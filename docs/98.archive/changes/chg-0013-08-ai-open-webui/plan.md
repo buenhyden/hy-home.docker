@@ -1,0 +1,76 @@
+---
+status: archived
+artifact_id: plan-0013
+artifact_type: archive
+parent_ids: []
+archived_from: docs/04.execution/plans/2026-03-27-08-ai-open-webui-plan.md
+archived_at: 2026-08-11
+archive_reason: "Move baseline completed source to stable typed target docs/98.archive/changes/chg-0013-08-ai-open-webui/plan.md; migrate 9 resolved inbound link(s) with it."
+archive_disposition: evidence-preserve
+archived_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
+archived_blob: 29d4ab939f12e33c0266351ca2a2aeb9b96e1ec6
+preservation_class: git-history
+---
+<!-- Target: docs/04.execution/plans/2026-03-27-08-ai-open-webui-plan.md -->
+
+# Open WebUI Implementation Plan
+
+---
+
+## Overview
+
+This document is the Open WebUI implementation plan. It defines work breakdown, verification, rollout, and completion criteria to ensure stable system deployment and operation.
+
+## Context
+
+Open WebUI is a critical component for the AI tier, providing the primary interface for users and automated RAG workflows. This plan ensures its deployment is standardized and traceable.
+
+## Goals & In-Scope
+
+- **Goals**:
+  - Standardize Open WebUI deployment config.
+  - Establish a complete documentation chain.
+  - Enable RAG with local Ollama/Qdrant integration.
+- **In Scope**:
+  - `docs/` hierarchy standardization.
+  - `infra/08-ai/open-webui/docker-compose.yml` validation.
+
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Optimizing model weights or fine-tuning.
+- **Out of Scope**: Infrastructure for external model providers (OpenAI, Anthropic).
+
+## Work Breakdown
+
+| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
+| --- | --- | --- | --- | --- |
+| PLN-001 | Create PRD, ARD, ADR | `docs/01.requirements + docs/02.architecture/` | REQ-PRD-FUN-01 | Files created & indexed |
+| PLN-002 | Create Technical Spec | `docs/03.specs/` | REQ-PRD-FUN-02 | Contract defined |
+| PLN-003 | Create Task List | `docs/04.execution/tasks/` | REQ-PRD-FUN-03 | Maintenance tasks ready |
+
+## Verification Plan
+
+| ID | Level | Description | Command / How to Run | Pass Criteria |
+| --- | --- | --- | --- | --- |
+| VAL-PLN-001 | Structural | Verify relative links | `find docs/ -name "*.md" \| xargs -n1 grep "\[..\/.*\]"` | All links resolve |
+| VAL-PLN-002 | Functional | Check container health | `docker inspect -f '{{.State.Health.Status}}' open-webui` | Status: healthy |
+
+## Risks & Mitigations
+
+| Risk | Impact | Mitigation |
+| --- | --- | --- |
+| GPU OOM | High | Limit `qwen3-embedding` concurrency or use CPU fallback |
+| SSO Failure | Medium | Maintain internal healthcheck as non-SSO route |
+
+## Completion Criteria
+
+- [x] Scoped documentation completed
+- [x] Verification criteria defined
+- [x] Indices updated
+
+## Related Documents
+
+- **PRD**: [../../01.requirements/prd-0013-ai-open-webui.md](../../../01.requirements/prd-0013-ai-open-webui.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0013-open-webui-architecture.md](../../../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
+- **Spec**: [../../03.specs/009-ai/open-webui.md](../../../03.specs/spec-0009-ai/spec.md)
+- **ADR**: [../../02.architecture/decisions/adr-0016-open-webui-implementation.md](../../../02.architecture/decisions/adr-0016-open-webui-implementation.md)

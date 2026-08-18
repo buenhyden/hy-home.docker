@@ -2,171 +2,132 @@
 status: active
 ---
 
-<!-- Target: docs/03.specs/README.md -->
-
 # 03.specs
 
-> 컴포넌트와 기능별 기술 명세, 구현 계약, 검증 기준을 관리하는 stage
+> 현재 capability 명세와 승인된 변경의 Plan/Task를 함께 관리하는 stage
 
 ## Overview
 
-`docs/03.specs`는 PRD, ARD, ADR을 구현 가능한 기술 계약으로 바꾸는 stage입니다. 각 spec은 구현자가 무엇을 바꾸고, 어떤 interface와 data contract를 지켜야 하며, 어떤 검증으로 완료를 판단할지 설명합니다.
+`docs/03.specs`는 요구사항과 아키텍처 결정을 구현 가능한 capability
+계약으로 구체화합니다. 각 `spec-<id>-<capability>/` 디렉터리의 `spec.md`는
+현재 동작의 durable source of truth이며, 승인된 변경이 진행 중일 때만
+`plan.md`와 `task.md`가 같은 디렉터리에 존재합니다.
 
-이 경로는 계획이나 작업 증거를 보관하지 않습니다. 실행 순서와 위험 관리는 `docs/04.execution/plans/`, 작업 결과와 evidence는 `docs/04.execution/tasks/`, 운영 절차와 정책은 `docs/05.operations/`가 담당합니다.
+Plan은 prospective strategy, Task는 실제 작업 상태와 검증 evidence를
+담당합니다. 완료 시 구현된 동작을 `spec.md`에 반영한 뒤 Plan과 Task를
+하나의 typed change packet으로 함께 보존합니다. capability child README는
+두지 않으며 `spec.md`가 capability 설명을 소유합니다.
 
 ## Audience
 
-이 README의 주요 독자:
-
 - Developers
 - System Architects
-- AI Agents
 - QA Engineers
+- Operators
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 컴포넌트/기능별 technical specification
-- config, data/interface, governance contract
-- API, schema, proto, tests, data model 같은 spec child contract
-- AI Agent 역할, tool, guardrail, evaluation contract
-- 구현 전 검증 기준과 성공 조건
+- capability별 current technical specification
+- 승인된 단일 변경의 co-located Plan과 Task
+- API, schema, protocol, data model, tests, agent design 같은 child contract
+- 구현 경계, interface/data contract, failure guardrail, 검증 기준
+- Requirement, Architecture Description, ADR, Operations로의 traceability
 
 ### Out of Scope
 
-- 제품 요구사항과 사용자 가치 정의 (`docs/01.requirements/` 담당)
-- 아키텍처 요구사항과 의사결정 (`docs/02.architecture/` 담당)
-- 구현 순서, milestone, 작업 배분 (`docs/04.execution/plans/` 담당)
-- 작업 수행 evidence (`docs/04.execution/tasks/` 담당)
-- 운영 가이드, 정책, 런북 (`docs/05.operations/` 담당)
-- Docker Compose runtime 원문이나 secret 값
+- 제품 요구사항과 사용자 가치 정의 (`docs/01.requirements`)
+- Architecture Description과 ADR (`docs/02.architecture`)
+- 운영 가이드, 정책, 런북, incident, release (`docs/05.operations`)
+- 완료된 Plan/Task 본문과 retired capability body (`docs/98.archive`)
+- Docker Compose runtime 원문과 secret 값
 
 ## Structure
 
 ```text
 docs/03.specs/
-├── 001-gateway/                         # Traefik/Nginx gateway contracts
-├── 002-auth/                            # Keycloak/OAuth2 Proxy contracts
-├── 003-security/                        # Vault and secret delivery contracts
-├── 004-data/                            # Core data service contracts
-├── 005-data-analytics/                  # Analytics engine contracts
-├── 006-messaging/                       # Kafka/RabbitMQ messaging contracts
-├── 007-observability/                   # LGTM observability contracts
-├── 008-workflow/                        # Airflow/n8n workflow contracts and agent design
-├── 009-ai/                              # Ollama/Open WebUI AI contracts
-├── 010-tooling/                         # Tooling service contracts
-├── 011-communication/                   # Mail communication contracts
-├── 012-laboratory/                      # Laboratory/admin surface contracts
-├── 090-workspace-audit-2026-05/         # Completed 2026-05-26 workspace audit historical spec
-├── 091-workspace-doc-consistency-2026-05/ # Completed 2026-05-28 workspace doc consistency spec (PR #89)
-├── 092-workspace-consistency-2026-05b/  # Completed 2026-05-29 workspace governance consistency follow-up spec
-├── 093-docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
-├── 094-harness-agent-first-engineering/ # Completed agent-first harness spec
-├── 095-infra-secrets-docs-refresh/      # Completed infra/secrets/docs refresh spec
-├── 096-llm-wiki-agent-first-completion/ # Completed LLM Wiki contract spec
-├── 097-home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
-├── 098-standardize-infra-net/           # Completed infra_net standardization spec
-├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
-├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
-├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 134-agent-governance-canonical-convergence/ # Active provider, memory, harness, loop, CI, and evidence convergence
-├── 135-target-surface-delta-convergence/ # Active tracked target-surface delta convergence spec
-├── 136-sdlc-taxonomy-convergence/        # Draft SDLC taxonomy and lifecycle convergence spec
-├── 137-agentic-research-pack-rebuild/    # Active source-backed agentic research pack rebuild spec
-└── README.md                            # This file
+├── README.md
+└── spec-<id>-<capability>/
+    ├── spec.md              # mandatory current capability contract
+    ├── plan.md              # optional; one active approved change
+    ├── task.md              # optional; one active evidence ledger
+    └── contracts/           # optional machine-readable contracts
 ```
 
-## Routing
+한 capability에는 `plan.md`와 `task.md` 역할이 각각 최대 하나만 존재합니다.
+완료된 실행 evidence는 이 stage에 남기지 않습니다.
 
-| If you need to define...                                                                              | Use                                                           |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Gateway routing, TLS, middleware, proxy behavior                                                      | `001-gateway/spec.md`                                         |
-| Identity, OAuth2, OIDC, session store behavior                                                        | `002-auth/spec.md`                                            |
-| Vault, secret template, AppRole, secret delivery behavior                                             | `003-security/spec.md`                                        |
-| Databases, cache, object storage, core data persistence                                               | `004-data/spec.md`                                            |
-| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines                                                  | `005-data-analytics/spec.md`                                  |
-| Kafka, RabbitMQ, stream/message broker behavior                                                       | `006-messaging/spec.md`                                       |
-| Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
-| Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
-| Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
-| Active agent-governance provider, memory, harness, loop, CI, and evidence convergence                 | `134-agent-governance-canonical-convergence/spec.md`          |
-| Active target-surface delta convergence                                                               | `135-target-surface-delta-convergence/spec.md`                |
-| SDLC taxonomy and lifecycle convergence                                                               | `136-sdlc-taxonomy-convergence/spec.md`                       |
-| Source-backed agentic engineering research pack rebuild                                               | `137-agentic-research-pack-rebuild/spec.md`                   |
-| Second-wave document restructure disposition contract                                                 | `103-document-restructure-audit-contract-archive/spec.md`     |
-| Workspace-wide document contract audit/disposition model                                              | `102-workspace-document-contract-audit-pack/spec.md`          |
-| Local AI inference, RAG UI, model-serving contracts                                                   | `009-ai/spec.md`, `009-ai/open-webui.md`                      |
-| IaC, registry, quality, performance tooling services                                                  | `010-tooling/spec.md`                                         |
-| Mail, SMTP, IMAP, development mail trapping                                                           | `011-communication/spec.md`                                   |
-| Laboratory/admin UI surfaces and access contracts                                                     | `012-laboratory/spec.md`                                      |
-| Completed governance/documentation contract work                                                      | named governance spec folders                                 |
+## Capability Index
+
+| ID | Capability | Current roles |
+| :-- | :-- | :-- |
+| `spec-0001` | [Gateway](./spec-0001-gateway/spec.md) | Spec |
+| `spec-0002` | [Auth](./spec-0002-auth/spec.md) | Spec |
+| `spec-0003` | [Security](./spec-0003-security/spec.md) | Spec |
+| `spec-0004` | [Data](./spec-0004-data/spec.md) | Spec |
+| `spec-0005` | [Data Analytics](./spec-0005-data-analytics/spec.md) | Spec |
+| `spec-0006` | [Messaging](./spec-0006-messaging/spec.md) | Spec |
+| `spec-0007` | [Observability](./spec-0007-observability/spec.md) | Spec |
+| `spec-0008` | [Workflow](./spec-0008-workflow/spec.md) | Spec, merged agent contract |
+| `spec-0009` | [AI](./spec-0009-ai/spec.md) | Spec, merged Open WebUI contract |
+| `spec-0010` | [Tooling](./spec-0010-tooling/spec.md) | Spec |
+| `spec-0011` | [Communication](./spec-0011-communication/spec.md) | Spec |
+| `spec-0012` | [Laboratory](./spec-0012-laboratory/spec.md) | Spec |
+| `spec-0090` | [Workspace Audit 2026-05](./spec-0090-workspace-audit-2026-05/spec.md) | Spec |
+| `spec-0091` | [Workspace Document Consistency](./spec-0091-workspace-doc-consistency-2026-05/spec.md) | Spec |
+| `spec-0092` | [Workspace Consistency Follow-up](./spec-0092-workspace-consistency-2026-05b/spec.md) | Spec |
+| `spec-0093` | [Documentation Taxonomy Agent-first Migration](./spec-0093-docs-taxonomy-agent-first-migration/spec.md) | Spec |
+| `spec-0094` | [Harness Agent-first Engineering](./spec-0094-harness-agent-first-engineering/spec.md) | Spec |
+| `spec-0095` | [Infra, Secrets, and Docs Refresh](./spec-0095-infra-secrets-docs-refresh/spec.md) | Spec |
+| `spec-0096` | [LLM Wiki Agent-first Completion](./spec-0096-llm-wiki-agent-first-completion/spec.md) | Spec |
+| `spec-0097` | [Home Docker Revalidation Follow-up](./spec-0097-home-docker-revalidation-deferred-follow-up/spec.md) | Spec |
+| `spec-0098` | [infra_net Standardization](./spec-0098-standardize-infra-net/spec.md) | Spec |
+| `spec-0102` | [Workspace Document Contract Audit Pack](./spec-0102-workspace-document-contract-audit-pack/spec.md) | Spec |
+| `spec-0103` | [Document Restructure Audit and Archive](./spec-0103-document-restructure-audit-contract-archive/spec.md) | Spec |
+| `spec-0105` | [Agentic Engineering Implementation Audit Pack](./spec-0105-agentic-engineering-implementation-audit-pack/spec.md) | Spec |
+| `spec-0123` | [Agentic Engineering Audit Remediation](./spec-0123-agentic-engineering-audit-remediation/spec.md) | Spec, [Task](./spec-0123-agentic-engineering-audit-remediation/task.md) |
+| `spec-0131` | [Document Corpus Lifecycle Migration Foundation](./spec-0131-document-corpus-lifecycle-migration-foundation/spec.md) | Spec |
+| `spec-0132` | [Agent Governance Harness Convergence](./spec-0132-agent-governance-harness-convergence/spec.md) | Spec |
+| `spec-0133` | [Target Surface Contract Convergence](./spec-0133-target-surface-contract-convergence/spec.md) | Spec |
+| `spec-0134` | [Agent Governance Canonical Convergence](./spec-0134-agent-governance-canonical-convergence/spec.md) | [Plan](./spec-0134-agent-governance-canonical-convergence/plan.md), [Task](./spec-0134-agent-governance-canonical-convergence/task.md) |
+| `spec-0135` | [Target Surface Delta Convergence](./spec-0135-target-surface-delta-convergence/spec.md) | [Plan](./spec-0135-target-surface-delta-convergence/plan.md), [Task](./spec-0135-target-surface-delta-convergence/task.md) |
+| `spec-0136` | [SDLC Taxonomy Convergence](./spec-0136-sdlc-taxonomy-convergence/spec.md) | [Plan](./spec-0136-sdlc-taxonomy-convergence/plan.md), [Task](./spec-0136-sdlc-taxonomy-convergence/task.md) |
+
+## Role Contract
+
+| Role | Responsibility |
+| :-- | :-- |
+| Spec | 현재 구현 동작, interface/data contract, failure boundary, 검증 기준 |
+| Plan | 승인된 한 변경의 prospective strategy, 순서, 위험, rollback, completion criteria |
+| Task | 실제 work log, 명령, 결과, review, commit, deferral evidence |
+
+Plan과 Task의 상태가 완료되면 먼저 구현된 동작을 Spec과 필요한 Operations
+문서에 반영합니다. 그 다음 두 문서를 동일한 `chg-<id>-<slug>/` packet으로
+이동하고 capability에서는 제거합니다. 별도 redirect 문서는 만들지 않습니다.
 
 ## How to Work in This Area
 
-1. 새 spec을 만들기 전에 상위 PRD, ARD, ADR이 있는지 확인합니다.
-2. 새 `spec.md`는 [spec template](../99.templates/templates/sdlc/spec.template.md)을 복사해 작성합니다.
-3. README는 [README template](../99.templates/templates/common/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다. Sibling README가 없는 historical spec folder는 `spec.md`가 유효하면 즉시 실패로 보지 않고, 새/current workstream에서 routing context가 필요할 때 README를 둡니다.
-4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/templates/spec-contracts/agent-design.template.md)을 사용해 해당 feature 디렉터리의 `agent-design.md`에 둡니다.
-5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
-6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
-7. 운영 링크는 목적별 bucket을 맞춥니다: guide는 `docs/05.operations/guides/`, policy는 `docs/05.operations/policies/`, runbook은 `docs/05.operations/runbooks/`.
-8. 이미지 태그, 고정 IP, 포트 같은 구현값 예시는 tracked compose와 `infra/tech-stack.versions.json`에 맞는 실제 값을 사용하고, 복사 가능한 placeholder를 남기지 않습니다.
-
-## Spec Contract
-
-Spec은 구현자가 따라야 하는 기술 계약입니다. 요구사항이나 실행 evidence를 다시 쓰지 않고, 다음 항목을 구현 가능한 형태로 연결합니다.
-
-| Contract Area      | Expected Content                                |
-| ------------------ | ----------------------------------------------- |
-| Related inputs     | PRD, ARD, ADR 링크 또는 명시적인 부재 사유      |
-| Contracts          | config, data/interface, governance contract     |
-| Core design        | component boundary, dependencies, stack         |
-| Verification       | 실행 가능한 명령, 수동 확인 기준, pass criteria |
-| Operations handoff | guide, policy, runbook 중 실제 운영 target 링크 |
-
-API, data model, tests, agent design 같은 child document는 같은 feature 디렉터리에 둡니다. 실행 순서와 작업 evidence는 `docs/04.execution`으로 연결합니다.
-
-## Documentation Standards
-
-- 가능한 경우 승인된 템플릿에서 시작한다.
-- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
-- 상위 문서와 하위 산출물 간 추적성을 유지한다.
-- 기존 spec의 domain facts를 보존하고, template section을 보강할 때 의미를 바꾸지 않는다.
-- ordinary broken-link 검사뿐 아니라 pseudo-link와 label/path mismatch를 확인한다.
-
-## AI Agent Guidance
-
-1. 이 README를 먼저 읽는다.
-2. 코드 변경 전 이 영역의 스펙 문서를 우선 참조하여 설계 의도를 파악한다.
-3. Graphify는 탐색 보조로만 사용하고, spec 판단은 tracked source files와 stage docs로 확인한다.
-4. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
-5. 새 PRD/ARD/ADR/Plan/Task가 필요한 변경이면 해당 stage template으로 별도 작성하고, 이 경로에 대체 문서를 만들지 않는다.
-
-## Stage Handoff
-
-이 stage의 완료 기준이 충족되면 [`docs/04.execution/`](../04.execution/README.md)로 이관한다. 구현 순서와 risk control은 `plan.template.md`를 사용해 Plan 문서로, 작업 수행 evidence는 `task.template.md`를 사용해 Task 문서로 기록한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
+1. 관련 Requirement, Architecture Description, ADR을 확인합니다.
+2. [Spec template](../99.templates/templates/sdlc/spec.template.md)으로
+   `spec.md`를 작성하고 stable artifact ID를 사용합니다.
+3. 승인된 변경에만 [Plan template](../99.templates/templates/sdlc/plan.template.md)과
+   [Task template](../99.templates/templates/sdlc/task.template.md)을 co-locate합니다.
+4. 한 capability의 active change packet을 하나로 제한합니다.
+5. 실제 결과를 Task에 기록하고 current behavior를 Spec에 write-back합니다.
+6. 운영자에게 보이는 변경은 `docs/05.operations`의 typed owner에 반영합니다.
+7. 완료된 Plan/Task는 [Stage 98 change packet](../98.archive/README.md)으로
+   함께 이동하고 현재 capability에서 제거합니다.
+8. 변경 문서 metadata, lifecycle, traceability, implementation alignment를
+   검증합니다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/README.md](../01.requirements/README.md)
-- **ARD**: [../02.architecture/requirements/README.md](../02.architecture/requirements/README.md)
-- **ADR**: [../02.architecture/decisions/README.md](../02.architecture/decisions/README.md)
-- **Plan**: [../04.execution/plans/README.md](../04.execution/plans/README.md)
-- **Tasks**: [../04.execution/tasks/README.md](../04.execution/tasks/README.md)
-- **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
-- **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
-- **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
-- **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
-- **Operational Readiness Program evidence owner**: [Program Task](../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
-- **Agent Governance Canonical Convergence Spec (active)**: [134-agent-governance-canonical-convergence/spec.md](./134-agent-governance-canonical-convergence/spec.md)
-- **Target Surface Delta Convergence Spec (active)**: [135-target-surface-delta-convergence/spec.md](./135-target-surface-delta-convergence/spec.md)
-- **SDLC Taxonomy Convergence Spec (draft)**: [136-sdlc-taxonomy-convergence/spec.md](./136-sdlc-taxonomy-convergence/spec.md)
-- **Agentic Engineering Research Pack Rebuild Spec (active)**: [137-agentic-research-pack-rebuild/spec.md](./137-agentic-research-pack-rebuild/spec.md)
-- **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
-- **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
-- **Home Docker Revalidation Deferred Follow-up Spec**: [097-home-docker-revalidation-deferred-follow-up/spec.md](./097-home-docker-revalidation-deferred-follow-up/spec.md)
-- **Infra / Secrets / Docs Refresh Spec**: [095-infra-secrets-docs-refresh/spec.md](./095-infra-secrets-docs-refresh/spec.md)
-- **LLM Wiki Agent-first Completion Spec**: [096-llm-wiki-agent-first-completion/spec.md](./096-llm-wiki-agent-first-completion/spec.md)
-- **Workspace Document Contract Audit Pack Spec**: [102-workspace-document-contract-audit-pack/spec.md](./102-workspace-document-contract-audit-pack/spec.md)
-- **Workspace Audit 2026-05 Spec**: [090-workspace-audit-2026-05/spec.md](./090-workspace-audit-2026-05/spec.md)
+- [Requirements](../01.requirements/README.md)
+- [Architecture](../02.architecture/README.md)
+- [Operations](../05.operations/README.md)
+- [Archive](../98.archive/README.md)
+- [Stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Document metadata profiles](../99.templates/support/document-metadata-profiles.yaml)
+- [Archive retention contract](../99.templates/support/archive-retention-contract.md)

@@ -31,7 +31,7 @@ jobs:
       - name: Check docs traceability sync
         run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.docs-traceability
 
-  # ── Documentation Implementation Alignment ─────────────────
+  # ── Documentation Link Alignment ───────────────────────────
   docs-implementation-alignment:
     permissions:
       contents: read
@@ -43,7 +43,7 @@ jobs:
       PUSH_BEFORE_SHA: ${{ github.event.before }}
     steps:
       - *checkout
-      - name: Check docs against tracked implementation surfaces
+      - name: Check document links, anchors, and archive boundaries
         run: python3 scripts/validation/run-ci-gate.py --profile ci --gate leaf.docs-implementation-alignment
       - name: Publish QA gate recommendations
         if: always()

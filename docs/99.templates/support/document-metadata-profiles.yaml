@@ -9,20 +9,43 @@ common:
     completed: [superseded]
     superseded: []
     archived: []
-  globally_forbidden: [type, document_type, template_type, owner, updated, links]
+  globally_forbidden: [type, document_type, template_type, owner, links]
   typed_keys:
-    [status, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle]
+    [
+      status,
+      artifact_id,
+      artifact_type,
+      parent_ids,
+      created,
+      updated,
+      observed_at,
+      supersedes,
+      completed_at,
+      reviewed_at,
+      next_review_at,
+      occurred_at,
+      resolved_at,
+      released_at,
+      archived_at,
+    ]
   frontmatter_order:
     - status
     - artifact_id
     - artifact_type
     - parent_ids
+    - created
+    - updated
+    - observed_at
     - supersedes
+    - completed_at
     - reviewed_at
-    - review_cycle
+    - next_review_at
+    - occurred_at
+    - resolved_at
+    - released_at
     - generated_by
     - archived_from
-    - archived_on
+    - archived_at
     - archive_reason
     - archive_disposition
     - archived_commit
@@ -33,19 +56,27 @@ common:
     - content_sha256
     - snapshot_reason
   inventory_excludes:
-    - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+    - docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
+  archive_source_prefixes:
+    - docs/
+    - archive/
   generated_outputs:
-    docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
+    docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
+    created: <created-at>
+    updated: <updated-at>
     reviewed_at: <reviewed-at>
-    review_cycle: <review-cycle>
+    next_review_at: <next-review-at>
+    completed_at: <completed-at>
+    occurred_at: <occurred-at>
+    resolved_at: <resolved-at>
+    released_at: <released-at>
     archived_from: docs/<original-path>.md
-    content_archived_from: archive/<original-path>.md
-    archived_on: YYYY-MM-DD
+    archived_at: <archived-at>
     archive_reason: <archive-reason>
     archive_disposition: <archive-disposition>
     archived_commit: <archived-commit>
@@ -56,10 +87,26 @@ common:
     content_sha256: <content-sha256>
     snapshot_reason: <snapshot-reason>
   root_exceptions:
-    docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
+    docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent.
 
 document_families:
-  sdlc: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release]
+  sdlc:
+    [
+      prd,
+      srs,
+      interface-requirement,
+      architecture-description,
+      adr,
+      spec,
+      plan,
+      task,
+      guide,
+      policy,
+      runbook,
+      incident,
+      postmortem,
+      release,
+    ]
   common:
     [
       reference,
@@ -74,62 +121,15 @@ document_families:
     ]
 
 archive_profiles:
-  content-archive:
-    path_globs: [archive/**/*.md]
-    template: docs/99.templates/templates/common/content-archive.template.md
-    artifact_type: archive
-    required:
-      [
-        status,
-        artifact_id,
-        artifact_type,
-        archived_from,
-        archived_on,
-        archive_reason,
-        archive_disposition,
-        archived_commit,
-        archived_blob,
-        preservation_class,
-      ]
-    optional: []
-    forbidden:
-      [
-        parent_ids,
-        layer,
-        supersedes,
-        current_replacement,
-        snapshot_path,
-        content_sha256,
-        snapshot_reason,
-        reviewed_at,
-        review_cycle,
-        type,
-        document_type,
-        template_type,
-        owner,
-        updated,
-        links,
-        generated_by,
-      ]
-    allowed_statuses: [archived]
-    allowed_parent_types: []
-    allow_empty_parents: true
-    disposition: archive exception
-    conditions:
-      replacement:
-        field: current_replacement
-        required_for: []
-        forbidden_for: [superseded, duplicate, conflict, withdrawn, evidence-preserve]
-        optional_for: []
-      snapshot:
-        fields: [snapshot_path, content_sha256, snapshot_reason]
-        required_for: []
-        forbidden_for: [git-history, immutable-snapshot]
-
-  sdlc-archive:
-    path_globs: [docs/98.archive/**/*.md]
+  change-plan:
+    path_globs: [docs/98.archive/changes/chg-*/plan.md]
     template: docs/99.templates/templates/common/archive.template.md
     artifact_type: archive
+    id_pattern: 'plan-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'chg-(?P<identity>[0-9]{4})-[a-z0-9][a-z0-9-]*'
+    artifact_id_identity_pattern: 'plan-(?P<identity>[0-9]{4})'
+    identity_capture: identity
     required:
       [
         status,
@@ -137,7 +137,7 @@ archive_profiles:
         artifact_type,
         parent_ids,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         archive_disposition,
         archived_commit,
@@ -147,22 +147,201 @@ archive_profiles:
     optional:
       [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
     forbidden:
-      [
-        reviewed_at,
-        review_cycle,
-        type,
-        document_type,
-        template_type,
-        owner,
-        updated,
-        links,
-        generated_by,
-      ]
+      [reviewed_at, next_review_at, type, document_type, template_type, owner, links, generated_by]
     allowed_statuses: [archived]
     allowed_parent_types:
       [
         prd,
-        ard,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  change-task:
+    path_globs: [docs/98.archive/changes/chg-*/task.md]
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    path_identity: inherited
+    parent_id_pattern: 'chg-(?P<identity>[0-9]{4})-[a-z0-9][a-z0-9-]*'
+    artifact_id_identity_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    identity_capture: identity
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [reviewed_at, next_review_at, type, document_type, template_type, owner, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  tombstone:
+    path_globs:
+      - docs/98.archive/tombstones/01.requirements/*.md
+      - docs/98.archive/tombstones/02.architecture/*.md
+      - docs/98.archive/tombstones/03.specs/*.md
+      - docs/98.archive/tombstones/05.operations/*.md
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: '(?:(?:prd|srs|interface|ad|adr|spec|ops|guide|policy|runbook|inc|postmortem|rel|ref)-[0-9]{4})'
+    path_identity: direct
+    parent_id_pattern: null
+    artifact_id_identity_pattern: null
+    identity_capture: null
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [reviewed_at, next_review_at, type, document_type, template_type, owner, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  migration:
+    path_globs: [docs/98.archive/migrations/mig-*.md]
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: 'mig-[0-9]{4}'
+    path_identity: direct
+    parent_id_pattern: null
+    artifact_id_identity_pattern: null
+    identity_capture: null
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [reviewed_at, next_review_at, type, document_type, template_type, owner, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
         adr,
         spec,
         plan,
@@ -211,12 +390,23 @@ readme_profiles:
       - docs/02.architecture/*/README.md
       - docs/03.specs/README.md
       - docs/03.specs/*/README.md
-      - docs/04.execution/README.md
-      - docs/04.execution/*/README.md
       - docs/05.operations/README.md
-      - docs/05.operations/*/README.md
-      - docs/05.operations/*/*/README.md
-      - docs/05.operations/*/*/*/README.md
+      - docs/05.operations/catalog/README.md
+      - docs/05.operations/catalog/00-workspace/README.md
+      - docs/05.operations/catalog/01-gateway/README.md
+      - docs/05.operations/catalog/02-auth/README.md
+      - docs/05.operations/catalog/03-security/README.md
+      - docs/05.operations/catalog/04-data/README.md
+      - docs/05.operations/catalog/05-messaging/README.md
+      - docs/05.operations/catalog/06-observability/README.md
+      - docs/05.operations/catalog/07-workflow/README.md
+      - docs/05.operations/catalog/08-ai/README.md
+      - docs/05.operations/catalog/09-tooling/README.md
+      - docs/05.operations/catalog/10-communication/README.md
+      - docs/05.operations/catalog/11-laboratory/README.md
+      - docs/05.operations/catalog/12-infra-net/README.md
+      - docs/05.operations/incidents/README.md
+      - docs/05.operations/releases/README.md
       - docs/90.references/README.md
       - docs/90.references/*/README.md
       - docs/90.references/*/*/README.md
@@ -420,7 +610,7 @@ template_roles:
   prd:
     source: docs/99.templates/templates/sdlc/prd.template.md
     artifact_profile: prd
-    target_globs: [docs/01.requirements/*.md]
+    target_globs: [docs/01.requirements/prd-*.md]
     required_headings:
       [
         '## Overview',
@@ -433,10 +623,41 @@ template_roles:
       ]
     conditional_headings: ['## AI Agent Requirements']
     forbidden_headings: ['## Implementation Details']
-  ard:
-    source: docs/99.templates/templates/sdlc/ard.template.md
-    artifact_profile: ard
-    target_globs: [docs/02.architecture/requirements/*.md]
+  srs:
+    source: docs/99.templates/templates/sdlc/srs.template.md
+    artifact_profile: srs
+    target_globs: [docs/01.requirements/srs-*.md]
+    required_headings:
+      [
+        '## Overview',
+        '## System Behavior',
+        '## Quality Requirements',
+        '## External Dependencies and Constraints',
+        '## Verification',
+        '## Related Documents',
+      ]
+    conditional_headings: ['## Assumptions']
+    forbidden_headings: ['## Implementation Plan']
+  interface-requirement:
+    source: docs/99.templates/templates/sdlc/interface-requirement.template.md
+    artifact_profile: interface-requirement
+    target_globs: [docs/01.requirements/interface-*.md]
+    required_headings:
+      [
+        '## Overview',
+        '## Participants and Direction',
+        '## Information Semantics',
+        '## Constraints and Compatibility',
+        '## Failure Expectations',
+        '## Verification',
+        '## Related Documents',
+      ]
+    conditional_headings: ['## Interface Examples']
+    forbidden_headings: ['## Implementation Plan']
+  architecture-description:
+    source: docs/99.templates/templates/sdlc/architecture-description.template.md
+    artifact_profile: architecture-description
+    target_globs: [docs/02.architecture/descriptions/ad-*.md]
     required_headings:
       [
         '## Overview and Context',
@@ -453,7 +674,7 @@ template_roles:
   adr:
     source: docs/99.templates/templates/sdlc/adr.template.md
     artifact_profile: adr
-    target_globs: [docs/02.architecture/decisions/*.md]
+    target_globs: [docs/02.architecture/decisions/adr-*.md]
     required_headings:
       [
         '## Context and Decision Drivers',
@@ -468,7 +689,7 @@ template_roles:
   spec:
     source: docs/99.templates/templates/sdlc/spec.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/spec.md]
+    target_globs: [docs/03.specs/spec-*/spec.md]
     required_headings:
       [
         '## Overview',
@@ -485,7 +706,7 @@ template_roles:
   plan:
     source: docs/99.templates/templates/sdlc/plan.template.md
     artifact_profile: plan
-    target_globs: [docs/04.execution/plans/*.md]
+    target_globs: [docs/03.specs/spec-*/plan.md]
     required_headings:
       [
         '## Overview',
@@ -502,7 +723,7 @@ template_roles:
   task:
     source: docs/99.templates/templates/sdlc/task.template.md
     artifact_profile: task
-    target_globs: [docs/04.execution/tasks/*.md]
+    target_globs: [docs/03.specs/spec-*/task.md]
     required_headings:
       [
         '## Overview',
@@ -522,15 +743,17 @@ template_roles:
   guide:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
-    target_globs: [docs/05.operations/guides/**/*.md]
-    required_headings:
-      ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
-    conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
+    target_globs:
+      - docs/05.operations/catalog/*/ops-*/guide.md
+    required_headings: ['## Usage', '## Common Checks', '## Related Documents']
+    conditional_headings:
+      ['## Overview', '## Audience and Prerequisites', '## Runbook Handoff', '## Troubleshooting']
     forbidden_headings: ['## Rollback or Recovery', '## Escalation']
   policy:
     source: docs/99.templates/templates/operations/policy.template.md
     artifact_profile: policy
-    target_globs: [docs/05.operations/policies/**/*.md]
+    target_globs:
+      - docs/05.operations/catalog/*/ops-*/policy.md
     required_headings:
       [
         '## Overview',
@@ -546,7 +769,8 @@ template_roles:
   runbook:
     source: docs/99.templates/templates/operations/runbook.template.md
     artifact_profile: runbook
-    target_globs: [docs/05.operations/runbooks/**/*.md]
+    target_globs:
+      - docs/05.operations/catalog/*/ops-*/runbook.md
     required_headings:
       [
         '## When to Use',
@@ -561,7 +785,7 @@ template_roles:
   incident:
     source: docs/99.templates/templates/operations/incident.template.md
     artifact_profile: incident
-    target_globs: [docs/05.operations/incidents/*/INC-*/*.md]
+    target_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/incident.md']
     required_headings:
       [
         '## Overview',
@@ -577,7 +801,7 @@ template_roles:
   postmortem:
     source: docs/99.templates/templates/operations/postmortem.template.md
     artifact_profile: postmortem
-    target_globs: [docs/05.operations/incidents/*/INC-*/postmortem.md]
+    target_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/postmortem.md']
     required_headings:
       [
         '## Overview',
@@ -595,7 +819,7 @@ template_roles:
   release:
     source: docs/99.templates/templates/operations/release.template.md
     artifact_profile: release
-    target_globs: [docs/05.operations/releases/*.md]
+    target_globs: [docs/05.operations/releases/rel-*/release.md]
     required_headings:
       [
         '## Overview',
@@ -659,24 +883,17 @@ template_roles:
   archive:
     source: docs/99.templates/templates/common/archive.template.md
     artifact_profile: archive
-    target_globs: [docs/98.archive/**/*.md]
+    target_globs:
+      - docs/98.archive/changes/chg-*/plan.md
+      - docs/98.archive/changes/chg-*/task.md
+      - docs/98.archive/tombstones/01.requirements/*.md
+      - docs/98.archive/tombstones/02.architecture/*.md
+      - docs/98.archive/tombstones/03.specs/*.md
+      - docs/98.archive/tombstones/05.operations/*.md
+      - docs/98.archive/migrations/mig-*.md
     required_headings:
       ['## Overview', '## Archive Metadata', '## Archive Ledger', '## Related Documents']
     conditional_headings: ['## Current Replacement', '## Preserved Evidence']
-    forbidden_headings: ['## Current Implementation']
-  content-archive:
-    source: docs/99.templates/templates/common/content-archive.template.md
-    artifact_profile: archive
-    target_globs: [archive/**/*.md]
-    required_headings:
-      [
-        '## Overview',
-        '## Current-use Warning',
-        '## Archive Metadata',
-        '## Archive Ledger',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Historical Retrieval']
     forbidden_headings: ['## Current Implementation']
   readme:
     source: docs/99.templates/templates/common/readme.template.md
@@ -725,7 +942,7 @@ template_roles:
   agent-design:
     source: docs/99.templates/templates/spec-contracts/agent-design.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/agent-design.md]
+    target_globs: [docs/03.specs/spec-*/agent-design.md]
     required_headings:
       [
         '## Overview',
@@ -746,7 +963,7 @@ template_roles:
   api-spec:
     source: docs/99.templates/templates/spec-contracts/api-spec.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/api-spec.md]
+    target_globs: [docs/03.specs/spec-*/api-spec.md]
     required_headings:
       [
         '## Overview',
@@ -767,7 +984,7 @@ template_roles:
   data-model:
     source: docs/99.templates/templates/spec-contracts/data-model.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/data-model.md]
+    target_globs: [docs/03.specs/spec-*/data-model.md]
     required_headings:
       [
         '## Overview',
@@ -786,7 +1003,7 @@ template_roles:
   service:
     source: docs/99.templates/templates/spec-contracts/service.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/service.md, examples/sample-web-service/service.md]
+    target_globs: [docs/03.specs/spec-*/service.md, examples/sample-web-service/service.md]
     required_headings:
       [
         '## Overview',
@@ -804,7 +1021,7 @@ template_roles:
   tests:
     source: docs/99.templates/templates/spec-contracts/tests.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/tests.md]
+    target_globs: [docs/03.specs/spec-*/tests.md]
     required_headings:
       [
         '## Overview',
@@ -824,7 +1041,10 @@ template_roles:
 
 profiles:
   prd:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/01.requirements/prd-*.md]
+    id_pattern: 'prd-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -832,14 +1052,13 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -848,8 +1067,11 @@ profiles:
     allow_empty_parents: true
     disposition: migration candidate
 
-  ard:
-    required: [status, artifact_id, artifact_type, parent_ids]
+  srs:
+    path_globs: [docs/01.requirements/srs-*.md]
+    id_pattern: 'srs-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -857,14 +1079,13 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -873,8 +1094,11 @@ profiles:
     allow_empty_parents: false
     disposition: migration candidate
 
-  adr:
-    required: [status, artifact_id, artifact_type, parent_ids]
+  interface-requirement:
+    path_globs: [docs/01.requirements/interface-*.md]
+    id_pattern: 'interface-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -882,181 +1106,266 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard]
+    allowed_parent_types: [prd, srs]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  architecture-description:
+    path_globs: [docs/02.architecture/descriptions/ad-*.md]
+    id_pattern: 'ad-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes]
+    forbidden:
+      [
+        type,
+        document_type,
+        template_type,
+        owner,
+        links,
+        reviewed_at,
+        next_review_at,
+        generated_by,
+        layer,
+        archived_from,
+        archived_at,
+        archive_reason,
+        current_replacement,
+      ]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, srs, interface-requirement]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  adr:
+    path_globs: [docs/02.architecture/decisions/adr-*.md]
+    id_pattern: 'adr-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes]
+    forbidden:
+      [
+        type,
+        document_type,
+        template_type,
+        owner,
+        links,
+        reviewed_at,
+        next_review_at,
+        generated_by,
+        layer,
+        archived_from,
+        archived_at,
+        archive_reason,
+        current_replacement,
+      ]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [architecture-description]
     allow_empty_parents: false
     disposition: migration candidate
 
   spec:
-    required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    path_globs: [docs/03.specs/spec-*/spec.md]
+    id_pattern: 'spec-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, archive]
+    allowed_parent_types: [architecture-description, adr, spec]
     allow_empty_parents: false
     disposition: migration candidate
 
   plan:
-    required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes]
+    path_globs: [docs/03.specs/spec-*/plan.md]
+    id_pattern: 'plan-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'spec-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'plan-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, completed_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, archive]
+    allowed_parent_types: [spec]
     allow_empty_parents: false
     disposition: migration candidate
 
   task:
-    required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes]
+    path_globs: [docs/03.specs/spec-*/task.md]
+    id_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    path_identity: inherited
+    parent_id_pattern: 'spec-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, completed_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task, archive]
+    allowed_parent_types: [spec, plan, task]
     allow_empty_parents: false
     disposition: migration candidate
 
   guide:
-    required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    path_globs:
+      - docs/05.operations/catalog/*/ops-*/guide.md
+    id_pattern: 'guide-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'guide-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
     allowed_parent_types: [spec, plan, task, policy]
-    allow_empty_parents: false
+    allow_empty_parents: true
     disposition: migration candidate
 
   policy:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
-    optional: [supersedes]
+    path_globs:
+      - docs/05.operations/catalog/*/ops-*/policy.md
+    id_pattern: 'policy-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'policy-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, plan, task]
-    allow_empty_parents: false
+    allowed_parent_types: [spec, architecture-description, adr]
+    allow_empty_parents: true
     disposition: migration candidate
 
   runbook:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
-    optional: [supersedes]
+    path_globs:
+      - docs/05.operations/catalog/*/ops-*/runbook.md
+    id_pattern: 'runbook-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'runbook-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task, guide, policy, archive]
-    allow_empty_parents: false
+    allowed_parent_types: [spec, plan, task, guide, policy]
+    allow_empty_parents: true
     disposition: migration candidate
 
   incident:
-    required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes]
+    path_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/incident.md']
+    id_pattern: 'inc-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, occurred_at]
+    optional: [supersedes, resolved_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1066,7 +1375,13 @@ profiles:
     disposition: migration candidate
 
   postmortem:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at]
+    path_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/postmortem.md']
+    id_pattern: 'postmortem-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'inc-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'postmortem-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at]
     optional: [supersedes]
     forbidden:
       [
@@ -1074,13 +1389,12 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1090,7 +1404,10 @@ profiles:
     disposition: migration candidate
 
   release:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/05.operations/releases/rel-*/release.md]
+    id_pattern: 'rel-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, released_at]
     optional: [supersedes, reviewed_at]
     forbidden:
       [
@@ -1098,13 +1415,12 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1115,42 +1431,54 @@ profiles:
 
   reference:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [observed_at, supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, reference]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        reference,
+      ]
     allow_empty_parents: true
     disposition: migration candidate
 
   audit:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [observed_at, supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1169,15 +1497,14 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1199,15 +1526,14 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1218,7 +1544,7 @@ profiles:
 
   generated:
     required: [generated_by]
-    optional: [status]
+    optional: [status, observed_at]
     forbidden:
       [
         artifact_id,
@@ -1226,16 +1552,15 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1254,17 +1579,16 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1284,16 +1608,15 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1311,7 +1634,7 @@ profiles:
         artifact_type,
         parent_ids,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         archive_disposition,
         archived_commit,
@@ -1321,22 +1644,12 @@ profiles:
     optional:
       [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
     forbidden:
-      [
-        reviewed_at,
-        review_cycle,
-        type,
-        document_type,
-        template_type,
-        owner,
-        updated,
-        links,
-        generated_by,
-      ]
+      [reviewed_at, next_review_at, type, document_type, template_type, owner, links, generated_by]
     allowed_statuses: [archived]
     allowed_parent_types:
       [
         prd,
-        ard,
+        architecture-description,
         adr,
         spec,
         plan,
@@ -1373,12 +1686,11 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
-        updated,
         links,
       ]
     allowed_statuses: []

@@ -1,0 +1,46 @@
+---
+status: archived
+artifact_id: ref-0088
+artifact_type: archive
+parent_ids: []
+archived_from: docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md
+archived_at: '2026-06-04'
+archive_reason: Duplicate Airflow DAG authoring guide retained stale repo-local DAG
+  path guidance that conflicted with the current bind-mounted workflow directory.
+archive_disposition: duplicate
+archived_commit: b9a96ac0995fd665f6b121d69483a5c83300823e
+archived_blob: d5a882c8544a8dcb0686223ffd0230e3206ececf
+preservation_class: git-history
+current_replacement: docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md
+---
+
+# Archive Tombstone: Airflow DAG Development Guide
+
+## Overview
+
+이 문서는 현재 구현과 상충해 active operations chain에서 제거된 Airflow DAG 개발 guide tombstone입니다.
+원문 운영 가이드는 stale current-truth로 재노출하지 않습니다.
+
+## Archive Metadata
+
+| Field | Value |
+| --- | --- |
+| Archived from | `docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md` |
+| Archived on | `2026-06-04` |
+| Archive reason | Duplicate DAG authoring guide retained the stale repo-local `infra/07-workflow/airflow/dags/` placement guidance. Current compose bind-mounts DAGs from `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. |
+| Current replacement | [Airflow DAG basics guide](../../../05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md) |
+
+## Current Replacement
+
+현재 Airflow DAG authoring 기준은 active [Airflow DAG basics guide](../../../05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md)를 따른다.
+Airflow 시스템 개요와 운영 handoff는 [Airflow usage guide](../../../05.operations/07-workflow/ops-0050-airflow/guide.md)를 기준으로 한다.
+
+## Archive Ledger
+
+- Original path: `docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md`
+- Disposition: archived tombstone
+- Body policy: stale original body removed
+
+## Related Documents
+
+- [Archive index](../../README.md)

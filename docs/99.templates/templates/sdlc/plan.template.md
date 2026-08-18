@@ -3,6 +3,8 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: plan
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
+completed_at: <completed-at>
 ---
 
 # {{title}} Implementation Plan

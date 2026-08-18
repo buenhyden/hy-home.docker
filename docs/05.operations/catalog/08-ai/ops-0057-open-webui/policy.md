@@ -1,0 +1,69 @@
+---
+status: active
+artifact_id: policy-0057
+artifact_type: policy
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md -->
+
+# Open WebUI Operations Policy
+
+## Overview
+
+이 문서는 Open WebUI 운영 정책을 정의한다. 인증/접근 통제, 문서 업로드 및 RAG 처리 기준, 구성 변경 승인 절차를 명확히 하여 서비스 안정성과 보안을 유지한다.
+
+## Policy Scope
+
+Open WebUI 서비스 운영 전반:
+
+- 사용자 접근 및 세션 관리
+- 문서 업로드/인덱싱/삭제 기준
+- Open WebUI와 Ollama/Qdrant 연동 구성 변경 관리
+
+- **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
+- **Agents**: Open WebUI 운영 자동화 에이전트, 문서 인덱싱/정리 에이전트
+- **Environments**: Local, Dev, Homelab, Production-like rehearsal
+
+## Controls
+
+- **Required**:
+  - 외부 노출 경로는 반드시 SSO 미들웨어(`sso-auth@file`)를 통과해야 한다.
+  - `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 변경은 사전 영향도 검토를 수행해야 한다.
+  - 인덱싱 실패/지연, 연결 실패 로그를 운영 증적으로 보관해야 한다.
+  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
+- **Allowed**:
+  - 문서 수명주기 관리(업로드, 재인덱싱, 삭제).
+  - 성능 개선 목적의 모델 파라미터 조정(승인된 범위 내).
+- **Disallowed**:
+  - 승인 없는 SSO 우회/비활성화.
+  - 검증 없이 프로덕션 임베딩 모델 변경.
+  - 출처 불명 모델/문서 처리 파이프라인 적용.
+
+## Exceptions
+
+- 로컬 단독 개발 환경에서 SSO 우회를 검토해야 하면 외부 네트워크 비노출, 명시 승인, 작업 종료 즉시 복구가 필수다.
+
+## Verification
+
+- 배포 전 체크:
+  - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+  - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+  - runtime 승인 후 root include 활성화 상태에서 `open-webui` container-internal health endpoint 응답 확인
+  - Open WebUI -> Ollama/Qdrant container-internal 연결성 확인
+- 운영 중 체크:
+  - 인증 실패율, 5xx 비율, 인덱싱 실패율 모니터링
+- 증적:
+  - 변경 티켓(또는 PR), 검증 로그, 롤백 결과
+
+## Review Cadence
+
+- **Quarterly**: 정책/권한/데이터 취급 기준 검토
+- **Per Release**: 모델/임베딩/연동 구성 변경 시 사전 검토
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Usage guide](guide.md)
+- [Recovery runbook](runbook.md)

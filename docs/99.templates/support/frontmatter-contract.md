@@ -92,13 +92,13 @@ validator owns profile precedence and ordering behavior. Human-readable
   document may retain only proven pre-existing deficits within the checker's
   approved boundary; partial migration and newly introduced violations block.
 - Reverse or otherwise exceptional lifecycle movement requires explicit scoped
-  Stage 04 approval evidence consumed by the checker; prose cannot override it.
+  co-located Task approval evidence consumed by the checker; prose cannot override it.
 - Active-record inspection remains advisory unless a later approved gate says
   otherwise.
 - Diagnostics expose bounded paths, identities, counts, and finding codes, not
   raw bodies, logs, credentials, or secret values.
 - The canonical pre/post-migration snapshot is
-  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`.
+  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`.
 
 Registered typed Markdown template sources declare their target `artifact_type` and
 use only the placeholder forms registered in the machine-readable profile.
@@ -109,11 +109,10 @@ non-angle markers such as `YYYY-MM-DD` remain field-specific.
 Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
-Archive tombstones keep semantic `artifact_type: archive`, then select
-`content-archive` for root `archive/**` or `sdlc-archive` for
-`docs/98.archive/**`. Content tombstones omit SDLC relation, replacement, and
-snapshot keys; Stage 98 tombstones retain their existing conditional fields.
-Both use the archive lifecycle profile and the provenance fields
+Archive records keep semantic `artifact_type: archive` and select exactly one
+typed `change-plan`, `change-task`, `tombstone`, or `migration` identity beneath
+`docs/98.archive/**`. README paths remain owned by the explicit archive README
+profile. Archive records use the archive lifecycle profile and provenance fields
 required by the registry. Conditional replacement and snapshot fields are
 present only when the archive profile admits them; their human interpretation
 is owned by the
@@ -138,7 +137,7 @@ field set, order, value shapes, and conditional presence.
 ## Duplicate-Purpose Key Rules
 
 - Do not use both `type` and path-derived document role for the same purpose.
-- Do not use generic `owner`, `updated`, or `links` metadata unless a target
+- Do not use generic `owner` or `links` metadata unless a target
   profile explicitly consumes those keys.
 - Do not copy README template metadata examples into final README files.
 - Do not add YAML frontmatter to README files just to make them resemble
@@ -149,8 +148,9 @@ field set, order, value shapes, and conditional presence.
 
 ## Legacy Cleanup Rules
 
-- Remove generic metadata snippets that list `title`, `type`, `owner`,
-  `updated`, or `links` when they are only illustrative.
+- Remove generic metadata snippets that list `title`, `type`, `owner`, or
+  `links` when they are only illustrative.
+- Every promoted SDLC target has immutable `created` and semantic-change `updated` ISO 8601 metadata. Dates never form path identity.
 - Replace flat template path references with canonical nested template paths.
 - If a target document contains copied template instructions instead of
   topic-specific content, record a follow-up gap unless the document is already
@@ -177,11 +177,10 @@ and are enforced by
 | Field          | Type         | Required by                 | Meaning                                                  |
 | :------------- | :----------- | :-------------------------- | :------------------------------------------------------- |
 | `reviewed_at`  | `YYYY-MM-DD` | policy, runbook, postmortem | Date the document's content was last confirmed accurate. |
-| `review_cycle` | string       | policy, runbook             | Cadence or trigger governing the next review.            |
+| `next_review_at` | ISO 8601 date | guide, policy, runbook     | Date by which the next review is due.                     |
 
-`review_cycle` accepts either a fixed cadence such as `quarterly` or an
-event trigger such as `on-source-change`. A document whose `reviewed_at`
-predates its cadence is stale, but staleness is not currently a blocking check.
+`next_review_at` is an ISO 8601 date. A document whose due date has passed is
+stale, but staleness is not currently a blocking check.
 
 ## Related Documents
 

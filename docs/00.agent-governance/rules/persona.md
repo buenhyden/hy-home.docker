@@ -2,54 +2,48 @@
 layer: agentic
 ---
 
-# AI Agent Persona Protocol
+# AI Agent Identity Routing
 
-Persona routing is mandatory for task execution.
+Provider-neutral identity routing for task execution.
 
 ## 1. Activation Protocol
 
-Before any implementation change, the agent must:
+Before mutation:
 
-1. Identify target layer and stage.
-2. Load relevant rules and one primary scope.
-3. Announce active persona, layer, and governing rule set.
+1. Resolve exactly one active `agent_id` from
+   `contracts/agent-catalog.yaml`.
+2. Use that entry's `scope`, permission profile, work profile, functions, and
+   provider projections without inventing a provider-local role.
+3. Load the matching canonical role document and one registered primary scope.
+4. State the active role, scope, and governing rule set in the task handoff.
 
-Announcement template:
+Provider-native adapters preserve this identity and role intent. They do not
+own separate persona names, scope mappings, permissions, or model policy.
 
-> "As your **[Persona]**, I am targeting **[Layer]** and following `docs/00.agent-governance` governance with **[Primary Rule]**."
+## 2. Authority Boundary
 
-## 2. Persona-to-Layer Mapping
+- `contracts/agent-catalog.yaml` owns active role IDs and their typed routing.
+- `agents/agents/<agent-id>.md` owns the canonical human-readable role intent.
+- `contracts/agent-governance-artifacts.yaml` owns path authority and review
+  obligations.
+- `contracts/provider-models.yaml` owns work-profile model and reasoning
+  selection.
+- `rules/bootstrap.md#3-canonical-load-order` owns loading order.
 
-| Persona                     | Primary Layer | Primary Governance       |
-| :-------------------------- | :------------ | :----------------------- |
-| Product Manager             | product       | `scopes/product.md`      |
-| System Architect            | architecture  | `scopes/architecture.md` |
-| Backend Engineer            | backend       | `scopes/backend.md`      |
-| Frontend Engineer           | frontend      | `scopes/frontend.md`     |
-| Infra/DevOps Engineer       | infra         | `scopes/infra.md`        |
-| Security Auditor            | security      | `scopes/security.md`     |
-| QA Engineer                 | qa            | `scopes/qa.md`           |
-| Operations/SRE Engineer     | ops           | `scopes/ops.md`          |
-| Mobile Engineer             | mobile        | `scopes/mobile.md`       |
-| Documentation Specialist    | docs          | `scopes/docs.md`         |
-| Metadata Steward            | meta          | `scopes/meta.md`         |
-| Entry/Gateway Engineer      | entry         | `scopes/entry.md`        |
-| Common Standards Reviewer   | common        | `scopes/common.md`       |
-| Agentic Workflow Specialist | agentic       | `scopes/agentic.md`      |
+If no catalog role matches, or multiple roles appear authoritative, stop and
+route the ambiguity to `workflow-supervisor`; do not revive an unregistered
+persona or scope file.
 
-## 3. Multi-Persona Rule
+## 3. Collaboration
 
-- For complex tasks, combine a reasoning persona with one specialist persona.
-- If two persona rules conflict, prefer the one tied to the currently edited layer.
-
-## 4. Skills Engagement
-
-- Persona routing does not restrict skill usage.
-- Agents should use relevant skills to improve speed and quality when available.
+Multi-role work retains one supervising owner and explicit worker/reviewer
+boundaries from `subagent-protocol.md`. Independent review must remain separate
+from implementation where the typed authority or workflow requires it.
 
 ## Related Documents
 
+- `docs/00.agent-governance/contracts/agent-catalog.yaml`
+- `docs/00.agent-governance/contracts/agent-governance-artifacts.yaml`
 - `docs/00.agent-governance/rules/bootstrap.md`
-- `docs/00.agent-governance/rules/agentic.md`
-- `docs/00.agent-governance/rules/task-checklists.md`
-- `docs/00.agent-governance/scopes/`
+- `docs/00.agent-governance/rules/workflows.md`
+- `docs/00.agent-governance/subagent-protocol.md`

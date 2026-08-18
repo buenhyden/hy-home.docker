@@ -62,7 +62,7 @@ honest lifecycle state and direct parents from its own evidence; source draft
 metadata is never approval or review evidence.
 
 Conditional headings are included only when the concern applies. An
-intentional deviation from the matched form is recorded in the owning Stage 04
+intentional deviation from the matched form is recorded in the owning co-located Task
 Task with approval and validation evidence.
 
 ## Related Documents

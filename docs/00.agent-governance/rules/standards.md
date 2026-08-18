@@ -10,28 +10,23 @@ Shared standards for instruction design, token efficiency, and execution quality
 
 - Keep `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` as thin entry shims.
 - Keep detailed governance only in `docs/00.agent-governance/`.
-- Load in this order:
-  1. `rules/bootstrap.md`
-  2. `rules/persona.md`
-  3. `rules/task-checklists.md`
-  4. `rules/agentic.md`
-  5. one primary `scopes/<layer>.md`
-  6. `rules/stage-authoring-matrix.md` (docs authoring only)
-  7. `rules/github-governance.md` (PR / merge / review tasks only)
-  8. stage docs JIT (`docs/01` to `docs/05`, then `docs/90` or `docs/99`)
+- Use only the canonical order in
+  `rules/bootstrap.md#3-canonical-load-order`.
 - Avoid duplicated instructions across root shims and rule files.
 
 ## 2. Language Standard
 
-- Governance and provider policy files in `docs/00.agent-governance/` must be English.
-- Human-facing repository guides and narratives should be Korean.
-- User-facing agent responses should be Korean unless explicitly requested otherwise.
+- Route artifact language by document role through
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
+- Conversational responses follow the user's active language preference under
+  `rules/output-style.md`.
 
 ## 3. Stage-Gate Compliance
 
 - Treat `docs/01` to `docs/99` as project SSoT.
 - Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
-- Keep reciprocal traceability across PRD, ARD, ADR, Spec, Plan, Task, Guide, Operations, and Runbook artifacts.
+- Keep reciprocal traceability across PRD, SRS, Interface Requirement,
+  Architecture Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
 
 ## 4. Execution Discipline
 

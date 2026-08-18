@@ -68,6 +68,7 @@ _REQUIRED_JOB_SUITES = {
         "repo-contracts-control-plane-regressions",
         "ci-precommit-regressions",
         "workflow-contract",
+        "operations-catalog-manifest",
         "repo-contracts",
     ),
     "agent-output-eval-fixture-gate": (
@@ -113,6 +114,7 @@ _REQUIRED_ROOT_CHILDREN = {
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.workflow-contract",
+        "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
     ),
     "ci.agent-output-eval-fixture-gate": (
@@ -194,8 +196,9 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.generated-freshness": (
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-index-freshness",
-        "leaf.local-llm-wiki-coverage-freshness",
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-script-manifest",
+        "leaf.operations-catalog-manifest",
     ),
     "local.compose-validation": ("leaf.compose-validation",),
     "local.compose-all-profiles-validation": (

@@ -50,16 +50,16 @@ dozzle/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dozzle.rule`, `traefik.http.routers.dozzle.entrypoints`, `traefik.http.routers.dozzle.tls`, `traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.dozzle.middlewares`, `traefik.http.services.dozzle.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `dozzle` |
-| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/dozzle.md), [Policy](../../../docs/05.operations/policies/11-laboratory/dozzle.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.
-2. 가이드 문서는 [Dozzle guide](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 참조한다.
-3. 운영 정책은 [Dozzle policy](../../../docs/05.operations/policies/11-laboratory/dozzle.md)를 확인한다.
-4. 장애 조치 지침은 [Dozzle runbook](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md)를 따른다.
+2. 가이드 문서는 [Dozzle guide](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md)를 참조한다.
+3. 운영 정책은 [Dozzle policy](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md)를 확인한다.
+4. 장애 조치 지침은 [Dozzle runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md)를 따른다.
 
 ## Tech Stack
 
@@ -95,6 +95,6 @@ dozzle/
 
 ## Related Documents
 
-- **Guide**: [docs/05.operations/guides/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
-- **Policy**: [docs/05.operations/policies/11-laboratory/dozzle.md](../../../docs/05.operations/policies/11-laboratory/dozzle.md)
-- **Runbook**: [docs/05.operations/runbooks/11-laboratory/dozzle.md](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md)
+- **Guide**: [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md)
+- **Policy**: [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md)
+- **Runbook**: [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md](../../../docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md)

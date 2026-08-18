@@ -11,11 +11,11 @@ Just-In-Time markers used to trigger the loading of specific policy or stage doc
 | Marker               | Target                          | Purpose                         |
 | :------------------- | :------------------------------ | :------------------------------ |
 | `[LOAD:PRD]`         | `docs/01.requirements/README.md`         | Product intent and requirements |
-| `[LOAD:ARD]`         | `docs/02.architecture/requirements/README.md`         | Architecture reference          |
+| `[LOAD:ARCHITECTURE]` | `docs/02.architecture/descriptions/README.md`        | Architecture Description        |
 | `[LOAD:ADR]`         | `docs/02.architecture/decisions/README.md`         | Decision history                |
 | `[LOAD:SPECS]`       | `docs/03.specs/README.md`       | Technical source of truth       |
-| `[LOAD:PLANS]`       | `docs/04.execution/plans/README.md`       | Implementation planning         |
-| `[LOAD:TASKS]`       | `docs/04.execution/tasks/README.md`       | Execution evidence              |
+| `[LOAD:PLANS]`       | `docs/03.specs/README.md`                 | Co-located implementation plans |
+| `[LOAD:TASKS]`       | `docs/03.specs/README.md`                 | Co-located execution evidence   |
 | `[LOAD:OPERATIONS]`  | `docs/05.operations/README.md`   | Operations knowledge base        |
 | `[LOAD:INCIDENTS]`   | `docs/05.operations/incidents/README.md`   | Incident records and postmortems |
 | `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |

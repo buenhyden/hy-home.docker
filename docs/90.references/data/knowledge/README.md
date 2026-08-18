@@ -60,15 +60,15 @@ knowledge/
 
 ## Current References
 
-- [llm-wiki-stage-category-coverage.md](./llm-wiki-stage-category-coverage.md) -
+- [llm-wiki-stage-category-coverage.md](ref-0076-llm-wiki-stage-category-coverage.md) -
   generated LLM Wiki stage/category coverage snapshot.
 
 ## How to Work in This Area
 
 1. Keep generated coverage output deterministic and source-path based.
 2. Do not store full document contents or secret-bearing paths here.
-3. Run `bash scripts/knowledge/generate-llm-wiki-coverage.sh` after in-scope
-   path changes.
+3. Run `python3 scripts/knowledge/generate-llm-wiki.py --write` after in-scope
+   path changes; the same collection pass refreshes index and coverage.
 4. Run `bash scripts/validation/check-repo-contracts.sh` after changing
    knowledge reference data or LLM Wiki generator scripts.
 
@@ -76,6 +76,6 @@ knowledge/
 
 - [reference data](../README.md)
 - [LLM Wiki references](../../llm-wiki/README.md)
-- [LLM Wiki generated index](../../llm-wiki/llm-wiki-index.md)
-- [LLM Wiki coverage generator](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh)
+- [LLM Wiki generated index](../../llm-wiki/ref-0082-llm-wiki-index.md)
+- [LLM Wiki generator](../../../../scripts/knowledge/generate-llm-wiki.py)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

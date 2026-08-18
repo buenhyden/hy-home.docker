@@ -15,12 +15,13 @@ Unified task execution checklists for all agent work.
       changes how the task should be performed; map its outputs to canonical
       repository stages before editing.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
-- [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
+- [ ] Identify required input documents (PRD, SRS, Interface Requirement,
+      Architecture Description, ADR, Specs, Plans, Tasks).
 - [ ] For audit/review/validation gaps, classify the canonical owner with
       `documentation-protocol.md` gap-to-stage routing before editing.
 - [ ] Review `docs/00.agent-governance/memory/README.md` and
       `docs/00.agent-governance/memory/current.md`; corroborate the bounded
-      handoff against the applicable Stage 04 Task, then retrieve relevant
+      handoff against the applicable co-located Task, then retrieve relevant
       memory notes when the task touches governance, docs, runtime, or repeated
       failures.
 - [ ] Identify ambiguity. Ask before state changes if a wrong assumption could
@@ -33,7 +34,7 @@ Unified task execution checklists for all agent work.
       before editing.
 - [ ] For high-risk approved surfaces, bind the approval to concrete evidence
       before editing: policy, runtime, CI, templates, secrets, remote GitHub,
-      model policy, and provider adapters require a Stage 04 task record that
+      model policy, and provider adapters require a co-located Task record that
       names the target surface, approval source, validation command, rollback or
       recovery path, and redaction boundary.
 - [ ] Use the single canonical Task form for ordinary and harness work; do not
@@ -59,7 +60,8 @@ Unified task execution checklists for all agent work.
       destination in the Task evidence.
 - [ ] Route each new gap to exactly one canonical owner first; use downstream
       links instead of duplicating rules or evidence across stages.
-- [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
+- [ ] Apply the document-role language route from
+      `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
 - [ ] Keep assumptions explicit and update them when repository evidence disproves them.
 - [ ] Validate new/changed links as edits are made.
 - [ ] For changed/new target Markdown, run the typed metadata checker with an
@@ -72,23 +74,21 @@ Unified task execution checklists for all agent work.
       only; never paste secret values into docs, logs, commits, PRs, or summaries.
 - [ ] For approved remote GitHub work, record the repository, remote surface,
       command class, before/after evidence, and any unverified remote gate.
-- [ ] Keep provider adapters aligned with Stage 00 lifecycle terms:
-      discovery -> applicability -> provider loading -> canonical artifact ->
-      validation evidence.
+- [ ] Keep provider adapters aligned with the lifecycle owned by
+      `rules/workflows.md`; do not copy its state order here.
 - [ ] Use only the four typed harness loops and their exact retry, stop,
       escalation, permission, and evidence bounds from
       `contracts/provider-models.yaml`; do not add prompt-local loop policy.
 - [ ] Keep loop owners and independent reviewers distinct, and record only
       `command`, `result`, `rollback`, and `skipped_checks`.
 - [ ] Record material progress and verification evidence in the applicable
-      Stage 04 Task, then refresh
+      co-located Task, then refresh
       `docs/00.agent-governance/memory/current.md` with only the bounded current
       handoff.
 - [ ] For archive work, run safe provenance and confidentiality checks through
       the lifecycle validator; do not inspect or record prohibited payloads.
-- [ ] Select `content-archive` for root `archive/**` and `sdlc-archive` for
-      `docs/98.archive/**`; keep `artifact_type: archive` and use the mapped
-      template without borrowing fields across the two profiles.
+- [ ] Select `sdlc-archive` only beneath `docs/98.archive/**`; keep
+      `artifact_type: archive` and use the mapped template.
 - [ ] Preserve independent specification and quality review as separate Task
       evidence before a destructive row or wave promotion can pass.
 - [ ] Refresh each derived output through its canonical generator and inspect
@@ -100,14 +100,14 @@ Unified task execution checklists for all agent work.
       only; do not claim detection of ignored/outside writes or sandboxing.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
 
-## 3. Completion Checklist
+## 3. Completion Contract
 
 - [ ] Run relevant repository checks for changed layers.
 - [ ] Confirm each implemented change is traceable to the approved plan when an approved-plan gate applies.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
 - [ ] Confirm new documents cannot use the legacy metadata exception and any
-      reverse lifecycle transition has explicit scoped Stage 04 override evidence.
+      reverse lifecycle transition has explicit scoped co-located Task override evidence.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm any HADS usage follows the mandatory
       `docs/90.references/data/hads/` profile when applicable, or is explicitly
@@ -134,7 +134,7 @@ Unified task execution checklists for all agent work.
       and replacement proof, provenance result, rollback boundary, generator
       freshness, independent reviews, and conditional controlled-wrapper evidence.
 - [ ] Record final status, verification evidence, and durable Memory links in
-      the applicable Stage 04 Task; update
+      the applicable co-located Task; update
       `docs/00.agent-governance/memory/current.md` with the bounded next
       handoff. `progress.md` remains historical navigation and is not updated
       as an active payload.

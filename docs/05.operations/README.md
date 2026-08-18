@@ -6,17 +6,16 @@ status: active
 
 # Operations
 
-> 서비스 사용 가이드, 운영 정책, 반복 실행 절차, 사고 기록을 분리해 관리하는 운영 지식 베이스
+> 도메인별로 Guide, Policy, Runbook을 함께 찾고 사고와 릴리스 증거로 연결하는 canonical Stage 05 인덱스
 
 ## Overview
 
-`docs/05.operations`는 운영자가 서비스를 이해하고, 통제 기준을 확인하고, 복구 절차를 실행하고, 사고 기록을 남기기 위한 canonical operations stage입니다.
-
-이 경로는 guide, policy, runbook, incident를 하나의 긴 문서에 섞지 않습니다. 목적별 하위 폴더를 사용해 사람과 AI Agent가 필요한 문서를 빠르게 찾도록 합니다.
+`docs/05.operations/`는 운영자가 서비스 사용 맥락, 통제 기준, 실행 절차를
+같은 stable subject identity 아래에서 찾는 canonical operations stage다. 최종
+탐색 구조는 `catalog/` 아래의 domain-first이며, 역할별 병렬 인덱스를
+발행하지 않는다. Incident와 Release event record는 catalog 밖에 둔다.
 
 ## Audience
-
-이 README의 주요 독자:
 
 - Operators
 - Developers
@@ -28,88 +27,65 @@ status: active
 
 ### In Scope
 
-- 서비스 사용, 설정, 온보딩 가이드
-- 운영 정책, 통제 기준, 예외 처리 기준
-- 장애 복구, 정기 점검, 반복 실행 절차
-- 사고 기록과 사후 분석
-- 실제 릴리스의 artifact, 검증, 승인, rollout/rollback, 결과 증거
-- AI Agent가 참조할 canonical operations context
+- 서비스 사용, 설정, 온보딩 Guide
+- 운영 통제, 예외, 검토 주기를 정의하는 Policy
+- 검증, 복구, rollback, escalation을 위한 Runbook
+- 실제 사고 packet과 사후 분석
+- 실제 릴리스 artifact, 승인, rollout/rollback, 결과 증거
 
 ### Out of Scope
 
-- 요구사항 정의 (`docs/01.requirements` 담당)
-- 아키텍처 요구사항과 결정 기록 (`docs/02.architecture` 담당)
-- 상세 기술 명세 (`docs/03.specs` 담당)
-- 실행 계획과 작업 증거 (`docs/04.execution` 담당)
-- secret 값, credential, token, 인증서 원문
+- 요구사항 정의 (`docs/01.requirements/`)
+- 아키텍처 요구사항과 결정 기록 (`docs/02.architecture/`)
+- 상세 기술 명세, Plan, Task (`docs/03.specs/`)
+- secret, credential, token, 인증서 원문
 
 ## Structure
 
-```text
-docs/05.operations/
-├── guides/       # 서비스 사용, 설정, 온보딩 가이드
-├── policies/     # 운영 통제, 보안/가용성 정책, 예외 기준
-├── runbooks/     # 복구, 검증, 반복 실행 절차
-├── incidents/    # 사고 단위 packet 폴더와 사후 분석
-├── releases/     # 실제 릴리스 event 증거 기록
-└── README.md     # This file
-```
+| Route | Purpose |
+| --- | --- |
+| [Catalog](./catalog/README.md) | domain별 current Operations subjects |
+| [Incidents](./incidents/README.md) | incident packets and postmortems |
+| [릴리스](./releases/README.md) | executed release evidence |
 
-## Routing
-
-| I need to...                                                | Go to                                                                                           |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| understand or configure a service                           | [guides/](./guides/README.md)                                                                   |
-| check allowed controls, exceptions, or review cadence       | [policies/](./policies/README.md)                                                               |
-| execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
-| record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                              |
-| record evidence for an executed release                     | [릴리스](./releases/README.md)                                                                    |
-| confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
+각 domain `README.md`가 subject navigation을 소유하며, subject 폴더에는
+`README.md`를 만들지 않는다. subject의 기존 역할만
+`catalog/<domain>/ops-####-<subject>/{guide,policy,runbook}.md`에 둔다.
 
 ## How to Work in This Area
 
-1. 서비스 사용법이나 배경 설명은 `guides/01-gateway/traefik.md` 같은 guide 문서에 둡니다.
-2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
-3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
-4. 실제 사고 기록과 postmortem은 `incidents/YYYY/INC-###-incident-title/` packet 안에 둡니다.
-5. 실제 릴리스 증거는 `releases/YYYY-MM-DD-release-name.md`에 기록합니다. changelog나 readiness 자료만으로 release record를 만들지 않습니다.
-6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
-
-특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/00-workspace/developer-setup.md`, `policies/00-workspace/infra-service-optimization-catalog.md`, `runbooks/00-workspace/release-management.md`)는 bucket root에 직접 두지 않고 의미별 하위 폴더에 둡니다. `guides/`, `policies/`, `runbooks/` root에는 해당 bucket `README.md`만 남깁니다.
-
-모든 서비스가 guide, policy, runbook을 모두 가질 필요는 없습니다. 소비자가 실제로 구분해서 찾아야 하는 문서만 추가합니다.
-
-## Operations Contract
-
-| Bucket       | Responsibility                                          | Required Profile                                                                            |
-| ------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `guides/`    | 정상 사용, 설정, 온보딩, common checks                  | `## Usage`, `## Common Checks`, handoff links                                               |
-| `policies/`  | 운영 통제, 허용/금지 상태, 예외, 검토 주기              | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence`                    |
-| `runbooks/`  | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
-| `incidents/` | 사고 사실 기록과 같은 packet 안의 사후 분석              | incident/postmortem templates                                                               |
-| `releases/`  | 실제 릴리스 artifact, 승인, 검증, rollout/rollback, 결과 | release template; 실제 event evidence 필수                                                   |
-
-하나의 leaf 문서에는 하나의 primary purpose만 둡니다. 사용 설명과 반복 절차가 모두 필요한 경우 guide에서 runbook으로 handoff 링크를 둡니다.
+1. [Catalog](./catalog/README.md)의 domain 인덱스에서 stable
+   `ops-####-<subject>`를 찾는다.
+2. 정상 사용 맥락과 common checks는 `guide.md`에 둔다.
+3. 필수·금지 통제, 예외, 검토 주기는 `policy.md`에 둔다.
+4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
+   `runbook.md`에 둔다.
+5. Guide의 `## Runbook Handoff`는 실제 sibling Runbook이 있고 그 절차로
+   넘겨야 할 때만 작성한다. Runbook의 `## Automation Handoff`도 실제
+   자동화 artifact와 검증 가능한 link가 있을 때만 작성한다.
+6. 모든 subject가 세 역할을 모두 가질 필요는 없다. frozen inventory에
+   존재하거나 별도 승인된 역할만 추가한다.
+7. 사고는 `incidents/<year>/inc-####-<slug>/`, 실제 릴리스는
+   `releases/rel-####-<slug>/` 아래에 기록한다.
+8. 문서를 추가, 이동, 삭제하면 owning domain `README.md`와 관련 inbound
+   link를 함께 갱신한다.
 
 ## Documentation Standards
 
-- operations 하위 문서는 목적별 폴더를 기준으로 배치합니다.
-- guide는 사용 맥락과 안전한 진입점을 설명합니다.
-- policy는 통제 기준, 예외 승인, 검토 주기를 설명합니다.
-- runbook은 명령, 기대 결과, 실패 시 중단 기준, rollback 또는 escalation 기준을 포함합니다.
-- 사고 기록은 secret, token, credential, private key 원문을 포함하지 않습니다.
-- release record는 deployment runtime의 소유권이나 실행 권한을 대체하지 않습니다.
-
-## Stage Handoff
-
-`docs/05.operations/`는 lifecycle의 최종 운영 단계다. 사고 기록에서 새 요구사항이 식별되면 [`docs/01.requirements/`](../01.requirements/README.md)로 feedback한다. 절차 개선이 설계 변경을 요구하면 [`docs/02.architecture/`](../02.architecture/README.md) 또는 [`docs/03.specs/`](../03.specs/README.md)로 이관한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
+- 한 leaf 문서는 하나의 primary role만 수행한다.
+- Guide는 절차를 복제하지 않고 필요할 때 sibling Runbook으로 handoff한다.
+- Policy는 명령 순서를 소유하지 않는다.
+- Runbook은 evidence, rollback/recovery, escalation 기준을 포함한다.
+- root, catalog, domain README만 active Operations index를 발행한다.
+- archive, generated summary, migration ledger의 immutable provenance는 current
+  path rewrite 대상으로 취급하지 않는다.
 
 ## Related Documents
 
-- [Docs Index](../README.md)
-- [Plans](../04.execution/plans/README.md)
-- [Tasks](../04.execution/tasks/README.md)
-- [Releases](./releases/README.md)
-- [Templates](../99.templates/README.md)
+- [Docs index](README.md)
+- [Requirements](../01.requirements/README.md)
+- [Architecture](../02.architecture/README.md)
+- [Specs, Plans, and Tasks](../03.specs/README.md)
+- [Operations templates](../99.templates/templates/operations/README.md)
 - [Documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
 - [Stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)

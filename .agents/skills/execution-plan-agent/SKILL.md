@@ -24,7 +24,7 @@ An approved specification and corroborated repository baseline must exist; unres
 
 ## Outputs
 
-- An executable Stage 04 Plan with exact file map, sequence, risks, and verification ladder.
+- An executable Plan co-located at `docs/03.specs/spec-####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
 
 ## Gates
 

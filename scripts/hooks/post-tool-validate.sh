@@ -228,5 +228,5 @@ fi
 
 if [[ "$run_governance" -eq 1 ]]; then
   bash scripts/validation/check-repo-contracts.sh
-  bash scripts/validation/check-doc-traceability.sh
+  python3 scripts/validation/check-document-links.py --mode traceability
 fi

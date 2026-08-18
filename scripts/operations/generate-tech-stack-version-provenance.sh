@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/docker/tech-stack-version-provenance.md"
+OUTPUT="docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md"
 
 usage() {
   cat <<'EOF'
@@ -255,8 +255,6 @@ lines: list[str] = [
     "generated_by: scripts/operations/generate-tech-stack-version-provenance.sh",
     "---",
     "",
-    "<!-- Target: docs/90.references/data/docker/tech-stack-version-provenance.md -->",
-    "",
     "# Reference: Tech-Stack Version Provenance",
     "",
     "## Overview",
@@ -445,9 +443,9 @@ lines.extend(
         "## Related Documents",
         "",
         "- **Docker data index**: [README.md](./README.md)",
-        "- **Docker image/version interpretation**: [image-version-interpretation.md](./image-version-interpretation.md)",
-        "- **Compose profile coverage**: [compose-profile-service-coverage.md](./compose-profile-service-coverage.md)",
-        "- **Automation candidates**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
+        "- **Docker image/version interpretation**: [ref-0060-image-version-interpretation.md](./ref-0060-image-version-interpretation.md)",
+        "- **Compose profile coverage**: [ref-0059-compose-profile-service-coverage.md](./ref-0059-compose-profile-service-coverage.md)",
+        "- **Automation candidates**: [ref-0021-automation-candidates.md](../../audits/ref-0021-automation-candidates.md)",
     ]
 )
 

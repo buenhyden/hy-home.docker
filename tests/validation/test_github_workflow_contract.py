@@ -116,7 +116,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
         self.assertEqual(16, len(ci.jobs))
-        self.assertEqual(80, len(contract.gate_registry.nodes))
+        self.assertEqual(81, len(contract.gate_registry.nodes))
         self.assertEqual(16, len(contract.gate_registry.job_roots))
         self.assertEqual(3, len(contract.gate_registry.profile_roots))
         self.assertEqual(
@@ -381,7 +381,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "eval": "eval python3 scripts/validation/run-ci-gate.py",
             "source": "source scripts/validation/run-local-qa-gates.sh",
             "shell-c": "bash -c 'true'",
-            "direct-script": "bash scripts/validation/check-doc-traceability.sh",
+            "direct-script": (
+                "python3 scripts/validation/check-document-links.py --mode traceability"
+            ),
         }
         for label, program in mutations.items():
             with self.subTest(label=label), self.workflow_fixture() as root:

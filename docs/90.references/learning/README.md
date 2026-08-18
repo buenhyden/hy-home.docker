@@ -54,8 +54,8 @@ docs/90.references/learning/
 
 ## Current References
 
-- [roadmap.md](./roadmap.md) - current CS/CE/SE learning roadmap
-- [roadmap-v1.md](./roadmap-v1.md) - archived initial roadmap
+- [roadmap.md](ref-0081-roadmap.md) - current CS/CE/SE learning roadmap
+- [roadmap-v1.md](ref-0080-roadmap-v1.md) - archived initial roadmap
 
 ## How to Work in This Area
 
@@ -69,6 +69,6 @@ docs/90.references/learning/
 ## Related Documents
 
 - [90.references](../README.md)
-- [stable reference terms](../data/glossary/stable-reference-terms.md)
+- [stable reference terms](../data/glossary/ref-0062-stable-reference-terms.md)
 - [docs index](../../README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)

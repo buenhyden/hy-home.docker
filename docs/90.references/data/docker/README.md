@@ -58,9 +58,9 @@ docs/90.references/data/docker/
 
 ## Current References
 
-- [compose-profile-service-coverage.md](./compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
-- [image-version-interpretation.md](./image-version-interpretation.md) - Docker image/version source interpretation rules
-- [tech-stack-version-provenance.md](./tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
+- [compose-profile-service-coverage.md](ref-0059-compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
+- [image-version-interpretation.md](ref-0060-image-version-interpretation.md) - Docker image/version source interpretation rules
+- [tech-stack-version-provenance.md](ref-0061-tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
 
 ## Reference Rules
 
@@ -89,9 +89,9 @@ docs/90.references/data/docker/
 ## Related Documents
 
 - [references index](../../README.md)
-- [Compose profile/service coverage](./compose-profile-service-coverage.md)
-- [image/version interpretation](./image-version-interpretation.md)
-- [tech-stack version provenance](./tech-stack-version-provenance.md)
+- [Compose profile/service coverage](ref-0059-compose-profile-service-coverage.md)
+- [image/version interpretation](ref-0060-image-version-interpretation.md)
+- [tech-stack version provenance](ref-0061-tech-stack-version-provenance.md)
 - [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json)
 - [tech stack versions](../../../../infra/tech-stack.versions.json)
 - [Compose coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh)

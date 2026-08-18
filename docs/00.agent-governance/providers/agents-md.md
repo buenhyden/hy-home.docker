@@ -16,7 +16,8 @@ Provider-neutral guidance for `AGENTS.md` style files.
 
 - Root `AGENTS.md` should act as an entry shim, not a monolithic policy dump.
 - Prefer modular delegation to governance files.
-- Use deterministic loading order and clear precedence rules.
+- Use only the canonical loading order in
+  `../rules/bootstrap.md#3-canonical-load-order` and the precedence below.
 - When path-level instruction files coexist, prefer the most specific in-scope file.
 
 ## 3. This Repository Policy
@@ -87,24 +88,18 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
   `scripts/operations/sync-provider-surfaces.sh` enforce or report drift from
   this model.
 
-### Shared Lifecycle and QA Contract
+### Shared Workflow and Completion Routing
 
-Every adapter preserves
-`discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`.
-For changed or new target Markdown, run
-`python3 scripts/validation/check-document-metadata.py --mode check-changed`
-with a safe base. Direct agent execution of all-files pre-commit is prohibited;
-an approved final QA gate uses only
-`scripts/validation/run-agent-precommit-all-files.sh` and records reviewed
-Git-visible, non-ignored repository paths. Provider-native hooks may route these
-obligations, while pointer/reminder surfaces remain behavioral and must not be
-described as native interception.
+Every adapter uses the lifecycle in `../rules/workflows.md` and the completion
+contract in `../rules/task-checklists.md#3-completion-contract`. Provider-native
+hooks may route those obligations, while pointer/reminder surfaces remain
+behavioral and must not be described as native interception.
 
 ## Related Documents
 
-- `../../01.requirements/024-agent-governance-standardization.md`
-- `../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
-- `../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
+- `../../01.requirements/prd-0024-agent-governance-standardization.md`
+- `../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
+- `../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/standards.md`
 - `docs/00.agent-governance/providers/claude.md`

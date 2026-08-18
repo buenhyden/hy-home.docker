@@ -4,7 +4,7 @@ artifact_id: <artifact-id>
 artifact_type: archive
 parent_ids: []
 archived_from: docs/<original-path>.md
-archived_on: YYYY-MM-DD
+archived_at: <archived-at>
 archive_reason: <archive-reason>
 archive_disposition: <archive-disposition>
 archived_commit: <archived-commit>

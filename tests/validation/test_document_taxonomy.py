@@ -1,0 +1,394 @@
+import os
+import re
+import subprocess
+import unittest
+from pathlib import Path, PurePosixPath
+
+import yaml
+
+from scripts.lib.document_governance.taxonomy import (
+    find_dated_identity_parts,
+    validate_stable_identity,
+)
+
+
+ROOT = Path(__file__).resolve().parents[2]
+LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+
+# These surfaces preserve migration provenance or time-bounded evidence; they do
+# not publish active document-routing contracts. Active Stage 00, Stage 01–03,
+# Stage 05, root/provider, template, and infrastructure surfaces remain scanned.
+LEGACY_PATH_EVIDENCE_ALLOWLIST = (
+    "docs/00.agent-governance/memory/progress.md",
+    "docs/04.execution/",
+    "docs/90.references/audits/",
+    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/",
+    "docs/98.archive/",
+    "graphify-out/",
+)
+
+AD_TO_PRD = {
+    "ad-0001": "prd-0001",
+    "ad-0002": "prd-0002",
+    "ad-0003": "prd-0003",
+    "ad-0004": "prd-0004",
+    "ad-0005": "prd-0006",
+    "ad-0006": "prd-0007",
+    "ad-0007": "prd-0008",
+    "ad-0008": "prd-0009",
+    "ad-0009": "prd-0010",
+    "ad-0010": "prd-0011",
+    "ad-0011": "prd-0012",
+    "ad-0012": "prd-0005",
+    "ad-0013": "prd-0013",
+    "ad-0014": "prd-0014",
+    "ad-0018": "prd-0015",
+    "ad-0019": "prd-0016",
+    "ad-0020": "prd-0017",
+    "ad-0021": "prd-0018",
+    "ad-0022": "prd-0019",
+    "ad-0023": "prd-0020",
+    "ad-0024": "prd-0021",
+    "ad-0025": "prd-0022",
+    "ad-0026": "prd-0023",
+    "ad-0027": "prd-0024",
+    "ad-0028": "prd-0025",
+}
+
+ADR_TO_AD = {
+    "adr-0001": "ad-0001",
+    "adr-0002": "ad-0002",
+    "adr-0003": "ad-0003",
+    "adr-0004": "ad-0004",
+    "adr-0005": "ad-0005",
+    "adr-0006": "ad-0006",
+    "adr-0007": "ad-0007",
+    "adr-0008": "ad-0008",
+    "adr-0009": "ad-0009",
+    "adr-0010": "ad-0010",
+    "adr-0011": "ad-0011",
+    "adr-0015": "ad-0012",
+    "adr-0016": "ad-0013",
+    "adr-0017": "ad-0014",
+    "adr-0018": "ad-0018",
+    "adr-0019": "ad-0019",
+    "adr-0020": "ad-0020",
+    "adr-0021": "ad-0021",
+    "adr-0022": "ad-0022",
+    "adr-0023": "ad-0023",
+    "adr-0024": "ad-0024",
+    "adr-0025": "ad-0025",
+    "adr-0026": "ad-0026",
+    "adr-0027": "ad-0027",
+    "adr-0028": "ad-0028",
+}
+
+
+def tracked_paths(pathspec: str) -> list[str]:
+    result = subprocess.run(
+        ["git", "ls-files", "--", pathspec],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.splitlines()
+
+
+def metadata_for(relative_path: str) -> dict[str, object]:
+    text = (ROOT / relative_path).read_text()
+    match = re.match(r"\A---\n(.*?)\n---\n", text, flags=re.S)
+    if match is None:
+        raise AssertionError(f"missing frontmatter: {relative_path}")
+    return yaml.safe_load(match.group(1))
+
+
+def ledger_records() -> list[dict[str, object]]:
+    match = re.search(r"```yaml\n(.*?)\n```", LEDGER.read_text(), flags=re.S)
+    if match is None:
+        raise AssertionError("migration ledger YAML block is missing")
+    return yaml.safe_load(match.group(1))["records"]
+
+
+def resolved_repo_path(source: str, destination: str) -> str | None:
+    if destination.startswith(("#", "http://", "https://", "mailto:", "data:")):
+        return None
+    base = re.split(r"[#?]", destination, maxsplit=1)[0]
+    if not base:
+        return None
+    if base.startswith("/"):
+        candidate = base.lstrip("/")
+    elif base.startswith("docs/"):
+        candidate = base
+    else:
+        candidate = str(PurePosixPath(source).parent / base)
+    return os.path.normpath(candidate).replace(os.sep, "/")
+
+
+class StableDocumentTaxonomyTests(unittest.TestCase):
+    def test_stage_01_has_no_unprefixed_three_digit_documents(self):
+        legacy_paths = [
+            path
+            for path in tracked_paths("docs/01.requirements")
+            if re.fullmatch(
+                r"docs/01\.requirements/[0-9]{3}-[^/]+\.md",
+                path,
+            )
+        ]
+        self.assertEqual([], legacy_paths)
+
+    def test_stage_02_has_no_architecture_requirements_directory(self):
+        self.assertEqual(
+            [],
+            tracked_paths("docs/02.architecture/requirements"),
+        )
+
+    def test_stage_01_prd_filename_and_metadata_agree_exactly(self):
+        paths = tracked_paths("docs/01.requirements/prd-*.md")
+        self.assertEqual(25, len(paths))
+        self.assertEqual(
+            {f"prd-{number:04d}" for number in range(1, 26)},
+            {metadata_for(path)["artifact_id"] for path in paths},
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                match = re.fullmatch(
+                    r"docs/01\.requirements/(?P<id>prd-[0-9]{4})-[a-z0-9-]+\.md",
+                    path,
+                )
+                self.assertIsNotNone(match)
+                metadata = metadata_for(path)
+                self.assertEqual(match.group("id"), metadata["artifact_id"])
+                self.assertEqual("prd", metadata["artifact_type"])
+                self.assertEqual([], metadata["parent_ids"])
+                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+
+    def test_stage_02_description_filename_metadata_and_parent_agree_exactly(self):
+        paths = tracked_paths("docs/02.architecture/descriptions/ad-*.md")
+        self.assertEqual(25, len(paths))
+        self.assertEqual(set(AD_TO_PRD), {metadata_for(path)["artifact_id"] for path in paths})
+        for path in paths:
+            with self.subTest(path=path):
+                match = re.fullmatch(
+                    r"docs/02\.architecture/descriptions/(?P<id>ad-[0-9]{4})-[a-z0-9-]+\.md",
+                    path,
+                )
+                self.assertIsNotNone(match)
+                metadata = metadata_for(path)
+                artifact_id = match.group("id")
+                self.assertEqual(artifact_id, metadata["artifact_id"])
+                self.assertEqual("architecture-description", metadata["artifact_type"])
+                self.assertEqual([AD_TO_PRD[artifact_id]], metadata["parent_ids"])
+                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+
+    def test_stage_02_adr_filename_metadata_and_parent_agree_exactly(self):
+        paths = tracked_paths("docs/02.architecture/decisions/adr-*.md")
+        self.assertEqual(25, len(paths))
+        self.assertEqual(set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths})
+        for path in paths:
+            with self.subTest(path=path):
+                match = re.fullmatch(
+                    r"docs/02\.architecture/decisions/(?P<id>adr-[0-9]{4})-[a-z0-9-]+\.md",
+                    path,
+                )
+                self.assertIsNotNone(match)
+                metadata = metadata_for(path)
+                artifact_id = match.group("id")
+                self.assertEqual(artifact_id, metadata["artifact_id"])
+                self.assertEqual("adr", metadata["artifact_type"])
+                self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
+                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+
+    def test_description_readme_ledger_row_is_a_move_to_descriptions(self):
+        rows = {
+            row["legacy_path"]: row
+            for row in ledger_records()
+        }
+        row = rows["docs/02.architecture/requirements/README.md"]
+        self.assertEqual("docs/02.architecture/descriptions/README.md", row["stable_path"])
+        self.assertEqual("move", row["action"])
+        self.assertIsNone(row["artifact_id"])
+
+    def test_tracked_markdown_has_no_inbound_link_to_moved_stage_01_or_02_path(self):
+        legacy_paths = {
+            str(row["legacy_path"])
+            for row in ledger_records()
+            if row["action"] == "move"
+            and (
+                str(row["legacy_path"]).startswith("docs/01.requirements/")
+                or str(row["legacy_path"]).startswith("docs/02.architecture/")
+            )
+        }
+        destinations = re.compile(
+            r"!?\[[^\]\n]*\]\(([^\s)]+)|"
+            r"^\[[^\]\n]+\]:\s*(\S+)|"
+            r"\b(?:href|src)=[\"']([^\"']+)",
+            flags=re.M,
+        )
+        violations: list[str] = []
+        for source in tracked_paths("*.md"):
+            if source == str(LEDGER.relative_to(ROOT)):
+                continue
+            for match in destinations.finditer((ROOT / source).read_text()):
+                destination = next(group for group in match.groups() if group is not None)
+                resolved = resolved_repo_path(source, destination)
+                if resolved in legacy_paths:
+                    violations.append(f"{source}: {destination} -> {resolved}")
+        self.assertEqual([], violations)
+
+    def test_active_markdown_publishes_no_legacy_stage_01_or_02_path(self):
+        forbidden = re.compile(
+            r"01\.requirements/[0-9]{3}-[a-z0-9-]+\.md|"
+            r"02\.architecture/requirements/|"
+            r"02\.architecture/decisions/[0-9]{4}-[a-z0-9-]+\.md"
+        )
+        violations: list[str] = []
+        for relative in tracked_paths("*.md"):
+            if any(
+                relative == prefix or relative.startswith(prefix)
+                for prefix in LEGACY_PATH_EVIDENCE_ALLOWLIST
+            ):
+                continue
+            for line_number, line in enumerate(
+                (ROOT / relative).read_text().splitlines(),
+                start=1,
+            ):
+                if forbidden.search(line):
+                    violations.append(f"{relative}:{line_number}: {line.strip()}")
+        self.assertEqual([], violations)
+
+    def test_stage_01_and_02_publish_no_legacy_architecture_vocabulary(self):
+        forbidden = re.compile(
+            r"Architecture (?:Requirements|Reference) Document|"
+            r"architecture-requirements|"
+            r"docs/02\.architecture/requirements|"
+            r"\bARD\b|"
+            r"artifact_type:\s*ard|"
+            r"\bard:",
+            flags=re.I,
+        )
+        violations: list[str] = []
+        for pathspec in ("docs/01.requirements", "docs/02.architecture"):
+            for relative in tracked_paths(pathspec):
+                path = ROOT / relative
+                if path.suffix != ".md":
+                    continue
+                if forbidden.search(path.read_text()):
+                    violations.append(relative)
+        self.assertEqual([], violations)
+
+    def test_rejects_date_prefix_and_year_partition(self):
+        self.assertEqual(
+            ("2026", "2026-08-09-audit.md"),
+            find_dated_identity_parts(
+                PurePosixPath(
+                    "docs/90.references/research/2026/2026-08-09-audit.md"
+                )
+            ),
+        )
+
+    def test_accepts_architecture_description_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/02.architecture/descriptions/ad-0001-gateway.md"
+            ),
+            {
+                "artifact_id": "ad-0001",
+                "artifact_type": "architecture-description",
+            },
+            {
+                "architecture-description": {
+                    "id_pattern": r"ad-[0-9]{4}",
+                }
+            },
+        )
+        self.assertEqual([], findings)
+
+    def test_accepts_inherited_task_role_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+            ),
+            {
+                "artifact_id": "task-0136-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
+                }
+            },
+        )
+        self.assertEqual([], findings)
+
+    def test_rejects_inherited_task_role_with_mismatched_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+            ),
+            {
+                "artifact_id": "task-9999-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
+                }
+            },
+        )
+        self.assertEqual(
+            ["path-id-mismatch"],
+            [finding.code for finding in findings],
+        )
+
+    def test_rejects_inherited_task_role_without_stable_parent(self):
+        findings = validate_stable_identity(
+            PurePosixPath("docs/03.specs/temporary-task/task.md"),
+            {
+                "artifact_id": "task-0136-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
+                }
+            },
+        )
+        self.assertEqual(
+            [
+                "path-id-mismatch",
+            ],
+            [finding.code for finding in findings],
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

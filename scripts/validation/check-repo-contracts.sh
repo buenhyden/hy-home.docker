@@ -16,6 +16,11 @@ section() {
   echo "==> $1"
 }
 
+section "Operations catalog approval manifest"
+if ! python3 scripts/validation/check-operations-catalog.py --mode manifest; then
+  fail "Operations catalog approval manifest is invalid"
+fi
+
 section "Docs top-level structure"
 allowed_docs=(
   "00.agent-governance"
@@ -406,7 +411,7 @@ if rg -n '[가-힣]' \
   docs/03.specs docs/04.execution/plans docs/04.execution/tasks docs/90.references \
   --glob '*.md' \
   --glob '!**/README.md' \
-  --glob '!docs/90.references/llm-wiki/llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
+  --glob '!docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
   fail "closed English-only doc surfaces contain Korean text"
   cat /tmp/check-repo-contracts-english-only-surfaces.txt >&2
 fi
@@ -434,8 +439,10 @@ import sys
 
 failures: list[str] = []
 slug = r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-prd_name = re.compile(rf"[0-9]{{3}}-{slug}\.md")
-spec_dir = re.compile(rf"[0-9]{{3}}-{slug}")
+# Taxonomy convergence (Spec 136) renames these to four-digit prefixed identities.
+# Both forms are accepted while the migration's remaining slices land.
+prd_name = re.compile(rf"(?:[0-9]{{3}}|prd-[0-9]{{4}})-{slug}\.md")
+spec_dir = re.compile(rf"(?:[0-9]{{3}}|spec-[0-9]{{4}})-{slug}")
 
 prd_root = pathlib.Path("docs/01.requirements")
 for path in sorted(prd_root.glob("*.md")):
@@ -688,8 +695,8 @@ def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
 
 failures: list[str] = []
 incidents_root = pathlib.Path("docs/05.operations/incidents")
-year_re = re.compile(r"^20[0-9]{2}$")
-packet_re = re.compile(r"^INC-[0-9]{3}-[a-z0-9][a-z0-9-]*$")
+year_re = re.compile(r"^[0-9]{4}$")
+packet_re = re.compile(r"^inc-[0-9]{4}-[a-z0-9][a-z0-9-]*$")
 
 if not incidents_root.is_dir():
     failures.append(f"missing incidents root: {incidents_root}")
@@ -703,18 +710,18 @@ if incidents_root.exists():
             continue
         for packet in sorted(child.iterdir()):
             if not packet.is_dir() or not packet_re.match(packet.name):
-                failures.append(f"{packet}: incident year folders may contain only INC-###-<title> packet folders")
+                failures.append(f"{packet}: incident year folders may contain only inc-####-<slug> packet folders")
                 continue
-            expected_incident = packet / f"{packet.name}.md"
+            expected_incident = packet / "incident.md"
             expected_postmortem = packet / "postmortem.md"
             markdown_files = sorted(path for path in packet.glob("*.md"))
             allowed_files = {expected_incident, expected_postmortem}
             for path in markdown_files:
                 if path not in allowed_files:
                     failures.append(
-                        f"{path}: incident packet markdown files must be {expected_incident.name} or postmortem.md"
+                        f"{path}: incident packet markdown files must be incident.md or postmortem.md"
                     )
-            if markdown_files and not expected_incident.is_file():
+            if not expected_incident.is_file():
                 failures.append(f"{packet}: incident packet is missing {expected_incident.name}")
             if expected_postmortem.is_file() and not expected_incident.is_file():
                 failures.append(f"{expected_postmortem}: postmortem requires paired incident file {expected_incident.name}")
@@ -724,22 +731,23 @@ if incidents_root.exists():
 
 literal_requirements = {
     pathlib.Path("docs/05.operations/incidents/README.md"): [
-        "YYYY/INC-###-incident-title/",
+        "YYYY/inc-####-incident-title/",
+        "incident.md",
         "postmortem.md",
     ],
     pathlib.Path("docs/99.templates/support/template-selection.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md",
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"): [
-        "incidents/YYYY/INC-###-<incident-title>/",
+        "incidents/<year>/inc-####-<slug>/",
         "Filename: `postmortem.md`",
     ],
     pathlib.Path(".claude/skills/incident-response/SKILL.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
 }
 for path, literals in literal_requirements.items():
@@ -954,7 +962,7 @@ required_index_links = (
     "./rulesets/main-protection.md",
     "../docs/00.agent-governance/rules/github-governance.md",
     "../scripts/validation/run-local-qa-gates.sh",
-    "../docs/90.references/data/governance/github-actions-control-plane-observation.yaml",
+    "../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml",
 )
 if github_readme.exists():
     failures.append(f"{github_readme}: GitHub navigation README is forbidden")
@@ -1674,7 +1682,7 @@ import yaml
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
-generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
 profiles = yaml.safe_load(
     pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
 )
@@ -1758,7 +1766,7 @@ scoped_label_paths = {
         "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
         "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
         "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
-        "docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md",
+        "docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md",
         "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
         "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
         "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
@@ -1767,10 +1775,10 @@ scoped_label_paths = {
         "docs/05.operations/runbooks/04-data/relational.md",
         "docs/05.operations/runbooks/05-messaging/kafka.md",
         "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
-        "docs/05.operations/runbooks/08-ai/ollama.md",
-        "docs/05.operations/runbooks/08-ai/open-webui.md",
-        "docs/05.operations/runbooks/11-laboratory/dashboard.md",
-        "docs/05.operations/runbooks/11-laboratory/dozzle.md",
+        "docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md",
+        "docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md",
     ]
 }
 
@@ -2490,20 +2498,17 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
-    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
-    pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md"),
-    pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
+    pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
+    pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
     pathlib.Path("docs/90.references/data/knowledge/README.md"),
-    pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"),
+    pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md"),
     pathlib.Path(".claude/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/functions/knowledge-map-agent.md"),
-    pathlib.Path("docs/03.specs/096-llm-wiki-agent-first-completion/spec.md"),
-    pathlib.Path("docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md"),
-    pathlib.Path("docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md"),
+    pathlib.Path("docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md"),
 ]
 
 for path in required_files:
@@ -2514,8 +2519,8 @@ llms_path = pathlib.Path("llms.txt")
 if llms_path.is_file():
     text = llms_path.read_text(errors="ignore")
     required_literals = [
-        "docs/90.references/llm-wiki/llm-wiki-index.md",
-        "docs/90.references/llm-wiki/repository-map.md",
+        "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
         "generated tracked repo-local path index",
         "tracked source files",
         "Runtime truth",
@@ -2535,7 +2540,7 @@ readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
         "docs/90.references/llm-wiki/",
-        "docs/90.references/llm-wiki/llm-wiki-index.md",
+        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
     ],
     pathlib.Path("docs/README.md"): [
         "90.references/llm-wiki/",
@@ -2544,22 +2549,16 @@ readme_checks = {
     ],
     pathlib.Path("docs/90.references/README.md"): [
         "llm-wiki/README.md",
-        "llm-wiki/llm-wiki-index.md",
-    ],
-    pathlib.Path("docs/05.operations/guides/README.md"): [
-        "00-workspace/README.md",
-    ],
-    pathlib.Path("docs/05.operations/guides/00-workspace/README.md"): [
-        "llm-wiki-maintenance.md",
+        "llm-wiki/ref-0082-llm-wiki-index.md",
     ],
     pathlib.Path("scripts/README.md"): [
-        "generate-llm-wiki-index.sh",
-        "generate-llm-wiki-coverage.sh",
+        "generate-llm-wiki.py",
+        "check-script-manifest.py",
         "--check",
     ],
     pathlib.Path("docs/90.references/data/README.md"): [
         "knowledge/README.md",
-        "knowledge/llm-wiki-stage-category-coverage.md",
+        "knowledge/ref-0076-llm-wiki-stage-category-coverage.md",
     ],
 }
 for path, literals in readme_checks.items():
@@ -2574,7 +2573,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     *wiki_files,
 ]
 for path in safety_files:
@@ -2605,7 +2604,7 @@ for path in safety_files:
     ):
         failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
 
-map_path = pathlib.Path("docs/90.references/llm-wiki/repository-map.md")
+map_path = pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md")
 if map_path.is_file():
     text = map_path.read_text(errors="ignore")
     for literal in [
@@ -2620,14 +2619,14 @@ if map_path.is_file():
         if literal not in text:
             failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
 
-index_path = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+index_path = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [
-        "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki.py",
         "Generated tracked repo-local index",
         "## Generated Index",
-        "scripts/knowledge/generate-llm-wiki-index.sh --check",
+        "scripts/knowledge/generate-llm-wiki.py --check",
         "doc-writer",
         "knowledge-map-agent",
     ]:
@@ -2652,15 +2651,15 @@ if index_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
 
-coverage_path = pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md")
+coverage_path = pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md")
 if coverage_path.is_file():
     text = coverage_path.read_text(errors="ignore")
     for literal in [
-        "generated_by: scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki.py",
         "## Source Bucket Coverage",
         "## LLM Wiki Category Coverage",
         "## Path Role Coverage",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh --check",
+        "scripts/knowledge/generate-llm-wiki.py --check",
         "graphify-out/",
         "secrets/README.md",
     ]:
@@ -3534,9 +3533,8 @@ expected_implementations = {
     pathlib.Path("scripts/validation/compose-core-readiness.lib.sh"),
     pathlib.Path("scripts/validation/run-compose-core-readiness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
-    pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
+    pathlib.Path("scripts/validation/check-document-links.py"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
-    pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
     pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"),
@@ -3557,8 +3555,7 @@ expected_implementations = {
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/rehearse-sample-service-delivery.sh"),

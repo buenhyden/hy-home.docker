@@ -44,7 +44,7 @@ validation as N/A instead of running runtime-affecting commands.
 ### 3.1 Approved Runtime Mutation Protocol
 
 When the user approves live runtime or Docker mutation, the agent still needs a
-concrete target before changing service state. The Stage 04 task evidence must
+concrete target before changing service state. The co-located Task evidence must
 record:
 
 - target service or Compose file,
@@ -75,7 +75,7 @@ only; it does not require starting, stopping, rebuilding, or recreating services
 | `infra/*/`                     | `infra-implementer` | `security-auditor` (read)    |
 | `.env*`, `secrets/`            | `infra-implementer` | all — plaintext forbidden    |
 | `scripts/validation/validate-docker-compose.sh` | `infra-implementer` | all other agents             |
-| `docs/02.architecture/requirements/`, `docs/02.architecture/decisions/` | `infra-implementer` | `doc-writer` (template fill) |
+| `docs/02.architecture/descriptions/`, `docs/02.architecture/decisions/` | `infra-implementer` | `doc-writer` (template fill) |
 
 Conflicts: the most specific scope wins. Raises to user if ambiguous.
 

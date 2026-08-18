@@ -16,7 +16,7 @@ release 입력이나 준비 상태를 설명할 수 있지만, 그 자체로 exe
 아닙니다.
 
 Deployment target, promotion, CD behavior, runtime rollback의 소유권은
-[Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
+Spec 127
 또는 이후 승인된 runtime chain에 남습니다. 이 index나 release record는 deployment
 runtime 실행 권한을 부여하지 않습니다.
 
@@ -69,4 +69,4 @@ releases/
 - [Release template](../../99.templates/templates/operations/release.template.md)
 - [Template selection](../../99.templates/support/template-selection.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
+- Spec 127

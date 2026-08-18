@@ -57,7 +57,7 @@ oauth2-proxy/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.oauth2-proxy.rule`, `traefik.docker.network`, `traefik.http.routers.oauth2-proxy.entrypoints`, `traefik.http.routers.oauth2-proxy.service`, `traefik.http.routers.oauth2-proxy.tls`, `traefik.http.routers.oauth2-proxy.middlewares`, plus 1 more |
 | Secret refs | names: `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`, `oauth2_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/oauth2_proxy_client_secret`, `/run/secrets/oauth2_proxy_cookie_secret`, `/run/secrets/oauth2_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `oauth2-proxy`, `oauth2-proxy`, `oauth2-proxy-valkey`; not declared for `oauth2-proxy-valkey-exporter` |
-| Operations | [Guide](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md), [Policy](../../../docs/05.operations/policies/02-auth/oauth2-proxy.md), [Runbook](../../../docs/05.operations/runbooks/02-auth/oauth2-proxy.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -65,10 +65,10 @@ oauth2-proxy/
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
 
-1. Read the [Auth Guides](../../../docs/05.operations/guides/02-auth/README.md) for OIDC/ForwardAuth configuration.
-2. Refer to the [OAuth2 Proxy Guide](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) for detailed configuration steps.
+1. Read the [Auth Guides](../../../docs/05.operations/catalog/02-auth/README.md) for OIDC/ForwardAuth configuration.
+2. Refer to the [OAuth2 Proxy Guide](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md) for detailed configuration steps.
 3. Check `config/oauth2-proxy.cfg` for runtime provider and cookie settings.
-4. Use the [Auth Runbook](../../../docs/05.operations/runbooks/02-auth/README.md) for cookie secret rotation procedures.
+4. Use the [Auth Runbook](../../../docs/05.operations/catalog/02-auth/README.md) for cookie secret rotation procedures.
 
 5. 이 README를 먼저 읽고 Traefik 레이블 설정을 확인한다.
 6. 새로운 서비스 추가 시 `forwardauth` 미들웨어를 `auth.${DEFAULT_URL}` 경로로 설정한다.
@@ -148,4 +148,4 @@ docker compose --profile auth logs oauth2-proxy --tail=200 | grep "OIDC"
 
 - [Keycloak](../keycloak/README.md) - The Identity Provider.
 - [01-gateway](../../01-gateway/README.md) - Traefik route configuration.
-- [docs/05.operations/02-auth/oauth2-proxy.md](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) - Session policies.
+- [docs/05.operations/catalog/02-auth/oauth2-proxy.md](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md) - Session policies.

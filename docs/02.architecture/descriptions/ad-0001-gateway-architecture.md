@@ -1,0 +1,91 @@
+---
+status: active
+artifact_id: ad-0001
+artifact_type: architecture-description
+parent_ids:
+  - prd-0001
+created: 2026-03-26
+updated: 2026-08-10
+---
+# Gateway Tier Architecture Description
+
+## Overview and Context
+
+이 문서는 `hy-home.docker` 시스템의 통합 진입점인 Gateway 티어의 아키텍처를 정의한다. Traefik과 Nginx의 하이브리드 구성을 통해 동적 서비스 발견과 정교한 경로 라우팅을 동시에 달성하는 구조를 설명한다.
+
+## Stakeholders and Concerns
+
+요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+
+Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 현재 root compose는 Traefik을 active edge router로 포함하며, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 profile-only 보조 프록시 leaf로 유지한다.
+
+## Boundaries and Constraints
+
+이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+
+- **Owns**:
+  - 외부 Ingress 트래픽 수신 (`web` 80, `websecure` 443)과 metrics/ping entrypoint(`metrics` 8082).
+  - TLS/SSL 인증서 적용 및 종료.
+  - 내부 서비스로의 트래픽 라우팅 및 부하 분산.
+  - 보안 미들웨어 (Rate Limit, IP Allow List, Auth Integration).
+- **Consumes**:
+  - Docker Socket (Service Discovery).
+  - Local Certificates (SSL/TLS).
+  - OAuth2 Proxy (Authentication request).
+- **Does Not Own**:
+  - 개별 마이크로서비스의 내부 비즈니스 로직.
+  - 데이터베이스 직접 연결 및 관리.
+  - Identity Provide (Keycloak 내부 관리).
+- **Non-goals**:
+  - 모든 트래픽의 상세 페이로드 로깅 (관찰성 티어에서 샘플링 처리).
+  - 서비스 메시(Service Mesh) 수준의 복잡한 동적 제어 (현재는 단순 Ingress 위주).
+
+## Quality Attributes
+
+### Quality Scenarios
+
+품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+
+- **Performance**: Traefik의 Go 기반 비동기 처리를 통해 낮은 지연 시간 보장. Nginx의 캐싱 기능을 활용한 정적 자원 최적화.
+- **Security**: TLS 1.3 우선 적용, HSTS 강제화, 리퀘스트 크기 제한, 인증(SSO) 통합.
+- **Reliability**: Health Check를 통한 비정상 타겟 자동 제외. Docker Provider 기반의 Self-healing 라우팅.
+- **Scalability**: Docker 레이블만으로 신규 서비스 수평 확장 및 라우팅 추가 가능.
+- **Observability**: Prometheus 메트릭 노출, OpenTelemetry(Tempo)를 통한 분산 트레이싱 연동.
+- **Operability**: Traefik Dashboard를 통한 실시간 라우팅 가시성 확보. 파일 기반 동적 설정 지원.
+
+## Architecture Views
+
+### Viewpoints and Views
+
+이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+
+Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외부 IP(또는 도메인)로 들어오는 모든 요청은 Traefik을 거치며, 설정된 규칙에 따라 직접 백엔드 컨테이너로 가거나 Nginx 프록시를 거쳐 특수 처리가 이루어진 후 전달된다.
+
+## Data and Infrastructure
+
+### Data and Control Flows
+
+데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+
+- **Key Entities / Flows**:
+  - `Internet -> Traefik (TLS Term) -> Service Container`
+  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO` when the profile-only Nginx leaf is explicitly deployed with root network/dependency context
+- **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
+- **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
+
+## Infrastructure & Deployment
+
+- **Runtime / Platform**: Docker Compose / Linux Alpine 기반 컨테이너.
+- **Deployment Model**: root compose actively includes `infra/01-gateway/traefik/docker-compose.yml`; `infra/01-gateway/nginx/docker-compose.yml` is not root-included by default and requires explicit profile/runtime context.
+- **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
+
+## Decision and Requirement Traceability
+
+상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+
+## Related Documents
+
+- **PRD**: [../../01.requirements/prd-0001-gateway.md](../../01.requirements/prd-0001-gateway.md)
+- **Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/spec-0001-gateway/spec.md)
+- **Plan**: ../../04.execution/plans/2026-03-26-01-gateway-standardization.md
+- **ADR**: [../decisions/adr-0001-traefik-nginx-hybrid.md](../decisions/adr-0001-traefik-nginx-hybrid.md)

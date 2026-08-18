@@ -108,11 +108,27 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
+      - id: check-operations-catalog
+        name: Operations catalog frozen manifest
+        entry: python3 scripts/validation/check-operations-catalog.py --mode manifest
+        language: system
+        files: ^(docs/05\.operations/|docs/98\.archive/migrations/mig-0002-|scripts/lib/document_governance/operations_catalog\.py|scripts/validation/check-operations-catalog\.py|tests/validation/test_operations_catalog\.py)
+        pass_filenames: false
+        stages: [pre-push]
+
       - id: check-doc-traceability
-        name: Doc traceability (execution <-> operations)
-        entry: ./scripts/validation/check-doc-traceability.sh
-        language: script
-        files: ^docs/(04\.execution|05\.operations)/
+        name: Document traceability
+        entry: python3 scripts/validation/check-document-links.py --mode traceability
+        language: system
+        files: ^docs/(03\.specs|05\.operations)/
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: check-doc-implementation-alignment
+        name: Document implementation alignment
+        entry: python3 scripts/validation/check-document-links.py --mode alignment
+        language: system
+        files: ^(README\.md|docs/.*\.md|infra/.*\.md)$
         pass_filenames: false
         stages: [pre-push]
 

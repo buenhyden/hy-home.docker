@@ -3,6 +3,7 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: postmortem
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
 reviewed_at: <reviewed-at>
 ---
 
@@ -41,10 +42,6 @@ reviewed_at: <reviewed-at>
 ## Feedback Loop
 
 {{feedback_loop}}
-
-## Detection Analysis
-
-{{detection_analysis}}
 
 ## Related Documents
 

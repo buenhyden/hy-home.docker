@@ -24,13 +24,11 @@ Codex-specific guidance for this repository.
 - Treat ambiguity as blocking before Codex changes planning, implementation,
   model/reasoning values, hook/config state, or completion status.
 
-## 3. Recommended Loading Sequence
+## 3. Loading Route
 
-1. `AGENTS.md`
-2. `docs/00.agent-governance/providers/agents-md.md`
-3. `docs/00.agent-governance/providers/codex.md`
-4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
-5. `rules/github-governance.md` for PR / merge / review tasks
+`AGENTS.md` is the entry shim. Follow only
+`rules/bootstrap.md#3-canonical-load-order`; this overlay does not define a
+provider-local sequence.
 
 ## 4. Runtime Boundary
 
@@ -51,17 +49,10 @@ Codex-specific guidance for this repository.
 - Shared skills are rendered from typed Stage 00 function sources through
   `scripts/operations/sync-provider-surfaces.sh`; provider skill bodies are
   never used as policy input.
-- Apply the model and reasoning selected by the agent's work profile in
-  `contracts/provider-models.yaml`: `adversarial-review`,
-  `complex-implementation`, and `long-horizon-supervision` use
-  `gpt-5.6-sol`; `evidence-research` and `routine-validation` use
-  `gpt-5.6-terra`. Their official provider lifecycle is `stable`, while
-  runtime acceptance and entitlement remain `needs_revalidation`; configured
-  defaults are not live activation claims. Never carry Anthropic or Gemini
-  model names into `.codex/`.
-- GPT-5.3 Codex Spark remains non-default preview/catalog context. It cannot be
-  introduced as an override until the contract, renderer, validator, and task
-  evidence all encode the same approved exception.
+- Apply the model and reasoning selected by the agent's registered work profile
+  in `contracts/provider-models.yaml`. Model identifiers, lifecycle,
+  disposition, runtime acceptance, and reasoning values remain typed renderer
+  inputs and are not copied into this overlay.
 - `model` and `model_reasoning_effort` values are configuration outputs of the
   Stage 00 policy. Codex must not introduce new aliases, downgrade reasoning
   gates, or copy speculative model names from prompt context unless Stage 00,
@@ -94,7 +85,7 @@ with a safe comparison base. Codex hooks provide routing and advisory context;
 the checked command output is the validation evidence. Direct agent execution
 of all-files pre-commit remains prohibited. At an approved final QA gate, use
 only `scripts/validation/run-agent-precommit-all-files.sh` and record the
-reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
+reviewed Git-visible, non-ignored repository paths in co-located Task evidence.
 
 ## 6. Current Hook Contract
 
@@ -138,9 +129,9 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - `.codex/README.md`
 - `.codex/hooks.json`
 - `.claude/CLAUDE.md`
-- `docs/01.requirements/024-agent-governance-standardization.md`
-- `docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
-- `docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
+- `docs/01.requirements/prd-0024-agent-governance-standardization.md`
+- `docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
+- `docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/agents/`
 - `scripts/hooks/agent-event-hook.sh`
 
@@ -148,5 +139,3 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 
 - <https://learn.chatgpt.com/docs/agent-configuration/subagents>
 - <https://learn.chatgpt.com/docs/hooks>
-- <https://developers.openai.com/api/docs/models/gpt-5.6-sol>
-- <https://developers.openai.com/api/docs/models/gpt-5.6-terra>

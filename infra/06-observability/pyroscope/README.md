@@ -23,7 +23,7 @@ Pyroscope provides continuous profiling of applications to identify performance 
 ### Out of Scope
 
 - Application-level profiling agents (handled by [Grafana Alloy](../alloy/README.md)).
-- Long-term archival of profiling data (governed by [Retention Policy](../../../docs/05.operations/policies/06-observability/pyroscope.md)).
+- Long-term archival of profiling data (governed by [Retention Policy](../../../docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md)).
 
 ## Structure
 
@@ -79,9 +79,9 @@ pyroscope/
 
 ## Related Documents
 
-- [Usage guide](../../../docs/05.operations/guides/06-observability/pyroscope.md)
-- [Operations policy](../../../docs/05.operations/policies/06-observability/pyroscope.md)
-- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/pyroscope.md)
+- [Usage guide](../../../docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md)
+- [Operations policy](../../../docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md)
+- [Recovery runbook](../../../docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md)
 
 ## How to Work in This Area
 

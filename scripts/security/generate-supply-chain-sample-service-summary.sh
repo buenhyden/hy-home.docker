@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/security/supply-chain-sample-service.md"
+OUTPUT="docs/90.references/data/security/ref-0079-supply-chain-sample-service.md"
 CHECKER="scripts/validation/check-supply-chain-policy.py"
 MODE="${1:-write}"
 
@@ -155,9 +155,8 @@ lines = [
     "",
     "## Related Documents",
     "",
-    "- [Supply-chain Task](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)",
-    "- [Supply-chain Plan](../../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)",
-    "- [Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)",
+    "- **Archived change evidence**: `docs/98.archive/changes/chg-0093-security-supply-chain-remediation/`",
+    "- **Archived spec provenance**: `docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md`",
     "- [security data index](./README.md)",
     "",
 ]

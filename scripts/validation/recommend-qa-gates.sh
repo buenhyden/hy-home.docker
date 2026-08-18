@@ -134,8 +134,7 @@ add_lifecycle_gates() {
   add_gate "python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted" "promoted lifecycle manifests must remain valid"
   add_gate "bash scripts/validation/generate-security-automation-readiness.sh --check" "lifecycle workflow and validation inventory may affect security readiness evidence"
   add_gate "bash scripts/validation/generate-audit-implementation-matrix.sh --check" "lifecycle workflow and validation inventory may affect audit implementation evidence"
-  add_gate "bash scripts/knowledge/generate-llm-wiki-index.sh --check" "lifecycle documentation and generated data require navigation freshness"
-  add_gate "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check" "lifecycle documentation and generated data require coverage freshness"
+  add_gate "python3 scripts/validation/check-script-manifest.py --check-generated" "lifecycle workflow and generated-output ownership require manifest freshness"
 }
 
 add_target_surface_gates() {
@@ -145,7 +144,7 @@ add_target_surface_gates() {
 
 is_target_surface_path() {
   local path="$1"
-  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
 
   case "$path" in
   .github/workflows/ci-quality.yml | \
@@ -185,7 +184,7 @@ recommend_for_path() {
     scripts/validation/check-supply-chain-policy.py | \
     tests/fixtures/supply-chain/* | \
     tests/validation/test_supply_chain_policy.py | \
-    docs/90.references/data/security/supply-chain-sample-service.md)
+    docs/90.references/data/security/ref-0079-supply-chain-sample-service.md)
     add_gate "python3 scripts/validation/check-supply-chain-policy.py --check" "local supply-chain policy or fixture surface changed"
     add_gate "bash scripts/security/generate-supply-chain-sample-service-summary.sh --check" "local supply-chain summary may be stale"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "supply-chain CI and script contracts changed"
@@ -232,9 +231,9 @@ recommend_for_path() {
 
   case "$path" in
   docs/* | docs/** | README.md)
-    add_gate "bash scripts/knowledge/generate-llm-wiki-index.sh --check" "documentation navigation may need index freshness"
-    add_gate "bash scripts/validation/check-doc-traceability.sh" "documentation links or execution/operations routing may have changed"
-    add_gate "bash scripts/validation/check-doc-implementation-alignment.sh" "active docs must match tracked implementation surfaces"
+    add_gate "python3 scripts/knowledge/generate-llm-wiki.py --check" "documentation navigation and coverage may need LLM Wiki freshness"
+    add_gate "python3 scripts/validation/check-document-links.py --mode traceability" "documentation links or Spec/Operations routing may have changed"
+    add_gate "python3 scripts/validation/check-document-links.py --mode alignment" "active docs must match tracked implementation surfaces"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "documentation contracts changed"
     ;;
   esac
@@ -252,7 +251,7 @@ recommend_for_path() {
     add_gate "bash scripts/validation/check-template-security-baseline.sh" "Compose security/template baseline may be affected"
     add_gate "bash scripts/validation/check-quickwin-baseline.sh" "QuickWin baseline controls may be affected"
     add_gate "bash scripts/operations/sync-tech-stack-versions.sh --check" "image/version registry may need drift validation"
-    add_gate "bash scripts/validation/check-doc-implementation-alignment.sh" "infra changes can stale active docs"
+    add_gate "python3 scripts/validation/check-document-links.py --mode alignment" "infra changes can stale active docs"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "infrastructure contracts changed"
     ;;
   esac

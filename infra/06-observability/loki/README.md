@@ -60,7 +60,7 @@ loki/
 | Route | `https://loki.${DEFAULT_URL}` through `gateway-standard-chain@file,sso-errors@file,sso-auth@file` |
 | Labels | `traefik.http.routers.loki.*`, `traefik.http.services.loki.loadbalancer.server.port` |
 | Healthcheck | `http://127.0.0.1:${LOKI_PORT:-3100}/ready` |
-| Operations | [Guide](../../../docs/05.operations/guides/06-observability/loki.md), [Policy](../../../docs/05.operations/policies/06-observability/loki.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/loki.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the linked runbook, compose config rendering, service logs, and redacted storage/ingestion evidence |
 
@@ -91,8 +91,8 @@ loki/
 
 ## How to Work in This Area
 
-1. Follow the [Loki guide](../../../docs/05.operations/guides/06-observability/loki.md) for usage and query context.
-2. Follow the [Loki runbook](../../../docs/05.operations/runbooks/06-observability/loki.md) for readiness, storage, ingestion, restart, and rollback steps.
+1. Follow the [Loki guide](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md) for usage and query context.
+2. Follow the [Loki runbook](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md) for readiness, storage, ingestion, restart, and rollback steps.
 3. Keep `MINIO_APP_USER_PASSWORD`, rendered environment values, and MinIO credentials out of docs, logs, task evidence, and commit messages.
 4. Do not change retention, compactor, MinIO bucket, resource caps, secret references, label cardinality policy, or route middleware without plan/task evidence and rollback notes.
 
@@ -116,6 +116,6 @@ loki/
 
 - [infra/README.md](../../README.md)
 - [Operations index](../../../docs/05.operations/README.md)
-- [Loki guide](../../../docs/05.operations/guides/06-observability/loki.md)
-- [Loki policy](../../../docs/05.operations/policies/06-observability/loki.md)
-- [Loki runbook](../../../docs/05.operations/runbooks/06-observability/loki.md)
+- [Loki guide](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md)
+- [Loki policy](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md)
+- [Loki runbook](../../../docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md)

@@ -77,7 +77,7 @@ memory/
 6. Create entries from `docs/99.templates/templates/governance/memory.template.md` when a finding is durable, reusable, or intentionally out of scope for the current task.
 7. Link each entry to related stage docs when applicable.
 8. Use `progress.md` only to navigate preserved historical work. Durable
-   implementation and review evidence belongs in the applicable Stage 04 Task.
+   implementation and review evidence belongs in the applicable co-located Task.
 
 ## Operational Procedures
 
@@ -118,5 +118,5 @@ memory/
 - [Task checklists](../rules/task-checklists.md)
 - [Current project memory](./current.md)
 - [Historical progress navigation](./progress.md)
-- [GitHub Actions control-plane observation](../../90.references/data/governance/github-actions-control-plane-observation.yaml)
+- [GitHub Actions control-plane observation](../../90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml)
 - [Memory template](../../99.templates/templates/governance/memory.template.md)

@@ -1,0 +1,201 @@
+---
+status: active
+artifact_id: ref-0029
+artifact_type: audit
+parent_ids:
+- ref-0026
+observed_at: '2026-07-05'
+reviewed_at: 2026-07-12
+---
+
+<!-- Target: docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md -->
+
+# Reference: SDLC and Document Contracts Implementation Audit
+
+## Overview
+
+This reference records the 2026-07-11 pre-remediation implementation state of
+the workspace SDLC, document roles, numbering, parent coverage, lifecycle
+gates, and release-record boundaries. It uses current tracked source as proof;
+the stale Graphify snapshot and older corpus totals are navigation or dated
+evidence only.
+
+## Purpose
+
+Give Spec 123 remediation work a criterion-by-criterion baseline without
+turning Stage 90 findings into active policy or treating link syntax as
+semantic lifecycle correctness.
+
+## Repository Role
+
+The active stage matrix, documentation protocol, Stage 99 contracts, stage
+artifacts, validators, `CHANGELOG.md`, and release runbook remain authoritative.
+This report is advisory evidence consumed by later metadata and contract work.
+It does not create a missing artifact, change a status, or authorize a release.
+
+## Scope
+
+### In Scope
+
+- PRD, ARD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Incident,
+  Postmortem, Release, README, Reference, Audit, and Archive roles
+- Type-specific numbering, parent coverage, entry/exit gates, and transitions
+- Missing versus unnecessary artifacts and release-record disposition
+
+### Out of Scope
+
+- Stage 00/99 contract, template, validator, workflow, runtime, or status changes
+- Inferring historical transition validity from the current status word
+- Creating incident, postmortem, release, or architecture artifacts without a trigger
+
+## Definitions / Facts
+
+- **Syntax compliance** means the current path, filename, frontmatter word,
+  template headings, or link shape satisfies an implemented check.
+- **Semantic correctness** means the artifact is still current for its role,
+  has the right direct parents, crossed its entry/exit gate legitimately, and
+  has coherent replacement or review evidence.
+- **Event-driven absence** means zero Incident or Postmortem leaves is not a
+  defect when no qualifying event is established by tracked evidence.
+- **Release record** is execution evidence for one actual release. A changelog
+  communicates changes and a runbook defines procedure; neither proves a
+  release occurred.
+- **Release contract readiness** means a distinct profile, checker route,
+  template, authoring route, and Stage 05 index exist. It is not a release
+  event, artifact, deployment, or outcome record.
+
+## Reproducible Current Snapshot
+
+All values below were reproduced from tracked files at baseline
+`e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb` on 2026-07-11.
+
+| Evidence | Current result | Interpretation |
+| --- | --- | --- |
+| `git ls-files 'docs/**/*.md' \| wc -l` | 872 | Current docs-only Markdown count required by the Task 4 brief. |
+| `git ls-files '*.md' \| wc -l` | 1,073 | Current repo-wide Markdown count; use this scope when comparing later repo-wide snapshots. |
+| Allowed-status `rg -l` over Stage 01/02/03/04/05/90/98 | 635 | Exact brief command result. Top-frontmatter parsing gives the same total: 366 active, 240 completed, 9 superseded, 20 archived, and 0 draft. |
+| Stage 01/02/03/04/05/90/98 Markdown | 730 total: 598 non-README leaves and 132 READMEs | Every one of the 598 leaves has an allowed top-frontmatter status. README behavior is profiled separately. The count includes the seven stage-root README files omitted by the narrower recursive glob used during initial drafting. |
+| Type counts | 24 PRDs; 24 ARDs; 24 ADRs; 46 Spec folders and 46 `spec.md`; 88 Plans; 114 Tasks; 66 Guides; 64 Policies; 61 Runbooks; 0 Incident/Postmortem leaves; 20 Archive tombstones | Counts prove corpus presence, not semantic necessity or freshness. |
+| Number/path checks | 0 invalid PRD, ARD, ADR, Spec-folder, Plan, or Task names | Three-digit PRD/Spec, four-digit ARD/ADR, and dated Plan/Task schemes coexist without requiring equal suffixes. |
+| Parent-link signals | 41/46 Specs mention PRD paths/fields; 40/46 mention ARD and ADR; 63/88 Plans mention a Spec path; 112/114 Tasks mention a Plan path; 69/114 mention a Spec path | Text signals are not a semantic parent manifest. Optional or N/A predecessors also require type-aware treatment. |
+| Operations/release | Only `docs/05.operations/incidents/README.md` exists under incidents; `CHANGELOG.md` contains only `Unreleased`; one release runbook exists; no workflow `environment:` or deployment job signal was found | Incident/Postmortem absence is event-driven. Release readiness is documented, but no actual Release record or CD execution evidence exists. |
+| Validator evidence | Traceability/alignment checks pass; the typed metadata checker also validates identities, direct parents, and lifecycle transitions for the migrated active chain and changed/new documents. | Full historical metadata findings remain advisory, so current enforcement is not retroactive corpus-wide parent/lifecycle reconstruction. |
+
+The parent-link signals use literal text patterns, not semantic parsing. These
+exact commands reproduce the numerators and denominators:
+
+```bash
+find docs/03.specs -mindepth 2 -maxdepth 2 -type f -name spec.md | wc -l
+rg -l '01\.requirements|\*\*PRD\*\*|\*\*Parent PRD\*\*' docs/03.specs/*/spec.md | wc -l
+rg -l '02\.architecture/requirements|\*\*ARD\*\*|\*\*Related ARD' docs/03.specs/*/spec.md | wc -l
+rg -l '02\.architecture/decisions|\*\*ADR|Related ADR' docs/03.specs/*/spec.md | wc -l
+find docs/04.execution/plans -maxdepth 1 -type f -name '*.md' ! -name README.md | wc -l
+rg -l '03\.specs/' docs/04.execution/plans/*.md -g '!README.md' | wc -l
+find docs/04.execution/tasks -maxdepth 1 -type f -name '*.md' ! -name README.md | wc -l
+rg -l '\.\./plans/|04\.execution/plans/' docs/04.execution/tasks/*.md -g '!README.md' | wc -l
+rg -l '03\.specs/' docs/04.execution/tasks/*.md -g '!README.md' | wc -l
+```
+
+In order, the results are 46, 41, 40, 40, 88, 63, 114, 112, and 69.
+
+The 930-file snapshot in the 2026-07-03 task and the 948-file snapshot in the
+2026-07-04 frontmatter report are dated, repo-wide evidence from their own
+baselines. They are not current counts and must not be compared directly with
+the narrower 872-file `docs/**/*.md` result.
+
+The Spec 129 foundation adds current contract evidence around, not inside,
+those preserved results: all five Markdown Spec-child templates instantiate
+the `spec` profile; Release has a profile, checker route, template, selection
+route, and Stage 05 index; and README exact-one profile selection is implemented.
+No Release event record was created, and the preserved 37 status-bearing README
+baseline remains a later migration concern.
+
+## Audit Criterion Records
+
+| Criterion ID | External criterion | Workspace evidence | Implementation state | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SDLC-01 | Preserve an end-to-end intent → requirement → architecture → technical contract → plan → evidence → operations/release flow with feedback to the earliest owner. | [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md), [spec-driven SDLC research](../research/ref-0057-spec-driven-sdlc.md), and active stage indexes define the flow. | Implemented | 2 documented and broadly applied | Retain | Stage 00 documentation protocol and stage owners | Existing traceability/alignment checks should remain; typed parent automation is covered separately. | Review matrix and run traceability/alignment commands. | High: direct tracked contracts; semantic transition coverage remains separate. |
+| SDLC-02 | PRD owns problem, users, scope, requirements, and measurable success criteria. | 24 correctly named Stage 01 leaves use the PRD template/profile. | Implemented | 3 automated/enforced for naming and changed-template shape | Retain | Stage 01 requirements | Keep changed-document template enforcement; do not require a PRD when the approved Spec records a justified N/A. | Filename scan plus repository contracts. | High. |
+| SDLC-03 | ARD owns architecture boundaries, concerns, and quality attributes when enduring architecture requirements exist. | 24 correctly named ARDs and the Stage 02 requirements index/template exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture requirements | Retain type-aware parent semantics for migrated/changed documents; avoid manufacturing ARDs for audit-only work. | Filename/template scan, metadata checker, and repository contracts. | High for structure; Medium for necessity decisions. |
+| SDLC-04 | ADR records one significant decision, alternatives, rationale, and consequences. | 24 correctly named ADRs and an ADR template/index exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture decisions | Keep ADR conditional on a real trade-off; semantic decision supersession remains human-reviewed. | Filename/template scan and repository contracts. | High for structure; Medium for current decision validity. |
+| SDLC-05 | Spec owns implementable design, interfaces, contracts, risks, and verification criteria. | All 46 valid Spec folders contain `spec.md`; optional contract templates exist. | Implemented | 3 automated/enforced for path and normalized template contract | Retain | Stage 03 specifications | Preserve optional support files and the typed-profile justified-root/N/A rules for migrated/changed documents. | Folder/spec count, metadata checker, and repository contracts. | High. |
+| SDLC-06 | Plan sequences stable Spec work with risk, rollback/recovery, commands, and completion gates. | 88 correctly dated Plans; 86 completed and 2 active by top status. The two active plans explicitly retain open umbrella scope. | Implemented | 3 automated/enforced for template and link contracts | Retain | Stage 04 plans | Retain semantic parent IDs and transition evidence for migrated/changed scope; do not infer historical staleness from age alone. | Top-frontmatter scan, metadata checker, template gate, and plan body review. | High for current active examples; Medium corpus-wide without retroactive transition history. |
+| SDLC-07 | Task records actual changes, validation, deviations, review, and commit evidence separately from planned work. | 114 correctly dated Tasks; 113 completed and the current Spec 123 task active. | Implemented | 3 automated/enforced for template and evidence shape | Retain | Stage 04 tasks | Preserve independent review gating and typed parent/transition evidence for migrated/changed scope. | Top-frontmatter scan, metadata checker, and repository contracts. | High. |
+| SDLC-08 | Guide explains use/onboarding and hands procedures to policies/runbooks. | 66 Guide leaves map through Stage 05 taxonomy and templates. | Implemented | 3 automated/enforced for normalized template and service alignment | Retain | Stage 05 guides | Keep guide/policy/runbook roles distinct; link semantics remain reviewable. | Corpus count, alignment check, repository contracts. | High for structure. |
+| SDLC-09 | Policy states required/prohibited controls, exceptions, and review expectations. | 64 Policy leaves map through the policy template and Stage 05 indexes. | Implemented | 3 automated/enforced for normalized template and service alignment | Retain | Stage 05 policies | Retain type-aware freshness metadata for migrated/changed documents only where review cadence has evidence. | Corpus count, metadata checker, alignment check, repository contracts. | High for structure; Medium for historical freshness. |
+| SDLC-10 | Runbook provides ordered repeatable procedure, evidence, recovery/rollback, and escalation. | 61 Runbook leaves include the workspace release runbook. | Implemented | 3 automated/enforced for normalized template and alignment | Retain | Stage 05 runbooks | Retain type-aware review/freshness rules for migrated/changed scope; a runbook must not be treated as proof that the procedure ran. | Corpus count, metadata checker, template/alignment checks. | High. |
+| SDLC-11 | Incident preserves live chronology, impact, command state, actions, and handoff. | Incident template/index/validator contracts exist; no incident leaf exists. | Not Applicable | 3 automated/enforced when an incident artifact exists | Retain | Stage 05 incidents | No automation should create an incident from absence alone; validate a future incident against its dedicated profile. | Incident-tree inventory and repository-contract incident rules. | High: zero leaves is direct; trigger absence is inferred conservatively. |
+| SDLC-12 | Postmortem is a distinct reviewed, blameless learning/action artifact after stabilization. | Postmortem template/validator contract exists; no postmortem leaf exists. | Not Applicable | 3 automated/enforced when a postmortem exists | Retain | Stage 05 incidents/postmortems | Keep separate from Incident; require an actual qualifying incident and review trigger. | Incident-tree inventory and template contract. | High. |
+| SDLC-13 | Release communication, procedure, and actual execution record remain distinct. | `CHANGELOG.md` has only `Unreleased`; the tag workflow verifies an exact tag string but does not generate a changelog or deploy; the release runbook is manual readiness procedure. A distinct Release profile, checker route, copyable template, authoring route, and Stage 05 index now exist, but no Release event record exists. | Partial | 2 documented and partially automated | Improve | Stage 05 Release owner; deployment remains separately owned by Spec 127 or a later approved chain | Retain the Release contract foundation and create a record only from actual tag/artifact/approval/rollout/outcome evidence; do not infer deployment/CD. | Inspect the Release route and template plus changelog, tag workflow, runbook, event-leaf inventory, and deployment/environment signals. | High. |
+| SDLC-14 | README is a folder-index/profile surface, not automatically a leaf lifecycle artifact. | The preserved Task 4 baseline contains 140 READMEs in its Stage 01-05/90/98/99 scope, with 37 carrying status and 103 without it. The registry now defines 17 non-overlapping README profiles and the checker classifies all 231 tracked READMEs exactly once with declared-consumer semantics. | Partial | 3 for classification; 2 for corpus adoption | Improve | Stage 00 documentation protocol and Stage 99 README contract/profile owners | Retain fail-closed profile selection and reconcile the 37 status-bearing baseline only in the next approved README migration wave. | Preserved README inventory, profile/consumer unit tests, tracked-path coverage, and later migration manifest. | High for counts and implemented foundation; Medium for semantic necessity of each existing status. |
+| SDLC-15 | Reference preserves stable source-backed context without replacing policy, plan, runbook, incident, or runtime truth. | 65 non-README Stage 90 leaves; the Reference template and repository-contract heading/status checks are active. | Implemented | 3 automated/enforced for structural profile | Retain | Stage 90 references | Add freshness/profile semantics selectively; keep Stage 90 advisory. | Reference corpus count and repository contracts. | High. |
+| SDLC-16 | Audit records bounded criteria, evidence, findings, disposition, and ownership while remaining a Reference-profile artifact. | 29 non-README audit leaves; the current pack uses the Reference template and Spec 123 row fields. | Implemented | 2 documented and generator-supported | Improve | Canonical Stage 90 audit pack | Preserve one row per criterion and extend generated coverage without inventing a separate audit template. | Audit count, Reference template, generated audit matrix. | High. |
+| SDLC-17 | Archive tombstone records the removed path, reason, and current replacement and stays outside the active chain. | 20 non-README Stage 98 tombstones all use `status: archived`; alignment reports zero active archive links. | Implemented | 3 automated/enforced | Retain | Stage 98 archive | Keep archive status and provenance type-specific; do not treat tombstones as current truth. | Top-status scan, alignment check, repository contracts. | High. |
+| SDLC-18 | Human numbering remains type-specific and is not reused as cross-stage identity. | 0 invalid names across 24 PRDs, 24 ARDs, 24 ADRs, 46 Spec folders, 88 Plans, and 114 Tasks; stable `artifact_id` is separately enforced for migrated/changed scope. | Implemented | 3 automated/enforced for current naming contracts | Retain | Documentation protocol | Retain separate stable identity without unifying human suffix widths mechanically. | Reproducible filename scans and metadata checker. | High. |
+| SDLC-19 | Direct parent coverage is typed, resolvable, and permits justified roots/multiple parents. | The checker resolves typed `parent_ids`, allowed roots, deterministic serialization, missing IDs, cycles, renames, and impacted dependents for the migrated active chain and changed/new documents. Parent order stabilizes presentation through registry type precedence and artifact ID; it does not assign semantic priority. Historical link-only artifacts remain advisory and are not retroactively complete. | Partial | 2 partially applied through human links | Add | Stage 99 metadata profiles plus stage owners | Retain current parent validation and serialization fixtures; separately approved historical migration would be required for corpus-wide coverage. | Metadata tests/check-changed plus advisory inventory and traceability comparison. | High for enforced scope; Medium for unmigrated historical artifacts. |
+| SDLC-20 | Entry and exit gates are explicit and must pass before status advances. | Stage matrix/templates and Spec 123 define gates; task evidence records commands, but no machine-readable cross-document gate state exists. | Partial | 2 documented and applied in current workflows | Improve | Stage 04 task/plan owners | Later profiles should bind transition evidence, approval, and validation without duplicating task bodies. | Template review, current task evidence, repository checks. | High. |
+| SDLC-21 | Forward/reverse lifecycle transitions are validated separately from allowed status vocabulary. | The checker validates selected forward/terminal transitions and requires explicit previous/current state, reason, and approval evidence for reverse overrides. It does not retroactively reconstruct complete transition history for the unmigrated historical corpus. | Partial | 1 documented | Add | Stage 99 lifecycle contract and metadata validator | Retain transition/override fixtures and changed/new blocking; keep historical reconstruction advisory unless separately approved. | Transition tests, explicit override evidence, and changed/new metadata check. | High for enforced changes; Medium for historical completeness. |
+| SDLC-22 | Artifact creation is trigger-driven; missing/unnecessary documents are decided semantically, not by making every chain contain every type. | Spec 123 explicitly records PRD/ARD/ADR N/A; Incident/Postmortem are event-driven; optional supporting contracts remain feature-driven. | Implemented | 1 documented decision discipline | Retain | Earliest applicable stage owner | Metadata profiles must support permitted roots and justified N/A without auto-creating documents. | Spec 123 inputs and document-role matrix review. | High. |
+
+## Findings and Task Routing
+
+The 2026-07-19 target-surface evidence confirms the archive split intended by
+the lifecycle contract: Vault/content provenance uses root `archive/**`, while
+SDLC provenance tombstones stay in Stage 98. The canonical promotion candidate
+has 483 rows (3 delete, 10 migrate, 470 preserve), all independently reviewed
+`pass/pass`. This is blocking-wave review evidence but not yet final lifecycle
+closure; Spec 133, its Plan/Task, Stage indexes, and progress memory remain
+active until promotion and final closure reviews pass.
+
+- Naming, leaf-status syntax, template shape, broad link/alignment checks, and
+  semantic identity/parent/transition validation for migrated/changed scope are
+  implemented; none is retroactive proof of full historical lifecycle coverage.
+- Current active Plan/Task examples have explicit open scope. No stale-active
+  transition was proven, but the validator cannot prove absence of stale state
+  across historical transitions.
+- All nine current superseded documents have replacement routes, and typed
+  changed/new supersession is enforced. Historical replacement/transition
+  completeness remains advisory.
+- Historical parent/lifecycle migration, adoption of the implemented README
+  profile foundation, and an actual Release event record remain partial
+  follow-up areas.
+- The Task 6 generator now includes this report's 22 rows, the frontmatter
+  report's 14 rows, and all other current canonical criteria in an exact
+  eleven-report / 161-row matrix with unique-ID and schema checks.
+- Zero Incident/Postmortem leaves and justified PRD/ARD/ADR N/A decisions are
+  not missing-artifact defects.
+
+## Source Rules
+
+- Current implementation claims use tracked files at the stated baseline.
+- Graphify was built from `30df271a`; it is stale and not used as proof.
+- External role criteria are inherited from the source-backed Task 1 research;
+  this audit does not claim formal ISO, NIST, SRE, PagerDuty, changelog, or
+  SemVer adoption.
+- Historical 930/948 totals retain their original date and command scope.
+
+## Sources
+
+- [SDLC document roles](../research/ref-0055-sdlc-document-roles.md) - source-backed role and trigger criteria
+- [Spec-driven SDLC](../research/ref-0057-spec-driven-sdlc.md) - transition, gate, and feedback criteria
+- [Document metadata and lifecycle](../research/ref-0045-document-metadata-lifecycle.md) - numbering, parent, transition, README, and release criteria
+- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md) - active stage ownership and done criteria
+- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - naming, template, status, and routing contracts
+- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - current status meanings and supersession rule
+- [Release management runbook](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) - release readiness procedure
+- [2026-07-03 frontmatter inventory](ref-0005-frontmatter-inventory.md) - dated 930-file evidence
+- [2026-07-04 frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md) - dated 948-file evidence
+
+## Maintenance
+
+- **Owner**: Documentation Specialist / SDLC artifact owners
+- **Review Cadence**: Reproduce after stage, template, metadata, lifecycle, or release-contract changes
+- **Update Trigger**: Role, naming, parent, transition, README, incident, archive, or release semantics change
+
+## Related Documents
+
+- [Audit pack README](ref-0019-readme.md)
+- [Frontmatter, template, and README audit](ref-0024-frontmatter-template-readme-implementation.md)
+- [SDLC quality and formatting summary](ref-0030-sdlc-quality-formatting-implementation.md)
+- [Implementation overview](ref-0026-implementation-overview.md)
+- [Spec 123](../../03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md)

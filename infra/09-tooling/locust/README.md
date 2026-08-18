@@ -66,9 +66,9 @@ locust/
 
 ## Related Documents
 
-- **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/guides/09-tooling/locust.md)
-- **Policy**: [Locust operations policy](../../../docs/05.operations/policies/09-tooling/locust.md)
-- **Runbook**: [Locust recovery runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md)
+- **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md)
+- **Policy**: [Locust operations policy](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md)
+- **Runbook**: [Locust recovery runbook](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md)
 
 ## Service Readiness
 
@@ -84,7 +84,7 @@ locust/
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `locust-master`, `locust-worker` |
-| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/locust.md), [Policy](../../../docs/05.operations/policies/09-tooling/locust.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

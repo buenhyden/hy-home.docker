@@ -9,11 +9,10 @@ This is the single source of truth for how agents format their responses and
 artifacts in `hy-home.docker`. Claude exposes it natively via
 `.claude/output-styles/*.md`; Codex and Gemini follow it as a behavioral contract.
 
-## 1. Language
+## 1. Language Routing
 
-- `docs/00.agent-governance/` content and all governance artifacts: English only.
-- Human-facing stage docs (`docs/01`–`docs/05`, `docs/90`): Korean, except where
-  interoperability requires English technical terms or code identifiers.
+- Artifact language is owned by document role in
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
 - Conversational replies follow the user's active language preference.
 
 ## 2. Findings and Reports

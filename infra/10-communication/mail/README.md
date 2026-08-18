@@ -77,9 +77,9 @@ mail/
 
 ## Related Documents
 
-- **Guide**: [Mail usage guide](../../../docs/05.operations/guides/10-communication/mail.md)
-- **Policy**: [Mail operations policy](../../../docs/05.operations/policies/10-communication/mail.md)
-- **Runbook**: [Mail recovery runbook](../../../docs/05.operations/runbooks/10-communication/mail.md)
+- **Guide**: [Mail usage guide](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md)
+- **Policy**: [Mail operations policy](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md)
+- **Runbook**: [Mail recovery runbook](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md)
 
 ## Service Readiness
 
@@ -95,7 +95,7 @@ mail/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.stalwart-ui.rule`, `traefik.http.routers.stalwart-ui.entrypoints`, `traefik.http.routers.stalwart-ui.tls`, `traefik.http.routers.stalwart-ui.middlewares`, `traefik.http.services.stalwart-ui.loadbalancer.server.port`, `traefik.http.routers.mailhog.rule`, plus 4 more |
 | Secret refs | names: `stalwart_password`; mounts: `/run/secrets/stalwart_password` |
 | Healthcheck | Compose healthcheck declared for `stalwart`, `mailhog` |
-| Operations | [Guide](../../../docs/05.operations/guides/10-communication/mail.md), [Policy](../../../docs/05.operations/policies/10-communication/mail.md), [Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md), [Policy](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md), [Runbook](../../../docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `10-communication`; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 

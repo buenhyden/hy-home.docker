@@ -50,7 +50,7 @@ tracked `_workspace` files appear without a future approved contract change.
 ## Related Documents
 
 - [repo-support README](./repo-support/README.md)
-- [workspace support surface spec](../docs/03.specs/106-workspace-support-surface-contract/spec.md)
-- [task evidence](../docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
+- retired workspace support surface Spec 0106 (historical evidence only)
+- task evidence
 - [subagent protocol](../docs/00.agent-governance/subagent-protocol.md)
 - [environment constraints](../docs/00.agent-governance/rules/environment-constraints.md)

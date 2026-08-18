@@ -9,7 +9,7 @@ Boundaries and permissions for agents interacting with repository documentation.
 ## 1. Context and Objective
 
 - Agentic hub: `docs/00.agent-governance/` (primary authority for agents).
-- Project docs: `docs/01.requirements/` to `docs/05.operations/incidents/`, plus `docs/90.references/`, `docs/98.archive/`, and `docs/99.templates/`.
+- Project docs: `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`, `docs/90.references/`, `docs/98.archive/`, and `docs/99.templates/`. Stage 04 is not an active target.
 - Root instructions: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 
 ## 2. Operational Permissions
@@ -22,18 +22,17 @@ Boundaries and permissions for agents interacting with repository documentation.
 
 ## 3. Maintenance Standards
 
-- Language policy:
-  - AI-focused docs (rules/scopes/providers/root shims): English.
-  - Human-facing docs (README, operations, reports): Korean by default.
+- Language: apply the document-role authority in
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
 - Link integrity: no broken links, no absolute filesystem links, no `file://` URIs.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
 - Template-first compliance: before creating or modifying target-stage docs
   under `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`,
-  `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`,
+  `docs/05.operations/`, `docs/90.references/`,
   or `docs/98.archive/`,
   load the mapped template from `docs/99.templates/templates/` and keep its
   required contract.
-- Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
+- Active stage artifacts must live only in canonical stage paths; capability Plan and Task files are co-located with `spec.md`, and no active artifact uses date or year path identity.
 
 ## 4. Out-of-Scope Handling
 

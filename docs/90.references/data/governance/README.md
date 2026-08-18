@@ -71,17 +71,17 @@ governance/
 
 ## Current References
 
-- [agent-governance-retirement-ledger.yaml](./agent-governance-retirement-ledger.yaml) - historical role and model replacements with immutable baseline commit/blob provenance
-- [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
-- [audit-implementation-matrix.md](./audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
+- [agent-governance-retirement-ledger.yaml](ref-0063-agent-governance-retirement-ledger.yaml) - historical role and model replacements with immutable baseline commit/blob provenance
+- [agent-output-eval-fixtures.md](ref-0064-agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
+- [audit-implementation-matrix.md](ref-0065-audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [document-corpus-lifecycle/README.md](./document-corpus-lifecycle/README.md) - corpus lifecycle manifest and generated-summary routing
-- [document-corpus-lifecycle/foundation.yaml](./document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
-- [document-corpus-lifecycle/foundation-summary.md](./document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
-- [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
-- [github-actions-control-plane-observation.yaml](./github-actions-control-plane-observation.yaml) - dated public GitHub Actions inventory with explicit unverified control-plane and root-cause boundaries
-- [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
-- [target-surface-delta-manifest.yaml](./target-surface-delta-manifest.yaml) - advisory successor manifest classifying every target path changed since the immutable Spec 133 closure
-- [target-surface-delta-summary.md](./target-surface-delta-summary.md) - generator-owned, value-free successor-delta and current-inventory summary
+- [document-corpus-lifecycle/foundation.yaml](document-corpus-lifecycle/ref-0067-foundation.yaml) - reviewed blocking Foundation migration manifest
+- [document-corpus-lifecycle/foundation-summary.md](document-corpus-lifecycle/ref-0066-foundation-summary.md) - generator-owned safe Foundation summary
+- [gap-to-stage-routing.md](ref-0070-gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
+- [github-actions-control-plane-observation.yaml](ref-0071-github-actions-control-plane-observation.yaml) - dated public GitHub Actions inventory with explicit unverified control-plane and root-cause boundaries
+- [provider-hook-parity-matrix.md](ref-0072-provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
+- [target-surface-delta-manifest.yaml](ref-0073-target-surface-delta-manifest.yaml) - advisory successor manifest classifying every target path changed since the immutable Spec 133 closure
+- [target-surface-delta-summary.md](ref-0074-target-surface-delta-summary.md) - generator-owned, value-free successor-delta and current-inventory summary
 
 ## How to Work in This Area
 

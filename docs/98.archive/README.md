@@ -2,28 +2,17 @@
 layer: archive
 ---
 
-<!-- Target: docs/98.archive/README.md -->
-
 # 98.archive
 
-> 승인된 manifest 결과를 가리키는 validated typed provenance tombstone stage이며, current guidance나 stale 원문 저장소가 아닙니다.
+> 승인된 typed Stage 98 기록의 단일 대상이며, current guidance나 일반 본문
+> 저장소가 아닙니다.
 
 ## Overview
 
-`docs/98.archive/`는 원문 보존 공간이 아니라 migration 추적 공간입니다.
-Archive tombstone은 full typed provenance and preservation contract를 충족하는
-간결한 관계 기록입니다. Identity, relation, disposition, immutable Git
-provenance, preservation metadata를 검증하며, `current_replacement` is disposition-conditional입니다. 관계와 보존 필드는 검증된 계약이 허용할 때만
-존재하고, 정확한 조건은 Stage 99 sole human owners와 machine registries로
-라우팅합니다. Tombstone은 stale 본문을 다시 노출하지 않습니다.
-
-`docs/98.archive/`는 두 가지 역할을 구분합니다. Tombstone
-(`archive.template.md`)은 경로 리다이렉트만 담당하며 본문을 보존하지 않고,
-content archive (`content-archive.template.md`)는 종료된 작업의 본문을
-소스 stage 구조를 그대로 미러링해 보존합니다. 둘 다 `status: archived`를
-사용하며, 정확한 필수/선택/금지 필드는
-[archive and retention contract](../99.templates/support/archive-retention-contract.md)의
-Archive Roles 표를 따릅니다.
+`docs/98.archive/`는 완료된 change evidence, 제거된 문서의 간결한 provenance
+tombstone, 그리고 승인된 migration ledger를 stable identity로 보존합니다.
+Active 문서는 Stage 98을 현재 지침으로 소비하지 않으며, 현재 판단은 각 active
+stage의 canonical artifact를 따릅니다.
 
 ## Audience
 
@@ -35,124 +24,79 @@ Archive Roles 표를 따릅니다.
 
 ### In Scope
 
-- 승인된 manifest와 archive profile을 통과한 whole-document provenance tombstone
-- 검증된 identity, relation, disposition, Git provenance, preservation 추적
-- disposition과 preservation class에 따라 조건부로 허용된 관계/보존 필드
-- archive migration ledger
-- 검증된 provenance tombstone과 승인된 immutable evidence snapshot 경로
+- `changes/chg-####-<slug>/plan.md`와 `task.md`로 보존하는 완료 change evidence
+- `tombstones/<stage>/<stable-id>-<slug>.md`의 concise provenance record
+- `migrations/mig-####-<slug>.md`의 승인된 source-to-target disposition ledger
+- 검증된 Git provenance, preservation metadata, replacement relation
 
 ### Out of Scope
 
-- 현재 판단 기준으로 사용할 요구사항, 설계, spec, plan, task, 운영 절차
-- 원문 stale body 보존
+- 현재 판단 기준으로 사용하는 requirement, architecture, spec, plan, task, policy
+- 제거된 문서의 전체 본문을 tombstone에 복제하는 행위
+- source stage 구조를 그대로 복제하는 archive directory
 - active 문서의 Related Documents 대상
 
 ## Structure
 
 ```text
 98.archive/
-├── 01.requirements/     # Stage 01에서 제거된 문서 tombstone
-├── 02.architecture/     # Stage 02에서 제거된 문서 tombstone
-├── 03.specs/            # Stage 03에서 제거된 문서 tombstone
-├── 04.execution/        # Stage 04에서 제거된 문서 tombstone
-├── 05.operations/       # Stage 05에서 제거된 문서 tombstone
-└── README.md            # This file
+├── changes/
+│   └── chg-####-<slug>/
+│       ├── plan.md
+│       └── task.md
+├── tombstones/
+│   └── <stage>/
+│       └── <stable-id>-<slug>.md
+├── migrations/
+│   └── mig-####-<slug>.md
+└── README.md
 ```
 
-## Migration Ledger
+## Current Inventory
 
-아래 표는 현재 `hand-maintained`이며 `transitional until Wave D`입니다.
-Generated ledger라고 주장하지 않으며, Wave D에서 기존 tombstone의 provenance를
-정비하고 canonical lifecycle generator를 승인하기 전까지 이 상태를 유지합니다.
-분류와 증거 조건은
-[corpus migration contract](../99.templates/support/corpus-migration-contract.md),
-archive provenance와 retention 조건은
-[archive and retention contract](../99.templates/support/archive-retention-contract.md)를
-따릅니다.
+Task 7 기준 `changes/`에는 146개 change packet과 234개 typed document가
+있습니다. 이 가운데 88개 packet은 Plan/Task pair, 14개는 ledger가 승인한
+Plan-only disposition, 44개는 ledger가 승인한 Task-only disposition입니다.
+`tombstones/`에는 38개 retired-document tombstone이 있습니다: `03.specs/` 28개,
+`05.operations/` 10개입니다. 각 기록은 원문 본문 대신 검증된 source path와
+Git provenance만 보존합니다. `migrations/`에는 authoritative `mig-0001` ledger
+한 건이 있습니다.
 
-| Original Path                                                                           | Archive Path                                                                                       | Reason                                                                                                                                           | Current Replacement                                                                                      |
-| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `docs/04.execution/plans/2026-05-30-ai-governance-reorg.md`                             | `docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md`                             | Original plan claimed legacy `.agents/` removal and superseded provider-adapter assumptions that conflict with tracked `.agents/` implementation | `docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md`                             |
-| `docs/04.execution/plans/2026-05-30-standardizing-agent-governance.md`                  | `docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md`                  | Original plan required `.codex/agents/*.md` YAML frontmatter and prohibited TOML, conflicting with TOML-only Codex adapters                      | `docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md`                             |
-| `docs/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md`              | `docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md`              | Diagnostic treated Codex Markdown prompts and broad HADS advisory status as active unresolved decisions                                          | `docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md`                             |
-| `docs/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md`               | `docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md`               | Plan preserved Codex Markdown compatibility prompts and broad HADS advisory-only decisions that conflict with current implementation             | `docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md`                             |
-| `docs/04.execution/tasks/2026-05-30-standardizing-agent-governance.md`                  | `docs/98.archive/04.execution/tasks/2026-05-30-standardizing-agent-governance.md`                  | Task evidence recorded `.codex/agents/*.md` YAML frontmatter as the preserved Codex harness shape                                                | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md`              | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md`              | Task pointed at obsolete Codex Markdown prompt and broad HADS advisory assumptions                                                               | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md`          | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md`          | Task depended on the archived Phase 2 plan as parent evidence                                                                                    | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md`           | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md`           | Task was tied to the archived Phase 2 alignment chain and pre-closure HADS/Codex boundaries                                                      | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md` | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md` | Task preserved pre-closure non-goals for HADS, Codex Markdown prompts, and hard validators                                                       | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md`    | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md`    | Task recorded HADS as advisory-only and `.codex/agents/*.md` as compatibility prompts                                                            | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md`                 | `docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md`                 | Closure preserved non-goals that were later approved and implemented                                                                             | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`                    |
-| `docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md`                           | `docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md`                           | Duplicate DAG guide retained stale repo-local DAG path guidance; active guide now uses `${DEFAULT_WORKFLOW_DIR}/airflow/dags`                    | `docs/05.operations/guides/07-workflow/airflow-dag-basics.md`                                            |
-| `docs/05.operations/guides/08-ai/01.llm-inference.md`                                   | `docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md`                                   | Duplicate Ollama inference guide with generic template residue and incomplete runbook handoff                                                    | `docs/05.operations/guides/08-ai/ollama.md`                                                              |
-| `docs/05.operations/guides/08-ai/local-llm-setup.md`                                    | `docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md`                                    | Duplicate local Ollama setup guide with generic template residue and no active runbook handoff                                                   | `docs/05.operations/guides/08-ai/ollama.md`                                                              |
-| `docs/05.operations/guides/09-tooling/01.iac-automation.md`                             | `docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md`                             | Duplicate Terrakube/Terraform guide with generic template residue and no active runbook handoff                                                  | `docs/05.operations/guides/09-tooling/terrakube.md`; `docs/05.operations/guides/09-tooling/terraform.md` |
-| `docs/05.operations/guides/03-security/01.setup.md`                                     | `docs/98.archive/05.operations/guides/03-security/01.setup.md`                                     | Duplicate Vault setup guide with stale service-local compose startup, direct container runtime commands, and generic template residue            | `docs/05.operations/guides/03-security/vault.md`                                                         |
-| `docs/05.operations/guides/07-workflow/airbyte.md`                                      | `docs/98.archive/05.operations/guides/07-workflow/airbyte.md`                                      | No tracked Airbyte implementation under `infra/07-workflow/airbyte`                                                                              | `docs/03.specs/008-workflow/spec.md`                                                                     |
-| `docs/05.operations/guides/05-messaging/ksql-streaming.md`                              | `docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md`                              | ksqlDB is currently implemented under `infra/04-data/analytics/ksql`, not under `infra/05-messaging`                                             | `docs/05.operations/guides/04-data/analytics/ksqldb.md`                                                  |
-| `docs/05.operations/policies/07-workflow/airbyte.md`                                    | `docs/98.archive/05.operations/policies/07-workflow/airbyte.md`                                    | No tracked Airbyte implementation under `infra/07-workflow/airbyte`                                                                              | `docs/03.specs/008-workflow/spec.md`                                                                     |
-| `docs/05.operations/runbooks/07-workflow/airbyte.md`                                    | `docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md`                                    | No tracked Airbyte implementation under `infra/07-workflow/airbyte`                                                                              | `docs/03.specs/008-workflow/spec.md`                                                                     |
+각 물리 문서는 다음 profile 중 정확히 하나를 사용합니다.
 
-### Stage 03 Specification Archive (2026-08-08)
+- `change-plan`: `changes/chg-####-<slug>/plan.md`
+- `change-task`: `changes/chg-####-<slug>/task.md`
+- `tombstone`: `tombstones/<stage>/<stable-id>-<slug>.md`
+- `migration`: `migrations/mig-####-<slug>.md`
 
-The table below records the source-to-destination mapping for the 32 terminal
-(`completed` or `superseded`) Stage 03 specifications relocated into
-`docs/98.archive/03.specs/` because forward-pointer tombstones proved
-impossible: the metadata validator derives a document's profile from its
-path alone and rejects `status: archived` on any path that is not an
-archive path, so no tombstone could carry the status that defines it. Each
-destination carries full Git provenance (`archived_commit`, `archived_blob`)
-under the `evidence-preserve` disposition; see each `spec.md`'s own
-`## Archive Metadata` and `## Archive Ledger` sections.
+정확한 disposition과 source provenance는
+[mig-0001](migrations/mig-0001-sdlc-taxonomy-convergence.md)이 소유합니다.
+과거의 날짜 기반 실행·archive 경로와 repository-root `archive/` 경로는 routing
+target이 아니며 Git history와 migration ledger로만 조회합니다. 새 archive
+identity는 `chg-`, `mig-`, 또는 stage-appropriate tombstone identity를 사용하고,
+날짜는 `archived_at` 같은 typed provenance key에 둡니다.
 
-| Original Path                                                               | Archived Path                                                                          |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md`             | `docs/98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md`             |
-| `docs/03.specs/100-template-system-contract-standardization/spec.md`        | `docs/98.archive/03.specs/100-template-system-contract-standardization/spec.md`        |
-| `docs/03.specs/101-template-system-reorganization/spec.md`                  | `docs/98.archive/03.specs/101-template-system-reorganization/spec.md`                  |
-| `docs/03.specs/104-agentic-research-pack-refresh/spec.md`                   | `docs/98.archive/03.specs/104-agentic-research-pack-refresh/spec.md`                   |
-| `docs/03.specs/106-workspace-support-surface-contract/spec.md`              | `docs/98.archive/03.specs/106-workspace-support-surface-contract/spec.md`              |
-| `docs/03.specs/107-provider-semantic-parity-validator/spec.md`              | `docs/98.archive/03.specs/107-provider-semantic-parity-validator/spec.md`              |
-| `docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md`       | `docs/98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md`       |
-| `docs/03.specs/109-gap-routing-recommendation/spec.md`                      | `docs/98.archive/03.specs/109-gap-routing-recommendation/spec.md`                      |
-| `docs/03.specs/110-agent-output-eval-fixtures/spec.md`                      | `docs/98.archive/03.specs/110-agent-output-eval-fixtures/spec.md`                      |
-| `docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md`               | `docs/98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md`               |
-| `docs/03.specs/112-audit-pack-coverage-report/spec.md`                      | `docs/98.archive/03.specs/112-audit-pack-coverage-report/spec.md`                      |
-| `docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md`                | `docs/98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md`                |
-| `docs/03.specs/114-tech-stack-version-provenance/spec.md`                   | `docs/98.archive/03.specs/114-tech-stack-version-provenance/spec.md`                   |
-| `docs/03.specs/115-provider-hook-parity-matrix/spec.md`                     | `docs/98.archive/03.specs/115-provider-hook-parity-matrix/spec.md`                     |
-| `docs/03.specs/116-agent-output-eval-runner/spec.md`                        | `docs/98.archive/03.specs/116-agent-output-eval-runner/spec.md`                        |
-| `docs/03.specs/117-security-automation-readiness-snapshot/spec.md`          | `docs/98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md`          |
-| `docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md`            | `docs/98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md`            |
-| `docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md`     | `docs/98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md`     |
-| `docs/03.specs/120-agent-output-eval-ci-gate/spec.md`                       | `docs/98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md`                       |
-| `docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md`             | `docs/98.archive/03.specs/121-dependency-vulnerability-audit-gate/spec.md`             |
-| `docs/03.specs/122-agentic-research-pack-consolidation/spec.md`             | `docs/98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md`             |
-| `docs/03.specs/123-agentic-engineering-audit-remediation/spec.md`           | `docs/98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md`           |
-| `docs/03.specs/124-compose-runtime-readiness-remediation/spec.md`           | `docs/98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md`           |
-| `docs/03.specs/125-infrastructure-operations-readiness-remediation/spec.md` | `docs/98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md` |
-| `docs/03.specs/126-security-supply-chain-remediation/spec.md`               | `docs/98.archive/03.specs/126-security-supply-chain-remediation/spec.md`               |
-| `docs/03.specs/127-deployment-release-engineering-remediation/spec.md`      | `docs/98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md`      |
-| `docs/03.specs/128-agentic-audit-harness-consolidation/spec.md`             | `docs/98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md`             |
-| `docs/03.specs/129-document-contract-canonicalization/spec.md`              | `docs/98.archive/03.specs/129-document-contract-canonicalization/spec.md`              |
-| `docs/03.specs/130-template-contract-system-canonicalization/spec.md`       | `docs/98.archive/03.specs/130-template-contract-system-canonicalization/spec.md`       |
-| `docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md`  | `docs/98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md`  |
-| `docs/03.specs/132-agent-governance-harness-convergence/spec.md`            | `docs/98.archive/03.specs/132-agent-governance-harness-convergence/spec.md`            |
-| `docs/03.specs/133-target-surface-contract-convergence/spec.md`             | `docs/98.archive/03.specs/133-target-surface-contract-convergence/spec.md`             |
+## Non-Authoritative Historical Provenance Ledger
+
+This hand-maintained, non-authoritative compatibility section is intentionally
+empty after the typed migration and is not routing. Historical source-to-target
+facts are owned by `mig-0001`. The retired `docs/98.archive/04.execution/`
+location is recorded here only as provenance and is not routing.
+
+### End Non-Authoritative Historical Provenance Ledger
 
 ## How to Work in This Area
 
-1. 승인된 manifest에서 대상과 소비자, 대체 문서, 보존 근거를 검토합니다.
-2. Git provenance와 confidentiality 검증을 통과한 결과만 canonical Archive template로 작성합니다.
-3. Active 문서는 tombstone을 current guidance로 역링크하지 않습니다.
-4. Wave D 전에는 이 hand-maintained ledger를 Task 근거와 함께 갱신하며 generated output이라고 표시하지 않습니다.
+1. 승인된 migration row와 source Git object를 먼저 검증합니다.
+2. Change evidence는 ledger가 지정한 동일 `chg-####` packet에 배치합니다.
+3. Tombstone에는 retired body를 복제하지 않고 typed provenance만 기록합니다.
+4. Active consumer를 canonical active target으로 이동한 뒤 archive record를 만듭니다.
+5. Lifecycle, metadata, active-to-archive link gate를 모두 통과시킵니다.
 
 ## Related Documents
 
 - [docs index](../README.md)
 - [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
-- [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
-- [archive template](../99.templates/templates/common/archive.template.md)
-- [content archive template](../99.templates/templates/common/content-archive.template.md)
-- [corpus migration contract](../99.templates/support/corpus-migration-contract.md)
 - [archive and retention contract](../99.templates/support/archive-retention-contract.md)
+- [document corpus migration contract](../99.templates/support/corpus-migration-contract.md)
+- [archive template](../99.templates/templates/common/archive.template.md)

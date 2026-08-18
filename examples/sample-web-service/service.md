@@ -17,8 +17,7 @@ parent_ids:
 
 ## Parent and Scope
 
-이 문서는 [Spec 126](../../docs/03.specs/126-security-supply-chain-remediation/spec.md)과
-[Spec 127](../../docs/03.specs/127-deployment-release-engineering-remediation/spec.md)의
+이 문서는 retired Spec 0126과 retired Spec 0127의 historical evidence가 정의한
 검증 경계를 함께 보여 주는 명시적 example fixture다. [로컬 README](./README.md)의
 copyable scaffold를 설명하지만, accepted current SDLC truth나 active 서비스 계약은
 아니다.
@@ -83,8 +82,8 @@ copyable scaffold를 설명하지만, accepted current SDLC truth나 active 서�
 ## Related Documents
 
 - [Service README](./README.md)
-- [Spec 126](../../docs/03.specs/126-security-supply-chain-remediation/spec.md)
-- [Spec 127](../../docs/03.specs/127-deployment-release-engineering-remediation/spec.md)
+- retired Spec 0126 historical evidence
+- retired Spec 0127 historical evidence
 - [Service scaffold template](../../docs/99.templates/templates/spec-contracts/service.template.md)
-- [New-service onboarding guide](../../docs/05.operations/guides/00-workspace/new-service-onboarding.md)
-- [Release management runbook](../../docs/05.operations/runbooks/00-workspace/release-management.md)
+- [New-service onboarding guide](../../docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md)
+- [Release management runbook](../../docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md)

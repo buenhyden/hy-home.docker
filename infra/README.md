@@ -178,7 +178,7 @@ service directory and cover the following agent-verifiable fields:
 
 - [Official Guides](../docs/05.operations/README.md)
 - [Operation Specs](../docs/05.operations/README.md)
-- [Architecture Details](../docs/02.architecture/requirements/README.md)
+- [Architecture Details](../docs/02.architecture/descriptions/README.md)
 - [Secret Management](../secrets/README.md)
 - [Root Compose](../docker-compose.yml)
 - [Tech Stack Versions](./tech-stack.versions.json)

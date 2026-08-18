@@ -42,39 +42,20 @@ Quality dimensions:
   retry, completion evidence, adapter rendering, model fallback, and
   calibration.
 
-## 4. Workflow Compliance
+## 4. Workflow and Language Routing
 
-- Use JIT routing: bootstrap -> persona -> checklists -> agentic rule -> one scope -> stage docs.
-- Keep governance docs English-only.
-- Keep user-facing communication Korean-first.
-- Treat `docs/01` to `docs/99` as read-only unless explicitly approved.
+- Follow the sole load order in `rules/bootstrap.md#3-canonical-load-order`.
+- Follow repeatable orchestration in `rules/workflows.md`.
+- Apply the document-role language table in
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
+- Resolve write permission through `rules/approval-boundaries.md`.
 
-## 5. Verification Checklist
+## 5. Completion Routing
 
-Before completion:
-
-1. Execute applicable checks for changed layers.
-2. Confirm changed root/governance files have no broken internal links.
-3. Confirm no stale or nonexistent command references remain in editable scope.
-4. Confirm documentation reflects current workspace state.
-5. Record out-of-scope issues (read-only stages) in `docs/00.agent-governance/memory/`.
-6. For agent-harness changes, require all 11 fixture catalog entries, all 16
-   deterministic regressions, `fixtures_check=pass`, and
-   `regressions_check=pass` without a network model call.
-7. Confirm semantic-loop evidence is limited to `command`, `result`,
-   `rollback`, and `skipped_checks`, and that the loop owner is not its
-   independent reviewer.
-
-For PR-related tasks, additionally verify the GitHub completion gate:
-
-1. All required GitHub status checks are green (or explicitly noted as pending with reason).
-2. All required code reviews are approved (or explicitly noted as outstanding with owner).
-3. No BLOCK-severity findings remain from code review or security audit.
-4. CODEOWNERS-triggered reviewers have been notified for any owned paths touched.
-5. No secrets, long-lived credentials, or unpinned action references were introduced.
-
-"Done" means all applicable gates above are met, not just local validation success.
-See the Completion Gate in `rules/github-governance.md` for the authoritative GitHub gate definition.
+Use only `rules/task-checklists.md#3-completion-contract`. Its conditional
+harness, evidence, documentation, and controlled-gate clauses determine which
+quality checks apply. PR-specific completion remains owned by the Completion
+Gate in `rules/github-governance.md`.
 
 ## Related Documents
 

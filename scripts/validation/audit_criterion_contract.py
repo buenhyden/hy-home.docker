@@ -10,9 +10,7 @@ import re
 from dataclasses import dataclass
 
 
-DEFAULT_PACK = pathlib.Path(
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
-)
+DEFAULT_PACK = pathlib.Path("docs/90.references/audits")
 
 # Ordered manifest: report -> expected criterion prefix -> exact row count.
 REPORT_PREFIX_COUNTS: dict[str, dict[str, int]] = {
@@ -29,12 +27,29 @@ REPORT_PREFIX_COUNTS: dict[str, dict[str, int]] = {
     "security-framework-maturity.md": {"SEC": 14},
 }
 
-NON_CRITERION_FILES = {
-    "README.md",
-    "implementation-overview.md",
-    "frontmatter-semantic-inventory.md",
+# Stable Stage 90 identities for the reports that formed the dated audit pack.
+# The logical names remain the report keys used in coverage output so historical
+# criterion provenance stays recognizable without making the current path dated.
+REPORT_FILES: dict[str, str] = {
+    "harness-engineering-implementation.md": "ref-0025-harness-engineering-implementation.md",
+    "loop-engineering-implementation.md": "ref-0027-loop-engineering-implementation.md",
+    "provider-harness-loop-implementation.md": "ref-0028-provider-harness-loop-implementation.md",
+    "workspace-rules-environment-implementation.md": "ref-0032-workspace-rules-environment-implementation.md",
+    "agent-instructions-catalog-vibe-models.md": "ref-0020-agent-instructions-catalog-vibe-models.md",
+    "automation-candidates.md": "ref-0021-automation-candidates.md",
+    "sdlc-document-contracts-implementation.md": "ref-0029-sdlc-document-contracts-implementation.md",
+    "frontmatter-template-readme-implementation.md": "ref-0024-frontmatter-template-readme-implementation.md",
+    "sdlc-quality-formatting-implementation.md": "ref-0030-sdlc-quality-formatting-implementation.md",
+    "compose-infrastructure-operations-readiness.md": "ref-0022-compose-infrastructure-operations-readiness.md",
+    "security-framework-maturity.md": "ref-0031-security-framework-maturity.md",
 }
-EXPECTED_PACK_FILES = NON_CRITERION_FILES | set(REPORT_PREFIX_COUNTS)
+
+NON_CRITERION_FILES = {
+    "ref-0019-readme.md",
+    "ref-0026-implementation-overview.md",
+    "ref-0023-frontmatter-semantic-inventory.md",
+}
+EXPECTED_PACK_FILES = NON_CRITERION_FILES | set(REPORT_FILES.values())
 EXPECTED_TOTAL = sum(
     count for prefix_counts in REPORT_PREFIX_COUNTS.values() for count in prefix_counts.values()
 )
@@ -278,11 +293,9 @@ def validate_pack(pack: pathlib.Path | str = DEFAULT_PACK) -> AuditCriterionCont
     actual_files = {path.name for path in pack_path.glob("*.md")}
     for missing in sorted(EXPECTED_PACK_FILES - actual_files):
         errors.append(f"{pack_path}: missing expected Markdown file: {missing}")
-    for unexpected in sorted(actual_files - EXPECTED_PACK_FILES):
-        errors.append(f"{pack_path}: unexpected Markdown file: {unexpected}")
 
     for report_name, prefix_counts in REPORT_PREFIX_COUNTS.items():
-        report_path = pack_path / report_name
+        report_path = pack_path / REPORT_FILES[report_name]
         if not report_path.is_file():
             per_report_counts[report_name] = 0
             continue

@@ -17,7 +17,7 @@ from typing import Iterable, Sequence
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE_REFERENCE = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/agent-output-eval-fixtures.md"
+    "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md"
 )
 CATALOG_CONTRACT = pathlib.PurePosixPath(
     "docs/00.agent-governance/contracts/agent-catalog.yaml"
@@ -541,7 +541,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/contracts/provider-models.yaml",
             "scripts/hooks/agent-event-hook.sh",
-            "docs/90.references/data/governance/provider-hook-parity-matrix.md",
+            "docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md",
         ),
         (Criterion("hook_semantics", ("deny", "block", "max_attempts", "escalate")),),
         (

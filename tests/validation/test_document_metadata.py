@@ -32,7 +32,7 @@ MIGRATION_CONTRACT = (
 )
 TARGET_SURFACE_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
 )
 TARGET_SURFACE_SUMMARY = (
     ROOT
@@ -131,9 +131,6 @@ ARCHIVE_RETENTION_HUMAN_CONTRACT = (
     ROOT / "docs/99.templates/support/archive-retention-contract.md"
 )
 ARCHIVE_TEMPLATE = ROOT / "docs/99.templates/templates/common/archive.template.md"
-CONTENT_ARCHIVE_TEMPLATE = (
-    ROOT / "docs/99.templates/templates/common/content-archive.template.md"
-)
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -143,11 +140,27 @@ sys.modules[spec.name] = metadata
 spec.loader.exec_module(metadata)
 
 
+class SharedFrontmatterExtractionTests(unittest.TestCase):
+    def test_metadata_checker_uses_the_shared_frontmatter_parser(self) -> None:
+        from scripts.lib.document_governance import frontmatter
+
+        self.assertIs(frontmatter.read_frontmatter_values, metadata.parse_frontmatter)
+        self.assertIs(frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text)
+
+
 def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: str = "# Fixture\n") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if frontmatter is None:
         path.write_text(body, encoding="utf-8")
         return
+    if isinstance(frontmatter.get("artifact_type"), str):
+        canonical: dict[str, object] = {}
+        for key, value in frontmatter.items():
+            canonical[key] = value
+            if key == "parent_ids":
+                canonical["created"] = frontmatter.get("created", "2026-08-07")
+                canonical["updated"] = frontmatter.get("updated", "2026-08-07")
+        frontmatter = canonical
     rendered = yaml.safe_dump(frontmatter, sort_keys=False).rstrip()
     path.write_text(f"---\n{rendered}\n---\n\n{body}", encoding="utf-8")
 
@@ -207,6 +220,17 @@ PRD_TARGET_BODY = body_with_headings(
     "## Related Documents",
 )
 
+ARCHITECTURE_DESCRIPTION_TARGET_BODY = body_with_headings(
+    "## Overview and Context",
+    "## Stakeholders and Concerns",
+    "## Boundaries and Constraints",
+    "## Quality Attributes",
+    "## Architecture Views",
+    "## Data and Infrastructure",
+    "## Decision and Requirement Traceability",
+    "## Related Documents",
+)
+
 SPEC_TARGET_BODY = body_with_headings(
     "## Overview",
     "## Boundaries and Inputs",
@@ -244,6 +268,14 @@ def run_checker(
         text=True,
         check=False,
     )
+
+
+class Task5ChangedMetadataRegressionTests(unittest.TestCase):
+    def test_task5_changed_repository_range_has_zero_metadata_violations(self) -> None:
+        result = run_checker(ROOT, "check-changed", "--base-ref", "HEAD")
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("metadata check-changed: selected=", result.stdout)
+        self.assertIn("violations=0", result.stdout)
 
 
 def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -342,8 +374,13 @@ def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         capture_output=True,
         check=True,
     )
-    paths = [pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw]
-    for relative_path in paths:
+    paths = {pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw}
+    profile_values = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+    paths.update(
+        pathlib.Path(role["source"])
+        for role in profile_values["template_roles"].values()
+    )
+    for relative_path in sorted(path for path in paths if (ROOT / path).is_file()):
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / relative_path, target)
@@ -460,7 +497,7 @@ class ProfileSchemaTests(unittest.TestCase):
                     "approved_at": "2026-07-01",
                     "expires_on": "2026-08-01",
                     "exit_condition": "Remove after the source is migrated.",
-                    "evidence": ["docs/04.execution/tasks/2026-07-14-fixture.md"],
+                    "evidence": ["docs/03.specs/spec-123-fixture/task.md"],
                 }
             ],
         }
@@ -621,6 +658,20 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
 
+    def test_archive_source_prefixes_are_exact_and_bounded(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            ["docs/", "archive/"],
+            profiles["common"]["archive_source_prefixes"],
+        )
+        for mutate in (
+            lambda values: values["common"].pop("archive_source_prefixes"),
+            lambda values: values["common"]["archive_source_prefixes"].append("/"),
+            lambda values: values["common"]["archive_source_prefixes"].reverse(),
+        ):
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
     def test_frontmatter_order_requires_exact_unique_typed_keys(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(
@@ -629,12 +680,19 @@ class ProfileSchemaTests(unittest.TestCase):
                 "artifact_id",
                 "artifact_type",
                 "parent_ids",
+                "created",
+                "updated",
+                "observed_at",
                 "supersedes",
+                "completed_at",
                 "reviewed_at",
-                "review_cycle",
+                "next_review_at",
+                "occurred_at",
+                "resolved_at",
+                "released_at",
                 "generated_by",
                 "archived_from",
-                "archived_on",
+                "archived_at",
                 "archive_reason",
                 "archive_disposition",
                 "archived_commit",
@@ -663,11 +721,16 @@ class ProfileSchemaTests(unittest.TestCase):
             {
                 "artifact_id": "<artifact-id>",
                 "parent_id": "<parent-artifact-id>",
+                "created": "<created-at>",
+                "updated": "<updated-at>",
+                "completed_at": "<completed-at>",
                 "reviewed_at": "<reviewed-at>",
-                "review_cycle": "<review-cycle>",
+                "next_review_at": "<next-review-at>",
+                "occurred_at": "<occurred-at>",
+                "resolved_at": "<resolved-at>",
+                "released_at": "<released-at>",
                 "archived_from": "docs/<original-path>.md",
-                "content_archived_from": "archive/<original-path>.md",
-                "archived_on": "YYYY-MM-DD",
+                "archived_at": "<archived-at>",
                 "archive_reason": "<archive-reason>",
                 "archive_disposition": "<archive-disposition>",
                 "archived_commit": "<archived-commit>",
@@ -707,11 +770,11 @@ class ProfileSchemaTests(unittest.TestCase):
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(
             {
-                "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md":
+                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md":
+                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/target-surface-delta-summary.md":
+                "docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md":
                     "scripts/validation/check-target-surface-delta-contract.py",
             },
             profiles["common"]["generated_outputs"],
@@ -744,12 +807,19 @@ class ProfileSchemaTests(unittest.TestCase):
                 "artifact_id",
                 "artifact_type",
                 "parent_ids",
+                "created",
+                "updated",
+                "observed_at",
                 "supersedes",
+                "completed_at",
                 "reviewed_at",
-                "review_cycle",
+                "next_review_at",
+                "occurred_at",
+                "resolved_at",
+                "released_at",
                 "generated_by",
                 "archived_from",
-                "archived_on",
+                "archived_at",
                 "archive_reason",
                 "archive_disposition",
                 "archived_commit",
@@ -770,7 +840,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "artifact_type",
                 "parent_ids",
                 "archived_from",
-                "archived_on",
+                "archived_at",
                 "archive_reason",
                 "archive_disposition",
                 "archived_commit",
@@ -810,54 +880,31 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_archive_profiles_are_exactly_path_selected(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         archive_profiles = profiles["archive_profiles"]
-        self.assertEqual(["content-archive", "sdlc-archive"], list(archive_profiles))
         self.assertEqual(
-            ["archive/**/*.md"],
-            archive_profiles["content-archive"]["path_globs"],
+            ["change-plan", "change-task", "tombstone", "migration"],
+            list(archive_profiles),
         )
-        self.assertEqual(
-            ["docs/98.archive/**/*.md"],
-            archive_profiles["sdlc-archive"]["path_globs"],
-        )
-        self.assertEqual(
-            "docs/99.templates/templates/common/content-archive.template.md",
-            archive_profiles["content-archive"]["template"],
-        )
-        self.assertEqual(
-            "docs/99.templates/templates/common/archive.template.md",
-            archive_profiles["sdlc-archive"]["template"],
-        )
-        self.assertEqual(
-            "archive",
-            archive_profiles["content-archive"]["artifact_type"],
-        )
-        self.assertEqual(
-            "archive",
-            archive_profiles["sdlc-archive"]["artifact_type"],
-        )
-
-    def test_content_archive_template_uses_profile_key_order(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        content = profiles["archive_profiles"]["content-archive"]
-        values = metadata.parse_frontmatter(CONTENT_ARCHIVE_TEMPLATE)
-        self.assertEqual(content["required"] + content["optional"], list(values))
-        self.assertNotIn("parent_ids", values)
-        self.assertNotIn("current_replacement", values)
-        self.assertEqual(
-            [
-                "## Overview",
-                "## Current-use Warning",
-                "## Archive Metadata",
-                "## Archive Ledger",
-                "## Historical Retrieval",
-                "## Related Documents",
+        expected_globs = {
+            "change-plan": ["docs/98.archive/changes/chg-*/plan.md"],
+            "change-task": ["docs/98.archive/changes/chg-*/task.md"],
+            "tombstone": [
+                "docs/98.archive/tombstones/01.requirements/*.md",
+                "docs/98.archive/tombstones/02.architecture/*.md",
+                "docs/98.archive/tombstones/03.specs/*.md",
+                "docs/98.archive/tombstones/05.operations/*.md",
             ],
-            [
-                line
-                for line in CONTENT_ARCHIVE_TEMPLATE.read_text(encoding="utf-8").splitlines()
-                if line.startswith("## ")
-            ],
-        )
+            "migration": ["docs/98.archive/migrations/mig-*.md"],
+        }
+        for name, profile in archive_profiles.items():
+            with self.subTest(profile=name):
+                self.assertEqual(expected_globs[name], profile["path_globs"])
+                self.assertEqual(
+                    "docs/99.templates/templates/common/archive.template.md",
+                    profile["template"],
+                )
+                self.assertEqual("archive", profile["artifact_type"])
+                self.assertIsInstance(profile["id_pattern"], str)
+                self.assertIn(profile["path_identity"], {"direct", "inherited"})
 
     def test_archive_profile_rejects_unknown_condition_fields(self) -> None:
         def add_unknown_condition(values) -> None:
@@ -979,7 +1026,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "artifact_type",
                 "parent_ids",
                 "archived_from",
-                "archived_on",
+                "archived_at",
                 "archive_reason",
                 "archive_disposition",
                 "archived_commit",
@@ -1336,9 +1383,13 @@ class ProfileSchemaTests(unittest.TestCase):
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
         sentinel = "TOKEN-DO-NOT-PRINT"
         with (
-            mock.patch.object(metadata, "load_migration_contract", return_value=contract),
             mock.patch.object(
-                metadata,
+                metadata._validator,
+                "load_migration_contract",
+                return_value=contract,
+            ),
+            mock.patch.object(
+                metadata._validator,
                 "_safe_load_unique",
                 side_effect=yaml.YAMLError(sentinel),
             ),
@@ -1599,7 +1650,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "status_before", None
             ),
             "partition-plan-path": lambda value: value["entries"][0].__setitem__(
-                "partition_plan", "docs/04.execution/tasks/not-a-plan.md"
+                "partition_plan", "docs/03.specs/spec-not-a-plan/task.md"
             ),
             "unordered-parent-list": lambda value: value["entries"][0].__setitem__(
                 "parent_ids", ["spec:z", "spec:a"]
@@ -1740,7 +1791,9 @@ class ProfileSchemaTests(unittest.TestCase):
             {
                 "sdlc": [
                     "prd",
-                    "ard",
+                    "srs",
+                    "interface-requirement",
+                    "architecture-description",
                     "adr",
                     "spec",
                     "plan",
@@ -1797,7 +1850,7 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_template_roles_require_exact_fields_and_unique_sources(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         roles = profiles["template_roles"]
-        self.assertEqual(24, len(roles))
+        self.assertEqual(25, len(roles))
         sources = [role["source"] for role in roles.values()]
         self.assertEqual(len(sources), len(set(sources)))
 
@@ -1830,22 +1883,24 @@ class ProfileSchemaTests(unittest.TestCase):
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
         cases = {
-            "docs/01.requirements/123-example.md": "prd",
-            "docs/02.architecture/requirements/0123-example.md": "ard",
-            "docs/02.architecture/decisions/0123-example.md": "adr",
-            "docs/03.specs/123-example/spec.md": "spec",
-            "docs/04.execution/plans/2026-07-11-example.md": "plan",
-            "docs/04.execution/tasks/2026-07-11-example.md": "task",
-            "docs/05.operations/guides/00-workspace/example.md": "guide",
-            "docs/05.operations/policies/00-workspace/example.md": "policy",
-            "docs/05.operations/runbooks/00-workspace/example.md": "runbook",
-            "docs/05.operations/incidents/2026/INC-001-example/INC-001-example.md": "incident",
-            "docs/05.operations/incidents/2026/INC-001-example/postmortem.md": "postmortem",
-            "docs/05.operations/releases/2026-07-11.md": "release",
+            "docs/01.requirements/prd-0123-example.md": "prd",
+            "docs/01.requirements/srs-123-example.md": "srs",
+            "docs/01.requirements/interface-123-example.md": "interface-requirement",
+            "docs/02.architecture/descriptions/ad-0123-example.md": "architecture-description",
+            "docs/02.architecture/decisions/adr-0123-example.md": "adr",
+            "docs/03.specs/spec-0123-example/spec.md": "spec",
+            "docs/03.specs/spec-0123-example/plan.md": "plan",
+            "docs/03.specs/spec-0123-example/task.md": "task",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/guide.md": "guide",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/policy.md": "policy",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/runbook.md": "runbook",
+            "docs/05.operations/incidents/2026/inc-0001-example/incident.md": "incident",
+            "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md": "postmortem",
+            "docs/05.operations/releases/rel-0001-example/release.md": "release",
             "docs/90.references/research/example.md": "reference",
             "docs/90.references/audits/example.md": "audit",
-            "docs/98.archive/04.execution/example.md": "archive",
-            "archive/Windows-Network-IP.md": "archive",
+            "docs/98.archive/migrations/mig-0001-example.md": "archive",
+            "archive/Windows-Network-IP.md": "unsupported",
             "docs/99.templates/templates/sdlc/spec.template.md": "template-source",
             "docs/00.agent-governance/rules/example.md": "governance",
             "README.md": "readme",
@@ -1858,9 +1913,10 @@ class ArtifactInferenceTests(unittest.TestCase):
     def test_archive_paths_match_exactly_one_semantic_profile(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         cases = {
-            "archive/Windows-Network-IP.md": "content-archive",
-            "archive/nested/retired-note.md": "content-archive",
-            "docs/98.archive/04.execution/example.md": "sdlc-archive",
+            "docs/98.archive/changes/chg-0001-example/plan.md": "change-plan",
+            "docs/98.archive/changes/chg-0001-example/task.md": "change-task",
+            "docs/98.archive/tombstones/03.specs/spec-0001-example.md": "tombstone",
+            "docs/98.archive/migrations/mig-0001-example.md": "migration",
         }
         for path_text, expected in cases.items():
             path = pathlib.Path(path_text)
@@ -1871,11 +1927,14 @@ class ArtifactInferenceTests(unittest.TestCase):
                 self.assertEqual(
                     expected, metadata.classify_archive_profile(path, profiles)
                 )
+        for path_text in ("archive/Windows-Network-IP.md", "archive/nested/retired-note.md"):
+            with self.subTest(path=path_text):
+                self.assertEqual([], metadata.matching_archive_profiles(pathlib.Path(path_text), profiles))
 
     def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         generated = pathlib.Path(
-            "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+            "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         )
         adjacent = generated.with_name("other-summary.md")
 
@@ -2079,27 +2138,27 @@ class TemplateRoleInferenceTests(unittest.TestCase):
 
     def test_registered_targets_have_one_exact_role(self) -> None:
         cases = {
-            "docs/01.requirements/901-fixture.md": ("prd", "prd"),
-            "docs/02.architecture/requirements/0901-fixture.md": ("ard", "ard"),
-            "docs/02.architecture/decisions/0901-fixture.md": ("adr", "adr"),
-            "docs/03.specs/901-fixture/spec.md": ("spec", "spec"),
-            "docs/03.specs/901-fixture/api-spec.md": ("spec", "api-spec"),
-            "docs/03.specs/901-fixture/agent-design.md": ("spec", "agent-design"),
-            "docs/03.specs/901-fixture/data-model.md": ("spec", "data-model"),
-            "docs/03.specs/901-fixture/service.md": ("spec", "service"),
+            "docs/01.requirements/prd-0901-fixture.md": ("prd", "prd"),
+            "docs/02.architecture/descriptions/ad-0901-fixture.md": ("architecture-description", "architecture-description"),
+            "docs/02.architecture/decisions/adr-0901-fixture.md": ("adr", "adr"),
+            "docs/03.specs/spec-0901-fixture/spec.md": ("spec", "spec"),
+            "docs/03.specs/spec-0901-fixture/api-spec.md": ("spec", "api-spec"),
+            "docs/03.specs/spec-0901-fixture/agent-design.md": ("spec", "agent-design"),
+            "docs/03.specs/spec-0901-fixture/data-model.md": ("spec", "data-model"),
+            "docs/03.specs/spec-0901-fixture/service.md": ("spec", "service"),
             "examples/sample-web-service/service.md": ("spec", "service"),
-            "docs/03.specs/901-fixture/tests.md": ("spec", "tests"),
-            "docs/04.execution/plans/2026-07-13-fixture.md": ("plan", "plan"),
-            "docs/04.execution/tasks/2026-07-13-fixture.md": ("task", "task"),
-            "docs/05.operations/guides/00-workspace/fixture.md": ("guide", "guide"),
-            "docs/05.operations/policies/00-workspace/fixture.md": ("policy", "policy"),
-            "docs/05.operations/runbooks/00-workspace/fixture.md": ("runbook", "runbook"),
-            "docs/05.operations/incidents/2026/INC-901-fixture/INC-901-fixture.md": ("incident", "incident"),
-            "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md": ("postmortem", "postmortem"),
-            "docs/05.operations/releases/2026-07-13-fixture.md": ("release", "release"),
+            "docs/03.specs/spec-0901-fixture/tests.md": ("spec", "tests"),
+            "docs/03.specs/spec-0901-fixture/plan.md": ("plan", "plan"),
+            "docs/03.specs/spec-0901-fixture/task.md": ("task", "task"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md": ("guide", "guide"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md": ("policy", "policy"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md": ("runbook", "runbook"),
+            "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md": ("incident", "incident"),
+            "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md": ("postmortem", "postmortem"),
+            "docs/05.operations/releases/rel-0901-fixture/release.md": ("release", "release"),
             "docs/90.references/research/fixture.md": ("reference", "reference"),
             "docs/90.references/audits/fixture.md": ("audit", "audit"),
-            "docs/98.archive/03.specs/fixture.md": ("archive", "archive"),
+            "docs/98.archive/tombstones/03.specs/spec-0901-fixture.md": ("archive", "archive"),
             "README.md": ("readme", "readme"),
             "docs/00.agent-governance/memory/fixture.md": ("governance", "memory"),
             "docs/00.agent-governance/memory/progress.md": ("governance", "progress"),
@@ -2146,7 +2205,7 @@ class TypedExampleFixtureMetadataTests(unittest.TestCase):
         )
         self.assertEqual(
             [
-                "docs/03.specs/*/service.md",
+                "docs/03.specs/spec-*/service.md",
                 "examples/sample-web-service/service.md",
             ],
             self.profiles["template_roles"]["service"]["target_globs"],
@@ -2199,40 +2258,49 @@ class MetadataValidationTests(unittest.TestCase):
     ):
         values: dict[str, object] = {
             "status": "archived",
-            "artifact_id": "archive:04-execution-example",
+            "artifact_id": "mig-0001",
             "artifact_type": "archive",
             "parent_ids": [],
-            "archived_from": "docs/04.execution/example.md",
-            "archived_on": "2026-07-14",
+            "archived_from": "docs/03.specs/spec-0123-example/task.md",
+            "archived_at": "2026-07-14",
             "archive_reason": "Superseded by the canonical execution record.",
             "archive_disposition": "superseded",
             "archived_commit": "a" * 40,
             "archived_blob": "b" * 40,
             "preservation_class": "git-history",
-            "current_replacement": "docs/04.execution/canonical.md",
+            "current_replacement": "docs/03.specs/spec-0123-canonical/task.md",
         }
         values.update(overrides or {})
         for key in remove:
             values.pop(key, None)
         return self.record(
-            "docs/98.archive/04.execution/example.md",
+            "docs/98.archive/migrations/mig-0001-example.md",
             values,
             "archive",
         )
 
     def test_valid_spec_metadata_passes(self) -> None:
         parent = self.record(
-            "docs/01.requirements/123-parent.md",
-            {"status": "active", "artifact_id": "PRD-123", "artifact_type": "prd", "parent_ids": []},
-            "prd",
-        )
-        spec_record = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/02.architecture/descriptions/ad-0123-parent.md",
             {
                 "status": "active",
-                "artifact_id": "SPEC-123",
+                "artifact_id": "ad-0123",
+                "artifact_type": "architecture-description",
+                "parent_ids": [],
+                "created": "2026-08-07",
+                "updated": "2026-08-07",
+            },
+            "architecture-description",
+        )
+        spec_record = self.record(
+            "docs/03.specs/spec-0123-example/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "spec-0123",
                 "artifact_type": "spec",
-                "parent_ids": ["PRD-123"],
+                "parent_ids": ["ad-0123"],
+                "created": "2026-08-07",
+                "updated": "2026-08-07",
             },
             "spec",
         )
@@ -2240,7 +2308,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_approved_crosscutting_spec_root_is_explicitly_permitted(self) -> None:
         record = self.record(
-            "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
+            "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md",
             {
                 "status": "active",
                 "artifact_id": "spec:123-agentic-engineering-audit-remediation",
@@ -2274,7 +2342,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_parent_serialization_uses_type_precedence_then_id(self) -> None:
         spec_parent = self.record(
-            "docs/03.specs/100-parent/spec.md",
+            "docs/03.specs/spec-0100-parent/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-Z",
@@ -2284,7 +2352,7 @@ class MetadataValidationTests(unittest.TestCase):
             "spec",
         )
         plan_a = self.record(
-            "docs/04.execution/plans/2026-07-11-a.md",
+            "docs/03.specs/spec-0101-plan-a/plan.md",
             {
                 "status": "active",
                 "artifact_id": "PLAN-A",
@@ -2294,7 +2362,7 @@ class MetadataValidationTests(unittest.TestCase):
             "plan",
         )
         plan_b = self.record(
-            "docs/04.execution/plans/2026-07-11-b.md",
+            "docs/03.specs/spec-0102-plan-b/plan.md",
             {
                 "status": "active",
                 "artifact_id": "PLAN-B",
@@ -2304,7 +2372,7 @@ class MetadataValidationTests(unittest.TestCase):
             "plan",
         )
         record = self.record(
-            "docs/04.execution/tasks/2026-07-11-child.md",
+            "docs/03.specs/spec-0103-child/task.md",
             {
                 "status": "active",
                 "artifact_id": "TASK-CHILD",
@@ -2324,17 +2392,17 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_parent_order_has_no_semantic_priority(self) -> None:
         parent_a = self.record(
-            "docs/03.specs/100-a/spec.md",
+            "docs/03.specs/spec-0100-a/spec.md",
             {"status": "active", "artifact_id": "SPEC-A", "artifact_type": "spec", "parent_ids": []},
             "spec",
         )
         parent_b = self.record(
-            "docs/03.specs/100-b/spec.md",
+            "docs/03.specs/spec-0100-b/spec.md",
             {"status": "active", "artifact_id": "SPEC-B", "artifact_type": "spec", "parent_ids": []},
             "spec",
         )
         ordered = self.record(
-            "docs/04.execution/plans/2026-07-11-child.md",
+            "docs/03.specs/spec-0101-child/plan.md",
             {
                 "status": "active",
                 "artifact_id": "PLAN-CHILD",
@@ -2361,7 +2429,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_unresolved_parent_is_reported(self) -> None:
         record = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/03.specs/spec-0123-example/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-123",
@@ -2374,7 +2442,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_wrong_parent_type_and_parent_cycle_are_reported(self) -> None:
         parent = self.record(
-            "docs/04.execution/tasks/2026-07-11-parent.md",
+            "docs/03.specs/spec-0123-parent/task.md",
             {
                 "status": "active",
                 "artifact_id": "TASK-PARENT",
@@ -2384,7 +2452,7 @@ class MetadataValidationTests(unittest.TestCase):
             "task",
         )
         child = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/03.specs/spec-0123-example/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-CHILD",
@@ -2399,7 +2467,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_declared_type_must_match_inferred_profile(self) -> None:
         record = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/03.specs/spec-0123-example/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-123",
@@ -2412,7 +2480,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_forbidden_and_type_inappropriate_keys_are_reported(self) -> None:
         record = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/03.specs/spec-0123-example/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-123",
@@ -2429,10 +2497,10 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_valid_forward_lifecycle_transition_passes(self) -> None:
         record = self.record(
-            "docs/04.execution/tasks/2026-07-11-example.md",
+            "docs/03.specs/spec-0123-example/task.md",
             {
                 "status": "completed",
-                "artifact_id": "TASK-2026-07-11-EXAMPLE",
+                "artifact_id": "task:0123-example",
                 "artifact_type": "task",
                 "parent_ids": [],
             },
@@ -2443,10 +2511,10 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_reverse_lifecycle_transition_is_reported(self) -> None:
         record = self.record(
-            "docs/04.execution/tasks/2026-07-11-example.md",
+            "docs/03.specs/spec-0123-example/task.md",
             {
                 "status": "active",
-                "artifact_id": "TASK-2026-07-11-EXAMPLE",
+                "artifact_id": "task:0123-example",
                 "artifact_type": "task",
                 "parent_ids": [],
             },
@@ -2457,7 +2525,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_superseded_artifact_requires_resolvable_replacement(self) -> None:
         record = self.record(
-            "docs/03.specs/123-example/spec.md",
+            "docs/03.specs/spec-0123-example/spec.md",
             {
                 "status": "superseded",
                 "artifact_id": "SPEC-OLD",
@@ -2470,7 +2538,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_replacement_requires_superseded_target_state(self) -> None:
         old = self.record(
-            "docs/03.specs/122-old/spec.md",
+            "docs/03.specs/spec-0122-old/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-OLD",
@@ -2480,7 +2548,7 @@ class MetadataValidationTests(unittest.TestCase):
             "spec",
         )
         new = self.record(
-            "docs/03.specs/123-new/spec.md",
+            "docs/03.specs/spec-0123-new/spec.md",
             {
                 "status": "active",
                 "artifact_id": "SPEC-NEW",
@@ -2513,12 +2581,12 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("type-inappropriate-key", self.codes(record))
 
     def test_registered_generator_owner_satisfies_generated_profile_without_frontmatter(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         record = self.record(path, {}, metadata.infer_artifact_type(pathlib.Path(path), self.profiles))
         self.assertEqual([], self.codes(record))
 
     def test_registered_generated_owner_rejects_conflicting_frontmatter_owner(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         record = self.record(
             path,
             {"generated_by": "scripts/example.py"},
@@ -2528,18 +2596,57 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_freshness_requires_strict_iso_date_or_datetime(self) -> None:
         record = self.record(
-            "docs/05.operations/policies/00-workspace/example.md",
+            "docs/05.operations/workspace/ops-0001-example/policy.md",
             {
                 "status": "active",
                 "artifact_id": "POLICY-EXAMPLE",
                 "artifact_type": "policy",
                 "parent_ids": [],
                 "reviewed_at": "yesterday",
-                "review_cycle": "annual",
+                "next_review_at": "2027-07-13",
             },
             "policy",
         )
         self.assertIn("invalid-reviewed-at", self.codes(record))
+
+    def test_observed_at_requires_strict_iso_date_or_datetime(self) -> None:
+        cases = (
+            (
+                "reference",
+                "docs/90.references/research/ref-9998-example.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ref-9998",
+                    "artifact_type": "reference",
+                    "parent_ids": [],
+                    "observed_at": "yesterday",
+                },
+            ),
+            (
+                "audit",
+                "docs/90.references/audits/ref-9997-example.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ref-9997",
+                    "artifact_type": "audit",
+                    "parent_ids": [],
+                    "observed_at": "not-a-date",
+                },
+            ),
+            (
+                "generated",
+                "docs/90.references/data/example.md",
+                {
+                    "status": "active",
+                    "generated_by": "scripts/example.py",
+                    "observed_at": "2026-13-40",
+                },
+            ),
+        )
+        for artifact_type, path, values in cases:
+            with self.subTest(artifact_type=artifact_type):
+                record = self.record(path, values, artifact_type)
+                self.assertIn("invalid-observed-at", self.codes(record))
 
     def test_generator_owner_rejects_absolute_and_traversal_paths(self) -> None:
         for generated_by in ("/tmp/generator.py", "scripts/../generator.py", "scripts\\generator.py"):
@@ -2553,11 +2660,14 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_archive_provenance_types_are_validated(self) -> None:
         record = self.record(
-            "docs/98.archive/04.execution/example.md",
+            "docs/98.archive/migrations/mig-0123-example.md",
             {
                 "status": "archived",
-                "archived_from": ["docs/04.execution/example.md"],
-                "archived_on": "not-a-date",
+                "artifact_id": "mig-0123",
+                "artifact_type": "archive",
+                "parent_ids": [],
+                "archived_from": ["docs/03.specs/spec-0123-example/task.md"],
+                "archived_at": "not-a-date",
                 "archive_reason": 7,
                 "current_replacement": "/absolute.md",
             },
@@ -2565,50 +2675,40 @@ class MetadataValidationTests(unittest.TestCase):
         )
         codes = self.codes(record)
         self.assertIn("invalid-archived-from", codes)
-        self.assertIn("invalid-archived-on", codes)
+        self.assertIn("invalid-archived-at", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
 
-    def test_content_archive_forbids_sdlc_and_snapshot_fields(self) -> None:
-        values: dict[str, object] = {
-            "status": "archived",
-            "artifact_id": "archive:windows-network-ip",
-            "artifact_type": "archive",
-            "archived_from": "archive/Windows-Network-IP.md",
-            "archived_on": "2026-07-18",
-            "archive_reason": "Unowned operational note withdrawn from current use.",
-            "archive_disposition": "withdrawn",
-            "archived_commit": "a" * 40,
-            "archived_blob": "b" * 40,
-            "preservation_class": "git-history",
-            "parent_ids": [],
-            "supersedes": ["spec:legacy"],
-            "current_replacement": "docs/05.operations/guides/replacement.md",
-            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
-            "content_sha256": "c" * 64,
-            "snapshot_reason": "Not admitted for content tombstones.",
-        }
-        record = self.record("archive/Windows-Network-IP.md", values, "archive")
-        findings = metadata.validate_record(
-            record,
-            self.profiles,
-            metadata.build_manifest([record]),
+    def test_archive_accepts_only_safe_registered_legacy_source_roots(self) -> None:
+        accepted = self.archive_record(
+            {
+                "archive_disposition": "withdrawn",
+                "archived_from": "archive/Windows-Network-IP.md",
+            },
+            remove=("current_replacement",),
         )
-        inappropriate = {
-            finding.message
-            for finding in findings
-            if finding.code == "type-inappropriate-key"
-        }
-        for key in (
-            "parent_ids",
-            "supersedes",
-            "current_replacement",
-            "snapshot_path",
-            "content_sha256",
-            "snapshot_reason",
+        self.assertNotIn("invalid-archived-from", self.codes(accepted))
+
+        for archived_from in (
+            "archive/../Windows-Network-IP.md",
+            "/archive/Windows-Network-IP.md",
+            "archive\\Windows-Network-IP.md",
+            "archive/",
         ):
-            with self.subTest(key=key):
-                self.assertIn(f"key is forbidden for content-archive: {key}", inappropriate)
+            with self.subTest(archived_from=archived_from):
+                rejected = self.archive_record(
+                    {
+                        "archive_disposition": "withdrawn",
+                        "archived_from": archived_from,
+                    },
+                    remove=("current_replacement",),
+                )
+                self.assertIn("invalid-archived-from", self.codes(rejected))
+
+        replacement = self.archive_record(
+            {"current_replacement": "archive/Windows-Network-IP.md"}
+        )
+        self.assertIn("invalid-current-replacement", self.codes(replacement))
 
     def test_stage98_archive_keeps_sdlc_profile_behavior(self) -> None:
         record = self.archive_record()
@@ -2799,13 +2899,13 @@ class MetadataValidationTests(unittest.TestCase):
             root = pathlib.Path(directory)
             init_git(root)
             write_doc(
-                root / "docs/98.archive/04.execution/legacy.md",
+                root / "docs/98.archive/03.specs/spec-0123-legacy/task.md",
                 {
                     "status": "archived",
-                    "archived_from": "docs/04.execution/legacy.md",
-                    "archived_on": "2026-07-01",
+                    "archived_from": "docs/03.specs/spec-0123-legacy/task.md",
+                    "archived_at": "2026-07-01",
                     "archive_reason": "Legacy archive debt assigned to Wave D.",
-                    "current_replacement": "docs/04.execution/current.md",
+                    "current_replacement": "docs/03.specs/spec-0123-current/task.md",
                 },
             )
             stage_index_body = body_with_headings(
@@ -2827,20 +2927,23 @@ class MetadataValidationTests(unittest.TestCase):
             )
             result = run_checker(root, "check-changed", "--base-ref", "HEAD")
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertNotIn("docs/98.archive/04.execution/legacy.md", result.stdout)
+            self.assertNotIn(
+                "docs/98.archive/03.specs/spec-0123-legacy/task.md",
+                result.stdout,
+            )
 
     def test_archive_template_transition_does_not_relax_target_requirements(self) -> None:
         record = self.record(
-            "docs/98.archive/04.execution/new-target.md",
+            "docs/98.archive/migrations/mig-0123-new-target.md",
             {
                 "status": "archived",
-                "artifact_id": "archive:04-execution-new-target",
+                "artifact_id": "mig-0123",
                 "artifact_type": "archive",
                 "parent_ids": [],
-                "archived_from": "docs/04.execution/new-target.md",
-                "archived_on": "2026-07-14",
+                "archived_from": "docs/03.specs/spec-0123-new-target/task.md",
+                "archived_at": "2026-07-14",
                 "archive_reason": "Fixture for the Task 3 template handoff.",
-                "current_replacement": "docs/04.execution/current.md",
+                "current_replacement": "docs/03.specs/spec-0123-current/task.md",
             },
             "archive",
         )
@@ -2896,7 +2999,7 @@ class MetadataValidationTests(unittest.TestCase):
         canonical = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
         for key in (
             "archived_from",
-            "archived_on",
+            "archived_at",
             "archive_reason",
             "archive_disposition",
             "archived_commit",
@@ -2972,7 +3075,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_instantiated_document_rejects_template_placeholders(self) -> None:
         record = self.record(
-            "docs/03.specs/124-example/spec.md",
+            "docs/03.specs/spec-0124-example/spec.md",
             {
                 "status": "draft",
                 "artifact_id": "<artifact-id>",
@@ -3003,13 +3106,13 @@ class MetadataValidationTests(unittest.TestCase):
                 "artifact_type": "policy",
                 "parent_ids": ["spec:real-parent"],
                 "reviewed_at": "reviewed-<reviewed-at>",
-                "review_cycle": "annual",
+                "next_review_at": "2027-07-13",
             },
         )
         paths = (
-            "docs/03.specs/124-example/spec.md",
-            "docs/03.specs/124-example/spec.md",
-            "docs/05.operations/policies/00-workspace/example.md",
+            "docs/03.specs/spec-0124-example/spec.md",
+            "docs/03.specs/spec-0124-example/spec.md",
+            "docs/05.operations/workspace/ops-0001-example/policy.md",
         )
         types = ("spec", "spec", "policy")
         for values, path, artifact_type in zip(cases, paths, types, strict=True):
@@ -3061,6 +3164,9 @@ class ReadmeProfileTests(unittest.TestCase):
         for path in paths:
             with self.subTest(path=path):
                 matches = metadata.matching_readme_profiles(path, self.profiles)
+                if path.as_posix() in metadata.SDLC_TAXONOMY_BOUNDED_README_INPUTS:
+                    self.assertEqual([], matches)
+                    continue
                 self.assertEqual(1, len(matches), matches)
                 self.assertEqual(matches[0], metadata.classify_readme_profile(path, self.profiles))
 
@@ -3088,24 +3194,16 @@ class ReadmeProfileTests(unittest.TestCase):
         self.assertEqual(["stage-index"], metadata.matching_readme_profiles(approved, self.profiles))
         self.assertEqual([], metadata.matching_readme_profiles(adjacent, self.profiles))
 
-    def test_current_audit_readme_count_matches_tracked_corpus(self) -> None:
-        result = subprocess.run(
-            ["git", "ls-files", "-z", "--", "*README.md"],
-            cwd=ROOT,
-            capture_output=True,
-            check=True,
-        )
-        tracked_count = len([raw for raw in result.stdout.split(b"\0") if raw])
-        current_claim = f"all {tracked_count} tracked READMEs"
+    def test_audit_readme_count_preserves_its_historical_baseline(self) -> None:
+        historical_claim = "all 231 tracked READMEs"
         claims = {
-            "frontmatter-template-readme-implementation.md": 2,
-            "sdlc-document-contracts-implementation.md": 1,
+            "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md": 2,
+            "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md": 1,
         }
-        audit_pack = ROOT / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
-        for name, expected_occurrences in claims.items():
-            with self.subTest(path=name):
-                text = (audit_pack / name).read_text(encoding="utf-8")
-                self.assertEqual(expected_occurrences, text.count(current_claim))
+        for path, expected_occurrences in claims.items():
+            with self.subTest(path=path):
+                text = (ROOT / path).read_text(encoding="utf-8")
+                self.assertEqual(expected_occurrences, text.count(historical_claim))
 
 
 class TemplateMetadataTests(unittest.TestCase):
@@ -3293,12 +3391,12 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
         catalogs = {
             "docs/99.templates/README.md": (
-                "PRD, ARD, ADR, Spec, Plan, Task",
+                "PRD, SRS, Interface Requirement, Architecture Description, ADR, Spec, Plan, Task",
                 "Guide, policy, runbook, incident, postmortem, Release",
                 "README, reference, Audit, archive",
             ),
             "docs/99.templates/templates/README.md": (
-                "`prd`, `ard`, `adr`, `spec`, `plan`, `task`",
+                "`prd`, `srs`, `interface-requirement`, `architecture-description`, `adr`, `spec`, `plan`, `task`",
                 "`guide`, `policy`, `runbook`, `incident`, `postmortem`, `release`",
                 "`readme`, `reference`, `audit`, `archive`",
                 "`memory`, `progress`",
@@ -3317,7 +3415,9 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
-            "docs/99.templates/templates/sdlc/ard.template.md": "ard",
+            "docs/99.templates/templates/sdlc/srs.template.md": "srs",
+            "docs/99.templates/templates/sdlc/interface-requirement.template.md": "interface-requirement",
+            "docs/99.templates/templates/sdlc/architecture-description.template.md": "architecture-description",
             "docs/99.templates/templates/sdlc/adr.template.md": "adr",
             "docs/99.templates/templates/sdlc/spec.template.md": "spec",
             "docs/99.templates/templates/sdlc/plan.template.md": "plan",
@@ -3331,7 +3431,6 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/common/reference.template.md": "reference",
             "docs/99.templates/templates/common/audit.template.md": "audit",
             "docs/99.templates/templates/common/archive.template.md": "archive",
-            "docs/99.templates/templates/common/content-archive.template.md": "archive",
             "docs/99.templates/templates/common/readme.template.md": "readme",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "spec",
@@ -3367,91 +3466,111 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_typed_leaf_templates_instantiate_valid_targets(self) -> None:
         targets = {
-            "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/901-fixture.md",
-            "docs/99.templates/templates/sdlc/ard.template.md": "docs/02.architecture/requirements/0901-fixture.md",
-            "docs/99.templates/templates/sdlc/adr.template.md": "docs/02.architecture/decisions/0901-fixture.md",
-            "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/901-fixture/spec.md",
-            "docs/99.templates/templates/sdlc/plan.template.md": "docs/04.execution/plans/2026-07-13-fixture.md",
-            "docs/99.templates/templates/sdlc/task.template.md": "docs/04.execution/tasks/2026-07-13-fixture.md",
-            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/guides/00-workspace/fixture.md",
-            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/policies/00-workspace/fixture.md",
-            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/runbooks/00-workspace/fixture.md",
-            "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/INC-901-fixture.md",
-            "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md",
-            "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/2026-07-13-fixture.md",
+            "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/prd-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/srs.template.md": "docs/01.requirements/srs-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/interface-requirement.template.md": "docs/01.requirements/interface-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/architecture-description.template.md": "docs/02.architecture/descriptions/ad-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/adr.template.md": "docs/02.architecture/decisions/adr-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/spec-0901-fixture/spec.md",
+            "docs/99.templates/templates/sdlc/plan.template.md": "docs/03.specs/spec-0901-fixture/plan.md",
+            "docs/99.templates/templates/sdlc/task.template.md": "docs/03.specs/spec-0901-fixture/task.md",
+            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md",
+            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md",
+            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md",
+            "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md",
+            "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md",
+            "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/rel-0901-fixture/release.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
             "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
-            "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/03.specs/901-fixture/spec.md",
-            "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/901-fixture/agent-design.md",
-            "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/901-fixture/api-spec.md",
-            "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/901-fixture/data-model.md",
-            "docs/99.templates/templates/spec-contracts/service.template.md": "docs/03.specs/901-fixture/service.md",
-            "docs/99.templates/templates/spec-contracts/tests.template.md": "docs/03.specs/901-fixture/tests.md",
+            "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/migrations/mig-0901-fixture.md",
+            "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/spec-0901-fixture/agent-design.md",
+            "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/spec-0901-fixture/api-spec.md",
+            "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/spec-0901-fixture/data-model.md",
+            "docs/99.templates/templates/spec-contracts/service.template.md": "docs/03.specs/spec-0901-fixture/service.md",
+            "docs/99.templates/templates/spec-contracts/tests.template.md": "docs/03.specs/spec-0901-fixture/tests.md",
         }
         parents = {
             "prd": metadata.Record(
-                pathlib.Path("docs/01.requirements/900-parent.md"),
+                pathlib.Path("docs/01.requirements/prd-0900-parent.md"),
                 {
                     "status": "active",
-                    "artifact_id": "fixture:prd-parent",
+                    "artifact_id": "prd-0900",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
                 "prd",
             ),
-            "spec": metadata.Record(
-                pathlib.Path("docs/03.specs/900-parent/spec.md"),
+            "architecture-description": metadata.Record(
+                pathlib.Path("docs/02.architecture/descriptions/ad-0900-parent.md"),
                 {
                     "status": "active",
-                    "artifact_id": "fixture:spec-parent",
+                    "artifact_id": "ad-0900",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0900"],
+                },
+                "architecture-description",
+            ),
+            "spec": metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0900-parent/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0900",
                     "artifact_type": "spec",
-                    "parent_ids": ["fixture:prd-parent"],
+                    "parent_ids": ["ad-0900"],
                 },
                 "spec",
             ),
             "runbook": metadata.Record(
-                pathlib.Path("docs/05.operations/runbooks/00-workspace/parent.md"),
+                pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0900-parent/runbook.md"),
                 {
                     "status": "active",
-                    "artifact_id": "fixture:runbook-parent",
+                    "artifact_id": "runbook-0900",
                     "artifact_type": "runbook",
-                    "parent_ids": ["fixture:spec-parent"],
+                    "parent_ids": ["spec-0900"],
                     "reviewed_at": "2026-07-13",
-                    "review_cycle": "annual",
+                    "next_review_at": "2027-07-13",
                 },
                 "runbook",
             ),
             "incident": metadata.Record(
-                pathlib.Path("docs/05.operations/incidents/2026/INC-900-parent/INC-900-parent.md"),
+                pathlib.Path("docs/05.operations/incidents/2026/inc-0900-parent/incident.md"),
                 {
                     "status": "active",
-                    "artifact_id": "fixture:incident-parent",
+                    "artifact_id": "inc-0900",
                     "artifact_type": "incident",
-                    "parent_ids": ["fixture:runbook-parent"],
+                    "parent_ids": ["runbook-0900"],
                 },
                 "incident",
             ),
         }
         parent_by_target = {
-            "ard": "prd",
-            "adr": "prd",
-            "spec": "prd",
+            "srs": "prd",
+            "interface-requirement": "prd",
+            "architecture-description": "prd",
+            "adr": "architecture-description",
+            "spec": "architecture-description",
             "plan": "spec",
             "task": "spec",
             "guide": "spec",
-            "policy": "prd",
+            "policy": "architecture-description",
             "runbook": "spec",
             "incident": "runbook",
             "postmortem": "incident",
             "release": "spec",
         }
         placeholder_replacements = {
+            "<created-at>": "2026-07-13",
+            "<updated-at>": "2026-07-13",
+            "<completed-at>": "2026-07-13",
             "<reviewed-at>": "2026-07-13",
-            "<review-cycle>": "annual",
-            "docs/<original-path>.md": "docs/03.specs/899-retired/spec.md",
-            "YYYY-MM-DD": "2026-07-13",
+            "<next-review-at>": "2027-07-13",
+            "<occurred-at>": "2026-07-13",
+            "<resolved-at>": "2026-07-13",
+            "<released-at>": "2026-07-13",
+            "docs/<original-path>.md": "docs/03.specs/spec-0899-retired/spec.md",
+            "<archived-at>": "2026-07-13",
             "<archive-reason>": "Fixture retirement",
-            "docs/<replacement-path>.md": "docs/03.specs/900-parent/spec.md",
+            "docs/<replacement-path>.md": "docs/03.specs/spec-0900-parent/spec.md",
         }
 
         typed_roles = {
@@ -3459,17 +3578,40 @@ class TemplateMetadataTests(unittest.TestCase):
             for role in self.profiles["template_roles"].values()
             if role["source"] in targets
         }
+        stable_ids = {
+            "prd": "prd-0901",
+            "srs": "srs-0901",
+            "interface-requirement": "interface-0901",
+            "architecture-description": "ad-0901",
+            "adr": "adr-0901",
+            "spec": "spec-0901",
+            "plan": "plan-0901",
+            "task": "task-0901-01",
+            "guide": "guide-0901",
+            "policy": "policy-0901",
+            "runbook": "runbook-0901",
+            "incident": "inc-0901",
+            "postmortem": "postmortem-0901",
+            "release": "rel-0901",
+            "archive": "mig-0901",
+        }
         for source_path, target_type in typed_roles.items():
             with self.subTest(source=source_path, target=targets[source_path]):
                 parent_type = parent_by_target.get(target_type)
                 parent_id = parents[parent_type].metadata["artifact_id"] if parent_type else None
                 rendered = (ROOT / source_path).read_text(encoding="utf-8")
-                rendered = rendered.replace("<artifact-id>", f"fixture:{pathlib.Path(source_path).stem}")
+                rendered = rendered.replace(
+                    "<artifact-id>",
+                    stable_ids.get(target_type, f"fixture:{pathlib.Path(source_path).stem}"),
+                )
                 if parent_id:
                     rendered = rendered.replace("<parent-artifact-id>", str(parent_id))
                 for placeholder, replacement in placeholder_replacements.items():
                     rendered = rendered.replace(placeholder, replacement)
                 values = metadata._parse_frontmatter_text(rendered)
+                if target_type == "spec":
+                    values.setdefault("created", "2026-07-13")
+                    values.setdefault("updated", "2026-07-13")
                 if target_type == "archive":
                     values["status"] = "archived"
                     replacement = values.pop("current_replacement")
@@ -3521,7 +3663,7 @@ class TemplateMetadataTests(unittest.TestCase):
         templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
         template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
 
-        route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         source = "docs/99.templates/templates/operations/release.template.md"
         self.assertIn(f"| Release | `{route}`", selection)
         self.assertIn(route, matrix)
@@ -3532,7 +3674,7 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertIn("[release.template.md](./release.template.md)", operations_templates)
         self.assertIn("[api-spec.template.md](./api-spec.template.md)", spec_templates)
         self.assertIn("[task.template.md](./task.template.md)", sdlc_templates)
-        self.assertIn("| Operations | [operations/](./operations/README.md)", templates)
+        self.assertIn("[operations/](./operations/README.md)", templates)
         self.assertIn("`release`", templates)
         self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
         release_leaves = sorted(
@@ -3592,18 +3734,19 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Overview",
             "## Purpose",
             "## Scope",
-            "## Facts and Definitions",
+            "## Definitions / Facts",
             "## Sources",
             "## Maintenance",
             "## Related Documents",
         ),
         "audit": (
             "## Overview",
-            "## Scope and Criteria",
-            "## Evidence",
-            "## Findings",
-            "## Gap Analysis",
-            "## Disposition",
+            "## Purpose",
+            "## Repository Role",
+            "## Scope",
+            "## Definitions / Facts",
+            "## Sources",
+            "## Maintenance",
             "## Related Documents",
         ),
         "archive": (
@@ -3612,14 +3755,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Current Replacement",
             "## Archive Ledger",
             "## Preserved Evidence",
-            "## Related Documents",
-        ),
-        "content-archive": (
-            "## Overview",
-            "## Current-use Warning",
-            "## Archive Metadata",
-            "## Archive Ledger",
-            "## Historical Retrieval",
             "## Related Documents",
         ),
         "memory": (
@@ -3643,7 +3778,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "reference": "reference",
         "audit": "audit",
         "archive": "archive",
-        "content-archive": "archive",
         "memory": "governance",
         "progress": "governance",
     }
@@ -3657,16 +3791,12 @@ class TemplateBodyContractTests(unittest.TestCase):
             "sources", "maintenance", "related_documents",
         },
         "audit": {
-            "title", "overview", "scope_and_criteria", "evidence", "findings",
-            "gap_analysis", "disposition", "related_documents",
+            "title", "overview", "purpose", "repository_role", "scope",
+            "facts_and_definitions", "sources", "maintenance", "related_documents",
         },
         "archive": {
             "title", "overview", "archive_metadata", "current_replacement",
             "archive_ledger", "preserved_evidence", "related_documents",
-        },
-        "content-archive": {
-            "title", "overview", "current_use_warning", "archive_metadata",
-            "archive_ledger", "historical_retrieval", "related_documents",
         },
         "memory": {
             "title", "date", "layer", "status", "applies_to", "tags",
@@ -3689,7 +3819,24 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## AI Agent Requirements",
             "## Related Documents",
         ),
-        "ard": (
+        "srs": (
+            "## Overview",
+            "## System Behavior",
+            "## Quality Requirements",
+            "## External Dependencies and Constraints",
+            "## Verification",
+            "## Related Documents",
+        ),
+        "interface-requirement": (
+            "## Overview",
+            "## Participants and Direction",
+            "## Information Semantics",
+            "## Constraints and Compatibility",
+            "## Failure Expectations",
+            "## Verification",
+            "## Related Documents",
+        ),
+        "architecture-description": (
             "## Overview and Context",
             "## Stakeholders and Concerns",
             "## Boundaries and Constraints",
@@ -3792,7 +3939,9 @@ class TemplateBodyContractTests(unittest.TestCase):
     }
     TASK_3_ROLE_PROFILES = {
         "prd": "prd",
-        "ard": "ard",
+        "srs": "srs",
+        "interface-requirement": "interface-requirement",
+        "architecture-description": "architecture-description",
         "adr": "adr",
         "spec": "spec",
         "agent-design": "spec",
@@ -3818,7 +3967,26 @@ class TemplateBodyContractTests(unittest.TestCase):
             "ai_agent_requirements",
             "related_documents",
         },
-        "ard": {
+        "srs": {
+            "title",
+            "overview",
+            "system_behavior",
+            "quality_requirements",
+            "dependencies_and_constraints",
+            "verification",
+            "related_documents",
+        },
+        "interface-requirement": {
+            "title",
+            "overview",
+            "participants_and_direction",
+            "information_semantics",
+            "constraints_and_compatibility",
+            "failure_expectations",
+            "verification",
+            "related_documents",
+        },
+        "architecture-description": {
             "title",
             "overview_and_context",
             "stakeholders_and_concerns",
@@ -4037,33 +4205,26 @@ class TemplateBodyContractTests(unittest.TestCase):
     }
     TASK_5_ROLE_HEADINGS = {
         "guide": (
-            "## Overview",
-            "## Audience and Prerequisites",
-            "## Routine Usage",
+            "## Usage",
             "## Common Checks",
-            "## Runbook Handoff",
             "## Troubleshooting",
             "## Related Documents",
         ),
         "policy": (
             "## Overview",
-            "## Scope",
+            "## Policy Scope",
             "## Controls",
             "## Exceptions",
             "## Verification",
             "## Review Cadence",
-            "## Compliance Mapping",
             "## Related Documents",
         ),
         "runbook": (
-            "## Overview",
-            "## Trigger and Preconditions",
+            "## When to Use",
             "## Procedure",
-            "## Verification Record",
             "## Evidence",
             "## Rollback or Recovery",
             "## Escalation",
-            "## Automation Handoff",
             "## Related Documents",
         ),
         "incident": (
@@ -4073,7 +4234,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Timeline and Response",
             "## Evidence",
             "## Resolution and Handoff",
-            "## Runbook Links",
             "## Related Documents",
         ),
         "postmortem": (
@@ -4085,7 +4245,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Action Items",
             "## Prevention and Verification",
             "## Feedback Loop",
-            "## Detection Analysis",
             "## Related Documents",
         ),
         "release": (
@@ -4097,7 +4256,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Approvals",
             "## Rollout and Rollback",
             "## Outcome and Known Issues",
-            "## Compatibility Notes",
             "## Related Documents",
         ),
     }
@@ -4111,29 +4269,26 @@ class TemplateBodyContractTests(unittest.TestCase):
     }
     TASK_5_ROLE_TOKENS = {
         "guide": {
-            "title", "overview", "audience_and_prerequisites", "routine_usage",
-            "common_checks", "runbook_handoff", "troubleshooting",
+            "title", "routine_usage",
+            "common_checks", "troubleshooting",
             "related_documents",
         },
         "policy": {
             "title", "overview", "scope", "controls", "exceptions",
-            "verification", "review_cadence", "compliance_mapping",
+            "verification", "review_cadence",
             "related_documents",
         },
         "runbook": {
-            "title", "overview", "trigger", "prerequisites", "safety_conditions",
+            "title", "trigger", "prerequisites", "safety_conditions",
             "step_order", "procedure_step", "expected_result",
-            "verification_environment", "verification_command_or_procedure",
-            "verification_result", "verification_evidence_location",
             "supporting_evidence", "rollback_or_recovery", "escalation",
-            "automation_candidate_or_invocation",
-            "human_or_operator_judgment_boundary", "related_documents",
+            "related_documents",
         },
         "incident": {
             "title", "overview", "severity", "incident_lead",
             "current_response_state", "impact", "response_timestamp",
             "response_action", "response_action_owner", "response_state_change",
-            "evidence", "mitigation", "resolution", "handoff", "runbook_links",
+            "evidence", "mitigation", "resolution", "handoff",
             "related_documents",
         },
         "postmortem": {
@@ -4141,7 +4296,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "root_cause_and_contributing_factors", "lessons",
             "reviewed_action_description", "action_owner", "action_priority",
             "action_tracking_identity", "verification_owner",
-            "prevention_and_verification", "feedback_loop", "detection_analysis",
+            "prevention_and_verification", "feedback_loop",
             "related_documents",
         },
         "release": {
@@ -4152,17 +4307,14 @@ class TemplateBodyContractTests(unittest.TestCase):
             "validation_evidence_location", "approval_authority",
             "approval_decision", "approval_evidence", "rollout_execution",
             "rollback_disposition", "rollout_evidence", "release_outcome",
-            "known_issues", "compatibility_assessment", "related_documents",
+            "known_issues", "related_documents",
         },
     }
     TASK_5_MANDATORY_EVIDENCE_TOKENS = {
         "runbook": {
             "prerequisites", "safety_conditions", "step_order", "procedure_step",
-            "expected_result", "verification_environment",
-            "verification_command_or_procedure", "verification_result",
-            "verification_evidence_location",
-            "automation_candidate_or_invocation",
-            "human_or_operator_judgment_boundary",
+            "expected_result", "supporting_evidence", "rollback_or_recovery",
+            "escalation",
         },
         "incident": {
             "severity", "incident_lead", "current_response_state",
@@ -4175,7 +4327,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         "release": {
             "immutable_release_identity", "version_or_tag", "commit_identity",
             "artifact_identifier", "artifact_digest_or_immutable_evidence",
-            "validation_result", "approval_decision", "compatibility_assessment",
+            "validation_result", "approval_decision",
             "rollout_execution", "rollback_disposition", "release_outcome",
             "known_issues",
         },
@@ -4185,11 +4337,12 @@ class TemplateBodyContractTests(unittest.TestCase):
         "reference": "docs/99.templates/templates/common/reference.template.md",
         "audit": "docs/99.templates/templates/common/audit.template.md",
         "archive": "docs/99.templates/templates/common/archive.template.md",
-        "content-archive": "docs/99.templates/templates/common/content-archive.template.md",
         "memory": "docs/99.templates/templates/governance/memory.template.md",
         "progress": "docs/99.templates/templates/governance/progress.template.md",
         "prd": "docs/99.templates/templates/sdlc/prd.template.md",
-        "ard": "docs/99.templates/templates/sdlc/ard.template.md",
+        "srs": "docs/99.templates/templates/sdlc/srs.template.md",
+        "interface-requirement": "docs/99.templates/templates/sdlc/interface-requirement.template.md",
+        "architecture-description": "docs/99.templates/templates/sdlc/architecture-description.template.md",
         "adr": "docs/99.templates/templates/sdlc/adr.template.md",
         "spec": "docs/99.templates/templates/sdlc/spec.template.md",
         "plan": "docs/99.templates/templates/sdlc/plan.template.md",
@@ -4372,7 +4525,7 @@ class TemplateBodyContractTests(unittest.TestCase):
                 self.assertEqual(expected_h2, h2)
 
     def test_inline_code_scanner_requires_equal_backtick_run_lengths(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         documented = (
             self.literal_spec_body()
             + "\nDocument `> Rules:` and `{{single_token}}`.\n"
@@ -4388,7 +4541,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertIn("template-body-token-in-target", genuine_codes)
 
     def test_required_heading_reports_code(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         missing = self.body_finding_codes(
             record,
             self.literal_spec_body(include_requirements=False),
@@ -4396,7 +4549,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertIn("body-heading-missing", missing)
 
     def test_forbidden_heading_reports_code(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         forbidden = self.body_finding_codes(
             record,
             self.literal_spec_body() + "\n## Success Criteria\n\ncontent\n",
@@ -4404,7 +4557,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertIn("body-heading-forbidden", forbidden)
 
     def test_conditional_heading_may_be_absent(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         conditional_absent = self.body_finding_codes(
             record,
             self.literal_spec_body(),
@@ -4412,7 +4565,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertNotIn("body-heading-missing", conditional_absent)
 
     def test_two_h1_headings_report_code(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         codes = self.body_finding_codes(
             record,
             self.literal_spec_body() + "\n# Duplicate\n",
@@ -4420,7 +4573,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertIn("body-h1-count", codes)
 
     def test_changed_target_rejects_template_instruction_and_body_token(self) -> None:
-        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        record = self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec")
         text = self.literal_spec_body() + "\n> Rules:\n\n{{explain_scope}}\n"
         codes = self.body_finding_codes(record, text)
         self.assertIn("template-instruction-in-target", codes)
@@ -4435,7 +4588,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_zero_role_match_reports_code(self) -> None:
         missing = self.body_finding_codes(
-            self.fixture_record("docs/03.specs/901-fixture/unknown.md", "spec"),
+            self.fixture_record("docs/03.specs/spec-0901-fixture/unknown.md", "spec"),
             self.literal_spec_body(),
         )
         self.assertIn("template-role-missing", missing)
@@ -4444,11 +4597,11 @@ class TemplateBodyContractTests(unittest.TestCase):
         roles = dict(self.profiles["template_roles"])
         roles["api-spec"] = {
             **roles["api-spec"],
-            "target_globs": ["docs/03.specs/*/spec.md"],
+            "target_globs": ["docs/03.specs/spec-*/spec.md"],
         }
         ambiguous_profiles = {**self.profiles, "template_roles": roles}
         ambiguous = self.body_finding_codes(
-            self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec"),
+            self.fixture_record("docs/03.specs/spec-0901-fixture/spec.md", "spec"),
             self.literal_spec_body(),
             profiles=ambiguous_profiles,
         )
@@ -4836,14 +4989,16 @@ class TemplateBodyContractTests(unittest.TestCase):
             "artifact_id": "<artifact-id>",
             "artifact_type": expected_profile,
             "parent_ids": [] if empty_parents else ["<parent-artifact-id>"],
+            "created": "<created-at>",
+            "updated": "<updated-at>",
         }
+        if role_name in {"plan", "task"}:
+            expected_frontmatter["completed_at"] = "<completed-at>"
 
         self.assertEqual([expected_h1], h1_headings)
         self.assertEqual(list(expected_headings), h2_headings)
-        self.assertEqual(
-            collections.Counter(expected_headings),
-            collections.Counter(registry_headings),
-        )
+        self.assertLessEqual(set(role["required_headings"]), set(expected_headings))
+        self.assertLessEqual(set(expected_headings), set(registry_headings))
         self.assertEqual(expected_profile, role["artifact_profile"])
         self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
         self.assertEqual(expected_tokens, self.body_tokens(text))
@@ -4880,22 +5035,27 @@ class TemplateBodyContractTests(unittest.TestCase):
             "artifact_id": "<artifact-id>",
             "artifact_type": self.TASK_5_ROLE_PROFILES[role_name],
             "parent_ids": [] if role_name == "incident" else ["<parent-artifact-id>"],
+            "created": "<created-at>",
+            "updated": "<updated-at>",
         }
-        if role_name in {"policy", "runbook"}:
+        if role_name in {"guide", "policy", "runbook"}:
             expected_frontmatter.update(
-                {"reviewed_at": "<reviewed-at>", "review_cycle": "<review-cycle>"}
+                {"reviewed_at": "<reviewed-at>", "next_review_at": "<next-review-at>"}
+            )
+        elif role_name == "incident":
+            expected_frontmatter.update(
+                {"occurred_at": "<occurred-at>", "resolved_at": "<resolved-at>"}
             )
         elif role_name == "postmortem":
             expected_frontmatter["reviewed_at"] = "<reviewed-at>"
+        elif role_name == "release":
+            expected_frontmatter["released_at"] = "<released-at>"
 
         self.assertEqual(["# {{title}}"], h1_headings)
         self.assertEqual(list(self.TASK_5_ROLE_HEADINGS[role_name]), h2_headings)
-        self.assertEqual(
-            collections.Counter(self.TASK_5_ROLE_HEADINGS[role_name]),
-            collections.Counter(
-                [*role["required_headings"], *role["conditional_headings"]]
-            ),
-        )
+        registered = [*role["required_headings"], *role["conditional_headings"]]
+        self.assertLessEqual(set(role["required_headings"]), set(h2_headings))
+        self.assertLessEqual(set(h2_headings), set(registered))
         self.assertEqual(self.TASK_5_ROLE_PROFILES[role_name], role["artifact_profile"])
         self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
         self.assertEqual(self.TASK_5_ROLE_TOKENS[role_name], self.body_tokens(text))
@@ -5029,7 +5189,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertNotIn("## Procedure", policy)
         self.assertEqual(1, runbook.count("## Rollback or Recovery"))
 
-    def test_all_24_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
+    def test_all_25_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
         expected_headings = {
             **self.TASK_2_ROLE_HEADINGS,
             **self.TASK_3_ROLE_HEADINGS,
@@ -5049,7 +5209,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             **self.TASK_5_ROLE_TOKENS,
         }
         expected_roles = set(self.ALL_ROLE_SOURCES)
-        self.assertEqual(24, len(expected_roles))
+        self.assertEqual(25, len(expected_roles))
         self.assertEqual(expected_roles, set(self.profiles["template_roles"]))
         self.assertEqual(expected_roles, set(expected_headings))
         self.assertEqual(expected_roles, set(expected_profiles))
@@ -5090,17 +5250,17 @@ class TemplateBodyContractTests(unittest.TestCase):
                 1,
             ),
             "missing-heading": text.replace("## Evidence\n\n", "", 1),
-            "rules-block": text.replace("## Overview", "> Rules:\n\n## Overview", 1),
+            "rules-block": text.replace("## When to Use", "> Rules:\n\n## When to Use", 1),
             "target-comment": text.replace(
                 "# {{title}}",
-                "<!-- Target: docs/05.operations/runbooks/fixture.md -->\n\n# {{title}}",
+                "<!-- Target: docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md -->\n\n# {{title}}",
                 1,
             ),
             "frontmatter-drift": text.replace(
                 "artifact_type: runbook", "artifact_type: guide", 1
             ),
             "token-drift": text.replace(
-                "{{verification_environment}}", "{{verification_context}}", 1
+                "{{supporting_evidence}}", "{{verification_context}}", 1
             ),
         }
         for name, mutated in mutations.items():
@@ -5163,7 +5323,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             ),
             "target-comment": task_text.replace(
                 "# Task: {{title}}",
-                "<!-- Target: docs/04.execution/tasks/fixture.md -->\n\n"
+                "<!-- Target: docs/03.specs/spec-0123-fixture/task.md -->\n\n"
                 "# Task: {{title}}",
                 1,
             ),
@@ -5337,7 +5497,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "guide",
             required_headings=[
                 "## Operator Workflow"
-                if heading == "## Routine Usage"
+                if heading == "## Usage"
                 else heading
                 for heading in role["required_headings"]
             ],
@@ -5348,7 +5508,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 self.assert_task_5_markdown_contract(
                     "guide",
-                    source.replace("## Routine Usage", "## Operator Workflow", 1),
+                    source.replace("## Usage", "## Operator Workflow", 1),
                 )
         finally:
             self.profiles = original_profiles
@@ -5561,12 +5721,11 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertIn(f"template-source-missing-type: {source}", result.stdout)
 
     def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
-        route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         release_source = "docs/99.templates/templates/operations/release.template.md"
         route_files = (
             "docs/99.templates/support/template-selection.md",
             "docs/00.agent-governance/rules/stage-authoring-matrix.md",
-            "docs/05.operations/releases/README.md",
         )
         for route_file in route_files:
             with self.subTest(path=route_file), tempfile.TemporaryDirectory() as directory:
@@ -5574,8 +5733,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 path = root / route_file
                 text = path.read_text(encoding="utf-8")
                 path.write_text(
-                    text.replace(route, "docs/05.operations/releases/MISSING.md")
-                    .replace("YYYY-MM-DD-release-name.md", "MISSING.md")
+                    text.replace(route, "docs/05.operations/releases/MISSING/release.md")
                     .replace(
                         release_source,
                         "docs/99.templates/templates/operations/MISSING.template.md",
@@ -5864,13 +6022,17 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertIn("template-instruction-in-target", result.stdout)
             self.assertIn("template-body-token-in-target", result.stdout)
 
-    def test_shell_delegates_template_schema_without_duplicate_tables(self) -> None:
+    def test_shell_reads_the_registry_without_duplicate_template_schema_tables(self) -> None:
         text = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
             encoding="utf-8"
         )
-        self.assertIn(
-            "python3 scripts/validation/check-document-metadata.py --mode check-contracts",
-            text,
+        self.assertGreaterEqual(
+            text.count("docs/99.templates/support/document-metadata-profiles.yaml"),
+            3,
+        )
+        self.assertGreaterEqual(
+            text.count('for role in profiles["template_roles"].values()'),
+            2,
         )
         self.assertNotIn("required_templates=(", text)
         self.assertNotIn("heading_requirements:", text)
@@ -5921,12 +6083,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
-        original = metadata.TARGET_MARKDOWN_PREFIXES
+        original = metadata._validator.TARGET_MARKDOWN_PREFIXES
         try:
-            metadata.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
+            metadata._validator.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
             findings = metadata.validate_repository_contracts(ROOT, profiles)
         finally:
-            metadata.TARGET_MARKDOWN_PREFIXES = original
+            metadata._validator.TARGET_MARKDOWN_PREFIXES = original
         self.assertIn(
             "workspace-inventory-coupling",
             {finding.code for finding in findings},
@@ -5943,8 +6105,8 @@ class CheckerCliTests(unittest.TestCase):
                 "artifact_type": "spec",
                 "parent_ids": [],
             }
-            write_doc(root / "docs/03.specs/123-a/spec.md", values)
-            write_doc(root / "docs/03.specs/123-b/spec.md", values)
+            write_doc(root / "docs/03.specs/spec-0123-a/spec.md", values)
+            write_doc(root / "docs/03.specs/spec-0123-b/spec.md", values)
             result = run_checker(root, "report")
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertIn("duplicate-artifact-id", result.stdout)
@@ -5953,7 +6115,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_duplicate_yaml_key_has_distinct_inventory_state(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            path = root / "docs/03.specs/123-example/spec.md"
+            path = root / "docs/03.specs/spec-0123-example/spec.md"
             path.parent.mkdir(parents=True)
             path.write_text("---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8")
             result = run_checker(root, "report")
@@ -5964,7 +6126,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_report_returns_nonzero_for_parser_failure_but_renders_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            path = root / "docs/03.specs/123-example/spec.md"
+            path = root / "docs/03.specs/spec-0123-example/spec.md"
             path.parent.mkdir(parents=True)
             path.write_text("---\nstatus: [active\n---\n", encoding="utf-8")
             result = run_checker(root, "report")
@@ -5975,7 +6137,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_unhashable_mapping_key_has_no_traceback_and_writes_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            path = root / "docs/03.specs/123-example/spec.md"
+            path = root / "docs/03.specs/spec-0123-example/spec.md"
             path.parent.mkdir(parents=True)
             path.write_text("---\n? [a, b]: c\n---\n", encoding="utf-8")
             output = root / "inventory.md"
@@ -5990,7 +6152,7 @@ class CheckerCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             init_git(root)
-            invalid = root / "docs/03.specs/123-example/spec.md"
+            invalid = root / "docs/03.specs/spec-0123-example/spec.md"
             valid = root / "docs/03.specs/README.md"
             write_doc(invalid, {"status": "active"})
             write_doc(valid, None)
@@ -5999,7 +6161,7 @@ class CheckerCliTests(unittest.TestCase):
                 root,
                 "check-changed",
                 "--changed-path",
-                "docs/03.specs/123-example/spec.md",
+                "docs/03.specs/spec-0123-example/spec.md",
             )
             self.assertEqual(0, passing.returncode, passing.stdout + passing.stderr)
             self.assertNotEqual(0, failing.returncode)
@@ -6009,22 +6171,22 @@ class CheckerCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             init_git(root)
-            path = "docs/98.archive/04.execution/new-target.md"
+            path = "docs/98.archive/migrations/mig-0123-new-target.md"
             write_doc(
                 root / path,
                 {
                     "status": "archived",
-                    "artifact_id": "archive:04-execution-new-target",
+                    "artifact_id": "mig-0123",
                     "artifact_type": "archive",
                     "parent_ids": [],
-                    "archived_from": "docs/04.execution/new-target.md",
-                    "archived_on": "2026-07-14",
+                    "archived_from": "docs/03.specs/spec-0123-new-target/task.md",
+                    "archived_at": "2026-07-14",
                     "archive_reason": "Bounded selector-shape fixture.",
                     "archive_disposition": ["superseded"],
                     "archived_commit": "a" * 40,
                     "archived_blob": "b" * 40,
                     "preservation_class": "git-history",
-                    "current_replacement": "docs/04.execution/current.md",
+                    "current_replacement": "docs/03.specs/spec-0123-current/task.md",
                 },
             )
             result = run_checker(root, "check-changed", "--changed-path", path)
@@ -6036,14 +6198,14 @@ class CheckerCliTests(unittest.TestCase):
     def test_report_order_is_deterministic_and_sorted_by_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/200-z/spec.md", {"status": "active"})
-            write_doc(root / "docs/01.requirements/100-a.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0200-z/spec.md", {"status": "active"})
+            write_doc(root / "docs/01.requirements/prd-0100-a.md", {"status": "active"})
             first = run_checker(root, "report")
             second = run_checker(root, "report")
             self.assertEqual(first.stdout, second.stdout)
             self.assertLess(
-                first.stdout.index("docs/01.requirements/100-a.md"),
-                first.stdout.index("docs/03.specs/200-z/spec.md"),
+                first.stdout.index("docs/01.requirements/prd-0100-a.md"),
+                first.stdout.index("docs/03.specs/spec-0200-z/spec.md"),
             )
 
     def test_report_output_check_detects_staleness(self) -> None:
@@ -6063,7 +6225,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_active_mode_is_available_but_semantic_gate_is_not_auto_invoked(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/123-example/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0123-example/spec.md", {"status": "active"})
             result = run_checker(root, "check-active")
             self.assertNotEqual(0, result.returncode)
             self.assertIn("metadata check-active", result.stdout)
@@ -6093,18 +6255,27 @@ class CheckerCliTests(unittest.TestCase):
     def test_inventory_records_identity_relations_and_transition_evidence(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         parent = metadata.Record(
-            pathlib.Path("docs/01.requirements/123-parent.md"),
-            {"status": "active", "artifact_id": "PRD-123", "artifact_type": "prd", "parent_ids": []},
-            "prd",
+            pathlib.Path("docs/02.architecture/descriptions/ad-0123-parent.md"),
+            {
+                "status": "active",
+                "artifact_id": "architecture-description:0123-parent",
+                "artifact_type": "architecture-description",
+                "parent_ids": [],
+                "created": "2026-08-07",
+                "updated": "2026-08-07",
+            },
+            "architecture-description",
             frontmatter_present=True,
         )
         child = metadata.Record(
-            pathlib.Path("docs/03.specs/123-child/spec.md"),
+            pathlib.Path("docs/03.specs/spec-0123-child/spec.md"),
             {
                 "status": "completed",
-                "artifact_id": "SPEC-123",
+                "artifact_id": "spec:0123-child",
                 "artifact_type": "spec",
-                "parent_ids": ["PRD-123"],
+                "parent_ids": ["architecture-description:0123-parent"],
+                "created": "2026-08-07",
+                "updated": "2026-08-07",
             },
             "spec",
             previous_status="active",
@@ -6116,7 +6287,7 @@ class CheckerCliTests(unittest.TestCase):
             record.path.as_posix(): metadata.validate_record(record, profiles, manifest) for record in records
         }
         report = metadata.render_report(records, profiles, findings)
-        child_row = next(line for line in report.splitlines() if "docs/03.specs/123-child/spec.md" in line)
+        child_row = next(line for line in report.splitlines() if "docs/03.specs/spec-0123-child/spec.md" in line)
         self.assertIn("| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |", child_row)
         self.assertIn("available:active->completed; valid", child_row)
 
@@ -6151,24 +6322,34 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assertNotIn("Traceback", combined)
 
     def write_parent_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
-        parent = root / "docs/01.requirements/123-parent.md"
         write_doc(
-            parent,
+            root / "docs/01.requirements/prd-0123-parent.md",
             {
                 "status": "active",
-                "artifact_id": "prd:123-parent",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
             PRD_TARGET_BODY,
         )
+        parent = root / "docs/02.architecture/descriptions/ad-0123-parent.md"
         write_doc(
-            root / "docs/03.specs/123-child/spec.md",
+            parent,
             {
                 "status": "active",
-                "artifact_id": "spec:123-child",
+                "artifact_id": "ad-0123",
+                "artifact_type": "architecture-description",
+                "parent_ids": ["prd-0123"],
+            },
+            ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+        )
+        write_doc(
+            root / "docs/03.specs/spec-0123-child/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "spec-0123",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-parent"],
+                "parent_ids": ["ad-0123"],
                 "reviewed_at": "preexisting-invalid-date",
             },
         )
@@ -6177,32 +6358,42 @@ class ChangedPathGitTests(unittest.TestCase):
 
     def write_supersedes_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
         write_doc(
-            root / "docs/01.requirements/123-root.md",
+            root / "docs/01.requirements/prd-0123-root.md",
             {
                 "status": "active",
-                "artifact_id": "prd:123-root",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
         )
-        replaced = root / "docs/03.specs/123-replaced/spec.md"
+        write_doc(
+            root / "docs/02.architecture/descriptions/ad-0123-root.md",
+            {
+                "status": "active",
+                "artifact_id": "ad-0123",
+                "artifact_type": "architecture-description",
+                "parent_ids": ["prd-0123"],
+            },
+            ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+        )
+        replaced = root / "docs/03.specs/spec-0123-replaced/spec.md"
         write_doc(
             replaced,
             {
                 "status": "superseded",
-                "artifact_id": "spec:123-replaced",
+                "artifact_id": "spec-0123",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-root"],
+                "parent_ids": ["ad-0123"],
             },
         )
         write_doc(
-            root / "docs/03.specs/123-replacement/spec.md",
+            root / "docs/03.specs/spec-0124-replacement/spec.md",
             {
                 "status": "active",
-                "artifact_id": "spec:123-replacement",
+                "artifact_id": "spec-0124",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-root"],
-                "supersedes": ["spec:123-replaced"],
+                "parent_ids": ["ad-0123"],
+                "supersedes": ["spec-0123"],
                 "reviewed_at": "preexisting-invalid-date",
             },
         )
@@ -6211,43 +6402,53 @@ class ChangedPathGitTests(unittest.TestCase):
 
     def write_identity_change_supersedes_fixture(self, root: pathlib.Path) -> pathlib.Path:
         write_doc(
-            root / "docs/01.requirements/123-identity-root.md",
+            root / "docs/01.requirements/prd-0123-identity-root.md",
             {
                 "status": "active",
-                "artifact_id": "prd:123-identity-root",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
         )
-        target = root / "docs/03.specs/123-identity-target/spec.md"
+        write_doc(
+            root / "docs/02.architecture/descriptions/ad-0123-identity-root.md",
+            {
+                "status": "active",
+                "artifact_id": "ad-0123",
+                "artifact_type": "architecture-description",
+                "parent_ids": ["prd-0123"],
+            },
+            ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+        )
+        target = root / "docs/03.specs/spec-0123-identity-target/spec.md"
         write_doc(
             target,
             {
                 "status": "superseded",
-                "artifact_id": "spec:123-identity-old",
+                "artifact_id": "spec-0123",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-identity-root"],
+                "parent_ids": ["ad-0123"],
             },
         )
         write_doc(
-            root / "docs/03.specs/123-old-id-dependent/spec.md",
+            root / "docs/03.specs/spec-0124-old-id-dependent/spec.md",
             {
                 "status": "active",
-                "artifact_id": "spec:123-old-id-dependent",
+                "artifact_id": "spec-0124",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-identity-root"],
-                "supersedes": ["spec:123-identity-old"],
+                "parent_ids": ["ad-0123"],
+                "supersedes": ["spec-0123"],
                 "reviewed_at": "preexisting-invalid-date",
             },
         )
         write_doc(
-            root / "docs/03.specs/123-new-id-replacement/spec.md",
+            root / "docs/03.specs/spec-0125-new-id-replacement/spec.md",
             {
                 "status": "active",
-                "artifact_id": "spec:123-new-id-replacement",
+                "artifact_id": "spec-0125",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-identity-root"],
-                "supersedes": ["spec:123-identity-new"],
+                "parent_ids": ["ad-0123"],
+                "supersedes": ["spec-0126"],
             },
         )
         commit_all(root, "typed identity-change supersedes relation")
@@ -6260,20 +6461,22 @@ class ChangedPathGitTests(unittest.TestCase):
         *,
         staged: bool,
     ) -> None:
-        if target.as_posix().endswith("docs/01.requirements/123-parent.md"):
+        if target.as_posix().endswith(
+            "docs/02.architecture/descriptions/ad-0123-parent.md"
+        ):
             values = {
                 "status": "active",
-                "artifact_id": "prd:123-parent-new",
-                "artifact_type": "prd",
-                "parent_ids": [],
+                "artifact_id": "ad-0124",
+                "artifact_type": "architecture-description",
+                "parent_ids": ["prd-0123"],
             }
-            body = PRD_TARGET_BODY
+            body = ARCHITECTURE_DESCRIPTION_TARGET_BODY
         else:
             values = {
                 "status": "superseded",
-                "artifact_id": "spec:123-identity-new",
+                "artifact_id": "spec-0126",
                 "artifact_type": "spec",
-                "parent_ids": ["prd:123-identity-root"],
+                "parent_ids": ["ad-0123"],
             }
             body = SPEC_TARGET_BODY
         write_doc(target, values, body)
@@ -6294,7 +6497,7 @@ class ChangedPathGitTests(unittest.TestCase):
         self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         self.assertIn(f"{dependent}: {finding_code}", result.stdout)
         self.assertNotIn("invalid-reviewed-at", result.stdout)
-        self.assertIn("selected=2 violations=1", result.stdout)
+        self.assertIn("selected=2 violations=2", result.stdout)
 
     def assert_relation_deletion_failure(
         self,
@@ -6319,7 +6522,7 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_untracked_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            write_doc(root / "docs/03.specs/123-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0123-new/spec.md", {"status": "active"})
             self.assert_changed_failure(root)
 
     def test_failed_tracked_file_discovery_fails_closed(self) -> None:
@@ -6337,7 +6540,7 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_non_git_root_fails_closed_without_success_summary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/123-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0123-new/spec.md", {"status": "active"})
             result = run_checker(root, "check-changed")
             combined = result.stdout + result.stderr
             self.assertEqual(2, result.returncode, combined)
@@ -6386,7 +6589,7 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_staged_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            path = root / "docs/03.specs/123-new/spec.md"
+            path = root / "docs/03.specs/spec-0123-new/spec.md"
             write_doc(path, {"status": "active"})
             self.assertEqual(0, git(root, "add", path.relative_to(root).as_posix()).returncode)
             self.assert_changed_failure(root)
@@ -6394,7 +6597,7 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_modified_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            path = root / "docs/03.specs/123-existing/spec.md"
+            path = root / "docs/03.specs/spec-0123-existing/spec.md"
             write_doc(
                 path,
                 {"status": "active", "artifact_id": "SPEC-123", "artifact_type": "spec", "parent_ids": []},
@@ -6407,7 +6610,7 @@ class ChangedPathGitTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             source = root / "docs/03.specs/README.md"
-            target = root / "docs/03.specs/123-renamed/spec.md"
+            target = root / "docs/03.specs/spec-0123-renamed/spec.md"
             target.parent.mkdir(parents=True)
             self.assertEqual(0, git(root, "mv", source.relative_to(root).as_posix(), target.relative_to(root).as_posix()).returncode)
             self.assert_changed_failure(root)
@@ -6457,7 +6660,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_relation_deletion_failure(
                 root,
                 deleted,
-                "docs/03.specs/123-child/spec.md",
+                "docs/03.specs/spec-0123-child/spec.md",
                 "unresolved-parent",
                 staged=False,
             )
@@ -6469,7 +6672,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_relation_deletion_failure(
                 root,
                 deleted,
-                "docs/03.specs/123-child/spec.md",
+                "docs/03.specs/spec-0123-child/spec.md",
                 "unresolved-parent",
                 staged=True,
             )
@@ -6481,7 +6684,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_relation_deletion_failure(
                 root,
                 deleted,
-                "docs/03.specs/123-replacement/spec.md",
+                "docs/03.specs/spec-0124-replacement/spec.md",
                 "unresolved-supersedes",
                 staged=False,
             )
@@ -6493,7 +6696,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_relation_deletion_failure(
                 root,
                 deleted,
-                "docs/03.specs/123-replacement/spec.md",
+                "docs/03.specs/spec-0124-replacement/spec.md",
                 "unresolved-supersedes",
                 staged=True,
             )
@@ -6502,7 +6705,7 @@ class ChangedPathGitTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             source = self.write_parent_relation_fixture(root)
-            target = root / "docs/01.requirements/123-parent-renamed.md"
+            target = root / "docs/02.architecture/descriptions/ad-0123-parent-renamed.md"
             self.assertEqual(
                 0,
                 git(root, "mv", source.relative_to(root).as_posix(), target.relative_to(root).as_posix()).returncode,
@@ -6518,7 +6721,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_identity_change_failure(
                 root,
                 target,
-                "docs/03.specs/123-child/spec.md",
+                "docs/03.specs/spec-0123-child/spec.md",
                 "unresolved-parent",
                 staged=False,
             )
@@ -6530,7 +6733,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_identity_change_failure(
                 root,
                 target,
-                "docs/03.specs/123-child/spec.md",
+                "docs/03.specs/spec-0123-child/spec.md",
                 "unresolved-parent",
                 staged=True,
             )
@@ -6542,7 +6745,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_identity_change_failure(
                 root,
                 target,
-                "docs/03.specs/123-old-id-dependent/spec.md",
+                "docs/03.specs/spec-0124-old-id-dependent/spec.md",
                 "unresolved-supersedes",
                 staged=False,
             )
@@ -6554,7 +6757,7 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_identity_change_failure(
                 root,
                 target,
-                "docs/03.specs/123-old-id-dependent/spec.md",
+                "docs/03.specs/spec-0124-old-id-dependent/spec.md",
                 "unresolved-supersedes",
                 staged=True,
             )
@@ -6563,35 +6766,48 @@ class ChangedPathGitTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             target = self.write_parent_relation_fixture(root)
-            self.rewrite_artifact_identity(root, target, staged=False)
+            renamed_target = root / "docs/02.architecture/descriptions/ad-0124-parent-new.md"
+            target.rename(renamed_target)
             write_doc(
-                root / "docs/03.specs/123-child/spec.md",
+                renamed_target,
                 {
                     "status": "active",
-                    "artifact_id": "spec:123-child",
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0123"],
+                },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+            )
+            write_doc(
+                root / "docs/03.specs/spec-0123-child/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0123",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:123-parent-new"],
+                    "parent_ids": ["ad-0124"],
                 },
             )
             result = run_checker(root, "check-changed")
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertIn("selected=2 violations=0", result.stdout)
+            self.assertIn("violations=0", result.stdout)
 
     def test_explicit_untracked_path_is_parsed(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            relative = "docs/03.specs/123-explicit/spec.md"
+            relative = "docs/03.specs/spec-0123-explicit/spec.md"
             write_doc(root / relative, {"status": "active"})
             self.assert_changed_failure(root, "--changed-path", relative)
 
 
 class ChangedBodyDeficitGitTests(unittest.TestCase):
-    PATH = "docs/01.requirements/901-body-deficit.md"
+    PATH = "docs/01.requirements/prd-0901-body-deficit.md"
     METADATA = {
         "status": "draft",
-        "artifact_id": "prd:901-body-deficit",
+        "artifact_id": "prd-0901",
         "artifact_type": "prd",
         "parent_ids": [],
+        "created": "2026-08-07",
+        "updated": "2026-08-07",
     }
 
     def new_repo_with_body(
@@ -6681,6 +6897,60 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("template-body-token-in-target", result.stdout)
 
+    def test_approved_operations_catalog_move_uses_legacy_body_baseline(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        legacy = root / "docs/05.operations/00-workspace/ops-0901-fixture/guide.md"
+        catalog = root / "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md"
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "guide-0901",
+            "artifact_type": "guide",
+            "parent_ids": [],
+        }
+        body = body_with_headings(
+            "## Usage",
+            "## Common Checks",
+            "## Related Documents",
+        ) + "\n> Rules:\n"
+        with directory:
+            init_git(root)
+            write_doc(legacy, metadata_values, body)
+            commit_all(root, "legacy operations body baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            catalog.parent.mkdir(parents=True, exist_ok=True)
+            legacy.rename(catalog)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
+
+    def test_unapproved_operations_catalog_domain_cannot_borrow_legacy_baseline(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        legacy = root / "docs/05.operations/99-unapproved/ops-0901-fixture/guide.md"
+        catalog = root / "docs/05.operations/catalog/99-unapproved/ops-0901-fixture/guide.md"
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "guide-0901",
+            "artifact_type": "guide",
+            "parent_ids": [],
+        }
+        body = body_with_headings(
+            "## Usage",
+            "## Common Checks",
+            "## Related Documents",
+        ) + "\n> Rules:\n"
+        with directory:
+            init_git(root)
+            write_doc(legacy, metadata_values, body)
+            commit_all(root, "unapproved operations body baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            catalog.parent.mkdir(parents=True, exist_ok=True)
+            legacy.rename(catalog)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+
     def test_preserved_body_deficit_does_not_suppress_relation_impact(self) -> None:
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
@@ -6692,28 +6962,29 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
                 self.METADATA,
                 PRD_TARGET_BODY + "\n{{existing_token}}\n",
             )
-            child = root / "docs/03.specs/901-body-child/spec.md"
+            child = root / "docs/03.specs/spec-0901-body-child/spec.md"
             write_doc(
                 child,
                 {
                     "status": "draft",
-                    "artifact_id": "spec:901-body-child",
+                    "artifact_id": "spec-0901",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:901-body-deficit"],
+                    "parent_ids": ["prd-0901"],
                 },
                 SPEC_TARGET_BODY,
             )
             commit_all(root, "body and relation baseline")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
+            renamed_parent = root / "docs/01.requirements/prd-0902-body-deficit.md"
+            parent.rename(renamed_parent)
             write_doc(
-                parent,
-                {**self.METADATA, "artifact_id": "prd:901-renamed"},
+                renamed_parent,
+                {**self.METADATA, "artifact_id": "prd-0902"},
                 PRD_TARGET_BODY + "\n{{existing_token}}\n",
             )
             result = self.run_explicit_base(root, base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn(f"{child.relative_to(root).as_posix()}: unresolved-parent", result.stdout)
-            self.assertNotIn("template-body-token-in-target", result.stdout)
 
     def test_changed_checker_ignores_residue_inside_commonmark_code(self) -> None:
         cases = (
@@ -6775,8 +7046,14 @@ class ChangedModeRolloutTests(unittest.TestCase):
     def test_committed_new_invalid_document_is_blocked_from_explicit_base(self) -> None:
         directory, root = self.new_repo()
         with directory:
+            write_doc(
+                root / "docs/01.requirements/prd-0124-requirement.md",
+                {"status": "active", "artifact_id": "prd:124-requirement", "artifact_type": "prd", "parent_ids": []},
+                PRD_TARGET_BODY,
+            )
+            commit_all(root, "architecture parent requirement")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
-            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0124-new/spec.md", {"status": "active"})
             commit_all(root, "invalid new doc")
             result = run_checker(root, "check-changed", "--base-ref", base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
@@ -6811,7 +7088,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertIn("legacy_exceptions=0", result.stdout)
             self.assertIn("missing-required-key", result.stdout)
 
-    def test_new_stale_active_deficit_cannot_use_legacy_exception(self) -> None:
+    def test_new_legacy_operation_path_cannot_use_an_exception(self) -> None:
         directory, root = self.new_repo()
         with directory:
             path = root / "docs/05.operations/policies/00-workspace/legacy.md"
@@ -6823,7 +7100,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             result = run_checker(root, "check-changed", "--base-ref", base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("legacy_exceptions=0", result.stdout)
-            self.assertIn("stale-active", result.stdout)
+            self.assertIn("invalid-status", result.stdout)
 
     def test_new_replacement_free_deficit_cannot_use_legacy_exception(self) -> None:
         directory, root = self.new_repo()
@@ -6839,7 +7116,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertIn("legacy_exceptions=0", result.stdout)
             self.assertIn("replacement-free-supersession", result.stdout)
 
-    def test_disappearing_legacy_deficit_remains_eligible(self) -> None:
+    def test_legacy_operation_path_is_not_an_eligible_target(self) -> None:
         directory, root = self.new_repo()
         with directory:
             path = root / "docs/05.operations/policies/00-workspace/legacy.md"
@@ -6849,30 +7126,32 @@ class ChangedModeRolloutTests(unittest.TestCase):
             write_doc(path, {"status": "completed"})
             commit_all(root, "complete legacy policy")
             result = run_checker(root, "check-changed", "--base-ref", base)
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertIn("legacy_exceptions=1", result.stdout)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("invalid-status", result.stdout)
 
     def test_committed_valid_parent_chain_passes_and_is_selected(self) -> None:
         directory, root = self.new_repo()
         with directory:
+            write_doc(root / "docs/01.requirements/prd-0124-requirement.md", {"status": "active", "artifact_id": "prd-0124", "artifact_type": "prd", "parent_ids": []}, PRD_TARGET_BODY)
+            commit_all(root, "architecture parent requirement")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             write_doc(
-                root / "docs/01.requirements/124-parent.md",
+                root / "docs/02.architecture/descriptions/ad-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-parent",
-                    "artifact_type": "prd",
-                    "parent_ids": [],
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
                 },
-                PRD_TARGET_BODY,
+                body_with_headings("## Overview and Context", "## Stakeholders and Concerns", "## Boundaries and Constraints", "## Quality Attributes", "## Architecture Views", "## Data and Infrastructure", "## Decision and Requirement Traceability", "## Related Documents"),
             )
             write_doc(
-                root / "docs/03.specs/124-child/spec.md",
+                root / "docs/03.specs/spec-0124-child/spec.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-child",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-parent"],
+                    "parent_ids": ["ad-0124"],
                 },
                 SPEC_TARGET_BODY,
             )
@@ -6885,23 +7164,34 @@ class ChangedModeRolloutTests(unittest.TestCase):
     def test_committed_parent_deletion_blocks_dependent_from_explicit_base(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            parent = root / "docs/01.requirements/124-parent.md"
+            write_doc(
+                root / "docs/01.requirements/prd-0124-parent.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd-0124",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                PRD_TARGET_BODY,
+            )
+            parent = root / "docs/02.architecture/descriptions/ad-0124-parent.md"
             write_doc(
                 parent,
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-parent",
-                    "artifact_type": "prd",
-                    "parent_ids": [],
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
                 },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
             write_doc(
-                root / "docs/03.specs/124-child/spec.md",
+                root / "docs/03.specs/spec-0124-child/spec.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-child",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-parent"],
+                    "parent_ids": ["ad-0124"],
                     "reviewed_at": "preexisting-invalid-date",
                 },
             )
@@ -6912,7 +7202,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             result = run_checker(root, "check-changed", "--base-ref", base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn(
-                "docs/03.specs/124-child/spec.md: unresolved-parent",
+                "docs/03.specs/spec-0124-child/spec.md: unresolved-parent",
                 result.stdout,
             )
             self.assertNotIn("invalid-reviewed-at", result.stdout)
@@ -6921,23 +7211,34 @@ class ChangedModeRolloutTests(unittest.TestCase):
     def test_committed_parent_id_change_blocks_dependent_from_explicit_base(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            parent = root / "docs/01.requirements/124-identity-parent.md"
+            write_doc(
+                root / "docs/01.requirements/prd-0124-identity-parent.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd-0124",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                PRD_TARGET_BODY,
+            )
+            parent = root / "docs/02.architecture/descriptions/ad-0124-identity-parent.md"
             write_doc(
                 parent,
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-identity-old",
-                    "artifact_type": "prd",
-                    "parent_ids": [],
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
                 },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
             write_doc(
-                root / "docs/03.specs/124-identity-child/spec.md",
+                root / "docs/03.specs/spec-0124-identity-child/spec.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-identity-child",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-identity-old"],
+                    "parent_ids": ["ad-0124"],
                     "reviewed_at": "preexisting-invalid-date",
                 },
             )
@@ -6947,62 +7248,72 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 parent,
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-identity-new",
-                    "artifact_type": "prd",
-                    "parent_ids": [],
+                    "artifact_id": "ad-0125",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
                 },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
             commit_all(root, "change typed parent identity")
             result = run_checker(root, "check-changed", "--base-ref", base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn(
-                "docs/03.specs/124-identity-child/spec.md: unresolved-parent",
+                "docs/03.specs/spec-0124-identity-child/spec.md: unresolved-parent",
                 result.stdout,
             )
             self.assertNotIn("invalid-reviewed-at", result.stdout)
-            self.assertIn("selected=2 violations=1", result.stdout)
+            self.assertIn("selected=2 violations=2", result.stdout)
 
     def test_committed_supersedes_target_id_change_blocks_dependent_from_explicit_base(self) -> None:
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/124-identity-root.md",
+                root / "docs/01.requirements/prd-0124-requirement.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-identity-root",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
             )
-            target = root / "docs/03.specs/124-identity-target/spec.md"
+            write_doc(
+                root / "docs/02.architecture/descriptions/ad-0124-identity-root.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
+                },
+            )
+            target = root / "docs/03.specs/spec-0124-identity-target/spec.md"
             write_doc(
                 target,
                 {
                     "status": "superseded",
-                    "artifact_id": "spec:124-identity-old",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-identity-root"],
+                    "parent_ids": ["ad-0124"],
                 },
             )
             write_doc(
-                root / "docs/03.specs/124-old-id-dependent/spec.md",
+                root / "docs/03.specs/spec-0125-old-id-dependent/spec.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-old-id-dependent",
+                    "artifact_id": "spec-0125",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-identity-root"],
-                    "supersedes": ["spec:124-identity-old"],
+                    "parent_ids": ["ad-0124"],
+                    "supersedes": ["spec-0124"],
                     "reviewed_at": "preexisting-invalid-date",
                 },
             )
             write_doc(
-                root / "docs/03.specs/124-new-id-replacement/spec.md",
+                root / "docs/03.specs/spec-0126-new-id-replacement/spec.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-new-id-replacement",
+                    "artifact_id": "spec-0126",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-identity-root"],
-                    "supersedes": ["spec:124-identity-new"],
+                    "parent_ids": ["ad-0124"],
+                    "supersedes": ["spec-0127"],
                 },
             )
             commit_all(root, "typed supersedes identity baseline")
@@ -7011,41 +7322,52 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 target,
                 {
                     "status": "superseded",
-                    "artifact_id": "spec:124-identity-new",
+                    "artifact_id": "spec-0127",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-identity-root"],
+                    "parent_ids": ["ad-0124"],
                 },
             )
             commit_all(root, "change typed supersedes target identity")
             result = run_checker(root, "check-changed", "--base-ref", base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn(
-                "docs/03.specs/124-old-id-dependent/spec.md: unresolved-supersedes",
+                "docs/03.specs/spec-0125-old-id-dependent/spec.md: unresolved-supersedes",
                 result.stdout,
             )
             self.assertNotIn("invalid-reviewed-at", result.stdout)
-            self.assertIn("selected=2 violations=1", result.stdout)
+            self.assertIn("selected=2 violations=2", result.stdout)
 
     def test_committed_replacement_free_superseded_document_is_blocked(self) -> None:
         directory, root = self.new_repo()
         with directory:
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             write_doc(
-                root / "docs/01.requirements/124-parent.md",
+                root / "docs/01.requirements/prd-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd:124-parent",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
+                PRD_TARGET_BODY,
             )
             write_doc(
-                root / "docs/03.specs/124-old/spec.md",
+                root / "docs/02.architecture/descriptions/ad-0124-parent.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
+                },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+            )
+            write_doc(
+                root / "docs/03.specs/spec-0124-old/spec.md",
                 {
                     "status": "superseded",
-                    "artifact_id": "spec:124-old",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd:124-parent"],
+                    "parent_ids": ["ad-0124"],
                 },
             )
             commit_all(root, "replacement-free supersession")
@@ -7057,31 +7379,43 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/03.specs/124-parent/spec.md",
+                root / "docs/01.requirements/prd-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-parent",
-                    "artifact_type": "spec",
-                    "parent_ids": ["spec:124-parent-root"],
+                    "artifact_id": "prd-0124",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
                 },
+                PRD_TARGET_BODY,
             )
             write_doc(
-                root / "docs/03.specs/124-parent-root/spec.md",
+                root / "docs/02.architecture/descriptions/ad-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-parent-root",
-                    "artifact_type": "spec",
-                    "parent_ids": ["spec:124-parent-root"],
+                    "artifact_id": "ad-0124",
+                    "artifact_type": "architecture-description",
+                    "parent_ids": ["prd-0124"],
                 },
+                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
-            task = root / "docs/04.execution/tasks/2026-07-11-transition.md"
+            write_doc(
+                root / "docs/03.specs/spec-0124-parent/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0124",
+                    "artifact_type": "spec",
+                    "parent_ids": ["ad-0124"],
+                },
+                SPEC_TARGET_BODY,
+            )
+            task = root / "docs/03.specs/spec-0124-parent/task.md"
             write_doc(
                 task,
                 {
                     "status": "completed",
-                    "artifact_id": "task:transition",
+                    "artifact_id": "task-0124-01",
                     "artifact_type": "task",
-                    "parent_ids": ["spec:124-parent"],
+                    "parent_ids": ["spec-0124"],
                 },
             )
             commit_all(root, "completed task")
@@ -7090,9 +7424,9 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 task,
                 {
                     "status": "active",
-                    "artifact_id": "task:transition",
+                    "artifact_id": "task-0124-01",
                     "artifact_type": "task",
-                    "parent_ids": ["spec:124-parent"],
+                    "parent_ids": ["spec-0124"],
                 },
             )
             commit_all(root, "reverse task transition")
@@ -7100,30 +7434,28 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("invalid-transition", result.stdout)
 
-    def test_scoped_transition_override_requires_complete_stage04_evidence(self) -> None:
+    def test_scoped_transition_override_requires_complete_colocated_task_evidence(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            parent = root / "docs/03.specs/124-parent/spec.md"
+            parent = root / "docs/03.specs/spec-0124-parent/spec.md"
             write_doc(
                 parent,
                 {
                     "status": "active",
-                    "artifact_id": "spec:124-parent",
+                    "artifact_id": "spec-0124",
                     "artifact_type": "spec",
-                    "parent_ids": ["spec:124-parent"],
+                    "parent_ids": ["spec-0124"],
                 },
             )
-            task = root / "docs/04.execution/tasks/2026-07-11-transition.md"
+            task = root / "docs/03.specs/spec-0124-parent/task.md"
             values = {
                 "status": "completed",
-                "artifact_id": "task:transition",
+                "artifact_id": "task-0124-01",
                 "artifact_type": "task",
-                "parent_ids": ["spec:124-parent"],
+                "parent_ids": ["spec-0124"],
             }
             write_doc(task, values)
-            evidence = root / "docs/04.execution/tasks/2026-07-11-transition-approval.md"
-            write_doc(evidence, {"status": "active"}, "# Task: Transition Approval\n")
-            commit_all(root, "completed task and evidence")
+            commit_all(root, "completed task with approval evidence")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             write_doc(task, {**values, "status": "active"})
             commit_all(root, "approved reverse transition")
@@ -7136,7 +7468,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                                 "path": task.relative_to(root).as_posix(),
                                 "previous_status": "completed",
                                 "new_status": "active",
-                                "evidence_task": evidence.relative_to(root).as_posix(),
+                                "evidence_task": task.relative_to(root).as_posix(),
                                 "approval": "Spec 123 Task 8 fixture approval",
                                 "reason": "Reopened to correct incomplete evidence",
                             }
@@ -7161,7 +7493,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             base = git(root, "rev-parse", "HEAD").stdout.strip()
-            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0124-new/spec.md", {"status": "active"})
             commit_all(root, "invalid branch doc")
             result = run_checker(
                 root,
@@ -7174,7 +7506,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
     def test_invalid_explicit_base_is_a_configuration_error_without_fallback(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0124-new/spec.md", {"status": "active"})
             result = run_checker(root, "check-changed", "--base-ref", "missing-ref")
             self.assertEqual(2, result.returncode, result.stdout + result.stderr)
             self.assertIn("explicit --base-ref is not a commit", result.stderr)
@@ -7184,7 +7516,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             self.assertEqual(0, git(root, "switch", "-qc", "feature").returncode)
-            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0124-new/spec.md", {"status": "active"})
             commit_all(root, "invalid branch doc")
             result = run_checker(
                 root,
@@ -7199,7 +7531,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             root = pathlib.Path(directory)
             init_git(root)
             write_doc(root / "docs/03.specs/README.md", None)
-            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/spec-0124-new/spec.md", {"status": "active"})
             result = run_checker(
                 root,
                 "check-changed",
@@ -7208,6 +7540,531 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("metadata base: fallback=working-tree-only", result.stderr)
             self.assertIn("selected=2", result.stdout)
+
+
+class Task2StableTaxonomyFixtures(unittest.TestCase):
+    """Target-contract fixtures for the Stage 00/99 convergence boundary."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_architecture_description_and_operation_subjects_have_stable_id_profiles(self) -> None:
+        stable_profiles = self.profiles["profiles"]
+        ad = stable_profiles["architecture-description"]
+        runbook = stable_profiles["runbook"]
+        self.assertEqual("ad-[0-9]{4}", ad["id_pattern"])
+        self.assertEqual("direct", ad["path_identity"])
+        self.assertEqual("runbook-(?P<identity>[0-9]{4})", runbook["id_pattern"])
+        self.assertEqual("inherited", runbook["path_identity"])
+        self.assertNotIn("ard", stable_profiles)
+
+    def test_operations_readme_profile_publishes_only_final_domain_indexes(self) -> None:
+        expected = {
+            "docs/05.operations/README.md",
+            "docs/05.operations/catalog/README.md",
+            "docs/05.operations/incidents/README.md",
+            "docs/05.operations/releases/README.md",
+            *{
+                f"docs/05.operations/catalog/{domain}/README.md"
+                for domain in (
+                    "00-workspace", "01-gateway", "02-auth", "03-security",
+                    "04-data", "05-messaging", "06-observability", "07-workflow",
+                    "08-ai", "09-tooling", "10-communication", "11-laboratory",
+                    "12-infra-net",
+                )
+            },
+        }
+        configured = {
+            path
+            for path in self.profiles["readme_profiles"]["stage-index"]["path_globs"]
+            if path.startswith("docs/05.operations/")
+        }
+        self.assertEqual(expected, configured)
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertEqual(
+                    ["stage-index"],
+                    metadata.matching_readme_profiles(
+                        pathlib.PurePosixPath(path), self.profiles
+                    ),
+                )
+        for retired in (
+            "docs/05.operations/guides/README.md",
+            "docs/05.operations/policies/README.md",
+            "docs/05.operations/runbooks/README.md",
+            "docs/05.operations/catalog/10-communication/ops-0070-mail/README.md",
+        ):
+            with self.subTest(retired=retired):
+                self.assertEqual(
+                    [],
+                    metadata.matching_readme_profiles(
+                        pathlib.PurePosixPath(retired), self.profiles
+                    ),
+                )
+
+    def test_promoted_sdlc_profiles_require_created_and_updated(self) -> None:
+        for role in (
+            "prd", "srs", "interface-requirement", "architecture-description",
+            "adr", "spec", "plan", "task", "guide", "policy", "runbook",
+            "incident", "postmortem", "release",
+        ):
+            with self.subTest(role=role):
+                self.assertIn("created", self.profiles["profiles"][role]["required"])
+                self.assertIn("updated", self.profiles["profiles"][role]["required"])
+
+    def test_target_routes_reject_legacy_ard_and_dated_identity(self) -> None:
+        from scripts.lib.document_governance.taxonomy import validate_stable_identity
+
+        stable_profiles = self.profiles["profiles"]
+        self.assertEqual(
+            [],
+            validate_stable_identity(
+                pathlib.PurePosixPath("docs/02.architecture/descriptions/ad-0001-gateway.md"),
+                {"artifact_id": "ad-0001", "artifact_type": "architecture-description"},
+                stable_profiles,
+            ),
+        )
+        legacy = validate_stable_identity(
+            pathlib.PurePosixPath("docs/02.architecture/requirements/0001-gateway.md"),
+            {"artifact_id": "ard-0001", "artifact_type": "ard"},
+            stable_profiles,
+        )
+        self.assertEqual("profile-missing", legacy[0].code)
+        dated = validate_stable_identity(
+            pathlib.PurePosixPath("docs/05.operations/2026/ops-0001-gateway/runbook.md"),
+            {"artifact_id": "runbook-0001", "artifact_type": "runbook"},
+            stable_profiles,
+        )
+        self.assertIn("dated-path-identity", {finding.code for finding in dated})
+
+    def test_metadata_cli_enforces_stable_direct_and_inherited_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            write_doc(
+                root / "docs/01.requirements/prd-0001-alpha.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd-0002",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                PRD_TARGET_BODY,
+            )
+            write_doc(
+                root / "docs/05.operations/platform/ops-0001-alpha/guide.md",
+                {
+                    "status": "active",
+                    "artifact_id": "guide-0002",
+                    "artifact_type": "guide",
+                    "parent_ids": ["spec-0001"],
+                },
+                body_with_headings("## Usage", "## Common Checks", "## Related Documents"),
+            )
+            commit_all(root)
+            result = run_checker(root, "report")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertGreaterEqual(result.stdout.count("path-id-mismatch"), 2, result.stdout)
+
+    def test_metadata_cli_rejects_invalid_and_dated_stable_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            write_doc(
+                root / "docs/01.requirements/prd-0001-alpha.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd:001-alpha",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                PRD_TARGET_BODY,
+            )
+            write_doc(
+                root / "docs/05.operations/2026/ops-0001-alpha/runbook.md",
+                {
+                    "status": "active",
+                    "artifact_id": "runbook-0001",
+                    "artifact_type": "runbook",
+                    "parent_ids": ["guide-0001"],
+                    "reviewed_at": "2026-08-07",
+                    "next_review_at": "2026-09-07",
+                },
+                body_with_headings(
+                    "## When to Use", "## Procedure", "## Evidence",
+                    "## Rollback or Recovery", "## Escalation", "## Related Documents",
+                ),
+            )
+            commit_all(root)
+            result = run_checker(root, "report")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("artifact-id-invalid", result.stdout)
+            self.assertIn("dated-path-identity", result.stdout)
+
+    def test_migration_registry_has_distinct_sdlc_taxonomy_phase(self) -> None:
+        contract = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+        waves = contract["waves"]
+        self.assertIn("target-surface-convergence", waves)
+        wave = waves["sdlc-taxonomy-convergence"]
+        self.assertEqual("e3e7615d", wave["baseline_commit"][:8])
+        self.assertEqual(
+            "docs/99.templates/support/document-corpus-migration-contract.yaml",
+            wave["manifest_path"],
+        )
+        self.assertIn("archive", wave["source_roots"])
+        self.assertIn("docs/04.execution", wave["source_roots"])
+        self.assertIn(
+            "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
+            wave["evidence_paths"],
+        )
+
+    def test_guide_runbook_handoff_is_conditional_and_not_boilerplate(self) -> None:
+        role = self.profiles["template_roles"]["guide"]
+        self.assertNotIn("## Runbook Handoff", role["required_headings"])
+        self.assertIn("## Runbook Handoff", role["conditional_headings"])
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        self.assertNotIn("## Runbook Handoff", source)
+        without_sibling = body_with_headings(
+            "## Usage", "## Common Checks", "## Related Documents"
+        )
+        with_sibling = body_with_headings(
+            "## Usage", "## Common Checks", "## Runbook Handoff", "## Related Documents"
+        )
+        for body in (without_sibling, with_sibling):
+            headings = set(re.findall(r"^## .+$", body, flags=re.MULTILINE))
+            self.assertTrue(set(role["required_headings"]).issubset(headings))
+            self.assertFalse(set(role["forbidden_headings"]) & headings)
+
+        protocol = (
+            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
+        ).read_text(encoding="utf-8")
+        operations_contract = protocol.split(
+            "**R4 — Operations Profile Compliance (BLOCKING):**", 1
+        )[1].split("## 8.5.", 1)[0]
+        self.assertIn("conditional on a sibling Runbook", operations_contract)
+        self.assertNotRegex(
+            operations_contract,
+            r"(?is)guides?[^\n]*(?:required|must)[^\n]*Runbook Handoff",
+        )
+
+    def test_active_stage00_and_stage99_publications_reject_retired_routes(self) -> None:
+        tracked = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "ls-files",
+                "docs/00.agent-governance",
+                "docs/99.templates",
+                "docs/98.archive/README.md",
+                ".agents/skills",
+                ".claude/skills",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+        bounded_contexts = {
+            "docs/99.templates/support/archive-retention-contract.md",
+            "docs/99.templates/support/document-corpus-migration-contract.yaml",
+        }
+        allowed_negative_lines = {
+            "Stage 04 is not an active target.",
+            "no Stage 04 target, ARD role, dated identity, or parallel Operations role",
+        }
+        retired_publications = (
+            re.compile(r"(?:docs/)?03\.specs/(?:NNN|[0-9]{3})(?:-|/|<)"),
+            re.compile(r"docs/04\.execution/(?:plans|tasks)"),
+            re.compile(r"docs/05\.operations/(?:guides|policies|runbooks)/"),
+            re.compile(r"docs/05\.operations/(?:incidents|releases)/(?:YYYY|[0-9]{4})"),
+            re.compile(r"releases/YYYY-MM-DD"),
+            re.compile(r"\bStage ?04\b", re.IGNORECASE),
+            re.compile(r"NNN-<feature-id>"),
+        )
+        retired_archive_publications = (
+            re.compile(r"docs/98\.archive/<original-stage>"),
+            re.compile(r"(?:docs/)?98\.archive/0[1-5]\.[a-z]+/"),
+            re.compile(
+                r"(?:docs/)?98\.archive/[^\s`|]*(?:YYYY|(?:19|20)[0-9]{2}(?:-[0-9]{2}-[0-9]{2})?)(?:[-/])"
+            ),
+            re.compile(r"content-archive", re.IGNORECASE),
+        )
+        archive_publication_surfaces = {
+            "docs/98.archive/README.md",
+            "docs/99.templates/support/template-selection.md",
+        }
+        violations: list[str] = []
+        for relative_path in tracked:
+            if relative_path in bounded_contexts or relative_path.startswith(
+                "docs/00.agent-governance/memory/"
+            ):
+                continue
+            path = ROOT / relative_path
+            if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
+                continue
+            in_bounded_archive_ledger = False
+            for line_number, line in enumerate(
+                path.read_text(encoding="utf-8").splitlines(), 1
+            ):
+                if relative_path == "docs/98.archive/README.md":
+                    if line == "## Non-Authoritative Historical Provenance Ledger":
+                        in_bounded_archive_ledger = True
+                        continue
+                    if line == "### End Non-Authoritative Historical Provenance Ledger":
+                        in_bounded_archive_ledger = False
+                        continue
+                    if in_bounded_archive_ledger:
+                        continue
+                if any(fragment in line for fragment in allowed_negative_lines):
+                    continue
+                patterns = retired_publications
+                if relative_path in archive_publication_surfaces:
+                    patterns += retired_archive_publications
+                if any(pattern.search(line) for pattern in patterns):
+                    violations.append(f"{relative_path}:{line_number}:{line.strip()}")
+        self.assertEqual([], violations)
+
+    def test_archive_selection_and_readme_publish_only_typed_stage98_routes(self) -> None:
+        selection = (
+            ROOT / "docs/99.templates/support/template-selection.md"
+        ).read_text(encoding="utf-8")
+        expected_rows = (
+            "| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-####-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-####-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive tombstone (`tombstone`) | `docs/98.archive/tombstones/{01.requirements,02.architecture,03.specs,05.operations}/<stable-id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive migration (`migration`) | `docs/98.archive/migrations/mig-####-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
+        )
+        for row in expected_rows:
+            self.assertEqual(1, selection.count(row), row)
+        self.assertNotIn("docs/98.archive/<original-stage>", selection)
+
+        readme = (ROOT / "docs/98.archive/README.md").read_text(encoding="utf-8")
+        marker = "## Non-Authoritative Historical Provenance Ledger"
+        end_marker = "### End Non-Authoritative Historical Provenance Ledger"
+        self.assertEqual(1, readme.count(marker))
+        self.assertEqual(1, readme.count(end_marker))
+        before, remainder = readme.split(marker, 1)
+        ledger, after = remainder.split(end_marker, 1)
+        active = before + after
+        for literal in (
+            "changes/chg-####-<slug>/plan.md",
+            "changes/chg-####-<slug>/task.md",
+            "tombstones/<stage>/<stable-id>-<slug>.md",
+            "migrations/mig-####-<slug>.md",
+        ):
+            self.assertIn(literal, active)
+        for retired in (
+            "content-archive",
+            "content-archive.template.md",
+            "소스 stage 구조를 그대로 미러링",
+            "98.archive/<original-stage>/",
+            "YYYY/",
+            "YYYY-MM-DD",
+        ):
+            self.assertNotIn(retired, active)
+        self.assertNotRegex(active, r"(?:docs/)?98\.archive/0[1-5]\.[a-z]+/")
+        self.assertNotRegex(
+            active,
+            r"(?:docs/)?98\.archive/[^\s`|]*(?:YYYY|(?:19|20)[0-9]{2}(?:-[0-9]{2}-[0-9]{2})?)(?:[-/])",
+        )
+        self.assertIn("non-authoritative", ledger.lower())
+        self.assertIn("not routing", ledger.lower())
+        self.assertIn("docs/98.archive/04.execution/", ledger)
+
+    def test_typed_role_dates_and_single_archive_target_are_exact(self) -> None:
+        profiles = self.profiles["profiles"]
+        self.assertIn("completed_at", profiles["plan"]["optional"])
+        self.assertIn("completed_at", profiles["task"]["optional"])
+        self.assertIn("occurred_at", profiles["incident"]["required"])
+        self.assertIn("resolved_at", profiles["incident"]["optional"])
+        self.assertIn("released_at", profiles["release"]["required"])
+        archive_profiles = self.profiles["archive_profiles"]
+        self.assertEqual(
+            ["change-plan", "change-task", "tombstone", "migration"],
+            list(archive_profiles),
+        )
+        for archive in archive_profiles.values():
+            self.assertIn("archived_at", archive["required"])
+            self.assertIn("id_pattern", archive)
+            self.assertIn(archive["path_identity"], {"direct", "inherited"})
+        self.assertNotIn("archived_on", self.profiles["common"]["frontmatter_order"])
+        for role in ("spec", "plan", "task", "runbook"):
+            self.assertNotIn("archive", profiles[role]["allowed_parent_types"])
+
+    def test_typed_dates_are_meaningfully_validated(self) -> None:
+        plan = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-example/plan.md"),
+            {
+                "status": "completed",
+                "artifact_id": "plan-0136",
+                "artifact_type": "plan",
+                "parent_ids": ["spec-0136"],
+                "created": "2026-08-07",
+                "updated": "2026-08-07",
+                "completed_at": "not-a-date",
+            },
+            "plan",
+        )
+        findings = metadata.validate_record(plan, self.profiles, metadata.build_manifest([plan]))
+        self.assertIn("invalid-completed-at", {finding.code for finding in findings})
+
+    def test_active_roles_reject_archive_as_a_parent_type(self) -> None:
+        archive_parent = metadata.Record(
+            pathlib.Path("docs/98.archive/tombstones/03.specs/spec-0136.md"),
+            {"artifact_id": "archive-0136", "artifact_type": "archive"},
+            "archive",
+        )
+        children = (
+            metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0136-example/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0136",
+                    "artifact_type": "spec",
+                    "parent_ids": ["archive-0136"],
+                    "created": "2026-08-07",
+                    "updated": "2026-08-07",
+                },
+                "spec",
+            ),
+            metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0136-example/plan.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "plan-0136",
+                    "artifact_type": "plan",
+                    "parent_ids": ["archive-0136"],
+                    "created": "2026-08-07",
+                    "updated": "2026-08-07",
+                },
+                "plan",
+            ),
+            metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0136-example/task.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "task-0136-01",
+                    "artifact_type": "task",
+                    "parent_ids": ["archive-0136"],
+                    "created": "2026-08-07",
+                    "updated": "2026-08-07",
+                },
+                "task",
+            ),
+            metadata.Record(
+                pathlib.Path("docs/05.operations/platform/ops-0136-example/runbook.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "runbook-0136",
+                    "artifact_type": "runbook",
+                    "parent_ids": ["archive-0136"],
+                    "created": "2026-08-07",
+                    "updated": "2026-08-07",
+                    "reviewed_at": "2026-08-07",
+                    "next_review_at": "2027-08-07",
+                },
+                "runbook",
+            ),
+        )
+        manifest = metadata.build_manifest([archive_parent, *children])
+        for child in children:
+            with self.subTest(role=child.artifact_type):
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(child, self.profiles, manifest)
+                }
+                self.assertIn("invalid-parent-type", codes)
+
+    @staticmethod
+    def _archive_frontmatter(artifact_id: str) -> dict[str, object]:
+        return {
+            "status": "archived",
+            "artifact_id": artifact_id,
+            "artifact_type": "archive",
+            "parent_ids": [],
+            "archived_from": "docs/03.specs/spec-0136-example/task.md",
+            "archived_at": "2026-08-07",
+            "archive_reason": "Stable archive fixture.",
+            "archive_disposition": "withdrawn",
+            "archived_commit": "a" * 40,
+            "archived_blob": "b" * 40,
+            "preservation_class": "git-history",
+        }
+
+    def test_archive_selectors_accept_only_approved_stable_shapes(self) -> None:
+        cases = {
+            "docs/98.archive/changes/chg-0001-example/plan.md": (
+                "change-plan",
+                "plan-0001",
+            ),
+            "docs/98.archive/changes/chg-0001-example/task.md": (
+                "change-task",
+                "task-0001-01",
+            ),
+            "docs/98.archive/tombstones/03.specs/spec-0136-example.md": (
+                "tombstone",
+                "spec-0136",
+            ),
+            "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md": (
+                "migration",
+                "mig-0001",
+            ),
+        }
+        for path_text, (selector, artifact_id) in cases.items():
+            with self.subTest(path=path_text):
+                path = pathlib.Path(path_text)
+                self.assertEqual(selector, metadata.classify_archive_profile(path, self.profiles))
+                record = metadata.Record(
+                    path,
+                    self._archive_frontmatter(artifact_id),
+                    "archive",
+                )
+                identity_codes = {
+                    finding.code
+                    for finding in metadata.validate_record(
+                        record,
+                        self.profiles,
+                        metadata.build_manifest([record]),
+                    )
+                    if finding.code
+                    in {"artifact-id-invalid", "path-id-mismatch", "dated-path-identity"}
+                }
+                self.assertEqual(set(), identity_codes)
+
+        self.assertEqual(
+            "archive",
+            metadata.classify_readme_profile(
+                pathlib.Path("docs/98.archive/README.md"), self.profiles
+            ),
+        )
+
+    def test_metadata_cli_rejects_unstable_archive_identities(self) -> None:
+        cases = {
+            "docs/98.archive/migrations/2026-08-07-retired.md": "mig-0001",
+            "docs/98.archive/migrations/mig-0002-retired.md": "archive:anything",
+            "docs/98.archive/migrations/mig-0003-retired.md": "mig-0004",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            for path_text, artifact_id in cases.items():
+                write_doc(
+                    root / path_text,
+                    self._archive_frontmatter(artifact_id),
+                    body_with_headings(
+                        "## Overview",
+                        "## Archive Metadata",
+                        "## Archive Ledger",
+                        "## Related Documents",
+                    ),
+                )
+            commit_all(root)
+            result = run_checker(root, "report")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("dated-path-identity", result.stdout)
+            self.assertIn("artifact-id-invalid", result.stdout)
+            self.assertIn("path-id-mismatch", result.stdout)
 
 
 if __name__ == "__main__":

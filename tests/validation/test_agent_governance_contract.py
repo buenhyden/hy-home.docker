@@ -22,7 +22,8 @@ CHECKER = ROOT / "scripts/validation/check-agent-governance-contract.py"
 MODULE = ROOT / "scripts/validation/agent_governance_contract.py"
 CONTRACT_DIR = ROOT / "docs/00.agent-governance/contracts"
 RETIREMENT_LEDGER = (
-    ROOT / "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+    ROOT
+    / "docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml"
 )
 CONTRACT_FILES = (
     "agent-governance-artifacts.yaml",
@@ -61,6 +62,7 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         ".codex/README.md",
         ".gemini/README.md",
         ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/INDEX.md",
         ".github/workflow-contract.yml",
         "scripts/README.md",
         "scripts/hooks/agent-event-hook.sh",
@@ -69,12 +71,19 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         "scripts/validation/run-local-qa-gates.sh",
         "scripts/validation/validate-harness.sh",
         "tests/validation/test_agent_output_eval_fixtures.py",
-        "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+        "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md",
+        "docs/99.templates/templates/sdlc/task.template.md",
     ):
         source = ROOT / relative_path
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+    for provider_root in (".agents", ".claude", ".codex", ".gemini"):
+        shutil.copytree(
+            ROOT / provider_root,
+            root / provider_root,
+            dirs_exist_ok=True,
+        )
     governance = root / "docs/00.agent-governance"
     shutil.copytree(
         ROOT / "docs/00.agent-governance",
@@ -85,14 +94,105 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
     # fixture reads it from where it now lives while still projecting it at the
     # active path that the retired-role provenance records cite.
     spec_source = (
-        ROOT
-        / "docs/98.archive/03.specs/132-agent-governance-harness-convergence/spec.md"
+        ROOT / "docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md"
     )
     spec_target = (
         root / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
     )
     spec_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec_source, spec_target)
+
+    # Task 2 fixtures exercise the registered Stage 00 scripts-index profile.
+    # The live Scripts README was intentionally narrowed by Task 3, so retain a
+    # minimal historical fixture instead of treating that later projection as
+    # the Task 2 baseline.
+    scripts_readme = root / "scripts/README.md"
+    scripts_readme.write_text(
+        """# Scripts
+
+## Overview
+
+Fixture scripts index.
+
+## Audience
+
+Repository maintainers.
+
+## Scope
+
+Registered Task 2 harness surfaces.
+
+## Structure
+
+Validation scripts and tests.
+
+## Purpose Folder Implementation
+
+The validation folder owns checks.
+
+## How to Work in This Area
+
+Use the registered wrappers.
+
+## Active Surface Retention Rules
+
+Retain registered active surfaces.
+
+## Navigation / Inventory
+
+- `validate-harness.sh`
+- `run-local-qa-gates.sh --harness`
+
+## Hardening Tier Arguments
+
+Use bounded validation tiers.
+
+## Script Lifecycle
+
+Follow the registered lifecycle.
+
+## Utilities & Automation
+
+Use repository-local automation.
+
+## Related Documents
+
+See the governance contracts.
+""",
+        encoding="utf-8",
+    )
+
+    local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+    local_qa.write_text(
+        local_qa.read_text(encoding="utf-8")
+        + "\n# Fixture contract markers: sync-provider-surfaces.sh --check; "
+        "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions; "
+        "--mode repository --section all\n",
+        encoding="utf-8",
+    )
+
+    current_task = (
+        "docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md"
+    )
+    task = root / current_task
+    task.parent.mkdir(parents=True, exist_ok=True)
+    task.write_text("---\nstatus: active\n---\n\n# Fixture Task\n", encoding="utf-8")
+    memory = root / "docs/00.agent-governance/memory/current.md"
+    memory.write_text(
+        "---\nlayer: agentic\nstatus: active\n---\n\n"
+        "# Current Project Memory\n\n"
+        "## Current objective\n\n"
+        f"- Current task: `{current_task}`\n\n"
+        "## Approved decisions\n\n- Fixture decision.\n\n"
+        "## Active boundary\n\n- Fixture boundary.\n\n"
+        "## Verified state\n\n"
+        f"- Verified commit: `{'a' * 40}`\n"
+        "- Verified at: `2026-08-07T13:52:00+09:00`\n\n"
+        "## Blockers and unverified facts\n\n- None recorded.\n\n"
+        "## Evidence links\n\n- Fixture evidence.\n\n"
+        "## Next handoff\n\n- Continue fixture validation.\n",
+        encoding="utf-8",
+    )
 
 
 def mutate_yaml(root: pathlib.Path, name: str, mutate) -> None:
@@ -825,7 +925,8 @@ class RetirementLedgerTests(unittest.TestCase):
 
     def test_retirement_ledger_has_exact_replacement_and_git_provenance(self) -> None:
         expected_path = pathlib.PurePosixPath(
-            "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+            "docs/90.references/data/governance/"
+            "ref-0063-agent-governance-retirement-ledger.yaml"
         )
         self.assertEqual(expected_path, contract.RETIREMENT_LEDGER_PATH)
         values = contract._load_yaml(ROOT, contract.RETIREMENT_LEDGER_PATH)
@@ -1702,12 +1803,11 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         "docs/00.agent-governance/scopes/docs.md",
         "docs/00.agent-governance/agents/agents/hook-developer.md",
         "docs/00.agent-governance/agents/functions/style-validation.md",
-        "docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md",
-        "docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md",
+        "docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md",
+        "docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md",
         "scripts/README.md",
         "scripts/hooks/agent-event-hook.sh",
-        "scripts/knowledge/generate-llm-wiki-index.sh",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "scripts/knowledge/generate-llm-wiki.py",
     )
 
     def test_exact_role_categories_and_function_cardinality_are_canonical(self) -> None:
@@ -1952,20 +2052,8 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 )
 
         scope_dir = ROOT / "docs/00.agent-governance/scopes"
-        scope_names = (
-            "agentic",
-            "architecture",
-            "backend",
-            "common",
-            "entry",
-            "frontend",
-            "infra",
-            "meta",
-            "mobile",
-            "ops",
-            "product",
-            "qa",
-            "security",
+        scope_names = tuple(
+            contract.load_contract_bundle(ROOT).catalog["scopes"]
         )
         for name in scope_names:
             with self.subTest(scope=name):
@@ -2326,12 +2414,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_116_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_110_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(116, len(inventory))
+        self.assertEqual(110, len(inventory))
         self.assertTrue(
             {
                 ROOT / "docs/00.agent-governance/agents/functions/"
@@ -3166,7 +3254,8 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
         ]
         self.assertEqual([], policy_findings)
         scripts_text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
-        self.assertIn("path-authority", scripts_text)
+        self.assertIn("scripts/manifest.yaml", scripts_text)
+        self.assertIn("machine-readable authority", scripts_text)
 
     def test_readme_policy_prose_excludes_non_prose_markdown_surfaces(self) -> None:
         source = """\
@@ -3727,7 +3816,7 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
     # the fixture copies only this Task and the stale-state check resolves the
     # named Task's status.
     CURRENT_TASK = (
-        "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md"
+        "docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md"
     )
     EXPECTED_SECTIONS = (
         "Current objective",
@@ -3762,10 +3851,58 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
     @staticmethod
     def _copy_fixture(root: pathlib.Path) -> None:
         copy_task2_harness_surfaces(root)
-        task_source = ROOT / Task3SharedProjectMemoryTests.CURRENT_TASK
+        task_source = (
+            ROOT
+            / "docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md"
+        )
         task_target = root / Task3SharedProjectMemoryTests.CURRENT_TASK
         task_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(task_source, task_target)
+        task_text = task_target.read_text(encoding="utf-8")
+        task_target.write_text(
+            re.sub(r"(?m)^status: .+$", "status: active", task_text, count=1),
+            encoding="utf-8",
+        )
+        memory = root / Task3SharedProjectMemoryTests.CURRENT_MEMORY
+        memory.write_text(
+            """---
+layer: agentic
+status: active
+---
+
+# Current Project Memory
+
+## Current objective
+
+- Current task: `docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md`
+
+## Approved decisions
+
+- Exercise the bounded historical fixture.
+
+## Active boundary
+
+- Validate only copied fixture surfaces.
+
+## Verified state
+
+- Verified commit: `0000000000000000000000000000000000000000`
+- Verified at: `2026-08-12T00:00:00+09:00`
+
+## Blockers and unverified facts
+
+- None.
+
+## Evidence links
+
+- See the current fixture task.
+
+## Next handoff
+
+- Continue the fixture validation.
+""",
+            encoding="utf-8",
+        )
 
     @staticmethod
     def _replace_memory(root: pathlib.Path, old: str, new: str) -> None:
@@ -3817,7 +3954,7 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
             with self.subTest(active_rule_consumer=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertIn("memory/current.md", text)
-                self.assertIn("Stage 04 Task", text)
+                self.assertIn("co-located Task", text)
                 collapsed = " ".join(text.split()).lower()
                 for pattern in forbidden_progress_directions:
                     self.assertNotRegex(collapsed, pattern)
@@ -3859,6 +3996,10 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
             self.CURRENT_MEMORY,
             contract.CURRENT_MEMORY_PATH,
         )
+        self.assertEqual(
+            r"docs/03\.specs/spec-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*/task\.md",
+            contract.CURRENT_MEMORY_TASK_PATTERN,
+        )
         self.assertEqual(32 * 1024, contract.CURRENT_MEMORY_MAX_BYTES)
         self.assertEqual(400, contract.CURRENT_MEMORY_MAX_LINES)
         self.assertEqual(self.EXPECTED_SECTIONS, contract.CURRENT_MEMORY_SECTIONS)
@@ -3871,12 +4012,18 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
         for label in ("Current task", "Verified commit", "Verified at"):
             self.assertEqual(1, len(re.findall(rf"^- {label}:", text, re.MULTILINE)))
 
-        bundle = contract.load_contract_bundle(ROOT)
-        self.assertEqual([], contract._validate_current_memory(ROOT, bundle))
-
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self._copy_fixture(root)
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertEqual(
+                    [],
+                    contract._validate_current_memory(
+                        root, contract.load_contract_bundle(root)
+                    ),
+                )
             self._replace_memory(
                 root,
                 "## Approved decisions",
@@ -3998,6 +4145,15 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
             "AGC-MEMORY-STALE-STATE",
             ancestor=False,
         )
+
+        def restore_stage04_task(root: pathlib.Path) -> None:
+            old = "docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md"
+            old_task = root / old
+            old_task.parent.mkdir(parents=True, exist_ok=True)
+            old_task.write_text("---\nstatus: active\n---\n", encoding="utf-8")
+            self._replace_memory(root, self.CURRENT_TASK, old)
+
+        validate_mutation(restore_stage04_task, "AGC-MEMORY-BOUNDS")
 
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -4349,33 +4505,22 @@ class Task6CanonicalEvidenceDirectImpactTests(unittest.TestCase):
         normalized_codex = " ".join(codex_provider.split())
         normalized_postflight = " ".join(postflight.split())
 
-        self.assertIn(
-            "`adversarial-review`, `complex-implementation`, and "
-            "`long-horizon-supervision` use `gpt-5.6-sol`",
-            normalized_codex,
-        )
-        self.assertIn(
-            "`evidence-research` and `routine-validation` use `gpt-5.6-terra`",
-            normalized_codex,
-        )
-        self.assertIn(
-            "official provider lifecycle is `stable`",
-            normalized_codex,
-        )
-        self.assertIn(
-            "runtime acceptance and entitlement remain `needs_revalidation`",
-            normalized_codex,
-        )
+        self.assertIn("contracts/provider-models.yaml", normalized_codex)
+        self.assertIn("typed renderer inputs", normalized_codex)
+        self.assertNotIn("gpt-5.6-sol", normalized_codex)
+        self.assertNotIn("gpt-5.6-terra", normalized_codex)
         self.assertNotRegex(
             codex_provider,
             r"(?<![A-Za-z0-9.-])GPT-5\.6(?![A-Za-z0-9.-])",
         )
         self.assertNotIn("raw status is\n  `listed`", codex_provider)
-        self.assertIn(
-            "reports exactly 11 fixtures, 16 regressions", normalized_postflight
-        )
-        self.assertNotIn(
-            "reports exactly eight fixtures, ten regressions", normalized_postflight
+        self.assertIn("rules/task-checklists.md", normalized_postflight)
+        self.assertIn("#3-completion-contract", normalized_postflight)
+        fixture_count_pattern = r"exactly \d+ fixtures"
+        self.assertNotRegex(normalized_postflight, fixture_count_pattern)
+        self.assertRegex(
+            normalized_postflight + " reports exactly 11 fixtures",
+            fixture_count_pattern,
         )
 
 
@@ -4584,12 +4729,14 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertIn("Canonical Stage 00 function routes", text)
 
     def test_repository_all_enforces_harness_and_eval_surfaces(self) -> None:
-        bundle = contract.load_contract_bundle(ROOT)
-        self.assertEqual([], contract.validate_repository(ROOT, bundle, "all"))
-
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertEqual([], contract.validate_repository(root, bundle, "all"))
             hook = root / "scripts/hooks/agent-event-hook.sh"
             hook.write_text(
                 hook.read_text(encoding="utf-8").replace(
@@ -5156,6 +5303,236 @@ class GateRootHandoffTests(unittest.TestCase):
         result = self._run(str(ROOT), ())
         self.assertEqual(1, result.returncode)
         self.assertIn("invalid HYHOME_CI_GATE_ROOT", result.stdout + result.stderr)
+
+
+class Task2Stage00AuthorityFixtures(unittest.TestCase):
+    def test_rules_engineer_is_the_single_stage00_policy_owner(self) -> None:
+        values = yaml.safe_load(
+            (CONTRACT_DIR / "agent-governance-artifacts.yaml").read_text(encoding="utf-8")
+        )
+        authority = next(
+            item
+            for item in values["path_authority"]
+            if item["authority_id"] == "stage00-policy-and-contracts"
+        )
+        self.assertEqual("rules-engineer", authority["canonical_owner"])
+        self.assertIn("doc-writer", authority["permitted_contributors"])
+        self.assertNotEqual("doc-writer", authority["canonical_owner"])
+
+
+class Task8Stage00PolicyConvergenceTests(unittest.TestCase):
+    GOVERNANCE = ROOT / "docs/00.agent-governance"
+
+    def test_policy_provider_and_documentation_authority_are_separated(self) -> None:
+        values = yaml.safe_load(
+            (CONTRACT_DIR / "agent-governance-artifacts.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        authority = {
+            item["authority_id"]: item for item in values["path_authority"]
+        }
+        self.assertEqual(
+            "rules-engineer",
+            authority["stage00-policy-and-contracts"]["canonical_owner"],
+        )
+        self.assertEqual(
+            "hook-developer",
+            authority["provider-adapters-and-hooks"]["canonical_owner"],
+        )
+        self.assertIn(
+            "doc-writer",
+            authority["stage00-policy-and-contracts"]["permitted_contributors"],
+        )
+        self.assertNotEqual(
+            "doc-writer",
+            authority["stage00-policy-and-contracts"]["canonical_owner"],
+        )
+        renderer_path = "scripts/operations/provider_surface_renderer.py"
+        self.assertIn(
+            renderer_path,
+            authority["provider-adapters-and-hooks"]["path_patterns"],
+        )
+        renderer_authorities = [
+            item["authority_id"]
+            for item in authority.values()
+            if renderer_path in item["path_patterns"]
+        ]
+        self.assertEqual(["provider-adapters-and-hooks"], renderer_authorities)
+        hook_developer = (
+            self.GOVERNANCE / "agents/agents/hook-developer.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("provider surface renderer", hook_developer.lower())
+        self.assertIn("generated provider projections", hook_developer.lower())
+
+    def test_only_typed_catalog_scopes_remain_active(self) -> None:
+        catalog = contract.load_contract_bundle(ROOT).catalog
+        expected = {f"{scope}.md" for scope in catalog["scopes"]}
+        observed = {
+            path.name for path in (self.GOVERNANCE / "scopes").glob("*.md")
+        }
+        self.assertEqual(expected, observed)
+        self.assertNotIn("frontend.md", observed)
+        self.assertNotIn("mobile.md", observed)
+        retired_paths = {
+            f"docs/00.agent-governance/scopes/{name}.md"
+            for name in ("backend", "entry", "frontend", "meta", "mobile", "product")
+        }
+        for generated in (
+            ROOT / "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+            ROOT
+            / "docs/90.references/data/knowledge/"
+            "ref-0076-llm-wiki-stage-category-coverage.md",
+        ):
+            with self.subTest(generated=generated):
+                text = generated.read_text(encoding="utf-8")
+                for retired_path in retired_paths:
+                    self.assertNotIn(retired_path, text)
+        generator = "scripts/knowledge/generate-llm-wiki.py"
+        result = subprocess.run(
+            ["python3", generator, "--check"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_language_routing_has_one_document_role_owner(self) -> None:
+        owner = self.GOVERNANCE / "rules/documentation-protocol.md"
+        self.assertIn("## 3.1 Language Boundary by Document Role", owner.read_text())
+        for relative in (
+            "rules/output-style.md",
+            "rules/standards.md",
+            "rules/agentic.md",
+            "rules/task-checklists.md",
+            "rules/stage-authoring-matrix.md",
+        ):
+            with self.subTest(path=relative):
+                text = (self.GOVERNANCE / relative).read_text(encoding="utf-8")
+                self.assertIn("documentation-protocol.md#31-language-boundary-by-document-role", text)
+                self.assertNotIn("Korean by default", text)
+                self.assertNotIn("Korean human-facing", text)
+
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertNotIn(
+            "AGC-REPOSITORY-POLICY-DUPLICATION",
+            codes(contract.validate_repository(ROOT, bundle, "harness")),
+        )
+        mutations = (
+            (
+                "docs/00.agent-governance/rules/standards.md",
+                "\nbootstrap -> persona -> checklists -> agentic rule -> one scope -> stage docs\n",
+            ),
+            (
+                "docs/00.agent-governance/subagent-protocol.md",
+                "\ndiscover -> design/plan -> approval -> implement -> validate -> independent-review -> evidence -> handoff\n",
+            ),
+            (
+                "docs/00.agent-governance/rules/quality-standards.md",
+                "\n## Verification Checklist\n\nBefore completion:\n\n1. Run checks.\n",
+            ),
+            (
+                "docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md",
+                "\n**Docker infrastructure completion checklist (project rule)**\n",
+            ),
+            (
+                "docs/00.agent-governance/rules/postflight-checklist.md",
+                "\n## Completion Blockers (HALT if any fail)\n\n"
+                "| Condition | Action |\n| --- | --- |\n"
+                "| Required validation fails | Fix and rerun |\n",
+            ),
+            (
+                "docs/00.agent-governance/rules/hooks/"
+                "hookify.warn-docker-infra-stop.md",
+                "\n## Completion Blockers (HALT if any fail)\n\n"
+                "| Condition | Action |\n| --- | --- |\n"
+                "| Required validation fails | Fix and rerun |\n",
+            ),
+            (
+                "docs/00.agent-governance/scopes/docs.md",
+                "\nHuman-facing docs are Korean by default.\n",
+            ),
+            (
+                "docs/00.agent-governance/rules/provider-capability-matrix.md",
+                "\nThe active default is gpt-5.6-sol.\n",
+            ),
+        )
+        for relative, duplicate in mutations:
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                target = root / relative
+                target.write_text(
+                    target.read_text(encoding="utf-8") + duplicate,
+                    encoding="utf-8",
+                )
+                findings = contract.validate_repository(
+                    root, contract.load_contract_bundle(root), "harness"
+                )
+                self.assertIn("AGC-REPOSITORY-POLICY-DUPLICATION", codes(findings))
+
+    def test_load_workflow_and_completion_contracts_have_single_owners(self) -> None:
+        bootstrap = (self.GOVERNANCE / "rules/bootstrap.md").read_text()
+        standards = (self.GOVERNANCE / "rules/standards.md").read_text()
+        agentic = (self.GOVERNANCE / "rules/agentic.md").read_text()
+        postflight = (self.GOVERNANCE / "rules/postflight-checklist.md").read_text()
+        self.assertIn("## 3. Canonical Load Order", bootstrap)
+        self.assertNotIn("Load in this order:", standards)
+        self.assertIn("rules/bootstrap.md#3-canonical-load-order", standards)
+        self.assertNotIn("## 3. Implementation Flow", agentic)
+        self.assertIn("rules/workflows.md", agentic)
+        self.assertNotIn("## Completion Blockers", postflight)
+        self.assertIn("rules/task-checklists.md#3-completion-contract", postflight)
+        model_ids = {
+            str(item["model_id"])
+            for item in contract.load_contract_bundle(ROOT).providers["models"]
+        }
+        authority_docs = (
+            self.GOVERNANCE / "README.md",
+            self.GOVERNANCE / "rules/quality-standards.md",
+            self.GOVERNANCE / "rules/provider-capability-matrix.md",
+            self.GOVERNANCE / "subagent-protocol.md",
+        )
+        bundle = contract.load_contract_bundle(ROOT)
+        provider_overlays = {
+            self.GOVERNANCE.parent.parent / str(profile["path_pattern"])
+            for profile in bundle.artifacts["artifacts"]
+            if profile["artifact_type"] == "provider-overlay"
+            and profile["canonical"] is True
+        }
+        self.assertEqual(
+            {
+                self.GOVERNANCE / "providers/agents-md.md",
+                self.GOVERNANCE / "providers/claude.md",
+                self.GOVERNANCE / "providers/codex.md",
+                self.GOVERNANCE / "providers/gemini.md",
+            },
+            provider_overlays,
+        )
+        for path in (*authority_docs, *sorted(provider_overlays)):
+            with self.subTest(model_projection=path):
+                text = path.read_text(encoding="utf-8")
+                for model_id in model_ids:
+                    self.assertNotIn(model_id, text)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            agents_md = root / "docs/00.agent-governance/providers/agents-md.md"
+            agents_md.write_text(
+                agents_md.read_text(encoding="utf-8")
+                + f"\nActive model override: {sorted(model_ids)[0]}\n",
+                encoding="utf-8",
+            )
+            findings = contract.validate_repository(
+                root, contract.load_contract_bundle(root), "harness"
+            )
+            self.assertIn("AGC-REPOSITORY-POLICY-DUPLICATION", codes(findings))
+        memory_findings = contract._validate_current_memory(
+            ROOT, bundle
+        )
+        self.assertEqual([], memory_findings, contract.render_findings(memory_findings))
 
 
 if __name__ == "__main__":

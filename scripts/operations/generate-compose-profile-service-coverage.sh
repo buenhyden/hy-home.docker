@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/docker/compose-profile-service-coverage.md"
+OUTPUT="docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md"
 
 usage() {
   cat <<'EOF'
@@ -157,9 +157,10 @@ def compact_refs(items: list[dict[str, object]], limit: int = 18) -> str:
 lines: list[str] = [
     "---",
     "status: active",
+    "artifact_id: ref-0059",
+    "artifact_type: reference",
+    "parent_ids: []",
     "---",
-    "",
-    "<!-- Target: docs/90.references/data/docker/compose-profile-service-coverage.md -->",
     "",
     "# Reference: Docker Compose Profile Service Coverage",
     "",
@@ -283,8 +284,8 @@ lines.extend(
         "## Related Documents",
         "",
         "- **Docker data index**: [README.md](./README.md)",
-        "- **Docker image/version interpretation**: [image-version-interpretation.md](./image-version-interpretation.md)",
-        "- **Automation candidates**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
+        "- **Docker image/version interpretation**: [ref-0060-image-version-interpretation.md](./ref-0060-image-version-interpretation.md)",
+        "- **Automation candidates**: [ref-0021-automation-candidates.md](../../audits/ref-0021-automation-candidates.md)",
         "- **Compose validation script**: [../../../../scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh)",
     ]
 )

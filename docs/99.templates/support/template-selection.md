@@ -13,21 +13,26 @@ template source.
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| PRD | `docs/01.requirements/NNN-<feature-or-system>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
-| ARD | `docs/02.architecture/requirements/####-<system-or-domain>.md` | [ard.template.md](../templates/sdlc/ard.template.md) |
-| ADR | `docs/02.architecture/decisions/####-<short-title>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
-| Spec | `docs/03.specs/NNN-<feature-id>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
-| Plan | `docs/04.execution/plans/YYYY-MM-DD-<feature>.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
-| Task | `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md` | [task.template.md](../templates/sdlc/task.template.md) |
-| Guide | `docs/05.operations/guides/**.md` | [guide.template.md](../templates/operations/guide.template.md) |
-| Policy | `docs/05.operations/policies/**.md` | [policy.template.md](../templates/operations/policy.template.md) |
-| Runbook | `docs/05.operations/runbooks/**.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
-| Incident packet incident file | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md` | [incident.template.md](../templates/operations/incident.template.md) |
-| Incident packet postmortem.md | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
-| Release | `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | [release.template.md](../templates/operations/release.template.md) |
+| PRD | `docs/01.requirements/prd-####-<slug>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
+| SRS | `docs/01.requirements/srs-####-<slug>.md` | [srs.template.md](../templates/sdlc/srs.template.md) |
+| Interface Requirement | `docs/01.requirements/interface-####-<slug>.md` | [interface-requirement.template.md](../templates/sdlc/interface-requirement.template.md) |
+| Architecture Description | `docs/02.architecture/descriptions/ad-####-<slug>.md` | [architecture-description.template.md](../templates/sdlc/architecture-description.template.md) |
+| ADR | `docs/02.architecture/decisions/adr-####-<slug>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
+| Spec | `docs/03.specs/spec-####-<capability>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
+| Plan | `docs/03.specs/spec-####-<capability>/plan.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
+| Task | `docs/03.specs/spec-####-<capability>/task.md` | [task.template.md](../templates/sdlc/task.template.md) |
+| Guide | `docs/05.operations/catalog/<domain>/ops-####-<subject>/guide.md` | [guide.template.md](../templates/operations/guide.template.md) |
+| Policy | `docs/05.operations/catalog/<domain>/ops-####-<subject>/policy.md` | [policy.template.md](../templates/operations/policy.template.md) |
+| Runbook | `docs/05.operations/catalog/<domain>/ops-####-<subject>/runbook.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
+| Incident | `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md` | [incident.template.md](../templates/operations/incident.template.md) |
+| Postmortem | `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
+| Release | `docs/05.operations/releases/rel-####-<slug>/release.md` | [release.template.md](../templates/operations/release.template.md) |
 | Reference | `docs/90.references/{data,learning,llm-wiki,research}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
 | Audit | `docs/90.references/audits/**/*.md` except the generated metadata inventory | [audit.template.md](../templates/common/audit.template.md) |
-| Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-####-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-####-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive tombstone (`tombstone`) | `docs/98.archive/tombstones/{01.requirements,02.architecture,03.specs,05.operations}/<stable-id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive migration (`migration`) | `docs/98.archive/migrations/mig-####-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 
 ## Corpus Migration Selection Boundary
@@ -41,18 +46,23 @@ whether a validated archive result uses the Archive form and which conditional
 fields and sections apply. This file only maps the resulting target role to its
 copyable source.
 
+Operations convergence uses the separate frozen
+`docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+contract. Its structural and semantic dispositions remain non-executable while
+`approval.status` is `pending`; template selection never grants that approval.
+
 ## Spec Child Template Mapping
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| API spec | `docs/03.specs/NNN-<feature-id>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
-| Agent design | `docs/03.specs/NNN-<feature-id>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
-| Data model | `docs/03.specs/NNN-<feature-id>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
-| Service | `docs/03.specs/NNN-<feature-id>/service.md`; registered draft fixture `examples/sample-web-service/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
-| Tests | `docs/03.specs/NNN-<feature-id>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
-| OpenAPI | `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
-| GraphQL | `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
-| Protobuf | `docs/03.specs/NNN-<feature-id>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
+| API spec | `docs/03.specs/spec-####-<slug>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
+| Agent design | `docs/03.specs/spec-####-<slug>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
+| Data model | `docs/03.specs/spec-####-<slug>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
+| Service | `docs/03.specs/spec-####-<slug>/service.md`; registered draft fixture `examples/sample-web-service/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
+| Tests | `docs/03.specs/spec-####-<slug>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
+| OpenAPI | `docs/03.specs/spec-####-<slug>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
+| GraphQL | `docs/03.specs/spec-####-<slug>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
+| Protobuf | `docs/03.specs/spec-####-<slug>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
 
 ## Governance Template Mapping
 

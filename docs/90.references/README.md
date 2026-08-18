@@ -91,7 +91,9 @@ README 파일은 `docs/99.templates/templates/common/readme.template.md`의 기�
 - Top-level reference category는 `audits/`, `data/`, `research/`, `learning/` 중 하나를 사용한다.
 - `llm-wiki/`는 generated navigation surface로만 사용하고, 일반 reference category로 확장하지 않는다.
 - Subcategory folder는 `docs/90.references/data/docker/`처럼 lower-kebab-case를 사용한다.
-- SDLC-linked audit and research packs use `docs/90.references/{audits,research}/<date>-<sdlc_key>/`.
+- Stable reference artifacts use `ref-<id>-<slug>.<ext>` identities within their category; a pack index uses `ref-<id>-readme.md`.
+- Identity dates do not appear in paths. Preserve the source observation date in typed frontmatter such as `observed_at` while retaining body timeline timestamps.
+- Generated summaries and manifests use the same stable `ref-<id>-<slug>` namespace and remain owned by their registered generator.
 - Finalized pack report files use descriptive names and must not retain `part-*.md` prefixes.
 - Non-README 문서는 `docs/90.references/data/docker/image-version-interpretation.md`처럼 category 폴더 아래에 둔다.
 - Non-README reference 문서의 `status`는 `draft`, `active`, `archived` 중 하나를 사용한다.
@@ -109,7 +111,7 @@ README 파일은 `docs/99.templates/templates/common/readme.template.md`의 기�
 | Source-backed external research and repo-local analysis pack | `docs/90.references/research/` |
 | Learning roadmap and theory reference | `docs/90.references/learning/` |
 | LLM navigation map and generated path index | `docs/90.references/llm-wiki/` |
-| Architecture requirement | `docs/02.architecture/requirements/` |
+| Architecture description | `docs/02.architecture/descriptions/` |
 | Architecture decision | `docs/02.architecture/decisions/` |
 | Technical implementation contract | `docs/03.specs/` |
 | Implementation plan or evidence | `docs/04.execution/` |
@@ -150,60 +152,60 @@ Reference 문서는 active stage의 판단을 돕는 안정적 배경 지식입�
 ## Current References
 
 - [audits/README.md](./audits/README.md) - stable audit report and comparison-report category
-- [audits/2026-07-03-workspace-document-contract-audit-pack/README.md](./audits/2026-07-03-workspace-document-contract-audit-pack/README.md) - workspace document contract audit pack
-- [audits/2026-07-04-document-restructure-audit-contract-archive/README.md](./audits/2026-07-04-document-restructure-audit-contract-archive/README.md) - document restructure audit, archive, contract, and QA reference pack
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md) - agentic engineering implementation-status audit pack
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md) - cross-category implementation-status snapshot
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md) - harness engineering implementation audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md) - loop engineering implementation audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md) - Claude, Codex, and Gemini harness/loop implementation audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md) - workspace rules, environment, Docker Compose, and infrastructure implementation audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md) - agent instructions, catalog, vibe-coding, and model-routing audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md) - automation, pipeline, and workflow candidate report
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md) - SDLC and document-role implementation audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md) - frontmatter, template, and README semantic audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md) - SDLC, CI/CD, QA, formatting, linting, and security quality audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md) - structural Compose, infrastructure, and operations-readiness audit
-- [audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - SSDF, SLSA, and OpenSSF Scorecard security maturity coverage audit
+- [audits/ref-0001-readme.md](audits/ref-0001-readme.md) - workspace document contract audit pack
+- [audits/ref-0012-readme.md](audits/ref-0012-readme.md) - document restructure audit, archive, contract, and QA reference pack
+- [audits/ref-0019-readme.md](audits/ref-0019-readme.md) - agentic engineering implementation-status audit pack
+- [audits/ref-0026-implementation-overview.md](audits/ref-0026-implementation-overview.md) - cross-category implementation-status snapshot
+- [audits/ref-0025-harness-engineering-implementation.md](audits/ref-0025-harness-engineering-implementation.md) - harness engineering implementation audit
+- [audits/ref-0027-loop-engineering-implementation.md](audits/ref-0027-loop-engineering-implementation.md) - loop engineering implementation audit
+- [audits/ref-0028-provider-harness-loop-implementation.md](audits/ref-0028-provider-harness-loop-implementation.md) - Claude, Codex, and Gemini harness/loop implementation audit
+- [audits/ref-0032-workspace-rules-environment-implementation.md](audits/ref-0032-workspace-rules-environment-implementation.md) - workspace rules, environment, Docker Compose, and infrastructure implementation audit
+- [audits/ref-0020-agent-instructions-catalog-vibe-models.md](audits/ref-0020-agent-instructions-catalog-vibe-models.md) - agent instructions, catalog, vibe-coding, and model-routing audit
+- [audits/ref-0021-automation-candidates.md](audits/ref-0021-automation-candidates.md) - automation, pipeline, and workflow candidate report
+- [audits/ref-0029-sdlc-document-contracts-implementation.md](audits/ref-0029-sdlc-document-contracts-implementation.md) - SDLC and document-role implementation audit
+- [audits/ref-0024-frontmatter-template-readme-implementation.md](audits/ref-0024-frontmatter-template-readme-implementation.md) - frontmatter, template, and README semantic audit
+- [audits/ref-0030-sdlc-quality-formatting-implementation.md](audits/ref-0030-sdlc-quality-formatting-implementation.md) - SDLC, CI/CD, QA, formatting, linting, and security quality audit
+- [audits/ref-0022-compose-infrastructure-operations-readiness.md](audits/ref-0022-compose-infrastructure-operations-readiness.md) - structural Compose, infrastructure, and operations-readiness audit
+- [audits/ref-0031-security-framework-maturity.md](audits/ref-0031-security-framework-maturity.md) - SSDF, SLSA, and OpenSSF Scorecard security maturity coverage audit
 - [data/README.md](./data/README.md) - stable reference data category
 - [data/docker/README.md](./data/docker/README.md) - Docker image/version drift, registry, and runtime reference rules
-- [data/docker/compose-profile-service-coverage.md](./data/docker/compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
-- [data/docker/image-version-interpretation.md](./data/docker/image-version-interpretation.md) - Docker image/version source interpretation rules
-- [data/docker/tech-stack-version-provenance.md](./data/docker/tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
+- [data/docker/compose-profile-service-coverage.md](data/docker/ref-0059-compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
+- [data/docker/image-version-interpretation.md](data/docker/ref-0060-image-version-interpretation.md) - Docker image/version source interpretation rules
+- [data/docker/tech-stack-version-provenance.md](data/docker/ref-0061-tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
 - [data/glossary/README.md](./data/glossary/README.md) - stable reference terminology category
-- [data/glossary/stable-reference-terms.md](./data/glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
+- [data/glossary/stable-reference-terms.md](data/glossary/ref-0062-stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [data/governance/README.md](./data/governance/README.md) - governance routing reference data category
-- [data/governance/agent-output-eval-fixtures.md](./data/governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
-- [data/governance/audit-implementation-matrix.md](./data/governance/audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
+- [data/governance/agent-output-eval-fixtures.md](data/governance/ref-0064-agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
+- [data/governance/audit-implementation-matrix.md](data/governance/ref-0065-audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [data/governance/document-corpus-lifecycle/README.md](./data/governance/document-corpus-lifecycle/README.md) - document-corpus lifecycle manifest and generated-summary route
-- [data/governance/document-corpus-lifecycle/foundation.yaml](./data/governance/document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
-- [data/governance/document-corpus-lifecycle/foundation-summary.md](./data/governance/document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
-- [data/governance/gap-to-stage-routing.md](./data/governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
-- [data/governance/provider-hook-parity-matrix.md](./data/governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
+- [data/governance/document-corpus-lifecycle/foundation.yaml](data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml) - reviewed blocking Foundation migration manifest
+- [data/governance/document-corpus-lifecycle/foundation-summary.md](data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md) - generator-owned safe Foundation summary
+- [data/governance/gap-to-stage-routing.md](data/governance/ref-0070-gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
+- [data/governance/provider-hook-parity-matrix.md](data/governance/ref-0072-provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
 - [data/hads/README.md](./data/hads/README.md) - HADS profile category
-- [data/hads/profile.md](./data/hads/profile.md) - HADS profile and validation contract
+- [data/hads/profile.md](data/hads/ref-0075-profile.md) - HADS profile and validation contract
 - [data/knowledge/README.md](./data/knowledge/README.md) - generated LLM Wiki coverage and knowledge-index data category
-- [data/knowledge/llm-wiki-stage-category-coverage.md](./data/knowledge/llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
+- [data/knowledge/llm-wiki-stage-category-coverage.md](data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
 - [data/kubernetes/README.md](./data/kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context
-- [data/kubernetes/docker-compose-to-k3s-migration.md](./data/kubernetes/docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
+- [data/kubernetes/docker-compose-to-k3s-migration.md](data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
 - [data/security/README.md](./data/security/README.md) - generated security automation readiness data category
-- [data/security/security-automation-readiness.md](./data/security/security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
+- [data/security/security-automation-readiness.md](data/security/ref-0078-security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
 - [learning/README.md](./learning/README.md) - Docker-based infrastructure learning roadmap and theory references
 - [llm-wiki/README.md](./llm-wiki/README.md) - repo-local LLM Wiki entrypoint and tracked-source repository map
-- [llm-wiki/repository-map.md](./llm-wiki/repository-map.md) - curated tracked-source repository map
-- [llm-wiki/llm-wiki-index.md](./llm-wiki/llm-wiki-index.md) - generated tracked repo-local path index
+- [llm-wiki/repository-map.md](llm-wiki/ref-0083-repository-map.md) - curated tracked-source repository map
+- [llm-wiki/llm-wiki-index.md](llm-wiki/ref-0082-llm-wiki-index.md) - generated tracked repo-local path index
 - [research/README.md](./research/README.md) - source-backed research category
-- [research/2026-08-08-agentic-engineering-research-pack/README.md](./research/2026-08-08-agentic-engineering-research-pack/README.md) - harness, loop, provider, SDLC, QA research pack index
-- [research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md](./research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) - workspace purpose, roles, gates, contracts, scripts, governance baseline
-- [research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md](./research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) - harness engineering components and workspace application analysis
-- [research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md](./research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md) - agent, eval, CI, human approval loop analysis
-- [research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md](./research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md) - spec-driven development and SDLC mapping
-- [research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md](./research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md) - CI/CD, QA, formatting, and secure quality gate analysis
-- [research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md](./research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) - Claude, Codex, Gemini provider implementation comparison
-- [research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md](./research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md) - external AI agent catalog patterns and repo-local curated catalog import boundary
-- [research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md](./research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md) - Docker Compose and infrastructure harness analysis
-- [research/2026-08-08-agentic-engineering-research-pack/security-governance.md](./research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - security governance and secure SDLC analysis
-- [research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md](./research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md) - automation, pipeline, and workflow analysis
+- [research/ref-0039-readme.md](research/ref-0039-readme.md) - harness, loop, provider, SDLC, QA research pack index
+- [research/ref-0058-workspace-baseline.md](research/ref-0058-workspace-baseline.md) - workspace purpose, roles, gates, contracts, scripts, governance baseline
+- [research/ref-0047-harness-engineering.md](research/ref-0047-harness-engineering.md) - harness engineering components and workspace application analysis
+- [research/ref-0049-loop-engineering.md](research/ref-0049-loop-engineering.md) - agent, eval, CI, human approval loop analysis
+- [research/ref-0057-spec-driven-sdlc.md](research/ref-0057-spec-driven-sdlc.md) - spec-driven development and SDLC mapping
+- [research/ref-0053-quality-ci-formatting.md](research/ref-0053-quality-ci-formatting.md) - CI/CD, QA, formatting, and secure quality gate analysis
+- [research/ref-0051-provider-implementation-comparison.md](research/ref-0051-provider-implementation-comparison.md) - Claude, Codex, Gemini provider implementation comparison
+- [research/ref-0042-ai-agent-catalogs.md](research/ref-0042-ai-agent-catalogs.md) - external AI agent catalog patterns and repo-local curated catalog import boundary
+- [research/ref-0044-docker-compose-infrastructure.md](research/ref-0044-docker-compose-infrastructure.md) - Docker Compose and infrastructure harness analysis
+- [research/ref-0056-security-governance.md](research/ref-0056-security-governance.md) - security governance and secure SDLC analysis
+- [research/ref-0043-automation-pipeline-workflow.md](research/ref-0043-automation-pipeline-workflow.md) - automation, pipeline, and workflow analysis
 
 ## Stage Handoff
 

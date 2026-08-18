@@ -24,7 +24,7 @@ evidence.
 
 - [Canonical GitHub governance](../docs/00.agent-governance/rules/github-governance.md)
 - [Local main-protection proposal](./rulesets/main-protection.md)
-- [Dated GitHub Actions observation](../docs/90.references/data/governance/github-actions-control-plane-observation.yaml)
+- [Dated GitHub Actions observation](../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml)
 
 ## Verification
 
@@ -37,4 +37,4 @@ evidence.
 
 - [Agent governance overview](../docs/00.agent-governance/README.md)
 - [Current project memory](../docs/00.agent-governance/memory/current.md)
-- [Active convergence task](../docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md)
+- [Active convergence task](../docs/03.specs/spec-0135-target-surface-delta-convergence/task.md)

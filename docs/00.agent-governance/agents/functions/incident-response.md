@@ -32,7 +32,7 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 - Evidence is redacted and provenance-aware.
 - Response actions stay within the declared escalation boundary.
 - A paired postmortem is routed to
-  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
 
 ## Failure Handling
 

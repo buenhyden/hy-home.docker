@@ -3,8 +3,9 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: runbook
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
 reviewed_at: <reviewed-at>
-review_cycle: <review-cycle>
+next_review_at: <next-review-at>
 ---
 
 # {{title}}
@@ -32,12 +33,6 @@ review_cycle: <review-cycle>
 ## Escalation
 
 {{escalation}}
-
-## Automation Handoff
-
-| Automation candidate or invocation     | Human or operator judgment boundary     |
-| -------------------------------------- | --------------------------------------- |
-| {{automation_candidate_or_invocation}} | {{human_or_operator_judgment_boundary}} |
 
 ## Related Documents
 

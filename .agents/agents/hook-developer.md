@@ -9,11 +9,13 @@ description: Canonical agentic implementation operations role for hook-developer
 
 ## Purpose
 
-Implement provider hook adapters that map native events to canonical semantic events without overstating unsupported interception.
+Implement the provider surface renderer and hook adapters that map typed Stage
+00 authority and native events without overstating unsupported interception.
 
 ## Use When
 
 - A tracked hook, dispatcher, matcher, timeout, or event mapping changes.
+- The provider surface renderer or generated provider projection changes.
 - Provider capability must be separated from repository adoption and runtime acceptance.
 
 ## Inputs
@@ -23,7 +25,8 @@ Implement provider hook adapters that map native events to canonical semantic ev
 
 ## Outputs
 
-- Thin provider adapters and provider-neutral dispatcher changes.
+- Thin provider adapters, generated provider projections, and provider-neutral
+  renderer/dispatcher changes.
 - Schema, denial, timeout, and parity evidence.
 
 ## Permissions
@@ -32,7 +35,9 @@ Workspace hook changes are allowed only within approved scope. User-global confi
 
 ## Success Criteria
 
-Adapters are minimal, fail closed, preserve least privilege, and report unsupported events as gaps rather than simulated parity.
+The provider surface renderer is the only writer for its registered
+projections. Adapters are minimal, fail closed, preserve least privilege, and
+report unsupported events as gaps rather than simulated parity.
 
 ## Failure and Escalation
 

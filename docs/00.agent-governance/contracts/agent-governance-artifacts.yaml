@@ -621,6 +621,7 @@ path_authority:
       - .codex/**
       - .gemini/**
       - docs/00.agent-governance/providers/*.md
+      - scripts/operations/provider_surface_renderer.py
     canonical_owner: hook-developer
     entry_owners: []
     permitted_contributors:

@@ -52,5 +52,5 @@ future non-secret promotion.
 ## Related Documents
 
 - [workspace README](../README.md)
-- [workspace support surface spec](../../docs/03.specs/106-workspace-support-surface-contract/spec.md)
-- [workspace support surface task](../../docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
+- retired workspace support surface Spec 0106 (historical evidence only)
+- workspace support surface task

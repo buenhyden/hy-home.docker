@@ -475,6 +475,7 @@
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.workflow-contract",
+        "leaf.operations-catalog-manifest",
         "leaf.repo-contracts"
       ]
     },
@@ -704,8 +705,11 @@
     {
       "gate_id": "leaf.docs-implementation-alignment",
       "kind": "leaf",
-      "entrypoint": "scripts/validation/check-doc-implementation-alignment.sh",
-      "argv": [],
+      "entrypoint": "scripts/validation/check-document-links.py",
+      "argv": [
+        "--mode",
+        "alignment"
+      ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
@@ -717,6 +721,26 @@
       ],
       "opaque": true,
       "suite_key": "docs-implementation-alignment"
+    },
+    {
+      "gate_id": "leaf.operations-catalog-manifest",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-operations-catalog.py",
+      "argv": [
+        "--mode",
+        "manifest"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "operations-catalog-manifest"
     },
     {
       "gate_id": "leaf.docs-qa-gate-recommendations",
@@ -742,8 +766,11 @@
     {
       "gate_id": "leaf.docs-traceability",
       "kind": "leaf",
-      "entrypoint": "scripts/validation/check-doc-traceability.sh",
-      "argv": [],
+      "entrypoint": "scripts/validation/check-document-links.py",
+      "argv": [
+        "--mode",
+        "traceability"
+      ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
@@ -988,9 +1015,9 @@
       "suite_key": "local-document-corpus-promoted"
     },
     {
-      "gate_id": "leaf.local-llm-wiki-coverage-freshness",
+      "gate_id": "leaf.local-llm-wiki-freshness",
       "kind": "leaf",
-      "entrypoint": "scripts/knowledge/generate-llm-wiki-coverage.sh",
+      "entrypoint": "scripts/knowledge/generate-llm-wiki.py",
       "argv": [
         "--check"
       ],
@@ -1003,15 +1030,13 @@
         "local-all-profiles"
       ],
       "opaque": true,
-      "suite_key": "local-llm-wiki-coverage-freshness"
+      "suite_key": "local-llm-wiki-freshness"
     },
     {
-      "gate_id": "leaf.local-llm-wiki-index-freshness",
+      "gate_id": "leaf.local-script-manifest",
       "kind": "leaf",
-      "entrypoint": "scripts/knowledge/generate-llm-wiki-index.sh",
-      "argv": [
-        "--check"
-      ],
+      "entrypoint": "scripts/validation/check-script-manifest.py",
+      "argv": [],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
@@ -1021,7 +1046,7 @@
         "local-all-profiles"
       ],
       "opaque": true,
-      "suite_key": "local-llm-wiki-index-freshness"
+      "suite_key": "local-script-manifest"
     },
     {
       "gate_id": "leaf.local-provider-surface-drift",
@@ -1480,8 +1505,9 @@
       "children": [
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-index-freshness",
-        "leaf.local-llm-wiki-coverage-freshness"
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-script-manifest",
+        "leaf.operations-catalog-manifest"
       ]
     },
     {

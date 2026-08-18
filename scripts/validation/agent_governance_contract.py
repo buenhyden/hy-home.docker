@@ -51,7 +51,7 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
     }
 )
 RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+    "docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml"
 )
 CURRENT_MEMORY_PATH = "docs/00.agent-governance/memory/current.md"
 CURRENT_MEMORY_MAX_BYTES = 32 * 1024
@@ -77,7 +77,9 @@ MAX_QA_GUIDANCE_BYTES = 256 * 1_024
 MAX_QA_GUIDANCE_CLAUSES = 256
 MAX_QA_GUIDANCE_CLAUSE_CHARS = 2_048
 _CURRENT_MEMORY_LABELS = ("Current task", "Verified commit", "Verified at")
-_CURRENT_MEMORY_TASK_PREFIX = "docs/04.execution/tasks/"
+CURRENT_MEMORY_TASK_PATTERN = (
+    r"docs/03\.specs/spec-[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*/task\.md"
+)
 _CURRENT_MEMORY_FORBIDDEN_PATTERNS = (
     re.compile(r"(?im)^\s*(?:`{3,}|~{3,})"),
     re.compile(r"(?i)\b(?:credential|credentials|token|tokens|secret|secrets)\b"),
@@ -98,6 +100,46 @@ _CURRENT_MEMORY_FORBIDDEN_PATTERNS = (
     re.compile(
         r"(?im)^\s*(?:[$>]\s+|(?:command|stdout|stderr|traceback|command log|"
         r"raw output|exit code)\s*:)"
+    ),
+)
+_STAGE00_POLICY_OWNER_PATTERNS = (
+    (
+        "load-order",
+        "docs/00.agent-governance/rules/bootstrap.md",
+        re.compile(
+            r"(?is)(?:bootstrap\s*(?:-|=)*>\s*persona\s*(?:-|=)*>\s*"
+            r"checklists?\s*(?:-|=)*>\s*agentic.{0,160}\bscope\b|"
+            r"\bresolve\b.{0,160}\bpersona\b.{0,160}\bchecklist\b.{0,160}"
+            r"\bagentic\b.{0,160}\bscope\b)"
+        ),
+    ),
+    (
+        "workflow-order",
+        "docs/00.agent-governance/rules/workflows.md",
+        re.compile(
+            r"(?is)\bdiscover\b.{0,80}\bdesign/plan\b.{0,80}\bapproval\b"
+            r".{0,80}\bimplement\b.{0,80}\bvalidate\b.{0,80}"
+            r"\bindependent-review\b.{0,80}\bevidence\b.{0,80}\bhandoff\b"
+        ),
+    ),
+    (
+        "completion-contract",
+        "docs/00.agent-governance/rules/task-checklists.md",
+        re.compile(
+            r"(?ims)^\s*(?:#{1,6}\s+(?:\d+\.\s+)?(?:verification|completion)"
+            r"\s+checklist\b|before completion:\s*$|\*\*[^\n]*completion "
+            r"checklist[^\n]*\*\*|#{1,6}\s+completion blockers\s*"
+            r"\(halt if any fail\)\s*$[\s\S]{0,1200}?^\s*\|\s*condition\s*"
+            r"\|\s*action\s*\|\s*$)"
+        ),
+    ),
+    (
+        "language-routing",
+        "docs/00.agent-governance/rules/documentation-protocol.md",
+        re.compile(
+            r"(?i)\b(?:Korean-first|Korean by default|human-facing[^\n]{0,80}"
+            r"Korean)\b"
+        ),
     ),
 )
 _PRECOMMIT_OPTION_NAME = r"--?[a-z0-9][\w-]*"
@@ -1297,9 +1339,17 @@ def _read_root_confined_regular_text(
     ):
         raise _UnsafeRootFileError
 
+    # The root is the caller-supplied trust anchor, not a component discovered
+    # during the walk, so it is opened without O_NOFOLLOW. It may legitimately be
+    # reached through a symlink: the gate runner hands children the repository
+    # root as /proc/self/fd/<fd>, which is always a symlink, and a checkout can
+    # sit under a symlinked parent. Confinement is enforced on every component
+    # *below* the root, which keeps the anti-escape property intact.
+    root_flags = os.O_RDONLY | os.O_DIRECTORY
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     final_flags = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
     close_on_exec = getattr(os, "O_CLOEXEC", 0)
+    root_flags |= close_on_exec
     directory_flags |= close_on_exec
     final_flags |= close_on_exec
     descriptors: list[int] = []
@@ -1320,7 +1370,7 @@ def _read_root_confined_regular_text(
         return descriptor
 
     try:
-        current = open_component(root, directory_flags)
+        current = open_component(root, root_flags)
         for part in relative_path.parts[:-1]:
             current = open_component(part, directory_flags, dir_fd=current)
         final = open_component(relative_path.parts[-1], final_flags, dir_fd=current)
@@ -2889,7 +2939,7 @@ def _validate_catalog_contract(
                 source,
             )
         expected_paths = {
-            "fixture_catalog_path": "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+            "fixture_catalog_path": "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md",
             "scorer_path": "scripts/validation/agent_output_eval.py",
             "runner_path": "scripts/validation/run-agent-output-eval-fixtures.sh",
             "test_path": "tests/validation/test_agent_output_eval_fixtures.py",
@@ -5849,15 +5899,14 @@ def _validate_current_memory(
         task_path = task_values[0]
         if (
             not _is_safe_repo_path(task_path)
-            or not task_path.startswith(_CURRENT_MEMORY_TASK_PREFIX)
-            or not task_path.endswith(".md")
+            or re.fullmatch(CURRENT_MEMORY_TASK_PATTERN, task_path) is None
         ):
             _add(
                 findings,
                 "AGC-MEMORY-BOUNDS",
                 CURRENT_MEMORY_PATH,
                 "label.current-task",
-                "safe-stage04-task-path",
+                "safe-stable-colocated-task-path",
                 "invalid-task-reference",
                 source,
             )
@@ -6969,6 +7018,138 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
     return False
 
 
+def _validate_stage00_policy_ownership(
+    reader: _RepositoryReader,
+    bundle: ContractBundle,
+    findings: list[Finding],
+) -> None:
+    """Reject copied human policy across the registered live Stage 00 inventory."""
+
+    authority = next(
+        (
+            entry
+            for entry in _sequence_or_empty(bundle.artifacts.get("path_authority"))
+            if isinstance(entry, Mapping)
+            and entry.get("authority_id") == "stage00-policy-and-contracts"
+        ),
+        None,
+    )
+    if authority is None:
+        return
+
+    source = "agent-governance-artifacts"
+    patterns = tuple(
+        pattern
+        for pattern in _sequence_or_empty(authority.get("path_patterns"))
+        if isinstance(pattern, str)
+    )
+    inventory: set[str] = set()
+    try:
+        candidates = tuple(reader.root.rglob("*.md"))
+    except (OSError, ValueError):
+        _add(
+            findings,
+            "AGC-REPOSITORY-PATH-ENUMERATION",
+            "docs/00.agent-governance",
+            "stage00-policy-inventory",
+            "deterministic-governed-path-enumeration",
+            "path-enumeration-failed",
+            source,
+        )
+        return
+    for path in candidates:
+        relative = path.relative_to(reader.root).as_posix()
+        if not any(path_matches_artifact_pattern(relative, pattern) for pattern in patterns):
+            continue
+        if relative.startswith("docs/00.agent-governance/memory/") and relative not in {
+            "docs/00.agent-governance/memory/README.md",
+            CURRENT_MEMORY_PATH,
+        }:
+            continue
+        inventory.add(relative)
+
+    active_model_ids = tuple(
+        sorted(
+            str(entry.get("model_id"))
+            for entry in _sequence_or_empty(bundle.providers.get("models"))
+            if isinstance(entry, Mapping) and isinstance(entry.get("model_id"), str)
+        )
+    )
+    provider_authority = next(
+        (
+            entry
+            for entry in _sequence_or_empty(bundle.artifacts.get("path_authority"))
+            if isinstance(entry, Mapping)
+            and entry.get("authority_id") == "provider-adapters-and-hooks"
+        ),
+        None,
+    )
+    provider_patterns = tuple(
+        pattern
+        for pattern in _sequence_or_empty(
+            provider_authority.get("path_patterns")
+            if isinstance(provider_authority, Mapping)
+            else ()
+        )
+        if isinstance(pattern, str)
+    )
+    model_policy_inventory = set(inventory)
+    for profile_index, profile in enumerate(
+        _sequence_or_empty(bundle.artifacts.get("artifacts"))
+    ):
+        if (
+            not isinstance(profile, Mapping)
+            or profile.get("artifact_type") != "provider-overlay"
+            or profile.get("canonical") is not True
+        ):
+            continue
+        overlay = profile.get("path_pattern")
+        if not isinstance(overlay, str):
+            continue
+        if not any(
+            path_matches_artifact_pattern(overlay, pattern)
+            for pattern in provider_patterns
+        ):
+            _add(
+                findings,
+                "AGC-REPOSITORY-POLICY-DUPLICATION",
+                overlay,
+                f"artifacts[{profile_index}].path_pattern",
+                "provider-overlay-covered-by-typed-provider-authority",
+                "uncovered-provider-overlay",
+                source,
+            )
+        model_policy_inventory.add(overlay)
+
+    for relative in sorted(inventory):
+        text = reader.read(relative, "stage00-policy-inventory", source)
+        if text is None:
+            continue
+        for topic, owner, pattern in _STAGE00_POLICY_OWNER_PATTERNS:
+            if relative != owner and pattern.search(text) is not None:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-POLICY-DUPLICATION",
+                    relative,
+                    f"policy-owner.{topic}",
+                    "pointer-to-single-canonical-owner",
+                    "duplicate-policy-prose",
+                    source,
+                )
+    for relative in sorted(model_policy_inventory):
+        text = reader.read(relative, "active-model-policy-inventory", source)
+        if text is not None and any(model_id in text for model_id in active_model_ids):
+            _add(
+                findings,
+                "AGC-REPOSITORY-POLICY-DUPLICATION",
+                relative,
+                "policy-owner.model-values",
+                "typed-provider-model-contract-or-generated-native-adapter",
+                "copied-active-model-value",
+                source,
+            )
+
+
 def _validate_harness_semantic_surfaces(
     reader: _RepositoryReader,
     bundle: ContractBundle,
@@ -7201,6 +7382,7 @@ def validate_repository(
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)
+        _validate_stage00_policy_ownership(reader, bundle, findings)
         findings.extend(_validate_current_memory(root, bundle))
         _validate_harness_semantic_surfaces(reader, bundle, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"

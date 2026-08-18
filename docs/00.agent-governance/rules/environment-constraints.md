@@ -10,7 +10,7 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 
 - Root instruction files stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
-- Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
+- Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
 - `_workspace` is an ignored repo-support staging surface, not an active stage.
   Only `_workspace/README.md` and `_workspace/repo-support/README.md` are
   approved tracked contract files. Runtime artifacts must stay under
@@ -31,11 +31,11 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 ## 2. Verification
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
-- For governance/root changes, run `bash scripts/validation/check-doc-traceability.sh` and link/stale-reference checks for edited files.
+- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode traceability` and link/stale-reference checks for edited files.
 - Direct `pre-commit run` execution by agents is prohibited. At an approved
   final QA gate, use only
   `scripts/validation/run-agent-precommit-all-files.sh` from an initially clean
-  linked worktree with a tracked Stage 04 task and reviewed allowed prefixes.
+  linked worktree with a tracked co-located Task and reviewed allowed prefixes.
   Record its concise result and review hook-managed edits; never auto-reset,
   checkout, clean, or write task evidence from the wrapper.
 - Wrapper evidence covers only Git-visible, non-ignored repository paths.

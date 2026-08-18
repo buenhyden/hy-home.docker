@@ -1,0 +1,70 @@
+---
+status: active
+artifact_id: prd-0004
+artifact_type: prd
+parent_ids: []
+created: 2026-03-26
+updated: 2026-08-13
+---
+# Data Tier (04-data) Product Requirements
+
+## Overview
+
+이 문서는 `04-data` 티어의 제품 요구사항을 정의한다. `hy-home.docker` 플랫폼의 모든 상태 정보를 저장하고 관리하는 통합 데이터 계층으로서, 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
+
+## Problem and Stakeholders
+
+애플리케이션이 데이터 저장소의 물리적 배치나 장애 여부에 구애받지 않고 일관된 인터페이스를 통해 데이터를 영속화할 수 있는 복원력 있는 데이터 허브를 제공한다.
+
+## Problem Statement
+
+현대적인 홈 서버 환경에서는 관계형(SQL), 캐시(KV), 비정형(Object), AI 검색(Vector) 등 다양한 데이터 주기가 요구되나, 이를 개별적으로 관리할 경우 운영 복잡도가 증가하고 권한 및 백업 정책의 파편화가 발생한다.
+
+## Personas
+
+- **Backend Developers**: 안정적인 데이터 API(SQL, Redis, S3)가 필요한 서비스 개발자.
+- **Data Engineers**: 데이터 파이프라인 및 분석 환경을 구축하는 기술자.
+- **AI Agents**: 지식 기반(RAG) 검색을 위해 벡터 엔진이 필요한 에이전트.
+
+## Key Use Cases
+
+- **STORY-01**: 사용자는 고가용성 PostgreSQL 클러스터를 통해 비즈니스 데이터를 안전하게 저장하고 조회해야 한다.
+- **STORY-02**: 개발자는 고성능 분산 캐시(Valkey)를 통해 세션 및 임시 데이터를 밀리초 단위로 처리해야 한다.
+- **STORY-03**: 시스템은 대용량 미디어 및 로그 데이터를 S3 호환 오브젝트 스토리지(MinIO)에 안정적으로 저장해야 한다.
+- **STORY-04**: AI 서비스는 고차원 벡터 임베딩을 검색(Qdrant)하여 지능적인 응답을 생성해야 한다.
+
+## Requirements
+
+- **PRD-0004-R0001**: 모든 핵심 DB(PostgreSQL, Valkey)는 클러스터 구성을 통한 고가용성(HA)을 보장해야 한다.
+- **PRD-0004-R0002**: 데이터 트래픽은 `infra_net` 내부로 격리되어 외부 접근이 차단되어야 한다.
+- **PRD-0004-R0003**: 비밀번호 및 민감 정보는 Docker Secrets 또는 Vault를 통해 주입되어야 한다.
+- **PRD-0004-R0004**: 모든 데이터는 `${DEFAULT_DATA_DIR}` 하위에 영구적으로 보관되어야 한다.
+
+## Acceptance and Verification
+
+- **PRD-0004-AC0001**: PostgreSQL Primary 장애 시 30초 이내에 자동 Failover가 완료되어야 한다.
+- **PRD-0004-AC0002**: 모든 데이터 서비스에 대한 메트릭이 Prometheus를 통해 100% 수집되어야 한다.
+- **PRD-0004-AC0003**: 백업 본을 통한 복구 시 데이터 무결성이 99.99% 보장되어야 한다.
+
+## Scope and Non-goals
+
+- **In Scope**: 데이터 서비스의 배포 구성, HA 아키텍처, 네트워크 격리, 시크릿 관리.
+- **Out of Scope**: 개별 애플리케이션의 비즈니스 로직, 데이터 마이그레이션 도구 개발.
+- **Non-goals**: 실시간 데이터 시각화 대시보드 내장 (Observability 티어에서 담당).
+
+## Risks and Dependencies
+
+- **Risks**: 다중 노드 구성으로 인한 시스템 자원(RAM/CPU) 소모량 증가.
+- **Dependencies**: Docker Compose 및 컨테이너 런타임의 안정성, `${DEFAULT_DATA_DIR}`의 가용 공간.
+- **Assumptions**: 모든 서비스는 `infra_net` 내에서 통신 가능하다고 가정함.
+
+## AI Agent Requirements
+
+N/A
+
+## Related Documents
+
+- **Architecture Description**: [Data architecture descriptions](../02.architecture/descriptions/ad-0004-data-architecture.md)
+- **Spec**: [Data technical specification](../03.specs/spec-0004-data/spec.md)
+- **Plan**: Data standardization plan
+- **ADR**: [PostgreSQL HA Patroni decision](../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md)

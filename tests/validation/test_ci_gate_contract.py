@@ -48,6 +48,7 @@ REQUIRED_JOB_SUITES = {
         "repo-contracts-control-plane-regressions",
         "ci-precommit-regressions",
         "workflow-contract",
+        "operations-catalog-manifest",
         "repo-contracts",
     ),
     "agent-output-eval-fixture-gate": (
@@ -93,6 +94,7 @@ REQUIRED_ROOT_CHILDREN = {
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.workflow-contract",
+        "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
     ),
     "ci.agent-output-eval-fixture-gate": (
@@ -174,8 +176,9 @@ LOCAL_AGGREGATE_CHILDREN = {
     "local.generated-freshness": (
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-index-freshness",
-        "leaf.local-llm-wiki-coverage-freshness",
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-script-manifest",
+        "leaf.operations-catalog-manifest",
     ),
     "local.compose-validation": ("leaf.compose-validation",),
     "local.compose-all-profiles-validation": (
@@ -393,6 +396,24 @@ class CiGateContractTests(unittest.TestCase):
         *codes: str,
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
+
+    def test_operations_catalog_manifest_is_an_exact_required_ci_leaf(self) -> None:
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT),
+            ".github/workflow-contract.yml",
+        )
+        nodes = {node.gate_id: node for node in registry.nodes}
+        leaf = nodes["leaf.operations-catalog-manifest"]
+        self.assertEqual(
+            pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
+            leaf.entrypoint,
+        )
+        self.assertEqual(("--mode", "manifest"), leaf.argv)
+        self.assertIn("ci", leaf.profiles)
+        self.assertIn(
+            leaf.gate_id,
+            nodes["ci.repo-contracts"].children,
+        )
 
     def test_schema_v2_contract_is_strict_json_and_duplicate_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -23,6 +23,10 @@ layer: agentic
 이 카탈로그는 여섯 Operations 양식의 위치와 역할만 안내한다. 메타데이터,
 선택, lifecycle, 승인, 이관 및 검증 규칙은 support 문서를 따른다.
 
+새 Guide, Policy, Runbook은 역할별 병렬 root가 아니라
+`docs/05.operations/<domain>/ops-####-<subject>/`에 함께 둔다. 기존 역할이
+없는 subject에 새 문서를 만들려면 별도 승인과 inventory 근거가 필요하다.
+
 ## Structure
 
 | 역할 | 양식 |
@@ -34,13 +38,20 @@ layer: agentic
 | 원인, 교훈, 재발 방지 조치 | [postmortem.template.md](./postmortem.template.md) |
 | 실제 릴리스 산출물과 결과 증거 | [release.template.md](./release.template.md) |
 
+Operations subject navigation은 Stage root와 13개 domain `README.md`만
+발행한다. subject 폴더에는 `README.md`를 만들지 않으며, incident와 release는
+각 stable event 경로와 전용 인덱스를 사용한다.
+
 ## How to Work in This Area
 
 1. [template selection](../../support/template-selection.md)에서 문서 목적과
    대상 경로를 확인한다.
 2. 해당 양식을 복사하고 모든 토큰을 주제별 근거로 교체한다.
-3. [template contract](../../support/template-contract.md)와 활성 Stage 04
+3. [template contract](../../support/template-contract.md)와 활성 co-located
    Task에 검증 및 검토 증거를 기록한다.
+4. Guide의 `## Runbook Handoff`는 실제 sibling Runbook으로 넘길 때만,
+   Runbook의 `## Automation Handoff`는 실제 automation artifact와 검증 가능한
+   link가 있을 때만 추가한다.
 
 ## Related Documents
 

@@ -55,7 +55,7 @@ layer: agentic
   copied into non-canonical active docs paths.
 - **Memory**: `memory/current.md` is the bounded active handoff; other notes are
   advisory durable context, and `memory/progress.md` is append-preserved
-  historical navigation. Execution evidence belongs in the applicable Stage 04
+  historical navigation. Execution evidence belongs in the applicable co-located
   Task, and memory never overrides active governance.
 - **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,
   `scopes/qa.md`, scripts, and CI docs. Providers execute the same policy with
@@ -89,7 +89,7 @@ policy remains in the linked Stage 00 documents.
 | Sub-agent         | `subagent-protocol.md`                                                                     | Delegation imports exactly one primary scope and follows the shared communication and model policy.                     |
 | Output Style      | `rules/output-style.md`                                                                    | Provider output bindings remain behavioral adapters, not separate writing policy.                                       |
 | Workflow          | `rules/workflows.md`, stage docs                                                           | Planning, execution, verification, and evidence land in canonical stage paths.                                          |
-| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, Stage 04 Task evidence stays durable, and progress remains historical navigation.         |
+| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, co-located Task evidence stays durable, and progress remains historical navigation.       |
 | QA & CI/CD        | `scopes/qa.md`, `rules/github-governance.md`                                               | Each change type has local checks, CI-only gates, hook/script evidence, and skipped-check rationale.                    |
 | Model Policy      | `subagent-protocol.md`, provider notes                                                     | Model and reasoning-effort values change only when policy, sync script, and validators agree.                           |
 | Template Contract | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/` | Template deviations are audited with file, expected template, reason, approval/evidence owner, and validation evidence. |
@@ -117,32 +117,24 @@ policy remains in the linked Stage 00 documents.
 
 ## How to Work in This Area
 
-1. Resolve layer and load persona before any mutation.
-2. Load the pre-task checklist and `[LOAD:RULES:AGENTIC]`.
-3. Load exactly one primary scope.
-4. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
-5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify the Completion Gate.
-6. Review `memory/README.md` and `memory/current.md` before editing; use
-   `memory/progress.md` only when historical navigation is needed.
-7. Ask for clarification before state changes when the request is underspecified
-   or governance constraints conflict.
-8. Before changing model/config values, confirm the Stage 00 policy, provider
-   sync script, and validators already encode the same permitted value.
-9. Run `python3 scripts/validation/check-agent-governance-contract.py --mode contract`
-   after editing the typed contracts. Use repository mode only for a section
-   whose aggregate activation is owned by the current task.
-10. After changing canonical functions, run
-    `scripts/operations/sync-provider-surfaces.sh --write`, inspect the bounded
-    projection diff, and confirm `--check` reports zero drift.
-11. Run the completion checklist, record progress and verification in the
-    applicable Stage 04 Task, and refresh `memory/current.md` with only the
-    bounded next handoff.
+- Use the sole repository load order in
+  `rules/bootstrap.md#3-canonical-load-order`.
+- Route orchestration through `rules/workflows.md`, delegated work through
+  `subagent-protocol.md`, and write authority through
+  `rules/approval-boundaries.md`.
+- Read `memory/README.md` and `memory/current.md` as the bounded handoff;
+  `memory/progress.md` is historical navigation only.
+- Use `contracts/provider-models.yaml` for model and provider values, and use
+  the registered provider renderer for projection changes.
+- Decide completion only through
+  `rules/task-checklists.md#3-completion-contract`; record the resulting
+  evidence in the applicable co-located Task.
 
 ## Related Documents
 
-- `../01.requirements/024-agent-governance-standardization.md`
-- `../02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
-- `../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
+- `../01.requirements/prd-0024-agent-governance-standardization.md`
+- `../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
+- `../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `rules/agentic.md`
 - `rules/bootstrap.md`
 - `rules/jit-markers.md`

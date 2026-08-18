@@ -19,9 +19,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "scripts/validation/target_surface_delta_contract.py"
 MANIFEST_PATH = (
     ROOT
-    / "docs/90.references/data/governance/target-surface-delta-manifest.yaml"
+    / "docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml"
 )
-SUMMARY_PATH = MANIFEST_PATH.with_name("target-surface-delta-summary.md")
+SUMMARY_PATH = MANIFEST_PATH.with_name("ref-0074-target-surface-delta-summary.md")
+IMMUTABLE_SUMMARY_SHA256 = (
+    "ccf940b06b8ebb4ff48638287cf38ca4c983e9da560f6114fe7e7308f24834c1"
+)
 METADATA_CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
 PROFILE_REGISTRY = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 PREDECESSOR_CLOSURE = "63039b5b0b20c99a10aae7162627afefcd7a1d8b"
@@ -144,7 +147,7 @@ TASK42_NEW_UPDATE_PATHS = frozenset(
 TASK42_MODE_UPDATE_PATHS = frozenset(
     {
         "scripts/security/generate-supply-chain-sample-service-summary.sh",
-        "scripts/validation/check-doc-implementation-alignment.sh",
+        "scripts/validation/check-document-links.py",
         "scripts/validation/check-document-corpus-lifecycle.py",
         "scripts/validation/check-document-metadata.py",
         "scripts/validation/check-supply-chain-policy.py",
@@ -1117,9 +1120,15 @@ class WholeSurfaceTests(unittest.TestCase):
         first = contract.render_delta_summary(document, inventory)
         second = contract.render_delta_summary(document, inventory)
         self.assertEqual(first, second)
-        self.assertEqual(first, SUMMARY_PATH.read_text(encoding="utf-8"))
+        stable_summary = SUMMARY_PATH.read_bytes()
+        self.assertEqual(
+            IMMUTABLE_SUMMARY_SHA256,
+            hashlib.sha256(stable_summary).hexdigest(),
+        )
         self.assertNotIn("PASSWORD=", first)
         self.assertNotIn("SUPER_SECRET_VALUE", first)
+        self.assertNotIn(b"PASSWORD=", stable_summary)
+        self.assertNotIn(b"SUPER_SECRET_VALUE", stable_summary)
 
 
 class PredecessorIntegrityTests(unittest.TestCase):

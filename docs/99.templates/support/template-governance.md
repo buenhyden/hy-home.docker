@@ -29,7 +29,7 @@ contracts, and validation rules.
   when the active Plan requires them. Do not self-assign an
   independent PASS or APPROVED verdict.
 - Resolve Critical and Important findings before the logical task closes.
-  Record Minor findings and their disposition in Stage 04 evidence.
+  Record Minor findings and their disposition in co-located Task evidence.
 - Preserve remote, runtime, secret, deployment, and provider boundaries unless
   the task explicitly approves them.
 
@@ -115,5 +115,5 @@ and repository contract checks. A task touching these surfaces must record:
 - [README profile contract](./readme-profile-contract.md)
 - [corpus migration contract](./corpus-migration-contract.md)
 - [archive and retention contract](./archive-retention-contract.md)
-- [task evidence](../../04.execution/tasks/2026-07-02-template-system-reorganization.md)
-- [contract standardization task evidence](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md)
+- task evidence
+- contract standardization task evidence

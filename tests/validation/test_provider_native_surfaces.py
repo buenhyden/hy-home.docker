@@ -50,15 +50,17 @@ def copy_provider_contract_root(root: pathlib.Path) -> None:
     ledger_source = (
         ROOT
         / "docs/90.references/data/governance/"
-        "agent-governance-retirement-ledger.yaml"
+        "ref-0063-agent-governance-retirement-ledger.yaml"
     )
     ledger_target = root / ledger_source.relative_to(ROOT)
     ledger_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(ledger_source, ledger_target)
     spec_source = (
-        ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+        ROOT / "docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md"
     )
-    spec_target = root / spec_source.relative_to(ROOT)
+    spec_target = (
+        root / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+    )
     spec_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec_source, spec_target)
 
@@ -78,6 +80,17 @@ def write_native_projection(
 
 
 class ProviderNativeSurfaceTests(unittest.TestCase):
+    def test_provider_overlays_route_model_values_to_typed_contract(self) -> None:
+        values = load_provider_contract()
+        model_ids = {str(item["model_id"]) for item in values["models"]}
+        for runtime in ("claude", "codex", "gemini"):
+            relative = f"docs/00.agent-governance/providers/{runtime}.md"
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            with self.subTest(runtime=runtime):
+                self.assertIn("contracts/provider-models.yaml", text)
+                for model_id in model_ids:
+                    self.assertNotIn(model_id, text)
+
     def test_gemini_reasoning_uses_scoped_model_configs_without_sampling_parameters(
         self,
     ) -> None:

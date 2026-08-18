@@ -19,28 +19,54 @@ The metadata and lifecycle validators are their executable interpreters.
 
 ## Tombstone Profile and Provenance
 
-Archive path selection has two exact profiles under one semantic type. A
-`content-archive` tombstone owns root `archive/**`, while `sdlc-archive` owns
-`docs/98.archive/**`; both declare `artifact_type: archive`. Content tombstones
-forbid SDLC parents, supersession, replacement, and snapshot fields. SDLC
-tombstones retain the existing conditional replacement and snapshot contract.
-Each path must match exactly one selector and use its registered template.
+`docs/98.archive` is the sole documentation archive. Archive records preserve
+provenance under that root and never create an active compatibility, redirect,
+or legacy profile. Each path matches one registered archive selector and uses
+its registered template.
 
-### `content-archive`
+### `change-plan`
 
-Required: `status`, `artifact_id`, `artifact_type`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
-
-Optional: none.
-
-Forbidden: `parent_ids`, `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`, `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
-
-### `sdlc-archive`
-
-Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
 
 Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
 
-Forbidden: `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+The retained `plan.md` has `plan-####` identity inherited from its
+`changes/chg-####-<slug>/` packet directory.
+
+### `change-task`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+The retained `task.md` has `task-####-<sequence>` identity inherited from its
+`changes/chg-####-<slug>/` packet directory.
+
+### `tombstone`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+Tombstones preserve the removed document's stable ID in a direct
+`tombstones/<stage>/<stable-id>-<slug>.md` path.
+
+### `migration`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+Migration records use direct `mig-####` identity at
+`migrations/mig-####-<slug>.md`.
 
 Within the SDLC optional field set, `current_replacement` is required for
 `superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
@@ -56,7 +82,16 @@ The preservation classes are `git-history`, `immutable-snapshot`.
 resolve to that exact blob. The tombstone remains concise and never presents
 the removed body as current truth.
 
-For an SDLC tombstone, a verified withdrawal has no replacement, so the
+`archived_from` normally names a safe canonical path beneath `docs/`. The only
+additional registered historical source root is the retired top-level
+`archive/` directory. An `archive/...` value is provenance only: it must be a
+canonical relative path with no traversal, backslash, absolute path, or URI
+form, and `archived_commit:archived_from` must resolve to the recorded regular
+blob. It never authorizes a live archive destination or a
+`current_replacement`; all current archive records remain beneath
+`docs/98.archive`, and replacements remain beneath `docs/`.
+
+For a Stage 98 archive record, a verified withdrawal has no replacement, so the
 `current_replacement` key and `## Current Replacement` section are absent.
 Sentinel text must not fabricate a replacement. The direction of `supersedes`,
 direct parents, identity, and status still comes from the shared metadata
@@ -64,11 +99,10 @@ owner.
 
 ## Snapshot Admission and Confidentiality
 
-For `sdlc-archive`, Git history is the default preservation route. An immutable
+For every typed Stage 98 selector, Git history is the default preservation route. An immutable
 snapshot is admitted only for an evidence-preserve disposition with explicit
 audit, legal, or approved evidence need. It requires all three snapshot fields
-and the `## Preserved Evidence` section. `content-archive` never admits snapshot
-fields under either preservation class.
+and the `## Preserved Evidence` section.
 
 The snapshot path is content-addressed beneath
 `docs/98.archive/evidence/` with suffix `.md.snapshot`. The content hash must
@@ -97,8 +131,11 @@ The warning is advisory. Adding a new eligible leaf at the blocking boundary
 requires a tracked, canonical, reviewed Plan that authorizes the partition;
 editing an existing leaf does not count as a new addition.
 
-Stage 01 through Stage 03 use stable domains or bounded contexts. Stage 04's
-future approved shape is `docs/04.execution/plans` -> `docs/04.execution/plans/YYYY` and `docs/04.execution/tasks` -> `docs/04.execution/tasks/YYYY`.
+Stage 01 through Stage 03 use stable domains or bounded contexts. Legacy
+Stage 04 roots migrate to stable capability-owned paths:
+`docs/04.execution/plans` -> `docs/03.specs/spec-####-<capability>/plan.md` and
+`docs/04.execution/tasks` -> `docs/03.specs/spec-####-<capability>/task.md`.
+No dated Stage 04 path is an archive partition target.
 Moves preserve artifact identity and historical evidence. Wave C owns the
 actual Stage 04 partition; this Foundation contract does not move leaves.
 
@@ -124,4 +161,4 @@ lifecycle inference.
 - [common document contract](./common-document-contract.md)
 - [archive template](../templates/common/archive.template.md)
 - [Stage 98 archive](../../98.archive/README.md)
-- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- Foundation task evidence

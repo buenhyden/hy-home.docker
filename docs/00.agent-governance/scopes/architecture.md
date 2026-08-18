@@ -24,7 +24,7 @@ layer: architecture
 
 ## 3. Implementation Flow
 
-1. **Discover**: Analyze existing system context in `02.architecture/requirements/`.
+1. **Discover**: Analyze existing system context in `02.architecture/descriptions/`.
 2. **Standardize**: Select or define patterns (e.g., Saga, Event Sourcing) and document in ADR.
 3. **Verify**: Run repository-available validation commands relevant to the changed architecture surfaces.
 
