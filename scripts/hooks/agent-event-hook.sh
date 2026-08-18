@@ -425,6 +425,7 @@ logical_commit_stop_gate() {
     python3 - <<'PY'
 from __future__ import annotations
 
+import pathlib
 import subprocess
 
 try:
@@ -438,6 +439,68 @@ try:
 except subprocess.CalledProcessError:
     raise SystemExit(0)
 
+REGISTRY = "docs/00.agent-governance/contracts/deferred-paths.yaml"
+SCHEMA = "agent-governance/deferred-paths/v1"
+
+
+def deferred_paths() -> set[str]:
+    """Paths tracked governance declares intentionally dirty.
+
+    Fails closed: any missing, untracked, unreadable, or malformed registry
+    yields no exemptions, so the gate keeps blocking exactly as before.
+    """
+    registry = pathlib.Path(REGISTRY)
+    if not registry.is_file():
+        return set()
+
+    # The declaration must itself be committed, so exempting a path is a
+    # reviewable act rather than a local edit the gate would trust blindly.
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", REGISTRY],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if tracked.returncode != 0:
+        return set()
+
+    try:
+        import yaml
+    except ImportError:
+        return set()
+
+    try:
+        document = yaml.safe_load(registry.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return set()
+
+    if not isinstance(document, dict) or document.get("schema") != SCHEMA:
+        return set()
+
+    entries = document.get("deferrals")
+    if not isinstance(entries, list):
+        return set()
+
+    declared: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        path = entry.get("path")
+        reason = entry.get("reason")
+        owning_task = entry.get("owning_task")
+        if not isinstance(path, str) or not path.strip():
+            continue
+        if not isinstance(reason, str) or not reason.strip():
+            continue
+        if not isinstance(owning_task, str) or not owning_task.strip():
+            continue
+        if not pathlib.Path(owning_task).is_file():
+            continue
+        declared.add(path.strip())
+    return declared
+
+
+exempt = deferred_paths()
+
 paths: list[str] = []
 for line in result.stdout.splitlines():
     if not line.strip():
@@ -445,6 +508,8 @@ for line in result.stdout.splitlines():
     path = line[3:]
     if " -> " in path:
         path = path.split(" -> ", 1)[1]
+    if path in exempt:
+        continue
     paths.append(path)
 
 print("\n".join(paths[:80]))
