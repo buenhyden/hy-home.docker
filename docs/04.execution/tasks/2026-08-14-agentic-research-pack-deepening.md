@@ -374,16 +374,43 @@ Task's final gate, not per cluster.
 
 ### Commit identity
 
-| Logical unit                   | Commit  | Scope                                      |
-| ------------------------------ | ------- | ------------------------------------------ |
-| Ledger creation                | Pending | This Task and the execution task index row |
-| G1 Foundation                  | Pending | Two Foundation leaves                      |
-| G2a Harness and loop           | Pending | Four agentic-construction leaves           |
-| G2b Model and memory           | Pending | Four model and memory leaves               |
-| G3 SDLC and documentation      | Pending | Five SDLC and documentation leaves         |
-| G4 Delivery and quality        | Pending | Three delivery and quality leaves          |
-| G5 Infrastructure and security | Pending | Two infrastructure and security leaves     |
-| Index reconciliation           | Pending | Pack README and parent research router     |
+Filled 2026-08-18. Every row previously read `Pending` while the work was
+already committed, so the ledger stated the opposite of the repository state.
+Each commit below was matched to its row by comparing the commit's own file set
+against the row's declared leaf count, not by its subject line.
+
+| Logical unit                   | Commit                  | Scope                                                                  |
+| ------------------------------ | ----------------------- | ---------------------------------------------------------------------- |
+| Ledger creation                | `ece3eda9`, `c68985be`  | This Task and the execution task index row; `c68985be` records validation runtime preparation |
+| G1 Foundation                  | `4f37f0c1`              | Two Foundation leaves: `scope-application-matrix.md`, `workspace-baseline.md` |
+| G2a Harness and loop           | `1e61643c`              | Four agentic-construction leaves: `agent-instructions-vibe-coding.md`, `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md` |
+| G2b Model and memory           | `9f931ff1`              | Four model and memory leaves: `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md`, `provider-model-landscape.md` |
+| G3 SDLC and documentation      | `f2e96ed4`              | Five SDLC and documentation leaves: `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md`, `sdlc-document-roles.md`, `spec-driven-sdlc.md` |
+| G4 Delivery and quality        | `88f4b2e2`              | Three delivery and quality leaves: `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md` |
+| G5 Infrastructure and security | `8c3f0fce`              | Two infrastructure and security leaves: `docker-compose-infrastructure.md`, `security-governance.md` |
+| Index reconciliation           | `c8785e1b`              | Pack `README.md`, but also `agent-model-selection.md`, `docker-compose-infrastructure.md`, and `security-governance.md`; see the deviation note below |
+
+### Commits outside the planned clusters
+
+Three further commits changed leaves this Task owns and match no row above. They
+are recorded here so the pack's change surface has no unowned commit, not
+because the plan anticipated them.
+
+| Commit      | Files                                             | Why it is out of plan                                                                                        |
+| ----------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `52081b3d`  | `sdlc-document-roles.md`, this Task                | Separates the SDLC lifecycle and operations document families; a G3 leaf reopened after G3 closed              |
+| `4ad4837e`  | `llm-wiki-system.md`, `sdlc-document-roles.md`     | Records in-flight operations path convergence across a G3 leaf pair; does not update this Task in the same commit |
+| `1b5a83da`  | pack `README.md`, `loop-engineering.md`            | Adds loop-side workspace adoption rules; a G2a leaf reopened three days after G2a closed                        |
+
+### Commit rule deviations
+
+Two rules stated below were not met and are recorded rather than restated as
+satisfied. `c8785e1b`, `4ad4837e`, and `1b5a83da` do not update this Task in the
+same commit, so the same-commit ledger rule holds for six of nine commits.
+`c8785e1b` also exceeds its declared scope by three leaves, and `52081b3d`,
+`4ad4837e`, and `1b5a83da` reopen leaves whose owning cluster had already
+closed, so the one-commit-per-cluster rule holds for the six cluster commits
+only.
 
 ### Commit logical unit
 
