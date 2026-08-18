@@ -33,7 +33,15 @@ REQUIRED_LOCAL_PATHS = frozenset(
     {GENERATOR_PATH}
 )
 SAFE_SUFFIXES = frozenset({".conf", ".env", ".graphql", ".json", ".md", ".proto", ".sh", ".toml", ".txt", ".yaml", ".yml"})
-EXCLUDED_PREFIXES = (".git/", "graphify-out/", "node_modules/", "projects/storybook/nextjs/.next/", "projects/storybook/nextjs/node_modules/", "volumes/")
+# Deletion-invariance for the Spec 137 retirement. The retiring research pack is
+# excluded by exact trailing-slash prefix so this generated navigation surface
+# carries no reference to it either before or after deletion. Ported on
+# 2026-08-19 from scripts/knowledge/generate-llm-wiki-index.sh, which owned this
+# property while it was the canonical generator. Measured before the port: a
+# regeneration without it injects 20 clickable retiring-pack links into the
+# index and gate 4's hard clickable_links=0 fails.
+RETIRING_PACK_PREFIX = "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
+EXCLUDED_PREFIXES = (".git/", "graphify-out/", "node_modules/", "projects/storybook/nextjs/.next/", "projects/storybook/nextjs/node_modules/", "volumes/", RETIRING_PACK_PREFIX)
 EXCLUDED_PARTS = frozenset({".cache", ".next", "coverage", "dist", "node_modules", "vendor"})
 GENERATED_OR_LOCK_FILES = (".min.css", ".min.js", "package-lock.json", "pnpm-lock.yaml", "yarn.lock")
 CATEGORY_ORDER = (

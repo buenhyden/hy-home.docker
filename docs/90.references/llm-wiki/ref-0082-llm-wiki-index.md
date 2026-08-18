@@ -69,6 +69,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [docs/90.references/llm-wiki/README.md](README.md) | folder index |
+| [docs/90.references/llm-wiki/llm-wiki-index.md](llm-wiki-index.md) | Markdown reference |
 | [docs/90.references/llm-wiki/ref-0083-repository-map.md](ref-0083-repository-map.md) | Markdown reference |
 
 ### Agent governance
@@ -117,18 +118,25 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md](../../00.agent-governance/agents/functions/workspace-audit-revalidation.md) | Markdown reference |
 | [docs/00.agent-governance/contracts/agent-catalog.yaml](../../00.agent-governance/contracts/agent-catalog.yaml) | YAML config |
 | [docs/00.agent-governance/contracts/agent-governance-artifacts.yaml](../../00.agent-governance/contracts/agent-governance-artifacts.yaml) | YAML config |
+| [docs/00.agent-governance/contracts/deferred-paths.yaml](../../00.agent-governance/contracts/deferred-paths.yaml) | YAML config |
 | [docs/00.agent-governance/contracts/provider-models.yaml](../../00.agent-governance/contracts/provider-models.yaml) | YAML config |
 | [docs/00.agent-governance/harness-implementation-map.md](../../00.agent-governance/harness-implementation-map.md) | Markdown reference |
 | [docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md) | Markdown reference |
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
 | [docs/00.agent-governance/memory/current.md](../../00.agent-governance/memory/current.md) | Markdown reference |
+| [docs/00.agent-governance/memory/direct-deletion-branch-unadopted-design.md](../../00.agent-governance/memory/direct-deletion-branch-unadopted-design.md) | Markdown reference |
 | [docs/00.agent-governance/memory/docker-doc-contract-backlog.md](../../00.agent-governance/memory/docker-doc-contract-backlog.md) | Markdown reference |
 | [docs/00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md) | Markdown reference |
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
+| [docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md](../../00.agent-governance/memory/ignored-sdd-scratch-deletion.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
+| [docs/00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md](../../00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md) | Markdown reference |
+| [docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md](../../00.agent-governance/memory/spec-136-migration-branch-preservation.md) | Markdown reference |
 | [docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md](../../00.agent-governance/memory/stage-docs-lifecycle-audit.md) | Markdown reference |
+| [docs/00.agent-governance/memory/stop-gate-ignores-task-ownership.md](../../00.agent-governance/memory/stop-gate-ignores-task-ownership.md) | Markdown reference |
+| [docs/00.agent-governance/memory/worktree-consolidation-2026-08-18.md](../../00.agent-governance/memory/worktree-consolidation-2026-08-18.md) | Markdown reference |
 | [docs/00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md) | Markdown reference |
 | [docs/00.agent-governance/providers/claude.md](../../00.agent-governance/providers/claude.md) | Markdown reference |
 | [docs/00.agent-governance/providers/codex.md](../../00.agent-governance/providers/codex.md) | Markdown reference |
@@ -331,6 +339,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../02.architecture/descriptions/ad-0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md) | Markdown reference |
+| [docs/03.specs/137-agentic-research-pack-rebuild/spec.md](../../03.specs/137-agentic-research-pack-rebuild/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/03.specs/spec-0001-gateway/spec.md](../../03.specs/spec-0001-gateway/spec.md) | Markdown reference |
 | [docs/03.specs/spec-0002-auth/spec.md](../../03.specs/spec-0002-auth/spec.md) | Markdown reference |
@@ -370,6 +379,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/task.md) | Markdown reference |
+| [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
+| [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md](../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md) | Markdown reference |
+| [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
+| [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md](../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md](../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md](../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md) | Markdown reference |
+| [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
 
@@ -653,6 +669,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/ref-0075-profile.md](../data/hads/ref-0075-profile.md) | Markdown reference |
 | [docs/90.references/data/knowledge/README.md](../data/knowledge/README.md) | folder index |
+| [docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md](../data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/kubernetes/README.md](../data/kubernetes/README.md) | folder index |
 | [docs/90.references/data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md](../data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md) | Markdown reference |
@@ -662,29 +679,29 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/ref-0080-roadmap-v1.md](../learning/ref-0080-roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/ref-0081-roadmap.md](../learning/ref-0081-roadmap.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md](../research/2026-08-08-agentic-engineering-research-pack/README.md) | folder index |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md](../research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md](../research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md](../research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md](../research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md](../research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md](../research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md](../research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md](../research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md](../research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md](../research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/memory-hierarchy.md](../research/2026-08-08-agentic-engineering-research-pack/memory-hierarchy.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md](../research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md](../research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md](../research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md](../research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md](../research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md](../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md](../research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md](../research/2026-08-08-agentic-engineering-research-pack/verification-validation.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md](../research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
-| `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf) | Markdown reference |
-| `agent-instructions-vibe-coding` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-instructions-vibe-coding` leaf) | Markdown reference |
-| `agent-model-selection` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-model-selection` leaf) | Markdown reference |
-| `ai-agent-catalogs` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf) | Markdown reference |
-| `automation-pipeline-workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) | Markdown reference |
-| `docker-compose-infrastructure` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) | Markdown reference |
-| `document-metadata-lifecycle` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) | Markdown reference |
-| `documentation-architecture` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `documentation-architecture` leaf) | Markdown reference |
-| `harness-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) | Markdown reference |
-| `llm-wiki-system` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `llm-wiki-system` leaf) | Markdown reference |
-| `loop-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) | Markdown reference |
-| `memory-hierarchy` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `memory-hierarchy` leaf) | Markdown reference |
-| `provider-implementation-comparison` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf) | Markdown reference |
-| `provider-model-landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf) | Markdown reference |
-| `quality-ci-formatting` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf) | Markdown reference |
-| `scope-application-matrix` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `scope-application-matrix` leaf) | Markdown reference |
-| `sdlc-document-roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) | Markdown reference |
-| `security-governance` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) | Markdown reference |
-| `spec-driven-sdlc` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf) | Markdown reference |
-| `workspace-baseline` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf) | Markdown reference |
 | [docs/90.references/research/ref-0084-github-actions-platform.md](../research/ref-0084-github-actions-platform.md) | Markdown reference |
-| `verification-validation` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `verification-validation` leaf) | Markdown reference |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
 | [docs/99.templates/support/archive-retention-contract.md](../../99.templates/support/archive-retention-contract.md) | Markdown reference |
@@ -1000,6 +1017,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
 | [scripts/hooks/patch-graphify-post-commit.sh](../../../scripts/hooks/patch-graphify-post-commit.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
+| [scripts/knowledge/generate-llm-wiki-coverage.sh](../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | script |
+| [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
 | [scripts/knowledge/generate-llm-wiki.py](../../../scripts/knowledge/generate-llm-wiki.py) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
@@ -1017,6 +1036,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
 | [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
+| [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
+| [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
