@@ -180,7 +180,17 @@ referencing 8 distinct actions, each pinned to a full 40-character commit SHA:
 `actions/checkout` (4), `actions/setup-python` (4), `actions/setup-node` (3),
 `actions/first-interaction` (2), `astral-sh/setup-uv` (1),
 `github/codeql-action/upload-sarif` (1), `actions/labeler` (1), and
-`actions/stale` (1). Cross-referencing `.github/workflow-contract.yml`'s
+`actions/stale` (1).
+
+Corrected 2026-08-18: 17 is the count of LITERAL `uses:` lines, not of resolved
+references. `ci-quality.yml` declares an `&checkout` YAML anchor at line 25 and
+invokes it 15 further times, so an anchor-resolving parser reports 32 of 32
+resolved references across the same 8 action identities. A raw line scan
+undercounts by exactly those 15, which is how a superseded 18/18 figure once
+arose. The pin conclusion is unchanged; the coverage denominator is not, and the
+retiring pack was the only tracked record of that distinction.
+
+Cross-referencing `.github/workflow-contract.yml`'s
 `actions` registry confirms the same 8 action identities and the same SHA for
 each (for example `actions/checkout` at `3d3c42e5aac5ba805825da76410c181273ba90b1`);
 the registry's own `consumers` arrays list 12 file-level pairs because several
@@ -291,7 +301,7 @@ risk-shaped view the control-map table above does not:
 | 1             | Insufficient Flow Control Mechanisms               | Seven workflows declare top-level `permissions`; branch-protection _intent_ is tracked in `.github/rulesets/main-protection.md` but live enforcement is `UNVERIFIED` (`SEC-AUTO-007`).                                                                               |
 | 2             | Inadequate Identity and Access Management          | Single CODEOWNERS principal (`@buenhyden`) across all listed protected paths; no tracked evidence of scoped per-path bot/service identities.                                                                                                                         |
 | 3             | Dependency Chain Abuse                             | Dependabot (`SEC-AUTO-004`, Implemented) plus scoped npm audit; broad multi-ecosystem SCA is the one tracked Gap (`SEC-AUTO-012`).                                                                                                                                   |
-| 4             | Poisoned Pipeline Execution (PPE)                  | All 17 tracked `uses:` action references are pinned to full 40-character commit SHAs (re-verified today), which forecloses the tag-mutation variant of PPE for registered actions; no tracked evidence rules out script-injection PPE via untrusted workflow inputs. |
+| 4             | Poisoned Pipeline Execution (PPE)                  | All tracked `uses:` action references are pinned to full 40-character commit SHAs (re-verified today) — 17 literal lines resolving to 32 references once the `ci-quality.yml` `*checkout` anchor is expanded, which forecloses the tag-mutation variant of PPE for registered actions; no tracked evidence rules out script-injection PPE via untrusted workflow inputs. |
 | 5             | Insufficient PBAC (Pipeline-Based Access Controls) | Workflow permissions are declared per-workflow; no tracked environment-protection-rule evidence was found for this leaf's re-survey.                                                                                                                                 |
 | 6             | Insufficient Credential Hygiene                    | Gitleaks (`.gitleaks.toml`, extends the upstream default ruleset) plus the file-based Docker Secrets contract; secret rotation cadence is not tracked (unchanged finding).                                                                                           |
 | 7             | Insecure System Configuration                      | Eleven-tier hardening script PASS is the closest tracked control; it is selected-assertion evidence, not full runner/registry configuration audit.                                                                                                                   |
