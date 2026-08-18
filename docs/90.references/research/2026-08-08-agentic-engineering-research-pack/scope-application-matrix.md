@@ -251,9 +251,17 @@ lines, while `agentic.md` is 1,389 bytes and 45 lines. The eight base-tier
 files range from 1,389 to 2,566 bytes and are, in content, aspirational
 standard sheets — `frontend.md` names Next.js 15+, React 19+, Tailwind v4, and
 WCAG 2.2 AA; `backend.md` names OWASP ASVS L2 and a 90 percent domain-logic
-coverage floor; `mobile.md` names Expo Application Services builds. None of
-those claims has a tracked surface to bind to today, which is why the matrix
-labels their targets as adoption exceptions rather than as current state.
+coverage floor; `mobile.md` names Expo Application Services builds.
+Corrected 2026-08-18: an earlier version of this paragraph said none of those
+claims has a tracked surface to bind to today. That is false for
+`frontend.md`, whose stated floors are met by
+`projects/storybook/nextjs/package.json`, which pins `next` 16.2.10, `react`
+19.2.7, `tailwindcss` ^4.3.2 and `@storybook/addon-a11y` ^10.5.3; the sentence
+also contradicted this document's own matrix row for that scope. `backend.md`
+and `mobile.md` do remain unbound, because the tracked
+`examples/sample-web-service/` is a static site rather than a backend service
+and no Expo surface is tracked. Those two are why the matrix labels their
+targets as adoption exceptions rather than as current state.
 
 `docs.md` numbers its ownership and bridge sections `5` and `6` while the other
 five full-tier files number them `6` and `7`. `frontend.md` also renders its
