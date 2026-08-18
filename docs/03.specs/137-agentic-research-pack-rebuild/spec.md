@@ -328,6 +328,54 @@ review sequence within this boundary.
   records, remote state, or Git refs. A separately reviewed create-only
   evidence-ref publication remains the only permitted Gate 9 ref mutation.
 
+### Non-link literal admission amendment
+
+**Approval date:** 2026-08-18 (Asia/Seoul)
+
+Old-path inventory and allowlist names two admission routes for a non-link
+retiring-path literal: the claim-ledger route, which requires the literal to
+describe a factual old event AND carry an explicit claim-ledger disposition,
+and the commit-pinned baseline route. The Task's allowlist contains 39 rows in
+14 declared classes, and only 21 of them fall under those two routes. The
+remaining 18 were admitted by reading the claim-ledger conjunct as vacuously
+satisfied, which is not what the clause says and is not a reading this Spec
+had confirmed. That gap, not the rows themselves, was the defect.
+
+This amendment names every admission route explicitly. It does not widen what
+may be allowlisted: each route below carries a removal condition, so no route
+creates a permanent exception, and the clickable-link prohibition is untouched
+and admits no exception under any route.
+
+1. **Historical claim-ledger route** — unchanged. The literal describes a
+   factual old event and carries an explicit claim-ledger disposition.
+   Removal condition: none; these rows are immutable historical evidence.
+2. **Commit-pinned baseline route** — unchanged, including its existing
+   requirements to identify the pinned baseline or wave, not to act as a
+   current route or migration exception, and to stay covered by the baseline's
+   canonical promoted-manifest and summary checks.
+3. **Operative retirement-machinery route** — the literal is an operand of the
+   retirement work itself: a filter constant, a regression fixture, or a scan
+   target that must name the retiring path for the retirement machinery to
+   function. Such a row must not resolve to retiring content for a reader and
+   must be removed when the retirement completes. A literal that merely
+   mentions the path is not an operand and does not qualify.
+4. **Active retirement-unit route** — the literal appears in the scope,
+   boundary, or evidence statements of the retirement Spec, Plan, or Task that
+   owns this retirement. Such a row must be owned by a named active unit and
+   must be removed when that unit closes. This route is what the two
+   `Active-unit scope boundary` rows require; it is a current-state route, so
+   it does not and cannot satisfy the factual-old-event conjunct, and it is
+   admitted here on its own terms rather than by stretching that conjunct.
+5. **Non-resolving same-slug route** — the literal shares the retiring slug but
+   does not resolve to the retiring directory. Such a row must record why it
+   does not resolve. This route documents a non-hit; it grants nothing.
+
+Every allowlist row must declare exactly one route, and the route must be
+recoverable from its literal class. A row whose class maps to no route is not
+admitted. Requirement 4 of the pre-deletion gates is otherwise unchanged, and
+the four routes other than the first remain subject to the same reviewed-row
+requirement as before.
+
 ### Deletion-evidence decoupling amendment
 
 The user approved decoupling deletion authority from the publication mechanism
