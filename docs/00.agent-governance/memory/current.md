@@ -32,7 +32,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: pending this merge commit
+- Verified commit: `e2a93538` (merge `5afdd277`, absorption `e2a93538`)
 - Verified at: `2026-08-18`
 - All 66 merge conflicts were resolved with per-file verification: 19
   modify/delete and 47 both-modified. The gated retiring pack is intact at 20
@@ -60,6 +60,9 @@ status: active
   `scripts/lib/document_governance/`.
 - The taxonomy migration is complete through Task 10D. Slices 10E, 10F and 10G
   remain.
+- Both `.worktrees/` trees are removed and both branches deleted. Their commits
+  stay reachable through `preserve/rebuild-finish`, `preserve/taxonomy-final`,
+  and `pre-taxonomy-merge-main`.
 
 ## Evidence links
 
@@ -67,6 +70,7 @@ status: active
 - [Spec 136 taxonomy convergence](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)
 - [Operations catalog migration ledger](../../98.archive/migrations/mig-0002-operations-catalog-convergence.md)
 - [Spec 136 migration branch preservation](./spec-136-migration-branch-preservation.md)
+- [Worktree consolidation record](./worktree-consolidation-2026-08-18.md)
 
 ## Next handoff
 
