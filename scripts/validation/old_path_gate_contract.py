@@ -57,10 +57,25 @@ _DEST = rf"{_SLUG_BODY}(?:[/\\]|(?=[)>\"'\s\]?#&,;\\]|$))"
 
 _INLINE = re.compile(rf"\]\(\s*<?[^)\n]*{_DEST}", re.IGNORECASE)
 _REFERENCE = re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | re.M)
+# Any attribute that resolves a URL, not just href/src. Restricting it to two
+# names left srcset, data, poster, action and friends detected only as literals,
+# which a reviewed allowlist row then suppressed entirely -- the exact
+# amplification the clickable check exists to prevent. `srcset` additionally
+# could not match at all, because `(?:href|src)\s*=` stops at `srcset=`.
+_URL_ATTR = r"href|src|srcset|data|poster|action|formaction|cite|ping|manifest|longdesc"
 _HTML_ATTR = re.compile(
-    rf"(?:href|src)\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}", re.IGNORECASE
+    rf"\b(?:{_URL_ATTR})\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}", re.IGNORECASE
 )
 _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
+
+# How many lines a cross-line destination may span. The straddle rule keeps
+# attribution correct at any width, so this is purely a coverage/cost dial:
+# measured on the largest slug-bearing file the concat pass is linear in the
+# bound (0.118s at 2, 0.180s at 4, 0.246s at 6), and the full repository scan
+# went from about 10s at 2 to about 24s at 6. A skip-if-the-joined-text-lacks-
+# the-slug guard was tried and removed: it showed no measurable gain, because
+# the cost concentrates in exactly the slug-bearing files it cannot skip.
+WINDOW_LINES = 6
 # The newline is mandatory. With it optional this pattern also matched wholly
 # inside the second line of the window while the hit was recorded against the
 # first, fabricating a finding on the line before every inline link.
@@ -121,18 +136,15 @@ TERMINAL_NEGATION = re.compile(
     r"|\bpre[-\s]?reviewed\b"
     r"|\bnobody\b"
     r"|\breview\s+pending\b|\bpending\s+review\b"
-    # A requested review is an open state. The bare token cannot be used: it
-    # demotes "Approved; requested changes were applied", where "requested"
-    # modifies the changes rather than the review. Bind it to its subject.
-    r"|\b(?:re-?)?reviews?\s+"
-    r"(?:has\s+been\s+|have\s+been\s+|is\s+|are\s+|was\s+|were\s+)?"
-    r"(?:still\s+|again\s+|formally\s+|newly\s+)?requested\b"
-    # Verb-first phrasing, and the review word may be qualified.
-    r"|\brequested\s+(?:an?\s+|the\s+|another\s+)?"
-    r"(?:independent\s+|second\s+|external\s+|further\s+)?(?:re-?)?reviews?\b"
-    # The forge's own change-request verdict. Distinct from "requested
-    # changes", which is benign past-tense prose about changes already named.
-    r"|\bchanges\s+(?:were\s+|have\s+been\s+|are\s+)?requested\b"
+    # A requested review is an open state. Stated structurally rather than by
+    # enumeration: three consecutive rounds widened this by listing phrasings,
+    # and each time the next reviewer found more (adverbs, verb-first order,
+    # the forge's own "changes requested"). "requested" is an open state in
+    # every position except the adjectival one, where it modifies a noun naming
+    # work already identified -- "Approved; requested changes were applied".
+    # Excluding only that shape also removes the inverse false positive, where
+    # "review requested changes were incorporated" demoted an approved row.
+    r"|\brequested\b(?!\s+(?:changes|fixes|edits|corrections|updates|revisions)\b)"
     r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
     # Self-approval. The ledger requires a seat other than the author, and the
     # checker cannot see who settled a row, so at least the wording is rejected.
@@ -196,7 +208,17 @@ def _git(root: pathlib.Path, *args: str) -> str:
 
 
 def tracked_files(root: pathlib.Path) -> list[str]:
-    return [line for line in _git(root, "ls-files").splitlines() if line]
+    # NUL-delimited. With the default `core.quotePath`, git escapes non-ASCII
+    # names as `"docs/\346\227\245..."`, which then fails `is_file()` and was
+    # skipped with no diagnostic -- a silent coverage hole in output that is
+    # itself the gate's evidence. NUL also survives a newline in a filename,
+    # which `splitlines()` would have split into two bogus entries.
+    listing = _git(root, "-c", "core.quotePath=false", "ls-files", "-z")
+    return [name for name in listing.split("\0") if name]
+
+
+class AllowlistUnavailable(RuntimeError):
+    """The Task document backing the allowlist is missing or unreadable."""
 
 
 def _cells(line: str) -> list[str]:
@@ -207,7 +229,13 @@ def _cells(line: str) -> list[str]:
 
 def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
     """Parse the Task's allowlist, resolving columns by header name."""
-    lines = (root / TASK_PATH).read_text(encoding="utf-8").split("\n")
+    task = root / TASK_PATH
+    if not task.is_file():
+        # A missing or renamed Task doc is a gate failure, not a traceback. The
+        # caller reads the finding list; an uncaught FileNotFoundError leaves it
+        # with no verdict at all.
+        raise AllowlistUnavailable(f"{TASK_PATH}: allowlist source is missing")
+    lines = task.read_text(encoding="utf-8").split("\n")
     try:
         start = next(
             index
@@ -219,10 +247,19 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
 
     header: list[str] | None = None
     rows: dict[str, AllowRow] = {}
+    fenced = False
     for line in lines[start + 1 :]:
-        # Any subsequent heading ends the table, including a deeper one.
-        if re.match(r"^#{2,}\s", line):
+        # Any subsequent heading ends the table. `#{2,}` contradicted this
+        # comment by letting a level-1 heading through, which leaked every
+        # later table in as allowlist rows.
+        if re.match(r"^#{1,}\s", line):
             break
+        # A fenced or commented row is illustrative text, not a live grant.
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        if fenced or line.lstrip().startswith("<!--"):
+            continue
         if not line.startswith("|"):
             continue
         cells = _cells(line)
@@ -294,9 +331,15 @@ def _normalize(text: str) -> str:
     misattributed them.
     """
     decoded = html.unescape(urllib.parse.unquote(text))
-    # Deleted rather than replaced with a space: a URL parser strips CR and LF,
-    # so an encoded newline inside a destination must not break the slug apart.
-    return decoded.replace("\r", "").replace("\n", "").casefold()
+    # Deleted rather than replaced with a space. The WHATWG URL parser removes
+    # ASCII tab, LF, and CR from the input, so any of the three inside a
+    # destination must not break the slug apart. Tab was missed while the other
+    # two were handled, which let a genuinely resolving link score zero
+    # findings; entity forms mattered most, because `html.unescape` runs first
+    # and materializes `&#9;` or `&Tab;` into a tab this step then had to drop.
+    for stripped in ("\t", "\r", "\n"):
+        decoded = decoded.replace(stripped, "")
+    return decoded.casefold()
 
 
 def _normalized_lines(text: str) -> list[str]:
@@ -318,12 +361,18 @@ def _clickable_lines(text: str) -> dict[int, str]:
         for name, pattern in NEWLINE_WINDOW_FORMS:
             if pattern.search(f"{line}\n{following}"):
                 hits.setdefault(number, name)
+        # The window spans several following lines, not one. Newlines are legal
+        # inside a quoted HTML attribute value and the URL parser strips them,
+        # so a destination broken across three or more lines still resolves; a
+        # two-line window scored zero findings on it, in both halves of the gate.
+        window = "".join(lines[number - 1 : number + WINDOW_LINES])
         for name, pattern in CONCAT_WINDOW_FORMS:
-            # The match must actually cross the line boundary. Testing only that
-            # the joined text matches re-created the very defect this round is
-            # closing: a match lying wholly inside the following line was
-            # recorded against this one.
-            match = pattern.search(line + following)
+            # The match must actually cross the first line boundary. Testing
+            # only that the joined text matches re-created the very defect
+            # round 3 closed: a match lying wholly inside a following line was
+            # recorded against this one. Requiring the match to start within
+            # this line and end beyond it holds for any window width.
+            match = pattern.search(window)
             if match and match.start() < len(line) < match.end():
                 hits.setdefault(number, name)
     return hits

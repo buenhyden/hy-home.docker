@@ -281,6 +281,53 @@ class CrossLineDestinationTests(unittest.TestCase):
             with self.subTest(form=name):
                 self.assertTrue(contract._clickable_lines(text), name)
 
+    def test_destination_split_over_more_than_two_lines(self) -> None:
+        # The window was fixed at two lines, so a destination broken over three
+        # or more scored zero findings in both halves of the gate.
+        head, tail = SLUG[:12], SLUG[12:]
+        for parts in (
+            f'<a href="../{head}\n{tail[:10]}\n{tail[10:]}/x.md">',
+            f'<a href="../{head}\n{tail[:8]}\n{tail[8:18]}\n{tail[18:]}/x.md">',
+        ):
+            with self.subTest(lines=parts.count("\n") + 1):
+                self.assertEqual(
+                    {1: "split-html-attribute"}, contract._clickable_lines(parts)
+                )
+
+    def test_tab_is_stripped_like_a_newline(self) -> None:
+        # The URL parser removes tab, LF and CR alike. Only two were handled,
+        # so a tab-bearing destination resolved while scoring zero findings.
+        head, tail = SLUG[:12], SLUG[12:]
+        for form in ("\t", "&#9;", "&Tab;"):
+            with self.subTest(form=form):
+                text = f'<a href="../{head}{form}{tail}/x.md">'
+                self.assertEqual({1: "html-attribute"}, contract._clickable_lines(text))
+
+    def test_url_bearing_attributes_beyond_href_and_src(self) -> None:
+        # These were detected only as literals, which a reviewed allowlist row
+        # then suppressed -- the amplification the clickable check prevents.
+        for attribute in ("srcset", "data", "poster", "action", "formaction"):
+            with self.subTest(attribute=attribute):
+                text = f'<x {attribute}="../{SLUG}/x.md">'
+                self.assertEqual({1: "html-attribute"}, contract._clickable_lines(text))
+
+    def test_multiline_form_detects_its_own_case(self) -> None:
+        # Emptying NEWLINE_WINDOW_FORMS survived the suite: the form had no
+        # detection test, only the fabrication half of its behaviour pinned.
+        self.assertTrue(
+            any(
+                name == "multiline-link"
+                for _, name in contract._clickable_lines(
+                    f"[a](../\n{SLUG}/x.md)"
+                ).items()
+            )
+        )
+
+    def test_inline_destination_may_contain_a_space(self) -> None:
+        # Tightening _INLINE's class to exclude whitespace survived the suite
+        # while silently losing angle-bracket destinations containing a space.
+        self.assertTrue(contract._clickable_lines(f"[a](<../my dir/{SLUG}/x.md>)"))
+
 
 class NormalizationTests(unittest.TestCase):
     """Pins the normalization behaviours whose mutants previously survived."""
@@ -290,8 +337,13 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual("ab", contract._normalize("a%0Ab"))
 
     def test_headings_only_parsed_in_markdown(self) -> None:
-        text = "#!/usr/bin/env python3\nSLUG = 'x'"
-        self.assertEqual((), contract._headings_by_line(text, False)[1])
+        # The fixture must be text the heading pattern WOULD match, or the
+        # assertion holds whether or not the flag is honoured. The previous
+        # fixture was "#!/usr/bin/env python3", which the pattern rejects on
+        # its own, so mutating `if markdown:` to `if True:` survived the suite.
+        text = "# Title\nbody"
+        self.assertEqual(("Title",), contract._headings_by_line(text, True)[2])
+        self.assertEqual((), contract._headings_by_line(text, False)[2])
         self.assertEqual(
             ("!/usr/bin/env python3",),
             contract._headings_by_line("# !/usr/bin/env python3\nx", True)[2],
