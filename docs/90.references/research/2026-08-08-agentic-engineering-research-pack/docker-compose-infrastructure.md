@@ -231,7 +231,12 @@ accepted risk the way `cap_drop`/`restart`/`healthcheck` gaps are documented.
 
 Restart policy is more disciplined: `rg -o "restart:\s*\S+"` finds exactly two
 values in use, `unless-stopped` (45 occurrences) and `'no'` (13 occurrences,
-39 files match at least one). Cross-referencing the `'no'` occurrences against
+19 of the 47 variants declaring at least one `restart:` key). Corrected
+2026-08-18: the file count previously read 39. Both occurrence counts, 45 and
+13, reproduce exactly; only the file count was wrong. The scan glob must
+include the single `docker-compose.cluster.yaml`, because a `*.yml` pattern
+silently drops it and undercounts the variant set as 46.
+Cross-referencing the `'no'` occurrences against
 `extends:` blocks shows they concentrate in services extending
 `template-job-low`/`template-job-med` — for example `ksqldb-cli` at
 `infra/04-data/analytics/ksql/docker-compose.yml`, `valkey-cluster-init` at
