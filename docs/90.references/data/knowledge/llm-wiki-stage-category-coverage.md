@@ -49,7 +49,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1246`
+- Safe tracked source paths: `1253`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -61,11 +61,11 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `.claude` | 48 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | `.codex` | 16 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
-| `docs/00.agent-governance` | 106 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| `docs/00.agent-governance` | 110 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | `docs/01.requirements` | 26 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)<br>[docs/01.requirements/prd-0002-auth.md](../../../01.requirements/prd-0002-auth.md) |
 | `docs/02.architecture` | 53 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md)<br>[docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md) |
 | `docs/03.specs` | 40 | [docs/03.specs/137-agentic-research-pack-rebuild/spec.md](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)<br>[docs/03.specs/README.md](../../../03.specs/README.md)<br>[docs/03.specs/spec-0001-gateway/spec.md](../../../03.specs/spec-0001-gateway/spec.md) |
-| `docs/04.execution` | 6 | [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)<br>[docs/04.execution/plans/README.md](../../../04.execution/plans/README.md)<br>[docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md) |
+| `docs/04.execution` | 7 | [docs/04.execution/README.md](../../../04.execution/README.md)<br>[docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)<br>[docs/04.execution/plans/README.md](../../../04.execution/plans/README.md) |
 | `docs/05.operations` | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
 | `docs/90.references` | 99 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/README.md](../../audits/README.md)<br>[docs/90.references/audits/ref-0001-readme.md](../../audits/ref-0001-readme.md) |
 | `docs/98.archive` | 275 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md](../../../98.archive/changes/chg-0002-01-gateway-standardization/plan.md)<br>[docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md](../../../98.archive/changes/chg-0003-02-auth-standardization/plan.md) |
@@ -73,7 +73,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
 | `infra` | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | `root` | 8 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
-| `scripts` | 42 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
+| `scripts` | 44 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | `secrets` | 1 | [secrets/README.md](../../../../secrets/README.md) |
 
 ## LLM Wiki Category Coverage
@@ -82,13 +82,13 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | --- | ---: | --- |
 | Root entrypoints | 8 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | LLM Wiki reference | 3 | [docs/90.references/llm-wiki/README.md](../../llm-wiki/README.md)<br>[docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md](../../llm-wiki/ref-0082-llm-wiki-index.md)<br>[docs/90.references/llm-wiki/ref-0083-repository-map.md](../../llm-wiki/ref-0083-repository-map.md) |
-| Agent governance | 106 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| Agent governance | 110 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | Runtime surfaces | 64 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
-| Active stage docs | 125 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)<br>[docs/01.requirements/prd-0002-auth.md](../../../01.requirements/prd-0002-auth.md) |
+| Active stage docs | 126 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)<br>[docs/01.requirements/prd-0002-auth.md](../../../01.requirements/prd-0002-auth.md) |
 | Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
 | Reference and template docs | 146 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/README.md](../../audits/README.md)<br>[docs/90.references/audits/ref-0001-readme.md](../../audits/ref-0001-readme.md) |
 | Infrastructure source | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
-| Scripts and validators | 42 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
+| Scripts and validators | 44 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | GitHub workflow surface | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
 | Other tracked source | 275 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md](../../../98.archive/changes/chg-0002-01-gateway-standardization/plan.md)<br>[docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md](../../../98.archive/changes/chg-0003-02-auth-standardization/plan.md) |
@@ -98,10 +98,10 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 74 |
-| Markdown reference | 847 |
-| YAML config | 114 |
-| folder index | 124 |
-| script | 56 |
+| Markdown reference | 850 |
+| YAML config | 115 |
+| folder index | 125 |
+| script | 58 |
 | source path | 27 |
 | text entrypoint | 4 |
 

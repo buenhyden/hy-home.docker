@@ -17,7 +17,7 @@ Provide a deterministic path index for repo-local AI agents without creating a p
 
 ## Repository Role
 
-This generated tracked repo-local index complements `llms.txt` and `repository-map.md`. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.
+This generated tracked repo-local index complements `llms.txt` and `ref-0083-repository-map.md`. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.
 
 Graphify output is advisory navigation context only. This index is generated from repository path metadata and does not treat `graphify-out/` as source material.
 
@@ -120,6 +120,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md](../../00.agent-governance/agents/functions/workspace-audit-revalidation.md) | Markdown reference |
 | [docs/00.agent-governance/contracts/agent-catalog.yaml](../../00.agent-governance/contracts/agent-catalog.yaml) | YAML config |
 | [docs/00.agent-governance/contracts/agent-governance-artifacts.yaml](../../00.agent-governance/contracts/agent-governance-artifacts.yaml) | YAML config |
+| [docs/00.agent-governance/contracts/deferred-paths.yaml](../../00.agent-governance/contracts/deferred-paths.yaml) | YAML config |
 | [docs/00.agent-governance/contracts/provider-models.yaml](../../00.agent-governance/contracts/provider-models.yaml) | YAML config |
 | [docs/00.agent-governance/harness-implementation-map.md](../../00.agent-governance/harness-implementation-map.md) | Markdown reference |
 | [docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md) | Markdown reference |
@@ -133,8 +134,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md](../../00.agent-governance/memory/ignored-sdd-scratch-deletion.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
+| [docs/00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md](../../00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md) | Markdown reference |
 | [docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md](../../00.agent-governance/memory/spec-136-migration-branch-preservation.md) | Markdown reference |
 | [docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md](../../00.agent-governance/memory/stage-docs-lifecycle-audit.md) | Markdown reference |
+| [docs/00.agent-governance/memory/stop-gate-ignores-task-ownership.md](../../00.agent-governance/memory/stop-gate-ignores-task-ownership.md) | Markdown reference |
+| [docs/00.agent-governance/memory/worktree-consolidation-2026-08-18.md](../../00.agent-governance/memory/worktree-consolidation-2026-08-18.md) | Markdown reference |
 | [docs/00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md) | Markdown reference |
 | [docs/00.agent-governance/providers/claude.md](../../00.agent-governance/providers/claude.md) | Markdown reference |
 | [docs/00.agent-governance/providers/codex.md](../../00.agent-governance/providers/codex.md) | Markdown reference |
@@ -377,6 +381,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md](../../03.specs/spec-0136-sdlc-taxonomy-convergence/task.md) | Markdown reference |
+| [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md](../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md](../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md) | Markdown reference |
@@ -666,6 +671,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/ref-0075-profile.md](../data/hads/ref-0075-profile.md) | Markdown reference |
 | [docs/90.references/data/knowledge/README.md](../data/knowledge/README.md) | folder index |
+| [docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md](../data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/kubernetes/README.md](../data/kubernetes/README.md) | folder index |
 | [docs/90.references/data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md](../data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md) | Markdown reference |
@@ -1031,6 +1037,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
 | [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
+| [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
+| [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
@@ -1362,7 +1370,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 ## Sources
 
 - [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement
-- [repository-map.md](./ref-0083-repository-map.md) - curated canonical source map
+- [ref-0083-repository-map.md](./ref-0083-repository-map.md) - curated canonical source map
 - [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator
 - [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator
 

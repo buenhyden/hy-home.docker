@@ -59,6 +59,32 @@ files:
   successor: scripts/hooks/post-tool-validate.sh
   tests:
   - tests/validation/test_provider_native_surfaces.py
+- path: scripts/knowledge/generate-llm-wiki-coverage.sh
+  kind: generator
+  authority: docs/03.specs/137-agentic-research-pack-rebuild/spec.md
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - scripts/validation/agentic-research-gate9-evidence.py
+  - scripts/validation/check-repo-contracts.sh
+  disposition: merge
+  successor: scripts/knowledge/generate-llm-wiki.py
+  tests:
+  - tests/validation/test_agentic_research_gate9_evidence.py
+  - tests/validation/test_llm_wiki_retiring_pack_exclusion.py
+- path: scripts/knowledge/generate-llm-wiki-index.sh
+  kind: generator
+  authority: docs/03.specs/137-agentic-research-pack-rebuild/spec.md
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - scripts/validation/agentic-research-gate9-evidence.py
+  - scripts/validation/check-repo-contracts.sh
+  disposition: merge
+  successor: scripts/knowledge/generate-llm-wiki.py
+  tests:
+  - tests/validation/test_agentic_research_gate9_evidence.py
+  - tests/validation/test_llm_wiki_retiring_pack_exclusion.py
 - path: scripts/knowledge/generate-llm-wiki.py
   kind: generator
   authority: .github/workflow-contract.yml
