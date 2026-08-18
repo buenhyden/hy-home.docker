@@ -90,21 +90,24 @@ _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
 # HARD bound: a destination split over more than this many lines is not
 # detected, which is the original two-line defect at a larger constant.
 #
-# Cost, stated in full because an earlier version of this comment recorded only
-# the flattering half. Roughly linear in the bound: on the largest slug-bearing
-# tracked file -- graphify-out/graph.json, 17.5 MB, NOT the largest Markdown
-# file, which an earlier version of this comment measured instead and thereby
-# understated this by about 25x -- 1.17s at 2, 2.07s at 4, 2.96s at 6, with a
-# full repository scan around 10s. Those figures are an order of magnitude below the ones this comment
-# carried a round earlier, because requiring tag context in `_HTML_ATTR` lets it
-# fail fast on the overwhelming majority of lines; the earlier 24s full scan was
-# that missing anchor, not the window.
+# Cost, stated in full because two earlier versions of this comment recorded
+# only the flattering half. Roughly linear in the bound: on the largest
+# slug-bearing tracked file -- graphify-out/graph.json at 17.5 MB, NOT the
+# largest Markdown file, which one earlier version measured instead and
+# thereby understated this by about 22x -- 1.17s at 2, 2.07s at 4, 2.96s at 6.
+#
+# Full repository scan is about 22s. It was about 10s for exactly one round,
+# when every URL attribute required an enclosing tag and the pattern could
+# fail fast; that anchor was removed for href, src, srcset, poster,
+# formaction and longdesc because requiring it lost genuinely clickable HTML.
+# The 2.3x is therefore the accepted price of that recall, not a regression to
+# be optimised away by restoring the anchor.
 #
 # The remaining hazard is unrelated to this constant: `_INLINE` is QUADRATIC in
-# LINE LENGTH, and the window multiplies whatever that costs. A reviewer measured
-# 4x per doubling on a pathological single line, reaching about 50s at 46 KB.
-# No input-size guard and no timeout exist. Raising this constant multiplies that
-# class of cost, so it should not be raised without adding one.
+# LINE LENGTH, and the window multiplies whatever that costs. A reviewer
+# measured 4x per doubling on a pathological single line, reaching about 50s at
+# 46 KB. No input-size guard and no timeout exist. Raising this constant
+# multiplies that class of cost, so it should not be raised without adding one.
 #
 # A skip-if-the-joined-text-lacks-the-slug guard was tried and removed: it
 # showed no measurable gain, because the cost concentrates in exactly the

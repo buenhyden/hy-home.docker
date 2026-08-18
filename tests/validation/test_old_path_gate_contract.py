@@ -338,6 +338,36 @@ class OldPathGateFixtureTests(unittest.TestCase):
             task.write_bytes(b"\xff\xfe not utf-8")
             self.assertEqual(2, contract.main(["--root", str(root)]), "undecodable")
 
+    def test_counter_output_surface_is_printed(self) -> None:
+        """The printed counters ARE gate 4's evidence, so they must be pinned.
+
+        A reviewer's mutant deleting the `unreadable_files_skipped` print line
+        survived the whole suite: the dataclass field was pinned while the line
+        that exposes it was not, so a refactor could silently remove the very
+        evidence surface it was added to create.
+        """
+        import contextlib
+        import io
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            self._commit(root)
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                contract.main(["--root", str(root)])
+        printed = stream.getvalue()
+        for counter in (
+            "allowlist_rows_reviewed=",
+            "allowlist_rows_unreviewed=",
+            "clickable_links=",
+            "unallowlisted_literals=",
+            "forbidden_class_literals=",
+            "unreadable_files_skipped=",
+        ):
+            with self.subTest(counter=counter):
+                self.assertIn(counter, printed)
+
     def test_unreadable_files_are_counted_not_silently_skipped(self) -> None:
         # The scan's own output is gate 4's evidence, so a skipped file that
         # leaves no trace is a hole the evidence cannot show.
