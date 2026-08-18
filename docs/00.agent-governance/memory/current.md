@@ -37,7 +37,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `a89c101d`
+- Verified commit: `22e0d76e`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -60,21 +60,20 @@ status: active
 - Both independent review seats have now run and both returned Needs fixes.
   Their verdicts and this Task's re-derivation of the load-bearing measurements
   are recorded in the Task's Review Evidence.
-- Gate 4 has three open blockers, not one. Route 1 is met by no allowlist row,
-  because it requires a claim-ledger disposition the ledger has no slot to give
-  and the 2026-08-18 amendment rejected the vacuity reading without changing
-  route 1. The scanner keys allowlist rows by path at
-  `scripts/validation/old_path_gate_contract.py:422`, so a split row collapses to
-  its last member and the exactly-one-route requirement is unenforceable there.
-  Three rows declare a class the table marks withdrawn. Six of the twelve
-  unsettled rows do settle, including all three route 3 declarations.
-- Gate 2 is unsatisfied on forty rows, not one. Besides the mis-dispositioned
-  `ai-agent-catalogs.md` row, the 39 sweep rows labelled `Retain` or `Correct`
-  name the Task file as their own destination. The 2026-08-19 `carry` amendment
-  reached the other class exhibiting the same defect and not these, and they
-  cannot be relabelled as they stand because none states per-claim uniqueness or
-  a remediation owner, and at least 13 need a successor leaf this unit may not
-  create.
+- Two of the three gate 4 blockers are closed. Spec 137's `Route-1 admission and
+  split-row evaluation amendment` replaces route 1's unsatisfiable claim-ledger
+  conjunct with the Spec's own Historical-evidence boundary, and the scanner now
+  stores allowlist rows per path as a list and collapses them fail-closed, so a
+  split row survives and one unsettled sibling leaves the whole path unreviewed.
+  Gate 4 counts all 43 declared rows where it counted 41. What remains open is
+  the six unsettled rows the seat would not settle, three of which declare a
+  class the table marks withdrawn.
+- Gate 2 is unsatisfied on eighteen rows. The 39 self-referential sweep rows were
+  classified by destination: 22 are repository-state claims, now `Carry` with
+  their substance written into the carried-claims section and each carrying
+  uniqueness and a named owner; 17 are source-backed or upstream material that
+  `carry` bars and that needs a successor leaf outside this unit's boundary.
+  Those 17 plus the `ai-agent-catalogs.md` row are what remains.
 - Gate 1 fails on coverage as well as on review: an unresolved Mythos Preview
   lifecycle conflict has no ledger row, and the vendor catalog's `Caveat` column
   was never swept as a claim family.
@@ -116,11 +115,12 @@ status: active
 
 ## Next handoff
 
-- Decide the two route-level questions the seats surfaced: whether route 1 is
-  amended or every row admitted under it is re-routed, and whether the gate 4
-  scanner keys allowlist rows on path plus anchor so a split row survives.
-- Decide how the 39 self-referential sweep rows reach a real destination, given
-  that 13 of them need a successor leaf outside this unit's boundary.
+- Re-review the allowlist against the amended route 1 and the split-row-aware
+  scanner: 13 unsettled rows remain, including the three withdrawn classes and
+  the `spec-0105` row now marked NOT ADMITTED as a canonical-owner statement.
+- Review the 22 newly routed `Carry` rows and the 26 sweep `Omit` rows, of which
+  25 still lack the resolvable provenance pointer gate 3 requires.
+- Decide who creates the successor leaf the 18 gate-2 rows need.
 - Resume the taxonomy migration at slice 10E, domains 04 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
   deleted or relocated until every gate is independently recorded.
