@@ -2506,7 +2506,6 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
     pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
@@ -3541,7 +3540,6 @@ expected_implementations = {
     pathlib.Path("scripts/validation/compose-core-readiness.lib.sh"),
     pathlib.Path("scripts/validation/run-compose-core-readiness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
-    pathlib.Path("scripts/validation/check-document-links.py"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
@@ -3563,7 +3561,6 @@ expected_implementations = {
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/rehearse-sample-service-delivery.sh"),
@@ -3581,6 +3578,11 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
 }
+# This rule governs the SHELL surface only: the glob below collects *.sh, so a
+# .py entry in expected_implementations can never match and is unsatisfiable by
+# construction. Three such entries arrived with the taxonomy merge and were
+# removed on 2026-08-18. The Python surface is governed by scripts/manifest.yaml,
+# which registers both files the entries named.
 implementation_scripts = sorted(
     path
     for folder in ["validation", "hardening", "hooks", "knowledge", "operations", "security"]
