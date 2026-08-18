@@ -22,47 +22,71 @@ status: active
   nine pre-deletion gates in force.
 - The user chose to absorb the rebuild-finish branch's two memory notes together
   with its deferred-paths contract and stop-gate fix, and to retire the rest.
+- The user directed on 2026-08-19 that Spec 137 route 3 be amended for the
+  gate-4 scanner contradiction, that the gate 9 operand question be taken up
+  first, and that the disposition-type gap be resolved.
 
 ## Active boundary
 
-- This unit covers the merge commit, its conflict resolutions, and the
-  consolidation record. It does not migrate Spec 137's Stage 04 evidence into
-  the converged co-located layout.
+- This unit covers the Spec 137 amendment, the gate evidence it changes, and the
+  merge consolidation record. It does not migrate Spec 137's Stage 04 evidence
+  into the converged co-located layout.
 - The retiring pack stays at its original path under its deletion gates.
+- Editing the successor research pack is outside this unit, so a claim needing a
+  successor leaf is recorded as an open row rather than moved.
 
 ## Verified state
 
-- Verified commit: `e2a93538` (merge `5afdd277`, absorption `e2a93538`)
-- Verified at: `2026-08-18`
-- All 66 merge conflicts were resolved with per-file verification: 19
-  modify/delete and 47 both-modified. The gated retiring pack is intact at 20
-  files, and this Task's migration ledger is intact at 231 rows, 11 columns,
-  0 empty cells.
-- Gate 4's hard counters hold: `clickable_links=0` and
-  `forbidden_class_literals=0`.
-- The merged repository-harness inventory measures 110 uniquely routed
-  artifacts, which is neither side's recorded value.
+- Verified commit: `2004db0a`
+- Verified at: `2026-08-19`
+- Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
+  gate-4 scanner's own scan target is carved out of route 3's
+  removal-on-completion condition, route 3's operand test is evaluated per
+  mechanism, and a fifth disposition `carry` is defined and bound to
+  pre-deletion gate 2 so it cannot fall outside gates 2 and 3.
+- The migration ledger measures 231 rows, 11 columns, 0 empty cells, with
+  dispositions 66 `Retain`, 27 `Carry`, 39 `Correct`, 15 `Supersede`, 84 `Omit`.
+  The relabelling invalidated no review verdict because all 28 affected rows
+  carried `Not Run`.
+- Gate 4 measures `failures=40`, `clickable_links=0`,
+  `unallowlisted_literals=0`, `forbidden_class_literals=0`, 30 reviewed and 10
+  unreviewed allowlist rows.
+- `check-repo-contracts.sh` measures 10 failing subjects and 595 findings.
+- All 66 merge conflicts were resolved with per-file verification. The gated
+  retiring pack is intact at 20 files.
 
 ## Blockers and unverified facts
 
-- Gate 4 reports `failures=255`, of which 246 are `OLD-PATH-UNALLOWLISTED`. The
-  34-row allowlist keys on file paths and roughly 1,128 files moved, so its keys
-  no longer match. Reconciling it is required before deletion.
-- `check-repo-contracts.sh` reports 13 failing subjects, dominated by
-  cross-links that point at pre-migration paths, plus one Korean-text finding on
-  a closed English-only surface.
-- `AGC-MEMORY-BOUNDS` fails because the converged contract expects a Task
-  co-located with its spec, while Spec 137's Task remains under
-  `docs/04.execution/tasks/`. Migrating it is owned by the remaining taxonomy
-  slices, not by this unit.
+- Gate 4's only remaining blocking condition is the 10 unreviewed allowlist
+  rows; every literal now has a declared route. An independent allowlist
+  re-review is required and has not run.
+- Gate 1's second half and gate 3 stay NOT SATISFIED because all 68 sweep rows
+  carry `Not Run`. Two review seats dispatched for these terminated on a
+  transient provider `529` and need re-dispatch.
+- Gate 2 stays unsatisfied on one row: `ai-agent-catalogs.md` upstream-practice
+  research is barred from `carry` and needs `retain` into a successor leaf,
+  which is outside this unit's boundary.
+- `check-document-metadata.py --mode check-changed` reports 12 violations on the
+  Spec 137 Spec and Task. Their frontmatter is unchanged, so all 12 are the
+  pre-existing four-digit-identity and co-located-Task debt owned by the
+  remaining taxonomy slices.
+- The taxonomy migration is complete through Task 10D. Slices 10E, 10F and 10G
+  remain. Their contract debt dominates the remaining findings: broken links
+  pointing at pre-migration paths, of which 138 have multiple candidate targets
+  and were deliberately left unresolved, and validator existence assertions that
+  must be rewritten against the converged catalog rather than bulk-substituted.
+- `docs/90.references/llm-wiki/` holds both `llm-wiki-index.md` and
+  `ref-0082-llm-wiki-index.md` at different sizes, so a generated index exists
+  under both the pre-migration and converged names and only the converged name
+  is excluded from the English-only surface rule. Out of scope here; it belongs
+  to the taxonomy slices.
 - `scripts/validation/check-doc-traceability.sh` no longer exists; the branch
   consolidated the document governance validators into
   `scripts/lib/document_governance/`.
-- The taxonomy migration is complete through Task 10D. Slices 10E, 10F and 10G
-  remain.
 - Both `.worktrees/` trees are removed and both branches deleted. Their commits
   stay reachable through `preserve/rebuild-finish`, `preserve/taxonomy-final`,
   and `pre-taxonomy-merge-main`.
+- `main` is ahead of `origin/main`; nothing has been pushed.
 
 ## Evidence links
 
@@ -74,8 +98,10 @@ status: active
 
 ## Next handoff
 
-- Reconcile the gate 4 allowlist against the converged paths, then repair the 13
-  failing contract subjects.
+- Re-dispatch the two independent review seats: the allowlist re-review over the
+  10 unreviewed rows including the three withdrawn classifications, the
+  three-way `mig-0001` split, and the newly declared route 3 rows; and the
+  disposition review over the 68 sweep rows.
 - Resume the taxonomy migration at slice 10E, domains 04 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
   deleted or relocated until every gate is independently recorded.
