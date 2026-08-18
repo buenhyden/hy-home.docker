@@ -283,10 +283,70 @@ class OldPathGateFixtureTests(unittest.TestCase):
             "unclosed_fence_admits_nothing_after": "```\n" + dead,
             "single_line_comment": "<!-- " + dead.strip() + " -->\n",
             "block_comment": "<!--\n" + dead + "-->\n",
+            # A ``` does not close a ```` block, and a closing fence carries no
+            # info string; both let illustrative rows back in as live grants.
+            "shorter_fence_does_not_close": "````\n" + dead + "```\n" + dead + "````\n",
+            "info_string_does_not_close": "```\n" + dead + "```text\n" + dead + "```\n",
         }
         for name, tail in cases.items():
             with self.subTest(case=name):
                 self.assertEqual(["real/live.md"], self._rows_for(tail))
+
+    def test_state_resumes_after_an_illustrative_block(self) -> None:
+        """A row AFTER a skipped block must still be a live grant.
+
+        Asserting only that nothing leaks is a half test: it passes whether the
+        block ends correctly or swallows the rest of the table. A fence opened
+        inside an HTML comment ate the closing `-->` and dropped every later
+        row, and a fixture with no trailing row could not see it.
+        """
+        dead = "| `dead/row.md` | `# h` | Factual history | r | reviewed |\n"
+        after = "| `after/row.md` | `# h` | Factual history | r | Approved C0/I0/M0 |\n"
+        cases = {
+            "fence_inside_comment": "<!--\n```\n-->\n" + after,
+            "block_comment": "<!--\n" + dead + "-->\n" + after,
+            "closed_backtick_fence": "```\n" + dead + "```\n" + after,
+            "shorter_fence_does_not_close": (
+                "````\n" + dead + "```\n" + dead + "````\n" + after
+            ),
+            "info_string_does_not_close": (
+                "```\n" + dead + "```text\n" + dead + "```\n" + after
+            ),
+        }
+        for name, tail in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(["after/row.md", "real/live.md"], self._rows_for(tail))
+
+    def test_unrunnable_conditions_are_distinguishable_from_failure(self) -> None:
+        """Exit 2 must cover every "cannot run", not only a missing Task.
+
+        The exception's own docstring said "missing or unreadable" while only
+        missing was covered, so an unreadable Task, an undecodable one, and a
+        root that is not a repository each produced a bare traceback at exit 1
+        -- indistinguishable from a legitimate gate failure.
+        """
+        header = "### Old-path allowlist\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            task = root / contract.TASK_PATH
+            task.parent.mkdir(parents=True)
+
+            task.write_text(header, encoding="utf-8")
+            self.assertEqual(2, contract.main(["--root", str(root)]), "not a repo")
+
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            task.write_bytes(b"\xff\xfe not utf-8")
+            self.assertEqual(2, contract.main(["--root", str(root)]), "undecodable")
+
+    def test_unreadable_files_are_counted_not_silently_skipped(self) -> None:
+        # The scan's own output is gate 4's evidence, so a skipped file that
+        # leaves no trace is a hole the evidence cannot show.
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/binary.md").write_bytes(b"\xff\xfe\x00bad")
+            (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            self._commit(root)
+            self.assertEqual(1, contract.scan(root).unreadable_files)
 
     def test_a_missing_task_document_reports_rather_than_crashes(self) -> None:
         # Raising a named exception nothing catches only renamed the traceback:
@@ -357,6 +417,26 @@ class CrossLineDestinationTests(unittest.TestCase):
             with self.subTest(attribute=attribute):
                 text = f'<x {attribute}="../{SLUG}/x.md">'
                 self.assertEqual({1: "html-attribute"}, contract._clickable_lines(text))
+
+    def test_unambiguous_attributes_need_no_enclosing_tag(self) -> None:
+        """`href` and `src` are not ordinary prose, so they match anywhere.
+
+        Requiring an enclosing tag for these lost real clickable HTML and the
+        gate printed PASS with a working link present: an attribute at column
+        zero on a continuation line concatenates to `<ahref=`, a `>` inside an
+        earlier quoted value blocks a `[^<>]` prefix, and a tag opened further
+        above than WINDOW_LINES is outside the window altogether.
+        """
+        for name, text in {
+            "unindented_continuation": f'<a\nhref="../{SLUG}/x.md">l</a>',
+            "self_closing_img": f'<img\nsrc="../{SLUG}/x.png"\n/>',
+            "gt_inside_earlier_value": (
+                f'<a title="Docs > Research" href="../{SLUG}/x.md">l</a>'
+            ),
+            "tag_opened_far_above": "<a\n" + "x\n" * 8 + f'href="../{SLUG}/x.md">l',
+        }.items():
+            with self.subTest(form=name):
+                self.assertTrue(contract._clickable_lines(text), name)
 
     def test_attribute_names_outside_a_tag_are_not_clickable(self) -> None:
         """`data`, `action` and friends are ordinary identifiers too.
@@ -469,6 +549,14 @@ class SettledVerdictTests(unittest.TestCase):
         "Task 10b implementer reviewed; independent re-review requested",
         "Approved by the implementer; a second review is requested",
         "Reviewed; re-reviews have been requested from both seats",
+        # Excluding on the noun alone was an unconditional escape hatch, so
+        # these settled and the outcome depended on voice rather than state.
+        # The fix shipped unpinned and a reviewer's mutant reverting it
+        # survived the whole suite; these hold it.
+        "Approved C0/I0/M0; the seat requested changes",
+        "Approved C0/I0/M0; requested changes remain open",
+        "Approved C0/I0/M0; requested changes not yet supplied",
+        "reviewed; requested revisions still needed",
         # Residual forms the first subject binding missed: an adverb between
         # the subject and the verb, verb-first phrasing, and the forge's own
         # change-request verdict token.

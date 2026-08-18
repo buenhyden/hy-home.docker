@@ -62,14 +62,25 @@ _REFERENCE = re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | r
 # which a reviewed allowlist row then suppressed entirely -- the exact
 # amplification the clickable check exists to prevent. `srcset` additionally
 # could not match at all, because `(?:href|src)\s*=` stops at `srcset=`.
-_URL_ATTR = r"href|src|srcset|data|poster|action|formaction|cite|ping|manifest|longdesc"
-# The attribute must sit inside an opening tag. Matching the bare name anywhere
-# made `data`, `action`, `cite` and `ping` -- ordinary identifiers -- fire on
-# prose and on Python assignments. A clickable finding deliberately bypasses the
-# allowlist, so every such false positive was unsuppressable by any reviewed row
-# and made the gate unpassable for legitimate content.
+# Split by ambiguity, because the two error directions have different costs.
+#
+# Unambiguous names are not ordinary English in an `x = value` position, so they
+# need no tag context and match anywhere. Requiring tag context for these lost
+# genuinely clickable HTML -- a multi-line tag whose attribute starts at column
+# zero concatenates to `<ahref=`, a `>` inside an earlier quoted attribute value
+# blocks the `[^<>]` prefix, and a tag opened further above than WINDOW_LINES is
+# outside the window entirely. Each produced zero findings on a working link.
+_UNAMBIGUOUS_ATTR = r"href|src|srcset|poster|formaction|longdesc"
+# Ambiguous names ARE ordinary identifiers: `data = "..."` in Python, "The
+# action = ..." in prose, `curl --data=...`. Matching these anywhere produced
+# false positives that no reviewed row could clear, because a clickable finding
+# deliberately bypasses the allowlist -- which made the gate unpassable rather
+# than merely noisy. These require an enclosing opening tag.
+_AMBIGUOUS_ATTR = r"data|action|cite|ping|manifest"
+_ATTR_VALUE = r"(?:[\"'][^\"']*|[^\s>\"']*)"
 _HTML_ATTR = re.compile(
-    rf"<[a-z][^<>]*?\b(?:{_URL_ATTR})\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}",
+    rf"(?:\b(?:{_UNAMBIGUOUS_ATTR})\s*=\s*{_ATTR_VALUE}{_DEST}"
+    rf"|<[a-z][^<>]*?\b(?:{_AMBIGUOUS_ATTR})\s*=\s*{_ATTR_VALUE}{_DEST})",
     re.IGNORECASE,
 )
 _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
@@ -80,9 +91,11 @@ _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
 # detected, which is the original two-line defect at a larger constant.
 #
 # Cost, stated in full because an earlier version of this comment recorded only
-# the flattering half. Linear in the bound: 0.023s at 2, 0.032s at 4, 0.043s at
-# 6 on the largest slug-bearing tracked file, with a full repository scan around
-# 10s. Those figures are an order of magnitude below the ones this comment
+# the flattering half. Roughly linear in the bound: on the largest slug-bearing
+# tracked file -- graphify-out/graph.json, 17.5 MB, NOT the largest Markdown
+# file, which an earlier version of this comment measured instead and thereby
+# understated this by about 25x -- 1.17s at 2, 2.07s at 4, 2.96s at 6, with a
+# full repository scan around 10s. Those figures are an order of magnitude below the ones this comment
 # carried a round earlier, because requiring tag context in `_HTML_ATTR` lets it
 # fail fast on the overwhelming majority of lines; the earlier 24s full scan was
 # that missing anchor, not the window.
@@ -157,10 +170,16 @@ TERMINAL_NEGATION = re.compile(
     r"|\bpre[-\s]?reviewed\b"
     r"|\bnobody\b"
     r"|\breview\s+pending\b|\bpending\s+review\b"
-    # A requested review is an open state. Stated structurally rather than by
-    # enumeration: three consecutive rounds widened this by listing phrasings,
-    # and each time the next reviewer found more (adverbs, verb-first order,
-    # the forge's own "changes requested"). "requested" is an open state in
+    # A requested review is an open state. Read this as a fail-closed rule, not
+    # as a structural one: an earlier version of this comment claimed the latter
+    # while the code excluded six nouns unconditionally, so the outcome turned
+    # on voice rather than state. What the code actually does is treat
+    # "requested" as open EXCEPT where it is followed by a named work noun AND a
+    # named completion verb -- two enumerations, both on the settling side, so an
+    # unrecognised phrasing stays unsettled. Known cost of that choice: cells
+    # like "requested changes have been merged" are reported unsettled. That is
+    # the safe direction and is recorded as an accepted limit in the Task.
+    # "requested" is an open state in
     # every position except the adjectival one, where it modifies a noun naming
     # work already identified -- "Approved; requested changes were applied".
     # Excluding only that shape also removes the inverse false positive, where
@@ -224,6 +243,7 @@ class ScanResult:
     findings: list[Finding] = field(default_factory=list)
     generated_occurrences: int = 0
     anchor_unbound: int = 0
+    unreadable_files: int = 0
     rows: dict[str, AllowRow] = field(default_factory=dict)
 
 
@@ -236,13 +256,23 @@ def _git(root: pathlib.Path, *args: str) -> str:
     ).stdout
 
 
+def _git_or_unavailable(root: pathlib.Path, *args: str) -> str:
+    try:
+        return _git(root, *args)
+    except (subprocess.CalledProcessError, FileNotFoundError) as error:
+        # Not a repository, or git absent. The gate cannot run; it has not
+        # passed and it has not failed, and the contract requires that
+        # distinction so an environment fault pauses deletion.
+        raise AllowlistUnavailable(f"{root}: tracked-file listing failed") from error
+
+
 def tracked_files(root: pathlib.Path) -> list[str]:
     # NUL-delimited. With the default `core.quotePath`, git escapes non-ASCII
     # names as `"docs/\346\227\245..."`, which then fails `is_file()` and was
     # skipped with no diagnostic -- a silent coverage hole in output that is
     # itself the gate's evidence. NUL also survives a newline in a filename,
     # which `splitlines()` would have split into two bogus entries.
-    listing = _git(root, "-c", "core.quotePath=false", "ls-files", "-z")
+    listing = _git_or_unavailable(root, "-c", "core.quotePath=false", "ls-files", "-z")
     return [name for name in listing.split("\0") if name]
 
 
@@ -264,7 +294,16 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
         # caller reads the finding list; an uncaught FileNotFoundError leaves it
         # with no verdict at all.
         raise AllowlistUnavailable(f"{TASK_PATH}: allowlist source is missing")
-    lines = task.read_text(encoding="utf-8").split("\n")
+    try:
+        text = task.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        # The class docstring said "missing or unreadable" while only missing
+        # was covered, so an unreadable or undecodable Task still produced a
+        # bare traceback at the same exit status as a legitimate gate failure.
+        raise AllowlistUnavailable(
+            f"{TASK_PATH}: allowlist source is unreadable: {type(error).__name__}"
+        ) from error
+    lines = text.split("\n")
     try:
         start = next(
             index
@@ -279,18 +318,36 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
     # The fence is tracked by its marker, not as a boolean: a `~~~` inside a
     # ``` block does not close it in CommonMark, and toggling on either marker
     # let the row after the mismatched line back in as a live grant.
-    fence: str | None = None
+    fence: tuple[str, int] | None = None
     in_comment = False
     previous = ""
     for line in lines[start + 1 :]:
         stripped = line.lstrip()
+        # Comment state is resolved BEFORE fence state. Checking the fence
+        # first let a ``` inside an HTML comment open a real fence, which then
+        # swallowed the closing `-->` and dropped every later row.
+        if in_comment:
+            if "-->" in line:
+                in_comment = False
+            previous = line
+            continue
         if fence is not None:
-            if stripped.startswith(fence):
+            marker, width = fence
+            run = len(stripped) - len(stripped.lstrip(marker))
+            # CommonMark: a closing fence needs at least the opening width and
+            # carries no info string. Matching on a bare prefix let a ``` close
+            # a ```` block, and let ```` ```text ```` close one at all.
+            if (
+                stripped.startswith(marker)
+                and run >= width
+                and not stripped[run:].strip()
+            ):
                 fence = None
             previous = line
             continue
         if stripped.startswith(("```", "~~~")):
-            fence = stripped[:3]
+            marker = stripped[0]
+            fence = (marker, len(stripped) - len(stripped.lstrip(marker)))
             previous = line
             continue
         # An HTML comment spans lines. Skipping only a line that itself starts
@@ -479,6 +536,11 @@ def scan(root: pathlib.Path) -> ScanResult:
         try:
             text = absolute.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
+            # Counted, never silent. Most of these are genuinely binary, but a
+            # UTF-16 or Latin-1 Markdown file containing a live link lands here
+            # too, and a hole in the output that IS the gate's evidence cannot
+            # be left invisible.
+            result.unreadable_files += 1
             continue
         if needle not in _normalize(text):
             continue
@@ -600,6 +662,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"forbidden_class_literals={count('OLD-PATH-FORBIDDEN-CLASS')}")
     print(f"generated_surface_occurrences={result.generated_occurrences}")
     print(f"anchor_unbound_occurrences_advisory={result.anchor_unbound}")
+    print(f"unreadable_files_skipped={result.unreadable_files}")
     print(f"failures={len(result.findings)}")
     if result.findings:
         return 1
