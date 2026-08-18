@@ -159,7 +159,7 @@ event:
   checks in sequence — `template_stop_gate` (blocks when a changed
   target-stage doc fails `check-repo-contracts.sh`) and
   `logical_commit_stop_gate` (blocks when task-owned changes remain
-  uncommitted, bypassed only by `AGENTS_ALLOW_UNCOMMITTED_STOP=1`) — and only
+  uncommitted, bypassed only by `AGENT_ALLOW_UNCOMMITTED_STOP=1`) — and only
   calls `session_end` if both pass.
 - `UserPromptSubmit` keyword-matches the incoming prompt against seven named
   Stage 00 functions (`compose-stack-agent`, `requirements-to-design-agent`,
