@@ -2043,12 +2043,16 @@ pseudo_link = re.compile(r"`\[((?:\.\.?/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
 related_link = re.compile(
     r"\*\*(Guide|Policy|Operation|Operations|Runbook)\*\*:\s*\[[^\]]+\]\(([^)]+)\)"
 )
+# Each label accepts the pre-migration bucket path or the converged catalog
+# form, where the role is carried by the leaf filename rather than by a
+# directory. Both are listed while the taxonomy migration's remaining slices
+# land; a link matching neither is still a failure.
 expected_bucket = {
-    "Guide": "05.operations/guides/",
-    "Policy": "05.operations/policies/",
-    "Operation": "05.operations/policies/",
-    "Operations": "05.operations/policies/",
-    "Runbook": "05.operations/runbooks/",
+    "Guide": ("05.operations/guides/", "/guide.md"),
+    "Policy": ("05.operations/policies/", "/policy.md"),
+    "Operation": ("05.operations/policies/", "/policy.md"),
+    "Operations": ("05.operations/policies/", "/policy.md"),
+    "Runbook": ("05.operations/runbooks/", "/runbook.md"),
 }
 
 for path in sorted(pathlib.Path("docs/03.specs").rglob("*.md")):
@@ -2064,10 +2068,10 @@ for path in sorted(pathlib.Path("docs/03.specs").rglob("*.md")):
             href = match.group(2).strip().split()[0]
             if "05.operations/" not in href:
                 continue
-            required = expected_bucket[label]
-            if required not in href:
+            accepted = expected_bucket[label]
+            if not any(form in href for form in accepted):
                 failures.append(
-                    f"{path}:{line_no}: {label} link must target {required}: {href}"
+                    f"{path}:{line_no}: {label} link must target one of {accepted}: {href}"
                 )
 
 if failures:
