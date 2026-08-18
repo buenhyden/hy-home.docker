@@ -1972,6 +1972,35 @@ backfilled.
 
 ## Deferred and Blocked Items
 
+- **Spec 137 route 3 is unsatisfiable for the gate-4 scanner (I2), decision
+  required.** Route 3 states that such a row "must be removed when the
+  retirement completes." The same Spec states that "The literal scan and
+  reviewed allowlist must pass before deletion and again after deletion; a
+  post-deletion scan alone is insufficient." The scanner's own scan target is
+  the literal: `scripts/validation/old_path_gate_contract.py` defines
+  `SLUG = "2026-07-05-agentic-research-pack-refresh"` and derives `RETIRING_DIR`
+  from it. Removing that literal at retirement makes the mandated post-deletion
+  scan impossible, so one clause of this Spec makes another unsatisfiable. This
+  is an internal contradiction, not an implementation defect, and no allowlist
+  row can close it. A Spec amendment carving the gate-4 scanner's own target
+  out of route 3's removal condition, with removal deferred until the
+  post-deletion scan is recorded complete, is the only route that resolves it.
+  NOT amended here: changing a Spec's normative route text needs explicit
+  approval.
+- **Spec 137 route 3's operand test is unmet by the gate 9 helper (I3),
+  decision required.** Route 3 admits a literal that "must name the retiring
+  path for the retirement machinery to function." The decoupling amendment in
+  the same Spec states that the gate 9 mechanism "gates nothing outside itself
+  and is not a precondition for deletion or lifecycle reconciliation." A
+  component the retirement does not need in order to function is not machinery
+  that must function, so `scripts/validation/agentic-research-gate9-evidence.py`
+  and `tests/validation/test_agentic_research_gate9_evidence.py` do not satisfy
+  the route they are admitted under. Unlike I2 this is a genuine judgement, not
+  a contradiction: the durability-enhancement track is arguably retirement
+  machinery for its own scope. Two remedies exist and this Task chooses
+  neither: re-argue route 3 on that ground, or move both rows to a route with
+  no operand-to-function test. Neither row declares route 3's mandatory
+  removal-on-completion condition either way.
 - **Gate 3 completeness sweep, open.** An independent evidence seat found that
   the ledger adjudicates enumerated lists element by element and then leaves
   specific elements out. Named instances: `sdlc-document-roles.md` items 1, 2,
