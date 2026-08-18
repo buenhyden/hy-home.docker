@@ -3572,6 +3572,14 @@ expected_implementations = {
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
     pathlib.Path("scripts/operations/sync-provider-surfaces.sh"),
     pathlib.Path("scripts/operations/sync-tech-stack-versions.sh"),
+    # Restored 2026-08-18: the taxonomy merge deleted these four with no
+    # successor named in its script manifest, while 636 tracked findings
+    # reference them as evidence that the commands were run. The files are
+    # back on disk, so the expected set must name them again.
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
+    pathlib.Path("scripts/validation/check-doc-traceability.sh"),
+    pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
 }
 implementation_scripts = sorted(
     path
