@@ -282,6 +282,12 @@ class OldPathGateFixtureTests(unittest.TestCase):
             "tilde_fence": "~~~\n" + dead + "~~~\n",
             "mismatched_fence_does_not_reopen": "```\n" + dead + "~~~\n" + dead,
             "unclosed_fence_admits_nothing_after": "```\n" + dead,
+            # Four or more spaces is code content, not a fence, so treating it
+            # as one closed a fence CommonMark keeps open and let the rows
+            # after it become live grants.
+            "four_space_indent_does_not_close": (
+                "```\n" + dead + "    ```\n" + dead + "```\n"
+            ),
             "single_line_comment": "<!-- " + dead.strip() + " -->\n",
             "block_comment": "<!--\n" + dead + "-->\n",
             # A ``` does not close a ```` block, and a closing fence carries no
@@ -307,6 +313,9 @@ class OldPathGateFixtureTests(unittest.TestCase):
             "fence_inside_comment": "<!--\n```\n-->\n" + after,
             "block_comment": "<!--\n" + dead + "-->\n" + after,
             "closed_backtick_fence": "```\n" + dead + "```\n" + after,
+            # A four-space run outside a fence must not OPEN one, or every
+            # row after it is silently dropped.
+            "four_space_indent_does_not_open": "    ```\n" + after,
             "shorter_fence_does_not_close": (
                 "````\n" + dead + "```\n" + dead + "````\n" + after
             ),
@@ -339,18 +348,62 @@ class OldPathGateFixtureTests(unittest.TestCase):
             task.write_bytes(b"\xff\xfe not utf-8")
             self.assertEqual(2, contract.main(["--root", str(root)]), "undecodable")
 
-            # The OSError half shipped unpinned: reverting the catch to
-            # UnicodeDecodeError alone survived the whole suite.
+            # The OSError half shipped unpinned and a reviewer's mutant
+            # survived. A chmod-based fixture is NOT usable here: this
+            # platform's temp filesystem does not enforce permissions, so the
+            # guard skipped and the test passed vacuously. Patching the read
+            # is deterministic everywhere.
             task.write_text("### Old-path allowlist\n", encoding="utf-8")
-            task.chmod(0o000)
+            real_read = pathlib.Path.read_text
+
+            def refuse(self, *args, **kwargs):
+                if self.name == pathlib.Path(contract.TASK_PATH).name:
+                    raise OSError(13, "Permission denied")
+                return real_read(self, *args, **kwargs)
+
+            pathlib.Path.read_text = refuse
             try:
-                if os.access(task, os.R_OK):
-                    self.skipTest("running with read override; chmod not enforced")
                 self.assertEqual(
                     2, contract.main(["--root", str(root)]), "unreadable"
                 )
             finally:
-                task.chmod(0o644)
+                pathlib.Path.read_text = real_read
+
+    def test_a_tracked_path_that_is_not_a_file_is_counted(self) -> None:
+        # `is_file()` sat outside the read guard and its skip was uncounted.
+        # A tracked file removed from the working tree exercises that branch
+        # deterministically: git still lists it, the path does not exist.
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/gone.md").write_text("x\n", encoding="utf-8")
+            (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            self._commit(root)
+            (root / "docs/gone.md").unlink()
+            self.assertEqual(1, contract.scan(root).unreadable_files)
+
+    def test_a_scan_read_failure_is_counted_not_raised(self) -> None:
+        """The scan loop's OSError half is a separate site from the Task's.
+
+        A mutant reverting this one survived while the Task-side guard was
+        pinned, because no fixture made an ordinary tracked file fail to read.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/leaf.md").write_text("x\n", encoding="utf-8")
+            (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            self._commit(root)
+            real_read = pathlib.Path.read_text
+
+            def refuse(self, *args, **kwargs):
+                if self.name == "leaf.md":
+                    raise OSError(13, "Permission denied")
+                return real_read(self, *args, **kwargs)
+
+            pathlib.Path.read_text = refuse
+            try:
+                self.assertEqual(1, contract.scan(root).unreadable_files)
+            finally:
+                pathlib.Path.read_text = real_read
 
     def test_counter_output_surface_is_printed(self) -> None:
         """The printed counters ARE gate 4's evidence, so they must be pinned.

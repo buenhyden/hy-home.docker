@@ -348,6 +348,12 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
         if fence is not None:
             marker, width = fence
             run = len(stripped) - len(stripped.lstrip(marker))
+            # The indent rule applies to CLOSING too. Applying it only to the
+            # opening left a four-space-indented run still closing the fence,
+            # so the rows after it became live grants anyway.
+            if len(line) - len(stripped) >= 4:
+                previous = line
+                continue
             # CommonMark: a closing fence needs at least the opening width and
             # carries no info string. Matching on a bare prefix let a ``` close
             # a ```` block, and let ```` ```text ```` close one at all.
