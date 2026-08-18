@@ -50,7 +50,7 @@ Superseded provenance only; not current implementation evidence.
 ## Sources
 
 - [Canonical audit README](ref-0019-readme.md) - current audit boundary.
-- [Provider research](../research/ref-0051-provider-implementation-comparison.md) - current provider criteria.
+- `Provider research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf) - current provider criteria.
 
 ## Maintenance
 

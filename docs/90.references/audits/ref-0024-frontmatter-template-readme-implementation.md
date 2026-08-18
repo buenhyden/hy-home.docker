@@ -168,8 +168,8 @@ unrelated historical findings remain advisory.
 
 ## Sources
 
-- [Document metadata and lifecycle criteria](../research/ref-0045-document-metadata-lifecycle.md) - DML-01 through DML-14
-- [SDLC document roles](../research/ref-0055-sdlc-document-roles.md) - artifact-type boundaries
+- `Document metadata and lifecycle criteria` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - DML-01 through DML-14
+- `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - artifact-type boundaries
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - current key/profile and README/generated rules
 - [Lifecycle status](../../99.templates/support/lifecycle-status.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - target-stage status, template, and numbering rules

@@ -88,5 +88,5 @@ security/
 - [security automation readiness](ref-0078-security-automation-readiness.md)
 - [sample-service supply-chain summary](ref-0079-supply-chain-sample-service.md)
 - [security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md)
-- [security governance research](../../research/ref-0056-security-governance.md)
+- `security governance research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf)
 - [reference template](../../../99.templates/templates/common/reference.template.md)

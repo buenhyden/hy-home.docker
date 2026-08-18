@@ -19,7 +19,7 @@ ruleset can and cannot be read from — documented nowhere.
 
 This reference covers the platform mechanics. It deliberately does not
 re-inventory the repository's workflows, jobs, or pinned actions; those live in
-[automation, pipeline, and workflow](ref-0043-automation-pipeline-workflow.md) and are
+`automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) and are
 not duplicated here. The one repository-facing section below records which
 platform capabilities are _not_ adopted, which is the complement of that
 inventory rather than a copy of it.
@@ -451,7 +451,7 @@ unchanged, but the mutable-tag exposure is the same in kind.
 ## Platform Capability Adoption in This Repository
 
 This is the complement of the tracked inventory in
-[automation, pipeline, and workflow](ref-0043-automation-pipeline-workflow.md), which
+`automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf), which
 records what the repository _does_ declare. This table is therefore strictly
 negative: it records only capabilities the repository does **not** use. What it
 does use is not restated here. Derived at `4122cecf` by scanning
@@ -633,9 +633,9 @@ an authenticated API. A green workflow file proves intent and nothing more.
 
 ## Related Documents
 
-- [research pack index](ref-0039-readme.md)
-- [automation, pipeline, and workflow](ref-0043-automation-pipeline-workflow.md)
-- [quality, CI, CD, QA, and formatting](ref-0053-quality-ci-formatting.md)
-- [security governance](ref-0056-security-governance.md)
-- [verification and validation](ref-0085-verification-validation.md)
+- `research pack index` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
+- `automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf)
+- `quality, CI, CD, QA, and formatting` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf)
+- `security governance` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf)
+- `verification and validation` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `verification-validation` leaf)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)

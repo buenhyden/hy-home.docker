@@ -335,5 +335,5 @@ when required.
 - [Spec 134](spec.md)
 - [Implementation Plan](plan.md)
 - [Agent governance](../../00.agent-governance/README.md)
-- [Canonical research](../../90.references/research/ref-0039-readme.md)
+- `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical audit](../../90.references/audits/ref-0019-readme.md)

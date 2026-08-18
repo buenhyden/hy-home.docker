@@ -164,7 +164,7 @@ recovery, and deployment remain unobserved runtime work.
 
 ## Sources
 
-- [Docker Compose infrastructure research](../research/ref-0044-docker-compose-infrastructure.md) - source-backed structural/runtime evidence ladder.
+- `Docker Compose infrastructure research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) - source-backed structural/runtime evidence ladder.
 - [Compose profile/service coverage](../data/docker/ref-0059-compose-profile-service-coverage.md) - generated tracked topology.
 - [Tech-stack version provenance](../data/docker/ref-0061-tech-stack-version-provenance.md) - generated declaration provenance and drift evidence.
 - [Infrastructure README](../../../infra/README.md) - repository topology and validation routing.

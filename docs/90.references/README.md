@@ -195,17 +195,17 @@ Reference 문서는 active stage의 판단을 돕는 안정적 배경 지식입�
 - [llm-wiki/repository-map.md](llm-wiki/ref-0083-repository-map.md) - curated tracked-source repository map
 - [llm-wiki/llm-wiki-index.md](llm-wiki/ref-0082-llm-wiki-index.md) - generated tracked repo-local path index
 - [research/README.md](./research/README.md) - source-backed research category
-- [research/ref-0039-readme.md](research/ref-0039-readme.md) - harness, loop, provider, SDLC, QA research pack index
-- [research/ref-0058-workspace-baseline.md](research/ref-0058-workspace-baseline.md) - workspace purpose, roles, gates, contracts, scripts, governance baseline
-- [research/ref-0047-harness-engineering.md](research/ref-0047-harness-engineering.md) - harness engineering components and workspace application analysis
-- [research/ref-0049-loop-engineering.md](research/ref-0049-loop-engineering.md) - agent, eval, CI, human approval loop analysis
-- [research/ref-0057-spec-driven-sdlc.md](research/ref-0057-spec-driven-sdlc.md) - spec-driven development and SDLC mapping
-- [research/ref-0053-quality-ci-formatting.md](research/ref-0053-quality-ci-formatting.md) - CI/CD, QA, formatting, and secure quality gate analysis
-- [research/ref-0051-provider-implementation-comparison.md](research/ref-0051-provider-implementation-comparison.md) - Claude, Codex, Gemini provider implementation comparison
-- [research/ref-0042-ai-agent-catalogs.md](research/ref-0042-ai-agent-catalogs.md) - external AI agent catalog patterns and repo-local curated catalog import boundary
-- [research/ref-0044-docker-compose-infrastructure.md](research/ref-0044-docker-compose-infrastructure.md) - Docker Compose and infrastructure harness analysis
-- [research/ref-0056-security-governance.md](research/ref-0056-security-governance.md) - security governance and secure SDLC analysis
-- [research/ref-0043-automation-pipeline-workflow.md](research/ref-0043-automation-pipeline-workflow.md) - automation, pipeline, and workflow analysis
+- `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf) - harness, loop, provider, SDLC, QA research pack index
+- `workspace-baseline` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf) - workspace purpose, roles, gates, contracts, scripts, governance baseline
+- `harness-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) - harness engineering components and workspace application analysis
+- `loop-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) - agent, eval, CI, human approval loop analysis
+- `spec-driven-sdlc` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf) - spec-driven development and SDLC mapping
+- `quality-ci-formatting` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf) - CI/CD, QA, formatting, and secure quality gate analysis
+- `provider-implementation-comparison` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf) - Claude, Codex, Gemini provider implementation comparison
+- `ai-agent-catalogs` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf) - external AI agent catalog patterns and repo-local curated catalog import boundary
+- `docker-compose-infrastructure` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) - Docker Compose and infrastructure harness analysis
+- `security-governance` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) - security governance and secure SDLC analysis
+- `automation-pipeline-workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) - automation, pipeline, and workflow analysis
 
 ## Stage Handoff
 

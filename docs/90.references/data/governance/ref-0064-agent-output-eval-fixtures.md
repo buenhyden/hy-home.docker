@@ -296,8 +296,8 @@ authoritative.
 - [OpenAI evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) - objective, dataset, metrics, run/compare, and continuous-evaluation framing.
 - [OpenAI Evals](https://github.com/openai/evals) - LLM/system eval framework and custom private eval concept.
 - [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) - defined, reliable, and consistent test-context concept.
-- [Loop engineering research](../../research/ref-0049-loop-engineering.md) - repo-local eval-loop gap.
-- [Harness engineering research](../../research/ref-0047-harness-engineering.md) - fixture and eval-harness background.
+- `Loop engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) - repo-local eval-loop gap.
+- `Harness engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) - fixture and eval-harness background.
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - provider parity source of truth.
 - [Automation candidates](../../audits/ref-0021-automation-candidates.md) - `AEA-AUTO-003` implementation context.
 - [agent-output eval runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) - local advisory fixture runner.

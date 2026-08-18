@@ -103,7 +103,7 @@ requirements.
 
 ## Sources
 
-- [Loop research](../research/ref-0049-loop-engineering.md)
+- `Loop research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf)
 - [Agent-output fixtures](../data/governance/ref-0064-agent-output-eval-fixtures.md)
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)

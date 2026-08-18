@@ -663,28 +663,28 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/learning/ref-0080-roadmap-v1.md](../learning/ref-0080-roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/ref-0081-roadmap.md](../learning/ref-0081-roadmap.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
-| [docs/90.references/research/ref-0039-readme.md](../research/ref-0039-readme.md) | Markdown reference |
-| [docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md](../research/ref-0040-agent-instructions-vibe-coding.md) | Markdown reference |
-| [docs/90.references/research/ref-0041-agent-model-selection.md](../research/ref-0041-agent-model-selection.md) | Markdown reference |
-| [docs/90.references/research/ref-0042-ai-agent-catalogs.md](../research/ref-0042-ai-agent-catalogs.md) | Markdown reference |
-| [docs/90.references/research/ref-0043-automation-pipeline-workflow.md](../research/ref-0043-automation-pipeline-workflow.md) | Markdown reference |
-| [docs/90.references/research/ref-0044-docker-compose-infrastructure.md](../research/ref-0044-docker-compose-infrastructure.md) | Markdown reference |
-| [docs/90.references/research/ref-0045-document-metadata-lifecycle.md](../research/ref-0045-document-metadata-lifecycle.md) | Markdown reference |
-| [docs/90.references/research/ref-0046-documentation-architecture.md](../research/ref-0046-documentation-architecture.md) | Markdown reference |
-| [docs/90.references/research/ref-0047-harness-engineering.md](../research/ref-0047-harness-engineering.md) | Markdown reference |
-| [docs/90.references/research/ref-0048-llm-wiki-system.md](../research/ref-0048-llm-wiki-system.md) | Markdown reference |
-| [docs/90.references/research/ref-0049-loop-engineering.md](../research/ref-0049-loop-engineering.md) | Markdown reference |
-| [docs/90.references/research/ref-0050-memory-hierarchy.md](../research/ref-0050-memory-hierarchy.md) | Markdown reference |
-| [docs/90.references/research/ref-0051-provider-implementation-comparison.md](../research/ref-0051-provider-implementation-comparison.md) | Markdown reference |
-| [docs/90.references/research/ref-0052-provider-model-landscape.md](../research/ref-0052-provider-model-landscape.md) | Markdown reference |
-| [docs/90.references/research/ref-0053-quality-ci-formatting.md](../research/ref-0053-quality-ci-formatting.md) | Markdown reference |
-| [docs/90.references/research/ref-0054-scope-application-matrix.md](../research/ref-0054-scope-application-matrix.md) | Markdown reference |
-| [docs/90.references/research/ref-0055-sdlc-document-roles.md](../research/ref-0055-sdlc-document-roles.md) | Markdown reference |
-| [docs/90.references/research/ref-0056-security-governance.md](../research/ref-0056-security-governance.md) | Markdown reference |
-| [docs/90.references/research/ref-0057-spec-driven-sdlc.md](../research/ref-0057-spec-driven-sdlc.md) | Markdown reference |
-| [docs/90.references/research/ref-0058-workspace-baseline.md](../research/ref-0058-workspace-baseline.md) | Markdown reference |
+| `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf) | Markdown reference |
+| `agent-instructions-vibe-coding` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-instructions-vibe-coding` leaf) | Markdown reference |
+| `agent-model-selection` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-model-selection` leaf) | Markdown reference |
+| `ai-agent-catalogs` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf) | Markdown reference |
+| `automation-pipeline-workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) | Markdown reference |
+| `docker-compose-infrastructure` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) | Markdown reference |
+| `document-metadata-lifecycle` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) | Markdown reference |
+| `documentation-architecture` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `documentation-architecture` leaf) | Markdown reference |
+| `harness-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) | Markdown reference |
+| `llm-wiki-system` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `llm-wiki-system` leaf) | Markdown reference |
+| `loop-engineering` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) | Markdown reference |
+| `memory-hierarchy` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `memory-hierarchy` leaf) | Markdown reference |
+| `provider-implementation-comparison` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf) | Markdown reference |
+| `provider-model-landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf) | Markdown reference |
+| `quality-ci-formatting` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf) | Markdown reference |
+| `scope-application-matrix` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `scope-application-matrix` leaf) | Markdown reference |
+| `sdlc-document-roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) | Markdown reference |
+| `security-governance` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) | Markdown reference |
+| `spec-driven-sdlc` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf) | Markdown reference |
+| `workspace-baseline` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf) | Markdown reference |
 | [docs/90.references/research/ref-0084-github-actions-platform.md](../research/ref-0084-github-actions-platform.md) | Markdown reference |
-| [docs/90.references/research/ref-0085-verification-validation.md](../research/ref-0085-verification-validation.md) | Markdown reference |
+| `verification-validation` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `verification-validation` leaf) | Markdown reference |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
 | [docs/99.templates/support/archive-retention-contract.md](../../99.templates/support/archive-retention-contract.md) | Markdown reference |

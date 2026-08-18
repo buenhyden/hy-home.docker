@@ -128,8 +128,8 @@ discovery.
 
 ## Sources
 
-- [Provider comparison research and official evidence ledger](../research/ref-0051-provider-implementation-comparison.md)
-- [Provider model landscape](../research/ref-0052-provider-model-landscape.md)
+- `Provider comparison research and official evidence ledger` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
+- `Provider model landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
 - [Claude notes](../../00.agent-governance/providers/claude.md)

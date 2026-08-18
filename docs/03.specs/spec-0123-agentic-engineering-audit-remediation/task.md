@@ -400,7 +400,7 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 ## Related Documents
 
-- [Canonical research pack](../../90.references/research/ref-0039-readme.md)
+- `Canonical research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Research category README](../../90.references/research/README.md)
 - [Spec 123 audit remediation](spec.md)
 - [Predecessor convergence Task](../spec-0134-agent-governance-canonical-convergence/task.md)

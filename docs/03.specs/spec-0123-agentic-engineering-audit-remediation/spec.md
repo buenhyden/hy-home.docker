@@ -68,7 +68,7 @@ must not be backdated into that catalog.
 - **Previous Specification**:
   ../122-agentic-research-pack-consolidation/spec.md
 - **Canonical Research Pack**:
-  [../../90.references/research/ref-0039-readme.md](../../90.references/research/ref-0039-readme.md)
+  `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - **Canonical Audit Pack**:
   [../../90.references/audits/ref-0019-readme.md](../../90.references/audits/ref-0019-readme.md)
 - **Overlapping Audit Pack**:
@@ -486,7 +486,7 @@ Specs 124-127 and their plans stay `draft` pending separate approval.
 - Implementation plan
 - Task evidence
 - Previous research consolidation specification
-- [Canonical research pack](../../90.references/research/ref-0039-readme.md)
+- `Canonical research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical implementation audit pack](../../90.references/audits/ref-0019-readme.md)
 - [Overlapping implementation audit pack](../../90.references/audits/ref-0033-readme.md)
 - [Research category](../../90.references/research/README.md)

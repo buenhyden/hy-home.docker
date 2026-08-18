@@ -167,10 +167,10 @@ nothing.
 
 ## Sources
 
-- [Instruction and vibe-coding research](../research/ref-0040-agent-instructions-vibe-coding.md)
-- [Pinned catalog research](../research/ref-0042-ai-agent-catalogs.md)
-- [Model-selection research](../research/ref-0041-agent-model-selection.md)
-- [Provider landscape](../research/ref-0052-provider-model-landscape.md)
+- `Instruction and vibe-coding research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-instructions-vibe-coding` leaf)
+- `Pinned catalog research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf)
+- `Model-selection research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-model-selection` leaf)
+- `Provider landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
 - [Agent catalog](../../00.agent-governance/agents/README.md)
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)

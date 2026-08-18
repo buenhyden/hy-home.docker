@@ -52,12 +52,12 @@ post_baseline_records:
   source_commit: f2f8f8a441b5977d55e516ba59ea7865c06d6c55
   reason: Move post-baseline active Stage 90 source to stable typed target docs/90.references/research/ref-0084-github-actions-platform.md; migrate 7 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md
-  stable_path: docs/90.references/research/ref-0085-verification-validation.md
+  stable_path: the `verification-validation` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0085
   action: move
   replacement: null
   source_commit: 9c927a0e187a4214358453f4826dc758a72611b5
-  reason: Move post-baseline active Stage 90 source to stable typed target docs/90.references/research/ref-0085-verification-validation.md; migrate 8 resolved inbound link(s) with it.
+  reason: Move post-baseline active Stage 90 source to stable typed target the `verification-validation` leaf of the retiring 2026-07-05 pack; migrate 8 resolved inbound link(s) with it.
 records:
 - legacy_path: docs/01.requirements/001-gateway.md
   stable_path: docs/01.requirements/prd-0001-gateway.md
@@ -5002,145 +5002,145 @@ records:
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Rewrite baseline active source in place for the approved target profile; preserve 10 resolved inbound link(s).
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
-  stable_path: docs/90.references/research/ref-0039-readme.md
+  stable_path: the `README` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0039
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0039-readme.md; migrate 69 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `README` leaf of the retiring 2026-07-05 pack; migrate 69 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md
-  stable_path: docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md
+  stable_path: the `agent-instructions-vibe-coding` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0040
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md; migrate 9 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `agent-instructions-vibe-coding` leaf of the retiring 2026-07-05 pack; migrate 9 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md
-  stable_path: docs/90.references/research/ref-0041-agent-model-selection.md
+  stable_path: the `agent-model-selection` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0041
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0041-agent-model-selection.md; migrate 10 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `agent-model-selection` leaf of the retiring 2026-07-05 pack; migrate 10 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md
-  stable_path: docs/90.references/research/ref-0042-ai-agent-catalogs.md
+  stable_path: the `ai-agent-catalogs` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0042
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0042-ai-agent-catalogs.md; migrate 14 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `ai-agent-catalogs` leaf of the retiring 2026-07-05 pack; migrate 14 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
-  stable_path: docs/90.references/research/ref-0043-automation-pipeline-workflow.md
+  stable_path: the `automation-pipeline-workflow` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0043
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0043-automation-pipeline-workflow.md; migrate 16 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `automation-pipeline-workflow` leaf of the retiring 2026-07-05 pack; migrate 16 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
-  stable_path: docs/90.references/research/ref-0044-docker-compose-infrastructure.md
+  stable_path: the `docker-compose-infrastructure` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0044
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0044-docker-compose-infrastructure.md; migrate 19 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `docker-compose-infrastructure` leaf of the retiring 2026-07-05 pack; migrate 19 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
-  stable_path: docs/90.references/research/ref-0045-document-metadata-lifecycle.md
+  stable_path: the `document-metadata-lifecycle` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0045
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0045-document-metadata-lifecycle.md; migrate 12 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `document-metadata-lifecycle` leaf of the retiring 2026-07-05 pack; migrate 12 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md
-  stable_path: docs/90.references/research/ref-0046-documentation-architecture.md
+  stable_path: the `documentation-architecture` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0046
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0046-documentation-architecture.md; migrate 8 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `documentation-architecture` leaf of the retiring 2026-07-05 pack; migrate 8 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md
-  stable_path: docs/90.references/research/ref-0047-harness-engineering.md
+  stable_path: the `harness-engineering` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0047
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0047-harness-engineering.md; migrate 20 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `harness-engineering` leaf of the retiring 2026-07-05 pack; migrate 20 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md
-  stable_path: docs/90.references/research/ref-0048-llm-wiki-system.md
+  stable_path: the `llm-wiki-system` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0048
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0048-llm-wiki-system.md; migrate 5 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `llm-wiki-system` leaf of the retiring 2026-07-05 pack; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md
-  stable_path: docs/90.references/research/ref-0049-loop-engineering.md
+  stable_path: the `loop-engineering` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0049
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0049-loop-engineering.md; migrate 21 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `loop-engineering` leaf of the retiring 2026-07-05 pack; migrate 21 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md
-  stable_path: docs/90.references/research/ref-0050-memory-hierarchy.md
+  stable_path: the `memory-hierarchy` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0050
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0050-memory-hierarchy.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `memory-hierarchy` leaf of the retiring 2026-07-05 pack; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md
-  stable_path: docs/90.references/research/ref-0051-provider-implementation-comparison.md
+  stable_path: the `provider-implementation-comparison` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0051
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0051-provider-implementation-comparison.md; migrate 23 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `provider-implementation-comparison` leaf of the retiring 2026-07-05 pack; migrate 23 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md
-  stable_path: docs/90.references/research/ref-0052-provider-model-landscape.md
+  stable_path: the `provider-model-landscape` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0052
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0052-provider-model-landscape.md; migrate 12 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `provider-model-landscape` leaf of the retiring 2026-07-05 pack; migrate 12 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
-  stable_path: docs/90.references/research/ref-0053-quality-ci-formatting.md
+  stable_path: the `quality-ci-formatting` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0053
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0053-quality-ci-formatting.md; migrate 29 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `quality-ci-formatting` leaf of the retiring 2026-07-05 pack; migrate 29 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md
-  stable_path: docs/90.references/research/ref-0054-scope-application-matrix.md
+  stable_path: the `scope-application-matrix` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0054
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0054-scope-application-matrix.md; migrate 3 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `scope-application-matrix` leaf of the retiring 2026-07-05 pack; migrate 3 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md
-  stable_path: docs/90.references/research/ref-0055-sdlc-document-roles.md
+  stable_path: the `sdlc-document-roles` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0055
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0055-sdlc-document-roles.md; migrate 15 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `sdlc-document-roles` leaf of the retiring 2026-07-05 pack; migrate 15 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
-  stable_path: docs/90.references/research/ref-0056-security-governance.md
+  stable_path: the `security-governance` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0056
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0056-security-governance.md; migrate 26 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `security-governance` leaf of the retiring 2026-07-05 pack; migrate 26 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md
-  stable_path: docs/90.references/research/ref-0057-spec-driven-sdlc.md
+  stable_path: the `spec-driven-sdlc` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0057
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0057-spec-driven-sdlc.md; migrate 19 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `spec-driven-sdlc` leaf of the retiring 2026-07-05 pack; migrate 19 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
-  stable_path: docs/90.references/research/ref-0058-workspace-baseline.md
+  stable_path: the `workspace-baseline` leaf of the retiring 2026-07-05 pack
   artifact_id: ref-0058
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/90.references/research/ref-0058-workspace-baseline.md; migrate 30 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target the `workspace-baseline` leaf of the retiring 2026-07-05 pack; migrate 30 resolved inbound link(s) with it.
 - legacy_path: docs/90.references/research/README.md
   stable_path: docs/90.references/research/README.md
   artifact_id: null

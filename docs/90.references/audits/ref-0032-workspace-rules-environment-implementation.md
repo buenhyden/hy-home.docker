@@ -117,7 +117,7 @@ separate.
 
 ## Sources
 
-- [Workspace baseline research](../research/ref-0058-workspace-baseline.md)
+- `Workspace baseline research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf)
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Agentic rule](../../00.agent-governance/rules/agentic.md)
 - [Task checklists](../../00.agent-governance/rules/task-checklists.md)

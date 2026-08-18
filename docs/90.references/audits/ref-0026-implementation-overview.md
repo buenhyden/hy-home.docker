@@ -242,7 +242,7 @@ tracked workflow/script surfaces.
 
 ## Sources
 
-- [Agentic engineering research pack](../research/ref-0039-readme.md) - criteria source.
+- `Agentic engineering research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf) - criteria source.
 - Audit pack task evidence - source inventory and validation evidence.
 - [Stage 00 governance hub](../../00.agent-governance/README.md) - governance SSoT.
 - [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md) - common capability mapping.
@@ -273,6 +273,6 @@ tracked workflow/script surfaces.
 - [SDLC and document-contract implementation audit](ref-0029-sdlc-document-contracts-implementation.md)
 - [Frontmatter, template, and README implementation audit](ref-0024-frontmatter-template-readme-implementation.md)
 - [Security framework maturity coverage](ref-0031-security-framework-maturity.md)
-- [Research pack](../research/ref-0039-readme.md)
+- `Research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Audit pack spec](../../03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md)
 - Audit pack plan
