@@ -124,7 +124,15 @@ TERMINAL_NEGATION = re.compile(
     # A requested review is an open state. The bare token cannot be used: it
     # demotes "Approved; requested changes were applied", where "requested"
     # modifies the changes rather than the review. Bind it to its subject.
-    r"|\b(?:re-?)?reviews?\s+(?:has\s+been\s+|have\s+been\s+|is\s+|are\s+|was\s+|were\s+)?requested\b"
+    r"|\b(?:re-?)?reviews?\s+"
+    r"(?:has\s+been\s+|have\s+been\s+|is\s+|are\s+|was\s+|were\s+)?"
+    r"(?:still\s+|again\s+|formally\s+|newly\s+)?requested\b"
+    # Verb-first phrasing, and the review word may be qualified.
+    r"|\brequested\s+(?:an?\s+|the\s+|another\s+)?"
+    r"(?:independent\s+|second\s+|external\s+|further\s+)?(?:re-?)?reviews?\b"
+    # The forge's own change-request verdict. Distinct from "requested
+    # changes", which is benign past-tense prose about changes already named.
+    r"|\bchanges\s+(?:were\s+|have\s+been\s+|are\s+)?requested\b"
     r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
     # Self-approval. The ledger requires a seat other than the author, and the
     # checker cannot see who settled a row, so at least the wording is rejected.

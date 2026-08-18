@@ -339,6 +339,13 @@ class SettledVerdictTests(unittest.TestCase):
         "Task 10b implementer reviewed; independent re-review requested",
         "Approved by the implementer; a second review is requested",
         "Reviewed; re-reviews have been requested from both seats",
+        # Residual forms the first subject binding missed: an adverb between
+        # the subject and the verb, verb-first phrasing, and the forge's own
+        # change-request verdict token.
+        "Task 10b implementer reviewed; independent review still requested",
+        "Task 10b implementer reviewed; requested an independent review",
+        "Task 10b implementer reviewed; changes requested",
+        "Reviewed; changes were requested by the second seat",
         "review not approved",
         "NOT approved",
         "review pending; gates do not pass yet",
