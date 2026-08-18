@@ -9606,8 +9606,14 @@ provenance objects, and semantic dispositions above remain unchanged.
   authoritative Operations result remains `47/47` in `335.595s`; the registered
   all-generator aggregate remains explicitly unverified after its exact
   12-minute cutoff and single interruption with exit `130`.
-- Handoff status: `FINAL_APPROVED_UNCOMMITTED`. The logical commit remains
-  controller-owned and pending; no commit identity is recorded yet.
+- Logical commit: `cb117edd109a217d89e4e97a0640b5c9c00b7492`
+  (`docs: converge operations catalog domains 00 through 03`). The frozen YAML
+  ledger, provenance objects, approval, and semantic dispositions remain
+  unchanged. Recovery remains the one-entry archive
+  `/tmp/task10d-ops0005-merge-source.tar` with SHA-256
+  `12d12f52c15a4535ceedf23de835426acf72658d3e8204d13ab5fc6399bc8672`.
+- Handoff status: `FINAL APPROVED AND COMMITTED`. Task 10E is the next bounded
+  semantic slice and may consume only approved domains 04--06 rows.
 
 ## Related Documents
 
