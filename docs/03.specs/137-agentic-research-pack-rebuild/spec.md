@@ -498,6 +498,64 @@ two additional requirements named above. The deletion precondition in
 `Migration contract` is unchanged and now reads over five dispositions rather
 than four.
 
+### Route-1 admission and split-row evaluation amendment
+
+**Approval date:** 2026-08-19 (Asia/Seoul)
+
+An independent review seat found that route 1 of
+`Non-link literal admission amendment` is satisfied by no row in the Task's
+allowlist, and that gate 4's own scanner cannot evaluate a row that shares a path
+with another. This amendment makes exactly two changes and no others. It widens
+no allowlist, admits no exception to the clickable-link prohibition, removes no
+gate, and lowers no threshold.
+
+**1. Route 1's claim-ledger conjunct is replaced.** Route 1 requires the literal
+to describe a factual old event AND to carry an explicit claim-ledger
+disposition. The second conjunct cannot be met by any allowlist row, for a
+structural reason rather than a drafting one. The claim ledger enumerates the
+twenty leaves of the retiring directory and dispositions the claims inside them.
+The allowlist, by the definition in `Old-path inventory and allowlist`, covers
+literals in tracked text **outside** that directory. A document outside the
+retiring pack has no ledger row and cannot be given one without changing what the
+ledger enumerates, so the conjunct is unsatisfiable by construction in the same
+way requirement 5, requirement 6 and route 3's removal condition were before
+their recorded carve-outs. The 2026-08-18 amendment correctly rejected reading
+the conjunct as vacuously satisfied; the defect it left open is that no reading
+of the conjunct as written can be satisfied at all.
+
+The accounting the conjunct was reaching for is supplied instead by this Spec's
+own `Historical-evidence boundary`. Route 1 now reads:
+
+1. **Historical-evidence route** — the literal describes a factual old event, the
+   document containing it is historical evidence under `Historical-evidence
+   boundary`, and the row states the event and what the record would lose if the
+   literal were altered. Qualifying documents are audits, archived
+   specifications, archived changes, completed plans and tasks, archive
+   tombstones, migration ledgers, and append-preserved progress records. A
+   present-tense statement designating a current criteria source, owner, or route
+   is a canonical-owner statement, which `Old-path inventory and allowlist`
+   denies an allowlist under any route, and it is not admitted here.
+   Removal condition: none; these rows are immutable historical evidence, and a
+   row under this route may not declare a removal condition that contradicts it.
+
+Measured at the time of amendment: twelve of the fifteen rows in this family
+already state the event and what the record preserves, so they satisfy the
+amended route without further change.
+
+**2. Requirement 4 is evaluated per declared allowlist row.** Requirement 4 of
+the pre-deletion gates is evaluated over the tracked-text universe, and
+`Non-link literal admission amendment` requires every allowlist row to declare
+exactly one route. Both obligations attach to the **row**. Where several rows
+share a path because one document holds literals of different classes, each row
+is a separate subject: each declares its own route, carries its own class, and
+receives its own review verdict, and a settled verdict on one row settles nothing
+for its siblings. A scan implementation that collapses rows sharing a path
+reports a state this Spec does not authorize, because it can mark literals
+reviewed under a verdict never given to them and can evaluate the forbidden-class
+prohibition against one class where several were declared. The allowlist is keyed
+by path together with the row's declared line or stable anchor, which is the pair
+`Old-path inventory and allowlist` already requires the Task to own.
+
 ### Historical-evidence boundary
 
 Audits, archived specifications, completed plans, completed tasks, and archive

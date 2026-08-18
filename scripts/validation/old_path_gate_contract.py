@@ -252,13 +252,37 @@ class AllowRow:
     forbidden_class: bool
 
 
+def _collapse_rows(path_rows: list["AllowRow"]) -> "AllowRow | None":
+    """Fail-closed view of every allowlist row declared for one path."""
+    if not path_rows:
+        return None
+    forbidden = next((row for row in path_rows if row.forbidden_class), None)
+    if forbidden is not None:
+        return forbidden
+    unsettled = next((row for row in path_rows if not row.settled), None)
+    if unsettled is not None:
+        return unsettled
+    anchors: tuple[str, ...] = ()
+    for row in path_rows:
+        anchors += row.anchors
+    first = path_rows[0]
+    return AllowRow(
+        path=first.path,
+        anchors=anchors,
+        literal_class=first.literal_class,
+        verdict=first.verdict,
+        settled=True,
+        forbidden_class=False,
+    )
+
+
 @dataclass
 class ScanResult:
     findings: list[Finding] = field(default_factory=list)
     generated_occurrences: int = 0
     anchor_unbound: int = 0
     unreadable_files: int = 0
-    rows: dict[str, AllowRow] = field(default_factory=dict)
+    rows: dict[str, list[AllowRow]] = field(default_factory=dict)
 
 
 def _git(root: pathlib.Path, *args: str) -> str:
@@ -328,7 +352,13 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
         return {}
 
     header: list[str] | None = None
-    rows: dict[str, AllowRow] = {}
+    # Keyed by path to a LIST of rows. Spec 137's Route-1 admission and split-row
+    # evaluation amendment makes each declared row a separate subject: one
+    # document may hold literals of different classes under separate rows, each
+    # with its own route, class and verdict. Storing one row per path let a
+    # later row silently overwrite an earlier one, so a settled verdict could
+    # mark literals reviewed that no reviewer had seen.
+    rows: dict[str, list[AllowRow]] = {}
     # The fence is tracked by its marker, not as a boolean: a `~~~` inside a
     # ``` block does not close it in CommonMark, and toggling on either marker
     # let the row after the mismatched line back in as a live grant.
@@ -419,14 +449,14 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
         verdict = pick("review")
         anchors = tuple(re.findall(r"`([^`]+)`", pick("anchor")))
         literal_class = pick("class")
-        rows[path] = AllowRow(
+        rows.setdefault(path, []).append(AllowRow(
             path=path,
             anchors=anchors,
             literal_class=literal_class,
             verdict=verdict,
             settled=_is_settled(verdict),
             forbidden_class=bool(FORBIDDEN_CLASSES.search(literal_class)),
-        )
+        ))
     return rows
 
 
@@ -570,7 +600,15 @@ def scan(root: pathlib.Path) -> ScanResult:
 
         clickable = _clickable_lines(text)
         headings = _headings_by_line(text, relative.endswith(".md"))
-        row = rows.get(relative)
+        # Every row declared for this path applies to it, and the amendment
+        # states that settling one row settles nothing for its siblings. The
+        # declared anchors are prose descriptors, so an occurrence cannot be
+        # attributed to one sibling reliably; the evaluation therefore fails
+        # closed across the whole group. A forbidden class anywhere in the group
+        # is reported, a single unsettled sibling leaves the path unreviewed,
+        # and only a fully settled group clears it.
+        path_rows = rows.get(relative) or []
+        row = _collapse_rows(path_rows)
         generated = relative.startswith(GENERATED_PREFIXES)
 
         for number, line in enumerate(text.split("\n"), start=1):
@@ -675,10 +713,11 @@ def main(argv: list[str] | None = None) -> int:
     def count(code: str) -> int:
         return sum(1 for item in result.findings if item.code == code)
 
-    settled = sum(1 for row in result.rows.values() if row.settled)
+    all_rows = [row for group in result.rows.values() for row in group]
+    settled = sum(1 for row in all_rows if row.settled)
     print("Old-path gate 4 check")
     print(f"allowlist_rows_reviewed={settled}")
-    print(f"allowlist_rows_unreviewed={len(result.rows) - settled}")
+    print(f"allowlist_rows_unreviewed={len(all_rows) - settled}")
     print(f"clickable_links={count('OLD-PATH-CLICKABLE-LINK')}")
     print(f"unallowlisted_literals={count('OLD-PATH-UNALLOWLISTED')}")
     print(f"unreviewed_allowlist_literals={count('OLD-PATH-ALLOWLIST-UNREVIEWED')}")

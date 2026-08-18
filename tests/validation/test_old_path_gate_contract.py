@@ -751,25 +751,100 @@ class SettledVerdictTests(unittest.TestCase):
 class OldPathGateRepositoryTests(unittest.TestCase):
     """Behaviour against the live repository."""
 
+    # Refreshed 2026-08-19. The pinned set was stale: the taxonomy merge admitted
+    # further rows and the Route-1 admission and split-row evaluation amendment
+    # made every declared row a subject, so two rows previously hidden by a
+    # path collision are now counted.
     EXPECTED_UNREVIEWED = {
+        "docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md",
         "docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md",
         "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md",
+        "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
+        "scripts/knowledge/generate-llm-wiki.py",
         "scripts/validation/agentic-research-gate9-evidence.py",
+        "scripts/validation/check-document-corpus-lifecycle.py",
         "scripts/validation/old_path_gate_contract.py",
         "tests/validation/test_agentic_research_gate9_evidence.py",
+        "tests/validation/test_document_corpus_lifecycle.py",
+        "tests/validation/test_document_taxonomy.py",
     }
 
     def test_allowlist_split_is_exact(self) -> None:
         """Pins the split, so a forced-settled regression cannot survive."""
         rows = contract.read_allowlist(ROOT)
-        unreviewed = {path for path, row in rows.items() if not row.settled}
+        unreviewed = {
+            path
+            for path, group in rows.items()
+            if any(not row.settled for row in group)
+        }
         self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
-        self.assertEqual(34, sum(1 for row in rows.values() if row.settled))
+        settled = sum(1 for group in rows.values() for row in group if row.settled)
+        self.assertEqual(30, settled)
 
     def test_no_live_row_declares_a_forbidden_class(self) -> None:
         rows = contract.read_allowlist(ROOT)
-        offenders = [path for path, row in rows.items() if row.forbidden_class]
+        offenders = [
+            path
+            for path, group in rows.items()
+            for row in group
+            if row.forbidden_class
+        ]
         self.assertEqual([], offenders)
+
+    def test_rows_sharing_a_path_all_survive(self) -> None:
+        """A split row must not be overwritten by its sibling.
+
+        Spec 137's Route-1 admission and split-row evaluation amendment makes
+        each declared row a separate subject. Before the fix the allowlist was a
+        dict of one row per path, so the three-way migration-ledger split
+        collapsed to whichever row parsed last and a settled verdict on it would
+        have marked its siblings' literals reviewed.
+        """
+        rows = contract.read_allowlist(ROOT)
+        ledger = rows["docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"]
+        self.assertEqual(3, len(ledger))
+        self.assertEqual(
+            {
+                "Factual history",
+                "Commit-pinned baseline",
+                "Non-resolving same-slug",
+            },
+            {row.literal_class for row in ledger},
+        )
+        total = sum(len(group) for group in rows.values())
+        self.assertEqual(43, total)
+        self.assertGreater(total, len(rows))
+
+    def test_one_unsettled_sibling_leaves_the_whole_path_unreviewed(self) -> None:
+        """The collapse fails closed rather than trusting a settled sibling."""
+        settled = contract.AllowRow(
+            path="p",
+            anchors=("a",),
+            literal_class="Factual history",
+            verdict="Approved",
+            settled=True,
+            forbidden_class=False,
+        )
+        unsettled = contract.AllowRow(
+            path="p",
+            anchors=("b",),
+            literal_class="Commit-pinned baseline",
+            verdict="Not Run",
+            settled=False,
+            forbidden_class=False,
+        )
+        forbidden = contract.AllowRow(
+            path="p",
+            anchors=("c",),
+            literal_class="Current router",
+            verdict="Approved",
+            settled=True,
+            forbidden_class=True,
+        )
+        self.assertIsNone(contract._collapse_rows([]))
+        self.assertFalse(contract._collapse_rows([settled, unsettled]).settled)
+        self.assertTrue(contract._collapse_rows([settled, forbidden]).forbidden_class)
+        self.assertTrue(contract._collapse_rows([settled, settled]).settled)
 
     def test_no_clickable_old_pack_link_survives(self) -> None:
         """Gate 4's absolute half: this must stay at zero."""
