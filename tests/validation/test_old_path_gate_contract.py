@@ -251,6 +251,53 @@ class OldPathGateFixtureTests(unittest.TestCase):
             result = contract.scan(root)
             self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(result.findings))
 
+    def _rows_for(self, tail: str) -> list[str]:
+        live = "| `real/live.md` | `# h` | Factual history | r | Approved C0/I0/M0 |\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "docs/04.execution/tasks").mkdir(parents=True)
+            (root / contract.TASK_PATH).write_text(
+                ALLOWLIST_HEADER + live + tail, encoding="utf-8"
+            )
+            return sorted(contract.read_allowlist(root))
+
+    def test_only_live_rows_grant_exemptions(self) -> None:
+        """Rows that are illustrative, commented, or past the table grant nothing.
+
+        Each case below was a real leak. The ATX-heading and single-fence cases
+        were fixed a round earlier but shipped unpinned, so a reviewer's mutants
+        of both survived the suite; they are held here alongside the new ones.
+        """
+        dead = "| `dead/row.md` | `# h` | Factual history | r | reviewed |\n"
+        later = (
+            "\n| Path | Anchor | Literal class | Reason | Review |\n"
+            "| --- | --- | --- | --- | --- |\n"
+            "| `leak/after.md` | `# h` | Factual history | r | reviewed |\n"
+        )
+        cases = {
+            "atx_heading_ends_table": "# Later\n" + later,
+            "setext_heading_ends_table": "\nLater\n=====\n" + later,
+            "backtick_fence": "```\n" + dead + "```\n",
+            "tilde_fence": "~~~\n" + dead + "~~~\n",
+            "mismatched_fence_does_not_reopen": "```\n" + dead + "~~~\n" + dead,
+            "unclosed_fence_admits_nothing_after": "```\n" + dead,
+            "single_line_comment": "<!-- " + dead.strip() + " -->\n",
+            "block_comment": "<!--\n" + dead + "-->\n",
+        }
+        for name, tail in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(["real/live.md"], self._rows_for(tail))
+
+    def test_a_missing_task_document_reports_rather_than_crashes(self) -> None:
+        # Raising a named exception nothing catches only renamed the traceback:
+        # the operator still got no verdict, no counters, and no finding list.
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            with self.assertRaises(contract.AllowlistUnavailable):
+                contract.read_allowlist(root)
+            # Exit 2 must be distinguishable from a legitimate gate failure (1).
+            self.assertEqual(2, contract.main(["--root", str(root)]))
+
 
 class LineAttributionTests(unittest.TestCase):
     """Findings must name the line the link is actually on."""
@@ -310,6 +357,37 @@ class CrossLineDestinationTests(unittest.TestCase):
             with self.subTest(attribute=attribute):
                 text = f'<x {attribute}="../{SLUG}/x.md">'
                 self.assertEqual({1: "html-attribute"}, contract._clickable_lines(text))
+
+    def test_attribute_names_outside_a_tag_are_not_clickable(self) -> None:
+        """`data`, `action` and friends are ordinary identifiers too.
+
+        A clickable finding bypasses the allowlist by design, so a false
+        positive here is unsuppressable by any reviewed row and makes the gate
+        unpassable. Widening the attribute list without requiring tag context
+        turned prose and a Python assignment into permanent gate failures.
+        """
+        for text in (
+            f'data = "docs/90.references/research/{SLUG}/README.md"',
+            f"The action = docs/90.references/research/{SLUG}/README.md is noted.",
+            f"curl --data=docs/90.references/research/{SLUG}/README.md http://x",
+            f"cite: docs/90.references/research/{SLUG}/README.md",
+        ):
+            with self.subTest(text=text[:40]):
+                self.assertEqual({}, contract._clickable_lines(text))
+
+    def test_window_bound_matches_its_documented_meaning(self) -> None:
+        # WINDOW_LINES documents how many lines a destination MAY span. The
+        # slice took one more than that, so the shipped width exceeded the
+        # constant and the ledger understated it.
+        def split_over(count: int) -> str:
+            size = len(SLUG) // count + 1
+            parts = [SLUG[i : i + size] for i in range(0, len(SLUG), size)]
+            return '<a href="../' + "\n".join(parts) + '/x.md">'
+
+        self.assertTrue(contract._clickable_lines(split_over(contract.WINDOW_LINES)))
+        self.assertFalse(
+            contract._clickable_lines(split_over(contract.WINDOW_LINES + 1))
+        )
 
     def test_multiline_form_detects_its_own_case(self) -> None:
         # Emptying NEWLINE_WINDOW_FORMS survived the suite: the form had no

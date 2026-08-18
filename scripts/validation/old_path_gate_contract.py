@@ -63,18 +63,39 @@ _REFERENCE = re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | r
 # amplification the clickable check exists to prevent. `srcset` additionally
 # could not match at all, because `(?:href|src)\s*=` stops at `srcset=`.
 _URL_ATTR = r"href|src|srcset|data|poster|action|formaction|cite|ping|manifest|longdesc"
+# The attribute must sit inside an opening tag. Matching the bare name anywhere
+# made `data`, `action`, `cite` and `ping` -- ordinary identifiers -- fire on
+# prose and on Python assignments. A clickable finding deliberately bypasses the
+# allowlist, so every such false positive was unsuppressable by any reviewed row
+# and made the gate unpassable for legitimate content.
 _HTML_ATTR = re.compile(
-    rf"\b(?:{_URL_ATTR})\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}", re.IGNORECASE
+    rf"<[a-z][^<>]*?\b(?:{_URL_ATTR})\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}",
+    re.IGNORECASE,
 )
 _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
 
 # How many lines a cross-line destination may span. The straddle rule keeps
-# attribution correct at any width, so this is purely a coverage/cost dial:
-# measured on the largest slug-bearing file the concat pass is linear in the
-# bound (0.118s at 2, 0.180s at 4, 0.246s at 6), and the full repository scan
-# went from about 10s at 2 to about 24s at 6. A skip-if-the-joined-text-lacks-
-# the-slug guard was tried and removed: it showed no measurable gain, because
-# the cost concentrates in exactly the slug-bearing files it cannot skip.
+# attribution correct at any width, so this is a coverage/cost dial. It is a
+# HARD bound: a destination split over more than this many lines is not
+# detected, which is the original two-line defect at a larger constant.
+#
+# Cost, stated in full because an earlier version of this comment recorded only
+# the flattering half. Linear in the bound: 0.023s at 2, 0.032s at 4, 0.043s at
+# 6 on the largest slug-bearing tracked file, with a full repository scan around
+# 10s. Those figures are an order of magnitude below the ones this comment
+# carried a round earlier, because requiring tag context in `_HTML_ATTR` lets it
+# fail fast on the overwhelming majority of lines; the earlier 24s full scan was
+# that missing anchor, not the window.
+#
+# The remaining hazard is unrelated to this constant: `_INLINE` is QUADRATIC in
+# LINE LENGTH, and the window multiplies whatever that costs. A reviewer measured
+# 4x per doubling on a pathological single line, reaching about 50s at 46 KB.
+# No input-size guard and no timeout exist. Raising this constant multiplies that
+# class of cost, so it should not be raised without adding one.
+#
+# A skip-if-the-joined-text-lacks-the-slug guard was tried and removed: it
+# showed no measurable gain, because the cost concentrates in exactly the
+# slug-bearing files it cannot skip.
 WINDOW_LINES = 6
 # The newline is mandatory. With it optional this pattern also matched wholly
 # inside the second line of the window while the hit was recorded against the
@@ -94,7 +115,7 @@ NEWLINE_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("multiline-link", _MULTILINE),
 )
 
-# Forms evaluated against a two-line window joined with nothing at all. A URL
+# Forms evaluated against a WINDOW_LINES-line window joined with nothing at all. A URL
 # parser strips CR and LF before parsing, so a destination broken across lines
 # rejoins into a working link. Only concatenation reproduces that, and only
 # these constructs can legally span the break.
@@ -144,7 +165,15 @@ TERMINAL_NEGATION = re.compile(
     # work already identified -- "Approved; requested changes were applied".
     # Excluding only that shape also removes the inverse false positive, where
     # "review requested changes were incorporated" demoted an approved row.
-    r"|\brequested\b(?!\s+(?:changes|fixes|edits|corrections|updates|revisions)\b)"
+    # The exclusion must name work that was actually COMPLETED, not merely a
+    # noun. Excluding on the noun alone was an unconditional escape hatch:
+    # "requested changes remain open" and the active-voice forge verdict "the
+    # seat requested changes" both settled, so the result depended on voice
+    # rather than on state. Requiring a completion verb fails closed -- an
+    # unrecognised phrasing stays unsettled rather than settling.
+    r"|\brequested\b(?!\s+(?:changes|fixes|edits|corrections|updates|revisions)\s+"
+    r"(?:(?:were|was|are|is|have\s+been|has\s+been)\s+)?"
+    r"(?:applied|incorporated|landed|addressed|resolved|supplied|made)\b)"
     r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
     # Self-approval. The ledger requires a seat other than the author, and the
     # checker cannot see who settled a row, so at least the wording is rejected.
@@ -247,18 +276,46 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
 
     header: list[str] | None = None
     rows: dict[str, AllowRow] = {}
-    fenced = False
+    # The fence is tracked by its marker, not as a boolean: a `~~~` inside a
+    # ``` block does not close it in CommonMark, and toggling on either marker
+    # let the row after the mismatched line back in as a live grant.
+    fence: str | None = None
+    in_comment = False
+    previous = ""
     for line in lines[start + 1 :]:
-        # Any subsequent heading ends the table. `#{2,}` contradicted this
-        # comment by letting a level-1 heading through, which leaked every
-        # later table in as allowlist rows.
-        if re.match(r"^#{1,}\s", line):
-            break
-        # A fenced or commented row is illustrative text, not a live grant.
-        if line.lstrip().startswith(("```", "~~~")):
-            fenced = not fenced
+        stripped = line.lstrip()
+        if fence is not None:
+            if stripped.startswith(fence):
+                fence = None
+            previous = line
             continue
-        if fenced or line.lstrip().startswith("<!--"):
+        if stripped.startswith(("```", "~~~")):
+            fence = stripped[:3]
+            previous = line
+            continue
+        # An HTML comment spans lines. Skipping only a line that itself starts
+        # with `<!--` left the block form -- the normal way to comment a table
+        # out -- granting real exemptions.
+        if in_comment:
+            if "-->" in line:
+                in_comment = False
+            previous = line
+            continue
+        if stripped.startswith("<!--") and "-->" not in line:
+            in_comment = True
+            previous = line
+            continue
+        # Any subsequent heading ends the table. `#{2,}` contradicted this
+        # comment by letting a level-1 heading through, and an ATX-only test
+        # let a setext heading through for the same reason.
+        if re.match(r"^#{1,6}\s", line) or (
+            re.match(r"^(?:={2,}|-{2,})\s*$", line)
+            and previous.strip()
+            and not previous.startswith("|")
+        ):
+            break
+        previous = line
+        if stripped.startswith("<!--"):
             continue
         if not line.startswith("|"):
             continue
@@ -365,7 +422,7 @@ def _clickable_lines(text: str) -> dict[int, str]:
         # inside a quoted HTML attribute value and the URL parser strips them,
         # so a destination broken across three or more lines still resolves; a
         # two-line window scored zero findings on it, in both halves of the gate.
-        window = "".join(lines[number - 1 : number + WINDOW_LINES])
+        window = "".join(lines[number - 1 : number - 1 + WINDOW_LINES])
         for name, pattern in CONCAT_WINDOW_FORMS:
             # The match must actually cross the first line boundary. Testing
             # only that the joined text matches re-created the very defect
@@ -512,7 +569,17 @@ def main(argv: list[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
     root = pathlib.Path(arguments.root).resolve()
 
-    result = scan(root)
+    try:
+        result = scan(root)
+    except AllowlistUnavailable as error:
+        # Previously this only renamed the exception: nothing caught it, so the
+        # operator still got a traceback with no verdict, no counters and no
+        # finding list, at the same exit status as a legitimate failure. A
+        # distinct status lets a caller tell "gate failed" from "gate could not
+        # run", which the contract requires to pause deletion rather than pass.
+        print(f"FAIL [OLD-PATH-GATE-UNRUNNABLE] {error}", file=sys.stderr)
+        print("gate_could_not_run=1", file=sys.stderr)
+        return 2
 
     for finding in sorted(result.findings, key=lambda item: (item.path, item.line)):
         print(
