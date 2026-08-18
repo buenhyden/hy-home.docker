@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -338,6 +339,19 @@ class OldPathGateFixtureTests(unittest.TestCase):
             task.write_bytes(b"\xff\xfe not utf-8")
             self.assertEqual(2, contract.main(["--root", str(root)]), "undecodable")
 
+            # The OSError half shipped unpinned: reverting the catch to
+            # UnicodeDecodeError alone survived the whole suite.
+            task.write_text("### Old-path allowlist\n", encoding="utf-8")
+            task.chmod(0o000)
+            try:
+                if os.access(task, os.R_OK):
+                    self.skipTest("running with read override; chmod not enforced")
+                self.assertEqual(
+                    2, contract.main(["--root", str(root)]), "unreadable"
+                )
+            finally:
+                task.chmod(0o644)
+
     def test_counter_output_surface_is_printed(self) -> None:
         """The printed counters ARE gate 4's evidence, so they must be pinned.
 
@@ -463,10 +477,37 @@ class CrossLineDestinationTests(unittest.TestCase):
             "gt_inside_earlier_value": (
                 f'<a title="Docs > Research" href="../{SLUG}/x.md">l</a>'
             ),
-            "tag_opened_far_above": "<a\n" + "x\n" * 8 + f'href="../{SLUG}/x.md">l',
         }.items():
             with self.subTest(form=name):
-                self.assertTrue(contract._clickable_lines(text), name)
+                # Assert the LINE, not just truthiness: a bare assertTrue
+                # cannot catch a re-introduced misattribution, which is the
+                # defect two earlier rounds shipped.
+                found = contract._clickable_lines(text)
+                self.assertEqual([1], list(found), name)
+                self.assertIn("html-attribute", found[1], name)
+
+    def test_tag_opened_beyond_the_window_is_a_declared_limit(self) -> None:
+        """A tag opened further above than WINDOW_LINES is NOT detected.
+
+        This is asserted as a limit, not fixed. It was detected for one round,
+        when the attribute matched with no tag context at all -- the same
+        exemption that made `src = "..."` in Python an unsuppressable false
+        positive. No windowed matcher can see a tag outside its window, so the
+        choice is between this miss and that false-positive class. The miss is
+        recorded in the module docstring as declared non-coverage.
+        """
+        text = "<a\n" + "x\n" * 8 + f'href="../{SLUG}/x.md">l'
+        self.assertEqual({}, contract._clickable_lines(text))
+
+    def test_multi_line_ambiguous_attribute_tag(self) -> None:
+        # `<object` + `data=` concatenate to `<objectdata=`, which no word
+        # boundary matches, so every multi-line tag was missed until the window
+        # gained a space-joined pass.
+        for tag in ("object data", "video poster", "form action"):
+            element, attribute = tag.split()
+            text = f'<{element}\n{attribute}="../{SLUG}/x">'
+            with self.subTest(element=element):
+                self.assertTrue(contract._clickable_lines(text))
 
     def test_attribute_names_outside_a_tag_are_not_clickable(self) -> None:
         """`data`, `action` and friends are ordinary identifiers too.
@@ -481,6 +522,15 @@ class CrossLineDestinationTests(unittest.TestCase):
             f"The action = docs/90.references/research/{SLUG}/README.md is noted.",
             f"curl --data=docs/90.references/research/{SLUG}/README.md http://x",
             f"cite: docs/90.references/research/{SLUG}/README.md",
+            # The unambiguous half was exempted from tag context for one round
+            # and re-acquired exactly this class. A clickable finding bypasses
+            # the allowlist, so no reviewed row can clear these and the gate
+            # becomes unpassable. Both halves are pinned here.
+            f'src = "docs/90.references/research/{SLUG}/README.md"',
+            f'href = "docs/90.references/research/{SLUG}/x.md"',
+            f'poster = "docs/90.references/research/{SLUG}/a.png"',
+            f"rsync --src=docs/90.references/research/{SLUG}/ dest/",
+            f"the src = docs/90.references/research/{SLUG}/x.md value",
         ):
             with self.subTest(text=text[:40]):
                 self.assertEqual({}, contract._clickable_lines(text))

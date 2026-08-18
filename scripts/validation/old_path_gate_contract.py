@@ -12,6 +12,16 @@ implementation-alignment check, or the LLM Wiki freshness checks, and it has no
 notion of the mandated pre-deletion and post-deletion double run. Passing here is
 necessary, not sufficient.
 
+Declared non-coverage, so these are limits rather than silent gaps. The
+clickable check does NOT detect: a tag opened further above its attribute than
+WINDOW_LINES; a destination split over more lines than WINDOW_LINES; a
+`<meta http-equiv="refresh">` target; a CSS `url(...)` reference; tracked text
+that is not valid UTF-8 (counted as `unreadable_files_skipped`, never silent);
+and a tracked symlink, which is read through to its target rather than scanned
+as a blob. Detection is bounded on purpose: eight review rounds established
+that widening it trades one error direction for the other, and gate 4's
+evidence is a human-reviewed finding list, not this module's unaided verdict.
+
 Review-verdict limit. The settled-verdict predicate checks that a row states a
 review happened. It cannot establish that a review actually happened, so it does
 not detect the defect that motivated it, where a record was relabelled from
@@ -57,31 +67,20 @@ _DEST = rf"{_SLUG_BODY}(?:[/\\]|(?=[)>\"'\s\]?#&,;\\]|$))"
 
 _INLINE = re.compile(rf"\]\(\s*<?[^)\n]*{_DEST}", re.IGNORECASE)
 _REFERENCE = re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | re.M)
-# Any attribute that resolves a URL, not just href/src. Restricting it to two
-# names left srcset, data, poster, action and friends detected only as literals,
-# which a reviewed allowlist row then suppressed entirely -- the exact
-# amplification the clickable check exists to prevent. `srcset` additionally
-# could not match at all, because `(?:href|src)\s*=` stops at `srcset=`.
-# Split by ambiguity, because the two error directions have different costs.
+# Any attribute that resolves a URL. ONE rule, not a two-tier split by name.
 #
-# Unambiguous names are not ordinary English in an `x = value` position, so they
-# need no tag context and match anywhere. Requiring tag context for these lost
-# genuinely clickable HTML -- a multi-line tag whose attribute starts at column
-# zero concatenates to `<ahref=`, a `>` inside an earlier quoted attribute value
-# blocks the `[^<>]` prefix, and a tag opened further above than WINDOW_LINES is
-# outside the window entirely. Each produced zero findings on a working link.
-_UNAMBIGUOUS_ATTR = r"href|src|srcset|poster|formaction|longdesc"
-# Ambiguous names ARE ordinary identifiers: `data = "..."` in Python, "The
-# action = ..." in prose, `curl --data=...`. Matching these anywhere produced
-# false positives that no reviewed row could clear, because a clickable finding
-# deliberately bypasses the allowlist -- which made the gate unpassable rather
-# than merely noisy. These require an enclosing opening tag.
-_AMBIGUOUS_ATTR = r"data|action|cite|ping|manifest"
+# Three rounds oscillated here. Requiring an enclosing tag prefix lost real
+# links; dropping it for the "unambiguous" names re-acquired unsuppressable
+# false positives on those names (`src = "..."` in Python, `--src=` in a shell
+# line). Both directions were caused by trying to recognise tag structure with
+# a prefix pattern. The rule now is only that a `<` must appear before the
+# attribute in the scanned text: prose and assignments have none, and every
+# real attribute sits inside a tag. `>` is deliberately allowed between, so a
+# `>` inside an earlier quoted value cannot block the match.
+_URL_ATTR = r"href|src|srcset|data|poster|action|formaction|cite|ping|manifest|longdesc"
 _ATTR_VALUE = r"(?:[\"'][^\"']*|[^\s>\"']*)"
 _HTML_ATTR = re.compile(
-    rf"(?:\b(?:{_UNAMBIGUOUS_ATTR})\s*=\s*{_ATTR_VALUE}{_DEST}"
-    rf"|<[a-z][^<>]*?\b(?:{_AMBIGUOUS_ATTR})\s*=\s*{_ATTR_VALUE}{_DEST})",
-    re.IGNORECASE,
+    rf"<[^\n]*?\b(?:{_URL_ATTR})\s*=\s*{_ATTR_VALUE}{_DEST}", re.IGNORECASE
 )
 _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
 
@@ -103,11 +102,14 @@ _AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
 # The 2.3x is therefore the accepted price of that recall, not a regression to
 # be optimised away by restoring the anchor.
 #
-# The remaining hazard is unrelated to this constant: `_INLINE` is QUADRATIC in
-# LINE LENGTH, and the window multiplies whatever that costs. A reviewer
-# measured 4x per doubling on a pathological single line, reaching about 50s at
-# 46 KB. No input-size guard and no timeout exist. Raising this constant
-# multiplies that class of cost, so it should not be raised without adding one.
+# The remaining hazard is unrelated to this constant: `_INLINE` is superlinear
+# in LINE LENGTH, and the window multiplies whatever that costs. Measured on a
+# pathological `](`-repetition line: 0.038s at 11 KB, 0.167s at 23 KB, 0.579s at
+# 46 KB, roughly 3.5x per doubling. An earlier version of this comment recorded
+# "about 50s at 46 KB" on a reviewer's figure that neither that reviewer's
+# successor nor this measurement reproduces; treat the growth rate as the claim,
+# not the magnitude. No input-size guard and no timeout exist, so raising this
+# constant multiplies that class of cost.
 #
 # A skip-if-the-joined-text-lacks-the-slug guard was tried and removed: it
 # showed no measurable gain, because the cost concentrates in exactly the
@@ -135,6 +137,15 @@ NEWLINE_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
 # parser strips CR and LF before parsing, so a destination broken across lines
 # rejoins into a working link. Only concatenation reproduces that, and only
 # these constructs can legally span the break.
+# Forms evaluated against a WINDOW_LINES-line window joined by a SPACE. Tag
+# structure, unlike a destination, does not survive concatenation: `<a` on one
+# line and `href=` on the next join to `<ahref=`, which no word boundary can
+# match, so every multi-line tag was missed. A space rejoins the structure; the
+# concat window below still covers a destination broken mid-URL.
+SPACED_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("spaced-html-attribute", _HTML_ATTR),
+)
+
 CONCAT_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("split-inline-link", _INLINE),
     ("split-reference-definition", _REFERENCE),
@@ -348,19 +359,20 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
                 fence = None
             previous = line
             continue
-        if stripped.startswith(("```", "~~~")):
+        indent = len(line) - len(stripped)
+        # Four or more spaces makes it code content, not a fence, so
+        # treating it as one closed a fence CommonMark keeps open and
+        # admitted the illustrative rows after it as live grants.
+        if indent < 4 and stripped.startswith(("```", "~~~")):
             marker = stripped[0]
             fence = (marker, len(stripped) - len(stripped.lstrip(marker)))
             previous = line
             continue
         # An HTML comment spans lines. Skipping only a line that itself starts
         # with `<!--` left the block form -- the normal way to comment a table
-        # out -- granting real exemptions.
-        if in_comment:
-            if "-->" in line:
-                in_comment = False
-            previous = line
-            continue
+        # out -- granting real exemptions. The consuming branch lives above the
+        # fence check, because a fence opened inside a comment swallowed the
+        # closing `-->`; a duplicate of it stood here and was unreachable.
         if stripped.startswith("<!--") and "-->" not in line:
             in_comment = True
             previous = line
@@ -482,16 +494,14 @@ def _clickable_lines(text: str) -> dict[int, str]:
         # inside a quoted HTML attribute value and the URL parser strips them,
         # so a destination broken across three or more lines still resolves; a
         # two-line window scored zero findings on it, in both halves of the gate.
-        window = "".join(lines[number - 1 : number - 1 + WINDOW_LINES])
-        for name, pattern in CONCAT_WINDOW_FORMS:
-            # The match must actually cross the first line boundary. Testing
-            # only that the joined text matches re-created the very defect
-            # round 3 closed: a match lying wholly inside a following line was
-            # recorded against this one. Requiring the match to start within
-            # this line and end beyond it holds for any window width.
-            match = pattern.search(window)
-            if match and match.start() < len(line) < match.end():
-                hits.setdefault(number, name)
+        span = lines[number - 1 : number - 1 + WINDOW_LINES]
+        for joiner, forms in ((" ", SPACED_WINDOW_FORMS), ("", CONCAT_WINDOW_FORMS)):
+            joined = joiner.join(span)
+            for name, pattern in forms:
+                match = pattern.search(joined)
+                if match and match.start() < len(line) < match.end():
+                    hits.setdefault(number, name)
+
     return hits
 
 
@@ -534,9 +544,13 @@ def scan(root: pathlib.Path) -> ScanResult:
         if relative.startswith(f"{RETIRING_DIR}/"):
             continue
         absolute = root / relative
-        if not absolute.is_file():
-            continue
         try:
+            # `is_file()` sat outside this guard, so a stat failure -- an
+            # unreadable parent directory, a symlink loop -- raised uncaught
+            # and exited 1, indistinguishable from a legitimate gate failure.
+            if not absolute.is_file():
+                result.unreadable_files += 1
+                continue
             text = absolute.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             # Counted, never silent. Most of these are genuinely binary, but a
