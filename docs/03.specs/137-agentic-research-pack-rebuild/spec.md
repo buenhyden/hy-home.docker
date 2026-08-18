@@ -407,6 +407,97 @@ uncertainty about it on 2026-08-17. It therefore remains deferred, and no
 controller, worker, or confined-runtime subsystem derives authority from this
 Spec.
 
+### Route-3 and disposition-vocabulary amendment
+
+**Approval date:** 2026-08-19 (Asia/Seoul)
+
+This amendment makes exactly three changes and no others. Two resolve internal
+contradictions in `Non-link literal admission amendment` route 3 and one closes
+a gap in `Migration contract`. It widens no allowlist, admits no exception to
+the clickable-link prohibition, removes no gate, and lowers no threshold.
+
+**1. Route 3's removal condition excludes the gate-4 scanner's own scan target.**
+Route 3 requires an admitted row to be removed when the retirement completes.
+`Old-path inventory and allowlist` separately requires that the literal scan and
+reviewed allowlist pass before deletion and again after deletion, and states
+that a post-deletion scan alone is insufficient. The scanner's scan target is
+itself a retiring-path literal: `scripts/validation/old_path_gate_contract.py`
+defines `SLUG = "2026-07-05-agentic-research-pack-refresh"` and derives
+`RETIRING_DIR` from it. Removing that literal when the retirement completes
+would make the mandated post-deletion scan impossible, so route 3's removal
+condition as written made another clause of this Spec unsatisfiable by
+construction, in the same way requirement 5 and requirement 6 of the
+pre-deletion gates were before their recorded carve-outs. The literal that
+defines the gate-4 scanner's scan target, and the same literal in that scanner's
+own regression fixtures, are therefore carved out of route 3's
+removal-on-completion condition. Their removal condition is instead the recorded
+completion of the post-deletion literal scan and its reviewed allowlist; until
+that is recorded the literal must remain. The carve-out is exhaustive: it covers
+the gate-4 scanner and the tests of that scanner, and no other file.
+
+**2. Route 3's operand test is evaluated per mechanism, not by gating status.**
+Route 3 admits a literal that must name the retiring path for the retirement
+machinery to function. `Deletion-evidence decoupling amendment` states that the
+gate 9 durability mechanism gates nothing outside itself and is not a
+precondition for deletion or lifecycle reconciliation. Read together, those
+clauses appeared to deny route 3 to
+`scripts/validation/agentic-research-gate9-evidence.py` and
+`tests/validation/test_agentic_research_gate9_evidence.py`, whose `OLD_PACK`
+constant is the manifest target the helper projects over and the fixture root
+its regression suite builds the synthetic retiring pack under. No other route
+admits them. Route 1 requires a factual old event carrying a claim-ledger
+disposition, route 2 requires a commit-pinned reviewed historical baseline
+selector, route 4 requires the literal to appear in a scope, boundary, or
+evidence statement of the owning Spec, Plan, or Task, and route 5 requires the
+literal not to resolve to the retiring directory. A live operand in tracked code
+satisfies none of the four, so the narrow reading admitted the rows under no
+route at all while this Spec continues to keep the track tracked and governed.
+
+Route 3's operand test is therefore evaluated against the mechanism the literal
+belongs to: whether that mechanism can function without naming the retiring
+path. A mechanism this Spec owns and keeps tracked qualifies whether or not it
+gates anything outside itself. Qualifying under route 3 grants that mechanism no
+gating role, revives no deletion precondition, and changes nothing in the
+decoupling amendment or in requirement 6's scope statement. A row admitted this
+way declares route 3 and carries route 3's removal-on-completion condition
+unless change 1 above applies to it.
+
+**3. `Migration contract` gains a fifth disposition, `carry`.**
+`Migration contract` names four dispositions and defines `retain` as verified
+and rewritten into an identified new leaf. Some material claims in the retiring
+pack are not reference content with a reference destination. They are live
+unremediated repository conditions, corrections whose audit trail matters, or
+withdrawn findings that would otherwise be re-raised. For those the canonical
+routing owner is `docs/00.agent-governance/rules/documentation-protocol.md`,
+which routes a governance, provider, agent-execution, approval-boundary, or
+memory-contract gap with no approved policy change to a memory note or task gap,
+and which requires that a `docs/90.references/` document not define active
+policy, runtime truth, runbook procedure, plan, task evidence, or incident
+timeline. Writing such a claim into a successor reference leaf would place task
+evidence in Stage 90 against that rule. The four dispositions had no name for
+the destination Stage 00 routing actually mandates, so this Spec adds one:
+
+- `carry`: a live unremediated repository condition, a correction whose audit
+  trail matters, or a withdrawn finding, verified against the current repository
+  and recorded in the owning Task's carried-claims section, where Stage 00
+  document-role routing makes a task gap or memory note its canonical owner
+  rather than a reference leaf.
+
+A `carry` record must state uniqueness per claim, because the label does not by
+itself mean the claim disappears when the retiring pack does, and must name the
+owner of any remediation it does not perform. `carry` is not available to
+source-backed research or upstream-capability material; that content takes
+`retain` and belongs in an identified successor leaf.
+
+Pre-deletion gate 2 quantifies over retained and corrected claims and gate 3
+over omissions, so a fifth disposition outside both would weaken the gate set.
+It does not: a `carry` claim is evaluated under gate 2 and resolves to a
+reviewed destination exactly as a retained claim does, its destination being the
+owning Task's carried-claims section rather than a new leaf, and it carries the
+two additional requirements named above. The deletion precondition in
+`Migration contract` is unchanged and now reads over five dispositions rather
+than four.
+
 ### Historical-evidence boundary
 
 Audits, archived specifications, completed plans, completed tasks, and archive
