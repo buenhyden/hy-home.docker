@@ -263,6 +263,17 @@ a router rather than a duplicate policy body.
    diff, validate parity/evaluation, and obtain independent review.
 7. Keep upstream auto-update and user-global install paths outside adoption.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **The upstream converter drops every safety-bearing field.** The converter maps only `name`, `description` and `developer_instructions`. An imported definition therefore arrives with no model, no effort, no sandbox and no MCP constraint, and inherits whatever the session provides. That is why direct conversion is a security problem rather than a formatting one.
+- **Upstream build guards converge with this repository's parity pattern.** The upstream catalog's build guards are recognizably the same pattern as this repository's parity checks: a declarative registry, a generator, and a check that fails when the two disagree. The convergence matters because it shows the pattern is transferable practice rather than workspace-specific invention.
+
 ## Scope Implications
 
 | Scope          | Application and disposition                                                                                                        |

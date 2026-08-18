@@ -295,6 +295,16 @@ companion harness-side list is
    four typed controls with no one-to-one mapping, and converting any of them
    into retry policy requires a reviewed Stage 00/03/04 change.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **Only a minority of documented provider events can block.** Of the events each provider documents, only a minority can block, and the per-provider totals are dated vendor observations rather than current facts. Regardless of what a provider permits, only the stop gate is blocking in this repository.
+
 ## Scope Implications
 
 The status and owner basis comes from the

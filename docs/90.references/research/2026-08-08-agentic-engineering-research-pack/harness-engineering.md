@@ -289,6 +289,16 @@ spans.
    ignored volumes, private provider state, and unapproved runtime/remote
    actions outside the evidence system.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **Setting the Claude effort control to its high value is a no-op.** Official guidance states that setting the effort control to `high` produces exactly the same behaviour as omitting the parameter, so profiles configured at that value match the provider default rather than raising it. Recorded here as well as in the model-selection leaf because both leaves reason from provider effort semantics.
+
 ## Scope Implications
 
 Every row uses the disposition and evidence owners in the

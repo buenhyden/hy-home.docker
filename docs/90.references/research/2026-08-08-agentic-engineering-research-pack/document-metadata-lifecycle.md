@@ -245,6 +245,16 @@ assertion) and always scoped to the one mode that already requires an exact
 base ref and changed-path set; there is no path to an override under
 `report`, `check-active`, or `check-contracts`.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **A status probe alone is not evidence that a source is unavailable.** A command-line client receives HTTP 403 from the W3C host while a browser-shaped fetch succeeds. Marking a source `UNVERIFIED` on a bare status probe is therefore unsound, which matters here because another host in this corpus genuinely does refuse automated retrieval.
+
 ## Scope Implications
 
 | Scope          | Application and disposition                                                                                                                         |

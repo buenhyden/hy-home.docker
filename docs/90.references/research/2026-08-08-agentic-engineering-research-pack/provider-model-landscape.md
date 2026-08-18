@@ -125,6 +125,68 @@ in `provider-models.yaml`, so the 2026-08-31 retirement carries no direct
 repository risk; it is recorded because a future registry refresh that adds
 one of the retiring IDs as a stopgap default would need this date.
 
+### Catalog evidence-reading rules
+
+The retiring pack's 145-row vendor catalog carried a `Caveat` column that is a
+separate claim family from the identity columns beside it. Measured over the
+catalog: 148 cells, 96 non-trivial, 70 distinct strings, 51 of them occurring
+once. Most are not facts about one model but reading rules that generalise well
+past the row they sit in, so they are carried here deduplicated into fifteen
+families rather than as 96 cells. The per-row identity data is not carried; it is
+re-derivable from the vendor pages the `Sources` section names.
+
+1. **A mutable alias is not a maturity claim.** `latest` does not mean stable,
+   and an alias stays mutable even when its current target is Stable.
+2. **Snapshot and alias schedules are separate.** A dated snapshot can be
+   Deprecated while its alias is not, snapshot evidence does not date an alias
+   transition, and deprecated snapshot status must not be transferred to the
+   current alias.
+3. **A product or marketing surface is not an API identity.** A product alias, a
+   policy alias, a family marketing name, and a managed-agent label are each
+   distinct from the API model ID.
+4. **Availability is not maturity.** Invitation-only access, an open-weight
+   release, and an Experimental label each establish that something exists
+   without establishing that it is generally available or production-suitable.
+5. **Existence evidence is not lifecycle state.** An announcement, an SDK commit,
+   or an API listing proves that a thing existed by a date; none proves its
+   current lifecycle state, its launch date, or a product entitlement.
+6. **A mutable page does not prove a state at an instant.** A status page or
+   listing read after a cutoff is not evidence of the state at that cutoff,
+   particularly where the page shows no exact update time.
+7. **Stable maturity and a scheduled lifecycle end coexist.** A provider-native
+   `stable` or `preview` token inside an ID does not override a Deprecated or
+   scheduled-retirement state recorded elsewhere.
+8. **First-party dates do not govern partner schedules.** Cloud marketplace and
+   partner lifecycles run separately from the first-party one.
+9. **Feature removal is not model deprecation.** A removed mode, an ended
+   legacy-tool support, and a separate fine-tuning transition each retire less
+   than the model.
+10. **A redirect or a grouped card does not change identity or maturity.** A
+    redirect does not revive the original endpoint's maturity, and one official
+    card may group several exact endpoints.
+11. **A specialized model is not a general worker.** Media, robotics, and other
+    specialized models are not general task-selection defaults.
+12. **An unzoned calendar day is cutoff-qualified only when its whole range
+    precedes the cutoff instant.** This is the rule that produces the
+    structural-versus-qualified split rather than any individual vendor fact.
+13. **Absent replacement or shutdown data is itself a finding.** A deprecation
+    entry with no named replacement, or with no shutdown date, records an
+    evidence gap rather than an absence of risk.
+14. **Retention and data-handling constraints ride with the model.** A model may
+    require a retention window that rules out zero-data-retention use.
+15. **An agent endpoint is not interchangeable with a base model.** Some agent
+    endpoints are not generative models at all.
+
+**Mythos Preview carries an unresolved official conflict.** The vendor lifecycle
+page schedules `claude-mythos-preview` for retirement on 2026-06-30 while the
+current overview still presents it as separately offered, and no dated
+completion notice or endpoint evidence resolves the two. Its availability at the
+cutoff is therefore `UNVERIFIED`, and the row is retained structurally rather
+than normalized. This is recorded because Spec 137's guardrail for a conflict
+between external and local documents is to record the conflict and its evidence
+class, not to pick a side; the intake-candidate framing above states the delta
+but not the conflict.
+
 ### Claude current-model comparison (2026-08-14 vendor table)
 
 | Model            | Claude API ID               | Pricing (in/out per MTok) | Context window | Adaptive thinking | Extended thinking (`thinking.type`) | Reliable knowledge cutoff |

@@ -297,6 +297,17 @@ classifier, but no such field exists today.
   Observation that would close this: a synthetic fixture that asserts which
   of the four sources should win for a given generated adapter.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **Setting the Claude effort control to its high value is a no-op.** Official guidance states that setting the effort control to `high` produces exactly the same behaviour as omitting the parameter. A profile configured at that value therefore matches the provider default and must not be read as the workspace raising effort.
+- **Gemini thinking is not a per-agent file control.** The Gemini CLI subagent file schema carries no reasoning or thinking field, so configured thinking values are not per-agent file controls; their destination is the model-config `thinkingConfig.thinkingLevel` path. The schema does carry `temperature`, which an earlier description omitted.
+
 ## Scope Implications
 
 | Scope          | Application and disposition                                                                                                                                                                                                                                       |

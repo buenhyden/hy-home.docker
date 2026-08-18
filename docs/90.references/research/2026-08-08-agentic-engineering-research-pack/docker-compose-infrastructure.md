@@ -410,6 +410,16 @@ this leaf can name the absence but cannot supply that inventory itself.
 | Exact latency SLO implementation            | Missing                                                                                                        | Architecture/infra/ops Spec defining measurement and error-budget contract.                                   |
 | Runtime prerequisites and recovery          | Partially `UNVERIFIED` — preflight now proves the bind-mount/network prerequisites are unmet in this workspace | Operator-approved directory/network provisioning, then health, dependency, and recovery procedure evidence.   |
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **Rendering a resolved configuration is not a confinement boundary.** The vendor trust-model page names the inheritance directive alongside includes as a transitive-privilege path, states that rendering a resolved configuration offers no confinement guarantee, and warns that file-reference fields surface file contents in that output before any container starts. Resolved-config review must not be treated as a safety guarantee, which matters directly against this workspace's large inheritance surface.
+
 ## Scope Implications
 
 | Scope          | Infrastructure implication                                                                                                                                   |

@@ -212,6 +212,17 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 - **Privacy boundary:** no ignored file, secret value, volume, raw log, private
   provider state, or external model interaction was read for this analysis.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **The full-content companion file is not part of the external proposal.** The proposal does not define a companion file; the site cites a project-specific expansion as an example. Reading the companion file as specified by the proposal overstates what the external convention requires.
+- **A cited vendor guide path redirects and serves no content.** The path returns an HTTP 308 redirect and serves nothing directly, so the redirect target must be cited instead. A tracked plan still uses the original URL, which makes this a live citation hazard rather than a historical note.
+
 ## Scope Implications
 
 | Scope          | LLM Wiki implication                                                                                                                                              |

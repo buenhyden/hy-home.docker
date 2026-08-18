@@ -239,6 +239,16 @@ README profile, not from Diataxis.
   fetch `https://diataxis.fr/compass/` (or the pinned source's compass file)
   directly rather than reasoning from this leaf's mention alone.
 
+### Carried source-evidence claims
+
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
+disposition. Each is a source-backed or upstream-capability claim that the
+migration ledger could not route to a Stage 04 gap, because the `carry`
+disposition bars that material. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **The primary documentation-framework site is a standing access boundary.** The site serves an edge bot challenge rather than rate limiting, so no backoff will clear it. The two-axis wording is `UNVERIFIED` at the rendered site and verified only against a pinned upstream source that a corroborating vendor page supports. The marker belongs with the four-mode and compass claims, not apart from them.
+
 ## Scope Implications
 
 | Scope          | Documentation-architecture implication                                                                                                                                                   |
