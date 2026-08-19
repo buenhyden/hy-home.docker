@@ -924,16 +924,23 @@ the stale Gemini identifier is filed once per retiring file, and two of its thre
 rows resolved to `doc-writer` while the third resolved to the repository owner on
 the false justification. All three now resolve to `doc-writer`.
 
-Uniqueness is stated per claim, with the one genuine duplicate group — the stale
-Gemini identifier, filed once per retiring file that records it — marked NOT
-unique and cross-referenced instead of being silently deduplicated.
+Uniqueness is stated per claim. **Correction 2026-08-19 (fourth pass): there is
+more than one duplicate group.** This sentence previously named the stale Gemini
+identifier as the single genuine duplicate; measured over the ledger, four rows
+declare themselves NOT unique — the three Gemini rows, one per retiring file that
+records the claim, and a fourth on the Changelog-authority claim in
+`automation-pipeline-workflow.md`. All are cross-referenced rather than silently
+deduplicated, so the per-file provenance survives.
 
 **The destination surface does not yet meet either requirement, measured
 2026-08-19 (third pass).** The figures above are the ledger surface. Gate 2 says
 the claim resolves to its destination, so the destination is the surface that
-governs, and it measures differently: of the 47 claim paragraphs in this section,
-**22 name a remediation owner and 32 state uniqueness**, leaving 25 without an
-owner and 15 without a uniqueness statement. The gap is concentrated in the
+governs, and when this gap was found it measured 22 owners and 32 uniqueness
+statements against 47 claim paragraphs. **Closed 2026-08-19 (fourth pass): the
+destination now measures 47 of 47 on both fields.** The 25 missing owners were
+resolved one paragraph at a time against the surface each claim must change to be
+remediated — not against every path the paragraph quotes — and the 15 missing
+uniqueness statements were written per claim. The gap is concentrated in the
 2026-08-18 block, whose paragraphs were written before the `carry` disposition
 existed and never acquired either field; the 2026-08-19 sweep paragraphs carry
 both. Six independent seats measured this on the destination surface and returned
@@ -984,7 +991,7 @@ lines 59 to 60 name `3.5 Flash` and `3.1 Flash-Lite` as the typed Gemini
 identifiers for the work-profile policy. Verified 2026-08-18: neither string
 occurs in `docs/00.agent-governance/contracts/provider-models.yaml`, and neither
 occurs anywhere in the successor research pack. The prose therefore described a
-superseded pre-migration state.
+superseded pre-migration state. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/providers/gemini.md` under `docs/00.agent-governance/` at `scopes/docs.md:59`. Uniqueness: NOT unique — this claim is recorded once per retiring file that carries it, three rows in all, cross-referenced rather than deduplicated so the per-file provenance survives.
 
 **Re-measured 2026-08-19: the defect is remediated, and this record changes
 subtype rather than lapsing.** `Flash` now occurs zero times in
@@ -1014,7 +1021,7 @@ scope and belongs to `doc-writer`, which owns `docs/00.agent-governance/` at `sc
 embeds most of its logic in `python3` heredocs. ShellCheck runs on the file and
 sees only the shell wrapper, so the repository's largest validator is
 overwhelmingly unlinted Python by line count while the tool that appears to
-cover it does not.
+cover it does not. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — the remediation lands on `.pre-commit-config.yaml` at `scopes/common.md:55`; the scanned script `scripts/validation/check-repo-contracts.sh` matches no scope pattern and falls to `@buenhyden`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Stated as a mechanism, not a number, corrected 2026-08-19.** This entry
 previously fixed the measurement at 4,062 / 3,573 / 421 lines and 87.9 percent,
@@ -1032,7 +1039,7 @@ bullet presupposes a finding it does not state.
 configuration but bound only to the `check-dependabot` hook. It is not a general
 JSON-schema gate across the repository's many typed JSON contracts. Reclassified
 from `Omit` to carried on 2026-08-18 after a reviewer ruled that its omission
-reason stated grounds for keeping the claim and none for dropping it.
+reason stated grounds for keeping the claim and none for dropping it. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — `.pre-commit-config.yaml` at `scopes/common.md:55`, where the hook binding would be widened. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Upstream build-guard convergence — MOVED 2026-08-19.** This claim is no longer carried here. It is source-backed upstream-practice research, which the `carry` disposition bars, and it now lives in the successor leaf `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md` under `Carried source-evidence claims`. Its ledger row is repointed there, so no ledger row routes to this section for it. The heading is kept as a redirect for readers following an earlier citation.
 
@@ -1044,7 +1051,7 @@ that an entry exists; it generates and commits nothing. The retiring leaf cites
 `:147-155`, which has drifted to `:209`. NOT unique: the same claim with the same
 stale cite survives at
 `docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/task.md`
-lines 660-665 and 677.
+lines 660-665 and 677. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/rules/github-governance.md` under `docs/00.agent-governance/` at `scopes/docs.md:59`.
 
 **Hardening-script image literal.** `scripts/hardening/check-all-hardening.sh` is
 664 lines covering eleven tiers. Verified 2026-08-18: `registry_component_image`
@@ -1053,7 +1060,7 @@ other image assertion is a literal string, so a version bump is a three-place
 edit — the script at line 548, `infra/11-laboratory/dozzle/docker-compose.yml`
 line 22, and `scripts/validation/check-repo-contracts.sh` line 3858 — whose
 omission surfaces only when the tier check runs. UNIQUE: the helper name occurs
-in no tracked file other than the script itself and the retiring leaf.
+in no tracked file other than the script itself and the retiring leaf. Remediation owner, resolved per paragraph 2026-08-19: `security-auditor` — `scripts/hardening/check-all-hardening.sh`, named verbatim at `scopes/security.md:67`.
 
 **Target-marker validator versus corpus.** `TARGET_TEMPLATE_LITERALS` includes
 the target marker itself, and the `template-instruction-in-target` finding is
@@ -1069,7 +1076,7 @@ The body scan applies no positional or first-line exemption. Verified 2026-08-18
 convention changed without the corpus being migrated. The rule surfaces one file
 per edit, which makes leaving it as-is the only option with an ongoing cost.
 EFFECTIVELY UNIQUE: the only other tracked mention is
-`docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/plan.md`.
+`docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/plan.md`. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the surface is `scripts/lib/document_governance/metadata_validator.py`; no scope pattern covers `scripts/lib/`, so the `*` rule in `.github/CODEOWNERS` applies.
 
 **Usage-type heading is counted, never inspected.** `scripts/validation/check-repo-contracts.sh`
 line 643 computes `usage_type_count` and line 644 rejects only `> 1`. Verified
@@ -1081,7 +1088,7 @@ files declare the field one heading level down as `#### Usage Type`:
 `docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md`, and
 `docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-basics/guide.md`. UNIQUE: the count
 variable name occurs in no other tracked file. Only the mechanism is carried;
-the retiring leaf's other counts have drifted and are deliberately not restated.
+the retiring leaf's other counts have drifted and are deliberately not restated. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the remediation is to the validator `scripts/validation/check-repo-contracts.sh`, which no scope pattern covers; the guides it scans are `docs/05.operations/` and carry the `doc-writer` / `incident-responder` ownership conflict recorded elsewhere in this Task.
 
 **Learning-concern rationale outruns the corpus.** `docs/99.templates/support/external-source-rationale.md`
 line 22 states that the repository maps the learning, explanation, reference, and
@@ -1089,14 +1096,14 @@ procedural concerns to its local document roles. Verified 2026-08-18: 24 tracked
 templates exist and none is learning- or tutorial-oriented, and the asserting
 sentence returns exactly one repository-wide hit. Either the rationale text or
 the corpus must change. UNIQUE as a statement: seventeen surviving tracked files
-reference that support file and none records the overstatement.
+reference that support file and none records the overstatement. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/99.templates/support/external-source-rationale.md` under `docs/99.templates/` at `scopes/docs.md:62`.
 
 **LLM Wiki has no typed contract.** `docs/00.agent-governance/contracts/` holds
 four typed contracts and none mentions the wiki. Enforcement is instead spread
 across several `check-repo-contracts.sh` sections with hardcoded `llm-wiki`
 literal lines, re-derivable with
 `grep -n llm-wiki scripts/validation/check-repo-contracts.sh`, which returns 31
-lines on 2026-08-19.
+lines on 2026-08-19. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/contracts/` at `scopes/docs.md:59`, where a typed contract would be added. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Counts and line cites corrected 2026-08-19.** This entry read "exactly three
 files" and pinned five section line numbers. The directory now holds four, since
@@ -1119,7 +1126,7 @@ requires the `- Status:` literal at `check-repo-contracts.sh` line 2270 by
 presence only and never parses its value. No archival destination exists:
 `memory/README.md` line 107 names a precondition for archiving but no path, and
 no memory note is tracked under an archive tree. The three named instances are
-what makes the abstract successor row actionable.
+what makes the abstract successor row actionable. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/memory/` at `scopes/docs.md:59`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Memory template declares a status key no note carries.** `docs/99.templates/templates/governance/memory.template.md`
 declares `status: draft` in frontmatter and `- Status: {{status}}` in the body.
@@ -1140,7 +1147,7 @@ matters. Re-derive with
 records do carry `status: active`, so the omission is specific to the durable
 tier. A retention validator written against the template as it stands would find
 nothing to read, which is precisely the blocker the successor calls for work on
-without recording.
+without recording. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/99.templates/templates/governance/memory.template.md` under `docs/99.templates/` at `scopes/docs.md:62`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Memory is excluded from two stale-reference scans.** `scripts/validation/check-repo-contracts.sh`
 excludes `docs/00.agent-governance/memory/**` at lines 424 and 504. Verified
@@ -1148,7 +1155,7 @@ excludes `docs/00.agent-governance/memory/**` at lines 424 and 504. Verified
 in `Active docs taxonomy shorthand`; both are repository-wide scans. Banned
 taxonomy and legacy stage shorthand therefore drift inside memory notes
 unreported. This is a second, independent scope gap and must not be conflated
-with the forbidden-material gap the successor does record.
+with the forbidden-material gap the successor does record. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the exclusion lives in `scripts/validation/check-repo-contracts.sh`, which no scope pattern covers. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Last-Verified is a body bullet with no gate.** Verified 2026-08-18: the
 `- Last Verified:` literal occurs exactly once under `scripts/`, at `check-repo-contracts.sh`
@@ -1157,7 +1164,7 @@ line 2290, inside a required-literal list enforced by presence alone; no
 contrast is enforced elsewhere: `scripts/validation/agent_governance_contract.py`
 gates `current.md` with `git merge-base --is-ancestor` and an ISO timestamp
 parse. Only the field name and the presence-only enforcement point are carried;
-the retiring leaf's per-note dates are commit-bound and deliberately dropped.
+the retiring leaf's per-note dates are commit-bound and deliberately dropped. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the gate would be added to `scripts/validation/agent_governance_contract.py`, which `.github/CODEOWNERS` names explicitly. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Domain-memory deferral has the wrong origin.** The deferral commonly cited as a
 specification boundary does not appear in the specification directory. Verified
@@ -1175,7 +1182,7 @@ conclusion that deletion therefore orphans no pointer is FALSE and is withdrawn
 `docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md` and
 `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`. Deletion
 does orphan pointers; they are simply not Stage 04 ones. That exposure belongs to
-gate 3 and the allowlist, not to this row's disposition.
+gate 3 and the allowlist, not to this row's disposition. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — the deferral record is in `docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md`, covered by `docs/03.specs/` at `scopes/common.md:54`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Withdrawn memory-subcommand finding.** An earlier finding held that the Gemini
 provider overlay cites unsupported memory subcommands. It is withdrawn and false.
@@ -1185,7 +1192,7 @@ fourth subcommand is instructed anywhere in the repository. No overlay change is
 required. The vendor-side half — that the official reference documents exactly
 these three — was not re-fetched and is not re-derivable offline; the
 repository-side conclusion does not depend on it. Retractions are the material
-most likely to be re-raised once deleted, which is why two lines are kept.
+most likely to be re-raised once deleted, which is why two lines are kept. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/providers/gemini.md` under `docs/00.agent-governance/` at `scopes/docs.md:59`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Frontend scope is partially satisfied.** Verified 2026-08-18 against
 `projects/storybook/nextjs/package.json`: `next` 16.2.10, `react` 19.2.7,
@@ -1200,7 +1207,7 @@ half of the finding. Framer Motion, TanStack Query, and Zustand return zero matc
 that manifest, and no tracked WCAG conformance evidence exists. This row is the
 audit trail for a correction already applied in place at successor
 `scope-application-matrix.md` lines 255 to 264, which now scopes the
-no-tracked-surface residual to `backend.md` and `mobile.md` only.
+no-tracked-surface residual to `backend.md` and `mobile.md` only. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — the tracked pins are in `projects/storybook/nextjs/package.json`, covered by `projects/storybook/` at `scopes/qa.md:136`; the deleted `scopes/frontend.md` was `doc-writer` material. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **The one candidate backend surface is not a backend service.** Verified
 2026-08-18 at `bbb645c4`: `examples/` holds nine tracked paths, and
@@ -1209,7 +1216,7 @@ no-tracked-surface residual to `backend.md` and `mobile.md` only.
 artifact is `site/index.html`, so it is an infrastructure reference image, not a
 backend service. NO LONGER UNIQUE: the same 2026-08-18 correction introduced
 successor `scope-application-matrix.md` line 262, which now states it. The row
-is retained as the audit trail rather than as the last copy.
+is retained as the audit trail rather than as the last copy. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the surface is `examples/sample-web-service/`, which no scope pattern covers.
 
 **The applies column is editorial, not tracked.** The retiring leaf states at
 lines 318 to 320 that the leaf-to-scope "applies by subject" column is editorial
@@ -1221,7 +1228,7 @@ into a single `Applicable topical leaves` column with no editorial caveat. This
 is a rule about how the surviving table may be cited, not a finding about the
 retiring pack. Its preferred final home is the successor matrix's own
 `## Scope Implications` preamble at lines 354 to 359 — corrected here, because
-the row previously named the pack index preamble, which carries no such caveat.
+the row previously named the pack index preamble, which carries no such caveat. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the surface is the successor Stage 90 leaf `scope-application-matrix.md`; no scope pattern covers `docs/90.references/` outside `llm-wiki/`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Three files disagree on the audit template.** Verified 2026-08-18:
 `docs/99.templates/support/template-selection.md` line 29 and
@@ -1235,7 +1242,7 @@ re-grounds on required headings instead — the audit profile requires
 `## Repository Role` and the reference profile does not, so a reference-templated
 document under that path still fails, by missing-required rather than by
 forbidden-heading. UNIQUE: nine tracked files name the audit template and none
-states the disagreement.
+states the disagreement. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — two of the three files are under `docs/99.templates/` at `scopes/docs.md:62`; the third, `docs/90.references/audits/README.md`, matches no pattern and falls to `@buenhyden`.
 
 **The stage matrix under-describes an enforced separation.** `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 line 20 carries a single `05 operations` row. Verified 2026-08-18: that cell does
@@ -1247,7 +1254,7 @@ roles carry mutually exclusive forbidden headings — enforced at
 forbidden rules — at line 50, not line 37 as this record first stated; the
 citation is corrected 2026-08-19 and `forbidden` occurs at line 50 of
 `docs/00.agent-governance/rules/stage-authoring-matrix.md` — points at the
-overlay file and never states the operations-role separation. Scoped deliberately to that unrecorded separation.
+overlay file and never states the operations-role separation. Scoped deliberately to that unrecorded separation. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/rules/stage-authoring-matrix.md` at `scopes/docs.md:59`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **A Stage 04 instruction names a script that does not exist.** Verified
 2026-08-18: `scripts/governance/validate-cross-links.sh` is absent, while
@@ -1258,7 +1265,7 @@ instruct running it. Only this half of the retiring block is carried. Its
 reports `failures=0` today, and so is its `.env` key-drift half, because both
 files now declare the same 325 key names including all six `INFLUXDB_*` names.
 Carrying a snapshot would re-introduce the stale-count problem this ledger
-exists to prevent.
+exists to prevent. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — the instruction is in `docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md`, covered by `docs/03.specs/` at `scopes/common.md:54`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **No repository-owned retry ceiling.** Neither tracked loop's retry ceiling is a
 repository-level counter, so neither survives a provider changing its Stop
@@ -1272,7 +1279,7 @@ tracked gates add no additional retry ceiling — but a uniqueness argument that
 rests on a zero count cannot stand on a count of two. UNIQUE as a claim rather
 than as a phrase, and it is a
 named structural gap rather than a measurement, so nothing else in the corpus
-implies it.
+implies it. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — a repository-level counter would live in the hook dispatcher under `scripts/hooks/`, which no scope pattern covers.
 
 **Codex `scope` and `source_catalog` are not allowlists.** The two Codex agent
 fields are local projection metadata and enforce no filesystem or tool
@@ -1280,7 +1287,7 @@ restriction. Verified 2026-08-18: the statement occurs only in the retiring leaf
 at line 185 and zero times in the successor pack. UNIQUE, and the highest
 consequence of the claims found rowless on 2026-08-18: both field names read
 like an allowlist, so deleting the only statement that they are not one converts
-a documented non-guarantee into an assumed security control.
+a documented non-guarantee into an assumed security control. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the surface is `.codex/`, which no scope pattern covers and which `.github/CODEOWNERS` assigns by the `.codex/**` rule.
 
 **The Codex skills pattern has no confirmed official source.** Both candidate
 official Codex skills documentation URLs returned HTTP 404 when the retiring leaf
@@ -1292,7 +1299,7 @@ lines 774 and 777. The 404 observation is a dated external retrieval and was NOT
 re-fetched; it is carried as the recorded observation, not as a current network
 fact. The claim's whole value is that it marks an evidence gap — delete it and a
 contract value stands asserted by a passing test with nothing recording that its
-official basis was never confirmed.
+official basis was never confirmed. Remediation owner, resolved per paragraph 2026-08-19: `doc-writer` — `docs/00.agent-governance/contracts/provider-models.yaml` at `scopes/docs.md:59`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Specification durability is a convention, not a check.** Nothing in the tracked
 validators forbids deleting a completed specification. Verified 2026-08-18: the
@@ -1300,7 +1307,7 @@ phrase occurs only in the retiring leaf at line 196 and zero times in the
 successor pack. Item 2 of that same six-item section already had a ledger row and
 item 1 did not, so the ledger's own element-by-element decomposition had a hole
 in it. UNIQUE, and it names an unenforced contract in a repository whose gates
-are otherwise executable.
+are otherwise executable. Remediation owner, resolved per paragraph 2026-08-19: `code-reviewer` — `docs/03.specs/` at `scopes/common.md:54`.
 
 **Disposition-type gap, RESOLVED 2026-08-19.** The Spec defined four
 dispositions and defined `retain` as verified and rewritten into an identified
