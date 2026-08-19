@@ -1431,7 +1431,7 @@ profiles:
 
   reference:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [observed_at, supersedes, reviewed_at, next_review_at]
+    optional: [observed_at, supersedes, reviewed_at, next_review_at, review_cycle]
     forbidden:
       [
         type,
