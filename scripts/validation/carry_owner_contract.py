@@ -60,8 +60,14 @@ CODEOWNERS_CITATION = re.compile(r"`\.github/CODEOWNERS(?::(\d+))?`")
 # owner phrase. The corpus writes several spellings and interposes wording such
 # as "the repository owner" before the backticks, so a bounded run of non-backtick
 # text is allowed between the phrase and the name.
+# Owners are introduced two ways in this corpus. The original phrasing is
+# "Remediation owner ... `X`". Superseding corrections were later written as
+# "Owner is `X` under the ... rule", and matching only the first phrasing made
+# every such correction invisible: `operative_owner()` returned the withdrawn
+# owner while the correction sat in the same cell. An independent seat found
+# that on two rows in 2026-08-20.
 OWNER_STATEMENT = re.compile(
-    r"[Rr]emediation owner[^`]{0,80}?`(@?[A-Za-z][A-Za-z0-9@_-]*)`"
+    r"(?:[Rr]emediation owner|\bOwner is)[^`]{0,80}?`(@?[A-Za-z][A-Za-z0-9@_-]*)`"
 )
 # A destination claim paragraph declares the ledger row it serves with a braced
 # marker holding that row's exact Claim anchor cell. A braced form is used rather
@@ -453,26 +459,22 @@ def check_pairing(records: list[Record]) -> list[Finding]:
                 )
             )
 
+        # Compare operative against operative. Comparing one surface's operative
+        # owner against the OTHER surface's whole set is the third form of this
+        # same defect: a cell that ever named the right owner, even in a
+        # withdrawn statement, satisfied the test forever. An independent seat
+        # found two rows passing while genuinely disagreeing on 2026-08-20.
         mine, theirs = record.owners(), partner.owners()
         my_operative, their_operative = record.operative_owner(), partner.operative_owner()
-        if my_operative and theirs and my_operative not in theirs:
+        if my_operative and their_operative and my_operative != their_operative:
             findings.append(
                 Finding(
                     "CARRY-OWNER-CROSS-SURFACE",
                     record.where,
                     f"{record.label}: the ledger's operative owner {my_operative!r} "
-                    f"is named nowhere in the destination at {partner.where}, "
-                    f"which names {sorted(theirs)}",
-                )
-            )
-        elif their_operative and mine and their_operative not in mine:
-            findings.append(
-                Finding(
-                    "CARRY-OWNER-CROSS-SURFACE",
-                    partner.where,
-                    f"{partner.label}: the destination's operative owner "
-                    f"{their_operative!r} is named nowhere in the ledger row at "
-                    f"{record.where}, which names {sorted(mine)}",
+                    f"disagrees with the destination's operative owner "
+                    f"{their_operative!r} at {partner.where}; the destination "
+                    f"names {sorted(theirs)} and the ledger names {sorted(mine)}",
                 )
             )
     return findings

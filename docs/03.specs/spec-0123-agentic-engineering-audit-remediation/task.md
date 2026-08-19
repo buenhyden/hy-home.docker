@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: task-0123-01
 artifact_type: task
 parent_ids:
@@ -75,10 +75,10 @@ boundary that paused
 
 ### Allowed Paths
 
-This Task is completed. The paths below record the write boundary that was
-in force while it executed; they grant nothing now. The research pack path
-among them is retiring under Spec 137 and must not be treated as a current
-writable route.
+The research pack path listed below is retiring under Spec 137. This Task's
+thirteen Work Breakdown units all read `Done`, but the Task remains `active`
+because it records two open drift findings and an unperformed independent
+review, so this boundary is not yet closed and the grant is not yet historical.
 
 T-ARPE-013 operates under a separate user instruction that authorized source
 revalidation, resolution of the heading-contract conflict, and remediation of

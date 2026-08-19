@@ -231,8 +231,16 @@ class CarryOwnerContractTests(unittest.TestCase):
             == []
         )
 
-    def test_one_shared_owner_is_enough_when_a_surface_names_two(self) -> None:
-        """A split surface may name two owners; agreement on one is agreement."""
+    def test_a_surface_naming_two_owners_is_judged_on_its_operative_one(self) -> None:
+        """A split surface may name two owners; only the last one is operative.
+
+        Renamed and re-premised 2026-08-20. It previously read "agreement on one
+        is agreement", which was the defect an independent seat found: the check
+        compared one surface's operative owner against the OTHER surface's whole
+        set, so a cell that ever named the right owner satisfied the test forever,
+        even in a withdrawn statement. Here the operative owners agree, so the
+        pair passes for the reason the contract intends.
+        """
         both = (
             "Remediation owner: `doc-writer` from `scopes/docs.md:59`; the other half "
             "is Remediation owner `code-reviewer` from `scopes/common.md:54`."
@@ -298,6 +306,56 @@ def _pair_codes(*records: contract.Record) -> list[str]:
 OWNED_BY_DOCS = "Remediation owner: `doc-writer` from `scopes/docs.md:59`."
 
 OWNED_BY_COMMON = "Remediation owner: `code-reviewer` from `scopes/common.md:54`."
+
+
+class OperativeOwnerComparisonTests(unittest.TestCase):
+    """Pins the two defects an independent seat found on 2026-08-20.
+
+    Both made `failures=0` true by construction for a fourth time, so both are
+    pinned rather than merely fixed.
+    """
+
+    def test_operative_owners_are_compared_against_each_other(self) -> None:
+        """A withdrawn owner on one surface must not satisfy the other's operative.
+
+        The ledger withdraws `code-reviewer` for `@buenhyden`; the destination
+        withdraws `@buenhyden` for `code-reviewer`. Every owner each surface names
+        appears on the other, so a set-membership test finds no disagreement. The
+        operative owners are opposite and it is a disagreement.
+        """
+
+        ledger = (
+            "Remediation owner: `code-reviewer` from `scopes/common.md:54`. "
+            "Withdrawn; Owner is `@buenhyden` under `.github/CODEOWNERS:16`."
+        )
+        destination = (
+            "Remediation owner: `@buenhyden` under `.github/CODEOWNERS:16`. "
+            "Withdrawn; Owner is `code-reviewer` from `scopes/common.md:54`. "
+            "{ledger-anchor: `A`} {survival: UNIQUE}"
+        )
+        assert "CARRY-OWNER-CROSS-SURFACE" in _pair_codes(
+            _ledger("`A`", ledger), _destination(destination)
+        )
+
+    def test_a_superseding_owner_not_phrased_as_remediation_owner_is_read(
+        self,
+    ) -> None:
+        """`Owner is X` supersedes an earlier `Remediation owner: Y`.
+
+        The owner pattern matched only the phrase "Remediation owner", so every
+        correction written as "Owner is `X` under the ... rule" was invisible and
+        `operative_owner()` returned the withdrawn owner instead.
+        """
+
+        ledger = (
+            "Remediation owner: `code-reviewer` from `scopes/common.md:54`. "
+            "Owner is `@buenhyden` under the `scripts/**` rule at "
+            "`.github/CODEOWNERS:16`."
+        )
+        assert "CARRY-OWNER-CROSS-SURFACE" in _pair_codes(
+            _ledger("`A`", ledger),
+            _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`} {survival: UNIQUE}"),
+        )
 
 
 if __name__ == "__main__":
