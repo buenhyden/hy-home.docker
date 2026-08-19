@@ -23,7 +23,22 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "docs/04.execution/",
     "docs/90.references/audits/",
     "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/",
+    # Widened 2026-08-19 from the retiring research pack's own directory to the
+    # whole research namespace, under the user-approved resolution of a Spec 137
+    # gate 4 finding. An independent seat ruled that the narrower entry was
+    # admitted under no admission route: route 3 covers literals the retirement
+    # machinery needs in order to function, and this file is document-taxonomy
+    # validation that the retiring pack merely contaminates. Naming the pack
+    # directly here is therefore not permissible, while dropping the exemption
+    # outright is not either, because six legacy Stage 01/02 paths across three
+    # of that pack's files fail the scan below.
+    #
+    # Removal condition, and it is a narrowing rather than a deletion: when the
+    # Spec 137 retirement completes and its post-deletion literal scan is
+    # recorded, narrow this back to the successor pack's own directory. Until
+    # then the successor pack is exempt too, which is the cost of the widening
+    # and is the reason it is time-bounded rather than permanent.
+    "docs/90.references/research/",
     "docs/98.archive/",
     "graphify-out/",
 )

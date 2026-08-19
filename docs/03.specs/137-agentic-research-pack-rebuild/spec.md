@@ -618,6 +618,68 @@ prohibition against one class where several were declared. The allowlist is keye
 by path together with the row's declared line or stable anchor, which is the pair
 `Old-path inventory and allowlist` already requires the Task to own.
 
+### Route-2 coverage and predicate-durability amendment
+
+**Approval date:** 2026-08-19 (Asia/Seoul)
+
+**Approved by:** user
+
+An independent gate 4 seat found that route 2's coverage conjunct is satisfied by
+no allowlist row and cannot be, and an independent gate 2 seat left open whether
+a record required to be replaced in place counts as surviving text. This
+amendment makes exactly two changes and no others. It admits no exception to the
+clickable-link prohibition, removes no gate, and lowers no threshold.
+
+**1. Route 2's coverage conjunct gains a carve-out.** Route 2 requires an
+admitted row to identify its pinned baseline or wave, not to act as a current
+route or migration exception, and to stay covered by the baseline's canonical
+promoted-manifest and summary checks. The third conjunct cannot be met by the
+rows that need route 2, for a structural reason rather than a drafting one. The
+baseline's canonical promoted manifest is keyed by source and target path and
+carries seven slug-bearing rows; the literals these allowlist rows cover are
+different literals in different files, so no promoted-manifest or summary check
+reaches them. The ledger's own integrity check, which would reach them, is gated
+behind a disposition-executed predicate that returns false while the migration is
+unexecuted. The conjunct is therefore unsatisfiable by construction in the same
+way requirement 5, requirement 6, route 3's removal condition and route 1's
+claim-ledger conjunct were before their recorded carve-outs.
+
+The three rows that declared route 2 while conceding this conjunct -- the
+commit-pinned baseline row over the taxonomy migration ledger, and the two
+lifecycle-selector rows over the corpus-lifecycle checker and its regression
+fixture -- are carved out of the coverage conjunct. Their remaining route 2
+obligations are unchanged: each must still identify its pinned baseline or wave,
+must still not act as a current route or migration exception, and must still
+state a removal condition. Their coverage obligation is instead the recorded
+completion of the post-deletion literal scan and its reviewed allowlist, the same
+substitute change 1 of the route-3 amendment used. The carve-out is exhaustive:
+it covers those three rows and no other.
+
+Route 2's enumerated subjects also gain the regression fixture of a covered
+selector. The route names a commit-pinned reviewed historical baseline selector,
+its immutable manifest, and a generated summary, none of which is a test fixture,
+so a fixture mirroring a covered selector was admitted under no route while this
+Spec keeps it tracked. This is the same move change 2 of the route-3 amendment
+made for the gate 9 regression fixtures, and it is bounded the same way: a
+fixture qualifies only when it mirrors a selector this route already admits.
+
+**2. The survival predicate excludes records required to be replaced in place.**
+`Uniqueness-predicate amendment` asks whether a claim survives anywhere in
+tracked repository text after the retiring pack is deleted. It does not qualify
+durability, and a bounded current-state record is tracked text that is required
+to be replaced whenever the active task changes. Counting it as survival would
+let a claim be judged non-unique on the strength of a record that is guaranteed
+to stop containing it. This is not hypothetical: a `carry` row cited the
+current-state memory record as surviving text for a claim that record now
+contains zero times.
+
+A record whose governing README or contract requires it to be replaced in place
+is therefore not surviving text for this predicate. Its content may still be
+cited as evidence of what was observed; it may not settle a `NOT UNIQUE` verdict.
+This narrows the predicate and can only move a verdict toward `UNIQUE`, so no
+`NOT UNIQUE` or `PARTIAL` verdict already settled on other grounds is disturbed.
+
+
 ### Historical-evidence boundary
 
 Audits, archived specifications, completed plans, completed tasks, and archive
