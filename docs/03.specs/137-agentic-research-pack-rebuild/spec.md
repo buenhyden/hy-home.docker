@@ -680,6 +680,33 @@ This narrows the predicate and can only move a verdict toward `UNIQUE`, so no
 `NOT UNIQUE` or `PARTIAL` verdict already settled on other grounds is disturbed.
 
 
+### Completed-unit historical-evidence amendment
+
+**Approval date:** 2026-08-19 (Asia/Seoul)
+
+**Approved by:** user
+
+Three allowlist rows sit in Specs carrying `status: completed`. `Old-path
+inventory and allowlist` requires every admitted row to carry a settled review
+verdict, and a completed unit has no actor to produce one. Requiring a per-row
+seat from a unit that is closed is unsatisfiable by construction in the same way
+requirement 5, requirement 6, route 3's removal condition, route 1's claim-ledger
+conjunct and route 2's coverage conjunct were before their recorded carve-outs.
+
+An allowlist row whose containing document is historical evidence under
+`Historical-evidence boundary` AND whose owning Spec carries `status: completed`
+is settled by this Spec's own route 1 admission, without a per-row review seat,
+provided the row states the factual old event and what the record would lose if
+the literal were altered. The row must still declare route 1 and must still not
+be a canonical-owner statement, which route 1 denies an allowlist under any
+route.
+
+This is a closure rule for a fixed and enumerable set, not a general exemption.
+It reaches only rows already inside a completed unit at the time of this
+amendment, and it does not admit a literal that route 1 would otherwise reject.
+A row in an active unit is unaffected and still requires its seat.
+
+
 ### Historical-evidence boundary
 
 Audits, archived specifications, completed plans, completed tasks, and archive
