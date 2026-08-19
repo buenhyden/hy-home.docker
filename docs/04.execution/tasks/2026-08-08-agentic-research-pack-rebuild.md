@@ -2744,6 +2744,37 @@ with their rows, and the carry contract measures `ledger_records=39`,
 Gemini rows still share one -- at `failures=0`. Gate 4 is unchanged at
 `failures=5` and `unallowlisted_literals=0`.
 
+
+### Citation sweep and a self-inflicted ledger defect, 2026-08-19
+
+**Citation sweep over the carry surfaces.** Every `path:line` citation in the 39
+`Carry` rows and their 37 destination paragraphs was resolved and checked: 103
+citations across 37 distinct files, all resolving under the corpus's relative and
+elided path conventions, and every one pointing inside its file. Zero drifted past
+end of file. Together with the earlier 89-path existence sweep this closes the
+mechanical citation classes. It does not close the class that actually falsified
+four records, which was quantitative, and this entry must not be read as doing so.
+
+**A defect this Task introduced, found while investigating something else.** The
+two errors in `tests/validation/test_document_taxonomy.py` were recorded earlier
+today as pre-existing and unrelated. They were pre-existing relative to the scan
+exemption change, and they were this Task's own: `ledger_records()` raised
+`yaml.scanner.ScannerError: mapping values are not allowed here` at the taxonomy
+ledger's `ref-0085` block, on the `reason` scalar this Task edited to record the
+deleted leaf's outcome. The added text contained a colon followed by a space
+inside an unquoted YAML scalar, which the parser reads as a mapping. Exactly one
+of the ledger's 799 `reason` lines contained that construct and it was the edited
+one; the other 798 observe the convention. The colon is replaced with a dash, the
+declared content is unchanged, and the ledger parses. The taxonomy suite is now
+`14/14`.
+
+**One over-reading, corrected before it was recorded as a finding.** The parse
+returns 796 records against 799 record starts in the text, which read at first as
+three records being silently absorbed. It is not: the ledger declares two lists by
+design, `post_baseline_records` at 3 and `records` at 796, and 796 plus 3 is the
+799 the text shows. `ledger_records()` reads `records` deliberately. The
+discrepancy was a difference between two correct counts of different things.
+
 ## Commit Ledger
 
 | Unit                                            | Commit identity                                                                                                                                                                                                  | Logical unit                                                                                                                                                                                                                                                                                                                 | Validation                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Review state                                                                                                                                                                                                                                                                                                |
