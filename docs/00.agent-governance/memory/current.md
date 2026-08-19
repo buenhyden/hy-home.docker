@@ -164,13 +164,20 @@ status: active
   catalog semantic work is 14 rows over 5 label kinds, of which 9 are this same
   family and only 4 rules are new.
 
-- **The claim that both surfaces measure 47 of 47 on owner and uniqueness is
-  RETRACTED.** Zero of the 47 destination records state uniqueness under the
-  survival predicate: that re-derivation was written into the ledger only, and the
-  destination still argues from intra-document duplication, the test the amendment
-  names and voids. 35 of 47 claims now carry two contradictory uniqueness verdicts.
-  This is failure four -- measuring the ledger while the gate reads the destination
-  -- recorded in this Task as historical and in fact live.
+- The claim that both surfaces measured 47 of 47 on owner and uniqueness was
+  retracted and is now true on measurement. RED was `failures=81`: zero of 47
+  destinations stated a survival verdict while all 47 ledger rows did, and 34
+  argued from intra-document duplication, the test the amendment voids. All 45
+  destinations now carry a `{survival: ...}` marker matching their rows, and the
+  check fires on a flipped verdict, a removed marker, and a voided basis. Row 792
+  is corrected from `NOT UNIQUE` to `UNIQUE` -- its two cited surviving surfaces do
+  not state the claim, one being a checklist item directing the identifiers be
+  implemented and the other a record that no longer contains them -- which also
+  resolves the three Gemini rows into agreement. Ledger verdicts are 12 `UNIQUE`,
+  23 `PARTIAL`, 12 `NOT UNIQUE`.
+- The checker read the FIRST owner and the FIRST survival verdict in a cell where
+  the convention is that the last supersedes. Both are fixed. That defect appeared
+  twice in the same module, which is worth remembering when adding a third field.
 - There is more than one duplicate group: four ledger rows declare NOT unique,
   the three Gemini rows plus the Changelog-authority row.
 
