@@ -133,7 +133,7 @@ class CarryOwnerContractTests(unittest.TestCase):
         assert (
             _pair_codes(
                 _ledger("`A`", OWNED_BY_DOCS),
-                _destination(OWNED_BY_DOCS + " {ledger-anchor: `A`}"),
+                _destination(OWNED_BY_DOCS + " {ledger-anchor: `A`} {survival: UNIQUE}"),
             )
             == []
         )
@@ -146,12 +146,56 @@ class CarryOwnerContractTests(unittest.TestCase):
         assert (
             _pair_codes(
                 _ledger(key, OWNED_BY_DOCS),
-                _destination(OWNED_BY_DOCS + " {ledger-anchor: " + key + "}"),
+                _destination(OWNED_BY_DOCS + " {ledger-anchor: " + key + "} {survival: UNIQUE}"),
             )
             == []
         )
 
 
+
+    def test_a_destination_stating_no_survival_verdict_fails(self) -> None:
+        """Gate 2 reads the destination, so the survival verdict belongs there."""
+        codes = _pair_codes(
+            _ledger_s("`A`", OWNED_BY_DOCS + " survival predicate: PARTIAL", "PARTIAL"),
+            _destination(OWNED_BY_DOCS + " {ledger-anchor: `A`}"),
+        )
+        assert "CARRY-SURVIVAL-UNSTATED" in codes
+
+    def test_a_destination_verdict_contradicting_the_ledger_fails(self) -> None:
+        """Two surfaces stated contradictory verdicts on 35 of 47 claims."""
+        codes = _pair_codes(
+            _ledger_s("`A`", OWNED_BY_DOCS + " survival predicate: PARTIAL", "PARTIAL"),
+            _destination(OWNED_BY_DOCS + " {ledger-anchor: `A`} {survival: UNIQUE}"),
+        )
+        assert "CARRY-SURVIVAL-MISMATCH" in codes
+
+    def test_the_voided_intra_document_test_fails_when_it_is_the_basis(self) -> None:
+        """The amendment voids it: intra-document duplication does not bear on the gate."""
+        codes = _pair_codes(
+            _ledger_s("`A`", OWNED_BY_DOCS + " survival predicate: UNIQUE", "UNIQUE"),
+            _destination(
+                OWNED_BY_DOCS
+                + " UNIQUE - no other paragraph in this section carries this claim."
+                + " {ledger-anchor: `A`}"
+            ),
+        )
+        assert "CARRY-SURVIVAL-VOIDED-TEST" in codes
+
+    def test_a_retained_intra_document_sentence_passes_beside_a_survival_verdict(
+        self,
+    ) -> None:
+        """Once the verdict is stated, the old sentence is provenance, not the basis."""
+        assert (
+            _pair_codes(
+                _ledger_s("`A`", OWNED_BY_DOCS + " survival predicate: UNIQUE", "UNIQUE"),
+                _destination(
+                    OWNED_BY_DOCS
+                    + " UNIQUE - no other ledger row carries it."
+                    + " {ledger-anchor: `A`} {survival: UNIQUE}"
+                ),
+            )
+            == []
+        )
 
     def test_a_disagreeing_owner_appended_last_fails(self) -> None:
         """The accumulation defect: set intersection went blind here.
@@ -182,7 +226,7 @@ class CarryOwnerContractTests(unittest.TestCase):
         assert (
             _pair_codes(
                 _ledger("`A`", corrected),
-                _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`}"),
+                _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`} {survival: UNIQUE}"),
             )
             == []
         )
@@ -196,7 +240,7 @@ class CarryOwnerContractTests(unittest.TestCase):
         assert (
             _pair_codes(
                 _ledger("`A`", both),
-                _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`}"),
+                _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`} {survival: UNIQUE}"),
             )
             == []
         )
@@ -220,6 +264,12 @@ def _ledger(key: str, text: str) -> contract.Record:
     return contract.Record(surface="ledger", where="L", label=key, text=text, keys=(key,))
 
 
+def _ledger_s(key: str, text: str, survival: str) -> contract.Record:
+    return contract.Record(
+        surface="ledger", where="L", label=key, text=text, keys=(key,), survival=survival
+    )
+
+
 
 def _destination(text: str) -> contract.Record:
     declared = tuple(
@@ -231,6 +281,11 @@ def _destination(text: str) -> contract.Record:
         label="paragraph",
         text=text,
         keys=declared,
+        survival=(
+            match.group(1)
+            if (match := contract.DESTINATION_SURVIVAL.search(text))
+            else ""
+        ),
     )
 
 

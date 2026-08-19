@@ -69,6 +69,17 @@ OWNER_STATEMENT = re.compile(
 # period-terminated pattern truncates them; that exact mistake has already been
 # made once in this corpus.
 LEDGER_ANCHOR_DECLARATION = re.compile(r"\{ledger-anchor:\s*(.+?)\}")
+# The Uniqueness-predicate amendment defines uniqueness as survival after the
+# retiring pack is deleted, and voids the intra-document test outright: whether
+# another row in the same ledger, or another paragraph in the same section,
+# carries the claim does not bear on the gate. Gate 2 reads the destination, so
+# the destination is where the survival verdict has to be stated.
+LEDGER_SURVIVAL = re.compile(r"survival predicate[:\s]*(UNIQUE|PARTIAL|NOT UNIQUE)")
+DESTINATION_SURVIVAL = re.compile(r"\{survival:\s*(UNIQUE|PARTIAL|NOT UNIQUE)\}")
+VOIDED_UNIQUENESS_TEST = re.compile(
+    r"no other (?:ledger row|paragraph in this section|row in this ledger)",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -90,6 +101,7 @@ class Record:
     label: str
     text: str
     keys: tuple[str, ...] = ()
+    survival: str = ""
 
     def owners(self) -> frozenset[str]:
         return frozenset(OWNER_STATEMENT.findall(self.text))
@@ -190,6 +202,14 @@ def collect_ledger_records(root: pathlib.Path, task: str) -> list[Record]:
                 label=cells[ANCHOR_COLUMN][:60],
                 text=cells[REASON_COLUMN],
                 keys=(cells[ANCHOR_COLUMN],),
+                # Last, not first: these cells append corrections, so an
+                # earlier verdict is superseded by a later one exactly as an
+                # earlier owner is.
+                survival=(
+                    stated[-1]
+                    if (stated := LEDGER_SURVIVAL.findall(cells[REASON_COLUMN]))
+                    else ""
+                ),
             )
         )
     return records
@@ -241,6 +261,11 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
                         label=title[:60],
                         text=body,
                         keys=declared,
+                        survival=(
+                            match.group(1)
+                            if (match := DESTINATION_SURVIVAL.search(body))
+                            else ""
+                        ),
                     )
                 )
             index = cursor
@@ -397,6 +422,37 @@ def check_pairing(records: list[Record]) -> list[Finding]:
         # deliberately not a set intersection: these cells accumulate withdrawn
         # owners, and an intersection passes whenever any historical owner
         # happens to match.
+        if not partner.survival:
+            findings.append(
+                Finding(
+                    "CARRY-SURVIVAL-UNSTATED",
+                    partner.where,
+                    f"{partner.label}: states no survival verdict; add a "
+                    "`{survival: UNIQUE|PARTIAL|NOT UNIQUE}` marker",
+                )
+            )
+        elif record.survival and partner.survival != record.survival:
+            findings.append(
+                Finding(
+                    "CARRY-SURVIVAL-MISMATCH",
+                    partner.where,
+                    f"{partner.label}: destination says {partner.survival!r} "
+                    f"while the ledger row at {record.where} says {record.survival!r}",
+                )
+            )
+        # A retained intra-document sentence is provenance once the survival
+        # verdict and its evidence are stated; it is the BASIS only while no
+        # survival verdict is present.
+        if not partner.survival and VOIDED_UNIQUENESS_TEST.search(partner.text):
+            findings.append(
+                Finding(
+                    "CARRY-SURVIVAL-VOIDED-TEST",
+                    partner.where,
+                    f"{partner.label}: argues uniqueness from intra-document "
+                    "duplication, which the Uniqueness-predicate amendment voids",
+                )
+            )
+
         mine, theirs = record.owners(), partner.owners()
         my_operative, their_operative = record.operative_owner(), partner.operative_owner()
         if my_operative and theirs and my_operative not in theirs:
