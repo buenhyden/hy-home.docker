@@ -103,11 +103,22 @@ status: active
   share a shape: the fact survives and the quantification and judgement vanish.
   Two verdicts inverted — the three Gemini rows were NOT unique on grounds the
   predicate excludes and are UNIQUE; two UNIQUE rows are NOT UNIQUE.
-- The owner requirement is now enforced by
-  `scripts/validation/carry_owner_contract.py`, which compares each record's
-  stated owner against the SSOT row it cites. It found 24 failures on its first
-  run and measures 0 now, with 10 regression tests pinning the historical failure
-  modes. Seven prior measurements failed because none of them could fail.
+- The owner requirement is enforced by
+  `scripts/validation/carry_owner_contract.py`, and its first form was not enough.
+  It compares each record's stated owner against the SSOT row it cites, which it
+  can do on one surface at a time, so its `failures=0` was true by construction: an
+  independent seat found 21 owner disagreements BETWEEN the surfaces, 17 naming a
+  different owner, and every one passed. Its docstring also asserted the opposite
+  of what its code does about missing owners. Both are corrected, and the module
+  now performs the join the data never carried: a destination paragraph declares
+  the ledger row it serves with a braced `{ledger-anchor: ...}` marker, and the
+  owners must agree. **RED is `failures=94`** -- 47 `CARRY-PAIR-MISSING` and 47
+  `CARRY-PAIR-UNDECLARED`. The state did not change; it became measurable.
+- **The 10 regression tests recorded as pinning the historical failure modes had
+  never run.** They were bare pytest-style functions and the repository runs
+  `unittest discover`; this was the only file of 34 in that directory declaring no
+  `TestCase`. Converted, it runs 17 tests, and disabling the join makes exactly the
+  4 failure-asserting tests fail.
 - **Task 10E is unblocked and its RED already exists.** The repository runs tests
   with `python3 -m unittest discover -s tests/validation`, not `pytest`; the
   recorded pytest blocker was never real. Two further claims made on discovering
@@ -141,9 +152,13 @@ status: active
   catalog semantic work is 14 rows over 5 label kinds, of which 9 are this same
   family and only 4 rules are new.
 
-- Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
-  paragraphs were resolved one at a time against the surface each claim must
-  change to be remediated, not against every path the paragraph quotes.
+- **The claim that both surfaces measure 47 of 47 on owner and uniqueness is
+  RETRACTED.** Zero of the 47 destination records state uniqueness under the
+  survival predicate: that re-derivation was written into the ledger only, and the
+  destination still argues from intra-document duplication, the test the amendment
+  names and voids. 35 of 47 claims now carry two contradictory uniqueness verdicts.
+  This is failure four -- measuring the ledger while the gate reads the destination
+  -- recorded in this Task as historical and in fact live.
 - There is more than one duplicate group: four ledger rows declare NOT unique,
   the three Gemini rows plus the Changelog-authority row.
 
