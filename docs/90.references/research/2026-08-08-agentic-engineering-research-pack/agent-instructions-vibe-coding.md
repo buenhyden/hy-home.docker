@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:agent-instructions-vibe-coding
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -215,15 +215,13 @@ records them.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **Do not over-attribute the ownership rule to the review guide.** The cited GitHub review page emphasises that human judgement stays essential but states no formal ownership-assignment rule. The normative half of the ownership criterion rests on NIST SSDF v1.1; the GitHub page backs only the weaker claim. Attributing the stronger rule to the secondary source overstates it.
 - **Slopsquatting is why a registry lookup is not verification.** The upstream source names slopsquatting, the registration of package names that models are known to hallucinate. Registry presence alone therefore does not verify a suggested dependency, because the attack works by making the hallucinated name resolve.
-- **The vibe-coding tutorial has six phases, not five.** The tutorial names six phases through "Improving your software project". An earlier five-phase research, plan, implement, test, iterate summary was wrong and omitted the final phase, and its implementation phase is specific to cloud agents.
+- **The vibe-coding tutorial has six phases, not five.** The tutorial names six phases: Researching with Copilot, Planning the implementation, Building your application with Copilot cloud agent, Testing your application, Iterating on changes, and Improving your software project. An earlier five-phase research, plan, implement, test, iterate summary was wrong and omitted the final phase, and its implementation phase is specific to cloud agents.
 - **Three criteria rest on a source nobody has re-read.** The practical-guide CDN URL resolves and returns a 7,335,065-byte PDF with no extractable text layer, so the claims behind three criteria are carried from an earlier verification rather than re-read. The obstacle is extraction, not access. Those three claims are `UNVERIFIED` on that basis and must not be read as freshly confirmed.
 
 ## Scope Implications

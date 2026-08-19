@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:spec-driven-sdlc
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -214,10 +214,8 @@ checker and human review to approximate full traceability.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **Two standards status claims carry unreconciled provenance.** The 29148:2018 and 42010:2022 status claims retain earlier retrieval provenance and were not re-verified on the date stated beside them. Carried as the contradiction rather than as either claim, because choosing one silently discards the other provenance.

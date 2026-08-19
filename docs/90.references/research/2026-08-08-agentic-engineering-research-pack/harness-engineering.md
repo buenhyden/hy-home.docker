@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:harness-engineering
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -291,10 +291,8 @@ spans.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **Setting the Claude effort control to its high value is a no-op.** Official guidance states that setting the effort control to `high` produces exactly the same behaviour as omitting the parameter, so profiles configured at that value match the provider default rather than raising it. Recorded here as well as in the model-selection leaf because both leaves reason from provider effort semantics.

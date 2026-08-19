@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:sdlc-document-roles
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -246,10 +246,8 @@ the merge, not this reference, resolves them.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **The committee catalog is the fallback route when the main standards host refuses.** The main standards site returned HTTP 403 to automated retrieval, and the ISO-operated committee catalog served the same records. Recorded as the method, not as the dated stage codes: when the primary host refuses, the committee catalog is the corroborating route.

@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:document-metadata-lifecycle
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -247,10 +247,8 @@ base ref and changed-path set; there is no path to an override under
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **A status probe alone is not evidence that a source is unavailable.** A command-line client receives HTTP 403 from the W3C host while a browser-shaped fetch succeeds. Marking a source `UNVERIFIED` on a bare status probe is therefore unsound, which matters here because another host in this corpus genuinely does refuse automated retrieval.

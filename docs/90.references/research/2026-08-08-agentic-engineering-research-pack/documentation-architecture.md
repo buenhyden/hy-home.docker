@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:documentation-architecture
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -241,13 +241,11 @@ README profile, not from Diataxis.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
-- **The primary documentation-framework site is a standing access boundary.** The site serves an edge bot challenge rather than rate limiting, so no backoff will clear it. The two-axis wording is `UNVERIFIED` at the rendered site and verified only against a pinned upstream source that a corroborating vendor page supports. The marker belongs with the four-mode and compass claims, not apart from them.
+- **The primary documentation-framework site is a standing access boundary.** The site serves an edge bot challenge rather than rate limiting, so no backoff will clear it. The two-axis wording is `UNVERIFIED` at the rendered site and rests on a pinned upstream source alone: the corroborating vendor page confirms the four type names independently but does **not** state the two axes, so no second source carries that half of the claim. The marker belongs with the four-mode and compass claims, not apart from them.
 
 ## Scope Implications
 

@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:docker-compose-infrastructure
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -412,10 +412,8 @@ this leaf can name the absence but cannot supply that inventory itself.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **Rendering a resolved configuration is not a confinement boundary.** The vendor trust-model page names the inheritance directive alongside includes as a transitive-privilege path, states that rendering a resolved configuration offers no confinement guarantee, and warns that file-reference fields surface file contents in that output before any container starts. Resolved-config review must not be treated as a safety guarantee, which matters directly against this workspace's large inheritance surface.

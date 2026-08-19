@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:loop-engineering
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-17
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -297,13 +297,11 @@ companion harness-side list is
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
-`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
-migration ledger could not route to a Stage 04 gap, because the `carry`
-disposition bars that material. Each states what the upstream evidence supports
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
-- **Only a minority of documented provider events can block.** Of the events each provider documents, only a minority can block, and the per-provider totals are dated vendor observations rather than current facts. Regardless of what a provider permits, only the stop gate is blocking in this repository.
+- **Only a minority of documented provider events can block.** Of the events each provider documents, only a minority can block: as recorded in the retiring pack, exactly four of the eleven documented Codex events can stop work and Gemini exposes two. Those totals are dated vendor observations rather than current facts, and they are the content of the correction — stating only that a minority can block preserves the shape and discards the claim. Regardless of what a provider permits, only the stop gate is blocking in this repository.
 
 ## Scope Implications
 

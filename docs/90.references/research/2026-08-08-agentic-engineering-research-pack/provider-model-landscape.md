@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:provider-model-landscape
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -129,9 +129,9 @@ one of the retiring IDs as a stopgap default would need this date.
 
 The retiring pack's 145-row vendor catalog carried a `Caveat` column that is a
 separate claim family from the identity columns beside it. Measured over the
-catalog: 148 cells, 96 non-trivial, 70 distinct strings, 51 of them occurring
+catalog: 145 cells, 96 non-trivial, 70 distinct strings, 51 of them occurring
 once. Most are not facts about one model but reading rules that generalise well
-past the row they sit in, so they are carried here deduplicated into fifteen
+past the row they sit in, so they are carried here deduplicated into twenty
 families rather than as 96 cells. The per-row identity data is not carried; it is
 re-derivable from the vendor pages the `Sources` section names.
 
@@ -161,9 +161,9 @@ re-derivable from the vendor pages the `Sources` section names.
 9. **Feature removal is not model deprecation.** A removed mode, an ended
    legacy-tool support, and a separate fine-tuning transition each retire less
    than the model.
-10. **A redirect or a grouped card does not change identity or maturity.** A
-    redirect does not revive the original endpoint's maturity, and one official
-    card may group several exact endpoints.
+10. **A redirect does not revive maturity.** Following a redirect reaches a
+    different endpoint; it does not restore the lifecycle state of the one that
+    was redirected away.
 11. **A specialized model is not a general worker.** Media, robotics, and other
     specialized models are not general task-selection defaults.
 12. **An unzoned calendar day is cutoff-qualified only when its whole range
@@ -176,6 +176,20 @@ re-derivable from the vendor pages the `Sources` section names.
     require a retention window that rules out zero-data-retention use.
 15. **An agent endpoint is not interchangeable with a base model.** Some agent
     endpoints are not generative models at all.
+16. **One official card may group several exact endpoints.** Card granularity is
+    a presentation choice, so a single card is not evidence that the endpoints
+    it groups share an identity or a schedule.
+17. **A normalized lifecycle label is derived, not the provider's own.** Where
+    this catalog records `Stable`, that normalization rests on the dated launch
+    plus current-model placement and is not the provider's own `Active` status.
+18. **The catalog asserts no performance ranking.** No row claims benchmark
+    superiority over another, and none should be read as implying one.
+19. **Presence in the catalog is not endorsement.** An alias retained as a
+    historical identifier, a preview suffix recorded for exactness, and a former
+    workspace worker value are each catalogued without being a current default
+    or locally proven as available.
+20. **An informal descriptor is not a lifecycle label.** Wording such as
+    "older" on a vendor page is description, not a deprecation state.
 
 **Mythos Preview carries an unresolved official conflict.** The vendor lifecycle
 page schedules `claude-mythos-preview` for retirement on 2026-06-30 while the
