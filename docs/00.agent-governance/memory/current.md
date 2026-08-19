@@ -246,15 +246,25 @@ status: active
   carry forward. Gate 4 needs a seat for its four corrected rows. Neither can be
   settled from inside this unit, and the session instruction in force forbids
   spawning review agents unless the user asks, so both wait on that request.
-- Gate 4's residual is enumerated from the scanner's own allowlist reader: 43
-  rows, 8 unsettled, needing three different actors. Four are corrected and wait
-  only on an independent seat (two `mig-0001` rows, two route 2 selector rows).
-  Three sit in Specs carrying `status: completed`, so they have no actor. One,
-  the `test_document_taxonomy.py` scan exemption, reads two ways after the route 3
-  amendment and the admitting reading is the one favourable to this unit, so it
-  was not taken. Two mechanical escapes were rejected: importing the scanner's
-  carved-out constant binds an unrelated test to a module scheduled to go, and
-  assembling the path from components hides a literal the gate exists to expose.
+- **Gate 4 is down to `failures=5` from 34, at 39 reviewed and 3 unreviewed.** The
+  user approved four resolutions on 2026-08-19 and all four are implemented. Spec
+  137 gained `Route-2 coverage and predicate-durability amendment`: it carves the
+  three conceding rows out of route 2's unsatisfiable coverage conjunct, names the
+  regression fixture of a covered selector among route 2's subjects, and rules that
+  a record required to be replaced in place is not surviving text for the
+  uniqueness predicate. The scan exemption in `test_document_taxonomy.py` is
+  widened to the research namespace with a written narrowing condition tied to the
+  post-deletion scan, so the retiring literal is gone and its allowlist row is
+  removed rather than settled; that widening also fixed a live failure in the
+  consuming suite, which drops from `failures=1, errors=2` to `errors=2`. The two
+  remaining errors are a pre-existing YAML parse failure in that suite's ledger
+  reader, unrelated and unfixed. The last three unreviewed rows sit in Specs
+  carrying `status: completed` and have no actor here.
+- **Eight carry rows are re-dispositioned**, two to `Retain` after writing the
+  material into the successor and re-deriving it, six to `Omit` with reasons. The
+  successor carried none of the eight, measured. The ledger now holds 253 rows at
+  `Retain` 77, `Supersede` 13, `Correct` 34, `Carry` 39, `Omit` 90, and the carry
+  contract measures 39 rows over 37 destinations at `failures=0`.
 - The deleted Stage 90 leaf now has its own unit at
   `docs/03.specs/spec-0152-deleted-reference-leaf-disposition/` with Spec, Plan
   and Task, on the user's direction. Registering it re-derived the figures and
