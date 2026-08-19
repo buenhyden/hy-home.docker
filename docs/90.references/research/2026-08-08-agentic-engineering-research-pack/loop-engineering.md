@@ -301,7 +301,7 @@ Source-evidence claims carried forward from the superseded 2026-07-05
 research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
-- **Only a minority of documented provider events can block.** Of the events each provider documents, only a minority can block: as recorded in the retiring pack, exactly four of the eleven documented Codex events can stop work and Gemini exposes two. Those totals are dated vendor observations rather than current facts, and they are the content of the correction — stating only that a minority can block preserves the shape and discards the claim. Regardless of what a provider permits, only the stop gate is blocking in this repository.
+- **Only a minority of documented provider events can block.** Of the events each provider documents, only a minority can block: as recorded in the retiring pack, exactly four of the eleven documented Codex events can stop work and Gemini exposes two, and Claude documents 31 event names of which 15 can block. **Claude half restored 2026-08-19** after a seat found it dropped: the paragraph's own argument is that stating only that a minority can block preserves the shape and discards the claim, and the discarded figure was the largest of the three. Those totals are dated vendor observations rather than current facts, and they are the content of the correction — stating only that a minority can block preserves the shape and discards the claim. Regardless of what a provider permits, only the stop gate is blocking in this repository.
 
 ## Scope Implications
 
