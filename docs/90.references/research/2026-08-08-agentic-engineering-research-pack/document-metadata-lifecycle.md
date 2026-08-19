@@ -141,7 +141,7 @@ exact arrays or validation algorithm.
 | Policy     | `reviewed_at` and `review_cycle` required        | PRD, ARD, ADR, Spec, Plan, or Task                                       | Periodically reviewed operational control.                              |
 | Runbook    | `reviewed_at` and `review_cycle` required        | Spec, Plan, Task, Guide, Policy, or Archive                              | Periodically reviewed executable procedure.                             |
 | Incident   | None                                             | Runbook; empty allowed                                                   | May be root if no verified Runbook parent; event state belongs in body. |
-| Postmortem | `reviewed_at` required; `review_cycle` forbidden | Incident only                                                            | Strict child of paired Incident; reviewed learning is dated once.       |
+| Postmortem | `reviewed_at` required; `next_review_at` forbidden — corrected 2026-08-19; `review_cycle` occurs in no `forbidden` list, and the registry's postmortem profile forbids `next_review_at` | Incident only                                                            | Strict child of paired Incident; reviewed learning is dated once.       |
 | Release    | `reviewed_at` optional; `review_cycle` forbidden | Spec, Plan, or Task                                                      | Must be backed by a real release event; not deployment/runtime proof.   |
 | Reference  | Both optional                                    | PRD/ARD/ADR/Spec/Plan/Task/Guide/Policy/Runbook/Reference; empty allowed | Advisory support role; cannot become policy or execution evidence.      |
 

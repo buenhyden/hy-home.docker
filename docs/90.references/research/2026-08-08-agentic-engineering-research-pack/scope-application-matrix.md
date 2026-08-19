@@ -57,7 +57,7 @@ enforcement.
 
 ### In scope
 
-- The fourteen tracked files under `docs/00.agent-governance/scopes/`.
+- The tracked files under `docs/00.agent-governance/scopes/`. **Count corrected 2026-08-19: eight, not fourteen.** `scopes/frontend.md`, `backend.md` and `mobile.md` no longer exist; re-derive with `ls docs/00.agent-governance/scopes/*.md | wc -l` rather than trusting a stated number.
 - Persona-to-scope routing and the typed agent/function catalog.
 - The three tracked contracts under `docs/00.agent-governance/contracts/`,
   including the path-authority records that earlier revisions did not cite.
@@ -228,7 +228,7 @@ the backend/mobile class would overstate the gap.
 
 ### Scope-file structural tiers
 
-The fourteen scope files are not structurally uniform, and the split is exact.
+The scope files are not structurally uniform, and the split is exact. **Corrected 2026-08-19: eight files, not fourteen** — the normative scope SET is still fourteen, but six of those scopes have no file, which is a different fact from fourteen files existing.
 Six carry a `File Ownership SSOT` section and a `Subagent Bridge` section on
 top of the shared five-section body; eight carry only the five-section body.
 
