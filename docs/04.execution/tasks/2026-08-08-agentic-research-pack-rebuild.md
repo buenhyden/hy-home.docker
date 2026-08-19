@@ -2662,6 +2662,30 @@ current-state memory record counts as surviving tracked text is a Spec ruling
 this Task cannot make, and row 792's correction above does not depend on it,
 because that record no longer contains the identifiers at all.
 
+
+### Cited-path sweep over the carry surfaces, 2026-08-19
+
+Swept every path cited by the 47 `Carry` rows and their 45 destination
+paragraphs, because an independent seat re-verified 14 of the 47 conditions live
+and 4 of those 14 falsified something the record asserts, leaving 33 carried on
+their own `Verified live 2026-08-18` stamps.
+
+**Result: 89 distinct cited paths, zero real defects.** Fifteen initially read as
+missing and all fifteen resolve. Thirteen are relative citations under
+`docs/00.agent-governance/`, which is this corpus's convention for scope,
+provider, rule and memory files. One, `scripts/governance/validate-cross-links.sh`,
+is absent because its row's whole claim is that two Stage 04 documents instruct
+running a script that does not exist. One, `scopes/frontend.md`, is absent because
+its row states in the same sentence that the file was deleted.
+
+**What this does and does not close.** It closes the cheapest failure class:
+no carried claim points at a path that silently stopped existing. It does not
+touch the class the seat actually falsified, which was quantitative -- ten durable
+notes against thirteen, seven README paths against five, a key said to occur zero
+times that occurs once. Those are content assertions inside existing files, and a
+path sweep cannot see them. The 33 unre-verified conditions remain open on that
+axis, and this entry should not be read as reducing them.
+
 ## Commit Ledger
 
 | Unit                                            | Commit identity                                                                                                                                                                                                  | Logical unit                                                                                                                                                                                                                                                                                                                 | Validation                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Review state                                                                                                                                                                                                                                                                                                |
