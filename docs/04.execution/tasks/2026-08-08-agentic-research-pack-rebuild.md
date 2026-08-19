@@ -2515,9 +2515,26 @@ backfilled.
   This is not fixed here. Restoring a deleted Stage 90 reference leaf, or
   deciding that the successor's different decomposition supersedes it, is a
   disposition decision this unit does not hold, and it is not a Spec 137 gate.
-  It is recorded so that it is not lost a second time. The `mig-0001` ledger
-  entry for this leaf declares a `stable_path` that no longer resolves, while its
-  sibling's does.
+  It is recorded so that it is not lost a second time.
+
+  **Disposition owner named 2026-08-19:** `doc-writer`, which owns
+  `docs/00.agent-governance/` and the Stage 90 documentation surfaces at
+  `scopes/docs.md:59`, with `@buenhyden` as the repository owner of record under
+  the `*` rule in `.github/CODEOWNERS`. The decision that owner must take is one
+  of three, and this unit takes none of them: restore the leaf from `57259e24`;
+  rule that the successor's decomposition supersedes it and record that ruling;
+  or accept the loss explicitly. The evidence each option needs is already
+  recorded above.
+
+  **The `mig-0001` half is closed.** That ledger entry declared a `stable_path`
+  that no longer resolves while its sibling's does, and the asymmetry was
+  unexplained. Commit `2ed631ee` records the outcome on the entry — the move
+  executed at `57259e24` and the merge `5afdd277` deleted its target — and leaves
+  `stable_path` unchanged, because that field records what the migration declared
+  rather than what currently exists, so rewriting it would falsify the
+  declaration instead of correcting it. The five identity fields the tracked
+  lifecycle checks compare are untouched, at 799 blocks and action counts
+  `merge 63 / move 613 / rewrite 47`.
 
 - **Two gaps in the File Ownership SSOT, recorded not fixed.** Naming the
   remediation owner for every carried claim required resolving surfaces against
