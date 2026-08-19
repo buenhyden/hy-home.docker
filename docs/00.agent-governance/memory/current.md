@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `8cdeacaf`
+- Verified commit: `3043acb7`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -85,13 +85,20 @@ status: active
   `ai-agent-catalogs.md` row are source-backed or upstream material written into
   eleven successor leaves. Zero of the 246 ledger rows now name themselves as
   their own destination. What remains is review, not routing.
-- Gate 2's reviewed-destination half is the standing blocker. Destination
-  existence is fully closed — 64 rows named their destination by bare filename, which resolved
-  for a reader but not mechanically because the same filenames exist in both
-  packs, and all 64 are expanded to full successor paths with the files verified
-  to exist. Zero rows are unresolvable, and every `Carry` row now names a
-  remediation owner resolved from the scope File Ownership SSOT and states
-  uniqueness, at 47 of 47 against 23 and 22 before.
+- Three independent seats reviewed the repaired state on 2026-08-19: the 47
+  `Carry` rows (19 settled / 28 held), the 54 successor-leaf rows (47 settled / 7
+  held), and four gate 4 rows (all four Needs fixes). Every hold from the first
+  two seats is now closed; two gate 4 rows remain.
+- The owner requirement failed measurement three times, each differently: the
+  first counted mentions rather than names, the second asserted a per-row
+  justification without checking it, and the third measured the ledger cells
+  while gate 2 says the claim resolves to its destination — which still held 21
+  placeholders after the ledger showed none. Both surfaces now measure zero
+  placeholders, 47 of 47 naming an owner and stating uniqueness.
+- The ownership tables hold 33 patterns, not the 24 previously recorded.
+- The Gemini stale-identifier claim is REMEDIATED, not live: `Flash` occurs zero
+  times in `providers/gemini.md` since `6bd7c62d`. Its three rows stay `carry`
+  under the audit-trail subtype and must not be read as a live defect.
 - Both destination seats reported and their bounded findings are applied. The
   most serious was mine: restoring an enumeration a seat said had been degraded,
   I wrote six source names from memory and published fabricated upstream content,
@@ -147,10 +154,18 @@ status: active
 
 ## Next handoff
 
-- Gate 2 still needs a review that runs over the current destinations. Both seats
-  reviewed the state before these repairs, and one settled 13 of 49 while the
-  other settled 0 of 34 on the ground that no review had run over content newer
-  than the leaves' own review dates.
+- Gate 2 needs one more review, now over the state at `3043acb7`. The 2026-08-19
+  seats reviewed the state before their own findings were applied, so their
+  settled counts do not carry forward.
+- Gate 4 allowlist rows for `check-document-corpus-lifecycle.py` and
+  `test_document_corpus_lifecycle.py` are the last open repair. The seat found
+  their route 2 coverage conjunct non-discriminating, no removal condition stated
+  after reclassification, and the test-fixture row possibly admitted under no
+  route at all.
+- A Stage 90 leaf, `ref-0085-verification-validation.md`, was deleted by the
+  taxonomy merge `5afdd277`; five of its sections occur in zero working-tree
+  files and the content survives only at `57259e24`. Recorded, not fixed, and
+  not a Spec 137 gate.
 - Route the four no-route allowlist rows to their owning units; none is fixable
   inside this unit.
 - No gate has been recorded satisfied.
