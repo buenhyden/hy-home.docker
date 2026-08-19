@@ -1227,12 +1227,12 @@ table at `scope-application-matrix.md` line 361 merges the two relationship type
 into a single `Applicable topical leaves` column with no editorial caveat. This
 is a rule about how the surviving table may be cited, not a finding about the
 retiring pack. Its preferred final home is the successor matrix's own
-`## Scope Implications` preamble at lines 354 to 359 — corrected here, because
+`## Scope Implications` preamble at lines 374 to 382 (corrected 2026-08-19; the earlier cite of 354 to 359 predates the leaf's growth) — corrected here, because
 the row previously named the pack index preamble, which carries no such caveat. Remediation owner, resolved per paragraph 2026-08-19: `@buenhyden` — the surface is the successor Stage 90 leaf `scope-application-matrix.md`; no scope pattern covers `docs/90.references/` outside `llm-wiki/`. Uniqueness: UNIQUE — no other paragraph in this section carries this claim, verified by reading the section's 47 claim paragraphs rather than by matching a token.
 
 **Three files disagree on the audit template.** Verified 2026-08-18:
-`docs/99.templates/support/template-selection.md` line 29 and
-`docs/99.templates/support/document-metadata-profiles.yaml` lines 635 to 637 both
+`docs/99.templates/support/template-selection.md` line 31 — corrected 2026-08-19 from line 29 — and
+`docs/99.templates/support/document-metadata-profiles.yaml` lines 859 to 882 — corrected 2026-08-19 from lines 635 to 637, which name the unrelated `srs` profile whose `target_globs` is `docs/01.requirements/srs-*.md` rather than the audit profile — both
 route `docs/90.references/audits/**` to `audit.template.md`, while
 `docs/90.references/audits/README.md` lines 80 and 90 still instruct authors to
 follow the reference template. One correction is required on transfer: the

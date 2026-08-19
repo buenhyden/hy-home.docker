@@ -83,6 +83,18 @@ manufacture a parent to satisfy a field.
 
 ### Current measured state
 
+**Superseded 2026-08-19; read the table as a dated snapshot, not as current
+state.** An independent seat measured the table against the working tree and this
+leaf re-derived the measurement: the taxonomy convergence moved Stage 04 evidence
+into `docs/03.specs/spec-*/task.md` and grew `docs/98.archive`, so the Stage 04
+and Stage 98 rows are now wrong by more than an order of magnitude. Measured at
+the review tree: `find docs/04.execution -name '*.md' | wc -l` returns **7**
+against a stated 103 Plans and 133 Tasks; `find docs/98.archive -name '*.md' |
+wc -l` returns **275**, of which 274 carry `status: archived`, against a stated
+52; and `ls docs/03.specs/*/spec.md | wc -l` returns **32** parent Specs. The
+table is retained as the 2026-08-14 reading it always was, and any current figure
+must be re-derived with the commands above rather than read from it.
+
 The following counts exclude `README.md` unless stated otherwise and were
 derived from current canonical paths after the 2026-08-08 archive migration.
 Re-verified directly with `find`/`grep` at the 2026-08-14 boundary: the Stage
