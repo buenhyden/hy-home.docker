@@ -755,22 +755,17 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     # further rows and the Route-1 admission and split-row evaluation amendment
     # made every declared row a subject, so two rows previously hidden by a
     # path collision are now counted.
-    # Refreshed 2026-08-19 twice. The pinned set was stale, then two settled
-    # rows had their verdicts withdrawn after an independent seat found the
-    # amended route 1 does not admit them, which is why the settled count falls
-    # rather than rises.
+    # Refreshed 2026-08-19. The set has moved three times in one day: a stale
+    # pin, then two settled verdicts withdrawn after a seat found the amended
+    # route 1 does not admit them, then seven rows settled on that same seat's
+    # verdict. The count therefore falls and then rises, and both directions are
+    # recorded rather than smoothed.
     EXPECTED_UNREVIEWED = {
         "docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md",
         "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md",
         "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md",
-        "docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md",
-        "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md",
         "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
-        "scripts/knowledge/generate-llm-wiki.py",
-        "scripts/validation/agentic-research-gate9-evidence.py",
         "scripts/validation/check-document-corpus-lifecycle.py",
-        "scripts/validation/old_path_gate_contract.py",
-        "tests/validation/test_agentic_research_gate9_evidence.py",
         "tests/validation/test_document_corpus_lifecycle.py",
         "tests/validation/test_document_taxonomy.py",
     }
@@ -785,7 +780,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         }
         self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
         settled = sum(1 for group in rows.values() for row in group if row.settled)
-        self.assertEqual(28, settled)
+        self.assertEqual(35, settled)
 
     def test_no_live_row_declares_a_forbidden_class(self) -> None:
         rows = contract.read_allowlist(ROOT)
