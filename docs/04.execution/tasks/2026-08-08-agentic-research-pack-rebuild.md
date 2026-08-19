@@ -782,7 +782,7 @@ over here.
 | `spec-driven-sdlc.md` | `9917fcdadf700e7f68541e73188620e133485470` | `10b06739620306465bf924a7b5fed2df3dd1e900` | `Potential Follow-up / Gap` | No surveyed spec-driven implementation models a product-intent artifact above the specification, so a future task wanting external validation for the product-requirements layer must look outside that tool space | Omit | The distinguishing phrase occurs zero times in the successor pack; the successor keeps only the weaker adjacent observation that the local product and architecture prefixes remain unadopted but analogous | n/a (omitted) | n/a (omitted) | Drop because it is a negative result over a four-tool survey that the successor has already superseded with a broader six-tool landscape row, and the narrower survey's universal claim cannot be asserted from the wider evidence set without re-running it. No repository artifact, validator or obligation depends on the finding | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
 | `provider-implementation-comparison.md` | `9917fcdadf700e7f68541e73188620e133485470` | `26e3c6e9d56f4f412de46532a8f98c6fbd6e8b76` | `Stale-Claim Corrections` / `Tracked policy statements that disagree with their own adapters` | The Gemini model identifiers named in governance prose exist nowhere else; this is the third retiring carrier of the stale `3.5 Flash` / `3.1 Flash-Lite` claim | Carry  | Verified live 2026-08-18: the bolded finding sits at line 315 of the retiring file; `docs/00.agent-governance/providers/gemini.md` lines 59-60 still name both strings; the typed provider-model contract assigns `gemini-3.6-flash` and `gemini-3.5-flash-lite` instead; zero occurrences in the successor pack | `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | `Gate 3 carried claims` | Added 2026-08-18 after an independent seat found this carrier undisposed while the ledger's own evidence cell already named it as such. The claim is disposed once at the destination and this row records the third carrier so the file-level coverage is complete | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
 | `security-governance.md` | `9917fcdadf700e7f68541e73188620e133485470` | `32af3c515643ea326fbd9db84ce71a57028a4a05` | `Control Census` (action pinning row); `Source Rules` | 32 of 32 RESOLVED external `uses:` references are full 40-character SHAs across 8 actions; the source text holds only 17 literal `uses:` lines because `ci-quality.yml` references a `*checkout` anchor 15 further times, and a raw line scan therefore undercounts by exactly 15 | Correct | Verified live 2026-08-18: `grep -h 'uses:' .github/workflows/*.yml` returns 17; `grep -c '\*checkout' .github/workflows/ci-quality.yml` returns 15; the `&checkout` anchor is declared at `ci-quality.yml` line 25. 17 + 15 = 32 resolved references across the same 8 action identities | `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md` | `Re-verification at current HEAD` literal-versus-resolved note; `Poisoned Pipeline Execution (PPE)` row | Added 2026-08-18. The successor had regressed to the anchor-blind method this correction exists to forbid, deriving 'exactly 17 `uses:` invocations' from a line scan and restating 'All 17 tracked `uses:` action references' in its OWASP row. Corrected in place rather than carried, so the surviving pack states the distinction a reader needs; an Omit or a Stage 04 carry would have left the regressed figure as the only surviving denominator for a supply-chain control | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
-| `quality-ci-formatting.md` | `9917fcdadf700e7f68541e73188620e133485470` | `7f4e064dce61f468e0be3cf5002af7bf5a8d80c8` | `Current validator results` (absent cross-link validator) | Two Stage 04 documents instruct running `scripts/governance/validate-cross-links.sh`, which does not exist in the repository | Carry  | Verified live 2026-08-18: the script is absent, and `docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md` and `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md` both reference it. Scoped deliberately: the retiring block's `failures=4` snapshot and its `.env` key-drift half are NOT carried, because the validator now reports `failures=0` and the two env files agree on all 325 key names | `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | `Gate 3 carried claims` | Added 2026-08-18. Only the live half is carried. The retiring block mixed one durable defect with commit-bound validator output, and carrying the snapshot would have re-introduced the stale-count problem this ledger exists to prevent | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
+| `quality-ci-formatting.md` | `9917fcdadf700e7f68541e73188620e133485470` | `7f4e064dce61f468e0be3cf5002af7bf5a8d80c8` | `Current validator results` (absent cross-link validator) | Two Stage 04 documents instruct running `scripts/governance/validate-cross-links.sh`, which does not exist in the repository | Carry  | Verified live 2026-08-18: the script is absent, and `docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md` and `docs/03.specs/spec-0135-target-surface-delta-convergence/task.md` both reference it. Scoped deliberately: the retiring block's `failures=4` snapshot and its `.env` key-drift half are NOT carried, because the validator now reports `failures=0` and the two env files agree on all 325 key names | `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | `Gate 3 carried claims` | Added 2026-08-18. Only the live half is carried. The retiring block mixed one durable defect with commit-bound validator output, and carrying the snapshot would have re-introduced the stale-count problem this ledger exists to prevent | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
 | `loop-engineering.md` | `9917fcdadf700e7f68541e73188620e133485470` | `1436c0b22e54f7c3679cc695577c0ae10700cb2a` | `Claude and Codex Implementation Status` (retry ceiling) | Neither tracked loop's retry ceiling is a repository-level counter, so neither survives a provider changing its Stop semantics; a repository-owned counter does not exist today | Carry  | Verified live 2026-08-18: the phrase occurs only in the retiring leaf, at lines 149 and 151, and zero times in the successor pack | `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | `Gate 3 carried claims` | Added 2026-08-18 after an independent seat found the claim rowless. It is a named structural gap that nothing else in the tracked corpus states, so an undisposed deletion would remove it silently | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
 | `harness-engineering.md` | `9917fcdadf700e7f68541e73188620e133485470` | `6d6cf79e2c724b801d2c66fa85d364acb363c784` | `Corrections to Stale Claims` (`scope` and `source_catalog` fields) | The Codex agent `scope` and `source_catalog` fields are local projection metadata and are NOT strict filesystem or tool allowlists | Carry  | Verified live 2026-08-18: the statement occurs only in the retiring leaf at line 185 and zero times in the successor pack | `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | `Gate 3 carried claims` | Added 2026-08-18. Highest consequence of the newly found rowless claims: the two field names read like an allowlist, and this is the only tracked statement that they do not enforce one. Deleting it converts a documented non-guarantee into an assumed control | Not Run; added 2026-08-18 after the Task 9 verdict and therefore outside its scope |
 | `provider-implementation-comparison.md` | `9917fcdadf700e7f68541e73188620e133485470` | `26e3c6e9d56f4f412de46532a8f98c6fbd6e8b76` | `Sources` (Codex skills documentation, UNVERIFIED) | Both candidate official Codex skills documentation URLs returned HTTP 404, so the tracked `native_skill_pattern` value has no confirming official source and is not treated as established | Retain | Verified live 2026-08-18 on the repository side: `native_skill_pattern: .agents/skills/**/SKILL.md` is asserted at `docs/00.agent-governance/contracts/provider-models.yaml` lines 22 and 34 and asserted again by `tests/validation/test_provider_native_surfaces.py` lines 774 and 777. The 404 observation itself is a dated external retrieval and was NOT re-fetched; it is carried as the recorded observation, not as a current network fact | `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md` | `Carried source-evidence claims` | Added 2026-08-18. The claim's whole value is that it marks an evidence gap. Deleting it leaves a contract value asserted by a passing test with nothing recording that its official basis was never confirmed, which converts a disclosed gap into a silent assumption **RE-DISPOSITIONED 2026-08-19.** An independent seat found this is a source-retrieval claim about whether two official URLs resolve, which the amendment bars from `carry`. With the boundary extended the remedy is available, so the claim is written into the successor leaf and this row takes `retain`. The dated 404 observation is carried as an observation and marked `UNVERIFIED` as a current network fact at the destination. | Not Run; re-dispositioned 2026-08-19 and awaiting independent review |
@@ -950,12 +950,20 @@ rather than deliberate. Remediating the provider overlay is out of this Task's
 scope and belongs to whichever unit owns Stage 00 provider text.
 
 **Embedded-Python lint blindness.** `scripts/validation/check-repo-contracts.sh`
-is 4,062 lines, of which 3,573 sit inside 34 `python3` heredocs, leaving 421
-lines of actual shell once the 68 heredoc delimiters are excluded (re-measured
-2026-08-18; the retiring file's own figures were 4,045 / 3,555 / 422). ShellCheck runs on the file and sees
-only that shell wrapper, so the repository's largest validator is approximately
-87.9 percent unlinted Python by line count and the tool that appears to cover
-it does not. The successor pack states the resulting gap but carries neither the
+embeds most of its logic in `python3` heredocs. ShellCheck runs on the file and
+sees only the shell wrapper, so the repository's largest validator is
+overwhelmingly unlinted Python by line count while the tool that appears to
+cover it does not.
+
+**Stated as a mechanism, not a number, corrected 2026-08-19.** This entry
+previously fixed the measurement at 4,062 / 3,573 / 421 lines and 87.9 percent,
+itself a re-measurement of the retiring file's 4,045 / 3,555 / 422. It has drifted
+again: the file measures 4,077 lines on 2026-08-19. A count that moves with every
+edit to the file cannot be carried as a settled fact, and the durable claim is the
+coverage gap rather than its size on any one day. Re-derive with
+`wc -l scripts/validation/check-repo-contracts.sh` and
+`grep -c "python3 - <<'\''PY" scripts/validation/check-repo-contracts.sh`, which
+returns 34 heredoc openers on 2026-08-19. The successor pack states the resulting gap but carries neither the
 measurement nor the false-coverage claim, so the successor's own open Python-gap
 bullet presupposes a finding it does not state.
 
@@ -974,7 +982,7 @@ runs `grep -F -- "$RELEASE_TAG" CHANGELOG.md`, exiting 1 on a miss. It verifies
 that an entry exists; it generates and commits nothing. The retiring leaf cites
 `:147-155`, which has drifted to `:209`. NOT unique: the same claim with the same
 stale cite survives at
-`docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+`docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/task.md`
 lines 660-665 and 677.
 
 **Hardening-script image literal.** `scripts/hardening/check-all-hardening.sh` is
@@ -995,7 +1003,7 @@ The body scan applies no positional or first-line exemption. Verified 2026-08-18
 convention changed without the corpus being migrated. The rule surfaces one file
 per edit, which makes leaving it as-is the only option with an ongoing cost.
 EFFECTIVELY UNIQUE: the only other tracked mention is
-`docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md`.
+`docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/plan.md`.
 
 **Usage-type heading is counted, never inspected.** `scripts/validation/check-repo-contracts.sh`
 line 643 computes `usage_type_count` and line 644 rejects only `> 1`. Verified
@@ -1003,9 +1011,9 @@ line 643 computes `usage_type_count` and line 644 rejects only `> 1`. Verified
 leaves, 63 carrying `### Usage Type`, 3 without. Zero occurrences pass silently
 and the field's value is never read, so free text passes. The three invisible
 files declare the field one heading level down as `#### Usage Type`:
-`docs/05.operations/guides/00-workspace/developer-setup.md`,
-`docs/05.operations/guides/01-gateway/setup.md`, and
-`docs/05.operations/guides/07-workflow/airflow-dag-basics.md`. UNIQUE: the count
+`docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md`,
+`docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md`, and
+`docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-basics/guide.md`. UNIQUE: the count
 variable name occurs in no other tracked file. Only the mechanism is carried;
 the retiring leaf's other counts have drifted and are deliberately not restated.
 
@@ -1018,9 +1026,19 @@ the corpus must change. UNIQUE as a statement: seventeen surviving tracked files
 reference that support file and none records the overstatement.
 
 **LLM Wiki has no typed contract.** `docs/00.agent-governance/contracts/` holds
-exactly three files and none mentions the wiki. Verified 2026-08-18: enforcement
-is instead spread across five `check-repo-contracts.sh` sections — lines 409,
-1677, 2342, 2493, and 3560 — with 37 hardcoded `llm-wiki` literal lines. Every
+four typed contracts and none mentions the wiki. Enforcement is instead spread
+across several `check-repo-contracts.sh` sections with hardcoded `llm-wiki`
+literal lines, re-derivable with
+`grep -n llm-wiki scripts/validation/check-repo-contracts.sh`, which returns 31
+lines on 2026-08-19.
+
+**Counts and line cites corrected 2026-08-19.** This entry read "exactly three
+files" and pinned five section line numbers. The directory now holds four, since
+the taxonomy merge added `deferred-paths.yaml`, and every one of the five line
+numbers has drifted. Fixed line numbers into a file this corpus keeps editing are
+not durable evidence, so the mechanism and its re-derivation command replace
+them. The claim itself, that a governed surface is enforced by imperative shell
+rather than by a typed contract, is unaffected by either correction. Every
 other governed surface is described by a typed contract; this one is imperative
 shell and embedded Python. Carried at governance-consistency severity, not as a
 functional defect. The successor's own `llm-wiki-system.md` states "typed
@@ -1047,7 +1065,7 @@ nothing to read, which is precisely the blocker the successor calls for work on
 without recording.
 
 **Memory is excluded from two stale-reference scans.** `scripts/validation/check-repo-contracts.sh`
-excludes `docs/00.agent-governance/memory/**` at lines 419 and 497. Verified
+excludes `docs/00.agent-governance/memory/**` at lines 424 and 504. Verified
 2026-08-18: line 419 sits in the `Banned stale references` section and line 497
 in `Active docs taxonomy shorthand`; both are repository-wide scans. Banned
 taxonomy and legacy stage shorthand therefore drift inside memory notes
@@ -1056,7 +1074,7 @@ with the forbidden-material gap the successor does record.
 
 **Last-Verified is a body bullet with no gate.** Verified 2026-08-18: the
 `- Last Verified:` literal occurs exactly once under `scripts/`, at `check-repo-contracts.sh`
-line 2274, inside a required-literal list enforced by presence alone; no
+line 2290, inside a required-literal list enforced by presence alone; no
 `last_verified` identifier and no date parse or comparison exists anywhere. The
 contrast is enforced elsewhere: `scripts/validation/agent_governance_contract.py`
 gates `current.md` with `git merge-base --is-ancestor` and an ISO timestamp
@@ -1066,8 +1084,8 @@ the retiring leaf's per-note dates are commit-bound and deliberately dropped.
 **Domain-memory deferral has the wrong origin.** The deferral commonly cited as a
 specification boundary does not appear in the specification directory. Verified
 2026-08-18: the phrase occurs in exactly two Stage 04 files —
-`docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-line 161 and `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
+`docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md`
+line 161 and `docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md`
 line 358 — plus the retiring leaf, and not in the current-state record. A domain
 taxonomy is therefore outside that specification because it never addressed the
 subject, not because it deferred it. The retiring leaf's flag that a Stage 04
@@ -1088,8 +1106,13 @@ most likely to be re-raised once deleted, which is why two lines are kept.
 **Frontend scope is partially satisfied.** Verified 2026-08-18 against
 `projects/storybook/nextjs/package.json`: `next` 16.2.10, `react` 19.2.7,
 `tailwindcss` ^4.3.2, and `@storybook/addon-a11y` ^10.5.3 clear the framework,
-library, and styling floors at `docs/00.agent-governance/scopes/frontend.md`
-lines 18 to 21. Framer Motion, TanStack Query, and Zustand return zero matches in
+library, and styling floors that `docs/00.agent-governance/scopes/frontend.md`
+carried at lines 18 to 21 before commit `6bd7c62d` deleted that file on
+2026-08-12. Corrected 2026-08-19: the citation was stamped verified on 2026-08-18
+against a pre-merge tree, six days after the deletion. The scope set now holds
+eight files and no frontend, backend or mobile scope, so the floors this row
+measures against no longer have a tracked owner, which is itself the more useful
+half of the finding. Framer Motion, TanStack Query, and Zustand return zero matches in
 that manifest, and no tracked WCAG conformance evidence exists. This row is the
 audit trail for a correction already applied in place at successor
 `scope-application-matrix.md` lines 255 to 264, which now scopes the
@@ -1142,8 +1165,8 @@ operations-role separation. Scoped deliberately to that unrecorded separation.
 
 **A Stage 04 instruction names a script that does not exist.** Verified
 2026-08-18: `scripts/governance/validate-cross-links.sh` is absent, while
-`docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md` and
-`docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md` both
+`docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md` and
+`docs/03.specs/spec-0135-target-surface-delta-convergence/task.md` both
 instruct running it. Only this half of the retiring block is carried. Its
 `failures=4` validator snapshot is deliberately dropped, because the validator
 reports `failures=0` today, and so is its `.env` key-drift half, because both
