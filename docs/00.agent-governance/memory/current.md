@@ -203,12 +203,17 @@ status: active
   was not taken. Two mechanical escapes were rejected: importing the scanner's
   carved-out constant binds an unrelated test to a module scheduled to go, and
   assembling the path from components hides a literal the gate exists to expose.
-- A Stage 90 leaf, `ref-0085-verification-validation.md`, was deleted by the
-  taxonomy merge `5afdd277`; five of its sections occur in zero working-tree
-  files and the content survives only at `57259e24`. Recorded, not fixed, and
-  not a Spec 137 gate.
-- Route the four no-route allowlist rows to their owning units; none is fixable
-  inside this unit.
+- The deleted Stage 90 leaf now has its own unit at
+  `docs/03.specs/spec-0152-deleted-reference-leaf-disposition/` with Spec, Plan
+  and Task, on the user's direction. Registering it re-derived the figures and
+  corrected one: the loss is 10 of 25 headings, not 5. The recorded 5 was true
+  when taken and false when written, because writing a heading into the record
+  makes it occur in a tracked file. The corrected predicate excludes the
+  recording surfaces and the deletion-scheduled retiring directory, and its
+  command is in that unit's Spec. The disposition itself is open and belongs to
+  `doc-writer`.
+- Route the three completed-Spec allowlist rows and the one unadmitted exemption
+  row to their owning units; none is fixable inside this unit.
 - No gate has been recorded satisfied.
 - Resume the taxonomy migration at slice 10E, domains 04 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
