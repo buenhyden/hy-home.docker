@@ -82,7 +82,7 @@ must not be backdated into that catalog.
 
 | Contract | Required Behavior |
 | --- | --- |
-| Canonical research | Extend `2026-07-05-agentic-research-pack-refresh` in place. Add focused criteria only when existing responsibility documents would become overloaded. |
+| Canonical research | Extended `2026-07-05-agentic-research-pack-refresh` in place. Focused criteria were added only where existing responsibility documents would otherwise have become overloaded. |
 | Canonical audit | Extend `2026-07-05-agentic-engineering-implementation-audit-pack` in place and keep it as the only current agentic implementation audit. |
 | Audit supersession | Merge verified unique 2026-07-07 audit content, remove unsupported claims, and convert the 2026-07-07 pack to mapping-only `superseded` records. |
 | Historical evidence | Preserve the 2026-07-03 and 2026-07-04 packs as dated evidence; indexes must warn that their corpus counts are not current facts. |

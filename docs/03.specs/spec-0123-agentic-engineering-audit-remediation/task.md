@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task-0123-01
 artifact_type: task
 parent_ids:
@@ -11,10 +11,11 @@ updated: 2026-08-11
 
 ## Overview
 
-This Task extends the single canonical agentic research pack at
+This Task extended the then-canonical agentic research pack at
 `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` with
-three new Stage 90 reference leaves and revalidates the fifteen existing
-leaves against current repository state and current official external sources.
+three new Stage 90 reference leaves and revalidated the fifteen existing
+leaves against the repository state and official external sources current at
+the time of execution.
 
 The Task does not create a new dated research pack. Spec 122 previously
 consolidated a duplicate dated pack and demoted
@@ -73,6 +74,11 @@ boundary that paused
 ## Scope and Change Boundaries
 
 ### Allowed Paths
+
+This Task is completed. The paths below record the write boundary that was
+in force while it executed; they grant nothing now. The research pack path
+among them is retiring under Spec 137 and must not be treated as a current
+writable route.
 
 T-ARPE-013 operates under a separate user instruction that authorized source
 revalidation, resolution of the heading-contract conflict, and remediation of
