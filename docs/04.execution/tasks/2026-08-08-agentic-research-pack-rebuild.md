@@ -928,6 +928,37 @@ Uniqueness is stated per claim, with the one genuine duplicate group — the sta
 Gemini identifier, filed once per retiring file that records it — marked NOT
 unique and cross-referenced instead of being silently deduplicated.
 
+**The destination surface does not yet meet either requirement, measured
+2026-08-19 (third pass).** The figures above are the ledger surface. Gate 2 says
+the claim resolves to its destination, so the destination is the surface that
+governs, and it measures differently: of the 47 claim paragraphs in this section,
+**22 name a remediation owner and 32 state uniqueness**, leaving 25 without an
+owner and 15 without a uniqueness statement. The gap is concentrated in the
+2026-08-18 block, whose paragraphs were written before the `carry` disposition
+existed and never acquired either field; the 2026-08-19 sweep paragraphs carry
+both. Six independent seats measured this on the destination surface and returned
+7 settled of 47 for that reason.
+
+**Automated resolution of the owner field has now failed five times and must not
+be attempted again with a matcher.** The failures, recorded because the pattern
+matters more than any one of them: a count of rows that *mention* an owner rather
+than name one; a blanket justification asserted without per-row evaluation; a
+per-row justification propagated to rows it was never evaluated against; a
+measurement taken on the ledger while the gate reads the destination; and a
+resolver that prefixed the governance directory onto arbitrary backticked tokens
+and produced nonsense surfaces such as `docs/00.agent-governance/3.1 Flash-Lite`
+and `docs/00.agent-governance/python3`, which would have written a false owner
+onto all 25 paragraphs with an evidence citation attached to each. That last
+output was discarded unwritten. Every one of the five produced output that looked
+more thorough than the state it replaced.
+
+The remaining 25 paragraphs must be resolved **one at a time against the
+paragraph's own cited evidence**, taking the surface the claim actually names
+rather than any token it happens to quote, and the resolution recorded with the
+scope table row that covers it. Where no pattern covers the surface, the
+repository owner applies under the `.github/CODEOWNERS` `*` rule — but that must
+be asserted only after the per-paragraph check, never as a default.
+
 The twenty-eighth row is an exception, not a member. `ai-agent-catalogs.md`
 anchor `Upstream Structure, Rules, and Implementation Approach` carries
 source-backed upstream-practice research, which the amendment explicitly bars
