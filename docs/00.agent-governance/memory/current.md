@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `4007b5de`
+- Verified commit: `931e44b2`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -88,14 +88,21 @@ status: active
 - Six independent seats re-reviewed the repaired state on 2026-08-19 in six
   batches: the 47 `Carry` rows returned 7 settled / 40 held, and the 54
   successor-leaf rows returned 47 settled / 7 held. Every hold is now closed.
-- The owner requirement failed measurement FIVE times, each differently: a count
-  of rows that mention an owner rather than name one; a blanket justification
-  asserted without per-row evaluation; a per-row justification propagated rather
-  than evaluated; a measurement on the ledger while the gate reads the
-  destination; and a resolver that prefixed the governance directory onto
-  arbitrary backticked tokens and would have written false evidence onto all 25
-  paragraphs. The fifth was discarded unwritten. The pattern is that each attempt
-  looked more thorough than the state it replaced.
+- The owner requirement failed measurement SEVEN times, each differently: a count
+  of mentions rather than names; a blanket justification asserted without per-row
+  evaluation; a per-row justification propagated rather than evaluated; a
+  measurement on the ledger while the gate reads the destination; a resolver that
+  prefixed the governance directory onto arbitrary tokens, discarded unwritten; a
+  closure claim that measured field PRESENCE and reported it as correctness; and
+  a survival-predicate sweep whose two halves were a path-token false positive and
+  a paraphrase-blind zero, also not written. The pattern is that every attempt
+  produced output that looked more thorough than the state it replaced.
+- Spec 137 gained `### Uniqueness-predicate amendment`. Uniqueness is survival
+  after the pack's deletion, not intra-document duplication. All 35 statements
+  written against the old test are withdrawn; row 763 is settled NOT UNIQUE; the
+  remaining 46 are routed as a seat's reading work and must not be settled by a
+  matcher.
+
 - Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
   paragraphs were resolved one at a time against the surface each claim must
   change to be remediated, not against every path the paragraph quotes.
