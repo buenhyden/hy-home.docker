@@ -277,6 +277,27 @@ status: active
 - Route the three completed-Spec allowlist rows and the one unadmitted exemption
   row to their owning units; none is fixable inside this unit.
 - No gate has been recorded satisfied.
-- Resume the taxonomy migration at slice 10E, domains 04 through 06.
+- **Task 10E slice `04-data` is executed and passes.** 19 declared subject renames
+  ran by `git mv`, then 50 `<!-- Target: -->` markers, 23 in-domain links and 180
+  path tokens across 22 out-of-domain consumers were repointed from the manifest.
+  `--mode executed --domains 04-data` goes 394 findings to PASS; `--mode complete`
+  improves 154 to 45; `--mode manifest` passes. The pre-execution synthetic estimate
+  of zero semantic findings measured the post-rewrite state, not the intermediate
+  one -- a `git mv` alone leaves every self-reference marker pointing at its
+  predecessor, so the real intermediate RED was 394.
+- **The checker now normalizes manifest-declared subject renames in structure mode**,
+  on the user's 2026-08-20 decision, resolving a real conflict where `executed`
+  required a cross-domain link to move and `structure` pinned the body that held it.
+  The map is applied per path segment, and an undeclared rename still fails; both
+  properties are pinned by `test_structure_mode_accepts_declared_subject_renames_only`.
+  Structure goes 88 to 87 and the 9 remaining mismatches are Task 10D prose rewrites
+  of a different class. `test_operations_catalog.py` measures 51 tests / 4 failures
+  against a recorded 50 / 4, the same four, all in un-migrated later domains.
+- **50 `template-instruction-in-target` violations are surfaced, not introduced.**
+  184 catalog files already carried the marker at `3f3d4b4e`, uniformly across
+  executed and unexecuted domains, and the metadata deficit scan only runs on
+  changed files. Three contracts disagree about the marker; the tension and its
+  measurements are in `operations-target-marker-contract-tension.md`.
+- Resume the taxonomy migration at slice 10E, domains 05 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
   deleted or relocated until every gate is independently recorded.
