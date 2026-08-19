@@ -575,10 +575,14 @@ correspondence pre-deletion gate 2 requires.
 
 The eighty rows added on 2026-08-18 carry `Not Run` instead, because a verdict
 written before those rows existed cannot cover them. The ledger therefore stands
-at 76 rows under the Task 9 verdict and 80 outside it, of 156. Corrected
-2026-08-18: this sentence read "twelve" from the first batch and was not
-updated when the remaining sixty-eight were filed, understating the unverified
-surface by a factor of nearly seven.
+at 76 rows under the Task 9 verdict and **175 outside it, of 251** — corrected
+2026-08-19 (eighth pass) after a seat measured the earlier figures. This sentence
+has now understated the unverified surface twice by the same mechanism: it read
+"twelve" from the first batch until 2026-08-18, then read "80 outside it, of 156"
+until today, each time frozen at the count when it was written while rows kept
+being filed. The 76 was correct throughout; only the denominator drifted.
+Re-derive both by parsing the ledger's disposition and verdict columns rather
+than trusting either figure.
 
 The closed migration ledger therefore does not by itself satisfy gate 2, and
 does not by itself open the Task 11 deletion gate; gates 1 through 9 remain
@@ -609,10 +613,15 @@ a reader can recover what was omitted but cannot verify the substitution without
 re-deriving it. That is a verifiability gap in the reason text, not a provenance
 gap, and it does not block gate 3.
 
-Two destination classes, separated 2026-08-18. Twenty-eight rows name
-`Gate 3 carried claims`, whose prose states each claim in full. The 38
-sweep-filed rows whose disposition needs a destination name their own ledger
-row instead,
+Two destination classes, separated 2026-08-18. **Both counts here are corrected
+2026-08-19 (eighth pass).** Forty-seven rows name `Gate 3 carried claims` as
+their New anchor — exactly the 47 `Carry` rows — against a stated twenty-eight.
+And **zero** rows now name their own ledger row as their destination, against a
+stated 38: that self-referential class was closed when every sweep row was given
+a real destination, and this sentence was not updated. The paragraph is retained
+because the distinction it draws explains why the two classes existed. Formerly,
+the sweep-filed rows whose disposition needed a destination named their own
+ledger row instead,
 because the row's claim, evidence and reason cells already carry the claim in
 this same file and restating them as prose would duplicate the ledger rather
 than preserve anything. This distinction was made after two seats found rows
@@ -2664,6 +2673,37 @@ backfilled.
   attempts on the adjacent owner requirement each produced output that looked
   more thorough than what it replaced, and the amendment was written partly to
   stop the same thing happening here.
+
+- **The successor pack's frontmatter carries an undeclared key on all 20 leaves,
+  recorded not fixed.** `python3 scripts/validation/check-document-metadata.py
+  --mode check-changed` reports `type-inappropriate-key: key is not declared for
+  reference: review_cycle` against the successor leaves it selects. Measured:
+  `review_cycle: on-source-change` is present in the frontmatter of all 20 leaves
+  and entered with `a682d5b1`, the commit that created the pack, so it predates
+  every edit this unit made and is not a regression introduced here. Only the
+  leaves this unit touched are selected by `--mode check-changed`, which is why
+  the count moves with the edit set rather than with the defect. The fix is a
+  choice between declaring the key for the `reference` type in
+  `docs/99.templates/support/document-metadata-profiles.yaml` and removing it
+  from 20 leaves, and both are `doc-writer` decisions on
+  `docs/99.templates/` at `scopes/docs.md:62` rather than edits this unit may
+  make unilaterally.
+
+- **Nine leaf-review holds carried forward, not closed.** The second verification
+  seat settled 43 of 54 successor-leaf rows and held eleven; two were blockers and
+  are closed, and the remaining nine are recorded here with what each needs.
+  Rows 633 and 819 need destination text, not a ledger edit: 633's own reason cell
+  declares that eight of the nine `Safe Boundary` items have no row, so the row
+  cannot settle while it records its own coverage hole, and 819 carries a
+  contradiction whose second side and stage code never reached the destination.
+  Rows 825, 871, 820 and 810 are fidelity repairs where a named upstream artifact
+  was generalised away — the Docker trust-model page, the embeddings rule the
+  family-15 split produced but no ledger row covers, FastHTML's
+  `llms-ctx-full.txt`, and ISO/IEC/IEEE `12207` — each unrecoverable after
+  deletion in its current form. Rows 801, 803 and 806 are ledger-text repairs:
+  two overstate what the successor's `defer` record covers, against destinations
+  that say the opposite, and one names two mutually exclusive destinations in a
+  single cell.
 
 - **Two gaps in the File Ownership SSOT, recorded not fixed.** Naming the
   remediation owner for every carried claim required resolving surfaces against
