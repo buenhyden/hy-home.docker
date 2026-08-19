@@ -108,12 +108,20 @@ status: active
   stated owner against the SSOT row it cites. It found 24 failures on its first
   run and measures 0 now, with 10 regression tests pinning the historical failure
   modes. Seven prior measurements failed because none of them could fail.
-- **Task 10E is unblocked on tooling.** The repository runs tests with
-  `python3 -m unittest discover -s tests/validation`, not `pytest`; the recorded
-  pytest blocker was never real. The Operations suite measures 50 tests with 4
-  pre-existing failures, against the `47/47` Task 10D recorded, so it has
-  regressed. 10E remains blocked on the 51 missing typed rewrite rules a reverted
-  rename attempt exposed.
+- **Task 10E is unblocked and its RED already exists.** The repository runs tests
+  with `python3 -m unittest discover -s tests/validation`, not `pytest`; the
+  recorded pytest blocker was never real. Two further claims made on discovering
+  that are also wrong and are corrected in the Spec 136 Task. The suite has NOT
+  regressed: it declares 50 tests at `cb117edd` and 50 now, and every input it
+  consumes is identical across that range, so its 4 failures existed at the commit
+  recorded as `authoritative Operations 47/47`. That 47 is round 1's figure and
+  rounds 2 and 3 added the other three afterwards. The 4 failures are Task 10E and
+  10F's RED: 10D's remediation wrote coverage that fails closed until the later
+  domains converge. The `51` missing rules is `04-data` alone after its renames
+  ran; at rest `--mode complete` measures 154 findings of which only 4 are
+  `semantic-rewrite-rule-missing`, and no domain's true count is measurable before
+  its renames execute. The suite costs `214.853s`, so rule work must batch per
+  domain.
 
 - Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
   paragraphs were resolved one at a time against the surface each claim must
