@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/policy.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md -->
 
 # ksqlDB Operations Policy
 

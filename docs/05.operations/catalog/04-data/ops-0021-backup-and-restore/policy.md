@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-06-04
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0021-backup-backup-policy/policy.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0021-backup-and-restore/policy.md -->
 
 # 04-Data Backup Policy
 
@@ -52,5 +52,5 @@ Backup exceptions require explicit owner approval and evidence showing why the d
 
 - [Operations index](../../../README.md)
 - [04-data policies index](../README.md)
-- [Storage exhaustion runbook](../ops-0035-storage-storage-exhaustion/runbook.md)
+- [Storage exhaustion runbook](../ops-0035-storage-exhaustion/runbook.md)
 - [04-data guides index](../README.md)

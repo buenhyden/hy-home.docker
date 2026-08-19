@@ -52,7 +52,7 @@ ksql/
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ksqldb-server`; not declared for `ksqldb-cli`, `ksql-datagen` |
-| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network context or a local validation overlay. |
 
@@ -60,9 +60,9 @@ ksql/
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
 
-1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/guide.md)를 참조한다.
-2. 처리 규약 및 자원 할당은 [운영 정책](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/policy.md)을 따른다.
-3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/runbook.md)을 참조한다.
+1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md)를 참조한다.
+2. 처리 규약 및 자원 할당은 [운영 정책](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md)을 따른다.
+3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md)을 참조한다.
 4. ksqlDB를 시작하기 전에 Kafka 브로커와 Schema Registry의 상태를 확인한다.
 
 5. ksqlDB 쿼리를 작성하거나 수정하기 전에 Kafka 토픽 구조를 먼저 파악한다.
@@ -81,9 +81,9 @@ ksql/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/catalog/04-data/analytics/ksqldb.md](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/guide.md)
-- **Policy**: [docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/policy.md](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/policy.md)
-- **Runbook**: [docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/runbook.md](../../../../docs/05.operations/catalog/04-data/ops-0018-analytics-ksqldb/runbook.md)
+- **System Guide**: [docs/05.operations/catalog/04-data/analytics/ksqldb.md](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md)
+- **Policy**: [docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md)
+- **Runbook**: [docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md](../../../../docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md)
 - **Kafka Status**: `infra/05-messaging/kafka/README.md`
 
 ---

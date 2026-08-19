@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-06-04
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0035-storage-storage-exhaustion/runbook.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0035-storage-exhaustion/runbook.md -->
 
 # 04-Data Storage Exhaustion Runbook
 
@@ -27,7 +27,7 @@ updated: 2026-08-11
 ### Canonical References
 
 - **Spec**: [04-data spec](../../../../03.specs/spec-0004-data/spec.md)
-- **Policy**: [04-data backup policy](../ops-0021-backup-backup-policy/policy.md)
+- **Policy**: [04-data backup policy](../ops-0021-backup-and-restore/policy.md)
 - **Guide**: [04-data guides index](../README.md)
 
 ## When to Use
@@ -116,5 +116,5 @@ Escalate to the owning operator before destructive cleanup, when backup evidence
 
 - [Operations index](../../../README.md)
 - [04-data runbooks index](../README.md)
-- [04-data backup policy](../ops-0021-backup-backup-policy/policy.md)
+- [04-data backup policy](../ops-0021-backup-and-restore/policy.md)
 - [Incident records](../../../incidents/README.md)

@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/guide.md -->
 
 # Valkey Cluster Usage Guide
 

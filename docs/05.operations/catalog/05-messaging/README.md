@@ -25,7 +25,7 @@ This domain co-locates each existing guide, policy, and runbook under its frozen
 | [RabbitMQ](ops-0038-rabbitmq/guide.md) | [Guide](ops-0038-rabbitmq/guide.md), [Policy](ops-0038-rabbitmq/policy.md), [Runbook](ops-0038-rabbitmq/runbook.md) |
 
 ksqlDB remains a data analytics subject; use the
-[ksqlDB guide](../04-data/ops-0018-analytics-ksqldb/guide.md).
+[ksqlDB guide](../04-data/ops-0018-ksqldb/guide.md).
 
 ## How to Work in This Area
 

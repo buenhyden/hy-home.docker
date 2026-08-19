@@ -22,25 +22,25 @@ in the migration ledger.
 
 | Subject | Available documents |
 | --- | --- |
-| [Analytics — InfluxDB](ops-0017-analytics-influxdb/guide.md) | [Guide](ops-0017-analytics-influxdb/guide.md), [Policy](ops-0017-analytics-influxdb/policy.md), [Runbook](ops-0017-analytics-influxdb/runbook.md) |
-| [Analytics — ksqlDB](ops-0018-analytics-ksqldb/guide.md) | [Guide](ops-0018-analytics-ksqldb/guide.md), [Policy](ops-0018-analytics-ksqldb/policy.md), [Runbook](ops-0018-analytics-ksqldb/runbook.md) |
-| [Analytics — OpenSearch](ops-0019-analytics-opensearch/guide.md) | [Guide](ops-0019-analytics-opensearch/guide.md), [Policy](ops-0019-analytics-opensearch/policy.md), [Runbook](ops-0019-analytics-opensearch/runbook.md) |
-| [Analytics — Warehouses](ops-0020-analytics-warehouses/guide.md) | [Guide](ops-0020-analytics-warehouses/guide.md), [Policy](ops-0020-analytics-warehouses/policy.md), [Runbook](ops-0020-analytics-warehouses/runbook.md) |
-| [Backup policy](ops-0021-backup-backup-policy/policy.md) | [Policy](ops-0021-backup-backup-policy/policy.md) |
-| [Cache and KV — Valkey Cluster](ops-0022-cache-and-kv-valkey-cluster/guide.md) | [Guide](ops-0022-cache-and-kv-valkey-cluster/guide.md), [Policy](ops-0022-cache-and-kv-valkey-cluster/policy.md), [Runbook](ops-0022-cache-and-kv-valkey-cluster/runbook.md) |
-| [Lake and Object — MinIO](ops-0023-lake-and-object-minio/guide.md) | [Guide](ops-0023-lake-and-object-minio/guide.md), [Policy](ops-0023-lake-and-object-minio/policy.md), [Runbook](ops-0023-lake-and-object-minio/runbook.md) |
-| [Lake and Object — SeaweedFS](ops-0024-lake-and-object-seaweedfs/guide.md) | [Guide](ops-0024-lake-and-object-seaweedfs/guide.md), [Policy](ops-0024-lake-and-object-seaweedfs/policy.md), [Runbook](ops-0024-lake-and-object-seaweedfs/runbook.md) |
-| [NoSQL — Cassandra](ops-0025-nosql-cassandra/guide.md) | [Guide](ops-0025-nosql-cassandra/guide.md), [Policy](ops-0025-nosql-cassandra/policy.md), [Runbook](ops-0025-nosql-cassandra/runbook.md) |
-| [NoSQL — CouchDB](ops-0026-nosql-couchdb/guide.md) | [Guide](ops-0026-nosql-couchdb/guide.md), [Policy](ops-0026-nosql-couchdb/policy.md), [Runbook](ops-0026-nosql-couchdb/runbook.md) |
-| [NoSQL — MongoDB](ops-0027-nosql-mongodb/guide.md) | [Guide](ops-0027-nosql-mongodb/guide.md), [Policy](ops-0027-nosql-mongodb/policy.md), [Runbook](ops-0027-nosql-mongodb/runbook.md) |
-| [Operational — MNG-DB](ops-0028-operational-mng-db/guide.md) | [Guide](ops-0028-operational-mng-db/guide.md), [Policy](ops-0028-operational-mng-db/policy.md), [Runbook](ops-0028-operational-mng-db/runbook.md) |
-| [Operational — Supabase](ops-0029-operational-supabase/guide.md) | [Guide](ops-0029-operational-supabase/guide.md), [Policy](ops-0029-operational-supabase/policy.md), [Runbook](ops-0029-operational-supabase/runbook.md) |
-| [Optimization hardening](ops-0030-optimization-optimization-hardening/guide.md) | [Guide](ops-0030-optimization-optimization-hardening/guide.md), [Policy](ops-0030-optimization-optimization-hardening/policy.md), [Runbook](ops-0030-optimization-optimization-hardening/runbook.md) |
-| [Relational — PostgreSQL Cluster](ops-0031-relational-postgresql-cluster/guide.md) | [Guide](ops-0031-relational-postgresql-cluster/guide.md), [Policy](ops-0031-relational-postgresql-cluster/policy.md), [Runbook](ops-0031-relational-postgresql-cluster/runbook.md) |
-| [PostgreSQL logical upgrade restore rehearsal](ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md) | [Runbook](ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md) |
-| [Specialized — Neo4j](ops-0033-specialized-neo4j/guide.md) | [Guide](ops-0033-specialized-neo4j/guide.md), [Policy](ops-0033-specialized-neo4j/policy.md), [Runbook](ops-0033-specialized-neo4j/runbook.md) |
-| [Specialized — Qdrant](ops-0034-specialized-qdrant/guide.md) | [Guide](ops-0034-specialized-qdrant/guide.md), [Policy](ops-0034-specialized-qdrant/policy.md), [Runbook](ops-0034-specialized-qdrant/runbook.md) |
-| [Storage exhaustion](ops-0035-storage-storage-exhaustion/runbook.md) | [Runbook](ops-0035-storage-storage-exhaustion/runbook.md) |
+| [Analytics — InfluxDB](ops-0017-influxdb/guide.md) | [Guide](ops-0017-influxdb/guide.md), [Policy](ops-0017-influxdb/policy.md), [Runbook](ops-0017-influxdb/runbook.md) |
+| [Analytics — ksqlDB](ops-0018-ksqldb/guide.md) | [Guide](ops-0018-ksqldb/guide.md), [Policy](ops-0018-ksqldb/policy.md), [Runbook](ops-0018-ksqldb/runbook.md) |
+| [Analytics — OpenSearch](ops-0019-opensearch/guide.md) | [Guide](ops-0019-opensearch/guide.md), [Policy](ops-0019-opensearch/policy.md), [Runbook](ops-0019-opensearch/runbook.md) |
+| [Analytics — Warehouses](ops-0020-starrocks/guide.md) | [Guide](ops-0020-starrocks/guide.md), [Policy](ops-0020-starrocks/policy.md), [Runbook](ops-0020-starrocks/runbook.md) |
+| [Backup policy](ops-0021-backup-and-restore/policy.md) | [Policy](ops-0021-backup-and-restore/policy.md) |
+| [Cache and KV — Valkey Cluster](ops-0022-valkey-cluster/guide.md) | [Guide](ops-0022-valkey-cluster/guide.md), [Policy](ops-0022-valkey-cluster/policy.md), [Runbook](ops-0022-valkey-cluster/runbook.md) |
+| [Lake and Object — MinIO](ops-0023-minio/guide.md) | [Guide](ops-0023-minio/guide.md), [Policy](ops-0023-minio/policy.md), [Runbook](ops-0023-minio/runbook.md) |
+| [Lake and Object — SeaweedFS](ops-0024-seaweedfs/guide.md) | [Guide](ops-0024-seaweedfs/guide.md), [Policy](ops-0024-seaweedfs/policy.md), [Runbook](ops-0024-seaweedfs/runbook.md) |
+| [NoSQL — Cassandra](ops-0025-cassandra/guide.md) | [Guide](ops-0025-cassandra/guide.md), [Policy](ops-0025-cassandra/policy.md), [Runbook](ops-0025-cassandra/runbook.md) |
+| [NoSQL — CouchDB](ops-0026-couchdb/guide.md) | [Guide](ops-0026-couchdb/guide.md), [Policy](ops-0026-couchdb/policy.md), [Runbook](ops-0026-couchdb/runbook.md) |
+| [NoSQL — MongoDB](ops-0027-mongodb/guide.md) | [Guide](ops-0027-mongodb/guide.md), [Policy](ops-0027-mongodb/policy.md), [Runbook](ops-0027-mongodb/runbook.md) |
+| [Operational — MNG-DB](ops-0028-management-database/guide.md) | [Guide](ops-0028-management-database/guide.md), [Policy](ops-0028-management-database/policy.md), [Runbook](ops-0028-management-database/runbook.md) |
+| [Operational — Supabase](ops-0029-supabase/guide.md) | [Guide](ops-0029-supabase/guide.md), [Policy](ops-0029-supabase/policy.md), [Runbook](ops-0029-supabase/runbook.md) |
+| [Optimization hardening](ops-0030-optimization-hardening/guide.md) | [Guide](ops-0030-optimization-hardening/guide.md), [Policy](ops-0030-optimization-hardening/policy.md), [Runbook](ops-0030-optimization-hardening/runbook.md) |
+| [Relational — PostgreSQL Cluster](ops-0031-postgresql-cluster/guide.md) | [Guide](ops-0031-postgresql-cluster/guide.md), [Policy](ops-0031-postgresql-cluster/policy.md), [Runbook](ops-0031-postgresql-cluster/runbook.md) |
+| [PostgreSQL logical upgrade restore rehearsal](ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md) | [Runbook](ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md) |
+| [Specialized — Neo4j](ops-0033-neo4j/guide.md) | [Guide](ops-0033-neo4j/guide.md), [Policy](ops-0033-neo4j/policy.md), [Runbook](ops-0033-neo4j/runbook.md) |
+| [Specialized — Qdrant](ops-0034-qdrant/guide.md) | [Guide](ops-0034-qdrant/guide.md), [Policy](ops-0034-qdrant/policy.md), [Runbook](ops-0034-qdrant/runbook.md) |
+| [Storage exhaustion](ops-0035-storage-exhaustion/runbook.md) | [Runbook](ops-0035-storage-exhaustion/runbook.md) |
 
 ## How to Work in This Area
 

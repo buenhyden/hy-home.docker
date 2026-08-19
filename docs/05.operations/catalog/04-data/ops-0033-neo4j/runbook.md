@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0033-specialized-neo4j/runbook.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md -->
 
 # Neo4j Health and Recovery Triage Runbook
 

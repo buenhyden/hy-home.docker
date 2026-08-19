@@ -514,7 +514,7 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
-            "docs/05.operations/catalog/04-data/ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
             postgres["authority"],
         )
         self.assertEqual(
@@ -539,7 +539,7 @@ class ScriptManifestTests(unittest.TestCase):
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
             "docs/05.operations/runbooks/03-security/vault.md",
-            "docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md",
         }
         migration_authority = "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
@@ -563,7 +563,7 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertTrue(
             is_runbook_authority(
                 "docs/05.operations/catalog/04-data/"
-                "ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
+                "ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
             )
         )
         rejected = (

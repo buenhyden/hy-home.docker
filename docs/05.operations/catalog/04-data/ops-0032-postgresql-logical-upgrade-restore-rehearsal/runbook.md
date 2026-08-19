@@ -73,4 +73,4 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 - [Rehearsal wrapper](../../../../../scripts/validation/rehearse-postgres-logical-upgrade.sh)
 - [Synthetic Compose fixture](../../../../../tests/fixtures/postgres-logical-upgrade/docker-compose.yml)
 - [Relational runbook index](../README.md)
-- [HA cluster triage runbook](../ops-0031-relational-postgresql-cluster/runbook.md)
+- [HA cluster triage runbook](../ops-0031-postgresql-cluster/runbook.md)

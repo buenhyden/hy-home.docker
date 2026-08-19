@@ -161,41 +161,41 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 - Analytics
   - [influxdb](../../../../../infra/04-data/analytics/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
-    ([OPER](../../04-data/ops-0017-analytics-influxdb/guide.md), [RUN](../../04-data/ops-0017-analytics-influxdb/runbook.md))
+    ([OPER](../../04-data/ops-0017-influxdb/guide.md), [RUN](../../04-data/ops-0017-influxdb/runbook.md))
   - [ksqldb](../../../../../infra/04-data/analytics/ksql/README.md): Kafka 토픽 스키마/호환성 게이트, state store 복구 시간 목표(RTO) 정의
-    ([OPER](../../04-data/ops-0018-analytics-ksqldb/guide.md), [RUN](../../04-data/ops-0018-analytics-ksqldb/runbook.md))
+    ([OPER](../../04-data/ops-0018-ksqldb/guide.md), [RUN](../../04-data/ops-0018-ksqldb/runbook.md))
   - [opensearch](../../../../../infra/04-data/analytics/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
-    ([OPER](../../04-data/ops-0019-analytics-opensearch/guide.md), [RUN](../../04-data/ops-0019-analytics-opensearch/runbook.md))
+    ([OPER](../../04-data/ops-0019-opensearch/guide.md), [RUN](../../04-data/ops-0019-opensearch/runbook.md))
   - [warehouses](../../../../../infra/04-data/analytics/warehouses/README.md): 배치 윈도우/리소스 큐 정책, 메타스토어 백업 주기 명시
-    ([OPER](../../04-data/ops-0020-analytics-warehouses/guide.md), [RUN](../../04-data/ops-0020-analytics-warehouses/runbook.md))
+    ([OPER](../../04-data/ops-0020-starrocks/guide.md), [RUN](../../04-data/ops-0020-starrocks/runbook.md))
 - Cache & KV
   - [valkey-cluster](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
-    ([OPER](../../04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md), [RUN](../../04-data/ops-0022-cache-and-kv-valkey-cluster/runbook.md))
+    ([OPER](../../04-data/ops-0022-valkey-cluster/guide.md), [RUN](../../04-data/ops-0022-valkey-cluster/runbook.md))
 - Lake & Object
   - [minio](../../../../../infra/04-data/lake-and-object/minio/README.md): 버킷 수명주기/버전관리 정책, KMS 연동 암호화, 교차 AZ 복제 검토
-    ([OPER](../../04-data/ops-0023-lake-and-object-minio/guide.md), [RUN](../../04-data/ops-0023-lake-and-object-minio/runbook.md))
+    ([OPER](../../04-data/ops-0023-minio/guide.md), [RUN](../../04-data/ops-0023-minio/runbook.md))
   - [seaweedfs](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
-    ([OPER](../../04-data/ops-0024-lake-and-object-seaweedfs/guide.md), [RUN](../../04-data/ops-0024-lake-and-object-seaweedfs/runbook.md))
+    ([OPER](../../04-data/ops-0024-seaweedfs/guide.md), [RUN](../../04-data/ops-0024-seaweedfs/runbook.md))
 - NoSQL
   - [cassandra](../../../../../infra/04-data/nosql/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
-    ([OPER](../../04-data/ops-0025-nosql-cassandra/guide.md), [RUN](../../04-data/ops-0025-nosql-cassandra/runbook.md))
+    ([OPER](../../04-data/ops-0025-cassandra/guide.md), [RUN](../../04-data/ops-0025-cassandra/runbook.md))
   - [couchdb](../../../../../infra/04-data/nosql/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
-    ([OPER](../../04-data/ops-0026-nosql-couchdb/guide.md), [RUN](../../04-data/ops-0026-nosql-couchdb/runbook.md))
+    ([OPER](../../04-data/ops-0026-couchdb/guide.md), [RUN](../../04-data/ops-0026-couchdb/runbook.md))
   - [mongodb](../../../../../infra/04-data/nosql/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
-    ([OPER](../../04-data/ops-0027-nosql-mongodb/guide.md), [RUN](../../04-data/ops-0027-nosql-mongodb/runbook.md))
+    ([OPER](../../04-data/ops-0027-mongodb/guide.md), [RUN](../../04-data/ops-0027-mongodb/runbook.md))
 - Operational
   - [mng-db](../../../../../infra/04-data/operational/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
-    ([OPER](../../04-data/ops-0028-operational-mng-db/guide.md), [RUN](../../04-data/ops-0028-operational-mng-db/runbook.md))
+    ([OPER](../../04-data/ops-0028-management-database/guide.md), [RUN](../../04-data/ops-0028-management-database/runbook.md))
   - [supabase](../../../../../infra/04-data/operational/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
-    ([OPER](../../04-data/ops-0029-operational-supabase/guide.md), [RUN](../../04-data/ops-0029-operational-supabase/runbook.md))
+    ([OPER](../../04-data/ops-0029-supabase/guide.md), [RUN](../../04-data/ops-0029-supabase/runbook.md))
 - Relational
   - [postgresql-cluster](../../../../../infra/04-data/relational/postgresql-cluster/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
-    ([OPER](../../04-data/ops-0031-relational-postgresql-cluster/guide.md), [RUN](../../04-data/ops-0031-relational-postgresql-cluster/runbook.md))
+    ([OPER](../../04-data/ops-0031-postgresql-cluster/guide.md), [RUN](../../04-data/ops-0031-postgresql-cluster/runbook.md))
 - Specialized
   - [neo4j](../../../../../infra/04-data/specialized/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용
-    ([OPER](../../04-data/ops-0033-specialized-neo4j/guide.md), [RUN](../../04-data/ops-0033-specialized-neo4j/runbook.md))
+    ([OPER](../../04-data/ops-0033-neo4j/guide.md), [RUN](../../04-data/ops-0033-neo4j/runbook.md))
   - [qdrant](../../../../../infra/04-data/specialized/qdrant/README.md): 컬렉션별 HNSW/quantization 정책 표준화, 임베딩 재색인 운영 절차 추가
-    ([OPER](../../04-data/ops-0034-specialized-qdrant/guide.md), [RUN](../../04-data/ops-0034-specialized-qdrant/runbook.md))
+    ([OPER](../../04-data/ops-0034-qdrant/guide.md), [RUN](../../04-data/ops-0034-qdrant/runbook.md))
 
 ### 05-messaging
 

@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/04-data/ops-0029-operational-supabase/runbook.md -->
+<!-- Target: docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md -->
 
 # Supabase Stack Health Runbook
 

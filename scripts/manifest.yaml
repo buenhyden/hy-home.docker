@@ -760,11 +760,11 @@ files:
   - tests/validation/test_ci_gate_adapters.py
 - path: scripts/validation/rehearse-postgres-logical-upgrade.sh
   kind: validator
-  authority: docs/05.operations/catalog/04-data/ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  authority: docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/04-data/ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  - docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
   disposition: retain
   successor: null
   tests:
