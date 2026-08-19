@@ -122,6 +122,17 @@ status: active
   `semantic-rewrite-rule-missing`, and no domain's true count is measurable before
   its renames execute. The suite costs `214.853s`, so rule work must batch per
   domain.
+- **`04-data`'s semantic half is sized in a synthetic tree, with no repo
+  mutation.** All 51 labels are one family, `stale:legacy-subject-path:`, over 19
+  subjects, and the stale artifact is a `<!-- Target: -->` self-reference marker,
+  not an H1, so Task 10D's handler shape does not transfer. Synthetic RED is 201
+  findings. A rule with no source replacement drops that to 99 but is fail-open:
+  repointing a marker at another subject in the same domain produced zero
+  findings. Passing two other adversarial mutations was not evidence of soundness.
+  Adding the row's own final path as `required_target` closes it and passes 50 of
+  51. The one that fails, the `ops-0032` rehearsal runbook, carries no marker and
+  contains its old slug zero times, so its approved label has no basis in the text
+  it labels -- a frozen-map defect, recorded not worked around.
 
 - Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
   paragraphs were resolved one at a time against the surface each claim must
