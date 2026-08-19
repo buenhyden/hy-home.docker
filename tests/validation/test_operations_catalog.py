@@ -386,6 +386,73 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                 ),
             )
 
+    def test_structure_mode_accepts_declared_subject_renames_only(self) -> None:
+        """A declared subject rename is an approved link rebase; others are not.
+
+        A structural target may link into another domain's subject. When that
+        subject is renamed the link must move with it, but structural bodies are
+        pinned to their frozen source, so an un-normalized rebase reads as a body
+        mismatch. Normalizing only renames the frozen manifest declares keeps the
+        pin meaningful: an undeclared rename is absent from the map and fails.
+        """
+
+        manifest = self._approved_manifest()
+        renamed = next(
+            subject
+            for subject in manifest.subjects
+            if subject.catalog_path.name != subject.final_path.name
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            execution_root = pathlib.Path(directory)
+            self._structure_tree(execution_root, manifest)
+            linking = [
+                execution_root / row.catalog_path
+                for row in manifest.files
+                if renamed.catalog_path.name
+                in (execution_root / row.catalog_path).read_text(encoding="utf-8")
+                and not row.catalog_path.as_posix().startswith(
+                    renamed.catalog_path.as_posix()
+                )
+            ]
+            self.assertTrue(
+                linking, "no structural target links to the renamed subject"
+            )
+            for target in linking:
+                pristine = target.read_text(encoding="utf-8")
+                target.write_text(
+                    pristine.replace(
+                        renamed.catalog_path.name, renamed.final_path.name
+                    ),
+                    encoding="utf-8",
+                )
+            self.assertEqual(
+                (),
+                validate_operations_catalog_manifest(
+                    ROOT,
+                    manifest,
+                    mode="structure",
+                    execution_root=execution_root,
+                ),
+                "a declared subject rename must normalize to its pinned identity",
+            )
+            for target in linking:
+                target.write_text(
+                    target.read_text(encoding="utf-8").replace(
+                        renamed.final_path.name, "ops-9999-undeclared"
+                    ),
+                    encoding="utf-8",
+                )
+            undeclared = validate_operations_catalog_manifest(
+                ROOT,
+                manifest,
+                mode="structure",
+                execution_root=execution_root,
+            )
+            self.assertTrue(
+                any(item.code == "structural-body-mismatch" for item in undeclared),
+                "an undeclared subject rename must still fail the structural pin",
+            )
+
     def test_structure_mode_rejects_any_role_body_addition_removal_or_rewrite(
         self,
     ) -> None:

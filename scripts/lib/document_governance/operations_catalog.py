@@ -952,12 +952,30 @@ def _semantic_section_tokens(
     return _semantic_section_tokens_exact(normalized), unsafe
 
 
+def _declared_subject_renames(
+    manifest: OperationsCatalogManifest,
+) -> Mapping[str, str]:
+    """Subject directory renames the frozen manifest declares.
+
+    Structural normalization collapses these before hashing a link identity, so
+    a declared rename reads as an approved rebase rather than a body mismatch.
+    An undeclared rename is absent from this map and still fails the pin.
+    """
+
+    return {
+        subject.catalog_path.name: subject.final_path.name
+        for subject in manifest.subjects
+        if subject.catalog_path.name != subject.final_path.name
+    }
+
+
 def _structural_body_normalization(
     text: str,
     source_path: pathlib.PurePosixPath,
     domains: frozenset[str],
+    subject_renames: Mapping[str, str],
 ) -> tuple[str, bool]:
-    """Normalize only approved domain-prefix and safe Markdown link rebases."""
+    """Normalize only approved domain-prefix, subject-rename, and link rebases."""
 
     normalized = text
     unsafe = False
@@ -973,7 +991,10 @@ def _structural_body_normalization(
             and parts[3] in domains
         ):
             target = pathlib.PurePosixPath("docs/05.operations", *parts[3:])
-        identity = f"{target.as_posix()}#{link.fragment or ''}"
+        # Match whole path segments. A substring rewrite would rename any path
+        # that merely contains a declared subject name.
+        resolved = "/".join(subject_renames.get(part, part) for part in target.parts)
+        identity = f"{resolved}#{link.fragment or ''}"
         marker = (
             f"<structural-link:{hashlib.sha256(identity.encode()).hexdigest()[:16]}>"
         )
@@ -2631,15 +2652,18 @@ def validate_operations_catalog_manifest(
                 row.legacy_path.as_posix(),
             )
             if mode == "structure":
+                subject_renames = _declared_subject_renames(manifest)
                 source_normalized, source_unsafe = _structural_body_normalization(
                     source_text or "",
                     row.legacy_path,
                     _STRUCTURAL_DOMAINS,
+                    subject_renames,
                 )
                 target_normalized, target_unsafe = _structural_body_normalization(
                     target_text,
                     row.catalog_path,
                     _STRUCTURAL_DOMAINS,
+                    subject_renames,
                 )
                 if source_unsafe or target_unsafe:
                     findings.append(
