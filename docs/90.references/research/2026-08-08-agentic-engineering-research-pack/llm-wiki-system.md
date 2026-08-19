@@ -214,6 +214,16 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 
 ### Carried source-evidence claims
 
+- **Registration literals are enforced across five index READMEs.** The
+  repository contract check requires named registration literals in the repository
+  root `README.md`, `docs/README.md`, `docs/90.references/README.md`,
+  `scripts/README.md` and `docs/90.references/data/README.md`, which is how a
+  generated index avoids being orphaned from the trees that should route to it.
+  Re-derived 2026-08-19 from the enforcement block itself, which holds exactly
+  five path entries. A count of README mentions in that block returns seven,
+  because two of the checked literals are themselves README paths; the
+  enforcement covers five files.
+
 Source-evidence claims carried forward from the superseded 2026-07-05
 research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.

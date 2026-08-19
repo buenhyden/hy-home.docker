@@ -213,6 +213,17 @@ Python coverage threshold is tracked.
 - Local passes do not replace GitHub-only SARIF or applied required checks;
   workflow YAML does not prove either ran remotely.
 
+### Reading the repository contract check's failure count
+
+The repository contract check prints `failures=<n>`, and that number counts
+failing SUBJECTS rather than failing findings or failing lines. A single
+reported failure can therefore stand for many findings, and the count moving
+from one number to another does not indicate a proportional change in the
+amount of work. Re-derive both figures before comparing two runs: the subject
+count is what the script prints, and the finding count has to be read from the
+output body. Verified 2026-08-19 against the script, which increments its
+counter once per failing subject and echoes that counter at the end.
+
 ### Evidence and enforcement states
 
 | State                 | Task 7 result                                                                                                                                                                                        |
