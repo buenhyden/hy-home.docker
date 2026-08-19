@@ -188,14 +188,21 @@ status: active
 
 ## Next handoff
 
-- Gate 2 needs one more review, now over the state at `3043acb7`. The 2026-08-19
-  seats reviewed the state before their own findings were applied, so their
-  settled counts do not carry forward.
-- Gate 4 allowlist rows for `check-document-corpus-lifecycle.py` and
-  `test_document_corpus_lifecycle.py` are the last open repair. The seat found
-  their route 2 coverage conjunct non-discriminating, no removal condition stated
-  after reclassification, and the test-fixture row possibly admitted under no
-  route at all.
+- **Both remaining gates are blocked on independent review, not on edits.** Gate 2
+  needs one more review over the current state; the 2026-08-19 seats reviewed the
+  state before their own findings were applied, so their settled counts do not
+  carry forward. Gate 4 needs a seat for its four corrected rows. Neither can be
+  settled from inside this unit, and the session instruction in force forbids
+  spawning review agents unless the user asks, so both wait on that request.
+- Gate 4's residual is enumerated from the scanner's own allowlist reader: 43
+  rows, 8 unsettled, needing three different actors. Four are corrected and wait
+  only on an independent seat (two `mig-0001` rows, two route 2 selector rows).
+  Three sit in Specs carrying `status: completed`, so they have no actor. One,
+  the `test_document_taxonomy.py` scan exemption, reads two ways after the route 3
+  amendment and the admitting reading is the one favourable to this unit, so it
+  was not taken. Two mechanical escapes were rejected: importing the scanner's
+  carved-out constant binds an unrelated test to a module scheduled to go, and
+  assembling the path from components hides a literal the gate exists to expose.
 - A Stage 90 leaf, `ref-0085-verification-validation.md`, was deleted by the
   taxonomy merge `5afdd277`; five of its sections occur in zero working-tree
   files and the content survives only at `57259e24`. Recorded, not fixed, and
