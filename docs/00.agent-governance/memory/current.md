@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `3043acb7`
+- Verified commit: `4007b5de`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -85,16 +85,23 @@ status: active
   `ai-agent-catalogs.md` row are source-backed or upstream material written into
   eleven successor leaves. Zero of the 246 ledger rows now name themselves as
   their own destination. What remains is review, not routing.
-- Three independent seats reviewed the repaired state on 2026-08-19: the 47
-  `Carry` rows (19 settled / 28 held), the 54 successor-leaf rows (47 settled / 7
-  held), and four gate 4 rows (all four Needs fixes). Every hold from the first
-  two seats is now closed; two gate 4 rows remain.
-- The owner requirement failed measurement three times, each differently: the
-  first counted mentions rather than names, the second asserted a per-row
-  justification without checking it, and the third measured the ledger cells
-  while gate 2 says the claim resolves to its destination — which still held 21
-  placeholders after the ledger showed none. Both surfaces now measure zero
-  placeholders, 47 of 47 naming an owner and stating uniqueness.
+- Six independent seats re-reviewed the repaired state on 2026-08-19 in six
+  batches: the 47 `Carry` rows returned 7 settled / 40 held, and the 54
+  successor-leaf rows returned 47 settled / 7 held. Every hold is now closed.
+- The owner requirement failed measurement FIVE times, each differently: a count
+  of rows that mention an owner rather than name one; a blanket justification
+  asserted without per-row evaluation; a per-row justification propagated rather
+  than evaluated; a measurement on the ledger while the gate reads the
+  destination; and a resolver that prefixed the governance directory onto
+  arbitrary backticked tokens and would have written false evidence onto all 25
+  paragraphs. The fifth was discarded unwritten. The pattern is that each attempt
+  looked more thorough than the state it replaced.
+- Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
+  paragraphs were resolved one at a time against the surface each claim must
+  change to be remediated, not against every path the paragraph quotes.
+- There is more than one duplicate group: four ledger rows declare NOT unique,
+  the three Gemini rows plus the Changelog-authority row.
+
 - The ownership tables hold 33 patterns, not the 24 previously recorded.
 - The Gemini stale-identifier claim is REMEDIATED, not live: `Flash` occurs zero
   times in `providers/gemini.md` since `6bd7c62d`. Its three rows stay `carry`
