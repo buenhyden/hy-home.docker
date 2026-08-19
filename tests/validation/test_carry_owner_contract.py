@@ -20,7 +20,11 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" /
 
 import carry_owner_contract as contract  # noqa: E402
 
-OWNERSHIP = {("docs", 59): "doc-writer", ("common", 54): "code-reviewer"}
+OWNERSHIP = {
+    ("docs", 59): "doc-writer",
+    ("common", 54): "code-reviewer",
+    ("security", 69): "security-auditor",
+}
 CODEOWNERS_LINES = {4, 16}
 
 
@@ -149,6 +153,40 @@ class CarryOwnerContractTests(unittest.TestCase):
 
 
 
+    def test_a_disagreeing_owner_appended_last_fails(self) -> None:
+        """The accumulation defect: set intersection went blind here.
+
+        These cells append corrections rather than editing, so a synchronised
+        cell names two owners. Under an intersection test a third, disagreeing
+        owner appended afterwards produced no finding at all. The operative owner
+        is the last one stated.
+        """
+        accumulated = (
+            OWNED_BY_DOCS
+            + " Owner re-resolved; the earlier statement is withdrawn. "
+            + OWNED_BY_COMMON
+            + " Remediation owner `security-auditor` from `scopes/security.md:69`."
+        )
+        codes = _pair_codes(
+            _ledger("`A`", accumulated),
+            _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`}"),
+        )
+        assert "CARRY-OWNER-CROSS-SURFACE" in codes
+
+    def test_a_withdrawn_owner_before_the_operative_one_passes(self) -> None:
+        """The corpus convention: a later statement supersedes an earlier one."""
+        corrected = (
+            "Remediation owner: `security-auditor` from `scopes/security.md:69`. "
+            "Owner re-resolved; the earlier statement is withdrawn. " + OWNED_BY_COMMON
+        )
+        assert (
+            _pair_codes(
+                _ledger("`A`", corrected),
+                _destination(OWNED_BY_COMMON + " {ledger-anchor: `A`}"),
+            )
+            == []
+        )
+
     def test_one_shared_owner_is_enough_when_a_surface_names_two(self) -> None:
         """A split surface may name two owners; agreement on one is agreement."""
         both = (
@@ -179,18 +217,20 @@ class CarryOwnerContractTests(unittest.TestCase):
 
 
 def _ledger(key: str, text: str) -> contract.Record:
-    return contract.Record(surface="ledger", where="L", label=key, text=text, key=key)
+    return contract.Record(surface="ledger", where="L", label=key, text=text, keys=(key,))
 
 
 
 def _destination(text: str) -> contract.Record:
-    declared = contract.LEDGER_ANCHOR_DECLARATION.search(text)
+    declared = tuple(
+        match.strip() for match in contract.LEDGER_ANCHOR_DECLARATION.findall(text)
+    )
     return contract.Record(
         surface="destination",
         where="D",
         label="paragraph",
         text=text,
-        key=declared.group(1).strip() if declared else "",
+        keys=declared,
     )
 
 

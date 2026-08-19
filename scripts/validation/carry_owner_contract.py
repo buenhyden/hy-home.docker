@@ -89,10 +89,26 @@ class Record:
     where: str
     label: str
     text: str
-    key: str = ""
+    keys: tuple[str, ...] = ()
 
     def owners(self) -> frozenset[str]:
         return frozenset(OWNER_STATEMENT.findall(self.text))
+
+    def operative_owner(self) -> str:
+        """The last owner this record names.
+
+        These cells accumulate. A correction appends "Owner re-resolved ... the
+        earlier statement is withdrawn" rather than editing the earlier text, so
+        a cell routinely names two or three owners of which only the last is
+        operative. Comparing the two surfaces by set intersection therefore went
+        blind as soon as any cell named more than one: injecting a third,
+        disagreeing owner into a synchronised cell produced no finding. The
+        operative owner is the last one stated, which is the convention the cells
+        already follow in words.
+        """
+
+        named = OWNER_STATEMENT.findall(self.text)
+        return named[-1] if named else ""
 
 
 def _read(root: pathlib.Path, relative: str) -> list[str]:
@@ -173,7 +189,7 @@ def collect_ledger_records(root: pathlib.Path, task: str) -> list[Record]:
                 where=f"{task}:{index + 1}",
                 label=cells[ANCHOR_COLUMN][:60],
                 text=cells[REASON_COLUMN],
-                key=cells[ANCHOR_COLUMN],
+                keys=(cells[ANCHOR_COLUMN],),
             )
         )
     return records
@@ -214,14 +230,17 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
                 cursor += 1
             body = " ".join(lines[index:cursor])
             if OWNER_STATEMENT.search(body):
-                declared = LEDGER_ANCHOR_DECLARATION.search(body)
+                declared = tuple(
+                    match.strip()
+                    for match in LEDGER_ANCHOR_DECLARATION.findall(body)
+                )
                 records.append(
                     Record(
                         surface="destination",
                         where=f"{task}:{index + 1}",
                         label=title[:60],
                         text=body,
-                        key=declared.group(1).strip() if declared else "",
+                        keys=declared,
                     )
                 )
             index = cursor
@@ -332,11 +351,17 @@ def check_pairing(records: list[Record]) -> list[Finding]:
 
     ledger = [record for record in records if record.surface == "ledger"]
     destination = [record for record in records if record.surface == "destination"]
-    by_key = {record.key: record for record in destination if record.key}
+    # A paragraph may serve several rows: three rows state one Gemini claim from
+    # three old leaves, so the marker is collected as a list rather than a scalar.
+    by_key: dict[str, Record] = {}
+    for record in destination:
+        for key in record.keys:
+            by_key[key] = record
+    ledger_keys = {key for item in ledger for key in item.keys}
 
     findings: list[Finding] = []
     for record in destination:
-        if not record.key:
+        if not record.keys:
             findings.append(
                 Finding(
                     "CARRY-PAIR-UNDECLARED",
@@ -346,18 +371,19 @@ def check_pairing(records: list[Record]) -> list[Finding]:
                 )
             )
             continue
-        if record.key not in {item.key for item in ledger}:
-            findings.append(
-                Finding(
-                    "CARRY-PAIR-ORPHAN",
-                    record.where,
-                    f"{record.label}: declares ledger anchor {record.key!r}, "
-                    "which matches no Carry row",
+        for key in record.keys:
+            if key not in ledger_keys:
+                findings.append(
+                    Finding(
+                        "CARRY-PAIR-ORPHAN",
+                        record.where,
+                        f"{record.label}: declares ledger anchor {key!r}, "
+                        "which matches no Carry row",
+                    )
                 )
-            )
 
     for record in ledger:
-        partner = by_key.get(record.key)
+        partner = by_key.get(record.keys[0]) if record.keys else None
         if partner is None:
             findings.append(
                 Finding(
@@ -367,14 +393,30 @@ def check_pairing(records: list[Record]) -> list[Finding]:
                 )
             )
             continue
+        # Each surface's operative owner must be named by the other. The test is
+        # deliberately not a set intersection: these cells accumulate withdrawn
+        # owners, and an intersection passes whenever any historical owner
+        # happens to match.
         mine, theirs = record.owners(), partner.owners()
-        if mine and theirs and not (mine & theirs):
+        my_operative, their_operative = record.operative_owner(), partner.operative_owner()
+        if my_operative and theirs and my_operative not in theirs:
             findings.append(
                 Finding(
                     "CARRY-OWNER-CROSS-SURFACE",
                     record.where,
-                    f"{record.label}: ledger names {sorted(mine)} and the "
-                    f"destination at {partner.where} names {sorted(theirs)}",
+                    f"{record.label}: the ledger's operative owner {my_operative!r} "
+                    f"is named nowhere in the destination at {partner.where}, "
+                    f"which names {sorted(theirs)}",
+                )
+            )
+        elif their_operative and mine and their_operative not in mine:
+            findings.append(
+                Finding(
+                    "CARRY-OWNER-CROSS-SURFACE",
+                    partner.where,
+                    f"{partner.label}: the destination's operative owner "
+                    f"{their_operative!r} is named nowhere in the ledger row at "
+                    f"{record.where}, which names {sorted(mine)}",
                 )
             )
     return findings
