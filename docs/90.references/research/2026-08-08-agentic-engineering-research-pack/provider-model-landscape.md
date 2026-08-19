@@ -180,8 +180,16 @@ re-derivable from the vendor pages the `Sources` section names.
     evidence gap rather than an absence of risk.
 14. **Retention and data-handling constraints ride with the model.** A model may
     require a retention window that rules out zero-data-retention use.
-15. **An agent endpoint is not interchangeable with a base model.** Some agent
-    endpoints are not generative models at all.
+15. **An agent endpoint is not interchangeable with a base model.** Corrected
+    2026-08-19: this family previously added "Some agent endpoints are not
+    generative models at all", which merged two distinct source classes and
+    attributed an embeddings property to agent endpoints. The retiring catalog
+    records them separately — `Agent endpoint is not interchangeable with a base
+    model` on the deep-research rows, and `Not a generative agent model` on
+    `gemini-embedding-2` and the `text-embedding-3` rows, which are Embeddings
+    API entries rather than agent endpoints. Read them as two rules: an agent
+    endpoint is a distinct surface from the base model it wraps, and an
+    embeddings entry is not a generative model at all.
 16. **One official card may group several exact endpoints.** Card granularity is
     a presentation choice, so a single card is not evidence that the endpoints
     it groups share an identity or a schedule.
