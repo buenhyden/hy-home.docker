@@ -219,7 +219,7 @@ research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
 - **The full-content companion file is not part of the external proposal.** The proposal does not define a companion file; the site cites a project-specific expansion as an example. Reading the companion file as specified by the proposal overstates what the external convention requires.
-- **A cited vendor guide path redirects and serves no content.** The path returns an HTTP 308 redirect and serves nothing directly, so the redirect target must be cited instead. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
+- **A cited vendor guide path redirects and serves no content.** The `developers.openai.com` guide path for `AGENTS.md` returns an HTTP 308 redirect and serves nothing directly, so its redirect target on `learn.chatgpt.com` must be cited instead. Both hosts are named here because the rule is unactionable without them. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
 
 ## Scope Implications
 

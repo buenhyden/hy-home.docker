@@ -349,6 +349,28 @@ therefore be read as _deliberately deferred_, not as _missing_. No comparable
 record exists for `backend`, `entry`, `frontend`, `meta`, or `mobile`, so those
 five remain undecided rather than deferred.
 
+The deferral covers one of the two capabilities the earlier analysis named, and
+the other two findings it carried are separate from it. Re-derived 2026-08-19:
+
+- **Only `product-discovery` is deferred.** `product-discovery` occurs once in
+  `docs/00.agent-governance/contracts/agent-catalog.yaml`, in the `defer` record
+  above. `outcome-validation` occurs **zero** times anywhere in that file, so it
+  is neither owned nor deferred. Reading the `defer` record as covering both
+  capabilities overstates it.
+- **The catalog does cover the adjacent work.** `workflow-supervisor`,
+  `doc-writer`, `rules-engineer` and the requirements, design and task functions
+  cover orchestration and document mechanics. The gap is discovery and outcome
+  validation specifically, not product work in general.
+- **No agent owns `docs/01.requirements/` in any File Ownership SSOT table.**
+  This is an ownership gap, not a capability gap, and the `defer` record does not
+  address it. Verified 2026-08-19 against the File Ownership sections of
+  `common.md`, `docs.md`, `infra.md`, `ops.md`, `qa.md` and `security.md`: none
+  of their 33 patterns matches `docs/01.requirements/`, while the directory holds
+  26 tracked documents. Ownership falls to the repository owner under the `*`
+  rule in `.github/CODEOWNERS`. PRD changes also cross the `docs/01` to `docs/99`
+  read-only boundary, so they need explicit approval regardless of who owns them.
+
+
 ## Scope Implications
 
 Applicable leaf names below refer to the flat twenty-leaf pack contract in

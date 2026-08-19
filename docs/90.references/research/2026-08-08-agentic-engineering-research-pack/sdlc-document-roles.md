@@ -250,7 +250,7 @@ Source-evidence claims carried forward from the superseded 2026-07-05
 research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
-- **The committee catalog is the fallback route when the main standards host refuses.** The main standards site returned HTTP 403 to automated retrieval, and the ISO-operated committee catalog served the same records. Recorded as the method, not as the dated stage codes: when the primary host refuses, the committee catalog is the corroborating route.
+- **The committee catalog is the fallback route when the main standards host refuses.** The main standards site `www.iso.org` returned HTTP 403 to automated retrieval, and the ISO-operated `committee.iso.org` catalog served the same records. Recorded as the method, not as the dated stage codes: when `www.iso.org` refuses, `committee.iso.org` is the corroborating route. The hostnames are stated because the method is not reproducible from a description of them.
 
 ## Scope Implications
 
