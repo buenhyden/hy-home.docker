@@ -130,9 +130,16 @@ status: active
   repointing a marker at another subject in the same domain produced zero
   findings. Passing two other adversarial mutations was not evidence of soundness.
   Adding the row's own final path as `required_target` closes it and passes 50 of
-  51. The one that fails, the `ops-0032` rehearsal runbook, carries no marker and
-  contains its old slug zero times, so its approved label has no basis in the text
-  it labels -- a frozen-map defect, recorded not worked around.
+  51. The `ops-0032` failure was first recorded as a frozen-map defect and that is
+  WITHDRAWN: the file carries no marker but does carry a stale subject path, its
+  sibling `ops-0031`'s, already classified correctly as a consumer finding. The
+  defect was in the proposed rule, which assumed all 51 sources share one shape.
+  **Settled shape:** empty `source_replacements`, `forbidden_target` the old slug,
+  and `required_target` the final path only when the source carries a `Target:`
+  marker. With it the domain reports zero semantic findings across all 51 rows and
+  catches all three adversarial mutations. Outside `04-data` the whole remaining
+  catalog semantic work is 14 rows over 5 label kinds, of which 9 are this same
+  family and only 4 rules are new.
 
 - Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
   paragraphs were resolved one at a time against the surface each claim must
