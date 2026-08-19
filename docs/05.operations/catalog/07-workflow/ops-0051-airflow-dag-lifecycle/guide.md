@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-basics/guide.md -->
+<!-- Target: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md -->
 
 # Airflow Dag Basics Operations
 
@@ -88,5 +88,5 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 - [Operations index](../../../README.md)
 - [Airflow system guide](../ops-0050-airflow/guide.md)
-- [DAG deployment policy](../ops-0052-dag-deployment/policy.md)
+- [DAG deployment policy](../ops-0051-airflow-dag-lifecycle/policy.md)
 - [Airflow recovery runbook](../ops-0050-airflow/runbook.md)

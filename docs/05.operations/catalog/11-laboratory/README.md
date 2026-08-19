@@ -24,7 +24,7 @@ is absent from the migration ledger.
 
 | Subject | Available documents |
 | --- | --- |
-| [Dashboard](ops-0071-dashboard/guide.md) | [Guide](ops-0071-dashboard/guide.md), [Policy](ops-0071-dashboard/policy.md), [Runbook](ops-0071-dashboard/runbook.md) |
+| [Dashboard](ops-0071-homer-dashboard/guide.md) | [Guide](ops-0071-homer-dashboard/guide.md), [Policy](ops-0071-homer-dashboard/policy.md), [Runbook](ops-0071-homer-dashboard/runbook.md) |
 | [Dozzle](ops-0072-dozzle/guide.md) | [Guide](ops-0072-dozzle/guide.md), [Policy](ops-0072-dozzle/policy.md), [Runbook](ops-0072-dozzle/runbook.md) |
 | [Open Notebook](ops-0073-open-notebook/guide.md) | [Guide](ops-0073-open-notebook/guide.md), [Policy](ops-0073-open-notebook/policy.md), [Runbook](ops-0073-open-notebook/runbook.md) |
 | [Optimization hardening](ops-0074-optimization-hardening/guide.md) | [Guide](ops-0074-optimization-hardening/guide.md), [Policy](ops-0074-optimization-hardening/policy.md), [Runbook](ops-0074-optimization-hardening/runbook.md) |

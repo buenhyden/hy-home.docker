@@ -49,7 +49,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
   - Pyroscope route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
     middleware chain을 유지한다.
   - 고정 retention 기간은 현재 `pyroscope.yaml`에 선언되어 있지 않다. 보관
-    기간 변경은 config/capacity 검증과 [retention policy](../ops-0048-retention/policy.md)
+    기간 변경은 config/capacity 검증과 [retention policy](../ops-0048-telemetry-retention/policy.md)
     갱신을 함께 요구한다.
 - **Allowed**:
   - Development/debug 상황에서 임시 고빈도 profiling을 사용할 수 있으나,
@@ -91,4 +91,4 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [Retention policy](../ops-0048-retention/policy.md)
+- [Retention policy](../ops-0048-telemetry-retention/policy.md)

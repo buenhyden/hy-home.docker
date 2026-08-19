@@ -262,7 +262,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 ### 11-laboratory
 
 - [dashboard](../../../../../infra/11-laboratory/dashboard/README.md): 실험성 대시보드 접근정책(SSO/IP allowlist) 적용, 만료 정책(자동 종료) 추가
-  ([OPER](../../11-laboratory/ops-0071-dashboard/guide.md), [RUN](../../11-laboratory/ops-0071-dashboard/runbook.md))
+  ([OPER](../../11-laboratory/ops-0071-homer-dashboard/guide.md), [RUN](../../11-laboratory/ops-0071-homer-dashboard/runbook.md))
 - [dozzle](../../../../../infra/11-laboratory/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
   ([OPER](../../11-laboratory/ops-0072-dozzle/guide.md), [RUN](../../11-laboratory/ops-0072-dozzle/runbook.md))
 - [portainer](../../../../../infra/11-laboratory/portainer/README.md): 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 명문화

@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/runbook.md -->
+<!-- Target: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md -->
 
 # Laboratory Dashboard Recovery Runbook
 

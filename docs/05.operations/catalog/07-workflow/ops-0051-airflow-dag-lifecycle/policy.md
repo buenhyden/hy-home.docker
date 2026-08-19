@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/ops-0052-dag-deployment/policy.md -->
+<!-- Target: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md -->
 
 # DAG Deployment Operations Policy
 
@@ -35,7 +35,7 @@ Governs the lifecycle of all Apache Airflow DAGs within the `hy-home.docker` eco
 
 ## Verification
 
-Compliance is checked via the Airflow static/runtime checks documented in [Airflow Procedure](../ops-0050-airflow/runbook.md), including `docker compose exec airflow-apiserver airflow dags list`, and monthly audits of the Airflow metadata DB.
+Compliance is checked via the Airflow static/runtime checks documented in [Airflow Procedure](../ops-0050-airflow/runbook.md), and monthly audits of the Airflow metadata DB.
 
 ## Review Cadence
 
@@ -50,5 +50,4 @@ Compliance is checked via the Airflow static/runtime checks documented in [Airfl
 ## Related Documents
 
 - [Operations index](../../../README.md)
-- [Airflow DAG basics guide](../ops-0051-airflow-dag-basics/guide.md)
-- [Airflow recovery runbook](../ops-0050-airflow/runbook.md)
+- [Airflow DAG basics guide](../ops-0051-airflow-dag-lifecycle/guide.md)

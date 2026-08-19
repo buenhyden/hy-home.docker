@@ -29,7 +29,7 @@ updated: 2026-08-11
 ### Canonical References
 
 - [../../../../infra/05-messaging/rabbitmq/README.md](../../../../../infra/05-messaging/rabbitmq/README.md)
-- [../../policies/05-messaging/rabbitmq.md](policy.md)
+- [RabbitMQ operations policy](policy.md)
 
 ## When to Use
 

@@ -41,7 +41,7 @@ updated: 2026-08-11
   - 관측성 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - 관측성 변경은 `check-template-security-baseline.sh`,
     `check-document-links.py --mode traceability`, 관련 compose validation 결과를 함께 확인한다.
-  - log/trace/profile retention 변경은 [retention policy](../ops-0048-retention/policy.md)와
+  - log/trace/profile retention 변경은 [retention policy](../ops-0048-telemetry-retention/policy.md)와
     서비스별 policy/runbook에 함께 반영한다.
   - 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증은
     runbook handoff 조건으로 취급한다.
@@ -90,4 +90,4 @@ updated: 2026-08-11
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [Retention policy](../ops-0048-retention/policy.md)
+- [Retention policy](../ops-0048-telemetry-retention/policy.md)

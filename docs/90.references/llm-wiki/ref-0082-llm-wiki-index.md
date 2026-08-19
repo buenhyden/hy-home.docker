@@ -131,6 +131,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md](../../00.agent-governance/memory/ignored-sdd-scratch-deletion.md) | Markdown reference |
+| [docs/00.agent-governance/memory/operations-target-marker-contract-tension.md](../../00.agent-governance/memory/operations-target-marker-contract-tension.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
 | [docs/00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md](../../00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md) | Markdown reference |
 | [docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md](../../00.agent-governance/memory/spec-136-migration-branch-preservation.md) | Markdown reference |
@@ -516,7 +517,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md](../../05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md](../../05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md](../../05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md) | Markdown reference |
-| [docs/05.operations/catalog/06-observability/ops-0048-retention/policy.md](../../05.operations/catalog/06-observability/ops-0048-retention/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md](../../05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md](../../05.operations/catalog/06-observability/ops-0049-tempo/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md](../../05.operations/catalog/06-observability/ops-0049-tempo/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md](../../05.operations/catalog/06-observability/ops-0049-tempo/runbook.md) | Markdown reference |
@@ -524,8 +525,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md](../../05.operations/catalog/07-workflow/ops-0050-airflow/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md](../../05.operations/catalog/07-workflow/ops-0050-airflow/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md](../../05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md) | Markdown reference |
-| [docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-basics/guide.md](../../05.operations/catalog/07-workflow/ops-0051-airflow-dag-basics/guide.md) | Markdown reference |
-| [docs/05.operations/catalog/07-workflow/ops-0052-dag-deployment/policy.md](../../05.operations/catalog/07-workflow/ops-0052-dag-deployment/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md](../../05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md](../../05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md](../../05.operations/catalog/07-workflow/ops-0053-n8n/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/07-workflow/ops-0053-n8n/policy.md](../../05.operations/catalog/07-workflow/ops-0053-n8n/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md](../../05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md) | Markdown reference |
@@ -545,7 +546,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md](../../05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/09-tooling/README.md](../../05.operations/catalog/09-tooling/README.md) | folder index |
-| [docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment-policy/policy.md](../../05.operations/catalog/09-tooling/ops-0060-iac-deployment-policy/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md](../../05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md](../../05.operations/catalog/09-tooling/ops-0061-k6/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md](../../05.operations/catalog/09-tooling/ops-0061-k6/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md](../../05.operations/catalog/09-tooling/ops-0061-k6/runbook.md) | Markdown reference |
@@ -578,9 +579,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md](../../05.operations/catalog/10-communication/ops-0070-mail/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md](../../05.operations/catalog/10-communication/ops-0070-mail/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/11-laboratory/README.md](../../05.operations/catalog/11-laboratory/README.md) | folder index |
-| [docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/guide.md](../../05.operations/catalog/11-laboratory/ops-0071-dashboard/guide.md) | Markdown reference |
-| [docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/policy.md](../../05.operations/catalog/11-laboratory/ops-0071-dashboard/policy.md) | Markdown reference |
-| [docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/runbook.md](../../05.operations/catalog/11-laboratory/ops-0071-dashboard/runbook.md) | Markdown reference |
+| [docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md](../../05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md](../../05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md](../../05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md](../../05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md](../../05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md](../../05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md) | Markdown reference |
@@ -597,9 +598,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md](../../05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md](../../05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/12-infra-net/README.md](../../05.operations/catalog/12-infra-net/README.md) | folder index |
-| [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/guide.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/guide.md) | Markdown reference |
-| [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/policy.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/policy.md) | Markdown reference |
-| [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md) | Markdown reference |
+| [docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/README.md](../../05.operations/catalog/README.md) | folder index |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
 | [docs/05.operations/releases/README.md](../../05.operations/releases/README.md) | folder index |

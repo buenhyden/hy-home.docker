@@ -45,7 +45,7 @@ Loki 운영 기준을 다룬다.
 - **Allowed**:
   - Dynamic log fields는 LogQL parser(`| json` 등)로 query time에 추출한다.
   - Long-term audit 보관이 필요하면 MinIO owning policy/runbook과 별도
-    Stage 04 task evidence로 snapshot 또는 replication을 검토한다.
+    co-located Task evidence로 snapshot 또는 replication을 검토한다.
 - **Disallowed**:
   - Retention 변경 없이 문서만 수정해 보관 정책이 바뀐 것처럼 선언하는 행위
   - `MINIO_APP_USER_PASSWORD` 또는 secret 값을 문서, 로그, task evidence에
@@ -80,4 +80,4 @@ Loki 운영 기준을 다룬다.
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [Retention policy](../ops-0048-retention/policy.md)
+- [Retention policy](../ops-0048-telemetry-retention/policy.md)

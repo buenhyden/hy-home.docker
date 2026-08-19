@@ -5,7 +5,7 @@
 ## Overview
 
 This domain co-locates the existing guide, policy, and runbook under the frozen
-`ops-0077-standardize-infra-net` identity. The three roles preserve their
+`ops-0077-ip-address-management` identity. The three roles preserve their
 separate usage, control, and procedure responsibilities.
 
 ## Audience
@@ -23,7 +23,7 @@ separate usage, control, and procedure responsibilities.
 
 | Subject | Available documents |
 | --- | --- |
-| [`infra_net` standardization](ops-0077-standardize-infra-net/guide.md) | [Guide](ops-0077-standardize-infra-net/guide.md), [Policy](ops-0077-standardize-infra-net/policy.md), [Runbook](ops-0077-standardize-infra-net/runbook.md) |
+| [`infra_net` standardization](ops-0077-ip-address-management/guide.md) | [Guide](ops-0077-ip-address-management/guide.md), [Policy](ops-0077-ip-address-management/policy.md), [Runbook](ops-0077-ip-address-management/runbook.md) |
 
 ## How to Work in This Area
 

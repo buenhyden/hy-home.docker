@@ -22,7 +22,7 @@ did not exist in the migration ledger.
 
 | Subject | Available documents |
 | --- | --- |
-| [IaC deployment policy](ops-0060-iac-deployment-policy/policy.md) | [Policy](ops-0060-iac-deployment-policy/policy.md) |
+| [IaC deployment policy](ops-0060-iac-deployment/policy.md) | [Policy](ops-0060-iac-deployment/policy.md) |
 | [k6](ops-0061-k6/guide.md) | [Guide](ops-0061-k6/guide.md), [Policy](ops-0061-k6/policy.md), [Runbook](ops-0061-k6/runbook.md) |
 | [Locust](ops-0062-locust/guide.md) | [Guide](ops-0062-locust/guide.md), [Policy](ops-0062-locust/policy.md), [Runbook](ops-0062-locust/runbook.md) |
 | [Optimization hardening](ops-0063-optimization-hardening/guide.md) | [Guide](ops-0063-optimization-hardening/guide.md), [Policy](ops-0063-optimization-hardening/policy.md), [Runbook](ops-0063-optimization-hardening/runbook.md) |

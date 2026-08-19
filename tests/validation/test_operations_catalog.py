@@ -1439,36 +1439,57 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                     ),
                 )
 
-    def test_executed_fails_closed_without_selected_slice_semantic_rules(
+    def test_executed_fails_closed_without_a_matching_semantic_rule(
         self,
     ) -> None:
-        """A slice whose rules do not exist yet must not validate synthetically.
+        """A row whose label resolves to no rule must not validate synthetically.
 
-        Repointed from `04-data` to `05-messaging` on 2026-08-19, when Task 10E
-        supplied `04-data`'s rules. The guard is about the property, not about
-        that domain: it named `04-data` because that was then the nearest slice
-        with no rules. Leaving it there would have turned a fail-closed guard
-        into an assertion that a domain stays unimplemented, which the next slice
-        to be implemented would break again. `05-messaging` still has no rule for
-        its `stale:parallel-policy-label` rows, so the property is testable there;
-        when those rules land, repoint it again rather than deleting it.
+        This guard used to name whichever domain had no rules yet, and was
+        repointed twice as slices landed -- from `04-data` to `05-messaging` on
+        2026-08-19, and then nowhere, because Task 10E left every declared label
+        with a rule. Riding a moving target made the guard assert that some
+        domain stays unimplemented, which the next slice always broke.
+
+        The property does not need an unimplemented domain. Several handlers are
+        keyed by path, so giving a real label to a row it does not key on makes
+        the rule resolve to nothing without inventing an unknown label. The
+        checker must fail closed there.
         """
 
         manifest = self._approved_manifest()
+        unkeyed = next(
+            row
+            for row in manifest.files
+            if row.final_path is not None
+            and row.legacy_path.parts[2] == "05-messaging"
+            and row.legacy_path.name != "README.md"
+            and "ops-0036-kafka" not in row.final_path.as_posix()
+            and "ops-0038-rabbitmq" not in row.final_path.as_posix()
+        )
+        rows = tuple(
+            dataclasses.replace(row, removed_semantics=("stale:parallel-policy-label",))
+            if row is unkeyed
+            else row
+            for row in manifest.files
+        )
+        mutated = dataclasses.replace(manifest, files=rows)
         with tempfile.TemporaryDirectory() as directory:
             execution_root = pathlib.Path(directory)
-            self._execution_tree(execution_root, manifest, "05-messaging")
+            self._execution_tree(execution_root, mutated, "05-messaging")
+            findings = validate_operations_catalog_manifest(
+                ROOT,
+                mutated,
+                mode="executed",
+                domains=("05-messaging",),
+                execution_root=execution_root,
+            )
             self.assertIn(
-                "semantic-rewrite-rule-missing",
-                finding_codes(
-                    validate_operations_catalog_manifest(
-                        ROOT,
-                        manifest,
-                        mode="executed",
-                        domains=("05-messaging",),
-                        execution_root=execution_root,
-                    )
-                ),
+                unkeyed.final_path.as_posix(),
+                {
+                    finding.path
+                    for finding in findings
+                    if finding.code == "semantic-rewrite-rule-missing"
+                },
             )
 
     def test_executed_remove_text_cannot_bypass_missing_semantic_rule(

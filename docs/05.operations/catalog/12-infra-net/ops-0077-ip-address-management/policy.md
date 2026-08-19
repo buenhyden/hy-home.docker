@@ -7,7 +7,7 @@ created: 2026-04-01
 updated: 2026-08-11
 ---
 
-<!-- Target: docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/policy.md -->
+<!-- Target: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md -->
 
 # infra_net IP Management Operations Policy
 

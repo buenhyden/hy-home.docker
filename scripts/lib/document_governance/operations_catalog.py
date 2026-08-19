@@ -1363,6 +1363,88 @@ def _semantic_rewrite_rule_task10d_remaining(
             "required_target": tuple(new for _old, new in replacements),
             "forbidden_target": (r"runbooks/00-workspace/",),
         }
+    if label == "duplicate:airflow-dag-validation-and-recovery-handoff":
+        # The merge ledger's reason names exactly what is duplicated: the
+        # dags-list verification and the ops-0050 recovery handoff, both of
+        # which the merged subject's guide already carries. The policy keeps
+        # its governance statement and drops the restatement.
+        replacements = (
+            (
+                ", including `docker compose exec airflow-apiserver airflow dags list`,",
+                ",",
+            ),
+            (
+                "- [Airflow recovery runbook](../ops-0050-airflow/runbook.md)\n",
+                "",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": (
+                "Compliance is checked via the Airflow static/runtime checks documented in",
+            ),
+            "forbidden_target": (
+                r"airflow-apiserver airflow dags list",
+                r"Airflow recovery runbook",
+            ),
+        }
+    if label == "stale:parallel-policy-label":
+        # The label names a path in the dissolved parallel `policies/` tree, so
+        # unlike its sibling entries it resolves to nothing after the migration.
+        # Each row names its own subject, so the pair is keyed rather than shared.
+        parallel_policy_labels = {
+            "ops-0036-kafka": (
+                "- [../../policies/05-messaging/kafka.md](policy.md)",
+                "- [Kafka operations policy](policy.md)",
+            ),
+            "ops-0038-rabbitmq": (
+                "- [../../policies/05-messaging/rabbitmq.md](policy.md)",
+                "- [RabbitMQ operations policy](policy.md)",
+            ),
+        }
+        replacement = next(
+            (pair for key, pair in parallel_policy_labels.items() if key in path),
+            None,
+        )
+        if replacement is None:
+            return None
+        return {
+            "source_replacements": (replacement,),
+            "required_target": (replacement[1],),
+            "forbidden_target": (r"policies/05-messaging/",),
+        }
+    if label == "stale:parallel-role-labels":
+        replacements = (
+            (
+                "- **Policy**: [../../policies/08-ai/ollama.md](../ops-0056-ollama/policy.md)",
+                "- **Policy**: [Ollama operations policy](../ops-0056-ollama/policy.md)",
+            ),
+            (
+                "- **Guide**: [../../guides/08-ai/ollama.md](../ops-0056-ollama/guide.md)",
+                "- **Guide**: [Ollama usage guide](../ops-0056-ollama/guide.md)",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"policies/08-ai/", r"guides/08-ai/"),
+        }
+    if label == "stale:stage-04-execution-route" and "ops-0043" in path:
+        # Convergence dissolved the standalone Stage 04 execution stage; Task
+        # evidence is now co-located under the owning Spec.
+        replacements = (
+            (
+                "Long-term audit 보관이 필요하면 MinIO owning policy/runbook과 별도\n"
+                "    Stage 04 task evidence로 snapshot 또는 replication을 검토한다.",
+                "Long-term audit 보관이 필요하면 MinIO owning policy/runbook과 별도\n"
+                "    co-located Task evidence로 snapshot 또는 replication을 검토한다.",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"Stage 04 task evidence",),
+        }
     if label == "stale:stage-04-execution-route" and "ops-0009" in path:
         replacements = (
             (

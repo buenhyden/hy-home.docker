@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment-policy/policy.md -->
+<!-- Target: docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md -->
 
 # IaC Deployment Policy
 

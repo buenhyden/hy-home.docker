@@ -30,7 +30,7 @@ retention roles under their frozen `ops-0039` through `ops-0049` identities.
 | [Prometheus](ops-0045-prometheus/guide.md) | [Guide](ops-0045-prometheus/guide.md), [Policy](ops-0045-prometheus/policy.md), [Runbook](ops-0045-prometheus/runbook.md) |
 | [Pushgateway](ops-0046-pushgateway/guide.md) | [Guide](ops-0046-pushgateway/guide.md), [Policy](ops-0046-pushgateway/policy.md), [Runbook](ops-0046-pushgateway/runbook.md) |
 | [Pyroscope](ops-0047-pyroscope/guide.md) | [Guide](ops-0047-pyroscope/guide.md), [Policy](ops-0047-pyroscope/policy.md), [Runbook](ops-0047-pyroscope/runbook.md) |
-| [Retention](ops-0048-retention/policy.md) | [Policy](ops-0048-retention/policy.md) |
+| [Retention](ops-0048-telemetry-retention/policy.md) | [Policy](ops-0048-telemetry-retention/policy.md) |
 | [Tempo](ops-0049-tempo/guide.md) | [Guide](ops-0049-tempo/guide.md), [Policy](ops-0049-tempo/policy.md), [Runbook](ops-0049-tempo/runbook.md) |
 
 ## How to Work in This Area

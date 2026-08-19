@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md -->
+<!-- Target: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md -->
 
 # 0012 Standardize Infra Net Runbook
 

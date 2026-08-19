@@ -6,7 +6,7 @@ parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/ops-0048-retention/policy.md -->
+<!-- Target: docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md -->
 
 # Retention and Performance Policies
 

@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 - [../../../02.architecture/descriptions/ad-0005-messaging-architecture.md](../../../../02.architecture/descriptions/ad-0005-messaging-architecture.md)
 - [../../../03.specs/006-messaging/spec.md](../../../../03.specs/spec-0006-messaging/spec.md)
-- [../../policies/05-messaging/kafka.md](policy.md)
+- [Kafka operations policy](policy.md)
 
 ## When to Use
 
