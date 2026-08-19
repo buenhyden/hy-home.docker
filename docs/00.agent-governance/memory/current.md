@@ -298,6 +298,33 @@ status: active
   executed and unexecuted domains, and the metadata deficit scan only runs on
   changed files. Three contracts disagree about the marker; the tension and its
   measurements are in `operations-target-marker-contract-tension.md`.
-- Resume the taxonomy migration at slice 10E, domains 05 through 06.
+- **The Operations catalog migration is executed end to end.** Slices 10E, 10F and
+  10G landed on 2026-08-20 and all 13 domains PASS `--mode executed`. Five renames,
+  the migration's only merge (`ops-0052-dag-deployment` into
+  `ops-0051-airflow-dag-lifecycle`, two `git mv` into one directory rather than a
+  directory move), and four missing semantic rules. `--mode complete` falls from 45
+  findings to 2, both `complete-index-routes-mismatch` owned by Task 10H, which
+  produces the indexes and consumes 10C--10G. `--mode structure` rises 87 to 108,
+  the expected direction, since it pins each target to its frozen pre-execution
+  source. `test_operations_catalog.py` is 51 tests / 0 failures, from 4.
+- **What the merge rule removes was measured, not chosen.** The section-token sets
+  already agreed in both directions, so the whole failure was the absent rule
+  cascading through `rewrite_valid`. The ledger's own subject `reason` names the
+  duplicate precisely, and the rule removes exactly that.
+- **The fails-closed guard no longer rides a moving target.** It named whichever
+  domain had no rules yet and had been repointed once; with every label ruled there
+  was nowhere left to point. It now gives a real label to a row its path key does
+  not match. Verified by injecting a fail-open branch and watching it fail.
+- **Gate 4's three blockers are remediated and gate 4 still measures `failures=5`,
+  correctly.** The user extended this unit's boundary on 2026-08-20 to own the three
+  documents. All five occurrences were present-tense canonical-owner statements; they
+  are converted to past tense rather than repointed, because these completed units
+  genuinely did use the retiring pack and repointing would falsify the record. The
+  `spec-0123` Task's `status` is corrected `active` to `completed` on measured grounds
+  -- all thirteen Work Breakdown units already read `Done` -- which makes it historical
+  evidence and makes its `Allowed Paths` grant historical; a scope note states that
+  explicitly. The remaining 5 failures are unsettled review verdicts, and settling them
+  is an independent review act the executor must not perform on their own remediation.
+- Task 10H remains: the Operations indexes.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
   deleted or relocated until every gate is independently recorded.
