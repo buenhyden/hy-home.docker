@@ -63,6 +63,12 @@ CODEOWNERS_CITATION = re.compile(r"`\.github/CODEOWNERS(?::(\d+))?`")
 OWNER_STATEMENT = re.compile(
     r"[Rr]emediation owner[^`]{0,80}?`(@?[A-Za-z][A-Za-z0-9@_-]*)`"
 )
+# A destination claim paragraph declares the ledger row it serves with a braced
+# marker holding that row's exact Claim anchor cell. A braced form is used rather
+# than a sentence-terminated one because several anchors contain a period and a
+# period-terminated pattern truncates them; that exact mistake has already been
+# made once in this corpus.
+LEDGER_ANCHOR_DECLARATION = re.compile(r"\{ledger-anchor:\s*(.+?)\}")
 
 
 @dataclass(frozen=True)
@@ -83,6 +89,10 @@ class Record:
     where: str
     label: str
     text: str
+    key: str = ""
+
+    def owners(self) -> frozenset[str]:
+        return frozenset(OWNER_STATEMENT.findall(self.text))
 
 
 def _read(root: pathlib.Path, relative: str) -> list[str]:
@@ -163,6 +173,7 @@ def collect_ledger_records(root: pathlib.Path, task: str) -> list[Record]:
                 where=f"{task}:{index + 1}",
                 label=cells[ANCHOR_COLUMN][:60],
                 text=cells[REASON_COLUMN],
+                key=cells[ANCHOR_COLUMN],
             )
         )
     return records
@@ -172,9 +183,22 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
     """Claim paragraphs in the carried-claims section.
 
     A claim paragraph opens with a bolded title. Editorial notes in the same
-    section also open that way, so a paragraph is treated as a claim only when it
-    carries an owner phrase or is otherwise indistinguishable from one; the
-    caller sees a missing-owner finding either way, which is the safe direction.
+    section open the same way, and nothing in the text distinguishes them, so
+    this collector keeps only paragraphs that already carry an owner phrase.
+
+    Corrected 2026-08-19. This docstring previously claimed the caller "sees a
+    missing-owner finding either way, which is the safe direction". That was
+    false: a paragraph with no owner phrase never becomes a record, so
+    CARRY-OWNER-MISSING is unreachable on this surface and the reported
+    destination count is a count of owner-bearing paragraphs rather than
+    coverage of the carried claims. An independent seat found this. It is the
+    same measure-presence-report-correctness move this module's header lists as
+    the sixth historical failure, reproduced in the header that lists it.
+
+    The reachability gap is not closed by widening this collector, because an
+    editorial note would then be reported as a claim missing an owner. It is
+    closed by pairing, which check_pairing below performs: a Carry ledger row
+    with no destination paragraph declaring it is reported directly.
     """
 
     lines = _read(root, task)
@@ -190,12 +214,14 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
                 cursor += 1
             body = " ".join(lines[index:cursor])
             if OWNER_STATEMENT.search(body):
+                declared = LEDGER_ANCHOR_DECLARATION.search(body)
                 records.append(
                     Record(
                         surface="destination",
                         where=f"{task}:{index + 1}",
                         label=title[:60],
                         text=body,
+                        key=declared.group(1).strip() if declared else "",
                     )
                 )
             index = cursor
@@ -290,6 +316,70 @@ def check_record(
     return findings
 
 
+def check_pairing(records: list[Record]) -> list[Finding]:
+    """Pair each Carry ledger row with the destination paragraph that serves it.
+
+    Gate 2 reads the destination, and the two surfaces state the same claim
+    twice. Nothing in the data joined them: a ledger row is keyed by its Claim
+    anchor and a destination paragraph opens with unrelated prose, so no check
+    could compare what the two surfaces say. Every comparison was therefore made
+    by eye, and by eye the owner agreed on both surfaces while an independent
+    seat found 21 disagreements, 17 of them naming a different owner.
+
+    This function supplies the join. A destination paragraph declares the ledger
+    row it serves, and the owners the two surfaces name must then agree.
+    """
+
+    ledger = [record for record in records if record.surface == "ledger"]
+    destination = [record for record in records if record.surface == "destination"]
+    by_key = {record.key: record for record in destination if record.key}
+
+    findings: list[Finding] = []
+    for record in destination:
+        if not record.key:
+            findings.append(
+                Finding(
+                    "CARRY-PAIR-UNDECLARED",
+                    record.where,
+                    f"{record.label}: declares no ledger row; add a "
+                    "`{ledger-anchor: <exact Claim anchor cell>}` marker",
+                )
+            )
+            continue
+        if record.key not in {item.key for item in ledger}:
+            findings.append(
+                Finding(
+                    "CARRY-PAIR-ORPHAN",
+                    record.where,
+                    f"{record.label}: declares ledger anchor {record.key!r}, "
+                    "which matches no Carry row",
+                )
+            )
+
+    for record in ledger:
+        partner = by_key.get(record.key)
+        if partner is None:
+            findings.append(
+                Finding(
+                    "CARRY-PAIR-MISSING",
+                    record.where,
+                    f"{record.label}: no destination paragraph declares this row",
+                )
+            )
+            continue
+        mine, theirs = record.owners(), partner.owners()
+        if mine and theirs and not (mine & theirs):
+            findings.append(
+                Finding(
+                    "CARRY-OWNER-CROSS-SURFACE",
+                    record.where,
+                    f"{record.label}: ledger names {sorted(mine)} and the "
+                    f"destination at {partner.where} names {sorted(theirs)}",
+                )
+            )
+    return findings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate the Spec 137 carry remediation-owner requirement."
@@ -324,6 +414,8 @@ def main() -> int:
     findings: list[Finding] = []
     for record in records:
         findings += check_record(record, ownership, codeowners_lines)
+    if arguments.surface == "both":
+        findings += check_pairing(records)
 
     for finding in findings:
         print(finding.render())
