@@ -324,7 +324,7 @@ def _cells(line: str) -> list[str]:
     return [part.replace(r"\|", "|").strip() for part in parts]
 
 
-def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
+def read_allowlist(root: pathlib.Path) -> dict[str, list[AllowRow]]:
     """Parse the Task's allowlist, resolving columns by header name."""
     task = root / TASK_PATH
     if not task.is_file():
@@ -352,6 +352,7 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
         return {}
 
     header: list[str] | None = None
+    malformed: list[tuple[int, str]] = []
     # Keyed by path to a LIST of rows. Spec 137's Route-1 admission and split-row
     # evaluation amendment makes each declared row a separate subject: one
     # document may hold literals of different classes under separate rows, each
@@ -435,6 +436,15 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
             continue
         if set("".join(cells)) <= {"-", " ", ":"}:
             continue
+        if len(cells) != len(header):
+            # A row whose cell count does not match the header is misread by
+            # position, not skipped: `pick` indexes by header position, so an
+            # unescaped `|` inside a cell shifts every later field and the
+            # review verdict is read from the wrong one. That failed closed only
+            # by luck on 2026-08-19, when a pasted table fragment put the text
+            # `Criteria source` where the verdict belongs. Fail loudly instead.
+            malformed.append((len(cells), line))
+            continue
 
         def pick(name: str) -> str:
             assert header is not None
@@ -457,6 +467,11 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
             settled=_is_settled(verdict),
             forbidden_class=bool(FORBIDDEN_CLASSES.search(literal_class)),
         ))
+    if malformed:
+        raise ValueError(
+            "allowlist rows do not match the header cell count; escape any "
+            f"literal `|` inside a cell as `\\|`: {malformed[:3]}"
+        )
     return rows
 
 

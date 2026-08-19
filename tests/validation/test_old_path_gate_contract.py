@@ -755,8 +755,14 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     # further rows and the Route-1 admission and split-row evaluation amendment
     # made every declared row a subject, so two rows previously hidden by a
     # path collision are now counted.
+    # Refreshed 2026-08-19 twice. The pinned set was stale, then two settled
+    # rows had their verdicts withdrawn after an independent seat found the
+    # amended route 1 does not admit them, which is why the settled count falls
+    # rather than rises.
     EXPECTED_UNREVIEWED = {
         "docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md",
+        "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md",
+        "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md",
         "docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md",
         "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md",
         "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
@@ -779,7 +785,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         }
         self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
         settled = sum(1 for group in rows.values() for row in group if row.settled)
-        self.assertEqual(30, settled)
+        self.assertEqual(28, settled)
 
     def test_no_live_row_declares_a_forbidden_class(self) -> None:
         rows = contract.read_allowlist(ROOT)
@@ -790,6 +796,31 @@ class OldPathGateRepositoryTests(unittest.TestCase):
             if row.forbidden_class
         ]
         self.assertEqual([], offenders)
+
+    def test_malformed_row_fails_loudly(self) -> None:
+        """An unescaped pipe must not shift the verdict into another field.
+
+        `pick` indexes cells by header position, so a row with more cells than
+        the header is misread rather than skipped. On 2026-08-19 a pasted table
+        fragment put the text `Criteria source` where the review verdict
+        belongs; it failed closed only because that string does not settle.
+        """
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            task = root / "docs" / "04.execution" / "tasks"
+            task.mkdir(parents=True)
+            (task / "2026-08-08-agentic-research-pack-rebuild.md").write_text(
+                "### Old-path allowlist\n\n"
+                "| Path | Line or stable anchor | Literal class | Reason | Review verdict |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| `a.md` | `x` | Factual history | reason with | an unescaped pipe | Approved |\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError) as caught:
+                contract.read_allowlist(root)
+            self.assertIn("header cell count", str(caught.exception))
 
     def test_rows_sharing_a_path_all_survive(self) -> None:
         """A split row must not be overwritten by its sibling.

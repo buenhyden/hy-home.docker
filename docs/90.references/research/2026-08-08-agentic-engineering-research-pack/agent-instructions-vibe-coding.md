@@ -215,8 +215,8 @@ records them.
 
 ### Carried source-evidence claims
 
-Carried 2026-08-19 from the retiring research pack under Spec 137's `retain`
-disposition. Each is a source-backed or upstream-capability claim that the
+Carried 2026-08-19 from the retiring research pack under Spec 137's `retain` or
+`correct` disposition, per the ledger row that routes each one. Each is a source-backed or upstream-capability claim that the
 migration ledger could not route to a Stage 04 gap, because the `carry`
 disposition bars that material. Each states what the upstream evidence supports
 and, where it matters more, what it does not.

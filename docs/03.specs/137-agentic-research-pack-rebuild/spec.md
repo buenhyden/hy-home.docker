@@ -505,9 +505,10 @@ than four.
 An independent review seat found that route 1 of
 `Non-link literal admission amendment` is satisfied by no row in the Task's
 allowlist, and that gate 4's own scanner cannot evaluate a row that shares a path
-with another. This amendment makes exactly two changes and no others. It widens
-no allowlist, admits no exception to the clickable-link prohibition, removes no
-gate, and lowers no threshold.
+with another. This amendment makes exactly two changes and no others. It admits
+no exception to the clickable-link prohibition, removes no gate, and lowers no
+threshold. It does widen route 1 relative to one reading of the clause it
+replaces, which the first change states and bounds rather than denying.
 
 **1. Route 1's claim-ledger conjunct is replaced.** Route 1 requires the literal
 to describe a factual old event AND to carry an explicit claim-ledger
@@ -520,8 +521,21 @@ retiring pack has no ledger row and cannot be given one without changing what th
 ledger enumerates, so the conjunct is unsatisfiable by construction in the same
 way requirement 5, requirement 6 and route 3's removal condition were before
 their recorded carve-outs. The 2026-08-18 amendment correctly rejected reading
-the conjunct as vacuously satisfied; the defect it left open is that no reading
-of the conjunct as written can be satisfied at all.
+the conjunct as vacuously satisfied.
+
+Narrowed 2026-08-19 after an independent seat refuted the broader claim this
+paragraph first made, that no reading of the conjunct could be satisfied at all.
+That is false under a reading in which the LITERAL, not the containing document,
+is the subject: a literal naming a specific retiring leaf can cite that leaf's
+own ledger rows, and the seat measured six of the fifteen documents in this
+family carrying such literals, up to 41 of 47 occurrences in one of them. The
+unsatisfiable case is narrower than first stated: it is the directory-only
+literal, which names no leaf and so can cite no disposition. Because this
+amendment drops the ledger tie for the whole family rather than only for that
+case, it does widen route 1 relative to the literal-subject reading. The
+widening is deliberate and bounded, because the replacement test below is
+stricter in the dimension that matters for a reader: it excludes canonical-owner
+statements outright, which the ledger tie never did.
 
 The accounting the conjunct was reaching for is supplied instead by this Spec's
 own `Historical-evidence boundary`. Route 1 now reads:
