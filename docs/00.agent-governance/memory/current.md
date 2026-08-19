@@ -112,8 +112,20 @@ status: active
   of what its code does about missing owners. Both are corrected, and the module
   now performs the join the data never carried: a destination paragraph declares
   the ledger row it serves with a braced `{ledger-anchor: ...}` marker, and the
-  owners must agree. **RED is `failures=94`** -- 47 `CARRY-PAIR-MISSING` and 47
-  `CARRY-PAIR-UNDECLARED`. The state did not change; it became measurable.
+  owners must agree. RED was `failures=94`; it is now `failures=0` at
+  `ledger_records=47` and `destination_records=45`, the true shape. All 45
+  destination paragraphs declare their rows, three Gemini rows share one, and the
+  two orphan paragraphs are removed after verifying both claims present at the
+  successor leaves their `Retain` rows name. The 18 measured owner disagreements
+  are adjudicated to the destination, which had resolved per paragraph against the
+  surface each remediation lands on. The mechanical coverage measure alone would
+  have got row 803 wrong, where the remediation lands on an uncovered script.
+- **The reconciliation weakened the check and the check caught it.** Synchronising
+  by appending rather than replacing left every cell naming two owners, and the
+  set-intersection comparison then went blind: an injected third, disagreeing owner
+  produced no finding. The comparison now tests the operative owner, the last one
+  stated. Re-injecting fails and removing returns to zero, so the zero is measured.
+  19 tests.
 - **The 10 regression tests recorded as pinning the historical failure modes had
   never run.** They were bare pytest-style functions and the repository runs
   `unittest discover`; this was the only file of 34 in that directory declaring no
