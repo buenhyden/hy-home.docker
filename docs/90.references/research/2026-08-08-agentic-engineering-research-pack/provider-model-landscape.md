@@ -169,6 +169,12 @@ re-derivable from the vendor pages the `Sources` section names.
 12. **An unzoned calendar day is cutoff-qualified only when its whole range
     precedes the cutoff instant.** This is the rule that produces the
     structural-versus-qualified split rather than any individual vendor fact.
+    **Correction.** The retiring pack applied a `historical state unverified`
+    marker to rows failing this test, meaning the official evidence retrieved
+    on its access date does not prove the exact state at the cutoff instant,
+    because the page is mutable, the event lacks a cutoff-safe timestamp, or
+    official pages conflict. That marker is a convention of that pack, not a
+    value in any typed contract, and it must not be cited as one.
 13. **Absent replacement or shutdown data is itself a finding.** A deprecation
     entry with no named replacement, or with no shutdown date, records an
     evidence gap rather than an absence of risk.

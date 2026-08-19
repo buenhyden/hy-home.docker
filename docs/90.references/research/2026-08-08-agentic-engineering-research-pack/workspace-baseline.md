@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:workspace-baseline
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -528,6 +528,14 @@ Current gaps, each paired with the observation that would close it:
 | Applied remote branch protection and required checks                                     | repository owner                  | Authenticated `gh api` readback of rulesets and branch protection.                           |
 | Provider runtime acceptance of adapters, hooks, and models                               | separately approved evidence task | A live provider session recorded as runtime evidence.                                        |
 | Live Compose health for 49 tracked definitions                                           | separately approved runtime unit  | A runtime unit with pre-check, change, and post-check evidence.                              |
+
+### Carried source-evidence claims
+
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **The tracked Codex session-end record conflicts with upstream.** `contracts/provider-models.yaml` records the Codex `session-end` binding as `unsupported` with a null native event, while Codex documents `SessionEnd`, which makes the tracked record stale rather than merely incomplete. The upstream half is a dated observation carried from the retiring pack and was not re-fetched here, so it is `UNVERIFIED` as a current capability claim; the repository half is directly checkable in the named contract.
 
 ## Scope Implications
 

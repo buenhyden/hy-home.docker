@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:provider-implementation-comparison
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-14
+reviewed_at: 2026-08-19
 review_cycle: on-source-change
 ---
 
@@ -215,6 +215,14 @@ and evidence can share owners. Native instruction loading, file schemas,
 settings precedence, trust, sandboxes, payloads, timeouts, and memory remain
 provider-specific. The renderer should translate those differences and the
 validator should detect drift; neither should claim live provider acceptance.
+
+### Carried source-evidence claims
+
+Source-evidence claims carried forward from the superseded 2026-07-05
+research pack on 2026-08-19. Each states what the upstream evidence supports
+and, where it matters more, what it does not.
+
+- **The Codex skills pattern has no confirming official source.** Both candidate official pages, `https://learn.chatgpt.com/docs/skills` and `https://learn.chatgpt.com/docs/agent-configuration/skills`, returned HTTP 404 at the recorded revalidation, so the `native_skill_pattern: .agents/skills/**/SKILL.md` value recorded for Codex has no confirming official source and is not treated as established. The per-agent `[[skills.config]]` field remains verified, because it appears on the Codex subagents page. The 404 observation is dated and was not re-fetched here; it is `UNVERIFIED` as a current network fact and carried as the recorded observation.
 
 ## Scope Implications
 
