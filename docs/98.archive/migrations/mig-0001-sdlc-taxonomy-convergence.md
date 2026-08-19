@@ -57,7 +57,7 @@ post_baseline_records:
   action: move
   replacement: null
   source_commit: 9c927a0e187a4214358453f4826dc758a72611b5
-  reason: Move post-baseline active Stage 90 source to stable typed target the `verification-validation` leaf of the retiring 2026-07-05 pack; migrate 8 resolved inbound link(s) with it.
+  reason: Move post-baseline active Stage 90 source to stable typed target the `verification-validation` leaf of the retiring 2026-07-05 pack; migrate 8 resolved inbound link(s) with it. OUTCOME RECORDED 2026-08-19: this declared move executed at 57259e24, which renamed the legacy path to the stable path (R096) and is an ancestor of HEAD, and the stable path was then deleted by the taxonomy merge 5afdd277, so it does not resolve at HEAD while its sibling ref-0084 does. stable_path is left unchanged because it records what the migration declared, not what currently exists; rewriting it would falsify the declaration. The file content survives only in git history at 57259e24. Restoring or superseding it is a Stage 90 disposition decision recorded against docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md and is not a Spec 137 gate.
 records:
 - legacy_path: docs/01.requirements/001-gateway.md
   stable_path: docs/01.requirements/prd-0001-gateway.md
