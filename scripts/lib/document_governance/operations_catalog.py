@@ -1040,6 +1040,7 @@ def _remove_text_fragment_is_structural(
 def _semantic_rewrite_rule(
     row: OperationFileRecord,
     label: str,
+    source_text: str | None = None,
 ) -> Mapping[str, tuple[object, ...]] | None:
     """Return exact Task 10D source rewrites and final semantic invariants."""
 
@@ -1060,13 +1061,13 @@ def _semantic_rewrite_rule(
             ),
         }
         replacements = rename_rules.get(row.legacy_path)
-        if replacements is None:
-            return None
-        return {
-            "source_replacements": replacements,
-            "required_target": tuple(new for _old, new in replacements),
-            "forbidden_target": (re.escape(label.rsplit(":", 1)[1]),),
-        }
+        if replacements is not None:
+            return {
+                "source_replacements": replacements,
+                "required_target": tuple(new for _old, new in replacements),
+                "forbidden_target": (re.escape(label.rsplit(":", 1)[1]),),
+            }
+        return _subject_path_marker_rule(row, label, source_text)
     if label == "contradiction:env-key-diff-count":
         replacements = (
             (
@@ -1152,6 +1153,51 @@ def _semantic_rewrite_rule(
             ),
         }
     return _semantic_rewrite_rule_task10d_remaining(row, label)
+
+
+def _subject_path_marker_rule(
+    row: OperationFileRecord,
+    label: str,
+    source_text: str | None = None,
+) -> Mapping[str, tuple[object, ...]] | None:
+    """Rule for a subject rename whose stale artifact is a self-reference marker.
+
+    Task 10D's rows for this label family carried a stale subject name inside an
+    H1, so its rule replaces heading text. The later domains do not: measured
+    across the 51 labelled sources in `04-data`, no H1 contains its old slug --
+    they read `# InfluxDB Usage Guide` and the like -- and the slug occurs
+    exactly once per file, inside a `<!-- Target: ... -->` self-reference marker
+    that the executor's own subject-path substitution already rewrites. So there
+    is no source rewrite to state, and stating one would invent work the executor
+    has already done.
+
+    What the rule contributes is the pair of invariants the substitution has to
+    have produced. `forbidden_target` is the old slug: it must not survive
+    anywhere in the final body. `required_target` is the row's own final path,
+    but ONLY when the source carries a marker, because the sources do not share
+    one shape -- one file of the 51 has no marker at all, and requiring its own
+    path of it would fail a row that has nothing to fail on.
+
+    Both invariants can fail, which was verified in a synthetic execution tree
+    before this rule was written: repointing a final file's marker at another
+    subject in the same domain, deleting a section, and reintroducing the old
+    slug are each caught. An earlier draft omitted `required_target` and passed
+    the repointed marker, so the narrower rule is not a simplification.
+    """
+
+    if not label.startswith("stale:legacy-subject-path:"):
+        return None
+    if row.final_path is None:
+        return None
+    # Read the marker out of the source rather than assuming it. Manifest-time
+    # validation calls this without the source text, and there the rule only has
+    # to exist, so the path invariant is omitted rather than guessed.
+    has_marker = source_text is not None and "<!-- Target:" in source_text
+    return {
+        "source_replacements": (),
+        "required_target": (row.final_path.as_posix(),) if has_marker else (),
+        "forbidden_target": (re.escape(label.rsplit(":", 1)[1]),),
+    }
 
 
 def _semantic_rewrite_rule_task10d_remaining(
@@ -1415,7 +1461,7 @@ def _apply_semantic_rewrite_rules(
     missing_rules: list[str] = []
     valid = True
     for label in row.removed_semantics:
-        rule = _semantic_rewrite_rule(row, label)
+        rule = _semantic_rewrite_rule(row, label, source_text)
         if rule is None:
             missing_rules.append(label)
             valid = False

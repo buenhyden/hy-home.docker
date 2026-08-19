@@ -1375,10 +1375,22 @@ class OperationsCatalogManifestTests(unittest.TestCase):
     def test_executed_fails_closed_without_selected_slice_semantic_rules(
         self,
     ) -> None:
+        """A slice whose rules do not exist yet must not validate synthetically.
+
+        Repointed from `04-data` to `05-messaging` on 2026-08-19, when Task 10E
+        supplied `04-data`'s rules. The guard is about the property, not about
+        that domain: it named `04-data` because that was then the nearest slice
+        with no rules. Leaving it there would have turned a fail-closed guard
+        into an assertion that a domain stays unimplemented, which the next slice
+        to be implemented would break again. `05-messaging` still has no rule for
+        its `stale:parallel-policy-label` rows, so the property is testable there;
+        when those rules land, repoint it again rather than deleting it.
+        """
+
         manifest = self._approved_manifest()
         with tempfile.TemporaryDirectory() as directory:
             execution_root = pathlib.Path(directory)
-            self._execution_tree(execution_root, manifest, "04-data")
+            self._execution_tree(execution_root, manifest, "05-messaging")
             self.assertIn(
                 "semantic-rewrite-rule-missing",
                 finding_codes(
@@ -1386,7 +1398,7 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                         ROOT,
                         manifest,
                         mode="executed",
-                        domains=("04-data",),
+                        domains=("05-messaging",),
                         execution_root=execution_root,
                     )
                 ),
