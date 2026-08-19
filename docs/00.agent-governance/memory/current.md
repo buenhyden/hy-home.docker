@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `efab7013`
+- Verified commit: `a6b33a66`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -64,11 +64,13 @@ status: active
 - Both independent review seats have now run and both returned Needs fixes.
   Their verdicts and this Task's re-derivation of the load-bearing measurements
   are recorded in the Task's Review Evidence.
-- Both seats have reported and their findings are applied. Gate 4 now measures
-  28 reviewed and 15 unreviewed rows with `failures=44`, up from 13 and 41,
-  because two settled verdicts were withdrawn: `spec-0123/spec.md` and
-  `spec-0123/task.md` are admitted under no route on the same two tests this
-  Task used to disqualify `spec-0105`. The rise is the honest direction.
+- Gate 4 stands at 35 settled and 8 unsettled allowlist rows with `failures=34`.
+  It rose to 44 first, when two wrongly settled verdicts were withdrawn, then
+  fell as seven rows settled on the seat's own verdict and four took bounded
+  edits. Four rows remain admitted under no route and need their owning units
+  rather than an edit here: two present-tense canonical-owner statements in
+  `Required Behavior` tables, an `Allowed Paths` write grant into the
+  deletion-gated directory in an active unit, and a scan-exemption constant.
 - Two of the three original gate 4 blockers are closed. Spec 137's `Route-1 admission and
   split-row evaluation amendment` replaces route 1's unsatisfiable claim-ledger
   conjunct with the Spec's own Historical-evidence boundary, and the scanner now
@@ -84,8 +86,12 @@ status: active
   eleven successor leaves. Zero of the 246 ledger rows now name themselves as
   their own destination. What remains is review, not routing.
 - Gate 2's reviewed-destination half is the standing blocker: of 147 `Retain`,
-  `Correct` and `Carry` rows, 93 carry `Not Run`. Destination existence is
-  closed; destination review is not.
+  `Correct` and `Carry` rows, 93 carry `Not Run`. Destination existence is now
+  fully closed — 64 rows named their destination by bare filename, which resolved
+  for a reader but not mechanically because the same filenames exist in both
+  packs, and all 64 are expanded to full successor paths with the files verified
+  to exist. Zero rows are unresolvable. Two seats are reviewing the 93: one over
+  the 49 `Carry` rows and one over the 44 `Retain` and `Correct` rows.
 - Both gate 1 coverage holes are filled. The vendor catalog's `Caveat` column is
   deduplicated into fifteen reading-rule families in the successor leaf with
   fourteen new ledger rows, and the Mythos Preview lifecycle conflict has its own
@@ -133,11 +139,10 @@ status: active
 
 ## Next handoff
 
-- Settle or change the 15 unreviewed allowlist rows. A seat would settle 7 today;
-  4 are admitted under no route and need their owning units, and 2 need a bounded
-  edit naming the pinned baseline.
-- Review the 93 `Not Run` destinations, which is the only thing between gate 2
-  and satisfaction now that every row has a real destination.
+- Apply the two in-flight destination reviews, then decide whether gate 2 can be
+  recorded satisfied.
+- Route the four no-route allowlist rows to their owning units; none is fixable
+  inside this unit.
 - No gate has been recorded satisfied.
 - Resume the taxonomy migration at slice 10E, domains 04 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
