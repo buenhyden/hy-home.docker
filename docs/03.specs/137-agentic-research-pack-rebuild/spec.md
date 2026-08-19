@@ -498,6 +498,54 @@ two additional requirements named above. The deletion precondition in
 `Migration contract` is unchanged and now reads over five dispositions rather
 than four.
 
+### Uniqueness-predicate amendment
+
+**Amendment approval date:** 2026-08-19 (Asia/Seoul)
+
+The `carry` requirement to "state uniqueness per claim" named a rationale but not
+a predicate. Its stated reason — that the label "does not by itself mean the
+claim disappears when the retiring pack does" — is a statement about **survival
+after deletion**, yet the requirement never said what uniqueness is measured
+against. Every implementation of it in the owning Task answered a different
+question: whether another row in the same ledger, or another paragraph in the
+same carried-claims section, carries the claim. That is intra-document
+duplication, and it does not bear on the gate.
+
+The gap is not theoretical. One row was recorded UNIQUE under the
+intra-document test while the successor pack states the same claim directly, so
+the claim survives deletion and the carry is not the only record of it. The
+record asserted the opposite of the fact the requirement exists to establish.
+
+**The predicate is survival, and it is now stated.** A `carry` record states
+uniqueness by answering one question: after the retiring pack is deleted, does
+this claim survive anywhere in tracked repository text other than the carried
+record itself? The answer takes one of three forms:
+
+- `UNIQUE` — no tracked text outside the retiring pack and outside the carried
+  record states the claim, so the carry is the only thing that will survive
+  deletion and is load-bearing.
+- `NOT UNIQUE` — identified tracked text outside the retiring pack states the
+  claim and survives deletion. The record must name that text by path. `carry`
+  remains available, because a duplicate that preserves provenance is a
+  legitimate reason to carry, but the record may no longer be justified on the
+  ground that it is the only surviving copy.
+- `PARTIAL` — some part of the claim survives elsewhere and some does not. The
+  record must say which part is which, because the surviving part cannot justify
+  the carry and the vanishing part is the whole of what is load-bearing.
+
+**What settles it.** A string search over tracked text outside the retiring
+directory is necessary but not sufficient: a paraphrase survives deletion while
+defeating the search. A `UNIQUE` verdict therefore requires both a recorded
+search that returns nothing and a reading of the destinations the claim would
+most plausibly have been written into. A `NOT UNIQUE` or `PARTIAL` verdict is
+settled by the path it names, because a positive is self-evidencing.
+
+**Scope of this amendment.** It changes what the requirement asks, not whether
+gate 2 applies. Uniqueness statements written against the intra-document test do
+not satisfy the requirement and must be re-derived. Statements that happen to be
+correct under both tests are not thereby settled; the recorded evidence must be
+the survival evidence.
+
 ### Route-1 admission and split-row evaluation amendment
 
 **Approval date:** 2026-08-19 (Asia/Seoul)
