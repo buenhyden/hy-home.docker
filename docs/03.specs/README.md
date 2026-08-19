@@ -94,6 +94,7 @@ docs/03.specs/
 | `spec-0134` | [Agent Governance Canonical Convergence](./spec-0134-agent-governance-canonical-convergence/spec.md) | [Plan](./spec-0134-agent-governance-canonical-convergence/plan.md), [Task](./spec-0134-agent-governance-canonical-convergence/task.md) |
 | `spec-0135` | [Target Surface Delta Convergence](./spec-0135-target-surface-delta-convergence/spec.md) | [Plan](./spec-0135-target-surface-delta-convergence/plan.md), [Task](./spec-0135-target-surface-delta-convergence/task.md) |
 | `spec-0136` | [SDLC Taxonomy Convergence](./spec-0136-sdlc-taxonomy-convergence/spec.md) | [Plan](./spec-0136-sdlc-taxonomy-convergence/plan.md), [Task](./spec-0136-sdlc-taxonomy-convergence/task.md) |
+| `spec-0152` | [Deleted Reference Leaf Disposition](./spec-0152-deleted-reference-leaf-disposition/spec.md) | [Plan](./spec-0152-deleted-reference-leaf-disposition/plan.md), [Task](./spec-0152-deleted-reference-leaf-disposition/task.md) |
 
 ## Role Contract
 

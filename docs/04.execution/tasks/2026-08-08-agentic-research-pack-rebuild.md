@@ -2705,6 +2705,20 @@ backfilled.
   or accept the loss explicitly. The evidence each option needs is already
   recorded above.
 
+  **Registered as its own unit 2026-08-19, and the survival figure above is
+  corrected by it.** The disposition now lives at
+  `docs/03.specs/spec-0152-deleted-reference-leaf-disposition/`, with a Spec, a
+  Plan and a Task, because a Stage 90 documentation judgement does not belong
+  inside a pack retirement track. Registering it also re-derived the figures
+  rather than carrying them, and one was wrong. The claim above that five
+  headings occur in zero files was true when taken and false by the time it was
+  written, because writing a heading into this record makes it occur in a tracked
+  file: the act of recording the loss falsified the measurement that justified
+  recording it. Under a predicate that excludes the recording surfaces and the
+  deletion-scheduled retiring directory, 10 of the 25 headings survive in no
+  durable tracked file, twice the figure above. The corrected predicate, its
+  exclusion set and its re-derivation command are in that unit's Spec.
+
   **The `mig-0001` half is closed.** That ledger entry declared a `stable_path`
   that no longer resolves while its sibling's does, and the asymmetry was
   unexplained. Commit `2ed631ee` records the outcome on the entry — the move
