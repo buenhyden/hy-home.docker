@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `a6b33a66`
+- Verified commit: `8cdeacaf`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -85,13 +85,21 @@ status: active
   `ai-agent-catalogs.md` row are source-backed or upstream material written into
   eleven successor leaves. Zero of the 246 ledger rows now name themselves as
   their own destination. What remains is review, not routing.
-- Gate 2's reviewed-destination half is the standing blocker: of 147 `Retain`,
-  `Correct` and `Carry` rows, 93 carry `Not Run`. Destination existence is now
-  fully closed — 64 rows named their destination by bare filename, which resolved
+- Gate 2's reviewed-destination half is the standing blocker. Destination
+  existence is fully closed — 64 rows named their destination by bare filename, which resolved
   for a reader but not mechanically because the same filenames exist in both
   packs, and all 64 are expanded to full successor paths with the files verified
-  to exist. Zero rows are unresolvable. Two seats are reviewing the 93: one over
-  the 49 `Carry` rows and one over the 44 `Retain` and `Correct` rows.
+  to exist. Zero rows are unresolvable, and every `Carry` row now names a
+  remediation owner resolved from the scope File Ownership SSOT and states
+  uniqueness, at 47 of 47 against 23 and 22 before.
+- Both destination seats reported and their bounded findings are applied. The
+  most serious was mine: restoring an enumeration a seat said had been degraded,
+  I wrote six source names from memory and published fabricated upstream content,
+  caught on the next source comparison. Restoring content is as source-bound as
+  writing it. Five further published leaf defects are corrected, the caveat
+  family set is completed at twenty families, eleven pre-merge path citations are
+  repointed through the migration ledger, and two drifting measurements are
+  replaced by their re-derivation commands.
 - Both gate 1 coverage holes are filled. The vendor catalog's `Caveat` column is
   deduplicated into fifteen reading-rule families in the successor leaf with
   fourteen new ledger rows, and the Mythos Preview lifecycle conflict has its own
@@ -139,8 +147,10 @@ status: active
 
 ## Next handoff
 
-- Apply the two in-flight destination reviews, then decide whether gate 2 can be
-  recorded satisfied.
+- Gate 2 still needs a review that runs over the current destinations. Both seats
+  reviewed the state before these repairs, and one settled 13 of 49 while the
+  other settled 0 of 34 on the ground that no review had run over content newer
+  than the leaves' own review dates.
 - Route the four no-route allowlist rows to their owning units; none is fixable
   inside this unit.
 - No gate has been recorded satisfied.
