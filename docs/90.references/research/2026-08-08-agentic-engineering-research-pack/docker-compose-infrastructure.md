@@ -416,7 +416,7 @@ Source-evidence claims carried forward from the superseded 2026-07-05
 research pack on 2026-08-19. Each states what the upstream evidence supports
 and, where it matters more, what it does not.
 
-- **Rendering a resolved configuration is not a confinement boundary.** The vendor trust-model page names the inheritance directive alongside includes as a transitive-privilege path, states that rendering a resolved configuration offers no confinement guarantee, and warns that file-reference fields surface file contents in that output before any container starts. Resolved-config review must not be treated as a safety guarantee, which matters directly against this workspace's large inheritance surface.
+- **Rendering a resolved configuration is not a confinement boundary.** The vendor trust-model page names the inheritance directive alongside includes as a transitive-privilege path, states that rendering a resolved configuration offers no confinement guarantee, and warns that file-reference fields surface file contents in that output before any container starts. Resolved-config review must not be treated as a safety guarantee, which matters directly against this workspace's large inheritance surface. **Source named 2026-08-19** after a seat found the page registered in the retiring leaf but nowhere in this one, leaving the rule unrecoverable after deletion: the page is `https://docs.docker.com/compose/trust-model/`, and the mechanisms it names are `extends`, `include`, and the resolved output of `docker compose config`.
 
 ## Scope Implications
 
