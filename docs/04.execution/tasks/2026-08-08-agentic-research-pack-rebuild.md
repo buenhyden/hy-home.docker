@@ -2775,6 +2775,42 @@ design, `post_baseline_records` at 3 and `records` at 796, and 796 plus 3 is the
 799 the text shows. `ledger_records()` reads `records` deliberately. The
 discrepancy was a difference between two correct counts of different things.
 
+
+### A blocker this Task misdiagnosed, and the amendment withdrawn for it, 2026-08-19
+
+This Task described gate 4's three remaining rows to the user as sitting in Specs
+carrying `status: completed`, with no actor able to produce a review verdict, and
+obtained approval for a carve-out settling such rows without a per-row seat. The
+amendment was written and committed. Reading the rows before applying it shows the
+description was wrong and the amendment addresses a problem these rows do not
+have. It is withdrawn.
+
+**Measured.** `docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md`
+carries `status: active`, not completed, so it has an actor and the amendment's own
+precondition never held for it. The other two do carry `status: completed`, but
+neither is unsettled for want of a reviewer.
+
+**All three are denied on substance, not on process.** The active Task's literal
+at `:15` is a present-tense designation of the canonical pack and its `:86` grants
+the deletion-gated directory as a writable path under `### Allowed Paths`, which is
+a live mutable route. The `spec-0123` Spec's occurrence sits in a `Contract /
+Required Behavior` table labelled `Canonical research` and reads as a present-tense
+instruction. The `spec-0105` Spec's two occurrences are a present-tense criteria
+designation and a present-tense criteria-source row. `Old-path inventory and
+allowlist` denies a canonical-owner statement an allowlist under any route, and the
+amended route 1 restates that denial. Applying the withdrawn carve-out would have
+admitted exactly what the Spec forbids.
+
+**What these rows actually need** is a change in the documents that hold the
+literals: the write grant removed from the active unit's `Allowed Paths`, and the
+present-tense canonical-owner statements rewritten or removed. Two of those
+documents carry `status: completed`, so editing their `Required Behavior` tables is
+itself a governance question and is not taken here.
+
+**Gate 4 is unchanged by this entry** at 39 reviewed, 3 unreviewed and
+`failures=5`. The withdrawal restores the Spec to its state before the amendment;
+no other clause is touched.
+
 ## Commit Ledger
 
 | Unit                                            | Commit identity                                                                                                                                                                                                  | Logical unit                                                                                                                                                                                                                                                                                                                 | Validation                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Review state                                                                                                                                                                                                                                                                                                |
