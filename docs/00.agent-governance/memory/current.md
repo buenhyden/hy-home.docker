@@ -41,7 +41,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `931e44b2`
+- Verified commit: `82474ca7`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -97,11 +97,23 @@ status: active
   a survival-predicate sweep whose two halves were a path-token false positive and
   a paraphrase-blind zero, also not written. The pattern is that every attempt
   produced output that looked more thorough than the state it replaced.
-- Spec 137 gained `### Uniqueness-predicate amendment`. Uniqueness is survival
-  after the pack's deletion, not intra-document duplication. All 35 statements
-  written against the old test are withdrawn; row 763 is settled NOT UNIQUE; the
-  remaining 46 are routed as a seat's reading work and must not be settled by a
-  matcher.
+- Spec 137 gained `### Uniqueness-predicate amendment`; all 47 uniqueness
+  statements are re-derived under it by three seats: 11 UNIQUE, 23 PARTIAL, 13
+  NOT UNIQUE. Only 11 carries are the sole surviving record. The PARTIAL rows
+  share a shape: the fact survives and the quantification and judgement vanish.
+  Two verdicts inverted — the three Gemini rows were NOT unique on grounds the
+  predicate excludes and are UNIQUE; two UNIQUE rows are NOT UNIQUE.
+- The owner requirement is now enforced by
+  `scripts/validation/carry_owner_contract.py`, which compares each record's
+  stated owner against the SSOT row it cites. It found 24 failures on its first
+  run and measures 0 now, with 10 regression tests pinning the historical failure
+  modes. Seven prior measurements failed because none of them could fail.
+- **Task 10E is unblocked on tooling.** The repository runs tests with
+  `python3 -m unittest discover -s tests/validation`, not `pytest`; the recorded
+  pytest blocker was never real. The Operations suite measures 50 tests with 4
+  pre-existing failures, against the `47/47` Task 10D recorded, so it has
+  regressed. 10E remains blocked on the 51 missing typed rewrite rules a reverted
+  rename attempt exposed.
 
 - Both surfaces now measure 47 of 47 on owner and uniqueness. The 25 destination
   paragraphs were resolved one at a time against the surface each claim must
