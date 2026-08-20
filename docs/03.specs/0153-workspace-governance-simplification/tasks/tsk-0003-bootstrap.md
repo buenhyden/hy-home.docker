@@ -60,6 +60,15 @@ Activate the canonical prefixless SPEC-0153 package, split bootstrap evidence in
 | Final closure evidence | Approved review packet | Specification `C0/I0/M0`; Python `C0/I0/M0`; controller named suite `298/298`, final focus `25/25`, and re-review `5/5`; changed metadata `selected=20 violations=0`; Ruff, `py_compile`, and diff hygiene passed. |
 | Baseline debt attribution | Traceability and full-suite history | Traceability returned exactly one untouched baseline finding: the oversized Stage 04 target. The earlier legacy-fixture full-suite failure was reproduced at baseline, then its mixed-authority fixture was corrected within Task 3; the final named suite passed `298/298`, so no Task 3 full-suite regression remains. |
 
+## Controlled Agent Pre-commit Evidence
+
+The controller staged exactly `25` Task 3 Git path identities, verified the
+cached boundary and diff hygiene, and created logical commit
+`d8542bfe05b80bf47f652fc3caa493307d0e2ba3` with message
+`docs(spec): activate canonical governance package`. Final specification and
+Python reviews were `C0/I0/M0`, and the exact named suite passed `298/298`.
+No Task 4 work or Migration recovery-field update was included.
+
 ## Review Evidence
 
 | Review | Status | Findings and disposition |
@@ -72,6 +81,7 @@ Activate the canonical prefixless SPEC-0153 package, split bootstrap evidence in
 
 | Commit | Description |
 | :--- | :--- |
+| `d8542bfe05b80bf47f652fc3caa493307d0e2ba3` | `docs(spec): activate canonical governance package` — exact `25` Git paths; final `C0/I0/M0`; `298/298` passed. |
 
 ## Rulings
 
