@@ -184,9 +184,10 @@ placeholder rejection assertion before the current GREEN run.
 
 ## Controlled Agent Pre-commit Evidence
 
-No pre-commit wrapper, staging, or commit was run. The exact row packet approval
-and independent re-reviews are complete; the controller retains staging and
-commit ownership.
+The controller staged exactly the six Task 1 paths, verified the cached path
+set and `git diff --cached --check`, and created the approved logical commit.
+No corpus transition, push, merge, runtime mutation, or secret operation was
+performed.
 
 ## Review Evidence
 
@@ -199,12 +200,13 @@ commit ownership.
 
 ## Commit Ledger
 
-No Task 1 commit exists. The Task 1 paths remain unstaged for controller review.
+- `e58d91796409fd562a8b395293942c0f73949c24` —
+  `docs: register workspace governance migration`
 
 ## Deferred and Blocked Items
 
-- Task 1 handoff is blocked only on the controller-owned logical commit; no
-  transition executes before that control-plane commit exists.
+- Task 1 is complete. Task 2 may install the Stage 99 authority before any
+  approved corpus transition executes.
 - Recovery commits remain null while rows are planned. They become mandatory
   before a moved or deleted row is completed.
 - Ordinary in-place semantic edits remain in the owning Task file lists and are
