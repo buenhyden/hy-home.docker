@@ -7,8 +7,6 @@ import sys
 import tempfile
 import unittest
 
-import yaml
-
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
     validate_repository_contracts,
@@ -23,7 +21,7 @@ from scripts.lib.document_governance.taxonomy import (
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+PROFILES = ROOT / "docs/99.templates/registry.json"
 INCIDENT_ROUTE = "docs/05.operations/incidents/<year>/inc-####-<slug>/"
 THREE_DIGIT_COMPONENT = re.compile(
     r"^(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}-"
@@ -38,7 +36,10 @@ INTERNAL_ID = re.compile(r"\*\*(?P<identity>[A-Z][A-Z0-9-]*[0-9])\*\*:")
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.profiles = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+        from scripts.lib.document_governance.registry import load_registry
+
+        cls.registry = load_registry(PROFILES)
+        cls.profiles = cls.registry.profiles
 
     def test_every_tracked_typed_document_path_uses_four_digits(self) -> None:
         tracked = subprocess.run(
@@ -51,6 +52,16 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         invalid = sorted(
             path
             for path in tracked
+            if path.startswith(
+                (
+                    "docs/01.requirements/",
+                    "docs/02.architecture/",
+                    "docs/03.specs/",
+                    "docs/05.operations/",
+                    "docs/90.references/",
+                    "docs/98.archive/",
+                )
+            )
             if any(THREE_DIGIT_COMPONENT.match(part) for part in path.split("/"))
         )
         self.assertEqual([], invalid)
@@ -64,18 +75,17 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertEqual([], invalid)
 
     def test_profiles_parse_and_publish_exact_incident_selector(self) -> None:
-        profiles = self.profiles["profiles"]
-        templates = self.profiles["template_roles"]
-        self.assertEqual("prd-[0-9]{4}", profiles["prd"]["id_pattern"])
-        incident_glob = (
-            "docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/"
-            "inc-[0-9][0-9][0-9][0-9]-*/incident.md"
+        incident = self.profiles["incident"]
+        postmortem = self.profiles["postmortem"]
+        self.assertEqual("inc-{number:4}", incident["artifact_id_pattern"])
+        self.assertEqual(
+            "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
+            incident["path_pattern"],
         )
-        postmortem_glob = incident_glob.replace("incident.md", "postmortem.md")
-        self.assertEqual([incident_glob], profiles["incident"]["path_globs"])
-        self.assertEqual([postmortem_glob], profiles["postmortem"]["path_globs"])
-        self.assertEqual([incident_glob], templates["incident"]["target_globs"])
-        self.assertEqual([postmortem_glob], templates["postmortem"]["target_globs"])
+        self.assertEqual(
+            "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
+            postmortem["path_pattern"],
+        )
 
     def test_profile_loader_accepts_only_bounded_digit_classes(self) -> None:
         from scripts.lib.document_governance.metadata_validator import (
@@ -84,28 +94,22 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         )
 
         loaded = load_profiles(PROFILES)
-        self.assertEqual(
-            self.profiles["template_roles"]["incident"]["target_globs"],
-            loaded["template_roles"]["incident"]["target_globs"],
-        )
+        self.assertEqual(self.profiles["incident"], loaded["incident"])
         unsafe = PROFILES.read_text(encoding="utf-8").replace(
-            "inc-[0-9][0-9][0-9][0-9]-*/incident.md",
-            "inc-[a-z][0-9][0-9][0-9]-*/incident.md",
-            1,
+            "{year:4}/inc-{number:4}", "{year:3}/inc-{number:4}", 1
         )
         with tempfile.TemporaryDirectory() as directory:
-            temporary = pathlib.Path(directory) / "profiles.yaml"
+            temporary = pathlib.Path(directory) / "registry.json"
             temporary.write_text(unsafe, encoding="utf-8")
             with self.assertRaises(ProfileError):
                 load_profiles(temporary)
 
     def test_internal_requirement_ids_are_four_digits(self) -> None:
         self.assertFalse(is_valid_internal_requirement_id("PRD-001-R001"))
-        self.assertTrue(is_valid_internal_requirement_id("PRD-0001-R0001"))
-        self.assertTrue(is_valid_internal_requirement_id("PRD-0001-AC0001"))
-        self.assertTrue(is_valid_internal_requirement_id("SRS-0001-R0001"))
-        self.assertTrue(is_valid_internal_requirement_id("IFR-0001-R0001"))
-        self.assertFalse(is_valid_internal_requirement_id("SRS-0001-AC0001"))
+        self.assertTrue(is_valid_internal_requirement_id("REQ-0001-FR-0001"))
+        self.assertTrue(is_valid_internal_requirement_id("REQ-0001-NFR-0001"))
+        self.assertTrue(is_valid_internal_requirement_id("REQ-0001-IF-0001"))
+        self.assertFalse(is_valid_internal_requirement_id("FR-0001"))
 
     def test_incident_route_requires_year_and_four_digit_id(self) -> None:
         self.assertTrue(

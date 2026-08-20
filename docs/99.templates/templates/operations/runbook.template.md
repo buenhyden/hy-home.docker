@@ -1,39 +1,49 @@
 ---
+profile_id: runbook
 status: draft
-artifact_id: <artifact-id>
+artifact_id: runbook-####
 artifact_type: runbook
-parent_ids: [<parent-artifact-id>]
-created: <created-at>
-reviewed_at: <reviewed-at>
-next_review_at: <next-review-at>
+parent_ids: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
+next_review_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
-## When to Use
+## Purpose
 
-| Trigger     | Prerequisites     | Safety conditions     |
-| ----------- | ----------------- | --------------------- |
-| {{trigger}} | {{prerequisites}} | {{safety_conditions}} |
+{{purpose}}
+
+## Trigger
+
+{{trigger}}
+
+## Prerequisites
+
+{{prerequisites}}
 
 ## Procedure
 
-| Step order     | Procedure step     | Expected result     |
-| -------------- | ------------------ | ------------------- |
-| {{step_order}} | {{procedure_step}} | {{expected_result}} |
+{{procedure}}
 
-## Evidence
+## Verification
 
-{{supporting_evidence}}
+{{verification}}
 
-## Rollback or Recovery
+## Rollback
 
-{{rollback_or_recovery}}
+{{rollback}}
 
 ## Escalation
 
 {{escalation}}
 
-## Related Documents
+## Traceability
 
-{{related_documents}}
+{{subject_and_authority_links}}
+
+## Automation
+
+{{automation}}

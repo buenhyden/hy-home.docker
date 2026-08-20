@@ -62,7 +62,10 @@ from scripts.lib.document_governance.git_provenance import (  # noqa: E402
 )
 from scripts.lib.document_governance import metadata_contract  # noqa: E402
 
-DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
+LEGACY_MIGRATION_PROFILES = (
+    ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+)
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 TARGET_SURFACE_DELTA_SCRIPT = (
     ROOT / "scripts/validation/target_surface_delta_contract.py"
@@ -2020,6 +2023,20 @@ def _surface_artifact_types(
     return None, None
 
 
+def _manifest_profiles(
+    profiles: dict[str, object] | None,
+) -> dict[str, object]:
+    """Return the Registry-first adapter required by manifest inference."""
+
+    if profiles is not None and isinstance(profiles.get("profiles"), dict):
+        return profiles
+    registry = metadata.load_registry(DEFAULT_PROFILES)
+    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES, DEFAULT_CONTRACT)
+    if not isinstance(legacy, dict):
+        raise ProfileError("legacy migration profiles require a mapping envelope")
+    return metadata.build_registry_transition_profiles(registry, legacy)
+
+
 def _generate_manifest_skeleton(
     root: pathlib.Path,
     contract: dict[str, object],
@@ -2037,6 +2054,7 @@ def _generate_manifest_skeleton(
     pinned_baseline = wave_contract.get("baseline_commit")
     if pinned_baseline is not None and pinned_baseline != baseline_commit:
         raise ProfileError("baseline_ref must resolve to the wave's pinned baseline_commit")
+    active_profiles = _manifest_profiles(profiles)
     source_roots = wave_contract.get("source_roots")
     direct_source_paths = wave_contract.get("direct_source_paths")
     if source_roots is not None or direct_source_paths is not None:
@@ -2059,9 +2077,6 @@ def _generate_manifest_skeleton(
             if existing is not None and existing != mode:
                 raise ProfileError("wave source metadata conflicts across selectors")
             selected[path] = mode
-        active_profiles = profiles or metadata.load_profiles(
-            DEFAULT_PROFILES, DEFAULT_CONTRACT
-        )
         rows: list[MigrationManifestRow] = []
         for source_path, mode in sorted(selected.items()):
             surface_class = _surface_class(source_path, mode, active_profiles)
@@ -2132,7 +2147,7 @@ def _generate_manifest_skeleton(
         artifact_type = (
             "generated"
             if "generated_by" in frontmatter
-            else metadata.infer_artifact_type(relative, profiles)
+            else metadata.infer_artifact_type(relative, active_profiles)
         )
         status = frontmatter.get("status")
         rows.append(
@@ -2153,6 +2168,9 @@ def _generate_manifest_skeleton(
                 preservation_class=None,
                 evidence=ManifestEvidence((), (), (), (), ()),
                 review_verdict=ReviewVerdict("pending", "pending"),
+                artifact_type_before=artifact_type,
+                artifact_type_after=artifact_type,
+                surface_class="typed-example",
             )
         )
     return MigrationManifestDocument(
@@ -5878,7 +5896,14 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
-    parser.add_argument("--profiles", type=pathlib.Path, default=DEFAULT_PROFILES)
+    parser.add_argument(
+        "--registry",
+        "--profiles",
+        dest="profiles",
+        type=pathlib.Path,
+        default=DEFAULT_PROFILES,
+        help="Stage 99 registry (legacy --profiles remains a transition alias)",
+    )
     parser.add_argument("--contract", type=pathlib.Path, default=DEFAULT_CONTRACT)
     parser.add_argument("--mode", required=True, choices=MODES)
     parser.add_argument("--wave")
@@ -5899,7 +5924,22 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
         contract_path = _rooted(root, args.contract).resolve()
         profiles_path = _rooted(root, args.profiles).resolve()
         contract = load_migration_contract(contract_path)
-        profiles = metadata.load_profiles(profiles_path, contract_path)
+        if profiles_path.suffix.lower() == ".json":
+            try:
+                registry = metadata.load_registry(profiles_path)
+            except metadata.RegistryError as error:
+                raise ProfileError("Stage 99 registry is invalid") from error
+            # Stage 99 is the active authority. The legacy envelope remains a
+            # bounded translation input until Task 3 moves the corpus records.
+            profiles = metadata.build_registry_transition_profiles(
+                registry,
+                metadata.load_profiles(
+                    LEGACY_MIGRATION_PROFILES,
+                    contract_path,
+                ),
+            )
+        else:
+            profiles = metadata.load_profiles(profiles_path, contract_path)
         manifest_argument = args.manifest
         output_argument = args.output
         if args.wave is not None:

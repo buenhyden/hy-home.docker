@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hy-home.invalid/schemas/document-profile.schema.json",
+  "title": "Stage 99 document registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profiles",
+    "template_roles",
+    "lifecycles",
+    "identity_spaces",
+    "transitions"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/profile"}
+    },
+    "template_roles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/templateRole"}
+    },
+    "lifecycles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/lifecycle"}
+    },
+    "identity_spaces": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/identitySpace"}
+    },
+    "transitions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "frontmatter_policy",
+        "path_pattern",
+        "artifact_id_pattern",
+        "identity_relation",
+        "template_id",
+        "required_frontmatter",
+        "optional_frontmatter",
+        "required_sections",
+        "optional_sections",
+        "lifecycle_id",
+        "traceability",
+        "exceptions"
+      ],
+      "properties": {
+        "profile_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "frontmatter_policy": {
+          "enum": ["required", "absent", "unmanaged"]
+        },
+        "path_pattern": {"type": "string", "minLength": 1},
+        "artifact_id_pattern": {"type": ["string", "null"]},
+        "identity_relation": {
+          "enum": ["direct", "package-member", "subject-member", "none"]
+        },
+        "template_id": {"type": ["string", "null"]},
+        "required_frontmatter": {"$ref": "#/$defs/stringList"},
+        "optional_frontmatter": {"$ref": "#/$defs/stringList"},
+        "required_sections": {"$ref": "#/$defs/stringList"},
+        "optional_sections": {"$ref": "#/$defs/stringList"},
+        "lifecycle_id": {"type": ["string", "null"]},
+        "media_type": {"type": "string", "minLength": 1},
+        "traceability": {"$ref": "#/$defs/traceability"},
+        "exceptions": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "traceability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowed_parent_profiles": {"$ref": "#/$defs/stringList"},
+        "internal_id_spaces": {"$ref": "#/$defs/stringList"},
+        "membership_authority": {
+          "const": "operations-migration-manifest"
+        }
+      }
+    },
+    "templateRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "profile_id"],
+      "properties": {
+        "source": {"type": "string", "pattern": "^docs/99\\.templates/templates/"},
+        "profile_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statuses", "transitions"],
+      "properties": {
+        "statuses": {"$ref": "#/$defs/stringList"},
+        "transitions": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/stringList"}
+        }
+      }
+    },
+    "identitySpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prefix", "width", "high_water", "next_number", "child_spaces"],
+      "properties": {
+        "prefix": {"type": "string", "minLength": 1},
+        "width": {"type": "integer", "minimum": 1, "maximum": 12},
+        "high_water": {"type": "integer", "minimum": 0},
+        "next_number": {"type": "integer", "minimum": 1},
+        "child_spaces": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/identitySpace"}
+        }
+      }
+    }
+  }
+}

@@ -1,45 +1,49 @@
 ---
-status: draft
-artifact_id: <artifact-id>
+profile_id: incident
+status: open
+artifact_id: inc-####
 artifact_type: incident
 parent_ids: []
-created: <created-at>
-occurred_at: <occurred-at>
-resolved_at: <resolved-at>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+occurred_at: YYYY-MM-DDTHH:MM:SSZ
+resolved_at: null
 ---
 
 # {{title}}
 
-## Overview
+## Summary
 
-{{overview}}
-
-## Incident Metadata
-
-| Severity | Incident lead | Current response state |
-| --- | --- | --- |
-| {{severity}} | {{incident_lead}} | {{current_response_state}} |
+{{summary}}
 
 ## Impact
 
 {{impact}}
 
-## Timeline and Response
+## Coordination
 
-| Timestamp | Action | Action owner | Response state change |
-| --- | --- | --- | --- |
-| {{response_timestamp}} | {{response_action}} | {{response_action_owner}} | {{response_state_change}} |
+{{roles_and_coordination}}
 
-## Evidence
+## Timeline
 
-{{evidence}}
+{{timeline}}
 
-## Resolution and Handoff
+## Mitigation
 
-| Mitigation | Resolution | Handoff |
-| --- | --- | --- |
-| {{mitigation}} | {{resolution}} | {{handoff}} |
+{{mitigation}}
 
-## Related Documents
+## Current Status
 
-{{related_documents}}
+{{current_status}}
+
+## Corrective Actions
+
+{{corrective_actions}}
+
+## Traceability
+
+{{runbook_and_system_links}}
+
+## Communications
+
+{{communications}}

@@ -25,6 +25,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
+REGISTRY = ROOT / "docs/99.templates/registry.json"
 PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contract.md"
@@ -1151,6 +1152,16 @@ class LifecycleTestCase(unittest.TestCase):
 
 
 class PublicContractTests(LifecycleTestCase):
+    def test_cli_defaults_to_registry_and_keeps_profiles_as_transition_alias(self) -> None:
+        parser = lifecycle._parser()
+        current = parser.parse_args(["--mode", "check-contract"])
+        transitional = parser.parse_args(
+            ["--mode", "check-contract", "--profiles", str(PROFILES)]
+        )
+
+        self.assertEqual(REGISTRY, current.profiles)
+        self.assertEqual(PROFILES, transitional.profiles)
+
     def test_modes_are_the_exact_fixed_tuple(self) -> None:
         self.assertEqual(
             lifecycle.MODES,
@@ -1704,6 +1715,33 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual(row.active_consumers, ())
         self.assertEqual(row.evidence, lifecycle.ManifestEvidence((), (), (), (), ()))
         self.assertIsNone(row.preservation_class)
+
+    def test_public_skeleton_uses_registry_profiles_for_canonical_spec(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source = root / "docs/03.specs/0001-example/spec.md"
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "---\nprofile_id: spec\nstatus: draft\nartifact_id: SPEC-0001\n"
+            "artifact_type: spec\nparent_ids: []\ncreated: 2026-08-20\n"
+            "updated: 2026-08-20\n---\n\n# Example\n",
+            encoding="utf-8",
+        )
+        baseline = commit_all(root)
+        contract = self.fixture_contract([source.relative_to(root).as_posix()])
+
+        document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="fixture",
+            baseline_ref=baseline,
+        )
+
+        self.assertEqual(1, len(document.entries))
+        self.assertEqual("spec", document.entries[0].artifact_type_before)
+        self.assertEqual("spec", document.entries[0].artifact_type_after)
 
     def test_target_wave_expands_exact_roots_and_direct_paths(self) -> None:
         document = lifecycle._task7_immutable_expected_document(

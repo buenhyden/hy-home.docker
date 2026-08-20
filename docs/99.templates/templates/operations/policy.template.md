@@ -1,26 +1,32 @@
 ---
+profile_id: policy
 status: draft
-artifact_id: <artifact-id>
+artifact_id: policy-####
 artifact_type: policy
-parent_ids: [<parent-artifact-id>]
-created: <created-at>
-reviewed_at: <reviewed-at>
-next_review_at: <next-review-at>
+parent_ids: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
+next_review_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
-## Overview
+## Purpose
 
-{{overview}}
+{{purpose}}
 
-## Policy Scope
+## Scope
 
 {{scope}}
 
-## Controls
+## Policy Statements
 
-{{controls}}
+{{normative_policy}}
+
+## Enforcement
+
+{{enforcement}}
 
 ## Exceptions
 
@@ -30,10 +36,10 @@ next_review_at: <next-review-at>
 
 {{verification}}
 
-## Review Cadence
+## Traceability
 
-{{review_cadence}}
+{{subject_and_authority_links}}
 
-## Related Documents
+## Definitions
 
-{{related_documents}}
+{{definitions}}

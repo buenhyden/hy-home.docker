@@ -1,0 +1,272 @@
+from __future__ import annotations
+
+import dataclasses
+import os
+import pathlib
+import subprocess
+import tempfile
+import time
+import unittest
+from types import MappingProxyType
+from unittest import mock
+
+from scripts.lib.document_governance import identity_history
+from scripts.lib.document_governance.identity_history import (
+    IdentityHistoryError,
+    IssuedIdentities,
+    collect_issued_identities,
+    validate_identity_history,
+)
+from scripts.lib.document_governance.registry import load_registry
+
+
+class IdentityHistoryTests(unittest.TestCase):
+    def _git(self, root: pathlib.Path, *arguments: str) -> str:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=root,
+            check=True,
+            text=True,
+            capture_output=True,
+        ).stdout
+
+    def test_deleted_lowercase_package_and_child_ids_remain_reserved(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            requirement = root / "docs/01.requirements/prd-0042-example.md"
+            requirement.parent.mkdir(parents=True)
+            requirement.write_text(
+                "---\nartifact_id: prd-0042\n---\n\n"
+                "**PRD-0042-R0043**: old functional requirement\n"
+                "**PRD-0042-NFR-0044**: old non-functional requirement\n"
+                "**IFR-0042-R0045**: old interface requirement\n",
+                encoding="utf-8",
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add deleted requirement")
+            second = root / "docs/01.requirements/req-0043-example.md"
+            second.write_text(
+                "---\nartifact_id: REQ-0043\n---\n\n"
+                "REQ-0043-FR-0043\nREQ-0043-NFR-0044\nREQ-0043-IF-0045\n",
+                encoding="utf-8",
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add second requirement")
+            requirement.unlink()
+            second.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete requirement")
+
+            issued = collect_issued_identities(root)
+
+        self.assertGreaterEqual(issued.high_water("requirement"), 42)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0042.FR"), 43)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0042.NFR"), 44)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0042.IF"), 45)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0043.FR"), 43)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0043.NFR"), 44)
+        self.assertGreaterEqual(issued.high_water("requirement.REQ-0043.IF"), 45)
+
+    def test_registry_high_water_is_not_below_repository_history(self) -> None:
+        registry = load_registry()
+        started = time.monotonic()
+        issued = collect_issued_identities(
+            pathlib.Path(__file__).resolve().parents[2], refs=("--all",)
+        )
+
+        self.assertEqual((), validate_identity_history(registry, issued))
+        self.assertLessEqual(
+            time.monotonic() - started,
+            identity_history.MAX_GIT_SCAN_SECONDS + 5,
+        )
+
+    def test_history_uses_only_bounded_exact_id_family_pickaxes(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        commands: list[tuple[str, ...]] = []
+        real_run_git = identity_history._run_git
+
+        def recording_run_git(
+            repo: pathlib.Path,
+            arguments: tuple[str, ...],
+            **kwargs: object,
+        ) -> str:
+            commands.append(arguments)
+            return real_run_git(repo, arguments, **kwargs)
+
+        with mock.patch.object(
+            identity_history,
+            "_run_git",
+            side_effect=recording_run_git,
+        ):
+            collect_issued_identities(root, refs=("HEAD",))
+
+        history_commands = [
+            command for command in commands if command[:1] == ("log",)
+        ]
+        self.assertEqual(
+            len(identity_history.GIT_HISTORY_QUERIES),
+            len(history_commands),
+        )
+        self.assertTrue(history_commands)
+        self.assertTrue(all("-G" in command for command in history_commands))
+        self.assertTrue(all("-S" not in command for command in history_commands))
+        self.assertTrue(
+            all("artifact_id:" not in command for command in history_commands)
+        )
+
+    def test_git_output_cap_terminates_stdout_and_stderr_producers_early(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            executable = root / "git"
+            executable.write_text(
+                "#!/usr/bin/env python3\n"
+                "import os, pathlib, signal, sys, time\n"
+                "marker = pathlib.Path(os.environ['FAKE_GIT_MARKER'])\n"
+                "def stop(*_):\n"
+                "    marker.write_text('terminated', encoding='utf-8')\n"
+                "    raise SystemExit(0)\n"
+                "signal.signal(signal.SIGTERM, stop)\n"
+                "target = int(os.environ['FAKE_GIT_FD'])\n"
+                "chunk = b'x' * 4096\n"
+                "while True:\n"
+                "    os.write(target, chunk)\n"
+                "    time.sleep(0.001)\n",
+                encoding="utf-8",
+            )
+            executable.chmod(0o755)
+
+            for stream_name, descriptor in (("stdout", "1"), ("stderr", "2")):
+                with self.subTest(stream=stream_name):
+                    marker = root / f"{stream_name}.marker"
+                    environment = {
+                        "PATH": f"{root}{os.pathsep}{os.environ.get('PATH', '')}",
+                        "FAKE_GIT_MARKER": str(marker),
+                        "FAKE_GIT_FD": descriptor,
+                    }
+                    started = time.monotonic()
+                    with (
+                        mock.patch.dict(os.environ, environment),
+                        self.assertRaisesRegex(
+                            IdentityHistoryError,
+                            "Git identity scan exceeded its output bound",
+                        ),
+                    ):
+                        identity_history._run_git(
+                            root,
+                            ("adversarial",),
+                            max_output_bytes=1024,
+                            timeout_seconds=4,
+                        )
+                    self.assertLess(time.monotonic() - started, 2)
+                    self.assertEqual("terminated", marker.read_text(encoding="utf-8"))
+
+    def test_terminate_and_reap_waits_for_killed_child_and_surfaces_reap_failure(
+        self,
+    ) -> None:
+        alive = True
+        process = mock.Mock()
+        process.poll.side_effect = lambda: None if alive else -9
+
+        def wait(timeout: float | None = None) -> int:
+            nonlocal alive
+            if timeout is not None:
+                raise subprocess.TimeoutExpired("fake-git", timeout)
+            alive = False
+            return -9
+
+        process.wait.side_effect = wait
+        identity_history._terminate_and_reap(process, None)
+
+        self.assertIsNotNone(process.poll())
+        process.kill.assert_called_once_with()
+        process.wait.assert_called_once_with()
+
+        failed = mock.Mock()
+        failed.poll.return_value = None
+        failed.wait.side_effect = OSError("wait failed")
+        with self.assertRaisesRegex(
+            IdentityHistoryError, "failed to reap bounded Git identity scan"
+        ):
+            identity_history._terminate_and_reap(failed, None)
+
+    def test_history_rejects_an_issued_but_unregistered_package_child_space(self) -> None:
+        registry = load_registry()
+        requirement = registry.identity_spaces["requirement"]
+        children = {
+            key: value
+            for key, value in requirement.child_spaces.items()
+            if key != "REQ-0001.FR"
+        }
+        broken_requirement = dataclasses.replace(
+            requirement, child_spaces=MappingProxyType(children)
+        )
+        broken_registry = dataclasses.replace(
+            registry,
+            identity_spaces=MappingProxyType(
+                {
+                    **registry.identity_spaces,
+                    "requirement": broken_requirement,
+                }
+            ),
+        )
+        issued = IssuedIdentities(
+            MappingProxyType(
+                {"requirement.REQ-0001.FR": frozenset({4})}
+            )
+        )
+
+        self.assertIn(
+            "identity-history-space-missing",
+            {
+                finding.code
+                for finding in validate_identity_history(broken_registry, issued)
+            },
+        )
+
+    def test_rename_into_docs_uses_the_destination_path_for_added_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            source = root / "notes.md"
+            source.write_text("artifact_id: note-0001\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add note")
+            target = root / "docs/01.requirements/0099-example.md"
+            target.parent.mkdir(parents=True)
+            source.rename(target)
+            target.write_text("artifact_id: REQ-0099\n", encoding="utf-8")
+            self._git(root, "add", "-A")
+            self._git(root, "commit", "-qm", "promote requirement")
+            target.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete requirement")
+
+            issued = collect_issued_identities(root)
+
+        self.assertGreaterEqual(issued.high_water("requirement"), 99)
+
+    def test_tracked_identity_source_symlink_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            target = root / "target.md"
+            target.write_text("artifact_id: REQ-0001\n", encoding="utf-8")
+            link = root / "docs/01.requirements/0001-example.md"
+            link.parent.mkdir(parents=True)
+            link.symlink_to(target)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add unsafe identity source")
+
+            with self.assertRaises(IdentityHistoryError):
+                collect_issued_identities(root)
+
+
+if __name__ == "__main__":
+    unittest.main()

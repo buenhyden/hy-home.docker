@@ -159,6 +159,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_document_links.py
+- path: scripts/lib/document_governance/identity_history.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_identity_history.py
 - path: scripts/lib/document_governance/links.py
   kind: library
   authority: docs/00.agent-governance/rules/documentation-protocol.md
@@ -172,7 +183,7 @@ files:
   - tests/validation/test_document_links.py
 - path: scripts/lib/document_governance/metadata_contract.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -184,7 +195,7 @@ files:
   - tests/validation/test_document_links.py
 - path: scripts/lib/document_governance/metadata_validator.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
   consumers:
@@ -205,9 +216,24 @@ files:
   successor: null
   tests:
   - tests/validation/test_operations_catalog.py
+- path: scripts/lib/document_governance/registry.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/identity_history.py
+  - scripts/lib/document_governance/metadata_contract.py
+  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/lib/document_governance/taxonomy.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_registry.py
+  - tests/validation/test_identity_history.py
 - path: scripts/lib/document_governance/taxonomy.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -476,7 +502,7 @@ files:
   - tests/validation/test_github_workflow_contract.py
 - path: scripts/validation/check-document-corpus-lifecycle.py
   kind: validator
-  authority: .github/workflow-contract.yml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
   consumers:
@@ -503,7 +529,7 @@ files:
   - tests/validation/test_document_links.py
 - path: scripts/validation/check-document-metadata.py
   kind: validator
-  authority: .github/workflow-contract.yml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
   consumers:
@@ -514,6 +540,7 @@ files:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
+  - tests/validation/test_document_metadata.py
 - path: scripts/validation/check-github-workflow-contract.py
   kind: validator
   authority: .github/workflow-contract.yml

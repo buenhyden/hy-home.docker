@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI adapter for the shared document metadata contract."""
+"""CLI adapter for the Stage 99 Registry-backed metadata contract."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from scripts.lib.document_governance import metadata_contract as _contract  # no
 from scripts.lib.document_governance import metadata_validator as _validator  # noqa: E402
 
 
+DEFAULT_REGISTRY = _contract.DEFAULT_REGISTRY
 main = _validator.main
 
 

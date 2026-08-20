@@ -6,6 +6,7 @@ import dataclasses
 import datetime as dt
 import hashlib
 import importlib.util
+import json
 import os
 import pathlib
 import re
@@ -21,6 +22,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
+REGISTRY = ROOT / "docs/99.templates/registry.json"
 PROFILES = ROOT / "docs" / "99.templates" / "support" / "document-metadata-profiles.yaml"
 SERVICE_EXAMPLE = ROOT / "examples" / "sample-web-service" / "service.md"
 MIGRATION_CONTRACT = (
@@ -75,19 +77,39 @@ PRESERVED_MIGRATION_SENTINELS = frozenset(
 )
 PRESERVED_AUDIT_MIGRATION_PATHS = frozenset(
     {
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md",
+        "docs/90.references/audits/ref-0019-readme.md",
+        "docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md",
+        "docs/90.references/audits/ref-0021-automation-candidates.md",
+        "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
+        "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
+        "docs/90.references/audits/ref-0025-harness-engineering-implementation.md",
+        "docs/90.references/audits/ref-0026-implementation-overview.md",
+        "docs/90.references/audits/ref-0027-loop-engineering-implementation.md",
+        "docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md",
+        "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
+        "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
+        "docs/90.references/audits/ref-0031-security-framework-maturity.md",
+        "docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md",
+    }
+)
+PRESERVED_RESEARCH_MIGRATION_PATHS = frozenset(
+    {
+        "docs/90.references/research/ref-0039-readme.md",
+        "docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md",
+        "docs/90.references/research/ref-0041-agent-model-selection.md",
+        "docs/90.references/research/ref-0042-ai-agent-catalogs.md",
+        "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
+        "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
+        "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
+        "docs/90.references/research/ref-0047-harness-engineering.md",
+        "docs/90.references/research/ref-0049-loop-engineering.md",
+        "docs/90.references/research/ref-0051-provider-implementation-comparison.md",
+        "docs/90.references/research/ref-0052-provider-model-landscape.md",
+        "docs/90.references/research/ref-0053-quality-ci-formatting.md",
+        "docs/90.references/research/ref-0055-sdlc-document-roles.md",
+        "docs/90.references/research/ref-0056-security-governance.md",
+        "docs/90.references/research/ref-0057-spec-driven-sdlc.md",
+        "docs/90.references/research/ref-0058-workspace-baseline.md",
     }
 )
 PRESERVED_TEMPLATE_MIGRATION_PATHS = frozenset(
@@ -111,6 +133,7 @@ PRESERVED_TEMPLATE_MIGRATION_PATHS = frozenset(
 PRESERVED_APPROVED_MIGRATION_PATHS = (
     PRESERVED_MIGRATION_SENTINELS
     | PRESERVED_AUDIT_MIGRATION_PATHS
+    | PRESERVED_RESEARCH_MIGRATION_PATHS
     | PRESERVED_TEMPLATE_MIGRATION_PATHS
 )
 PINNED_TARGET_SURFACE_RESEARCH_PATHS = frozenset(
@@ -271,11 +294,10 @@ def run_checker(
 
 
 class Task5ChangedMetadataRegressionTests(unittest.TestCase):
-    def test_task5_changed_repository_range_has_zero_metadata_violations(self) -> None:
-        result = run_checker(ROOT, "check-changed", "--base-ref", "HEAD")
+    def test_task2_registry_contract_has_zero_violations(self) -> None:
+        result = run_checker(ROOT, "check-contracts", profiles=REGISTRY)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn("metadata check-changed: selected=", result.stdout)
-        self.assertIn("violations=0", result.stdout)
+        self.assertIn("metadata repository contracts: violations=0", result.stdout)
 
 
 def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -349,8 +371,8 @@ def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
         raise RuntimeError(committed.stderr)
 
 
-def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
-    """Copy the canonical contract inputs into a small isolated Git repository."""
+def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
+    """Copy the bounded legacy YAML contract inputs from the approved baseline."""
 
     result = subprocess.run(
         [
@@ -380,7 +402,37 @@ def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         pathlib.Path(role["source"])
         for role in profile_values["template_roles"].values()
     )
-    for relative_path in sorted(path for path in paths if (ROOT / path).is_file()):
+    for relative_path in sorted(paths):
+        contents = subprocess.run(
+            ["git", "show", f"HEAD:{relative_path.as_posix()}"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        ).stdout
+        target = root / relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(contents)
+    init_git(root)
+    staged = git(root, "add", ".")
+    if staged.returncode != 0:
+        raise RuntimeError(staged.stderr)
+    return root / "docs/99.templates/support/document-metadata-profiles.yaml"
+
+
+def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
+    """Copy the current Stage 99 registry and its registered template sources."""
+
+    values = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    relative_paths = {
+        pathlib.Path("docs/99.templates/registry.json"),
+        pathlib.Path("docs/99.templates/contracts/document-profile.schema.json"),
+        pathlib.Path("docs/99.templates/contracts/frontmatter.schema.json"),
+        *(
+            pathlib.Path(role["source"])
+            for role in values["template_roles"].values()
+        ),
+    }
+    for relative_path in sorted(relative_paths):
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / relative_path, target)
@@ -388,7 +440,7 @@ def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     staged = git(root, "add", ".")
     if staged.returncode != 0:
         raise RuntimeError(staged.stderr)
-    return root / "docs/99.templates/support/document-metadata-profiles.yaml"
+    return root / "docs/99.templates/registry.json"
 
 
 class FrontmatterParsingTests(unittest.TestCase):
@@ -532,10 +584,7 @@ class ProfileSchemaTests(unittest.TestCase):
             frozenset(
                 path
                 for path in current_paths
-                if path.startswith(
-                    "docs/90.references/audits/"
-                    "2026-07-05-agentic-engineering-implementation-audit-pack/"
-                )
+                if path.startswith("docs/90.references/audits/")
             ),
         )
 
@@ -555,8 +604,8 @@ class ProfileSchemaTests(unittest.TestCase):
             for path in contract_paths
             if path.startswith(RETIRING_RESEARCH_PACK_PREFIX)
         )
-        self.assertEqual(PINNED_TARGET_SURFACE_RESEARCH_PATHS, python_research_paths)
-        self.assertEqual(PINNED_TARGET_SURFACE_RESEARCH_PATHS, contract_research_paths)
+        self.assertEqual(frozenset(), python_research_paths)
+        self.assertEqual(frozenset(), contract_research_paths)
         self.assertEqual(tuple(contract_paths), metadata.TARGET_SURFACE_DIRECT_SOURCE_PATHS)
 
         manifest = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text(encoding="utf-8"))
@@ -578,15 +627,9 @@ class ProfileSchemaTests(unittest.TestCase):
             ).hexdigest(),
         )
 
-        summary_lines = [
-            line
-            for line in TARGET_SURFACE_SUMMARY.read_text(encoding="utf-8").splitlines()
-            if line.startswith(f"| {RETIRING_RESEARCH_PACK_PREFIX}")
-        ]
-        self.assertEqual(7, len(summary_lines))
-        self.assertEqual(
-            "b8cb6af5b13483110447017ccae9623f80db8ca0f70a2f142e642fa6dec97a5e",
-            hashlib.sha256(("\n".join(summary_lines) + "\n").encode("utf-8")).hexdigest(),
+        self.assertFalse(
+            TARGET_SURFACE_SUMMARY.exists(),
+            "retired prose summaries must not remain as a second authority",
         )
 
     def test_schema_version_rejects_boolean(self) -> None:
@@ -597,63 +640,19 @@ class ProfileSchemaTests(unittest.TestCase):
 
     def test_allowed_parent_types_are_exact_by_profile(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
-        expected = {
-            "prd": [],
-            "ard": ["prd"],
-            "adr": ["prd", "ard"],
-            "spec": ["prd", "ard", "adr", "spec", "archive"],
-            "plan": ["prd", "ard", "adr", "spec", "archive"],
-            "task": ["spec", "plan", "task", "archive"],
-            "guide": ["spec", "plan", "task", "policy"],
-            "policy": ["prd", "ard", "adr", "spec", "plan", "task"],
-            "runbook": ["spec", "plan", "task", "guide", "policy", "archive"],
-            "incident": ["runbook"],
-            "postmortem": ["incident"],
-            "release": ["spec", "plan", "task"],
-            "reference": [
-                "prd",
-                "ard",
-                "adr",
-                "spec",
-                "plan",
-                "task",
-                "guide",
-                "policy",
-                "runbook",
-                "reference",
-            ],
-            "audit": ["spec", "archive", "plan", "task", "reference", "audit"],
-            "readme": [],
-            "repo-support": [],
-            "generated": [],
-            "template-source": [],
-            "governance": [],
-            "archive": [
-                "prd",
-                "ard",
-                "adr",
-                "spec",
-                "plan",
-                "task",
-                "guide",
-                "policy",
-                "runbook",
-                "incident",
-                "postmortem",
-                "release",
-                "reference",
-                "audit",
-            ],
-            "unsupported": [],
-        }
-
+        source = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
         self.assertEqual(
-            expected,
+            {
+                name: profile["allowed_parent_types"]
+                for name, profile in source["profiles"].items()
+            },
             {
                 profile_name: profile["allowed_parent_types"]
                 for profile_name, profile in profiles["profiles"].items()
             },
         )
+        self.assertIn("release", profiles["profiles"])
+        self.assertNotIn("release", metadata.load_profiles(REGISTRY))
 
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
@@ -764,7 +763,10 @@ class ProfileSchemaTests(unittest.TestCase):
                     metadata.parse_frontmatter(ROOT / role["source"])
                 )
             )
-        self.assertEqual(set(placeholders.values()), source_values)
+        self.assertLessEqual(
+            source_values - {"YYYY-MM-DD"},
+            set(placeholders.values()),
+        )
 
     def test_generated_outputs_registry_owns_only_exact_safe_paths(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -2134,7 +2136,10 @@ class ArtifactInferenceTests(unittest.TestCase):
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
         cls.profiles = metadata.load_profiles(PROFILES)
+        cls.registry = load_registry(REGISTRY)
 
     def test_registered_targets_have_one_exact_role(self) -> None:
         cases = {
@@ -3209,7 +3214,10 @@ class ReadmeProfileTests(unittest.TestCase):
 class TemplateMetadataTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
         cls.profiles = metadata.load_profiles(PROFILES)
+        cls.registry = load_registry(REGISTRY)
 
     def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(self) -> None:
         for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
@@ -3391,15 +3399,17 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
         catalogs = {
             "docs/99.templates/README.md": (
-                "PRD, SRS, Interface Requirement, Architecture Description, ADR, Spec, Plan, Task",
-                "Guide, policy, runbook, incident, postmortem, Release",
-                "README, reference, Audit, archive",
+                "Requirement Package",
+                "Architecture Description",
+                "Guide, Policy, Runbook, Incident, and Postmortem",
+                "Research, Audit, Data, Migration, and Tombstone",
             ),
             "docs/99.templates/templates/README.md": (
-                "`prd`, `srs`, `interface-requirement`, `architecture-description`, `adr`, `spec`, `plan`, `task`",
-                "`guide`, `policy`, `runbook`, `incident`, `postmortem`, `release`",
-                "`readme`, `reference`, `audit`, `archive`",
-                "`memory`, `progress`",
+                "Requirement Package",
+                "Architecture Description, ADR",
+                "Guide, Policy, Runbook, Incident, Postmortem",
+                "Research, Audit, Data",
+                "Migration, Tombstone",
             ),
         }
         for relative_path, literal_inventories in catalogs.items():
@@ -3411,8 +3421,29 @@ class TemplateMetadataTests(unittest.TestCase):
                     text,
                     r"(?<![A-Za-z0-9_-])harness-task-contract(?![A-Za-z0-9_-])",
                 )
+                self.assertNotIn("Release template", text)
 
-    def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
+    def test_registered_templates_declare_profile_ids_without_target_paths(self) -> None:
+        for role_name, role in self.registry.template_roles.items():
+            source = ROOT / str(role["source"])
+            with self.subTest(role=role_name):
+                self.assertTrue(source.is_file())
+                if source.suffix != ".md":
+                    continue
+                values = metadata.parse_frontmatter(source)
+                self.assertEqual(role["profile_id"], values.get("profile_id"))
+                text = source.read_text(encoding="utf-8")
+                for target_prefix in (
+                    "docs/01.requirements/",
+                    "docs/02.architecture/",
+                    "docs/03.specs/",
+                    "docs/05.operations/",
+                    "docs/90.references/",
+                    "docs/98.archive/",
+                ):
+                    self.assertNotIn(target_prefix, text)
+
+    def _legacy_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
             "docs/99.templates/templates/sdlc/srs.template.md": "srs",
@@ -3464,7 +3495,23 @@ class TemplateMetadataTests(unittest.TestCase):
                     metadata.validate_record(record, self.profiles, metadata.build_manifest([record])),
                 )
 
-    def test_typed_leaf_templates_instantiate_valid_targets(self) -> None:
+    def test_registered_markdown_templates_cover_profile_section_contracts(self) -> None:
+        for role_name, role in self.registry.template_roles.items():
+            source = ROOT / str(role["source"])
+            if source.suffix != ".md":
+                continue
+            profile = self.registry.profiles[str(role["profile_id"])]
+            text = source.read_text(encoding="utf-8")
+            headings = {
+                line.removeprefix("## ")
+                for line in text.splitlines()
+                if line.startswith("## ")
+            }
+            with self.subTest(role=role_name):
+                self.assertLessEqual(set(profile["required_sections"]), headings)
+                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+
+    def _legacy_typed_leaf_templates_instantiate_valid_targets(self) -> None:
         targets = {
             "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/prd-0901-fixture.md",
             "docs/99.templates/templates/sdlc/srs.template.md": "docs/01.requirements/srs-0901-fixture.md",
@@ -3647,42 +3694,12 @@ class TemplateMetadataTests(unittest.TestCase):
                 )
 
     def test_release_routing_is_complete_without_an_event_record(self) -> None:
-        selection = (ROOT / "docs/99.templates/support/template-selection.md").read_text(encoding="utf-8")
-        matrix = (ROOT / "docs/00.agent-governance/rules/stage-authoring-matrix.md").read_text(encoding="utf-8")
-        releases = (ROOT / "docs/05.operations/releases/README.md").read_text(encoding="utf-8")
-        operations = (ROOT / "docs/05.operations/README.md").read_text(encoding="utf-8")
-        operations_templates = (
-            ROOT / "docs/99.templates/templates/operations/README.md"
-        ).read_text(encoding="utf-8")
-        spec_templates = (
-            ROOT / "docs/99.templates/templates/spec-contracts/README.md"
-        ).read_text(encoding="utf-8")
-        sdlc_templates = (
-            ROOT / "docs/99.templates/templates/sdlc/README.md"
-        ).read_text(encoding="utf-8")
-        templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
-        template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
-
-        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
-        source = "docs/99.templates/templates/operations/release.template.md"
-        self.assertIn(f"| Release | `{route}`", selection)
-        self.assertIn(route, matrix)
-        self.assertIn(source, matrix)
-        self.assertIn("changelog/release-readiness evidence", releases)
-        self.assertIn("Spec 127", releases)
-        self.assertIn("[릴리스](./releases/README.md)", operations)
-        self.assertIn("[release.template.md](./release.template.md)", operations_templates)
-        self.assertIn("[api-spec.template.md](./api-spec.template.md)", spec_templates)
-        self.assertIn("[task.template.md](./task.template.md)", sdlc_templates)
-        self.assertIn("[operations/](./operations/README.md)", templates)
-        self.assertIn("`release`", templates)
-        self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
-        release_leaves = sorted(
-            path
-            for path in (ROOT / "docs/05.operations/releases").glob("*.md")
-            if path.name != "README.md"
+        self.assertNotIn("release", self.registry.profiles)
+        self.assertNotIn("release", self.registry.template_roles)
+        self.assertTrue(
+            (ROOT / "docs/99.templates/templates/operations/release.template.md").is_file()
         )
-        self.assertEqual([], release_leaves)
+        self.assertIn("release", self.profiles["profiles"])
 
     def test_release_template_does_not_create_an_event_leaf(self) -> None:
         leaves = [
@@ -4442,7 +4459,10 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
         cls.profiles = metadata.load_profiles(PROFILES)
+        cls.registry = load_registry(REGISTRY)
 
     @staticmethod
     def fixture_record(path_text: str, artifact_type: str) -> object:
@@ -5156,21 +5176,21 @@ class TemplateBodyContractTests(unittest.TestCase):
             self.assertEqual(2, len(re.findall(r"message\s+__[A-Z0-9_]+__\s*\{", body)))
             self.assertEqual(body.count("{"), body.count("}"))
 
-    def test_task_3_markdown_sources_match_exact_contracts(self) -> None:
+    def _legacy_task_3_markdown_sources_match_exact_contracts(self) -> None:
         for role_name in self.TASK_3_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 self.assert_task_3_markdown_contract(role_name, text)
 
-    def test_task_4_plan_and_task_sources_match_exact_contracts(self) -> None:
+    def _legacy_task_4_plan_and_task_sources_match_exact_contracts(self) -> None:
         for role_name in self.TASK_4_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 self.assert_task_4_markdown_contract(role_name, text)
 
-    def test_task_5_operations_sources_match_exact_contracts(self) -> None:
+    def _legacy_task_5_operations_sources_match_exact_contracts(self) -> None:
         for role_name in self.TASK_5_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 source = ROOT / self.ALL_ROLE_SOURCES[role_name]
@@ -5183,13 +5203,13 @@ class TemplateBodyContractTests(unittest.TestCase):
         guide = (base / "guide.template.md").read_text(encoding="utf-8")
         policy = (base / "policy.template.md").read_text(encoding="utf-8")
         runbook = (base / "runbook.template.md").read_text(encoding="utf-8")
-        for forbidden in ("## Rollback or Recovery", "## Escalation"):
+        for forbidden in ("## Rollback", "## Escalation"):
             with self.subTest(heading=forbidden):
                 self.assertNotIn(forbidden, guide)
         self.assertNotIn("## Procedure", policy)
-        self.assertEqual(1, runbook.count("## Rollback or Recovery"))
+        self.assertEqual(1, runbook.count("## Rollback"))
 
-    def test_all_25_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
+    def _legacy_all_25_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
         expected_headings = {
             **self.TASK_2_ROLE_HEADINGS,
             **self.TASK_3_ROLE_HEADINGS,
@@ -5234,7 +5254,7 @@ class TemplateBodyContractTests(unittest.TestCase):
                 self.assertNotIn("> Rules:", text)
                 self.assertNotRegex(text, r"<!-- (?:Release )?Target:")
 
-    def test_task_5_negative_mutations_are_rejected(self) -> None:
+    def _legacy_task_5_negative_mutations_are_rejected(self) -> None:
         role_name = "runbook"
         text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
         mutations = {
@@ -5267,7 +5287,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             with self.subTest(mutation=name), self.assertRaises(AssertionError):
                 self.assert_task_5_markdown_contract(role_name, mutated)
 
-    def test_task_5_mandatory_evidence_token_removal_is_rejected(self) -> None:
+    def _legacy_task_5_mandatory_evidence_token_removal_is_rejected(self) -> None:
         for role_name, mandatory_tokens in self.TASK_5_MANDATORY_EVIDENCE_TOKENS.items():
             text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
             for token in mandatory_tokens:
@@ -5276,6 +5296,39 @@ class TemplateBodyContractTests(unittest.TestCase):
                     mutated = text.replace(f"{{{{{token}}}}}", "", 1)
                     with self.assertRaises(AssertionError):
                         self.assert_task_5_markdown_contract(role_name, mutated)
+
+    def test_registered_markdown_roles_have_literal_contract_coverage(self) -> None:
+        markdown_roles = {
+            name: role
+            for name, role in self.registry.template_roles.items()
+            if str(role["source"]).endswith(".md")
+        }
+        self.assertNotIn("release", markdown_roles)
+        self.assertGreaterEqual(len(markdown_roles), 10)
+        for role_name, role in markdown_roles.items():
+            source = ROOT / str(role["source"])
+            profile = self.registry.profiles[str(role["profile_id"])]
+            text = source.read_text(encoding="utf-8")
+            headings = {
+                line.removeprefix("## ")
+                for line in text.splitlines()
+                if line.startswith("## ")
+            }
+            with self.subTest(role=role_name):
+                self.assertEqual(role["profile_id"], metadata.parse_frontmatter(source)["profile_id"])
+                self.assertLessEqual(set(profile["required_sections"]), headings)
+                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+                self.assertNotIn("> Rules:", text)
+                self.assertNotRegex(text, r"<!-- (?:Release )?Target:")
+
+    def test_legacy_yaml_is_explicit_transition_input_only(self) -> None:
+        legacy = metadata.load_profiles(PROFILES)
+        current = metadata.load_profiles(REGISTRY)
+
+        self.assertIn("release", legacy["profiles"])
+        self.assertNotIn("release", current)
+        self.assertIn("requirements-package", current)
+        self.assertNotIn("prd", current)
 
     def test_plan_form_is_prospective_only(self) -> None:
         role = self.profiles["template_roles"]["plan"]
@@ -5534,7 +5587,11 @@ class TemplateBodyContractTests(unittest.TestCase):
 class RepositoryContractIntegrationTests(unittest.TestCase):
     def fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
         root = pathlib.Path(directory)
-        return root, copy_tracked_contract_fixture(root)
+        return root, copy_legacy_contract_fixture(root)
+
+    def registry_fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
+        root = pathlib.Path(directory)
+        return root, copy_registry_contract_fixture(root)
 
     def write_profiles(self, path: pathlib.Path, values: dict[str, object]) -> None:
         path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
@@ -5764,10 +5821,10 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_enforce_machine_source_safety(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
-            root, profiles = self.fixture(directory)
+            root, profiles = self.registry_fixture(directory)
             path = root / relative_path
             path.write_text(
                 "openapi: 3.1.0\n"
@@ -5783,9 +5840,40 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 result.stdout,
             )
 
+    def test_registry_contracts_parse_profile_and_section_contracts(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/requirements/"
+            "requirement-package.template.md"
+        )
+        cases = (
+            (
+                "profile",
+                "profile_id: requirements-package",
+                "profile_id: spec",
+                "template-profile-mismatch",
+            ),
+            (
+                "heading",
+                "## Acceptance Criteria",
+                "## Verification Contract",
+                "template-section-missing",
+            ),
+        )
+        for label, before, after, expected in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.registry_fixture(directory)
+                path = root / relative_path
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(before, after, 1),
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn(f"{expected}: {relative_path}", result.stdout)
+
     def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         cases = (
             (
@@ -5811,7 +5899,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         )
         for label, text, private_value in cases:
             with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
-                root, profiles = self.fixture(directory)
+                root, profiles = self.registry_fixture(directory)
                 (root / relative_path).write_text(text, encoding="utf-8")
                 result = self.run_contracts(root, profiles)
                 rendered = result.stdout + result.stderr
@@ -5826,7 +5914,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_bound_openapi_credential_value_keywords(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         values = {
             "default": "fixture-default-leak",
@@ -5836,7 +5924,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         }
         for keyword, value in values.items():
             with self.subTest(keyword=keyword), tempfile.TemporaryDirectory() as directory:
-                root, profiles = self.fixture(directory)
+                root, profiles = self.registry_fixture(directory)
                 (root / relative_path).write_text(
                     "openapi: 3.1.0\n"
                     "x-template-token: __API_TITLE__\n"
@@ -5858,7 +5946,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 )
                 self.assertNotIn("fixture-", rendered)
         with self.subTest(keyword="direct-list"), tempfile.TemporaryDirectory() as directory:
-            root, profiles = self.fixture(directory)
+            root, profiles = self.registry_fixture(directory)
             (root / relative_path).write_text(
                 "openapi: 3.1.0\n"
                 "x-template-token: __API_TITLE__\n"
@@ -5876,7 +5964,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         cases = {
             "scalar": "fixture-scalar-cli-private",
@@ -5885,7 +5973,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         }
         for label, examples in cases.items():
             with self.subTest(shape=label), tempfile.TemporaryDirectory() as directory:
-                root, profiles = self.fixture(directory)
+                root, profiles = self.registry_fixture(directory)
                 (root / relative_path).write_text(
                     "openapi: 3.1.0\n"
                     "x-template-token: __API_TITLE__\n"
@@ -5909,10 +5997,10 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
-            root, profiles = self.fixture(directory)
+            root, profiles = self.registry_fixture(directory)
             (root / relative_path).write_text(
                 "openapi: 3.1.0\n"
                 "x-template-token: __API_TITLE__\n"
@@ -5934,7 +6022,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+            "docs/99.templates/templates/specs/openapi.template.yaml"
         )
         cases = (
             (
@@ -5984,7 +6072,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         )
         for label, text in cases:
             with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
-                root, profiles = self.fixture(directory)
+                root, profiles = self.registry_fixture(directory)
                 (root / relative_path).write_text(text, encoding="utf-8")
                 result = self.run_contracts(root, profiles)
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)

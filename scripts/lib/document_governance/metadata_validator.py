@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import copy
 import dataclasses
 import datetime as dt
 import fnmatch
@@ -68,7 +69,23 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     resolve_git_provenance,
 )
-from scripts.lib.document_governance.taxonomy import validate_stable_identity  # noqa: E402
+from scripts.lib.document_governance.identity_history import (  # noqa: E402
+    IdentityHistoryError,
+    collect_issued_identities,
+    validate_identity_history,
+)
+from scripts.lib.document_governance.registry import (  # noqa: E402
+    DEFAULT_REGISTRY,
+    DocumentRegistry,
+    RegistryError,
+    classify_path as classify_registered_path,
+    load_registry,
+    validate_frontmatter,
+)
+from scripts.lib.document_governance.taxonomy import (  # noqa: E402
+    classify_path as classify_taxonomy_path,
+    validate_stable_identity,
+)
 
 
 # Retain the validator's established public parser name while keeping the
@@ -76,7 +93,10 @@ from scripts.lib.document_governance.taxonomy import validate_stable_identity  #
 parse_frontmatter = read_frontmatter_values
 
 
-DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+DEFAULT_PROFILES = DEFAULT_REGISTRY
+LEGACY_TRANSITION_PROFILES = (
+    ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+)
 DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
     ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
 )
@@ -1105,6 +1125,44 @@ def infer_artifact_type(
     """Infer a supported artifact profile from a repository-relative path."""
 
     normalized = normalize_repo_relative_path(path)
+    registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
+    if isinstance(registry, DocumentRegistry):
+        registered = classify_registered_path(normalized, registry)
+        if registered is not None and registered != "unsupported":
+            return registered
+        legacy_map = profiles.get("_legacy_profiles")
+        if isinstance(legacy_map, Mapping):
+            legacy_match = classify_taxonomy_path(
+                pathlib.PurePosixPath(normalized), legacy_map
+            )
+            if legacy_match is not None:
+                return legacy_match
+        if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
+            return "generated"
+        # These are explicit, removable legacy corpus envelopes. Canonical
+        # Stage 01/02/03/05 role paths must match Registry above or fail closed.
+        if pathlib.PurePosixPath(normalized).name == "README.md":
+            try:
+                classify_readme_profile(pathlib.Path(normalized), dict(profiles))
+            except ProfileError:
+                pass
+            else:
+                return "readme"
+        if normalized.startswith("docs/00.agent-governance/") or normalized.startswith(
+            "docs/99.templates/support/"
+        ):
+            return "governance"
+        if normalized.startswith("docs/98.archive/"):
+            return "archive"
+        if normalized.startswith("docs/90.references/audits/"):
+            return "audit"
+        if normalized.startswith("docs/90.references/"):
+            return "reference"
+        if normalized.startswith("docs/99.templates/templates/") and normalized.endswith(
+            ".template.md"
+        ):
+            return "template-source"
+        return "unsupported"
     name = pathlib.PurePosixPath(normalized).name
     if name == "README.md":
         return "readme"
@@ -2448,6 +2506,16 @@ def validate_record(
 
     common, profile_map = _profile_mapping(profiles)
     raw_profile = profile_map.get(record.artifact_type)
+    registry = profiles.get("_registry")
+    legacy_map = profiles.get("_legacy_profiles")
+    if (
+        isinstance(registry, DocumentRegistry)
+        and classify_registered_path(record.path.as_posix(), registry) is None
+        and isinstance(legacy_map, Mapping)
+    ):
+        legacy_profile = legacy_map.get(record.artifact_type)
+        if isinstance(legacy_profile, dict):
+            raw_profile = legacy_profile
     profile_label = record.artifact_type
     archive_profile_error: ProfileError | None = None
     if record.artifact_type == "archive":
@@ -2506,7 +2574,12 @@ def validate_record(
             )
         )
 
-    if record.artifact_type == "readme":
+    registry_classification = (
+        classify_registered_path(record.path.as_posix(), registry)
+        if isinstance(registry, DocumentRegistry)
+        else None
+    )
+    if record.artifact_type == "readme" and registry_classification != "readme":
         try:
             readme_profile_name = classify_readme_profile(record.path, profiles)
         except ProfileError as error:
@@ -2638,7 +2711,7 @@ def validate_record(
     if isinstance(status, str) and previous_status and (
         status != previous_status or promoted_reversion
     ):
-        transitions = common.get("transitions", {})
+        transitions = raw_profile.get("transitions", common.get("transitions", {}))
         allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
         override_key = (record.path.as_posix(), previous_status, status)
         promoted_hop_valid = (
@@ -2685,11 +2758,34 @@ def validate_record(
                 )
             )
 
+    active_registry = profiles.get("_registry")
+    if isinstance(active_registry, DocumentRegistry) and (
+        classify_registered_path(record.path.as_posix(), active_registry)
+        == record.artifact_type
+    ):
+        profile_id = record.metadata.get("profile_id")
+        if not isinstance(profile_id, str) or profile_id != record.artifact_type:
+            findings.append(
+                _finding(
+                    record,
+                    "profile-id-mismatch",
+                    "profile_id must equal the Registry-classified profile",
+                )
+            )
+
     if (
         isinstance(declared_type, str)
         and declared_type == record.artifact_type
-        and isinstance(raw_profile.get("id_pattern"), str)
-        and isinstance(raw_profile.get("path_identity"), str)
+        and (
+            (
+                isinstance(raw_profile.get("id_pattern"), str)
+                and isinstance(raw_profile.get("path_identity"), str)
+            )
+            or (
+                "artifact_id_pattern" in raw_profile
+                and isinstance(raw_profile.get("identity_relation"), str)
+            )
+        )
     ):
         identity_profiles = (
             {record.artifact_type: raw_profile}
@@ -4098,7 +4194,7 @@ def load_promoted_transition_witnesses(
     return {witness.path: witness}
 
 
-def load_profiles(
+def _load_legacy_profiles(
     path: pathlib.Path = DEFAULT_PROFILES,
     migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
 ) -> dict[str, object]:
@@ -4533,6 +4629,137 @@ def load_profiles(
     return loaded
 
 
+def load_profiles(
+    path: pathlib.Path = DEFAULT_PROFILES,
+    migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
+) -> Mapping[str, Mapping[str, object]] | dict[str, object]:
+    """Return the Registry profile map; accept legacy YAML only as transition input."""
+
+    if path.suffix.lower() == ".json":
+        try:
+            return load_registry(path).profiles
+        except RegistryError as error:
+            raise ProfileError(str(error)) from error
+    return _load_legacy_profiles(path, migration_contract_path)
+
+
+def build_registry_transition_profiles(
+    registry: DocumentRegistry,
+    legacy_profiles: Mapping[str, object],
+) -> dict[str, object]:
+    """Adapt Registry profiles over the bounded legacy corpus envelope.
+
+    The legacy YAML remains an explicit migration input until Task 3 moves the
+    corpus. Canonical target routes are classified and validated by Registry;
+    old routes retain their pre-migration profiles without becoming a second
+    authority for new paths.
+    """
+
+    adapted = copy.deepcopy(dict(legacy_profiles))
+    legacy_map = adapted.get("profiles")
+    common = adapted.get("common")
+    if not isinstance(legacy_map, dict) or not isinstance(common, dict):
+        raise ProfileError("legacy transition profiles require common and profiles")
+    for key in ("typed_keys", "frontmatter_order"):
+        values = common.get(key)
+        if isinstance(values, list) and "profile_id" not in values:
+            common[key] = ["profile_id", *values]
+    translated = dict(legacy_map)
+    for profile_id, profile in registry.profiles.items():
+        lifecycle_id = profile.get("lifecycle_id")
+        statuses = (
+            list(registry.lifecycles[lifecycle_id])
+            if isinstance(lifecycle_id, str) and lifecycle_id in registry.lifecycles
+            else []
+        )
+        traceability = profile.get("traceability")
+        parents = (
+            list(traceability.get("allowed_parent_profiles", ()))
+            if isinstance(traceability, Mapping)
+            else []
+        )
+        transitions = (
+            {
+                status: list(targets)
+                for status, targets in registry.transitions.get(
+                    profile_id, {}
+                ).items()
+            }
+            if profile_id in registry.transitions
+            else {}
+        )
+        translated[profile_id] = {
+            "required": list(profile.get("required_frontmatter", ())),
+            "optional": list(profile.get("optional_frontmatter", ())),
+            "forbidden": [],
+            "allowed_statuses": statuses,
+            "allowed_parent_types": parents,
+            "allow_empty_parents": not parents,
+            "allow_additional": False,
+            "disposition": "registry-canonical",
+            "path_pattern": profile.get("path_pattern"),
+            "artifact_id_pattern": profile.get("artifact_id_pattern"),
+            "identity_relation": profile.get("identity_relation"),
+            "transitions": transitions,
+        }
+    adapted["profiles"] = translated
+    adapted["_legacy_profiles"] = copy.deepcopy(legacy_map)
+    legacy_roles = adapted.get("template_roles")
+    projected_roles = dict(legacy_roles) if isinstance(legacy_roles, dict) else {}
+    for role_id, role in registry.template_roles.items():
+        profile_id = role.get("profile_id")
+        profile = registry.profiles.get(str(profile_id))
+        path_pattern = profile.get("path_pattern") if isinstance(profile, Mapping) else None
+        if not isinstance(profile, Mapping) or not isinstance(path_pattern, str):
+            continue
+        projected_roles[role_id] = {
+            "source": role.get("source"),
+            "artifact_profile": profile_id,
+            "target_globs": [_registry_path_glob(path_pattern)],
+            "required_headings": [
+                f"## {section}" for section in profile.get("required_sections", ())
+            ],
+            "conditional_headings": [
+                f"## {section}" for section in profile.get("optional_sections", ())
+            ],
+            "forbidden_headings": [],
+        }
+    adapted["template_roles"] = projected_roles
+    families = adapted.get("document_families")
+    if isinstance(families, dict):
+        existing = [
+            member
+            for members in families.values()
+            if isinstance(members, list)
+            for member in members
+            if isinstance(member, str)
+        ]
+        canonical = [
+            profile_id
+            for profile_id in registry.profiles
+            if profile_id
+            not in {
+                "readme",
+                "governance",
+                "template-source",
+                "generated",
+                "repo-support",
+                "unsupported",
+            }
+            and profile_id not in existing
+        ]
+        sdlc = families.get("sdlc")
+        if isinstance(sdlc, list):
+            families["sdlc"] = [*sdlc, *canonical]
+    adapted["_registry"] = registry
+    return adapted
+
+
+def _registry_path_glob(pattern: str) -> str:
+    rendered = re.sub(r"\{[^{}]+:4\}", "[0-9][0-9][0-9][0-9]", pattern)
+    return re.sub(r"\{(?:slug|domain|stage)\}", "*", rendered)
+
+
 def _run_git(
     root: pathlib.Path,
     args: Sequence[str],
@@ -4847,6 +5074,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     _require_git_worktree(root)
     findings: list[Finding] = []
     tracked_markdown = _tracked_repository_markdown(root)
+    registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
 
     for path in tracked_markdown:
         if not any(
@@ -4905,9 +5133,33 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         except (OSError, UnicodeError) as error:
             findings.append(Finding(path.as_posix(), "readme-unreadable", str(error)))
             continue
+        if registry_native:
+            active_registry = profiles.get("_registry")
+            assert isinstance(active_registry, DocumentRegistry)
+            if classify_registered_path(path.as_posix(), active_registry) != "readme":
+                # Specialized package/domain READMEs remain in the bounded
+                # legacy corpus until Task 3 supplies their Registry metadata.
+                continue
+            _, h2 = extract_markdown_headings(text)
+            raw_readme = active_registry.profiles.get("readme", {})
+            required_sections = raw_readme.get("required_sections", ())
+            if isinstance(required_sections, Sequence) and not isinstance(
+                required_sections, (str, bytes)
+            ):
+                for section in required_sections:
+                    heading = f"## {section}"
+                    if isinstance(section, str) and heading not in h2:
+                        findings.append(
+                            Finding(
+                                path.as_posix(),
+                                "readme-heading-missing",
+                                f"Registry README is missing required heading: {heading}",
+                            )
+                        )
+            continue
         record = dataclasses.replace(
-            _record_from_text(path, text),
-            artifact_type=infer_artifact_type(path),
+            _record_from_text(path, text, profiles=profiles),
+            artifact_type=infer_artifact_type(path, profiles),
         )
         matches = matching_readme_profiles(path, profiles)
         if not matches:
@@ -4957,13 +5209,17 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         "template-source",
         "unsupported",
     }
-    tracked_templates = [
-        path
-        for path in tracked_markdown
-        if path.as_posix().startswith("docs/99.templates/templates/")
-        and path.name != "README.md"
-        and (root / path).is_file()
-    ]
+    tracked_templates = (
+        []
+        if registry_native
+        else [
+            path
+            for path in tracked_markdown
+            if path.as_posix().startswith("docs/99.templates/templates/")
+            and path.name != "README.md"
+            and (root / path).is_file()
+        ]
+    )
     for path in tracked_templates:
         try:
             text = (root / path).read_text(encoding="utf-8")
@@ -5018,13 +5274,14 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                     f"registry target {mapped_type!r} differs from declared artifact_type {declared_type!r}",
                 )
             )
-    for source_path in sorted(roles_by_source):
-        if not (root / source_path).is_file():
-            findings.append(
-                Finding(source_path, "template-source-missing", "registered Markdown template does not exist")
-            )
+    if not registry_native:
+        for source_path in sorted(roles_by_source):
+            if not (root / source_path).is_file():
+                findings.append(
+                    Finding(source_path, "template-source-missing", "registered Markdown template does not exist")
+                )
 
-    for path in _tracked_machine_templates(root):
+    for path in (() if registry_native else _tracked_machine_templates(root)):
         try:
             text = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
@@ -5044,7 +5301,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         for source_path, (_, role) in roles_by_source.items()
         if role.get("artifact_profile") == "release"
     )
-    if len(release_sources) != 1:
+    if not registry_native and len(release_sources) != 1:
         findings.append(
             Finding(
                 "docs/99.templates/support/document-metadata-profiles.yaml",
@@ -5052,7 +5309,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                 f"registry must map exactly one Release template; found {len(release_sources)}",
             )
         )
-    else:
+    elif not registry_native:
         release_source = release_sources[0]
         release_name = pathlib.PurePosixPath(release_source).name
         release_route = "docs/05.operations/releases/rel-####-<slug>/release.md"
@@ -5076,11 +5333,16 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                     )
                 )
 
-    human_support = [
-        path
-        for path in tracked_markdown
-        if path.as_posix().startswith("docs/99.templates/support/") and path.suffix == ".md"
-    ]
+    human_support = (
+        []
+        if registry_native
+        else [
+            path
+            for path in tracked_markdown
+            if path.as_posix().startswith("docs/99.templates/support/")
+            and path.suffix == ".md"
+        ]
+    )
     registry_arrays_by_key: dict[str, list[tuple[tuple[str, ...], list[str]]]] = collections.defaultdict(list)
     for registry_path, members in _registry_string_arrays(profiles):
         if registry_path:
@@ -6029,11 +6291,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="report",
     )
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
-    parser.add_argument("--profiles", type=pathlib.Path, default=DEFAULT_PROFILES)
+    parser.add_argument(
+        "--registry",
+        "--profiles",
+        dest="profiles",
+        type=pathlib.Path,
+        default=DEFAULT_PROFILES,
+        help="Stage 99 registry (legacy --profiles remains a transition alias)",
+    )
     parser.add_argument("--output", type=pathlib.Path)
     parser.add_argument("--check", action="store_true", help="compare --output without writing")
     parser.add_argument("--changed-path", action="append", default=[])
     parser.add_argument("--base-ref", default=None, help="optional Git ref for lifecycle transition comparison")
+    parser.add_argument(
+        "--history-scope",
+        choices=("changed", "full"),
+        default="changed",
+        help="scan all Git history only for the explicit full document-contract profile",
+    )
     parser.add_argument(
         "--transition-override-file",
         type=pathlib.Path,
@@ -6042,12 +6317,204 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.check and args.output is None:
         parser.error("--check requires --output")
+    if args.history_scope == "full" and args.mode != "check-contracts":
+        parser.error("--history-scope full requires --mode check-contracts")
     root = args.root.resolve()
+    registry = None
     try:
-        profiles = load_profiles(args.profiles.resolve())
-    except ProfileError as error:
+        if args.profiles.suffix.lower() == ".json":
+            registry = load_registry(args.profiles)
+            profiles = build_registry_transition_profiles(
+                registry,
+                load_profiles(LEGACY_TRANSITION_PROFILES),
+            )
+        else:
+            profiles = load_profiles(args.profiles.resolve())
+    except (ProfileError, RegistryError) as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
+    if args.mode == "check-contracts" and args.profiles.suffix.lower() == ".json":
+        assert registry is not None
+        contract_findings: list[Finding] = []
+        for role, definition in registry.template_roles.items():
+            source = definition.get("source")
+            if not isinstance(source, str):
+                continue
+            template = root / source
+            if not template.is_file() or template.is_symlink():
+                contract_findings.append(
+                    Finding(source, "template-source-missing", f"registered role is unavailable: {role}")
+                )
+                continue
+            try:
+                text = template.read_text(encoding="utf-8")
+            except (OSError, UnicodeError):
+                contract_findings.append(
+                    Finding(source, "template-source-unreadable", "registered template is not readable UTF-8")
+                )
+                continue
+            if template.suffix == ".md":
+                profile_id = definition["profile_id"]
+                profile = registry.profiles.get(str(profile_id))
+                if not isinstance(profile, Mapping):
+                    contract_findings.append(
+                        Finding(source, "template-profile-mismatch", str(profile_id))
+                    )
+                    continue
+                try:
+                    values = _parse_frontmatter_text(text)
+                except FrontmatterError:
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-frontmatter-invalid",
+                            "template frontmatter is not valid YAML",
+                        )
+                    )
+                    continue
+                if values.get("profile_id") != profile_id:
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-profile-mismatch",
+                            f"expected exact profile_id: {profile_id}",
+                        )
+                    )
+                if values.get("artifact_type") != profile_id:
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-artifact-type-mismatch",
+                            f"expected exact artifact_type: {profile_id}",
+                        )
+                    )
+                required = set(profile.get("required_frontmatter", ()))
+                optional = set(profile.get("optional_frontmatter", ()))
+                for key in sorted(required - set(values)):
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-frontmatter-missing",
+                            f"required frontmatter key is missing: {key}",
+                        )
+                    )
+                for key in sorted(set(values) - required - optional):
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-frontmatter-unregistered",
+                            f"frontmatter key is not registered: {key}",
+                        )
+                    )
+                try:
+                    schema_values = {
+                        key: (
+                            "2000-01-01T00:00:00Z"
+                            if value == "YYYY-MM-DDTHH:MM:SSZ"
+                            else "2000-01-01"
+                            if value == "YYYY-MM-DD"
+                            else value
+                        )
+                        for key, value in values.items()
+                    }
+                    schema_findings = validate_frontmatter(
+                        schema_values,
+                        root
+                        / "docs/99.templates/contracts/frontmatter.schema.json",
+                    )
+                except RegistryError:
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-frontmatter-schema-unavailable",
+                            "frontmatter schema cannot be trusted",
+                        )
+                    )
+                else:
+                    contract_findings.extend(
+                        Finding(source, finding.code, finding.message)
+                        for finding in schema_findings
+                    )
+                lifecycle_id = profile.get("lifecycle_id")
+                if isinstance(lifecycle_id, str):
+                    status = values.get("status")
+                    if status not in registry.lifecycles.get(lifecycle_id, ()):
+                        contract_findings.append(
+                            Finding(
+                                source,
+                                "template-status-invalid",
+                                f"status is outside lifecycle: {lifecycle_id}",
+                            )
+                        )
+                h1, h2 = extract_markdown_headings(text)
+                if len(h1) != 1:
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-h1-invalid",
+                            "Markdown template must contain exactly one H1",
+                        )
+                    )
+                actual_sections = {heading.removeprefix("## ") for heading in h2}
+                required_sections = set(profile.get("required_sections", ()))
+                optional_sections = set(profile.get("optional_sections", ()))
+                for section in sorted(required_sections - actual_sections):
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-section-missing",
+                            f"required section is missing: {section}",
+                        )
+                    )
+                for section in sorted(
+                    actual_sections - required_sections - optional_sections
+                ):
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-section-unregistered",
+                            f"section is not registered: {section}",
+                        )
+                    )
+                if re.search(
+                    r"docs/(?:01\.requirements|02\.architecture|03\.specs|"
+                    r"05\.operations|90\.references|98\.archive)/",
+                    text,
+                ):
+                    contract_findings.append(
+                        Finding(
+                            source,
+                            "template-concrete-target",
+                            "template embeds a concrete target-stage path",
+                        )
+                    )
+            else:
+                contract_findings.extend(
+                    _machine_template_findings(
+                        Record(pathlib.PurePosixPath(source), {}, "unsupported"),
+                        text,
+                    )
+                )
+        try:
+            contract_findings.extend(validate_repository_contracts(root, profiles))
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
+        if args.history_scope == "full":
+            try:
+                issued = collect_issued_identities(root, refs=("--all",))
+            except IdentityHistoryError as error:
+                print(f"configuration-error: {error}", file=sys.stderr)
+                return 2
+            contract_findings.extend(
+                Finding(finding.path, finding.code, finding.message)
+                for finding in validate_identity_history(registry, issued)
+            )
+        contract_findings = sorted(set(contract_findings))
+        for finding in contract_findings:
+            print(f"{finding.code}: {finding.path}: {finding.message}")
+        print(f"metadata repository contracts: violations={len(contract_findings)}")
+        return 1 if contract_findings else 0
     if args.mode == "check-contracts":
         try:
             contract_findings = validate_repository_contracts(root, profiles)

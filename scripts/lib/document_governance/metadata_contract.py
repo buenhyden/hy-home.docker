@@ -17,6 +17,7 @@ from scripts.lib.document_governance.metadata_validator import (
     _safe_repo_path,
     _valid_metadata_artifact_id,
     build_manifest,
+    build_registry_transition_profiles,
     collect_records_at_ref,
     infer_artifact_type,
     load_migration_contract,
@@ -28,6 +29,16 @@ from scripts.lib.document_governance.metadata_validator import (
     validate_record,
     validate_static_exception_document,
     validate_static_migration_manifest,
+)
+from scripts.lib.document_governance.registry import (
+    DEFAULT_REGISTRY,
+    DocumentRegistry,
+    IdentitySpace,
+    RegistryError,
+    RegistryFinding,
+    load_registry,
+    validate_frontmatter,
+    validate_registry,
 )
 
 __all__ = (
@@ -45,6 +56,7 @@ __all__ = (
     "_safe_repo_path",
     "_valid_metadata_artifact_id",
     "build_manifest",
+    "build_registry_transition_profiles",
     "collect_records_at_ref",
     "infer_artifact_type",
     "load_migration_contract",
@@ -56,4 +68,12 @@ __all__ = (
     "validate_record",
     "validate_static_exception_document",
     "validate_static_migration_manifest",
+    "DEFAULT_REGISTRY",
+    "DocumentRegistry",
+    "IdentitySpace",
+    "RegistryError",
+    "RegistryFinding",
+    "load_registry",
+    "validate_frontmatter",
+    "validate_registry",
 )

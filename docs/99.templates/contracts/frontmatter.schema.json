@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hy-home.invalid/schemas/frontmatter.schema.json",
+  "title": "Document frontmatter",
+  "type": "object",
+  "properties": {
+    "profile_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1},
+    "artifact_id": {"type": "string", "minLength": 1},
+    "artifact_type": {"type": "string", "minLength": 1},
+    "parent_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "created": {"type": "string", "format": "date"},
+    "updated": {"type": "string", "format": "date"},
+    "observed_at": {"type": "string", "format": "date"},
+    "reviewed_at": {"type": "string", "format": "date"},
+    "next_review_at": {"type": "string", "format": "date"},
+    "occurred_at": {"type": "string", "minLength": 1},
+    "resolved_at": {"type": ["string", "null"], "minLength": 1},
+    "completed_at": {"type": "string", "minLength": 1},
+    "supersedes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "superseded_by": {"type": ["string", "null"]},
+    "layer": {"type": "string", "minLength": 1},
+    "runtime": {"type": "string", "minLength": 1},
+    "generated_by": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}
