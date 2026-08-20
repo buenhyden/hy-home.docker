@@ -202,11 +202,13 @@ a blocking concurrent-change signal, not permission to update expected counts.
 **Interfaces:**
 
 - Consumes: approved Spec 0153, tracked inventory, Git object identity.
-- Produces: `ADR-0029`, Migration `mig-0003`, and immutable source-to-target rows
-  with `source_path`, `target_path`, `artifact_id`, `action`, `owner_task`,
-  `recovery_commit`, and `status`.
+- Produces: `ADR-0029`, Migration `mig-0003`, typed `planned_creations`, and
+  immutable transition rows. Each creation has `path`, `artifact_id`, and
+  `owner_task`. Each transition has `row_id`, `source_path`, `target_path`,
+  `artifact_id`, `action`, `owner_task`, `source_kind`, `source_owner_task`,
+  `active_consumers`, `recovery_commit`, and `status`.
 
-- [ ] **Step 1: Write the missing-control-plane RED test**
+- [x] **Step 1: Write the missing-control-plane RED test**
 
 ```python
 from pathlib import Path
@@ -221,7 +223,7 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
         self.assertTrue(MIGRATION.is_file())
 ```
 
-- [ ] **Step 2: Run RED and record the exact absence**
+- [x] **Step 2: Run RED and record the exact absence**
 
 Run:
 
@@ -232,43 +234,85 @@ PYTHONPATH=. python3 -m unittest \
 
 Expected: FAIL because both approved control-plane files are absent.
 
-- [ ] **Step 3: Create ADR-0029 from the current ADR template**
+- [x] **Step 3: Create ADR-0029 from the current ADR template**
 
 Record context, authority alternatives, the chosen Stage 00/99 split, generated
 provider projections, six public suites, consequences, and confirmation tests.
 Use `artifact_id: adr-0029`, `status: draft`, and link Spec 0153. Do not move or
 uppercase it until Task 6 installs the Stage 02 target profile.
 
-- [ ] **Step 4: Create Migration mig-0003 from the current archive template**
+- [x] **Step 4: Create Migration mig-0003 from the current archive template**
 
 Add a machine-readable fenced YAML block with this exact row contract:
 
 ```yaml
-schema_version: 1
+schema_version: 2
 migration_id: mig-0003
+baseline_commit: 889d3868ecd0913cddac79a718584a54a8453525
 approval:
   status: pending
+  approved_by: null
+  approved_at: null
+consumer_policy:
+  version: 1
+  literal_references: exact-repository-relative-path
+  markdown_links: shared-local-relative-parser
+  delete_consumers: inactive-when-delete-owner-task-lte-source-owner-task
+  excluded_noncurrent: []
+  derived_edges_sha256: <64-lowercase-hex>
+final_compaction:
+  owner_task: 13
+  schema_version: 3
+  top_level_keys: [schema_version, migration_id, rows]
+  row_keys: [source_path, target_path, artifact_id, action, recovery_commit]
+planned_creations:
+  - path: docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md
+    artifact_id: adr-0029
+    owner_task: 1
 rows:
-  - source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md
+  - row_id: mig-0003-r0001
+    source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md
     target_path: docs/03.specs/0153-workspace-governance-simplification/spec.md
-    artifact_id: spec-0153
+    artifact_id: SPEC-0153
     action: rename
     owner_task: 3
+    source_kind: tracked
+    source_owner_task: null
+    active_consumers: []
     recovery_commit: null
     status: planned
 ```
 
-Populate one row for every Stage 00/01/02/03/04/05/90/98/99/provider/script
-source selected by this plan. `null` is allowed only before the source commit is
-recorded; Task 13 rejects it for completed/deleted rows.
+Populate one structural row for every Stage 00/01/02/03/04/05/90/98/99,
+provider, script, and mirrored-test source selected by this plan. Ordinary
+in-place semantic edits are not Migration rows. `planned_creations` registers a
+new path only when a later transition consumes it. `action` is `rename`,
+`merge`, or `delete`; create is never a transition action. `null` recovery is
+allowed only while a row remains planned; Task 13 rejects it for
+completed/deleted rows.
 
-- [ ] **Step 5: Expand the test to validate every ledger row**
+- [x] **Step 5: Expand the test to validate every ledger row**
 
-Assert unique source and target paths, allowed actions, owner Tasks 2-13, no
-target collision, a tracked regular source for every planned row, and no
-Stage 05 Release target or Gemini/Antigravity target.
+Require exactly one YAML fence and a strict loader that rejects duplicate keys,
+aliases, anchors, and explicit tags. Assert unique row and source-transition
+identities, canonical POSIX paths, allowed actions, exact required keys, and no
+normalized collision across baseline, planned creation, and target namespaces
+except explicit merge or ordered transition lineage. Freeze the exact base
+commit and prove every `tracked` source through `git ls-tree -rz --full-tree` as
+mode `100644` or `100755` and type `blob`. A
+`planned-output` source must match either a `planned_creations` path/artifact
+whose `source_owner_task` is earlier than its transition owner or the exact
+target/artifact of an earlier transition row. Require every current tracked
+source to carry its exact owner-ordered active-consumer list. Resolve local
+Markdown relative links with the shared safe parser and retain literal scanning
+for code/config/plain references. A delete-disposition consumer is inactive only
+when its delete owner Task is no later than the source transition owner. Exclude
+Stage 98 recovery, Graphify collateral, and immutable or generated Stage 90
+evidence. Bind the baseline commit, consumer policy, derived-edge digest,
+final-compaction contract, creations, and rows into the selection digest. Reject
+Release, Gemini, or Antigravity targets and create actions inside transitions.
 
-- [ ] **Step 6: Run focused GREEN checks**
+- [x] **Step 6: Run focused GREEN checks**
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -279,12 +323,40 @@ git diff --check
 
 Expected: migration tests and changed metadata pass; no corpus path has moved.
 
+Actual Task 1 evidence after final re-review: the initial one-test RED failed on the
+absent ADR. The quality-remediation RED then ran `8` tests with `7` failures;
+after correction, `11/11` focused tests pass. The frozen packet contains `17`
+planned creations, `903` transitions, and `3,571` derived consumer edges with
+edge SHA-256 `2f1840983d98ed93ffdc183305c49b389b17e5c8362538e5df97d451be2b9139` and
+selection SHA-256
+`9328d04dc01ad60faa9be3f805eaa9414af1bacfe4751c61ef133749390e30e1`.
+Changed metadata reports `selected=5 violations=0 legacy_exceptions=0
+transition_overrides=0`; `git diff --check` exits zero. Exact output is recorded
+in `task.md`. Final independent specification and quality re-reviews each report
+`C0/I0/M0`; the earlier quality `I5` and lifecycle `I1` are addressed. The user
+approved the exact selection digest as `user` on `2026-08-20`; no corpus
+transition has executed.
+
 - [ ] **Step 7: Review and commit the control plane**
+
+Status: independent reviews, exact user row-set approval, and the approved-state
+`11/11` focused suite are complete. Only the controller-owned logical commit and
+its identity remain.
 
 Require independent specification and quality approval of the complete selected
 row set, then obtain the user's explicit approval of that exact row set. Record
 the verdicts, approval identity/date, and Task 1 RED/GREEN evidence in `task.md`,
-change `approval.status` from `pending` to `approved`, then:
+change `approval.status` from `pending` to `approved`, and run the same lifecycle
+suite before staging. `pending` requires null approval identity/date; `approved`
+requires a nonempty identity and a real canonical `YYYY-MM-DD` date. Both states
+retain the same selected rows and digest.
+
+```bash
+PYTHONPATH=. python3 -m unittest \
+  tests.validation.test_workspace_governance_migration -v
+```
+
+Only after that command passes may the control plane be staged:
 
 ```bash
 git add docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md \
@@ -1266,6 +1338,9 @@ git commit -m "refactor(references): simplify evidence packages"
 - Produces: `RecoveryReference(commit, original_path)` and minimal Migration or
   Tombstone documents. Recovery uses one commit-level identity, never line SHA,
   branch snapshot, or whole-archive count.
+- Migration 0003 may retain its approved execution fields through Task 10 because
+  they are required to execute and review later transitions. Task 13 compacts
+  the durable completed Migration to mapping and recovery fields only.
 
 - [ ] **Step 1: Write minimal-archive RED tests**
 
@@ -1325,7 +1400,8 @@ constructing the argument vector.
 
 Use native moves for the three Migrations. Tombstones contain only old path,
 replacement or `none`, reason, status, and recovery commit. Do not copy retired
-Spec/Plan/Task bodies.
+Spec/Plan/Task bodies. Preserve Migration 0003's reviewed execution ledger without
+expanding it; its per-mapping flow rows remain temporary execution evidence.
 
 - [ ] **Step 5: Run focused GREEN and provenance mutation tests**
 
@@ -1597,6 +1673,7 @@ git commit -m "refactor(ci): route validation through public suites"
 - Modify: all registered generated provider and Stage 90 Data outputs
 - Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - Modify: `docs/98.archive/README.md`
+- Modify: `tests/validation/test_workspace_governance_migration.py`
 - Delete in the retirement commit:
   `docs/03.specs/0153-workspace-governance-simplification/README.md`,
   `spec.md`, `plan.md`, and all thirteen `tasks/tsk-####-<slug>.md` files
@@ -1651,6 +1728,25 @@ findings, rerun affected focused gates, then rerun the full profile once.
 
 - [ ] **Step 5: Complete Migration evidence and create the closure commit**
 
+First add or update the focused final-state fixture and mutations. The fixture
+uses schema version `3` and only `schema_version`, `migration_id`, and `rows` at
+the top level. Each row has exactly `source_path`, `target_path`, `artifact_id`,
+`action`, and `recovery_commit`. Add mutations for schema version `2`, null
+recovery, and every execution-only top-level or row field.
+
+Run RED before changing the durable Migration:
+
+```bash
+PYTHONPATH=. python3 -m unittest \
+  tests.validation.test_workspace_governance_migration -v
+```
+
+Expected RED: the completed fixture or at least one mutation proves the pending
+execution schema cannot serve as the final compacted schema. Implement the
+minimal schema-version-3 mapping and rerun the same command. Expected GREEN:
+both pending/approved execution fixtures and final compacted fixtures pass their
+state-specific contracts, while all cross-state mutations fail closed.
+
 Set every executed row to `completed`; bind deleted/moved source recovery to an
 existing regular blob commit; update allocation high-water values; record exact
 suite evidence and review verdicts. Commit the still-present Spec package with
@@ -1664,12 +1760,22 @@ git commit -m "docs: complete workspace governance convergence"
 Resolve that commit with `git rev-parse HEAD` and write it as the recovery commit
 for the one-time Spec 0153 package rows. This avoids a self-referential commit.
 
+Then compact the durable Stage 98 Migration to schema version `3`. Its top level
+contains only `schema_version`, `migration_id`, and `rows`; every row contains exactly
+`source_path`, `target_path`, `artifact_id`, `action`, and `recovery_commit`.
+Drop pending-only approval, owner, status, source-kind, source-owner, planned
+creation, consumer-policy, derived-consumer, and row-identity fields. A focused
+minimality assertion must reject any extra field or null recovery for an
+executed mapping before retirement proceeds.
+
 - [ ] **Step 6: Retire Spec 0153 and its transient execution evidence**
 
 Verify the closure commit contains each package file with `git cat-file -e`,
 remove the package files listed above, and update current links. Keep only ADR
 0029 and Migration 0003 as durable decision/recovery evidence. Stage only the
-literal retirement/dependent-link paths and verify the cached-name list.
+literal retirement/dependent-link paths and verify the cached-name list. Confirm
+that every pending planned creation is represented by an executed mapping before
+the temporary creation registry is dropped during compaction.
 
 - [ ] **Step 7: Run retirement-focused and full final verification**
 

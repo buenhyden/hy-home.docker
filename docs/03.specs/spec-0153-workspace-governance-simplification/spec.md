@@ -619,7 +619,10 @@ The implementation is complete only when all of the following are true:
 10. Stage 90 contains only Research, Audit, and Data packages with prefixless,
     date-free identities.
 11. Stage 98 contains only README, minimal Migrations, and minimal Tombstones;
-    no ordinary full-content document archive remains.
+    no ordinary full-content document archive remains. A pending Migration may
+    retain schema-version-2 execution fields and pending/approved state, but its
+    schema-version-3 durable rows contain only source, target, artifact, action,
+    and non-null recovery commit mappings.
 12. Script/test ownership mirrors by responsibility, transitional and duplicate
     tools are absent, and one-time helpers are deleted.
 13. The validation graph contains the six canonical public suites, every focused
@@ -663,6 +666,31 @@ plan proves the separation.
 No agent may infer approval for destructive external actions, runtime changes,
 push, merge, or publication from approval of this repository migration.
 
+## Implementation Evidence
+
+Task 1 registered draft ADR-0029 and Migration 0003 without moving a corpus
+source. The Migration began pending and now records exact user approval. The
+initial RED proved the control-plane files were absent. That
+RED also exposed a representation defect: a transition schema limited to
+currently tracked sources could not safely describe an artifact created by one
+Task and consumed by a later Task. The bounded Plan/Migration/Test correction
+adds typed planned creations and sequential source provenance while preserving
+the approved authority, lifecycle, and recovery contract in this specification.
+
+The approved selection is frozen at commit
+`889d3868ecd0913cddac79a718584a54a8453525`: `17` planned creations, `903`
+structural transition rows, and `3,571` owner-ordered literal/Markdown consumer
+edges. The derived-edge SHA-256 is
+`2f1840983d98ed93ffdc183305c49b389b17e5c8362538e5df97d451be2b9139`; the
+selection SHA-256, bound to the baseline, consumer policy, edge digest,
+final-compaction contract, creations, and rows, is
+`9328d04dc01ad60faa9be3f805eaa9414af1bacfe4751c61ef133749390e30e1`.
+Focused validation currently passes `11/11`. Final independent specification
+and quality re-reviews each report `C0/I0/M0`, with the earlier quality `I5` and
+lifecycle `I1` addressed. The user approved the exact selection digest as
+`user` on `2026-08-20`; the controller-owned Task 1 commit remains before any
+transition executes.
+
 ## Related Documents
 
 - [Predecessor taxonomy specification](../spec-0136-sdlc-taxonomy-convergence/spec.md)
@@ -671,7 +699,8 @@ push, merge, or publication from approval of this repository migration.
 - [Archive and migration lookup](../../98.archive/README.md)
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Stage 99 template hub](../../99.templates/README.md)
+- [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
+- [Migration 0003](../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
 
-Planned architecture decision: `ADR-0029: Workspace Documentation and Agent
-Governance Authority`. It is created before Stage 99 implementation and linked
-here once the decision file exists.
+ADR-0029 remains draft and Migration 0003 is approved; both remain uncommitted
+until the controller closes the Task 1 control-plane unit.
