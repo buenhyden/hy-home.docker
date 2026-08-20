@@ -13,10 +13,11 @@ updated: 2026-08-20
 ## Overview
 
 This specification defines the successor taxonomy for repository documentation,
-AI-agent governance, templates, validation, and lifecycle evidence. It supersedes
-the target-state design in Spec 0136 without rewriting that specification's
-completed migration history. The Operations catalog work already completed under
-Spec 0136 is an input to this specification, not work to repeat.
+AI-agent governance, templates, validation, and lifecycle evidence. When
+activated, it supersedes the target-state design in Spec 0136 without rewriting
+that specification's completed migration history. The Operations catalog work
+already completed under Spec 0136 is an input to this specification, not work to
+repeat.
 
 The design uses a staged, authority-first migration. Stage 99 first becomes the
 single machine authority for document paths, profiles, identifiers, sections,
@@ -26,8 +27,8 @@ move only after those authorities can validate the destination shape.
 
 The final repository supports Claude and Codex. Gemini and Antigravity governance,
 models, adapters, shims, projections, tests, and generated surfaces are retired.
-The `.agents/` surface remains only for provider-neutral shared skills used by the
-supported runtimes.
+The `.agents/` surface remains only as a generated compatibility projection of
+provider-neutral Stage 00 skills used by the supported runtimes.
 
 ## Boundaries and Inputs
 
@@ -91,7 +92,10 @@ location is required because the current Stage 99 profile still owns the
 `spec-####-<slug>` shape. The first implementation unit changes Stage 99, proves
 the prefixless profile, and then performs a native move to
 `docs/03.specs/0153-workspace-governance-simplification/`. No compatibility copy
-or redirect is created.
+or redirect is created. Its bootstrap ID remains `spec-0153` while the legacy
+profile is authoritative. The Stage 99 transition changes the canonical lexical
+form to `SPEC-0153` in the same logical unit as the native path move and inbound
+trace rewrite; the numeric identity `0153` does not change.
 
 ### External evidence and limits
 
@@ -122,7 +126,8 @@ reviewability. The exact taxonomy below is the workspace's design decision.
 | External evidence, point-in-time audits, structured reference data | Stage 90 |
 | Historical path and authority lookup | Git history plus minimal Stage 98 records |
 | Runtime syntax and hooks | `.claude/` and `.codex/` adapters |
-| Shared supported-provider skills | `.agents/skills/` |
+| Provider-neutral reusable skills | Stage 00 `skills/` |
+| Runtime skill projection | Generated `.agents/skills/` and supported provider adapters |
 
 No generated adapter, validator, template, README, migration, tombstone, or
 reference document may redefine a rule owned by another row.
@@ -196,8 +201,9 @@ docs/00.agent-governance/
 - project `memory/` is removed. Current state belongs to the owning Spec task;
   reusable content moves by meaning to policy, skill, operations, or reference.
 - root `AGENTS.md` and `CLAUDE.md` remain concise bootstrap shims.
-- `.agents/` owns no policy. It exposes shared skills required by both supported
-  runtimes.
+- `.agents/` owns no policy or skill source. It is a generated compatibility
+  projection of Stage 00 skills required by Claude and Codex. Projection parity
+  and freshness are executable validation obligations.
 - Gemini and Antigravity identifiers, adapters, projections, tests, generated
   outputs, model records, and shims are removed.
 
@@ -253,6 +259,10 @@ docs/03.specs/
 └── 0001-<slug>/
     ├── README.md
     ├── spec.md
+    ├── contracts/
+    │   ├── openapi.yaml
+    │   ├── schema.graphql
+    │   └── service.proto
     ├── plan.md
     └── tasks/
         └── tsk-0001-<slug>.md
@@ -265,6 +275,10 @@ docs/03.specs/
 - `design.md` and `tests.md` are not document roles.
 - `spec.md` owns goals, exact behavior, Technical Approach, interfaces,
   Acceptance Contract, and failure conditions.
+- `contracts/` is optional and contains executable interface contracts owned by
+  the package. The registry declares allowed deterministic filenames and media
+  types; `spec.md` links every owned contract. These payloads have machine
+  profiles and templates but are not additional prose document roles.
 - `plan.md` owns implementation sequence, dependencies, risk, verification,
   commit boundaries, rollback, and recovery.
 - task documents own bounded execution and review evidence.
@@ -300,10 +314,21 @@ docs/05.operations/
 - The approved domain/subject structure and completed semantic convergence are
   retained.
 - Subject paths remove the `ops-` prefix; stable frontmatter IDs remain.
+- The subject directory number binds to a registered subject identity. Role
+  artifact IDs are independent stable member identities and are not renumbered
+  after an approved merge. For example, subject `0051` may retain
+  `policy-0052` when the Operations migration manifest records that membership.
+  Validators require subject-path-to-subject identity agreement and exact
+  registered role membership instead of equating every role ID to the subject
+  number.
 - Guide, Policy, and Runbook are optional roles. A subject contains only roles
   with distinct owners, purposes, triggers, or verification obligations.
 - Role documents merge only when owner, scope, trigger, and validator evidence
   all agree.
+- Every retained, renamed, merged, or removed role has one migration-manifest
+  row recording source and final route, subject and role identity, owner, scope,
+  trigger, verification evidence, active consumers, and body-preservation
+  witnesses. A role disposition without that row fails closed.
 - Incident year containment and `inc-####` are the only date/path prefix
   exception.
 - `releases/` and Release profiles, IDs, templates, indexes, fixtures, and gates
@@ -374,8 +399,9 @@ docs/99.templates/
 ```
 
 `registry.json` is the only machine authority for canonical path patterns,
-profile IDs, artifact IDs, internal IDs, required and optional sections,
-lifecycle states, traceability relationships, template IDs, and exceptions.
+profile IDs, artifact IDs, internal IDs, issued-ID allocation state, required and
+optional sections, lifecycle states and transitions, traceability relationships,
+template IDs, and exceptions.
 Schemas validate the registry and frontmatter. Templates reference a profile ID
 and never hard-code a target path.
 
@@ -386,16 +412,43 @@ Release, Gemini, and Antigravity templates are removed.
 
 ### Status and identity lifecycle
 
-Common status values are `draft`, `active`, `superseded`, and `retired`.
-Profiles may add only the following values:
+The registry defines exact status sets rather than combining an implicit common
+set with profile-specific additions:
 
-- Plan/Task: `completed`, `blocked`, `cancelled`.
-- Incident: `open`, `mitigated`, `closed`.
-- ADR: `rejected`.
+| Profile family | Allowed statuses | Allowed forward transitions |
+| :--- | :--- | :--- |
+| living Requirement, Architecture Description, Spec, Guide, Policy, Runbook, Research, and Data | `draft`, `active`, `superseded`, `retired` | `draft -> active|retired`; `active -> superseded|retired` |
+| ADR | `draft`, `active`, `superseded`, `retired`, `rejected` | `draft -> active|rejected|retired`; `active -> superseded|retired` |
+| Plan and Task | `draft`, `active`, `blocked`, `completed`, `cancelled` | `draft -> active|cancelled`; `active -> blocked|completed|cancelled`; `blocked -> active|cancelled` |
+| Incident | `open`, `mitigated`, `closed` | `open -> mitigated|closed`; `mitigated -> closed` |
+| Postmortem and point-in-time Audit | `draft`, `active`, `superseded`, `retired` | `draft -> active|retired`; `active -> superseded|retired` |
+| Migration and Tombstone | `draft`, `completed`, `superseded` | `draft -> completed`; `completed -> superseded` |
 
-Replacement uses `supersedes` and `superseded_by`. Issued IDs remain reserved
-after deletion and are never reused. Validators require the numeric path
-identity, artifact ID, and internal requirement ID owner to agree.
+Terminal states do not transition backward. An existing completed Spec is
+classified deterministically as either an `active` living contract or a retired
+one-time package; an existing archived document becomes a Tombstone/Migration or
+is removed after Git recovery proof. Completed Plans and Tasks are summarized
+and removed according to the Stage 03 lifecycle.
+
+Replacement uses `supersedes` and `superseded_by`. Because Spec 0153 is still a
+draft under the legacy profile, `parent_ids` records its current lineage. In the
+activation unit, the Stage 99 migration atomically adds the forward
+`supersedes: [SPEC-0136]` relation to Spec 0153 and the reverse `superseded_by`
+relation to Spec 0136 without changing Spec 0136's completed migration evidence.
+
+Each registry identity space owns monotonic allocation state. Bootstrap computes
+the high-water mark from tracked documents and Git history, reserves every value
+at or below that mark, and records the next allocatable number. Package-owned
+FR/NFR/IF spaces maintain their own high-water marks. Issuance updates allocation
+state atomically with the new artifact, and deletion never lowers a mark. This
+conservatively prevents reuse even after the current document is removed.
+
+Final canonical package IDs use uppercase `REQ-`, `AD-`, `ADR-`, `SPEC-`,
+`RES-`, `AUD-`, and `DATA-`. The migration preserves each numeric identity,
+records lowercase-to-uppercase aliases only as migration evidence, rewrites all
+active inbound traces atomically, and rejects lowercase aliases afterward.
+Numeric path-to-artifact agreement applies to standalone numbered packages.
+Operations role members use the explicit subject-membership rule defined above.
 
 ## Interfaces and Data
 
@@ -408,6 +461,7 @@ Each registry profile defines at least:
   "profile_id": "requirements-package",
   "path_pattern": "docs/01.requirements/{number:4}-{slug}.md",
   "artifact_id_pattern": "REQ-{number:4}",
+  "identity_relation": "direct",
   "template_id": "requirements/package",
   "required_sections": [],
   "optional_sections": [],
@@ -416,6 +470,11 @@ Each registry profile defines at least:
   "exceptions": []
 }
 ```
+
+The registry also contains an `identity_spaces` collection with the canonical
+prefix, width, high-water mark, next number, and package-owned child spaces. It
+does not reproduce retired document bodies; it records only allocation state
+needed to make non-reuse enforceable.
 
 The final schema determines the exact JSON representation. The semantic
 requirements above are binding; field spelling that improves schema clarity may
@@ -451,7 +510,7 @@ tests/
 
 ### Gate topology
 
-The final validation graph exposes exactly six responsibility leaves:
+The final validation graph exposes exactly six public responsibility suites:
 
 1. `document-contract`
 2. `document-graph`
@@ -460,10 +519,17 @@ The final validation graph exposes exactly six responsibility leaves:
 5. `agent-governance`
 6. `repository-integrity`
 
-`run-ci-gate.py --profile changed` selects impacted leaves. `--profile full`
-runs all leaves. Local, pre-commit, PR, push, and final verification use the
-same leaf implementations. Hooks and workflows select profiles and do not
-reimplement policy.
+Each suite is an aggregate over small, focused validators registered in
+`scripts/manifest.yaml`; the suite itself contains no validation logic.
+`repository-integrity`, for example, composes existing focused Compose,
+dependency, frontend, supply-chain, workflow, and repository-syntax validators
+without merging their implementations or fixtures. Every atomic validator maps
+to exactly one public suite, and `run-ci-gate.py --explain` emits that mapping.
+
+`run-ci-gate.py --profile changed` selects impacted suites and their validators.
+`--profile full` runs all suites. Local, pre-commit, PR, push, and final
+verification use the same atomic implementations. Hooks and workflows select
+profiles and do not reimplement policy.
 
 ### Fixture contract
 
@@ -493,6 +559,8 @@ fixtures are removed. One canonical provenance record is referenced by identity.
 | An Operations merge loses unique procedure or policy meaning | Merge requires equal owner, scope, trigger, and verification obligations plus body-level preservation tests. |
 | A path move breaks generated outputs | Generator owner runs explicit write once, then check; generated files are never hand-edited. |
 | Provider removal deletes neutral skills | Gemini/Antigravity selectors are removed, while shared skills are retained when Claude or Codex consumes them. |
+| Stage 00 memory is removed before bootstraps stop loading it | Memory routing, root-shim rewrites, Stage 00 moves, provider projections, and bootstrap validation form one reversible logical unit; no commit may reference an absent memory path. |
+| Deleting a current artifact makes its ID reusable | Registry allocation state advances monotonically and is verified against Git history during bootstrap; deletion cannot lower the high-water mark. |
 | Stage 04 deletion races active Spec 137 | The Stage 03/04 task waits for the owning Spec 137 result and rebases from its committed state. |
 | Archive minimization destroys the only recoverable body | Git object and recovery commit are verified before the current copy is removed. |
 | A fixture passes because it mirrors implementation constants | Fixtures derive valid input from the registry and mutate one semantic boundary at a time. |
@@ -504,11 +572,16 @@ fixtures are removed. One canonical provenance record is referenced by identity.
 
 ### Migration sequence
 
-1. Commit this approved specification and the cross-stage ADR.
+1. Commit this approved specification and create `ADR-0029: Workspace
+   Documentation and Agent Governance Authority` at the current-compatible
+   `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`;
+   move it natively to the prefixless path after the Stage 99/02 profiles permit
+   that route.
 2. Establish Stage 99 registry/schema/template authority and registry-backed
    validation.
-3. Converge Stage 00 and provider adapters; remove project memory, Gemini, and
-   Antigravity.
+3. In one reversible bootstrap unit, route durable memory content, rewrite root
+   shims, converge Stage 00 and provider projections, validate bootstrap parity,
+   and remove project memory, Gemini, and Antigravity.
 4. Migrate Stage 01 and Stage 02 identities and content roles.
 5. Migrate Stage 03 packages and remove Stage 04 after Spec 137 integration.
 6. Remove Operations subject prefixes, merge proven duplicate roles, remove
@@ -523,8 +596,9 @@ fixtures are removed. One canonical provenance record is referenced by identity.
 
 The implementation is complete only when all of the following are true:
 
-1. The final top-level tree contains only the approved documentation stages and
-   supported provider surfaces.
+1. The final documentation and AI-agent control-plane tree contains only the
+   approved documentation stages and supported provider surfaces; unrelated
+   runtime and repository roots remain intact.
 2. Stage 99 registry/schema/template validation is the sole document-contract
    authority; `support/` no longer duplicates it.
 3. Stage 00 has only README, SDLC, policies, roles, supported providers, and
@@ -538,7 +612,9 @@ The implementation is complete only when all of the following are true:
 7. Spec paths are prefixless; `design.md`, `tests.md`, and residual Stage 04 are
    absent; current living behavior remains in `spec.md`.
 8. Operations retains domain/subject ownership, uses prefixless subject paths,
-   contains no proven duplicate roles, and contains no Releases surface.
+   has an exact reviewed disposition row for every role, preserves each stable
+   role-to-subject membership, contains no role meeting all duplicate criteria,
+   and contains no Releases surface.
 9. Incident paths use the year/package exception and pass exact role/path checks.
 10. Stage 90 contains only Research, Audit, and Data packages with prefixless,
     date-free identities.
@@ -546,16 +622,18 @@ The implementation is complete only when all of the following are true:
     no ordinary full-content document archive remains.
 12. Script/test ownership mirrors by responsibility, transitional and duplicate
     tools are absent, and one-time helpers are deleted.
-13. The validation graph contains the six canonical leaves, with identical leaf
-    implementations across local and CI profiles.
+13. The validation graph contains the six canonical public suites, every focused
+    validator maps to exactly one suite, and local and CI profiles invoke the
+    same atomic implementations.
 14. Fixtures are registry-driven and bounded; branch and line-number SHA
     duplication is absent while security/recovery provenance remains.
 15. No active authority, generated index, or operational link points to a
     predecessor, Tombstone, removed provider, Release, or Stage 04 path; explicit
     `supersedes` and migration-evidence links remain allowed.
-16. Issued IDs are not reused, numeric identities agree, and all cross-document
-    requirement links use full IDs.
-17. All six full-profile leaves pass, generated outputs are fresh, diff hygiene
+16. Registry allocation state prevents issued-ID reuse, standalone package
+    numeric identities agree, Operations subject membership is exact, canonical
+    ID case is enforced, and all requirement links use full IDs.
+17. All six full-profile suites pass, generated outputs are fresh, diff hygiene
     passes, and independent specification and quality reviews have no Critical
     or Important finding.
 
@@ -593,3 +671,7 @@ push, merge, or publication from approval of this repository migration.
 - [Archive and migration lookup](../../98.archive/README.md)
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Stage 99 template hub](../../99.templates/README.md)
+
+Planned architecture decision: `ADR-0029: Workspace Documentation and Agent
+Governance Authority`. It is created before Stage 99 implementation and linked
+here once the decision file exists.
