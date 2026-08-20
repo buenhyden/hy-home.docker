@@ -1,11 +1,12 @@
 ---
-status: draft
+profile_id: plan
+status: active
 artifact_id: plan-0153
 artifact_type: plan
 parent_ids:
-  - spec-0153
+  - SPEC-0153
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-21
 ---
 
 # Workspace Governance and SDLC Simplification Implementation Plan
@@ -25,7 +26,7 @@ validation logic.
 **Tech Stack:** Python 3.12+, Bash, JSON Schema Draft 2020-12, PyYAML, Git,
 unittest, GitHub Actions, Markdown, JSON, YAML, GraphQL, OpenAPI, and Proto.
 
-**Spec:** `docs/03.specs/spec-0153-workspace-governance-simplification/spec.md`
+**Spec:** `docs/03.specs/0153-workspace-governance-simplification/spec.md`
 
 ## Global Constraints
 
@@ -82,7 +83,7 @@ unittest, GitHub Actions, Markdown, JSON, YAML, GraphQL, OpenAPI, and Proto.
 
 ---
 
-## Overview
+## Objective
 
 This plan implements the approved Spec 0153 in one dependency-ordered program.
 The current package remains at its legacy-compatible path until Task 2 installs
@@ -94,7 +95,7 @@ The final Task closes generated outputs and links, verifies all six public gate
 suites, records recovery evidence, and removes the completed one-time Spec, Plan,
 and Task package according to the approved lifecycle.
 
-## Context and Inputs
+## Dependencies
 
 ### Verified starting state
 
@@ -127,8 +128,8 @@ a blocking concurrent-change signal, not permission to update expected counts.
 
 | Responsibility | Canonical implementation files |
 | :--- | :--- |
-| Approved behavior | `docs/03.specs/spec-0153-workspace-governance-simplification/spec.md` |
-| Program sequence | `docs/03.specs/spec-0153-workspace-governance-simplification/plan.md` |
+| Approved behavior | `docs/03.specs/0153-workspace-governance-simplification/spec.md` |
+| Program sequence | `docs/03.specs/0153-workspace-governance-simplification/plan.md` |
 | Cross-stage decision | `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`, later prefixless |
 | Migration ledger | `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`, later prefixless |
 | Document registry | `docs/99.templates/registry.json` |
@@ -186,7 +187,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 - Adding provider capabilities for unsupported AI runtimes.
 - Converting root `DESIGN.md` into an SDLC artifact.
 
-## Work Breakdown
+## Execution Sequence
 
 ### Task 1: Register the Cross-Stage Decision and Migration Ledger
 
@@ -194,10 +195,10 @@ a blocking concurrent-change signal, not permission to update expected counts.
 
 - Create: `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`
 - Create: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
-- Create: `docs/03.specs/spec-0153-workspace-governance-simplification/task.md`
+- Create: `docs/03.specs/0153-workspace-governance-simplification/task.md`
 - Create: `tests/validation/test_workspace_governance_migration.py`
-- Modify: `docs/03.specs/spec-0153-workspace-governance-simplification/spec.md`
-- Modify: `docs/03.specs/spec-0153-workspace-governance-simplification/plan.md`
+- Modify: `docs/03.specs/0153-workspace-governance-simplification/spec.md`
+- Modify: `docs/03.specs/0153-workspace-governance-simplification/plan.md`
 
 **Interfaces:**
 
@@ -361,7 +362,7 @@ Only after that command passes may the control plane be staged:
 ```bash
 git add docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md \
   docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md \
-  docs/03.specs/spec-0153-workspace-governance-simplification \
+  docs/03.specs/0153-workspace-governance-simplification \
   tests/validation/test_workspace_governance_migration.py
 git commit -m "docs: register workspace governance migration"
 ```
@@ -408,7 +409,7 @@ git commit -m "docs: register workspace governance migration"
 - Modify: `tests/validation/test_document_metadata.py`
 - Modify: `tests/validation/test_four_digit_document_identity.py`
 - Modify: `tests/validation/test_document_corpus_lifecycle.py`
-- Modify: `docs/03.specs/spec-0153-workspace-governance-simplification/task.md`
+- Modify: `docs/03.specs/0153-workspace-governance-simplification/task.md`
 
 **Interfaces:**
 
@@ -552,7 +553,7 @@ git add docs/99.templates scripts/requirements.txt \
   tests/validation/test_document_metadata.py \
   tests/validation/test_four_digit_document_identity.py \
   tests/validation/test_document_corpus_lifecycle.py
-git add docs/03.specs/spec-0153-workspace-governance-simplification/task.md
+git add docs/03.specs/0153-workspace-governance-simplification/task.md
 git commit -m "refactor(docs): establish stage 99 registry authority"
 ```
 
@@ -560,7 +561,8 @@ git commit -m "refactor(docs): establish stage 99 registry authority"
 
 **Files:**
 
-- Move: `docs/03.specs/spec-0153-workspace-governance-simplification/` -> `docs/03.specs/0153-workspace-governance-simplification/`
+- Move: the approved legacy package path in Migration rows `mig-0003-r0001`
+  and `mig-0003-r0002` -> `docs/03.specs/0153-workspace-governance-simplification/`
 - Create: `docs/03.specs/0153-workspace-governance-simplification/README.md`
 - Create: `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md`
 - Create: `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md`
@@ -579,7 +581,7 @@ git commit -m "refactor(docs): establish stage 99 registry authority"
 - Delete after evidence migration: moved legacy `task.md`
 - Modify: `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md`
 - Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
-- Modify: all active consumers returned by `rg -l 'spec-0153-workspace-governance-simplification|spec-0153|plan-0153' docs scripts tests .github .agents .claude .codex AGENTS.md CLAUDE.md`
+- Modify: all active consumers returned by `rg -l 'SPEC-0153-workspace-governance-simplification|SPEC-0153|plan-0153' docs scripts tests .github .agents .claude .codex AGENTS.md CLAUDE.md`
 - Test: `tests/validation/test_document_registry.py`
 - Test: `tests/validation/test_document_metadata.py`
 - Test: `tests/validation/test_workspace_governance_migration.py`
@@ -626,10 +628,9 @@ Expected: FAIL because the package remains at its bootstrap path.
 
 - [ ] **Step 3: Move the package natively and normalize identity**
 
-```bash
-git mv docs/03.specs/spec-0153-workspace-governance-simplification \
-  docs/03.specs/0153-workspace-governance-simplification
-```
+Move the two sources selected by Migration rows `mig-0003-r0001` and
+`mig-0003-r0002` to their registered canonical package path with native
+`git mv` operations.
 
 Set `spec.md` to `artifact_id: SPEC-0153`; keep Plan/Task identity formats exactly
 as registered in Task 2. Set `SPEC-0153 supersedes SPEC-0136` and update the
@@ -1798,7 +1799,7 @@ Use `superpowers:finishing-a-development-branch` to present the verified merge,
 push/PR, keep, or discard options. Do not push, merge, or delete the branch
 without the user's separate explicit choice.
 
-## Verification Plan
+## Verification
 
 ### Task-level verification
 
@@ -1836,7 +1837,7 @@ migration inputs. A Task may close only its owned subset; it may not rename a
 baseline failure to a warning, skip it, or claim a repository-wide PASS before
 Task 13. Task 13 requires zero findings.
 
-## Risks and Rollback
+## Risk and Rollback
 
 | Risk | Prevention | Rollback |
 | :--- | :--- | :--- |
@@ -1891,7 +1892,7 @@ history rewrite. Reverts are logical-commit scoped or exact Git-object restores.
 
 ## Related Documents
 
-- `docs/03.specs/spec-0153-workspace-governance-simplification/spec.md`
+- `docs/03.specs/0153-workspace-governance-simplification/spec.md`
 - `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`
 - `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
 - `docs/00.agent-governance/README.md`

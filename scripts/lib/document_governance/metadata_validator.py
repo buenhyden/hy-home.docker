@@ -1048,10 +1048,14 @@ class Manifest(dict[str, pathlib.Path]):
         values: dict[str, pathlib.Path],
         duplicates: dict[str, tuple[pathlib.Path, ...]],
         records_by_id: dict[str, Record],
+        relation_records_by_id: dict[str, Record] | None = None,
+        relation_conflicts: dict[str, tuple[pathlib.Path, ...]] | None = None,
     ) -> None:
         super().__init__(values)
         self.duplicates = duplicates
         self.records_by_id = records_by_id
+        self.relation_records_by_id = relation_records_by_id or dict(records_by_id)
+        self.relation_conflicts = relation_conflicts or {}
 
 
 def registered_generated_owner(
@@ -1210,6 +1214,34 @@ def infer_artifact_type(
     return "unsupported"
 
 
+LEGACY_SPEC_RELATION_PATH = re.compile(
+    r"docs/03\.specs/spec-(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*/spec\.md"
+)
+LEGACY_SPEC_RELATION_ID = re.compile(r"spec-(?P<number>[0-9]{4})")
+
+
+def _legacy_spec_relation_alias(record: Record) -> str | None:
+    """Return the one-way canonical relation alias for a valid legacy Spec."""
+
+    if (
+        record.artifact_type != "spec"
+        or record.metadata.get("artifact_type") != "spec"
+    ):
+        return None
+    path_match = LEGACY_SPEC_RELATION_PATH.fullmatch(record.path.as_posix())
+    artifact_id = record.metadata.get("artifact_id")
+    id_match = (
+        LEGACY_SPEC_RELATION_ID.fullmatch(artifact_id)
+        if isinstance(artifact_id, str)
+        else None
+    )
+    if path_match is None or id_match is None:
+        return None
+    if path_match.group("number") != id_match.group("number"):
+        return None
+    return f"SPEC-{id_match.group('number')}"
+
+
 def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
     """Build a deterministic artifact-ID manifest and retain duplicate context."""
 
@@ -1228,7 +1260,36 @@ def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
         for artifact_id, paths in sorted(paths_by_id.items())
         if len(paths) > 1
     }
-    return Manifest(values, duplicates, records_by_id)
+    relation_candidates: dict[str, list[Record]] = collections.defaultdict(list)
+    for record in sorted(records, key=lambda item: item.path.as_posix()):
+        artifact_id = record.metadata.get("artifact_id")
+        if isinstance(artifact_id, str) and artifact_id.strip():
+            relation_candidates[artifact_id.strip()].append(record)
+        alias = _legacy_spec_relation_alias(record)
+        if alias is not None:
+            relation_candidates[alias].append(record)
+
+    relation_records_by_id: dict[str, Record] = {}
+    relation_conflicts: dict[str, tuple[pathlib.Path, ...]] = {}
+    for relation_id, candidates in sorted(relation_candidates.items()):
+        unique = {
+            candidate.path.as_posix(): candidate
+            for candidate in candidates
+        }
+        if len(unique) == 1:
+            relation_records_by_id[relation_id] = next(iter(unique.values()))
+        else:
+            relation_conflicts[relation_id] = tuple(
+                sorted(candidate.path for candidate in unique.values())
+            )
+
+    return Manifest(
+        values,
+        duplicates,
+        records_by_id,
+        relation_records_by_id,
+        relation_conflicts,
+    )
 
 
 def _profile_mapping(profiles: dict[str, object]) -> tuple[dict[str, object], dict[str, object]]:
@@ -1709,21 +1770,51 @@ def _typed_target_types(profiles: dict[str, object]) -> set[str]:
     }
 
 
-def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest) -> bool:
+def _relation_record(manifest: Manifest, artifact_id: str) -> Record | None:
+    """Resolve exact IDs or one-way legacy Spec aliases for relations only."""
+
+    if artifact_id in manifest.relation_conflicts:
+        return None
+    return manifest.relation_records_by_id.get(artifact_id)
+
+
+def _relation_reference_exists(manifest: Manifest, artifact_id: str) -> bool:
+    """Return whether an exact or unique transition relation is resolvable."""
+
+    return (
+        artifact_id not in manifest.relation_conflicts
+        and (
+            artifact_id in manifest.relation_records_by_id
+            or artifact_id in manifest
+        )
+    )
+
+
+def _relation_ids_for_record(record: Record) -> frozenset[str]:
+    relation_ids: set[str] = set()
     artifact_id = record.metadata.get("artifact_id")
-    if not isinstance(artifact_id, str) or not artifact_id.strip():
+    if isinstance(artifact_id, str) and artifact_id.strip():
+        relation_ids.add(artifact_id.strip())
+    alias = _legacy_spec_relation_alias(record)
+    if alias is not None:
+        relation_ids.add(alias)
+    return frozenset(relation_ids)
+
+
+def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest) -> bool:
+    relation_ids = _relation_ids_for_record(record)
+    if not relation_ids:
         return False
-    target = artifact_id.strip()
     pending = list(parent_ids)
     visited: set[str] = set()
     while pending:
         candidate = pending.pop()
-        if candidate == target:
+        if candidate in relation_ids:
             return True
         if candidate in visited:
             continue
         visited.add(candidate)
-        parent_record = manifest.records_by_id.get(candidate)
+        parent_record = _relation_record(manifest, candidate)
         if parent_record is None:
             continue
         nested = _string_list(parent_record.metadata.get("parent_ids"))
@@ -2213,6 +2304,17 @@ def validate_body_contract(
 
     if _machine_template_path(record.path):
         return _machine_template_findings(record, text)
+
+    registry = profiles.get("_registry")
+    if isinstance(registry, DocumentRegistry):
+        registered_profile = classify_registered_path(record.path.as_posix(), registry)
+        profile = registry.profiles.get(record.artifact_type)
+        if (
+            registered_profile == record.artifact_type
+            and isinstance(profile, Mapping)
+            and profile.get("template_id") is None
+        ):
+            return []
 
     source_roles = _source_roles_for_path(record.path, profiles)
     is_markdown_source = (
@@ -2787,9 +2889,15 @@ def validate_record(
             )
         )
     ):
+        uses_legacy_transition_identity = (
+            isinstance(active_registry, DocumentRegistry)
+            and registry_classification is None
+            and isinstance(legacy_map, Mapping)
+            and isinstance(legacy_map.get(record.artifact_type), dict)
+        )
         identity_profiles = (
             {record.artifact_type: raw_profile}
-            if record.artifact_type == "archive"
+            if record.artifact_type == "archive" or uses_legacy_transition_identity
             else profile_map
         )
         for taxonomy_finding in validate_stable_identity(
@@ -2820,12 +2928,21 @@ def validate_record(
             findings.append(_finding(record, "missing-parent", "this artifact profile does not permit a root"))
         parent_type_order = raw_profile.get("allowed_parent_types", [])
         allowed_parent_types = set(parent_type_order)
+        relation_ids = _relation_ids_for_record(record)
         for parent_id in parent_ids:
-            if isinstance(artifact_id, str) and parent_id == artifact_id.strip():
+            if parent_id in relation_ids:
                 findings.append(_finding(record, "self-parent", f"artifact references itself as parent: {parent_id}"))
                 continue
-            parent_record = typed_manifest.records_by_id.get(parent_id)
-            if parent_id not in typed_manifest:
+            parent_record = _relation_record(typed_manifest, parent_id)
+            if parent_id in typed_manifest.relation_conflicts:
+                findings.append(
+                    _finding(
+                        record,
+                        "ambiguous-relation-reference",
+                        f"parent relation resolves to multiple exact or legacy Spec records: {parent_id}",
+                    )
+                )
+            elif not _relation_reference_exists(typed_manifest, parent_id):
                 findings.append(_finding(record, "unresolved-parent", f"parent artifact_id is unresolved: {parent_id}"))
             elif parent_record and allowed_parent_types and parent_record.artifact_type not in allowed_parent_types:
                 findings.append(
@@ -2837,13 +2954,19 @@ def validate_record(
                 )
         if (
             len(parent_ids) == len(set(parent_ids))
-            and not any(parent_id in typed_manifest.duplicates for parent_id in parent_ids)
+            and not any(
+                parent_id in typed_manifest.duplicates
+                or parent_id in typed_manifest.relation_conflicts
+                for parent_id in parent_ids
+            )
             and isinstance(parent_type_order, list)
         ):
             type_precedence = {
                 parent_type: index for index, parent_type in enumerate(parent_type_order)
             }
-            resolved_parents = [typed_manifest.records_by_id.get(parent_id) for parent_id in parent_ids]
+            resolved_parents = [
+                _relation_record(typed_manifest, parent_id) for parent_id in parent_ids
+            ]
             if all(
                 parent_record is not None and parent_record.artifact_type in type_precedence
                 for parent_record in resolved_parents
@@ -2851,7 +2974,9 @@ def validate_record(
                 expected_parent_ids = sorted(
                     parent_ids,
                     key=lambda parent_id: (
-                        type_precedence[typed_manifest.records_by_id[parent_id].artifact_type],
+                        type_precedence[
+                            _relation_record(typed_manifest, parent_id).artifact_type  # type: ignore[union-attr]
+                        ],
                         parent_id,
                     ),
                 )
@@ -2872,15 +2997,24 @@ def validate_record(
         if supersedes is None:
             findings.append(_finding(record, "invalid-supersedes", "supersedes must be a list of non-empty strings"))
         else:
+            relation_ids = _relation_ids_for_record(record)
             for replaced_id in supersedes:
-                if isinstance(artifact_id, str) and replaced_id == artifact_id.strip():
+                if replaced_id in relation_ids:
                     findings.append(_finding(record, "self-supersession", f"artifact supersedes itself: {replaced_id}"))
-                elif replaced_id not in typed_manifest:
+                elif replaced_id in typed_manifest.relation_conflicts:
+                    findings.append(
+                        _finding(
+                            record,
+                            "ambiguous-relation-reference",
+                            f"supersedes relation resolves to multiple exact or legacy Spec records: {replaced_id}",
+                        )
+                    )
+                elif not _relation_reference_exists(typed_manifest, replaced_id):
                     findings.append(
                         _finding(record, "unresolved-supersedes", f"superseded artifact_id is unresolved: {replaced_id}")
                     )
                 else:
-                    replaced_record = typed_manifest.records_by_id.get(replaced_id)
+                    replaced_record = _relation_record(typed_manifest, replaced_id)
                     if replaced_record and replaced_record.metadata.get("status") != "superseded":
                         findings.append(
                             _finding(
@@ -2891,12 +3025,20 @@ def validate_record(
                         )
 
     if status == "superseded" and "artifact_id" in required:
-        replacement_ids = {
-            replaced_id
-            for candidate in typed_manifest.records_by_id.values()
-            for replaced_id in (_string_list(candidate.metadata.get("supersedes")) or [])
-        }
-        if not isinstance(artifact_id, str) or artifact_id.strip() not in replacement_ids:
+        replacement_ids: set[str] = set()
+        for candidate in typed_manifest.records_by_id.values():
+            candidate_relation_ids = _relation_ids_for_record(candidate)
+            for replaced_id in (
+                _string_list(candidate.metadata.get("supersedes")) or []
+            ):
+                if (
+                    replaced_id not in candidate_relation_ids
+                    and replaced_id not in typed_manifest.relation_conflicts
+                    and _relation_reference_exists(typed_manifest, replaced_id)
+                ):
+                    replacement_ids.add(replaced_id)
+        relation_ids = _relation_ids_for_record(record)
+        if not relation_ids.intersection(replacement_ids):
             findings.append(
                 _finding(
                     record,
@@ -4665,6 +4807,14 @@ def build_registry_transition_profiles(
         if isinstance(values, list) and "profile_id" not in values:
             common[key] = ["profile_id", *values]
     translated = dict(legacy_map)
+    legacy_spec = translated.get("spec")
+    if isinstance(legacy_spec, dict):
+        legacy_spec = copy.deepcopy(legacy_spec)
+        optional = legacy_spec.get("optional")
+        if isinstance(optional, list) and "superseded_by" not in optional:
+            legacy_spec["optional"] = [*optional, "superseded_by"]
+        translated["spec"] = legacy_spec
+        legacy_map["spec"] = copy.deepcopy(legacy_spec)
     for profile_id, profile in registry.profiles.items():
         lifecycle_id = profile.get("lifecycle_id")
         statuses = (

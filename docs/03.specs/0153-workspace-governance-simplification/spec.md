@@ -1,11 +1,14 @@
 ---
-status: draft
-artifact_id: spec-0153
+profile_id: spec
+status: active
+artifact_id: SPEC-0153
 artifact_type: spec
 parent_ids:
-  - spec-0136
+  - SPEC-0136
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-21
+supersedes:
+  - SPEC-0136
 ---
 
 # Workspace Governance and SDLC Simplification Specification
@@ -86,16 +89,12 @@ conflict, not evidence that those paths should be restored. The Operations
 manifest itself passes its approved structural contract; its final index work is
 absorbed by this successor plan.
 
-This specification is initially committed at the legacy-compatible package path
-`docs/03.specs/spec-0153-workspace-governance-simplification/`. That bootstrap
-location is required because the current Stage 99 profile still owns the
-`spec-####-<slug>` shape. The first implementation unit changes Stage 99, proves
-the prefixless profile, and then performs a native move to
+This specification was initially committed under the legacy prefixed Stage 03
+package profile. Task 2 established the prefixless Stage 99 profile, and Task 3
+then moved the package natively to
 `docs/03.specs/0153-workspace-governance-simplification/`. No compatibility copy
-or redirect is created. Its bootstrap ID remains `spec-0153` while the legacy
-profile is authoritative. The Stage 99 transition changes the canonical lexical
-form to `SPEC-0153` in the same logical unit as the native path move and inbound
-trace rewrite; the numeric identity `0153` does not change.
+or redirect exists. The canonical lexical ID is `SPEC-0153`; the numeric
+identity `0153` did not change during activation.
 
 ### External evidence and limits
 
@@ -113,7 +112,7 @@ trace rewrite; the numeric identity `0153` does not change.
 The sources support responsibility separation, traceability, lifecycle, and
 reviewability. The exact taxonomy below is the workspace's design decision.
 
-## Contracts
+## Behavior Contract
 
 ### Authority contract
 
@@ -143,7 +142,7 @@ reference document may redefine a rule owned by another row.
 
 Stage 90 and Stage 98 never override current policy or current product truth.
 
-## Core Design
+## Technical Approach
 
 ### Target repository taxonomy
 
@@ -568,7 +567,7 @@ fixtures are removed. One canonical provenance record is referenced by identity.
 | Current baseline failures are relabeled as success | The plan records command, exit, finding count, and owner. Nonzero is never described as PASS. |
 | Concurrent work is overwritten | Work proceeds in an isolated worktree and does not stage or rewrite paths owned by another active task. |
 
-## Verification
+## Acceptance Contract
 
 ### Migration sequence
 
@@ -691,7 +690,7 @@ lifecycle `I1` addressed. The user approved the exact selection digest as
 `user` on `2026-08-20`; the controller-owned Task 1 commit remains before any
 transition executes.
 
-## Related Documents
+## Traceability
 
 - [Predecessor taxonomy specification](../spec-0136-sdlc-taxonomy-convergence/spec.md)
 - [Predecessor implementation plan](../spec-0136-sdlc-taxonomy-convergence/plan.md)

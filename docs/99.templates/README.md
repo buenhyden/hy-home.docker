@@ -125,6 +125,6 @@ docs/99.templates/
 ## Related Documents
 
 - [Template catalog](./templates/README.md)
-- [Workspace governance specification](../03.specs/spec-0153-workspace-governance-simplification/spec.md)
+- [Workspace governance specification](../03.specs/0153-workspace-governance-simplification/spec.md)
 - [Workspace governance authority ADR](../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
 - [Migration ledger](../98.archive/migrations/mig-0003-workspace-governance-simplification.md)

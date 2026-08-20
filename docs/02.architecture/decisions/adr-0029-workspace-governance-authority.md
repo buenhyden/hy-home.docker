@@ -134,7 +134,7 @@ No runtime, deployment, remote, or secret state is asserted by this ADR.
 
 ## Related Documents
 
-- [Workspace Governance and SDLC Simplification Spec](../../03.specs/spec-0153-workspace-governance-simplification/spec.md)
-- [Workspace Governance and SDLC Simplification Plan](../../03.specs/spec-0153-workspace-governance-simplification/plan.md)
+- [Workspace Governance and SDLC Simplification Spec](../../03.specs/0153-workspace-governance-simplification/spec.md)
+- [Workspace Governance and SDLC Simplification Plan](../../03.specs/0153-workspace-governance-simplification/plan.md)
 - [Agent Governance Canonical Adapter Architecture Description](../descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - [ADR-0027: Stage 00 Canonical Adapter Model](adr-0027-stage-00-canonical-adapter-model.md)

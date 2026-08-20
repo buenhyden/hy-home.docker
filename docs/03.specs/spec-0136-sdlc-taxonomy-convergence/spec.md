@@ -1,12 +1,13 @@
 ---
-status: active
+status: superseded
 artifact_id: spec-0136
 artifact_type: spec
 parent_ids:
   - spec-0131
   - spec-0134
+superseded_by: SPEC-0153
 created: 2026-08-07
-updated: 2026-08-13
+updated: 2026-08-21
 ---
 # SDLC Taxonomy and Agent Governance Convergence Specification
 

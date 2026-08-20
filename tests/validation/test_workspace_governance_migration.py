@@ -13,6 +13,7 @@ import unittest
 
 import yaml
 
+from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.links import parse_local_markdown_links
 
 
@@ -21,6 +22,31 @@ ADR = ROOT / "docs/02.architecture/decisions/adr-0029-workspace-governance-autho
 MIGRATION = (
     ROOT
     / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+)
+CANONICAL_PACKAGE = (
+    ROOT / "docs/03.specs/0153-workspace-governance-simplification"
+)
+LEGACY_PACKAGE = (
+    ROOT / "docs/03.specs/spec-0153-workspace-governance-simplification"
+)
+EXPECTED_TASK_FILES = (
+    "tsk-0001-control-plane.md",
+    "tsk-0002-stage99.md",
+    "tsk-0003-bootstrap.md",
+    "tsk-0004-stage00.md",
+    "tsk-0005-requirements.md",
+    "tsk-0006-architecture.md",
+    "tsk-0007-spec-lifecycle.md",
+    "tsk-0008-operations.md",
+    "tsk-0009-references.md",
+    "tsk-0010-archive.md",
+    "tsk-0011-script-tests.md",
+    "tsk-0012-gates.md",
+    "tsk-0013-closure.md",
+)
+BOOTSTRAP_EVIDENCE_BLOB = "f271bcf127e2ad766b6006210e9cba1d41176887"
+BOOTSTRAP_EVIDENCE_SHA256 = (
+    "1fc246c7b23a9d998939d1f40ae1af82fc41f7aed151ae3a1b162bbb9d2010ba"
 )
 EXPECTED_SELECTION_SHA256 = (
     "9328d04dc01ad60faa9be3f805eaa9414af1bacfe4751c61ef133749390e30e1"
@@ -80,6 +106,46 @@ def _run_git(*args: str) -> bytes:
     return subprocess.run(
         ("git", *args), cwd=ROOT, check=True, capture_output=True
     ).stdout
+
+
+def _level_two_section(text: str, heading: str) -> str:
+    match = re.search(
+        rf"^## {re.escape(heading)}\s*$\n(?P<body>.*?)(?=^## |\Z)",
+        text,
+        flags=re.DOTALL | re.MULTILINE,
+    )
+    if match is None:
+        raise AssertionError(f"missing level-two section: {heading}")
+    return match.group("body")
+
+
+def _markdown_table_data_rows(section: str) -> tuple[tuple[str, ...], ...]:
+    rows: list[tuple[str, ...]] = []
+    after_separator = False
+    for line in section.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|") or not stripped.endswith("|"):
+            if stripped:
+                after_separator = False
+            continue
+        cells = tuple(cell.strip() for cell in stripped[1:-1].split("|"))
+        if cells and all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells):
+            after_separator = True
+        elif after_separator:
+            rows.append(cells)
+    return tuple(rows)
+
+
+def _level_three_sections(section: str) -> dict[str, str]:
+    matches = tuple(re.finditer(r"^### (?P<heading>.+?)\s*$", section, re.MULTILINE))
+    return {
+        match.group("heading"): section[
+            match.end() : matches[index + 1].start()
+            if index + 1 < len(matches)
+            else len(section)
+        ].strip()
+        for index, match in enumerate(matches)
+    }
 
 
 class _StrictLedgerLoader(yaml.SafeLoader):
@@ -381,6 +447,211 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
     def test_governance_migration_control_plane_exists(self) -> None:
         self.assertTrue(ADR.is_file())
         self.assertTrue(MIGRATION.is_file())
+
+    def test_spec_0153_uses_canonical_package(self) -> None:
+        self.assertFalse(LEGACY_PACKAGE.exists())
+        self.assertTrue(CANONICAL_PACKAGE.joinpath("README.md").is_file())
+        self.assertTrue(CANONICAL_PACKAGE.joinpath("spec.md").is_file())
+        self.assertTrue(CANONICAL_PACKAGE.joinpath("plan.md").is_file())
+        self.assertFalse(CANONICAL_PACKAGE.joinpath("task.md").exists())
+        self.assertEqual(
+            EXPECTED_TASK_FILES,
+            tuple(
+                path.name
+                for path in sorted(CANONICAL_PACKAGE.joinpath("tasks").glob("tsk-*.md"))
+            ),
+        )
+
+    def test_spec_0153_supersedes_spec_0136_reciprocally(self) -> None:
+        self.assertTrue(CANONICAL_PACKAGE.joinpath("spec.md").is_file())
+        current = read_frontmatter_values(CANONICAL_PACKAGE / "spec.md")
+        predecessor = read_frontmatter_values(
+            ROOT / "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md"
+        )
+
+        self.assertEqual("SPEC-0153", current["artifact_id"])
+        self.assertIn("SPEC-0136", current["supersedes"])
+        self.assertEqual("SPEC-0153", predecessor["superseded_by"])
+
+    def test_spec_0153_task_evidence_is_complete_and_nonprospective(self) -> None:
+        tasks = CANONICAL_PACKAGE / "tasks"
+        self.assertTrue(tasks.joinpath("tsk-0001-control-plane.md").is_file())
+        self.assertTrue(tasks.joinpath("tsk-0002-stage99.md").is_file())
+        control_plane = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+            encoding="utf-8"
+        )
+        stage99 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
+        bootstrap = tasks.joinpath("tsk-0003-bootstrap.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(EXPECTED_SELECTION_SHA256, control_plane)
+        self.assertIn("e58d91796409fd562a8b395293942c0f73949c24", control_plane)
+        self.assertIn("71f89ba1", control_plane)
+        self.assertIn("Task 2 Registry RED", stage99)
+        self.assertIn("APPROVED C0/I0/M0", stage99)
+        self.assertIn("c891118e736ee46c709b22de459c20858467ddd3", stage99)
+        self.assertIn("8cc65475", stage99)
+        self.assertGreater(
+            len(
+                _markdown_table_data_rows(
+                    _level_two_section(bootstrap, "Work Log")
+                )
+            ),
+            0,
+        )
+        self.assertGreater(
+            len(
+                _markdown_table_data_rows(
+                    _level_two_section(bootstrap, "Verification Evidence")
+                )
+            ),
+            0,
+        )
+        self.assertGreater(
+            len(
+                _markdown_table_data_rows(
+                    _level_two_section(bootstrap, "Review Evidence")
+                )
+            ),
+            0,
+        )
+        self.assertEqual(
+            (),
+            _markdown_table_data_rows(
+                _level_two_section(bootstrap, "Commit Ledger")
+            ),
+        )
+
+        for index, filename in enumerate(EXPECTED_TASK_FILES, start=1):
+            values = read_frontmatter_values(tasks / filename)
+            self.assertEqual("task", values["profile_id"])
+            self.assertEqual(f"task-0153-{index:04d}", values["artifact_id"])
+            self.assertEqual(["SPEC-0153", "plan-0153"], values["parent_ids"])
+            if index <= 3:
+                self.assertEqual("completed", values["status"])
+            else:
+                self.assertEqual("draft", values["status"])
+
+    def test_spec_0153_completed_task_evidence_partitions_source_blob(self) -> None:
+        source_bytes = _run_git("cat-file", "blob", BOOTSTRAP_EVIDENCE_BLOB)
+        self.assertEqual(
+            BOOTSTRAP_EVIDENCE_SHA256,
+            hashlib.sha256(source_bytes).hexdigest(),
+        )
+        source = source_bytes.decode("utf-8")
+        tasks = CANONICAL_PACKAGE / "tasks"
+        task1 = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+            encoding="utf-8"
+        )
+        task2 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
+
+        source_work_rows = _markdown_table_data_rows(
+            _level_two_section(source, "Work Log")
+        )
+        source_task2_work = tuple(
+            row for row in source_work_rows if row[0].startswith("Task 2")
+        )
+        source_task1_work = tuple(
+            row for row in source_work_rows if not row[0].startswith("Task 2")
+        )
+        self.assertEqual(
+            source_task1_work,
+            _markdown_table_data_rows(_level_two_section(task1, "Work Log")),
+        )
+        self.assertEqual(
+            source_task2_work,
+            _markdown_table_data_rows(_level_two_section(task2, "Work Log")),
+        )
+
+        source_review_rows = _markdown_table_data_rows(
+            _level_two_section(source, "Review Evidence")
+        )
+        source_task2_reviews = {
+            row for row in source_review_rows if row[0].startswith("Task 2")
+        }
+        source_task1_reviews = tuple(
+            row for row in source_review_rows if not row[0].startswith("Task 2")
+        )
+        task2_reviews = set(
+            _markdown_table_data_rows(_level_two_section(task2, "Review Evidence"))
+        )
+        self.assertEqual(
+            source_task1_reviews,
+            _markdown_table_data_rows(_level_two_section(task1, "Review Evidence")),
+        )
+        self.assertTrue(source_task2_reviews <= task2_reviews)
+
+        source_commits = tuple(
+            re.findall(
+                r"`([0-9a-f]{40})`",
+                _level_two_section(source, "Commit Ledger"),
+            )
+        )
+        self.assertEqual(
+            (
+                "e58d91796409fd562a8b395293942c0f73949c24",
+                "c891118e736ee46c709b22de459c20858467ddd3",
+            ),
+            source_commits,
+        )
+        self.assertIn(source_commits[0], _level_two_section(task1, "Commit Ledger"))
+        self.assertIn(source_commits[1], _level_two_section(task2, "Commit Ledger"))
+
+    def test_spec_0153_verification_evidence_partitions_source_blob(self) -> None:
+        source = _run_git("cat-file", "blob", BOOTSTRAP_EVIDENCE_BLOB).decode(
+            "utf-8"
+        )
+        tasks = CANONICAL_PACKAGE / "tasks"
+        task1 = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+            encoding="utf-8"
+        )
+        task2 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
+        source_sections = _level_three_sections(
+            _level_two_section(source, "Verification Evidence")
+        )
+        task1_sections = _level_three_sections(
+            _level_two_section(task1, "Verification Evidence")
+        )
+        task2_sections = _level_three_sections(
+            _level_two_section(task2, "Verification Evidence")
+        )
+        task1_headings = (
+            "Initial RED",
+            "Focused GREEN",
+            "Quality Remediation RED",
+            "Lifecycle Remediation RED",
+            "Initial Review Remediation Probe",
+        )
+        self.assertEqual(
+            {*task1_headings, "Task 2 Registry RED and GREEN"},
+            set(source_sections),
+        )
+        for heading in task1_headings:
+            with self.subTest(task="tsk-0001", section=heading):
+                self.assertEqual(source_sections[heading], task1_sections[heading])
+        self.assertIn("Task 2 Registry RED and GREEN", task2_sections)
+        self.assertEqual(
+            source_sections["Task 2 Registry RED and GREEN"],
+            task2_sections["Task 2 Registry RED and GREEN"],
+        )
+
+    def test_spec_0153_draft_tasks_have_no_evidence_rows(self) -> None:
+        tasks = CANONICAL_PACKAGE / "tasks"
+        evidence_sections = (
+            "Work Log",
+            "Verification Evidence",
+            "Review Evidence",
+            "Commit Ledger",
+        )
+
+        for filename in EXPECTED_TASK_FILES[3:]:
+            text = tasks.joinpath(filename).read_text(encoding="utf-8")
+            for heading in evidence_sections:
+                with self.subTest(task=filename, section=heading):
+                    self.assertEqual(
+                        (),
+                        _markdown_table_data_rows(_level_two_section(text, heading)),
+                    )
 
     def test_approved_selection_is_exact_and_reviewable(self) -> None:
         _validate_execution_ledger_state(self.ledger)

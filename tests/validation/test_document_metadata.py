@@ -40,6 +40,7 @@ TARGET_SURFACE_SUMMARY = (
     ROOT
     / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
 )
+LEGACY_CONTRACT_FIXTURE_COMMIT = "71f89ba1"
 RETIRING_RESEARCH_PACK_PREFIX = (
     "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
 )
@@ -299,6 +300,557 @@ class Task5ChangedMetadataRegressionTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("metadata repository contracts: violations=0", result.stdout)
 
+    def test_spec_0153_canonical_package_satisfies_registry_metadata(self) -> None:
+        package = pathlib.Path(
+            "docs/03.specs/0153-workspace-governance-simplification"
+        )
+        selected_paths = [
+            (package / "README.md").as_posix(),
+            (package / "spec.md").as_posix(),
+            (package / "plan.md").as_posix(),
+            *[
+                (
+                    package
+                    / "tasks"
+                    / f"tsk-{number:04d}-{slug}.md"
+                ).as_posix()
+                for number, slug in enumerate(
+                    (
+                        "control-plane",
+                        "stage99",
+                        "bootstrap",
+                        "stage00",
+                        "requirements",
+                        "architecture",
+                        "spec-lifecycle",
+                        "operations",
+                        "references",
+                        "archive",
+                        "script-tests",
+                        "gates",
+                        "closure",
+                    ),
+                    start=1,
+                )
+            ],
+        ]
+        self.assertEqual(16, len(selected_paths))
+
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        records = metadata.collect_records(
+            ROOT,
+            profiles,
+            selected_paths=selected_paths,
+        )
+        selected = [
+            record
+            for record in records
+            if record.path.as_posix().startswith(f"{package.as_posix()}/")
+        ]
+        self.assertEqual(16, len(selected))
+        manifest = metadata.build_manifest(records)
+        findings = [
+            finding
+            for record in selected
+            for finding in metadata.validate_record(record, profiles, manifest)
+        ]
+        self.assertEqual([], findings)
+
+    def test_canonical_spec_relations_resolve_one_legacy_spec_alias(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        predecessor = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-predecessor/spec.md"),
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+                "superseded_by": "SPEC-0153",
+            },
+            "spec",
+        )
+        successor = metadata.Record(
+            pathlib.Path("docs/03.specs/0153-successor/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "SPEC-0153",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "supersedes": ["SPEC-0136"],
+            },
+            "spec",
+        )
+        manifest = metadata.build_manifest([predecessor, successor])
+        successor_codes = {
+            finding.code
+            for finding in metadata.validate_record(successor, profiles, manifest)
+        }
+        predecessor_codes = {
+            finding.code
+            for finding in metadata.validate_record(predecessor, profiles, manifest)
+        }
+
+        self.assertFalse(
+            {"unresolved-parent", "unresolved-supersedes"} & successor_codes
+        )
+        self.assertFalse(
+            {
+                "artifact-id-invalid",
+                "type-inappropriate-key",
+                "replacement-free-supersession",
+            }
+            & predecessor_codes
+        )
+
+    def test_spec_relation_alias_does_not_relax_path_identity_validation(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy_with_canonical_id = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "active",
+                "artifact_id": "SPEC-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+        canonical_with_legacy_id = metadata.Record(
+            pathlib.Path("docs/03.specs/0136-canonical/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+
+        for record in (legacy_with_canonical_id, canonical_with_legacy_id):
+            with self.subTest(path=record.path):
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(
+                        record, profiles, metadata.build_manifest([record])
+                    )
+                }
+                self.assertIn("artifact-id-invalid", codes)
+
+    def test_legacy_spec_relation_alias_collision_fails_closed(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy_records = [
+            metadata.Record(
+                pathlib.Path(f"docs/03.specs/spec-0136-{slug}/spec.md"),
+                {
+                    "status": "superseded",
+                    "artifact_id": "spec-0136",
+                    "artifact_type": "spec",
+                    "parent_ids": [],
+                },
+                "spec",
+            )
+            for slug in ("one", "two")
+        ]
+        successor = metadata.Record(
+            pathlib.Path("docs/03.specs/0153-successor/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "SPEC-0153",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "supersedes": ["SPEC-0136"],
+            },
+            "spec",
+        )
+        findings = metadata.validate_record(
+            successor,
+            profiles,
+            metadata.build_manifest([*legacy_records, successor]),
+        )
+
+        self.assertIn("ambiguous-relation-reference", {item.code for item in findings})
+
+    def test_exact_and_legacy_spec_relation_alias_conflict_fails_closed(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+        exact = metadata.Record(
+            pathlib.Path("docs/03.specs/0136-canonical/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "superseded",
+                "artifact_id": "SPEC-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+        successor = metadata.Record(
+            pathlib.Path("docs/03.specs/0153-successor/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "SPEC-0153",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "supersedes": ["SPEC-0136"],
+            },
+            "spec",
+        )
+        findings = metadata.validate_record(
+            successor,
+            profiles,
+            metadata.build_manifest([legacy, exact, successor]),
+        )
+
+        self.assertIn("ambiguous-relation-reference", {item.code for item in findings})
+
+    def test_legacy_spec_alias_detects_self_parent_and_cycle(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "active",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                legacy, profiles, metadata.build_manifest([legacy])
+            )
+        }
+
+        self.assertTrue({"self-parent", "parent-cycle"} <= codes)
+
+    def test_legacy_spec_alias_detects_two_node_parent_cycle(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "active",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0153"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+        canonical = metadata.Record(
+            pathlib.Path("docs/03.specs/0153-canonical/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "SPEC-0153",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+        manifest = metadata.build_manifest([legacy, canonical])
+
+        for record in (legacy, canonical):
+            with self.subTest(path=record.path):
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(record, profiles, manifest)
+                }
+                self.assertIn("parent-cycle", codes)
+
+    def test_legacy_spec_alias_cannot_replace_itself(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+                "supersedes": ["SPEC-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                legacy, profiles, metadata.build_manifest([legacy])
+            )
+        }
+
+        self.assertTrue(
+            {"self-supersession", "replacement-free-supersession"} <= codes
+        )
+
+    def test_duplicate_exact_relation_targets_fail_closed(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        duplicates = [
+            metadata.Record(
+                pathlib.Path(f"docs/03.specs/0136-{slug}/spec.md"),
+                {
+                    "profile_id": "spec",
+                    "status": "superseded",
+                    "artifact_id": "SPEC-0136",
+                    "artifact_type": "spec",
+                    "parent_ids": [],
+                    "created": "2026-08-21",
+                    "updated": "2026-08-21",
+                },
+                "spec",
+            )
+            for slug in ("one", "two")
+        ]
+        successor = metadata.Record(
+            pathlib.Path("docs/03.specs/0153-successor/spec.md"),
+            {
+                "profile_id": "spec",
+                "status": "active",
+                "artifact_id": "SPEC-0153",
+                "artifact_type": "spec",
+                "parent_ids": ["SPEC-0136"],
+                "supersedes": ["SPEC-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+
+        findings = metadata.validate_record(
+            successor,
+            profiles,
+            metadata.build_manifest([*duplicates, successor]),
+        )
+
+        self.assertIn("ambiguous-relation-reference", {item.code for item in findings})
+
+    def test_legacy_spec_alias_requires_declared_spec_identity(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        invalid_metadata = (
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "parent_ids": [],
+            },
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "artifact_type": "adr",
+                "parent_ids": [],
+            },
+        )
+
+        for index, legacy_metadata in enumerate(invalid_metadata, start=1):
+            with self.subTest(metadata=legacy_metadata):
+                legacy = metadata.Record(
+                    pathlib.Path(f"docs/03.specs/spec-0136-invalid-{index}/spec.md"),
+                    legacy_metadata,
+                    "spec",
+                )
+                successor = metadata.Record(
+                    pathlib.Path("docs/03.specs/0153-successor/spec.md"),
+                    {
+                        "profile_id": "spec",
+                        "status": "active",
+                        "artifact_id": "SPEC-0153",
+                        "artifact_type": "spec",
+                        "parent_ids": ["SPEC-0136"],
+                        "supersedes": ["SPEC-0136"],
+                        "created": "2026-08-21",
+                        "updated": "2026-08-21",
+                    },
+                    "spec",
+                )
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(
+                        successor,
+                        profiles,
+                        metadata.build_manifest([legacy, successor]),
+                    )
+                }
+                self.assertTrue(
+                    {"unresolved-parent", "unresolved-supersedes"} <= codes
+                )
+
+    def test_legacy_spec_raw_id_detects_self_parent_and_cycle(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "active",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": ["spec-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                legacy, profiles, metadata.build_manifest([legacy])
+            )
+        }
+
+        self.assertTrue({"self-parent", "parent-cycle"} <= codes)
+
+    def test_legacy_spec_raw_ids_detect_two_node_parent_cycle(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        records = [
+            metadata.Record(
+                pathlib.Path(f"docs/03.specs/spec-{number}-legacy/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": f"spec-{number}",
+                    "artifact_type": "spec",
+                    "parent_ids": [f"spec-{parent}"],
+                    "created": "2026-08-21",
+                    "updated": "2026-08-21",
+                },
+                "spec",
+            )
+            for number, parent in (("0136", "0153"), ("0153", "0136"))
+        ]
+        manifest = metadata.build_manifest(records)
+
+        for record in records:
+            with self.subTest(path=record.path):
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(record, profiles, manifest)
+                }
+                self.assertIn("parent-cycle", codes)
+
+    def test_legacy_spec_mixed_ids_detect_two_node_parent_cycle(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        records = [
+            metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0136",
+                    "artifact_type": "spec",
+                    "parent_ids": ["SPEC-0153"],
+                    "created": "2026-08-21",
+                    "updated": "2026-08-21",
+                },
+                "spec",
+            ),
+            metadata.Record(
+                pathlib.Path("docs/03.specs/spec-0153-legacy/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "spec-0153",
+                    "artifact_type": "spec",
+                    "parent_ids": ["spec-0136"],
+                    "created": "2026-08-21",
+                    "updated": "2026-08-21",
+                },
+                "spec",
+            ),
+        ]
+        manifest = metadata.build_manifest(records)
+
+        for record in records:
+            with self.subTest(path=record.path):
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(record, profiles, manifest)
+                }
+                self.assertIn("parent-cycle", codes)
+
+    def test_legacy_spec_raw_id_cannot_replace_itself(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        legacy = metadata.Record(
+            pathlib.Path("docs/03.specs/spec-0136-legacy/spec.md"),
+            {
+                "status": "superseded",
+                "artifact_id": "spec-0136",
+                "artifact_type": "spec",
+                "parent_ids": [],
+                "supersedes": ["spec-0136"],
+                "created": "2026-08-21",
+                "updated": "2026-08-21",
+            },
+            "spec",
+        )
+
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                legacy, profiles, metadata.build_manifest([legacy])
+            )
+        }
+
+        self.assertTrue(
+            {"self-supersession", "replacement-free-supersession"} <= codes
+        )
+
 
 def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
@@ -377,8 +929,11 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     result = subprocess.run(
         [
             "git",
-            "ls-files",
+            "ls-tree",
+            "-r",
             "-z",
+            "--name-only",
+            LEGACY_CONTRACT_FIXTURE_COMMIT,
             "--",
             "README.md",
             "_workspace/README.md",
@@ -388,8 +943,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
             "docs/99.templates/templates/spec-contracts/schema.template.graphql",
             "docs/99.templates/templates/spec-contracts/service.template.proto",
-            "docs/99.templates/support/*.md",
-            "docs/99.templates/support/document-metadata-profiles.yaml",
+            "docs/99.templates/support",
             "docs/00.agent-governance/rules/stage-authoring-matrix.md",
         ],
         cwd=ROOT,
@@ -397,14 +951,28 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         check=True,
     )
     paths = {pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw}
-    profile_values = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+    profile_blob = subprocess.run(
+        [
+            "git",
+            "show",
+            f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{PROFILES.relative_to(ROOT).as_posix()}",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+    ).stdout
+    profile_values = yaml.safe_load(profile_blob)
     paths.update(
         pathlib.Path(role["source"])
         for role in profile_values["template_roles"].values()
     )
     for relative_path in sorted(paths):
         contents = subprocess.run(
-            ["git", "show", f"HEAD:{relative_path.as_posix()}"],
+            [
+                "git",
+                "show",
+                f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{relative_path.as_posix()}",
+            ],
             cwd=ROOT,
             capture_output=True,
             check=True,

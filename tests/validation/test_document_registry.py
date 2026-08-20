@@ -21,11 +21,13 @@ from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
     build_registry_transition_profiles,
+    build_manifest,
     infer_artifact_type,
     load_profiles,
     validate_body_contract,
     validate_record,
 )
+from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
@@ -67,6 +69,32 @@ class DocumentRegistryTests(unittest.TestCase):
             {"REQ-0001.FR", "REQ-0001.NFR", "REQ-0001.IF"}
             <= set(requirement.child_spaces)
         )
+
+    def test_spec_0153_package_uses_registered_paths_and_identities(self) -> None:
+        registry = load_registry()
+        package = pathlib.Path(
+            "docs/03.specs/0153-workspace-governance-simplification"
+        )
+        expected_profiles = {
+            package / "README.md": "spec-package-readme",
+            package / "spec.md": "spec",
+            package / "plan.md": "plan",
+            **{
+                package / "tasks" / f"tsk-{number:04d}-example.md": "task"
+                for number in range(1, 14)
+            },
+        }
+
+        for path, profile_id in expected_profiles.items():
+            with self.subTest(path=path):
+                self.assertEqual(profile_id, classify_path(path, registry))
+
+        self.assertTrue((ROOT / package / "spec.md").is_file())
+        self.assertTrue((ROOT / package / "plan.md").is_file())
+        spec_values = read_frontmatter_values(ROOT / package / "spec.md")
+        plan_values = read_frontmatter_values(ROOT / package / "plan.md")
+        self.assertEqual("SPEC-0153", spec_values["artifact_id"])
+        self.assertEqual("plan-0153", plan_values["artifact_id"])
 
     def test_specific_profile_wins_over_unsupported_fallback(self) -> None:
         registry = load_registry()
@@ -617,6 +645,54 @@ class DocumentRegistryTests(unittest.TestCase):
                     record, missing, adapted, changed_boundary=True
                 )
             },
+        )
+
+    def test_null_template_profile_skips_body_role_but_keeps_frontmatter_contract(self) -> None:
+        registry = load_registry()
+        adapted = build_registry_transition_profiles(
+            registry, load_profiles(LEGACY_TRANSITION_PROFILES)
+        )
+        path = pathlib.Path("docs/03.specs/0153-example/README.md")
+        valid = Record(
+            path,
+            {"profile_id": "spec-package-readme"},
+            "spec-package-readme",
+            frontmatter_present=True,
+        )
+
+        self.assertEqual(
+            [],
+            validate_body_contract(
+                valid,
+                "# Example\n\nPackage index.\n",
+                adapted,
+                changed_boundary=True,
+            ),
+        )
+        invalid = Record(
+            path,
+            {},
+            "spec-package-readme",
+            frontmatter_present=True,
+        )
+        self.assertTrue(
+            {"missing-required-key", "profile-id-mismatch"}
+            <= {
+                finding.code
+                for finding in validate_record(
+                    invalid, adapted, build_manifest([invalid])
+                )
+            }
+        )
+
+    def test_transition_adapter_allows_legacy_spec_reciprocal_link_only(self) -> None:
+        adapted = build_registry_transition_profiles(
+            load_registry(), load_profiles(LEGACY_TRANSITION_PROFILES)
+        )
+
+        self.assertIn(
+            "superseded_by",
+            adapted["_legacy_profiles"]["spec"]["optional"],
         )
 
     def test_canonical_target_profile_id_must_equal_inferred_profile(self) -> None:

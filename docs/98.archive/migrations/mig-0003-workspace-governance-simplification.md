@@ -3,8 +3,8 @@ status: archived
 artifact_id: mig-0003
 artifact_type: archive
 parent_ids:
-  - spec-0153
-archived_from: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md
+  - SPEC-0153
+archived_from: docs/03.specs/0153-workspace-governance-simplification/spec.md
 archived_at: 2026-08-20T00:00:00+09:00
 archive_reason: evidence-preserve
 archive_disposition: evidence-preserve
@@ -1034,6 +1034,6 @@ rows.
 
 ## Related Documents
 
-- [Workspace Governance and SDLC Simplification Spec](../../03.specs/spec-0153-workspace-governance-simplification/spec.md)
-- [Workspace Governance and SDLC Simplification Plan](../../03.specs/spec-0153-workspace-governance-simplification/plan.md)
+- [Workspace Governance and SDLC Simplification Spec](../../03.specs/0153-workspace-governance-simplification/spec.md)
+- [Workspace Governance and SDLC Simplification Plan](../../03.specs/0153-workspace-governance-simplification/plan.md)
 - [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
