@@ -341,6 +341,11 @@ set and `git diff --cached --check`, and created the approved logical commit.
 No corpus transition, push, merge, runtime mutation, or secret operation was
 performed.
 
+For Task 2, the controller staged exactly `39` owned paths (`21` added and `18`
+modified), verified the cached boundary and diff hygiene, and created logical
+commit `c891118e736ee46c709b22de459c20858467ddd3`. Task 2 is complete with final
+quality closure `APPROVED C0/I0/M0`; no Task 3 corpus transition was included.
+
 ## Review Evidence
 
 | Review | Status | Findings and disposition |
@@ -355,6 +360,8 @@ performed.
 
 - `e58d91796409fd562a8b395293942c0f73949c24` —
   `docs: register workspace governance migration`
+- `c891118e736ee46c709b22de459c20858467ddd3` —
+  `feat(docs): establish stage 99 registry authority`
 
 ## Deferred and Blocked Items
 
