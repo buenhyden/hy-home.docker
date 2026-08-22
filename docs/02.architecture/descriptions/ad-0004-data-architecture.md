@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0004
 artifact_type: architecture-description
 parent_ids:
-  - prd-0004
+  - REQ-0004
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -105,7 +105,7 @@ graph TD
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-0004-data.md](../../01.requirements/prd-0004-data.md)
+- **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/spec-0004-data/spec.md)
 - **Plan**: ../../04.execution/plans/2026-03-26-04-data-standardization.md
 - **ADR**: [../decisions/adr-0004-postgresql-ha-patroni.md](../decisions/adr-0004-postgresql-ha-patroni.md)

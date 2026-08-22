@@ -16,6 +16,7 @@ from scripts.lib.document_governance.metadata_validator import (
 from scripts.lib.document_governance.taxonomy import (
     is_valid_incident_path,
     is_valid_internal_requirement_id,
+    requirement_package_identity,
     validate_stable_identity,
 )
 
@@ -30,9 +31,6 @@ THREE_DIGIT_ARTIFACT_ID = re.compile(
     r"^artifact_id:\s*(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}\s*$",
     re.MULTILINE,
 )
-INTERNAL_ID = re.compile(r"\*\*(?P<identity>[A-Z][A-Z0-9-]*[0-9])\*\*:")
-
-
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -211,29 +209,19 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                     },
                 )
 
-    def test_current_prd_internal_ids_follow_the_owner_identity(self) -> None:
-        invalid: list[str] = []
-        for path in sorted((ROOT / "docs/01.requirements").glob("prd-*.md")):
-            owner = path.name.split("-", 2)[:2]
-            owner_id = "-".join(owner).upper()
-            text = path.read_text(encoding="utf-8")
-            for heading, suffix in (
-                ("Requirements", "R"),
-                ("Non-functional Requirements", "R"),
-                ("Acceptance and Verification", "AC"),
-            ):
-                match = re.search(
-                    rf"(?ms)^## {re.escape(heading)}\n(?P<body>.*?)(?=^## |\Z)",
-                    text,
-                )
-                if match is None:
-                    continue
-                expected = re.compile(rf"{re.escape(owner_id)}-{suffix}[0-9]{{4}}")
-                for identity_match in INTERNAL_ID.finditer(match.group("body")):
-                    identity = identity_match.group("identity")
-                    if expected.fullmatch(identity) is None:
-                        invalid.append(f"{path.relative_to(ROOT)}:{heading}:{identity}")
-        self.assertEqual([], invalid)
+    def test_current_requirement_package_paths_own_their_ids(self) -> None:
+        paths = sorted((ROOT / "docs/01.requirements").glob("[0-9][0-9][0-9][0-9]-*.md"))
+        identities = tuple(
+            requirement_package_identity(path.relative_to(ROOT)) for path in paths
+        )
+        self.assertEqual(25, len(paths))
+        self.assertTrue(all(identity is not None for identity in identities))
+        self.assertEqual(25, len(set(identities)))
+        self.assertIsNone(
+            requirement_package_identity(
+                pathlib.PurePosixPath("docs/01.requirements/prd-0001-legacy.md")
+            )
+        )
 
     def test_prd_internal_id_validator_fails_closed(self) -> None:
         path = pathlib.Path("docs/01.requirements/prd-0001-example.md")

@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0009
 artifact_type: architecture-description
 parent_ids:
-  - prd-0010
+  - REQ-0010
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -85,7 +85,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [010-tooling.md](../../01.requirements/prd-0010-tooling.md)
+- **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Spec**: [010-tooling/spec.md](../../03.specs/spec-0010-tooling/spec.md)
 - **Plan**: 2026-03-26-09-tooling-standardization.md
 - **ADR**: [0009-tooling-services.md](../decisions/adr-0009-tooling-services.md)

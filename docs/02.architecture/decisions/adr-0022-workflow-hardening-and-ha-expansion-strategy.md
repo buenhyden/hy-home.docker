@@ -72,7 +72,7 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0019-workflow-optimization-hardening.md](../../01.requirements/prd-0019-workflow-optimization-hardening.md)
+- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../descriptions/ad-0022-workflow-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md

@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0011
-artifact_type: prd
+artifact_id: REQ-0011
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Communication Tier (10-communication) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `10-communication` 계층의 제품 요구사항을 정의한다. 이 계층은 현재 구현된 메일 통신 인프라를 담당하며, 개발용 SMTP 샌드박스와 운영용 메일 서버를 통합하여 안전하고 신뢰할 수 있는 메일 환경을 구축하는 것을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 모든 알림 및 통신 데이터가 보안 가이드라인에 따라 안전하게 처리되고, 개발 단계에서의 실수로 인한 오발송을 원천 차단하는 지능형 통신 허브를 제공한다.
 
@@ -32,21 +33,28 @@ updated: 2026-08-13
 - **STORY-02**: 시스템은 Stalwart를 통해 사용자 가입 환영 메일을 암호화된 채널로 안전하게 발송한다.
 - **STORY-03**: 관리자는 외부 메일 서비스로의 발송 시 스팸으로 분류되지 않도록 Stalwart에 SPF/DKIM 설정을 적용한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0011-R0001**: 개발용 SMTP 트랩 서비스 제공 (MailHog).
-- **PRD-0011-R0002**: 운영용 고성능 IMAP/SMTP/JMAP 메일 서버 제공 (Stalwart).
-- **PRD-0011-R0003**: 메일 전송 데이터의 실시간 UI 모니터링 및 검색 지원.
-- **PRD-0011-R0004**: TLS 암호화를 통한 보안 통신 보장.
-- **PRD-0011-R0005**: 시스템 SSO(Keycloak) 기반의 관리 UI 접근 제어.
+- **REQ-0011-FR-0001**: 개발용 SMTP 트랩 서비스 제공 (MailHog).
+- **REQ-0011-FR-0002**: 운영용 고성능 IMAP/SMTP/JMAP 메일 서버 제공 (Stalwart).
+- **REQ-0011-FR-0003**: 메일 전송 데이터의 실시간 UI 모니터링 및 검색 지원.
+- **REQ-0011-FR-0004**: TLS 암호화를 통한 보안 통신 보장.
+- **REQ-0011-FR-0005**: 시스템 SSO(Keycloak) 기반의 관리 UI 접근 제어.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0011-AC0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
-- **PRD-0011-AC0002**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
-- **PRD-0011-AC0003**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0011-FR-0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
+- **REQ-0011-FR-0002**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
+- **REQ-0011-FR-0003**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
+
+## Constraints
 
 - **In Scope**:
   - SMTP 트래핑 및 운영 메일 서비스.
@@ -58,7 +66,7 @@ updated: 2026-08-13
 - **Non-goals**:
   - 퍼블릭 이메일 서비스(Gmail 등)의 완전한 대체.
 
-## Risks and Dependencies
+## Risks
 
 - **Risks**: 메일 서버 IP 차단(Blacklist) 시 외부 발송 중단 위험.
 - **Dependencies**: `02-auth` (SSO 인증), `secrets/certs` (TLS 인증서).
@@ -67,7 +75,7 @@ updated: 2026-08-13
 
 N/A
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [0010-communication-architecture.md](../02.architecture/descriptions/ad-0010-communication-architecture.md)
 - **Spec**: [011-communication/spec.md](../03.specs/spec-0011-communication/spec.md)

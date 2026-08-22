@@ -29,7 +29,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0019-workflow-optimization-hardening.md](../../01.requirements/prd-0019-workflow-optimization-hardening.md)
+- **PRD**: [../../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md](../../02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md)
@@ -146,7 +146,7 @@ This document defines the workflow cross-validation agent design that sequential
 ### Parent Documents
 
 - **Spec**: [./spec.md](spec.md)
-- **PRD**: There is no dedicated PRD; the upper-level workflow tier context follows [../../01.requirements/prd-0019-workflow-optimization-hardening.md](../../01.requirements/prd-0019-workflow-optimization-hardening.md).
+- **PRD**: There is no dedicated PRD; the upper-level workflow tier context follows [../../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md).
 - **ARD**: There is no dedicated ARD; the structural upper-level context follows [../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md).
 - **Related ADRs**: There is no dedicated ADR; agent governance follows [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md) and [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/policies/agentic.md).
 

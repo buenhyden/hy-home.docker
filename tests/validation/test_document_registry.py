@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
+from unittest import mock
 
+import scripts.lib.document_governance.registry as registry_module
 from scripts.lib.document_governance.registry import (
     DEFAULT_REGISTRY,
     RegistryError,
@@ -32,6 +36,61 @@ from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def _fixture_git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _allocation_git_fixture(root: pathlib.Path) -> str:
+    registry = root / "docs/99.templates/registry.json"
+    registry.parent.mkdir(parents=True)
+    shutil.copyfile(DEFAULT_REGISTRY, registry)
+    stage = root / "docs/01.requirements"
+    stage.mkdir(parents=True)
+    for source in (ROOT / "docs/01.requirements").glob("*.md"):
+        if source.name != "README.md":
+            shutil.copyfile(source, stage / source.name)
+    for args in (
+        ("init", "-q"),
+        ("config", "user.name", "Registry Fixture"),
+        ("config", "user.email", "registry@example.invalid"),
+        ("add", "."),
+        ("commit", "-qm", "baseline"),
+    ):
+        result = _fixture_git(root, *args)
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr)
+    return _fixture_git(root, "rev-parse", "HEAD").stdout.strip()
+
+
+def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
+    registry_path = root / "docs/99.templates/registry.json"
+    raw = json.loads(registry_path.read_text(encoding="utf-8"))
+    allocation = raw["identity_spaces"]["requirement"]["child_spaces"][
+        "REQ-0003.FR"
+    ]
+    allocation["reserved_history"].remove(5)
+    allocation["current_issued"].append(5)
+    registry_path.write_text(json.dumps(raw), encoding="utf-8")
+    package_path = root / "docs/01.requirements/0003-security.md"
+    package_path.write_text(
+        package_path.read_text(encoding="utf-8").replace(
+            "\n## Non-functional Requirements\n",
+            (
+                "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
+                "number must remain unavailable. |\n\n"
+                "## Non-functional Requirements\n"
+            ),
+            1,
+        ),
+        encoding="utf-8",
+    )
 
 
 class DocumentRegistryTests(unittest.TestCase):
@@ -68,6 +127,15 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertTrue(
             {"REQ-0001.FR", "REQ-0001.NFR", "REQ-0001.IF"}
             <= set(requirement.child_spaces)
+        )
+        self.assertEqual(
+            (1, 2, 3, 4), requirement.child_spaces["REQ-0001.FR"].current_issued
+        )
+        self.assertEqual(
+            (), requirement.child_spaces["REQ-0001.IF"].current_issued
+        )
+        self.assertEqual(
+            (1,), requirement.child_spaces["REQ-0001.IF"].reserved_history
         )
 
     def test_spec_0153_package_uses_registered_paths_and_identities(self) -> None:
@@ -202,6 +270,12 @@ class DocumentRegistryTests(unittest.TestCase):
             "non-monotonic-identity": lambda value: value["identity_spaces"][
                 "requirement"
             ].update({"next_number": value["identity_spaces"]["requirement"]["high_water"]}),
+            "reserved-history-reissue": lambda value: value["identity_spaces"][
+                "requirement"
+            ]["child_spaces"]["REQ-0003.FR"]["current_issued"].append(5),
+            "incomplete-allocation-history": lambda value: value["identity_spaces"][
+                "requirement"
+            ]["child_spaces"]["REQ-0003.FR"]["reserved_history"].remove(5),
             "unknown-transition": lambda value: value["lifecycles"]["living"][
                 "transitions"
             ]["draft"].append("completed"),
@@ -299,6 +373,207 @@ class DocumentRegistryTests(unittest.TestCase):
             mutate(candidate)  # type: ignore[operator]
             with self.subTest(name=name):
                 self.assertTrue(validate_registry(candidate))
+
+    def test_requirement_allocation_transition_rejects_coherent_reclassification(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        allocation = raw["identity_spaces"]["requirement"]["child_spaces"][
+            "REQ-0003.FR"
+        ]
+        allocation["reserved_history"].remove(5)
+        allocation["current_issued"].append(5)
+        baseline = registry_module.load_trusted_requirement_allocation_baseline(":")
+
+        self.assertEqual((), validate_registry(raw))
+        findings = validate_registry(
+            raw,
+            trusted_requirement_baseline=baseline,
+            allow_requirement_allocation_transition=True,
+        )
+
+        self.assertIn(
+            "requirement-reserved-history-reclassified",
+            {finding.code for finding in findings},
+        )
+
+    def test_requirement_allocation_transition_requires_trusted_baseline(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+        findings = validate_registry(
+            raw,
+            allow_requirement_allocation_transition=True,
+        )
+
+        self.assertIn(
+            "requirement-allocation-baseline-required",
+            {finding.code for finding in findings},
+        )
+
+    def test_requirement_root_high_water_cannot_regress_or_orphan_child_spaces(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        requirement = raw["identity_spaces"]["requirement"]
+        requirement["high_water"] = 24
+        requirement["next_number"] = 25
+        baseline = registry_module.load_trusted_requirement_allocation_baseline(":")
+
+        snapshot_codes = {finding.code for finding in validate_registry(raw)}
+        transition_codes = {
+            finding.code
+            for finding in validate_registry(
+                raw,
+                trusted_requirement_baseline=baseline,
+                allow_requirement_allocation_transition=True,
+            )
+        }
+
+        self.assertIn("requirement-child-space-above-package-high-water", snapshot_codes)
+        self.assertIn("requirement-package-high-water-regressed", transition_codes)
+
+        advanced = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        advanced_requirement = advanced["identity_spaces"]["requirement"]
+        advanced_requirement["high_water"] = 26
+        advanced_requirement["next_number"] = 27
+        for kind in ("FR", "NFR", "IF"):
+            child = json.loads(
+                json.dumps(advanced_requirement["child_spaces"][f"REQ-0001.{kind}"])
+            )
+            child["prefix"] = f"REQ-0026-{kind}-"
+            advanced_requirement["child_spaces"][f"REQ-0026.{kind}"] = child
+        self.assertEqual(
+            (),
+            validate_registry(
+                advanced,
+                trusted_requirement_baseline=baseline,
+                allow_requirement_allocation_transition=True,
+            ),
+        )
+
+    def test_candidate_allocation_bounds_fail_without_finding_expansion(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        requirement = raw["identity_spaces"]["requirement"]
+        requirement["high_water"] = 10_000
+        requirement["next_number"] = 10_001
+
+        started = time.monotonic()
+        findings = validate_registry(raw)
+        elapsed = time.monotonic() - started
+
+        self.assertLess(elapsed, 1.0)
+        self.assertLessEqual(len(findings), 6)
+        self.assertIn(
+            "identity-allocation-bound-exceeded",
+            {finding.code for finding in findings},
+        )
+        self.assertNotIn(
+            "requirement-package-space-missing",
+            {finding.code for finding in findings},
+        )
+
+        schema = json.loads(
+            registry_module.DEFAULT_PROFILE_SCHEMA.read_text(encoding="utf-8")
+        )["$defs"]["identitySpace"]["properties"]
+        self.assertEqual(9_999, schema["high_water"]["maximum"])
+        self.assertEqual(9_999, schema["next_number"]["maximum"])
+        for field in ("current_issued", "reserved_history"):
+            self.assertEqual(9_999, schema[field]["maxItems"])
+            self.assertEqual(9_999, schema[field]["items"]["maximum"])
+        self.assertEqual(9_999, schema["child_spaces"]["maxProperties"])
+
+    def test_trusted_commit_ref_is_resolved_once_before_blob_reads(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            baseline_oid = _allocation_git_fixture(root)
+            self.assertEqual(0, _fixture_git(root, "branch", "moving", baseline_oid).returncode)
+            _reclassify_fixture_allocation(root)
+            self.assertEqual(0, _fixture_git(root, "add", ".").returncode)
+            self.assertEqual(
+                0,
+                _fixture_git(root, "commit", "-qm", "candidate").returncode,
+            )
+            candidate_oid = _fixture_git(root, "rev-parse", "HEAD").stdout.strip()
+            original = registry_module._git_read
+            calls: list[tuple[str, ...]] = []
+            moved = False
+
+            def moving_ref(args, *, root):  # type: ignore[no-untyped-def]
+                nonlocal moved
+                calls.append(tuple(args))
+                result = original(args, root=root)
+                if args[:2] == ["rev-parse", "--verify"]:
+                    self.assertEqual(
+                        0,
+                        _fixture_git(root, "branch", "-f", "moving", candidate_oid).returncode,
+                    )
+                    moved = True
+                return result
+
+            with mock.patch.object(registry_module, "_git_read", side_effect=moving_ref):
+                baseline = registry_module.load_trusted_requirement_allocation_baseline(
+                    "moving", root=root
+                )
+
+            self.assertTrue(moved)
+            self.assertEqual(baseline_oid, baseline.source)
+            self.assertNotIn(5, baseline.child_spaces["REQ-0003.FR"].current_issued)
+            self.assertEqual(
+                1,
+                sum(any("moving" in argument for argument in call) for call in calls),
+            )
+
+    def test_trusted_index_snapshot_reads_captured_blob_oids(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _allocation_git_fixture(root)
+            original = registry_module._git_read
+            index_changed = False
+
+            def moving_index(args, *, root):  # type: ignore[no-untyped-def]
+                nonlocal index_changed
+                result = original(args, root=root)
+                if args[:2] == ["ls-files", "--stage"]:
+                    _reclassify_fixture_allocation(root)
+                    self.assertEqual(0, _fixture_git(root, "add", ".").returncode)
+                    index_changed = True
+                return result
+
+            with mock.patch.object(registry_module, "_git_read", side_effect=moving_index):
+                baseline = registry_module.load_trusted_requirement_allocation_baseline(
+                    ":", root=root
+                )
+
+            self.assertTrue(index_changed)
+            self.assertNotIn(5, baseline.child_spaces["REQ-0003.FR"].current_issued)
+
+    def test_bounded_process_caps_stdout_and_stderr_before_buffering(self) -> None:
+        cases = {
+            "stdout": "import sys; sys.stdout.write('x' * 4096)",
+            "stderr": "import sys; sys.stderr.write('x' * 4096)",
+        }
+        for channel, source in cases.items():
+            with self.subTest(channel=channel):
+                with self.assertRaisesRegex(RegistryError, f"{channel}.*byte limit"):
+                    registry_module._run_bounded_process(  # type: ignore[attr-defined]
+                        [sys.executable, "-c", source],
+                        stdout_limit=64,
+                        stderr_limit=64,
+                    )
+
+    def test_explicit_pinned_commit_allocation_baseline_is_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            oid = _allocation_git_fixture(root)
+
+            baseline = registry_module.load_trusted_requirement_allocation_baseline(
+                oid, root=root
+            )
+
+            self.assertEqual(oid, baseline.source)
+            self.assertEqual(25, baseline.package_high_water)
 
     def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(self) -> None:
         registry = load_registry()

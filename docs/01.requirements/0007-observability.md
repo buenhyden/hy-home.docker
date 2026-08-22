@@ -1,7 +1,8 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0007
-artifact_type: prd
+artifact_id: REQ-0007
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
@@ -10,11 +11,11 @@ updated: 2026-08-13
 
 > Centralized telemetry, monitoring, and debugging hub.
 
-## Overview
+## Problem and Goals
 
 이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 제품 요구사항을 정의한다. 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus), Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 통합하여 시스템 전반의 상태를 실시간으로 모니터링하고 가시화하는 것을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 제공되는 모든 인프라 및 애플리케이션 서비스의 상태를 단일 지점(Single Source of Truth)에서 파악하고, 장애 발생 시 원인을 즉각적으로 규명할 수 있는 고도화된 관측 환경을 구축한다.
 
@@ -33,20 +34,27 @@ updated: 2026-08-13
 - **STORY-02**: 개발자는 요청 ID를 통해 특정 트랜잭션의 트레이스(Trace)와 관련 로그(Log)를 상관 분석한다.
 - **STORY-03**: 시스템 장애 시 Alertmanager가 Slack/Email로 알람을 전송하여 즉각 대응하게 한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0007-R0001**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
-- **PRD-0007-R0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(MinIO)에 영구 보관해야 한다.
-- **PRD-0007-R0003**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
-- **PRD-0007-R0004**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
-- **PRD-0007-R0005**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
+- **REQ-0007-FR-0001**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
+- **REQ-0007-FR-0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(MinIO)에 영구 보관해야 한다.
+- **REQ-0007-FR-0003**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
+- **REQ-0007-FR-0004**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
+- **REQ-0007-FR-0005**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0007-AC0001**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
-- **PRD-0007-AC0002**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0007-FR-0001**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
+- **REQ-0007-FR-0002**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
+
+## Constraints
 
 - **In Scope**:
   - LGTM Stack (Loki, Grafana, Tempo, Prometheus) 구성
@@ -56,7 +64,7 @@ updated: 2026-08-13
   - 비즈니스 로그의 상시 분석 및 통계 (ELK Stack 영역)
   - 외부 클라우드 모니터링 서비스와의 연동
 
-## Risks and Dependencies
+## Risks
 
 - **Persistence Layer**: Loki와 Tempo가 MinIO(`04-data`)에 의존하므로 데이터 계층 장애 시 관측 데이터 저장이 중단될 수 있다.
 - **Auth Layer**: Grafana 로그인 및 권한 관리가 Keycloak(`02-auth`)에 의존한다.
@@ -66,7 +74,7 @@ updated: 2026-08-13
 - **Allowed Actions**: Prometheus 쿼리(PromQL) 실행, 대시보드 상태 조회, 알람 상태 확인.
 - **Disallowed Actions**: 운영 데이터 임의 삭제, 알람 정책 임의 해제.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Observability architecture descriptions](../02.architecture/descriptions/ad-0006-observability-architecture.md)
 - **Spec**: [Observability technical specification](../03.specs/spec-0007-observability/spec.md)

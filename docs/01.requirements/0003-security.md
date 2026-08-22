@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0003
-artifact_type: prd
+artifact_id: REQ-0003
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Security Tier (03-security) Product Requirements
 
-## Overview
+## Problem and Goals
 
 `03-security` 티어는 하이홈 도커 플랫폼의 "Root of Trust" 역할을 하며, HashiCorp Vault를 통해 민감한 데이터(비밀번호, API 키, 인증서 등)를 중앙에서 관리하고 암호화한다. 모든 서비스는 소스 코드나 환경 변수에 비밀 정보를 직접 노출하지 않고, Vault를 통해 동적으로 주입받거나 참조하는 보안 체계를 구축한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 - **보안성**: 모든 비밀 정보의 암호화 저장 및 접근 제어 자동화.
 - **투명성**: 누가, 언제, 어떤 비밀 정보에 접근했는지에 대한 감사 로그 확보.
@@ -38,36 +39,39 @@ updated: 2026-08-13
 | UC-02 | Sidecar Injection | Vault Agent를 통해 컨테이너 시작 시 템플릿 기반으로 설정 파일에 비밀 정보 주입. |
 | UC-03 | Dynamic Access    | AppRole 또는 Userpass를 통한 애플리케이션/사용자별 권한 기반 접근 통제.         |
 
-## Requirements
+## Functional Requirements
 
 | ID    | Requirement           | Priority                                           |
 | ----- | --------------------- | -------------------------------------------------- |
-| PRD-0003-R0001 | Raft Storage          | 현재 단일 노드 Raft 통합 스토리지를 사용하고, HA 확장은 별도 전환 절차로 준비. |
-| PRD-0003-R0002 | Forward Proxy Support | Traefik을 통한 Vault UI/API 외부 노출 및 SSL 적용. |
-| PRD-0003-R0003 | Unseal Protocols      | 수동 Unseal 절차 및 정책 수립.                     |
-| PRD-0003-R0004 | Audit Logging         | 모든 요청에 대한 Audit 로그 활성화 및 보관.        |
+| REQ-0003-FR-0001 | Raft Storage          | 현재 단일 노드 Raft 통합 스토리지를 사용하고, HA 확장은 별도 전환 절차로 준비. |
+| REQ-0003-FR-0002 | Forward Proxy Support | Traefik을 통한 Vault UI/API 외부 노출 및 SSL 적용. |
+| REQ-0003-FR-0003 | Unseal Protocols      | 수동 Unseal 절차 및 정책 수립.                     |
+| REQ-0003-FR-0004 | Audit Logging         | 모든 요청에 대한 Audit 로그 활성화 및 보관.        |
 
 ## Non-functional Requirements
 
 | ID     | Requirement  | Description                                                            |
 | ------ | ------------ | ---------------------------------------------------------------------- |
-| PRD-0003-R0005 | Availability | 단일 노드 Vault 장애 시 영향을 명확히 감지하고, 향후 Raft quorum 확장을 위한 운영 절차를 유지. |
-| PRD-0003-R0006 | Reliability  | 비밀 정보 암호화 알고리즘의 최신성 유지 (AES-256-GCM).                 |
-| PRD-0003-R0007 | Performance  | 비밀 정보 조회 레이턴시 최소화 (Local API 캐싱).                       |
+| REQ-0003-NFR-0005 | Availability | 단일 노드 Vault 장애 시 영향을 명확히 감지하고, 향후 Raft quorum 확장을 위한 운영 절차를 유지. |
+| REQ-0003-NFR-0006 | Reliability  | 비밀 정보 암호화 알고리즘의 최신성 유지 (AES-256-GCM).                 |
+| REQ-0003-NFR-0007 | Performance  | 비밀 정보 조회 레이턴시 최소화 (Local API 캐싱).                       |
 
-## Scope and Non-goals
+## Constraints
 
 - **In Scope**: Vault Server(Raft), Vault Agent, ACL Policies, KV Engine.
 - **Out of Scope**: 외부 IdP(Keycloak) 직접 관리, Let's Encrypt 인증서 발급 자동화(Gateway 역할).
 - **Non-goals**: 외부 IdP(Keycloak) 직접 관리, Let's Encrypt 인증서 발급 자동화(Gateway 역할).
 
-## Acceptance and Verification
+## Interface Requirements
 
-- **PRD-0003-AC0001**: 현재 Vault/Agent compose와 문서가 root `security`/`core` profile 검증 및 hardening gate로 관리됨.
-- **PRD-0003-AC0002**: 서비스 컨테이너가 직접 비밀 정보를 알지 못해도 Vault Agent를 통해 주입받아 성공적으로 구동됨.
-- **PRD-0003-AC0003**: 감사 로그/원격 audit 고도화는 정책 승인 후 단계적으로 전환됨.
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
 
-## Risks and Dependencies
+- **REQ-0003-FR-0001**: 현재 Vault/Agent compose와 문서가 root `security`/`core` profile 검증 및 hardening gate로 관리됨.
+- **REQ-0003-FR-0002**: 서비스 컨테이너가 직접 비밀 정보를 알지 못해도 Vault Agent를 통해 주입받아 성공적으로 구동됨.
+- **REQ-0003-FR-0003**: 감사 로그/원격 audit 고도화는 정책 승인 후 단계적으로 전환됨.
+
+## Risks
 
 - **Risk**: Vault 쿼럼이나 Unseal 절차가 실패하면 비밀 정보 주입이 중단될 수 있음.
 - **Dependency**: Traefik 기반 외부 노출과 Docker/Vault Agent 사이드카 패턴에 의존함.
@@ -77,7 +81,7 @@ updated: 2026-08-13
 
 N/A
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Security architecture descriptions](../02.architecture/descriptions/ad-0003-security-architecture.md)
 - **Spec**: [Security technical specification](../03.specs/spec-0003-security/spec.md)

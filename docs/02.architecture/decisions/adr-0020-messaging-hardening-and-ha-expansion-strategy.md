@@ -71,7 +71,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0017-messaging-optimization-hardening.md](../../01.requirements/prd-0017-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/spec-0006-messaging/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md

@@ -17,7 +17,7 @@ updated: 2026-08-11
 
 ## Overview
 
-This document defines the technical design and interface contracts for the `04-data/analytics` tier engines: time-series storage (InfluxDB), stream processing (ksqlDB), log search (OpenSearch), and OLAP analytics (StarRocks). This specification translates PRD-2026-03-26-04-data-analytics requirements into technical details and describes integration with the infrastructure tier and data-processing rules. Because some analytics includes are currently commented out in the root `docker-compose.yml`, this specification describes the owned implementation and optional integration boundary.
+This document defines the technical design and interface contracts for the `04-data/analytics` tier engines: time-series storage (InfluxDB), stream processing (ksqlDB), log search (OpenSearch), and OLAP analytics (StarRocks). This specification translates REQ-0005 requirements into technical details and describes integration with the infrastructure tier and data-processing rules. Because some analytics includes are currently commented out in the root `docker-compose.yml`, this specification describes the owned implementation and optional integration boundary.
 
 ## Strategic Boundaries & Non-goals
 
@@ -26,7 +26,7 @@ This document defines the technical design and interface contracts for the `04-d
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0005-data-analytics.md](../../01.requirements/prd-0005-data-analytics.md)
+- **PRD**: [../../01.requirements/0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0012-data-analytics-architecture.md](../../02.architecture/descriptions/ad-0012-data-analytics-architecture.md)
 - **Related ADRs**: [../../02.architecture/decisions/adr-0015-analytics-engine-selection.md](../../02.architecture/decisions/adr-0015-analytics-engine-selection.md)
 

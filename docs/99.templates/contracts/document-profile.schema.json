@@ -124,10 +124,24 @@
       "properties": {
         "prefix": {"type": "string", "minLength": 1},
         "width": {"type": "integer", "minimum": 1, "maximum": 12},
-        "high_water": {"type": "integer", "minimum": 0},
-        "next_number": {"type": "integer", "minimum": 1},
+        "high_water": {"type": "integer", "minimum": 0, "maximum": 9999},
+        "next_number": {"type": "integer", "minimum": 1, "maximum": 9999},
+        "current_issued": {
+          "type": "array",
+          "maxItems": 9999,
+          "items": {"type": "integer", "minimum": 1, "maximum": 9999},
+          "uniqueItems": true
+        },
+        "reserved_history": {
+          "description": "Terminal reservations; allocation candidates must be compared with one captured Git index blob snapshot or one resolved commit OID predecessor and may not reclassify these numbers or regress the package high-water.",
+          "type": "array",
+          "maxItems": 9999,
+          "items": {"type": "integer", "minimum": 1, "maximum": 9999},
+          "uniqueItems": true
+        },
         "child_spaces": {
           "type": "object",
+          "maxProperties": 9999,
           "additionalProperties": {"$ref": "#/$defs/identitySpace"}
         }
       }

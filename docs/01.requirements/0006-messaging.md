@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0006
-artifact_type: prd
+artifact_id: REQ-0006
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Messaging Tier (05-messaging) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `hy-home.docker` 아키텍처의 메시징 계층(`05-messaging`)에 대한 제품 요구사항을 정의한다. 고성능 이벤트 스트리밍(Kafka)과 경량 작업 큐(RabbitMQ)를 통해 시스템 전반의 비동기 통신을 지원한다. 스트리밍 SQL 처리(ksqlDB)는 현재 `04-data/analytics` 구현과 운영 문서가 소유한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 시스템 컴포넌트 간의 결합도를 낮추고, 실시간 이벤트 처리 및 신뢰성 있는 메시지 전달을 가능하게 하는 견고한 전용 메시징 인프라를 제공한다.
 
@@ -33,20 +34,27 @@ updated: 2026-08-13
 - **STORY-02**: 시간이 오래 걸리는 작업을 RabbitMQ 큐에 넣고 비동기 워커가 처리.
 - **STORY-03**: Schema Registry와 Kafka Connect를 사용해 이벤트 형식과 커넥터 경계를 검증한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0006-R0001**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml`은 3 broker full compose이며, root `docker-compose.yml`은 dev compose(`docker-compose.dev.yml`)를 include해 단일 broker로 렌더링한다.
-- **PRD-0006-R0002**: RabbitMQ를 통한 표준 AMQP 0-9-1 프로토콜 지원.
-- **PRD-0006-R0003**: Avro/JSON 스키마 관리를 위한 Schema Registry 제공.
-- **PRD-0006-R0004**: 웹 기반 관리 UI(Kafbat, RabbitMQ Management) 제공.
-- **PRD-0006-R0005**: Kafka REST Proxy와 Kafka Exporter를 통해 운영 API와 지표 수집 경계를 제공한다.
+- **REQ-0006-FR-0001**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml`은 3 broker full compose이며, root `docker-compose.yml`은 dev compose(`docker-compose.dev.yml`)를 include해 단일 broker로 렌더링한다.
+- **REQ-0006-FR-0002**: RabbitMQ를 통한 표준 AMQP 0-9-1 프로토콜 지원.
+- **REQ-0006-FR-0003**: Avro/JSON 스키마 관리를 위한 Schema Registry 제공.
+- **REQ-0006-FR-0004**: 웹 기반 관리 UI(Kafbat, RabbitMQ Management) 제공.
+- **REQ-0006-FR-0005**: Kafka REST Proxy와 Kafka Exporter를 통해 운영 API와 지표 수집 경계를 제공한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0006-AC0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`가 root-included 메시징 구성에서 실패 0건으로 통과한다.
-- **PRD-0006-AC0002**: `bash scripts/hardening/check-all-hardening.sh 05-messaging`가 이미지 핀, 라우터 middleware, SSO, 경로 기준선 회귀를 차단한다.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0006-FR-0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`가 root-included 메시징 구성에서 실패 0건으로 통과한다.
+- **REQ-0006-FR-0002**: `bash scripts/hardening/check-all-hardening.sh 05-messaging`가 이미지 핀, 라우터 middleware, SSO, 경로 기준선 회귀를 차단한다.
+
+## Constraints
 
 - **In Scope**:
   - Kafka Cluster (KRaft)
@@ -60,7 +68,7 @@ updated: 2026-08-13
 - **Non-goals**:
   - 메시징 계층에서 데이터를 영구 보관하는 것 (Data 계층의 책임).
 
-## Risks and Dependencies
+## Risks
 
 - **Risks**: Kafka 노드 장애 시 파티션 리밸런싱 지연 가능성. 스키마 변경 시 하위 호환성 위반 위험.
 - **Dependencies**: 인증 및 권한 관리를 위해 `02-auth` 계층에 의존한다. ksqlDB consumer/processing boundary는 `04-data/analytics/ksql`에 의존한다.
@@ -71,7 +79,7 @@ updated: 2026-08-13
 - **Allowed Actions**: `kafka-init` 기준 토픽 선언 검토, 스키마 등록 상태 조회, 컨슈머 그룹 상태 조회.
 - **Disallowed Actions**: 클러스터 전체 리셋, 메시지 보존 주기(Retention) 임의 변경.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Messaging architecture descriptions](../02.architecture/descriptions/ad-0005-messaging-architecture.md)
 - **Spec**: [Messaging technical specification](../03.specs/spec-0006-messaging/spec.md)

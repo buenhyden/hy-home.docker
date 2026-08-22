@@ -41,9 +41,11 @@ GitHub Actions, Markdown, and repository-local typed YAML contracts.
   and a slug; no date prefix or identity-bearing year partition remains. The
   sole year containment exception is
   `docs/05.operations/incidents/<year>/inc-####-<slug>/`.
-- Internal requirement and acceptance identifiers use four digits, including
-  `PRD-0001-R0001`, `PRD-0001-AC0001`, `SRS-0001-R0001`, and
-  `IFR-0001-R0001`.
+- Package-qualified requirement identifiers use four digits. Current declared
+  examples include `REQ-0001-FR-0001` and `REQ-0003-NFR-0005`; interface
+  requirements use the registered `REQ-####-IF-####` shape only after an
+  allocation is issued. Acceptance items reference their matching FR IDs and
+  do not allocate a separate acceptance identity.
 - Dates live in typed frontmatter. Event timelines may retain timestamps in
   body content.
 - docs/98.archive is the only documentation archive.
@@ -511,7 +513,7 @@ git commit -m "docs: freeze SDLC and script migration dispositions"
 **Files:**
 
 - Rename: docs/01.requirements/[0-9][0-9][0-9]-*.md to
-  docs/01.requirements/prd-[0-9][0-9][0-9]-*.md
+  docs/01.requirements/[0-9][0-9][0-9][0-9]-*.md
 - Rename: the legacy Architecture Requirements rows recorded in `mig-0001` to
   docs/02.architecture/descriptions/ad-*.md
 - Rename: docs/02.architecture/decisions/*.md to
@@ -1254,8 +1256,8 @@ git commit -m "scripts: consolidate document governance validators"
 
 **Files:**
 
-- Move: every `docs/01.requirements/prd-###-<slug>.md` to
-  `docs/01.requirements/prd-####-<slug>.md`
+- Move: every three-digit Stage 01 Requirement filename to its four-digit,
+  prefixless Requirement Package filename.
 - Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
 - Modify: `docs/99.templates/support/template-selection.md`
 - Modify: Stage 00 authoring/function contracts and `docs/05.operations/incidents/README.md`
@@ -1305,14 +1307,15 @@ Expected: FAIL before the quoting repair and PASS afterward.
 
 Tests reject every tracked docs path with a three-digit typed ID, reject an
 Incident packet without a four-digit year directory, accept the exact
-year/`inc-####` form, reject `PRD-001-R001`, and accept
-`PRD-0001-R0001`/`PRD-0001-AC0001`.
+year/`inc-####` form, reject a three-digit child shape, and accept declared
+`REQ-0001-FR-0001`/`REQ-0003-NFR-0005` identities. Acceptance items reference
+their matching FR IDs.
 
 ~~~python
 def test_internal_requirement_ids_are_four_digits(self):
-    self.assertFalse(is_valid_requirement_id("PRD-001-R001"))
-    self.assertTrue(is_valid_requirement_id("PRD-0001-R0001"))
-    self.assertTrue(is_valid_requirement_id("PRD-0001-AC0001"))
+    self.assertFalse(is_valid_requirement_id("REQ-0001-FR-001"))
+    self.assertTrue(is_valid_requirement_id("REQ-0001-FR-0001"))
+    self.assertTrue(is_valid_requirement_id("REQ-0003-NFR-0005"))
 
 def test_incident_route_requires_year_and_four_digit_id(self):
     self.assertTrue(is_valid_incident_path(
@@ -1332,8 +1335,8 @@ def test_incident_route_requires_year_and_four_digit_id(self):
 - [ ] **Step 3: Finish native PRD moves and atomic identity migration**
 
 Reconcile the already-started Git index before issuing any new move. Move all
-25 current PRDs with Git exactly once, change artifact IDs to `prd-0001`
-through `prd-0025`, normalize internal requirement/acceptance IDs, and update
+25 current PRDs with Git exactly once, change artifact IDs to `REQ-0001`
+through `REQ-0025`, normalize internal requirement/acceptance IDs, and update
 every current identity relation and link in the same change. Immutable evidence
 retains its recorded legacy source values; the migration ledger records the
 corrected stable destinations.

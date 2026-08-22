@@ -15,6 +15,9 @@ _INCIDENT_PACKET_PATTERN = re.compile(r"inc-[0-9]{4}-[a-z0-9][a-z0-9-]*")
 _INTERNAL_REQUIREMENT_ID_PATTERN = re.compile(
     r"REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4}"
 )
+_REQUIREMENT_PACKAGE_PATH_PATTERN = re.compile(
+    r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
+)
 _REGISTERED_TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|subject_number|year):4\}"
     r"|\{(?:slug|domain|stage)\}"
@@ -167,6 +170,13 @@ def is_valid_internal_requirement_id(value: str) -> bool:
     """Return whether ``value`` uses the canonical typed internal ID shape."""
 
     return _INTERNAL_REQUIREMENT_ID_PATTERN.fullmatch(value) is not None
+
+
+def requirement_package_identity(path: PurePosixPath) -> str | None:
+    """Return the package identity owned by a canonical Stage 01 path."""
+
+    match = _REQUIREMENT_PACKAGE_PATH_PATTERN.fullmatch(path.as_posix())
+    return None if match is None else f"REQ-{match.group('number')}"
 
 
 def is_valid_incident_path(path: PurePosixPath) -> bool:

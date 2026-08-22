@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0012
 artifact_type: architecture-description
 parent_ids:
-  - prd-0005
+  - REQ-0005
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -134,7 +134,7 @@ The existing infrastructure strategy section defines the deployment boundary for
 
 ## Related Documents
 
-- **PRD**: [005-data-analytics.md](../../01.requirements/prd-0005-data-analytics.md)
+- **PRD**: [005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **ADR**: [0015-analytics-engine-selection.md](../decisions/adr-0015-analytics-engine-selection.md)
 - **Specs**: [spec.md](../../03.specs/spec-0005-data-analytics/spec.md)
 - **Guides**: [README.md](../../05.operations/catalog/04-data/README.md)

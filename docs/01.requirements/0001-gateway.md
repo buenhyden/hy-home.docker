@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0001
-artifact_type: prd
+artifact_id: REQ-0001
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Gateway Tier (01-gateway) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `hy-home.docker` 에코시스템의 통합 진입점인 `01-gateway` 티어의 제품 요구사항을 정의한다. 현재 구현은 root-active Traefik edge router와 profile-only Nginx 특수 경로 프록시 leaf로 구성되며, 트래픽 라우팅, TLS 종료, 보안 미들웨어 체인(SSO, Rate Limit 등)을 오케스트레이션한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 모든 외부 트래픽에 대해 단일화되고 안전하며 관찰 가능한 진입점을 제공하여 시스템의 보안을 강화하고 서비스 노출을 단순화한다.
 
@@ -34,19 +35,26 @@ updated: 2026-08-13
 - **STORY-02**: 관리자는 Traefik 대시보드를 통해 현재 라우팅 규칙과 서비스 상태를 실시간으로 확인할 수 있어야 함.
 - **STORY-03**: 특정 경로(예: `/keycloak/`, `/minio/`)에 대해 Nginx leaf를 통한 정교한 경로 재작성 및 헤더 조작이 가능해야 하며, Nginx runtime은 명시적 root network/dependency context에서만 다뤄야 함.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0001-R0001**: HTTP(80) 트래픽을 HTTPS(443)로 강제 리다이렉트해야 함.
-- **PRD-0001-R0002**: Docker Provider를 통해 컨테이너 생성을 감지하고 라우트를 자동 생성해야 함.
-- **PRD-0001-R0003**: TLS 1.2/1.3 및 최신 Cipher Suite를 지원하여 통신 보안을 보장해야 함.
-- **PRD-0001-R0004**: OAuth2 Proxy와 연동하여 특정 경로에 대한 인증(SSO) 미들웨어를 제공해야 함.
+- **REQ-0001-FR-0001**: HTTP(80) 트래픽을 HTTPS(443)로 강제 리다이렉트해야 함.
+- **REQ-0001-FR-0002**: Docker Provider를 통해 컨테이너 생성을 감지하고 라우트를 자동 생성해야 함.
+- **REQ-0001-FR-0003**: TLS 1.2/1.3 및 최신 Cipher Suite를 지원하여 통신 보안을 보장해야 함.
+- **REQ-0001-FR-0004**: OAuth2 Proxy와 연동하여 특정 경로에 대한 인증(SSO) 미들웨어를 제공해야 함.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0001-AC0001**: 모든 외부 노출 서비스는 100% TLS를 통해 접근되어야 함.
-- **PRD-0001-AC0002**: 신규 컨테이너 배포 시 별도의 설정 파일 수정 없이 60초 이내에 라우팅이 활성화되어야 함.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0001-FR-0001**: 모든 외부 노출 서비스는 100% TLS를 통해 접근되어야 함.
+- **REQ-0001-FR-0002**: 신규 컨테이너 배포 시 별도의 설정 파일 수정 없이 60초 이내에 라우팅이 활성화되어야 함.
+
+## Constraints
 
 - **In Scope**:
   - Traefik (Edge Router) 기반 root-active 동적 라우팅.
@@ -58,7 +66,7 @@ updated: 2026-08-13
 - **Non-goals**:
   - 자체 인증 서버 구현 (Auth 티어 담당).
 
-## Risks and Dependencies
+## Risks
 
 - **Dependency**: 컨테이너 Discovery를 위해 Docker Socket 접근 권한이 필요함.
 - **Assumption**: `scripts/operations/gen-secrets.sh`를 통해 필요한 인증서와 파일들이 사전에 준비되어 있음.
@@ -70,7 +78,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: Critical security policy changes and certificate renewals.
 - **Evaluation Expectation**: 100% routing accuracy for new services within 60 seconds.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Gateway architecture descriptions](../02.architecture/descriptions/ad-0001-gateway-architecture.md)
 - **Spec**: [Gateway technical specification](../03.specs/spec-0001-gateway/spec.md)

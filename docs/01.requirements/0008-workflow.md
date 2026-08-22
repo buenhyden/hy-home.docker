@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0008
-artifact_type: prd
+artifact_id: REQ-0008
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Workflow Tier (07-workflow) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `07-workflow` 계층(Airflow, n8n)의 제품 요구사항을 정의한다. 이 계층은 데이터 파이프라인의 자동화, 태스크 오케스트레이션, 그리고 강력한 로우코드(Low-code) 통합 기능을 제공하여 복잡한 비즈니스 로직과 데이터 흐름을 효율적으로 관리하는 것을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 복잡한 데이터 엔지니어링 작업부터 단순한 API 통합까지 포괄하는 통합 워크플로 엔진을 구축하여, 운영 효율성을 극대화하고 에이전트가 자율적으로 태스크를 오케스트레이션할 수 있는 환경을 제공한다.
 
@@ -32,21 +33,28 @@ updated: 2026-08-13
 - **STORY-02**: 개발자는 n8n을 사용하여 Slack 메시지 유입 시 특정 API를 호출하는 연동 시나리오를 5분 만에 구축한다.
 - **STORY-03**: 시스템 모니터링 에이전트는 특정 장애 감지 시 대응 워크플로를 n8n에서 실행하여 자동 복구를 시도한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0008-R0001**: Python 기반의 복잡한 DAG 정의 지원 (Airflow).
-- **PRD-0008-R0002**: 분산 처리를 위한 워커 스케일링 지원 (CeleryExecutor).
-- **PRD-0008-R0003**: GUI 기반의 로우코드 자동화 및 400개 이상의 외부 노드 연동 지원 (n8n).
-- **PRD-0008-R0004**: 워크플로 실행 상태 및 로그의 실시간 모니터링 제공.
-- **PRD-0008-R0005**: 에이전트가 API를 통해 워크플로를 제어할 수 있는 인터페이스 제공.
+- **REQ-0008-FR-0001**: Python 기반의 복잡한 DAG 정의 지원 (Airflow).
+- **REQ-0008-FR-0002**: 분산 처리를 위한 워커 스케일링 지원 (CeleryExecutor).
+- **REQ-0008-FR-0003**: GUI 기반의 로우코드 자동화 및 400개 이상의 외부 노드 연동 지원 (n8n).
+- **REQ-0008-FR-0004**: 워크플로 실행 상태 및 로그의 실시간 모니터링 제공.
+- **REQ-0008-FR-0005**: 에이전트가 API를 통해 워크플로를 제어할 수 있는 인터페이스 제공.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0008-AC0001**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).
-- **PRD-0008-AC0002**: n8n을 통한 새로운 연동 구축 시간 50% 단축.
-- **PRD-0008-AC0003**: 태스크 실패 시 알림 처리율 100%.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0008-FR-0001**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).
+- **REQ-0008-FR-0002**: n8n을 통한 새로운 연동 구축 시간 50% 단축.
+- **REQ-0008-FR-0003**: 태스크 실패 시 알림 처리율 100%.
+
+## Constraints
 
 - **In Scope**:
   - 비즈니스 로직 중심의 복잡한 Batch 및 ETL 프로세스 전담.
@@ -58,7 +66,7 @@ updated: 2026-08-13
 - **Non-goals**:
   - 리얼타임 스트리밍 처리 (Messaging Tier 영역).
 
-## Risks and Dependencies
+## Risks
 
 - **Risks**: Airflow 업그레이드 시 DB 스키마 마이그레이션 중단 가능성.
 - **Dependencies**: `04-data` (PostgreSQL) 및 `06-observability` (Metrics/Logging).
@@ -87,7 +95,7 @@ Runtime이 실행 중이면 Airflow와 n8n의 internal health를 각각 `airflow
 - **Disallowed Actions**: Airflow 관리자 설정 변경, DB 직접 조작.
 - **Human-in-the-loop Requirement**: 신규 DAG 배포 및 n8n 워크플로 활성화는 사람의 최종 승인이 필요함.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/ad-0007-workflow-architecture.md)
 - **Spec**: [008-workflow/spec.md](../03.specs/spec-0008-workflow/spec.md)

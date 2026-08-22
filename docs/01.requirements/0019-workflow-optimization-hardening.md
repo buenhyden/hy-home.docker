@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0019
-artifact_type: prd
+artifact_id: REQ-0019
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 07-Workflow Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/07-workflow` 계층(Airflow, n8n)의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 경로 보안 강화, health 기반 안정성 확보, 컨테이너 런타임 하드닝, 그리고 카탈로그 기반 확장 항목의 실행 로드맵 수립이다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 워크플로 계층을 "기본적으로 안전하고, 장애 전파에 강하며, 운영 확장 기준이 명확한" 오케스트레이션 플랫폼으로 표준화한다.
 
@@ -36,24 +37,31 @@ updated: 2026-08-13
 - **STORY-WRK-03**: CI는 workflow 하드닝 회귀를 PR 단계에서 자동 차단한다.
 - **STORY-WRK-04**: 팀은 Airflow DAG 품질 게이트/오토스케일 기준과 n8n Git backup/Vault 연계 기준을 추적한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0019-R0001**: Airflow/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **PRD-0019-R0002**: service-local Airflow compose는 broker(`airflow-valkey`) health 기반 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
-- **PRD-0019-R0003**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 service-local compose에서 n8n/valkey health 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
-- **PRD-0019-R0004**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
-- **PRD-0019-R0005**: `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0019-R0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **PRD-0019-R0007**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준과 n8n Git backup/Vault 연계를 정의해야 한다.
+- **REQ-0019-FR-0001**: Airflow/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
+- **REQ-0019-FR-0002**: service-local Airflow compose는 broker(`airflow-valkey`) health 기반 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
+- **REQ-0019-FR-0003**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 service-local compose에서 n8n/valkey health 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
+- **REQ-0019-FR-0004**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
+- **REQ-0019-FR-0005**: `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0019-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0019-FR-0007**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준과 n8n Git backup/Vault 연계를 정의해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0019-AC0001**: `bash scripts/hardening/check-all-hardening.sh 07-workflow` 실패 0건.
-- **PRD-0019-AC0002**: Airflow/n8n compose static validation 통과.
-- **PRD-0019-AC0003**: workflow optimization-hardening 문서 간 양방향 링크 정합성 확보.
-- **PRD-0019-AC0004**: workflow 카탈로그 확장 항목이 Plan/Tasks에 반영.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0019-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 07-workflow` 실패 0건.
+- **REQ-0019-FR-0002**: Airflow/n8n compose static validation 통과.
+- **REQ-0019-FR-0003**: workflow optimization-hardening 문서 간 양방향 링크 정합성 확보.
+- **REQ-0019-FR-0004**: workflow 카탈로그 확장 항목이 Plan/Tasks에 반영.
+
+## Constraints
 
 - **In Scope**:
   - `infra/07-workflow/airflow/docker-compose.yml`
@@ -68,7 +76,7 @@ updated: 2026-08-13
   - 즉시 멀티클러스터 workflow 아키텍처 전환
   - 외부 SaaS orchestration 서비스 이전
 
-## Risks and Dependencies
+## Risks
 
 - SSO 체인 강화는 기존 자동화 접근 경로에 영향을 줄 수 있어 운영 승인 절차가 필요하다.
 - Airflow/n8n은 `04-data` PostgreSQL, `01-gateway` Traefik, `02-auth` SSO middleware 구성에 의존한다.
@@ -81,7 +89,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: 접근제어 완화, HA topology 확장 시 승인 필수
 - **Evaluation Expectation**: workflow hardening + template baseline + doc traceability 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../03.specs/spec-0008-workflow/spec.md)

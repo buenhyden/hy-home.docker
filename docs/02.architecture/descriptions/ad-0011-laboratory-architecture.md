@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0011
 artifact_type: architecture-description
 parent_ids:
-  - prd-0012
+  - REQ-0012
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -99,7 +99,7 @@ graph TD
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-0012-laboratory.md](../../01.requirements/prd-0012-laboratory.md)
+- **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
 - **Plan**: ../../04.execution/plans/2026-03-26-11-laboratory-standardization.md
 - **ADR**: [../decisions/adr-0011-laboratory-services.md](../decisions/adr-0011-laboratory-services.md)

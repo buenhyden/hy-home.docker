@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0022
-artifact_type: prd
+artifact_id: REQ-0022
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 11-Laboratory Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/11-laboratory`(dashboard, dozzle, portainer, redisinsight, open-notebook) 계층의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 UI를 기본적으로 안전한 경계(TLS+SSO+IP allowlist) 뒤에 배치하고, 실험성 서비스의 운영 드리프트를 CI 단계에서 차단하며, 카탈로그 기반 확장 정책을 실행 로드맵으로 정착시키는 것이다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경은 최소화하는" 안전한 관리/실험 계층으로 표준화한다.
 
@@ -36,26 +37,33 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **STORY-LAB-02**: 팀은 dashboard/dozzle/portainer/redisinsight/open-notebook 변경 회귀를 PR 단계에서 차단한다.
 - **STORY-LAB-03**: 실험성 서비스 만료/승인/접근제어 정책을 문서 기반으로 운영한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0022-R0001**: 모든 Laboratory 라우터는 `gateway-standard-chain@file` + SSO 체인을 적용해야 한다.
-- **PRD-0022-R0002**: 모든 Laboratory 라우터는 서비스별 IP allowlist middleware를 적용해야 한다.
-- **PRD-0022-R0003**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
-- **PRD-0022-R0004**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
-- **PRD-0022-R0005**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
-- **PRD-0022-R0006**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0022-R0007**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **PRD-0022-R0008**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
-- **PRD-0022-R0009**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
+- **REQ-0022-FR-0001**: 모든 Laboratory 라우터는 `gateway-standard-chain@file` + SSO 체인을 적용해야 한다.
+- **REQ-0022-FR-0002**: 모든 Laboratory 라우터는 서비스별 IP allowlist middleware를 적용해야 한다.
+- **REQ-0022-FR-0003**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
+- **REQ-0022-FR-0004**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
+- **REQ-0022-FR-0005**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
+- **REQ-0022-FR-0006**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0022-FR-0007**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0022-FR-0008**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
+- **REQ-0022-FR-0009**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0022-AC0001**: `bash scripts/hardening/check-all-hardening.sh 11-laboratory` 실패 0건.
-- **PRD-0022-AC0002**: root `admin` profile compose 정적 검증과 optional service hardening checks가 통과.
-- **PRD-0022-AC0003**: PRD~Runbook optimization 문서 간 양방향 링크 정합성 확보.
-- **PRD-0022-AC0004**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0022-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 11-laboratory` 실패 0건.
+- **REQ-0022-FR-0002**: root `admin` profile compose 정적 검증과 optional service hardening checks가 통과.
+- **REQ-0022-FR-0003**: Requirement Package~Runbook optimization 문서 간 양방향 링크 정합성 확보.
+- **REQ-0022-FR-0004**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
+
+## Constraints
 
 - **In Scope**:
   - `infra/11-laboratory/*/docker-compose.yml`
@@ -70,7 +78,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
   - Keycloak realm/policy 내부 설계 변경
   - Traefik 엔트리포인트 구조 변경
 
-## Risks and Dependencies
+## Risks
 
 - IP allowlist 기본값은 사설망 기준이므로 외부 운영자 접속 시 환경변수 조정이 필요하다.
 - `01-gateway` middleware 및 `02-auth` SSO availability에 의존한다.
@@ -83,7 +91,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **Human-in-the-loop Requirement**: allowlist 완화/권한 확장/감사정책 예외는 승인 필수
 - **Evaluation Expectation**: lab hardening + 공통 baseline + doc traceability 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/spec-0012-laboratory/spec.md)

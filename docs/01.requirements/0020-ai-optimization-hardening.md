@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0020
-artifact_type: prd
+artifact_id: REQ-0020
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 08-AI Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/08-ai` 계층(Ollama, Open WebUI)의 최적화/하드닝 요구사항을 정의한다. 목표는 gateway 경계 보안 표준화, GPU 자원 보호를 위한 동시성 제어, health 기반 안정성 강화, 그리고 카탈로그 기반 확장 정책(모델 승격, 접근 통제, 로그 보존/마스킹)의 실행 로드맵 수립이다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운영 승격 기준이 명확한" 로컬 추론 플랫폼으로 표준화한다.
 
@@ -37,24 +38,31 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
 - **STORY-AI-03**: CI는 AI tier 하드닝 회귀를 PR 단계에서 자동 차단한다.
 - **STORY-AI-04**: 팀은 모델 승격 절차와 Open WebUI 접근/로그 정책을 운영 기준으로 추적한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0020-R0001**: Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **PRD-0020-R0002**: Ollama는 동시성/모델 로딩/큐 상한(`OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`)을 명시해야 한다.
-- **PRD-0020-R0003**: Open WebUI는 stateful 템플릿 계약을 사용해야 한다.
-- **PRD-0020-R0004**: `ollama-exporter`는 health 기반 dependency와 metrics healthcheck를 제공해야 한다.
-- **PRD-0020-R0005**: `scripts/hardening/check-all-hardening.sh 08-ai`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0020-R0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **PRD-0020-R0007**: 카탈로그 기준으로 모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책을 Plan/Tasks/Operations에 반영해야 한다.
+- **REQ-0020-FR-0001**: Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
+- **REQ-0020-FR-0002**: Ollama는 동시성/모델 로딩/큐 상한(`OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`)을 명시해야 한다.
+- **REQ-0020-FR-0003**: Open WebUI는 stateful 템플릿 계약을 사용해야 한다.
+- **REQ-0020-FR-0004**: `ollama-exporter`는 health 기반 dependency와 metrics healthcheck를 제공해야 한다.
+- **REQ-0020-FR-0005**: `scripts/hardening/check-all-hardening.sh 08-ai`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0020-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0020-FR-0007**: 카탈로그 기준으로 모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책을 Plan/Tasks/Operations에 반영해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0020-AC0001**: `bash scripts/hardening/check-all-hardening.sh 08-ai` 실패 0건.
-- **PRD-0020-AC0002**: AI compose 정적 검증 통과.
-- **PRD-0020-AC0003**: AI optimization-hardening 문서 간 양방향 링크 정합성 확보.
-- **PRD-0020-AC0004**: 카탈로그 08-ai 확장 항목이 Plan/Tasks/Operations에 반영.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0020-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 08-ai` 실패 0건.
+- **REQ-0020-FR-0002**: AI compose 정적 검증 통과.
+- **REQ-0020-FR-0003**: AI optimization-hardening 문서 간 양방향 링크 정합성 확보.
+- **REQ-0020-FR-0004**: 카탈로그 08-ai 확장 항목이 Plan/Tasks/Operations에 반영.
+
+## Constraints
 
 - **In Scope**:
   - `infra/08-ai/ollama/docker-compose.yml`
@@ -69,7 +77,7 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
   - 즉시 멀티노드 Ollama 클러스터 전환
   - 외부 상용 LLM API 표준화 작업 동시 추진
 
-## Risks and Dependencies
+## Risks
 
 - SSO/미들웨어 강화는 기존 테스트 스크립트/자동화 접근 경로 조정이 필요할 수 있다.
 - AI tier는 `01-gateway` Traefik, `02-auth` SSO, `04-data` Qdrant 및 PostgreSQL 설정에 의존한다.
@@ -82,7 +90,7 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
 - **Human-in-the-loop Requirement**: 접근제어 완화, 로그 보존 완화, 모델 승격 정책 예외는 승인 필수
 - **Evaluation Expectation**: `check-all-hardening.sh 08-ai` + 공통 기준선 + 문서 추적성 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../03.specs/spec-0009-ai/spec.md)

@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0019
 artifact_type: architecture-description
 parent_ids:
-  - prd-0016
+  - REQ-0016
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -113,7 +113,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0016-data-optimization-hardening.md](../../01.requirements/prd-0016-data-optimization-hardening.md)
+- **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0016-data-optimization-hardening.md)
 - **Spec**: [../03.specs/004-data/spec.md](../../03.specs/spec-0004-data/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md](../decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md)

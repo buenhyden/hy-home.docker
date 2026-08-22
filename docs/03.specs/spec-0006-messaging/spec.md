@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0017-messaging-optimization-hardening.md](../../01.requirements/prd-0017-messaging-optimization-hardening.md)
+- **PRD**: [../../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md](../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md)

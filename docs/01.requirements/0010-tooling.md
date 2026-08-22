@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0010
-artifact_type: prd
+artifact_id: REQ-0010
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Tooling Tier (09-tooling) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `09-tooling` 계층의 제품 요구사항을 정의한다. 이 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하며, IaC(Infrastructure as Code) 자동화, 코드 품질 분석, 그리고 대규모 성능 테스트를 지원하여 안정적이고 효율적인 개발 환경을 구축하는 것을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 코드 품질 검사부터 인프라 프로비저닝 자동화까지 아우르는 통합 툴링 생태계를 구축하여, 수동 작업을 최소화하고 데이터 기반의 엔지니어링 의사결정을 지원한다.
 
@@ -32,21 +33,28 @@ updated: 2026-08-13
 - **STORY-02**: 개발자는 소스 코드 푸시 시 SonarQube를 통해 버그, 취약점, 코드 스멜을 자동으로 분석받는다.
 - **STORY-03**: 성능 엔지니어는 Locust를 사용하여 분산 환경에서 수만 명의 동시 접속자를 시뮬레이션하고 병목 지점을 찾는다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0010-R0001**: Terraform 실행 및 상태 관리를 위한 중앙 집중식 IaC 오케스트레이션 지원 (Terrakube).
-- **PRD-0010-R0002**: 다중 언어 정적 코드 분석 및 품질 게이트 적용 지원 (SonarQube).
-- **PRD-0010-R0003**: Python 기반의 시나리오 정의 및 분산 부하 생성 지원 (Locust).
-- **PRD-0010-R0004**: 내부 서비스 배포를 위한 단일 노드 사설 이미지 레지스트리 제공.
-- **PRD-0010-R0005**: P2P 공유를 통한 장치 간 파일 동기화 기능 제공 (Syncthing).
+- **REQ-0010-FR-0001**: Terraform 실행 및 상태 관리를 위한 중앙 집중식 IaC 오케스트레이션 지원 (Terrakube).
+- **REQ-0010-FR-0002**: 다중 언어 정적 코드 분석 및 품질 게이트 적용 지원 (SonarQube).
+- **REQ-0010-FR-0003**: Python 기반의 시나리오 정의 및 분산 부하 생성 지원 (Locust).
+- **REQ-0010-FR-0004**: 내부 서비스 배포를 위한 단일 노드 사설 이미지 레지스트리 제공.
+- **REQ-0010-FR-0005**: P2P 공유를 통한 장치 간 파일 동기화 기능 제공 (Syncthing).
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0010-AC0001**: 모든 인프라 변경의 IaC 수용률 100%.
-- **PRD-0010-AC0002**: 주요 서비스 코드의 테크니컬 데트(Technical Debt) 비율 5% 미만 유지.
-- **PRD-0010-AC0003**: 신규 환경 구축 시간 70% 이상 단축.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0010-FR-0001**: 모든 인프라 변경의 IaC 수용률 100%.
+- **REQ-0010-FR-0002**: 주요 서비스 코드의 테크니컬 데트(Technical Debt) 비율 5% 미만 유지.
+- **REQ-0010-FR-0003**: 신규 환경 구축 시간 70% 이상 단축.
+
+## Constraints
 
 - **In Scope**:
   - 인프라 자동화 도구 및 관리 플랫폼.
@@ -58,7 +66,7 @@ updated: 2026-08-13
 - **Non-goals**:
   - 범용 퍼블릭 클라우드 서비스 제공.
 
-## Risks and Dependencies
+## Risks
 
 - **Risks**: Terrakube API 장애 시 인프라 변경 차단 위험.
 - **Dependencies**: Terrakube/SonarQube/Syncthing 등 선택 서비스는 필요에 따라 `04-data` (PostgreSQL/MinIO/Valkey/InfluxDB) 및 `02-auth` (Keycloak/Dex)를 사용한다. Registry와 Terraform helper는 현재 local/bind-mount 중심이다.
@@ -67,7 +75,7 @@ updated: 2026-08-13
 
 N/A
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/ad-0009-tooling-architecture.md)
 - **Spec**: [010-tooling/spec.md](../03.specs/spec-0010-tooling/spec.md)

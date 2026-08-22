@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0018
-artifact_type: prd
+artifact_id: REQ-0018
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 06-Observability Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/06-observability` 계층(Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager, Pushgateway, Pyroscope)의 최적화/하드닝 요구사항을 정의한다. 게이트웨이 경계 보안, 관리 경로 인증, 서비스 헬스 기반 의존성, 컨테이너 런타임 하드닝, 단계적 HA 확장을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 관측성 계층을 "기본적으로 안전하고(secure-by-default), 장애 전파에 강하며, 확장 가능한(HA-ready) 운영 플랫폼"으로 표준화한다.
 
@@ -36,24 +37,31 @@ updated: 2026-08-13
 - **STORY-OBS-02**: 엔지니어는 compose 의존성을 health 기반으로 정렬해 초기 기동 실패를 줄인다.
 - **STORY-OBS-03**: CI는 관측성 하드닝 회귀를 PR 단계에서 자동 차단한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0018-R0001**: 외부 노출 관측성 라우터는 `gateway-standard-chain@file`를 기본 적용해야 한다.
-- **PRD-0018-R0002**: 관리 UI/API 라우터는 `sso-errors@file,sso-auth@file` 체인을 강제해야 한다.
-- **PRD-0018-R0003**: Alloy/Grafana의 Loki/Tempo 의존성은 `service_healthy` 기준을 사용해야 한다.
-- **PRD-0018-R0004**: cAdvisor는 healthcheck를 제공해야 한다.
-- **PRD-0018-R0005**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
-- **PRD-0018-R0006**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0018-R0007**: PRD/Architecture Description/ADR/Spec/Plan/Task와 Guide/Policy/Runbook 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
+- **REQ-0018-FR-0001**: 외부 노출 관측성 라우터는 `gateway-standard-chain@file`를 기본 적용해야 한다.
+- **REQ-0018-FR-0002**: 관리 UI/API 라우터는 `sso-errors@file,sso-auth@file` 체인을 강제해야 한다.
+- **REQ-0018-FR-0003**: Alloy/Grafana의 Loki/Tempo 의존성은 `service_healthy` 기준을 사용해야 한다.
+- **REQ-0018-FR-0004**: cAdvisor는 healthcheck를 제공해야 한다.
+- **REQ-0018-FR-0005**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
+- **REQ-0018-FR-0006**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0018-FR-0007**: Requirement Package/Architecture Description/ADR/Spec/Plan/Task와 Guide/Policy/Runbook 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0018-AC0001**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
-- **PRD-0018-AC0002**: root compose profile 검증 또는 service-local validation overlay를 포함한 observability compose 정적 검증 통과.
-- **PRD-0018-AC0003**: 관측성 공개 라우터 middleware 계약 100% 충족.
-- **PRD-0018-AC0004**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0018-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
+- **REQ-0018-FR-0002**: root compose profile 검증 또는 service-local validation overlay를 포함한 observability compose 정적 검증 통과.
+- **REQ-0018-FR-0003**: 관측성 공개 라우터 middleware 계약 100% 충족.
+- **REQ-0018-FR-0004**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
+
+## Constraints
 
 - **In Scope**:
   - `infra/06-observability/docker-compose.yml`
@@ -69,7 +77,7 @@ updated: 2026-08-13
   - 즉시 멀티리전 observability 클러스터 구축
   - 전 서비스 샘플링 정책의 동시 대개편
 
-## Risks and Dependencies
+## Risks
 
 - SSO 체인 강화는 일부 자동화 접근 경로에 영향을 줄 수 있으며 예외 절차 정의가 필요하다.
 - Keycloak/Traefik 미들웨어 구성의 일관성이 전제되어야 한다.
@@ -82,7 +90,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: 접근제어 완화, 대규모 HA 토폴로지 변경 시 승인 필수
 - **Evaluation Expectation**: `check-all-hardening.sh 06-observability` + 공통 기준선 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../03.specs/spec-0007-observability/spec.md)

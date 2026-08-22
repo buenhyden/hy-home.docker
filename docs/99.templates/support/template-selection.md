@@ -13,9 +13,7 @@ template source.
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| PRD | `docs/01.requirements/prd-####-<slug>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
-| SRS | `docs/01.requirements/srs-####-<slug>.md` | [srs.template.md](../templates/sdlc/srs.template.md) |
-| Interface Requirement | `docs/01.requirements/interface-####-<slug>.md` | [interface-requirement.template.md](../templates/sdlc/interface-requirement.template.md) |
+| Requirement Package | `docs/01.requirements/####-<slug>.md` | [requirement-package.template.md](../templates/requirements/requirement-package.template.md) |
 | Architecture Description | `docs/02.architecture/descriptions/ad-####-<slug>.md` | [architecture-description.template.md](../templates/sdlc/architecture-description.template.md) |
 | ADR | `docs/02.architecture/decisions/adr-####-<slug>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
 | Spec | `docs/03.specs/spec-####-<capability>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |

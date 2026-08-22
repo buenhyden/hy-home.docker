@@ -64,7 +64,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- [Security PRD](../../01.requirements/prd-0003-security.md)
+- [Security PRD](../../01.requirements/0003-security.md)
 - [Security Architecture Description](../descriptions/ad-0003-security-architecture.md)
 - [Security spec](../../03.specs/spec-0003-security/spec.md)
 - Security standardization plan

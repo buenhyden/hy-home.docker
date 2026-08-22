@@ -71,7 +71,7 @@ Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강�
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0022-laboratory-optimization-hardening.md](../../01.requirements/prd-0022-laboratory-optimization-hardening.md)
+- **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0022-laboratory-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md

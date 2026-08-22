@@ -232,26 +232,22 @@ Stage 01 is flat:
 
     docs/01.requirements/
     ├── README.md
-    ├── prd-####-<slug>.md
-    ├── srs-####-<slug>.md
-    └── interface-####-<slug>.md
+    └── ####-<slug>.md
 
-PRD owns the problem, user value, scope, product requirements, and acceptance
-criteria.
+Each Requirement Package owns the problem, user value, scope, functional and
+non-functional requirements, optional solution-independent interface
+requirements, acceptance criteria, dependencies, and constraints. Implemented
+schemas belong with the Spec under contracts.
 
-SRS is optional. It owns system or software behavior, quality requirements,
-external dependencies, and constraints when that detail would overload the
-PRD.
+Package-qualified requirement identifiers use four digits. Current declared
+examples are:
 
-Interface Requirement is optional. It owns participants, direction, exchanged
-information semantics, constraints, compatibility expectations, and failure
-expectations. Implemented schemas belong with the Spec under contracts.
+- `REQ-0001-FR-0001`
+- `REQ-0003-NFR-0005`
+- `REQ-####-IF-####` only after a package/kind allocation is issued
 
-Internal requirement identifiers are:
-
-- PRD-0001-R0001 and PRD-0001-AC0001
-- SRS-0001-R0001
-- IFR-0001-R0001
+Acceptance items reference their matching FR IDs and do not allocate separate
+acceptance identities.
 
 Unresolved product choices remain in Stage 01 and do not move into
 architecture.
@@ -439,7 +435,7 @@ containment directory described below.
 
 Canonical identities include:
 
-- prd-0001, srs-0001, interface-0001;
+- REQ-0001;
 - ad-0001, adr-0001;
 - spec-0136;
 - ops-0001, guide-0001, policy-0001, runbook-0001;
@@ -928,8 +924,9 @@ The work is complete only when:
 15. The migration ledger accounts for every modified, merged, moved,
     replaced, and deleted legacy path.
 16. Every document identity uses a four-digit numeric component, including
-    existing PRDs and internal requirement/acceptance identities, and Incident
-    packets use the required year partition.
+    existing Requirement Packages and internal requirement identities;
+    acceptance items reference their matching FR IDs, and Incident packets use
+    the required year partition.
 17. Every Operations subject name and retained role file owns a distinct
     reviewed operational purpose; approved duplicates are merged and removed.
 18. Every active agent has one typed owner, responsibility, scope, handoff,

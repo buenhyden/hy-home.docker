@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for `in
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0014-auth-optimization-hardening.md](../../01.requirements/prd-0014-auth-optimization-hardening.md)
+- **PRD**: [../../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0014-auth-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md](../../02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md)

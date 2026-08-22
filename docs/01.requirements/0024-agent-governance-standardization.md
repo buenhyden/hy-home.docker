@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0024
-artifact_type: prd
+artifact_id: REQ-0024
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-06-01
 updated: 2026-08-21
 ---
 # Agent Governance Standardization Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `hy-home.docker`의 AI Agent 거버넌스 표준화 요구사항을 정의한다. 목표는 Stage 00을 공통 정책과 catalog의 SSoT로 유지하면서 Claude, Codex 및 provider-neutral compatibility surface가 같은 규칙, 작업 흐름, 검증 기준을 따르도록 하는 것이다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 `hy-home.docker`의 모든 AI Agent는 provider와 runtime 형식이 달라도 같은 repository 목적, stage-gated documentation lifecycle, Docker Compose 운영 경계, QA/CI/CD 검증 기준을 공유해야 한다.
 
@@ -33,38 +34,41 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 ## Key Use Cases
 
-- **STORY-01**: Maintainer는 agent governance 변경 전에 PRD, Architecture Description, ADR, plan, task evidence를 따라가며 왜 변경이 필요한지 확인한다.
+- **STORY-01**: Maintainer는 agent governance 변경 전에 Requirement Package, Architecture Description, ADR, plan, task evidence를 따라가며 왜 변경이 필요한지 확인한다.
 - **STORY-02**: Codex와 Claude adapter는 같은 Stage 00 catalog를 provider-specific 형식으로 노출하되 별도 정책을 만들지 않는다.
 - **STORY-03**: Agent는 Superpowers, HADS, Docker, QA, DevOps strategy를 사용할 때 active repository stage path와 검증 절차로 변환한다.
 - **STORY-04**: Reviewer는 Phase 2/3 같은 governance work가 Docker runtime, secrets, deployment, remote GitHub state를 변경하지 않았음을 evidence로 확인한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0024-R0001**: Stage 00은 role catalog, skill catalog, policies, provider registry, workflow states, and bounded evidence rules의 canonical source of truth여야 한다.
-- **PRD-0024-R0002**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
-- **PRD-0024-R0003**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
-- **PRD-0024-R0004**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
-- **PRD-0024-R0005**: HADS mandatory profile은 `docs/90.references/data/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
-- **PRD-0024-R0006**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
-- **PRD-0024-R0007**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
-- **PRD-0024-R0008**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
+- **REQ-0024-FR-0001**: Stage 00은 role catalog, skill catalog, policies, provider registry, workflow states, and bounded evidence rules의 canonical source of truth여야 한다.
+- **REQ-0024-FR-0002**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
+- **REQ-0024-FR-0003**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
+- **REQ-0024-FR-0004**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
+- **REQ-0024-FR-0005**: HADS mandatory profile은 `docs/90.references/data/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
+- **REQ-0024-FR-0006**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
+- **REQ-0024-FR-0007**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
+- **REQ-0024-FR-0008**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
 
 ## Non-functional Requirements
 
-- **PRD-0024-R0009**: Governance text must remain deterministic, concise, and free of contradictory provider-specific policy forks.
-- **PRD-0024-R0010**: Stage 00 governance files must remain English-only; human-facing stage execution evidence may use Korean where appropriate.
-- **PRD-0024-R0011**: Repository checks must be able to detect adapter drift, template drift, unsupported statuses, and traceability gaps.
-- **PRD-0024-R0012**: Graphify may support navigation, but completion claims must be corroborated by tracked docs and validation scripts when graph health is advisory.
-- **PRD-0024-R0013**: Documentation changes must remove or archive historical content when it conflicts with current tracked implementation truth.
+- **REQ-0024-NFR-0009**: Governance text must remain deterministic, concise, and free of contradictory provider-specific policy forks.
+- **REQ-0024-NFR-0010**: Stage 00 governance files must remain English-only; human-facing stage execution evidence may use Korean where appropriate.
+- **REQ-0024-NFR-0011**: Repository checks must be able to detect adapter drift, template drift, unsupported statuses, and traceability gaps.
+- **REQ-0024-NFR-0012**: Graphify may support navigation, but completion claims must be corroborated by tracked docs and validation scripts when graph health is advisory.
+- **REQ-0024-NFR-0013**: Documentation changes must remove or archive historical content when it conflicts with current tracked implementation truth.
 
-## Acceptance and Verification
+## Interface Requirements
 
-- **PRD-0024-AC0001**: Agent governance PRD, Architecture Description, ADR, Phase 1 diagnostic, and Phase 2 alignment plan are cross-linked.
-- **PRD-0024-AC0002**: `check-repo-contracts.sh`, `check-document-links.py --mode traceability`, provider surface sync, LLM Wiki freshness, and diff hygiene pass after changes.
-- **PRD-0024-AC0003**: No Docker runtime, secrets, deployment state, remote GitHub settings, or user-global Codex settings are changed during governance documentation alignment.
-- **PRD-0024-AC0004**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, or the co-located active Task evidence.
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
 
-## Scope and Non-goals
+- **REQ-0024-FR-0001**: Agent governance Requirement Package, Architecture Description, ADR, Phase 1 diagnostic, and Phase 2 alignment plan are cross-linked.
+- **REQ-0024-FR-0002**: `check-repo-contracts.sh`, `check-document-links.py --mode traceability`, provider surface sync, LLM Wiki freshness, and diff hygiene pass after changes.
+- **REQ-0024-FR-0003**: No Docker runtime, secrets, deployment state, remote GitHub settings, or user-global Codex settings are changed during governance documentation alignment.
+- **REQ-0024-FR-0004**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, or the co-located active Task evidence.
+
+## Constraints
 
 - **In Scope**:
   - Agent governance requirements for Stage 00 and provider adapters.
@@ -81,7 +85,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
   - Do not recreate `.codex/agents/*.md` compatibility prompt files.
   - Do not create a new non-stage documentation taxonomy.
 
-## Risks and Dependencies
+## Risks
 
 - Stage 00 provider adapter policy must remain aligned with `providers/registry.yaml`, `policies/agentic.md`, and the canonical role and skill catalogs.
 - The repository may have graphify advisory findings; these are navigation signals, not proof of completion.
@@ -103,7 +107,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 - **Evaluation Expectation**:
   - Every governance implementation task must record validation commands, pass/fail outcomes, skipped-check rationale, and Graphify advisory status when used.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Agent Governance Canonical Adapter Architecture Description](../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - **ADR**: [ADR-0027 Stage 00 Canonical Adapter Model](../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)

@@ -105,7 +105,7 @@ that requires it. An adjacent file is not in scope merely because it is nearby.
 - [Spec 131: Document Corpus Lifecycle Migration Foundation](../spec-0131-document-corpus-lifecycle-migration-foundation/spec.md)
 - Spec 130: Template Contract System Canonicalization
 - Spec 129: Document Contract Canonicalization
-- [Data analytics PRD](../../01.requirements/prd-0005-data-analytics.md)
+- [Data analytics PRD](../../01.requirements/0005-data-analytics.md)
 - [Data analytics Architecture Description](../../02.architecture/descriptions/ad-0012-data-analytics-architecture.md)
 - [Analytics engine ADR](../../02.architecture/decisions/adr-0015-analytics-engine-selection.md)
 - [Data analytics Spec](../spec-0005-data-analytics/spec.md)

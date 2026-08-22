@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0018
 artifact_type: architecture-description
 parent_ids:
-  - prd-0015
+  - REQ-0015
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -117,7 +117,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0015-security-optimization-hardening.md](../../01.requirements/prd-0015-security-optimization-hardening.md)
+- **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0015-security-optimization-hardening.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/spec-0003-security/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)

@@ -124,7 +124,7 @@ docker inspect --format '{{json .State.Health}}' schema-registry
 
 ## Related Documents
 
-- **PRD**: [05-messaging](../../../docs/01.requirements/prd-0006-messaging.md)
+- **PRD**: [05-messaging](../../../docs/01.requirements/0006-messaging.md)
 - **ARD**: [Messaging Architecture](../../../docs/02.architecture/descriptions/ad-0005-messaging-architecture.md)
 - **Guide**: [Kafka Guide](../../../docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md)
 - **Policy**: [Messaging Ops](../../../docs/05.operations/catalog/05-messaging/ops-0036-kafka/policy.md)

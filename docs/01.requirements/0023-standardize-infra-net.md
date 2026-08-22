@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0023
-artifact_type: prd
+artifact_id: REQ-0023
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-04-01
 updated: 2026-08-13
 ---
 # Standardize infra_net Network Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 프로젝트 내 모든 인프라 서비스들을 `infra_net` 네트워크에 통합하고 구체적인 서브넷(`172.19.0.0/16`)을 보장하기 위한 제품 요구사항을 정의한다. 이를 통해 서비스 간 통신의 표준화와 예측 가능한 IP 관리를 실현한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 모든 인프라 서비스가 단일 표준 네트워크(`infra_net`)를 통해 안전하고 효율적으로 통신하며, 명확한 IP 대역 관리를 통해 네트워크 충돌을 방지하고 운영 투명성을 높인다.
 
@@ -31,18 +32,25 @@ updated: 2026-08-13
 - **STORY-02**: 운영자는 `172.19.0.0/16` 대역을 통해 각 서비스의 IP를 예측 가능하게 관리하고 싶어 한다.
 - **STORY-03**: 기존에 설정된 `k3d-hyhome` 네트워크 연결은 그대로 유지되어 로컬 k3s 클러스터와의 연동이 중단되지 않아야 한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0023-R0001**: `docker-compose.yml`에 포함된 모든 활성 서비스는 `infra_net` 네트워크를 사용해야 함.
-- **PRD-0023-R0002**: `infra_net`의 서브넷은 반드시 `172.19.0.0/16`으로 정의되어야 함.
-- **PRD-0023-R0003**: 기존에 정의된 `k3d-hyhome` 네트워크 설정은 수정하거나 삭제하지 않고 유지함.
+- **REQ-0023-FR-0001**: `docker-compose.yml`에 포함된 모든 활성 서비스는 `infra_net` 네트워크를 사용해야 함.
+- **REQ-0023-FR-0002**: `infra_net`의 서브넷은 반드시 `172.19.0.0/16`으로 정의되어야 함.
+- **REQ-0023-FR-0003**: 기존에 정의된 `k3d-hyhome` 네트워크 설정은 수정하거나 삭제하지 않고 유지함.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0023-AC0001**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.
-- **PRD-0023-AC0002**: `infra_net` 네트워크의 IPAM 설정이 `172.19.0.0/16` 대역을 가리킴.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0023-FR-0001**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.
+- **REQ-0023-FR-0002**: `infra_net` 네트워크의 IPAM 설정이 `172.19.0.0/16` 대역을 가리킴.
+
+## Constraints
 
 - **In Scope**:
   - 루트 `docker-compose.yml` 및 `include`된 모든 `docker-compose` 파일 수정.
@@ -51,7 +59,7 @@ updated: 2026-08-13
   - `infra_net` 이외의 다른 네트워크(예: `project_net`)의 서브넷 변경.
   - 컨테이너 내부 서비스 로직 수정.
 
-## Risks and Dependencies
+## Risks
 
 - **Risks**: IP 충돌 가능성 (기존에 수동으로 할당된 IP가 있을 경우).
 - **Dependencies**: Root `docker-compose.yml`의 `networks` 기본 정의에 의존.
@@ -61,7 +69,7 @@ updated: 2026-08-13
 
 N/A
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [infra_net architecture descriptions](../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision](../02.architecture/decisions/adr-0026-standardize-infra-net.md)

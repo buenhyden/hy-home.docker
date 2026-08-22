@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0012
-artifact_type: prd
+artifact_id: REQ-0012
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13
 ---
 # Laboratory Tier (11-laboratory) Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `11-laboratory` 계층의 제품 요구사항을 정의한다. 시스템 관리자, 개발자, AI Agent가 분산된 인프라 서비스의 접근점과 상태를 한곳에서 확인하고 관리할 수 있도록 통합 대시보드와 관리 UI 요구사항을 정리한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 `11-laboratory` 계층은 시스템 관리자 및 개발자를 위한 통합 제어 센터와 실험적인 고립 환경을 제공한다. 분산된 인프라 서비스들을 시각화하고, 컨테이너 및 데이터 리소스에 대한 직관적인 관리 인터페이스를 구축하여 운영 효율성을 극대화한다.
 
@@ -33,25 +34,32 @@ updated: 2026-08-13
 - **데이터 시각화**: RedisInsight를 통해 Redis 클러스터의 키 분 분포 및 성능을 분석한다.
 - **노트북형 실험**: Open Notebook을 통해 로컬 지식 작업과 SurrealDB-backed 실험을 수행한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0012-R0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
-- **PRD-0012-R0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
-- **PRD-0012-R0003**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
-- **PRD-0012-R0004**: root-active Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **REQ-0012-FR-0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
+- **REQ-0012-FR-0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
+- **REQ-0012-FR-0003**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
+- **REQ-0012-FR-0004**: root-active Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0012-AC0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
-- **PRD-0012-AC0002**: Portainer, RedisInsight, Dozzle, Homer, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0012-FR-0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
+- **REQ-0012-FR-0002**: Portainer, RedisInsight, Dozzle, Homer, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
+
+## Constraints
 
 - **In Scope**: Portainer, RedisInsight, Homer Dashboard, Dozzle, Open Notebook/SurrealDB 구성 및 연동.
 - **Out of Scope**: 개별 비즈니스 애플리케이션의 관리 UI.
 - **Non-goals**: 하드웨어 수준의 모니터링(06-observability 담당).
 
-## Risks and Dependencies
+## Risks
 
 - **Dependency**: `02-auth` (Keycloak) availability for SSO.
 - **Risk**: Exposing Docker Socket to Portainer/Dozzle; mitigated by mandatory SSO.
@@ -60,7 +68,7 @@ updated: 2026-08-13
 
 N/A
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Laboratory architecture descriptions](../02.architecture/descriptions/ad-0011-laboratory-architecture.md)
 - **Spec**: [Laboratory technical specification](../03.specs/spec-0012-laboratory/spec.md)

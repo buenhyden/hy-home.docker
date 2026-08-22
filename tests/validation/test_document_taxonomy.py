@@ -43,32 +43,32 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "graphify-out/",
 )
 
-AD_TO_PRD = {
-    "ad-0001": "prd-0001",
-    "ad-0002": "prd-0002",
-    "ad-0003": "prd-0003",
-    "ad-0004": "prd-0004",
-    "ad-0005": "prd-0006",
-    "ad-0006": "prd-0007",
-    "ad-0007": "prd-0008",
-    "ad-0008": "prd-0009",
-    "ad-0009": "prd-0010",
-    "ad-0010": "prd-0011",
-    "ad-0011": "prd-0012",
-    "ad-0012": "prd-0005",
-    "ad-0013": "prd-0013",
-    "ad-0014": "prd-0014",
-    "ad-0018": "prd-0015",
-    "ad-0019": "prd-0016",
-    "ad-0020": "prd-0017",
-    "ad-0021": "prd-0018",
-    "ad-0022": "prd-0019",
-    "ad-0023": "prd-0020",
-    "ad-0024": "prd-0021",
-    "ad-0025": "prd-0022",
-    "ad-0026": "prd-0023",
-    "ad-0027": "prd-0024",
-    "ad-0028": "prd-0025",
+AD_TO_REQUIREMENT_PACKAGE = {
+    "ad-0001": "REQ-0001",
+    "ad-0002": "REQ-0002",
+    "ad-0003": "REQ-0003",
+    "ad-0004": "REQ-0004",
+    "ad-0005": "REQ-0006",
+    "ad-0006": "REQ-0007",
+    "ad-0007": "REQ-0008",
+    "ad-0008": "REQ-0009",
+    "ad-0009": "REQ-0010",
+    "ad-0010": "REQ-0011",
+    "ad-0011": "REQ-0012",
+    "ad-0012": "REQ-0005",
+    "ad-0013": "REQ-0013",
+    "ad-0014": "REQ-0014",
+    "ad-0018": "REQ-0015",
+    "ad-0019": "REQ-0016",
+    "ad-0020": "REQ-0017",
+    "ad-0021": "REQ-0018",
+    "ad-0022": "REQ-0019",
+    "ad-0023": "REQ-0020",
+    "ad-0024": "REQ-0021",
+    "ad-0025": "REQ-0022",
+    "ad-0026": "REQ-0023",
+    "ad-0027": "REQ-0024",
+    "ad-0028": "REQ-0025",
 }
 
 ADR_TO_AD = {
@@ -159,23 +159,35 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             tracked_paths("docs/02.architecture/requirements"),
         )
 
-    def test_stage_01_prd_filename_and_metadata_agree_exactly(self):
-        paths = tracked_paths("docs/01.requirements/prd-*.md")
+    def test_stage_01_requirement_package_filename_and_metadata_agree_exactly(self):
+        paths = [
+            path
+            for path in tracked_paths("docs/01.requirements")
+            if re.fullmatch(
+                r"docs/01\.requirements/[0-9]{4}-[a-z0-9-]+\.md",
+                path,
+            )
+        ]
         self.assertEqual(25, len(paths))
         self.assertEqual(
-            {f"prd-{number:04d}" for number in range(1, 26)},
+            {f"REQ-{number:04d}" for number in range(1, 26)},
             {metadata_for(path)["artifact_id"] for path in paths},
         )
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
-                    r"docs/01\.requirements/(?P<id>prd-[0-9]{4})-[a-z0-9-]+\.md",
+                    r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9-]+\.md",
                     path,
                 )
                 self.assertIsNotNone(match)
                 metadata = metadata_for(path)
-                self.assertEqual(match.group("id"), metadata["artifact_id"])
-                self.assertEqual("prd", metadata["artifact_type"])
+                self.assertEqual(
+                    f"REQ-{match.group('number')}", metadata["artifact_id"]
+                )
+                self.assertEqual("requirements-package", metadata["profile_id"])
+                self.assertEqual(
+                    "requirements-package", metadata["artifact_type"]
+                )
                 self.assertEqual([], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -183,7 +195,10 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_stage_02_description_filename_metadata_and_parent_agree_exactly(self):
         paths = tracked_paths("docs/02.architecture/descriptions/ad-*.md")
         self.assertEqual(25, len(paths))
-        self.assertEqual(set(AD_TO_PRD), {metadata_for(path)["artifact_id"] for path in paths})
+        self.assertEqual(
+            set(AD_TO_REQUIREMENT_PACKAGE),
+            {metadata_for(path)["artifact_id"] for path in paths},
+        )
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
@@ -195,7 +210,9 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 artifact_id = match.group("id")
                 self.assertEqual(artifact_id, metadata["artifact_id"])
                 self.assertEqual("architecture-description", metadata["artifact_type"])
-                self.assertEqual([AD_TO_PRD[artifact_id]], metadata["parent_ids"])
+                self.assertEqual(
+                    [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
+                )
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 

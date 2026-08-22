@@ -295,10 +295,119 @@ def run_checker(
 
 
 class Task5ChangedMetadataRegressionTests(unittest.TestCase):
-    def test_task2_registry_contract_has_zero_violations(self) -> None:
+    def test_requirement_packages_satisfy_repository_contracts(self) -> None:
+        from scripts.lib.document_governance.requirements import (
+            load_requirement_packages,
+        )
+
+        packages = load_requirement_packages(ROOT / "docs/01.requirements")
+        self.assertEqual(25, len(packages))
         result = run_checker(ROOT, "check-contracts", profiles=REGISTRY)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("metadata repository contracts: violations=0", result.stdout)
+
+    def test_metadata_cli_rejects_paired_reserved_reclassification(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            fixture_registry = copy_registry_contract_fixture(root)
+            stage = root / "docs/01.requirements"
+            stage.mkdir(parents=True)
+            for source in (ROOT / "docs/01.requirements").glob("*.md"):
+                if source.name != "README.md":
+                    shutil.copyfile(source, stage / source.name)
+            commit_all(root, "allocation baseline")
+
+            raw = json.loads(fixture_registry.read_text(encoding="utf-8"))
+            allocation = raw["identity_spaces"]["requirement"]["child_spaces"][
+                "REQ-0003.FR"
+            ]
+            allocation["reserved_history"].remove(5)
+            allocation["current_issued"].append(5)
+            fixture_registry.write_text(json.dumps(raw), encoding="utf-8")
+            package = stage / "0003-security.md"
+            package.write_text(
+                package.read_text(encoding="utf-8").replace(
+                    "\n## Non-functional Requirements\n",
+                    (
+                        "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
+                        "number must remain unavailable. |\n\n"
+                        "## Non-functional Requirements\n"
+                    ),
+                    1,
+                ),
+                encoding="utf-8",
+            )
+
+            for mode in ("check-changed", "check-contracts"):
+                with self.subTest(mode=mode):
+                    result = run_checker(
+                        root,
+                        mode,
+                        "--base-ref",
+                        "HEAD",
+                        profiles=fixture_registry,
+                    )
+                    combined = result.stdout + result.stderr
+                    self.assertNotEqual(0, result.returncode, combined)
+                    self.assertIn("requirement-reserved-history-reclassified", combined)
+
+    def test_metadata_cli_never_uses_staged_candidate_as_predecessor(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            fixture_registry = copy_registry_contract_fixture(root)
+            stage = root / "docs/01.requirements"
+            stage.mkdir(parents=True)
+            for source in (ROOT / "docs/01.requirements").glob("*.md"):
+                if source.name != "README.md":
+                    shutil.copyfile(source, stage / source.name)
+            commit_all(root, "allocation baseline")
+
+            raw = json.loads(fixture_registry.read_text(encoding="utf-8"))
+            allocation = raw["identity_spaces"]["requirement"]["child_spaces"][
+                "REQ-0003.FR"
+            ]
+            allocation["reserved_history"].remove(5)
+            allocation["current_issued"].append(5)
+            fixture_registry.write_text(json.dumps(raw), encoding="utf-8")
+            package = stage / "0003-security.md"
+            package.write_text(
+                package.read_text(encoding="utf-8").replace(
+                    "\n## Non-functional Requirements\n",
+                    (
+                        "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
+                        "number must remain unavailable. |\n\n"
+                        "## Non-functional Requirements\n"
+                    ),
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                0,
+                git(
+                    root,
+                    "add",
+                    "docs/99.templates/registry.json",
+                    "docs/01.requirements/0003-security.md",
+                ).returncode,
+            )
+            fixture_registry.write_text(
+                fixture_registry.read_text(encoding="utf-8") + "\n",
+                encoding="utf-8",
+            )
+
+            for mode in ("check-changed", "check-contracts"):
+                with self.subTest(mode=mode):
+                    result = run_checker(
+                        root,
+                        mode,
+                        "--base-ref",
+                        "HEAD",
+                        profiles=fixture_registry,
+                    )
+                    combined = result.stdout + result.stderr
+                    self.assertNotEqual(0, result.returncode, combined)
+                    self.assertIn("requirement-reserved-history-reclassified", combined)
 
     def test_spec_0153_canonical_package_satisfies_registry_metadata(self) -> None:
         package = pathlib.Path(
@@ -358,6 +467,57 @@ class Task5ChangedMetadataRegressionTests(unittest.TestCase):
             for finding in metadata.validate_record(record, profiles, manifest)
         ]
         self.assertEqual([], findings)
+
+    def test_legacy_requirement_relation_alias_is_archive_only(self) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        requirement = metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-example.md"),
+            {
+                "profile_id": "requirements-package",
+                "status": "active",
+                "artifact_id": "REQ-0001",
+                "artifact_type": "requirements-package",
+                "parent_ids": [],
+            },
+            "requirements-package",
+        )
+        historical = metadata.Record(
+            pathlib.Path("docs/98.archive/migrations/0003-example.md"),
+            {
+                "profile_id": "migration",
+                "status": "completed",
+                "artifact_id": "mig-0003",
+                "artifact_type": "migration",
+                "parent_ids": ["prd-0001"],
+            },
+            "migration",
+        )
+        active = metadata.Record(
+            pathlib.Path("docs/02.architecture/descriptions/0001-active.md"),
+            {
+                "profile_id": "architecture-description",
+                "status": "active",
+                "artifact_id": "AD-0001",
+                "artifact_type": "architecture-description",
+                "parent_ids": ["prd-0001"],
+            },
+            "architecture-description",
+        )
+        manifest = metadata.build_manifest([requirement, historical, active])
+        historical_codes = {
+            finding.code
+            for finding in metadata.validate_record(historical, profiles, manifest)
+        }
+        active_codes = {
+            finding.code
+            for finding in metadata.validate_record(active, profiles, manifest)
+        }
+
+        self.assertNotIn("unresolved-parent", historical_codes)
+        self.assertIn("unresolved-parent", active_codes)
 
     def test_canonical_spec_relations_resolve_one_legacy_spec_alias(self) -> None:
         profiles = metadata.build_registry_transition_profiles(

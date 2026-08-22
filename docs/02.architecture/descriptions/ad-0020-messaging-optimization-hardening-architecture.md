@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0020
 artifact_type: architecture-description
 parent_ids:
-  - prd-0017
+  - REQ-0017
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -108,7 +108,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0017-messaging-optimization-hardening.md](../../01.requirements/prd-0017-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/spec-0006-messaging/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md)

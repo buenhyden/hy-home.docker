@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0017
-artifact_type: prd
+artifact_id: REQ-0017
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 05-Messaging Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/05-messaging` 계층(Kafka, RabbitMQ)의 최적화/하드닝 요구사항을 정의한다. 게이트웨이 경계에서의 트래픽 제어, 관리 경로 보호, 이미지 버전 고정, 구성 정합성, CI 기반 회귀 차단을 목표로 한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 메시징 계층을 "기본적으로 안전하고(secure-by-default), 회귀를 자동 차단하며, 단계적 확장(HA/재처리/DLQ)이 가능한 운영 기반"으로 전환한다.
 
@@ -36,23 +37,30 @@ updated: 2026-08-13
 - **STORY-02**: 엔지니어는 이미지 태그/구성 경로 회귀를 CI에서 사전에 차단한다.
 - **STORY-03**: 장애 대응자는 runbook 절차로 관리 경로 접근/브로커 헬스 문제를 빠르게 복구한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0017-R0001**: Kafka/RabbitMQ 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
-- **PRD-0017-R0002**: Kafka UI(`kafka-ui` router)와 RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
-- **PRD-0017-R0003**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
-- **PRD-0017-R0004**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
-- **PRD-0017-R0005**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0017-R0006**: Stage 01-05 문서 체계에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
+- **REQ-0017-FR-0001**: Kafka/RabbitMQ 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
+- **REQ-0017-FR-0002**: Kafka UI(`kafka-ui` router)와 RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
+- **REQ-0017-FR-0003**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
+- **REQ-0017-FR-0004**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
+- **REQ-0017-FR-0005**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0017-FR-0006**: Stage 01-05 문서 체계에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0017-AC0001**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
-- **PRD-0017-AC0002**: root-included Kafka/RabbitMQ compose 정적 검증 명령 통과 및 service-local compose context boundary 기록
-- **PRD-0017-AC0003**: 메시징 노출 라우터의 middleware 계약 충족
-- **PRD-0017-AC0004**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0017-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
+- **REQ-0017-FR-0002**: root-included Kafka/RabbitMQ compose 정적 검증 명령 통과 및 service-local compose context boundary 기록
+- **REQ-0017-FR-0003**: 메시징 노출 라우터의 middleware 계약 충족
+- **REQ-0017-FR-0004**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
+
+## Constraints
 
 - **In Scope**:
   - `infra/05-messaging/kafka/docker-compose.yml`
@@ -69,7 +77,7 @@ updated: 2026-08-13
   - 모든 카탈로그 확장 항목의 즉시 구현
   - 비메시징 티어의 직접 변경
 
-## Risks and Dependencies
+## Risks
 
 - SSO 정책 강화는 일부 운영 자동화 경로에 영향이 있을 수 있어 절차 기반 예외 정책이 필요하다.
 - 카탈로그 확장 항목(DLQ/재처리/quorum queue)은 단계별 승인과 운영 검증이 필요하다.
@@ -82,7 +90,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: 운영 접근 정책 완화, 대규모 HA 확장은 승인 후 수행
 - **Evaluation Expectation**: `infrastructure-hardening`, `template-security-baseline`, `doc-traceability` 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../03.specs/spec-0006-messaging/spec.md)

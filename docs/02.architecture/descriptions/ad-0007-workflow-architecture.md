@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0007
 artifact_type: architecture-description
 parent_ids:
-  - prd-0008
+  - REQ-0008
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -89,7 +89,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [008-workflow.md](../../01.requirements/prd-0008-workflow.md)
+- **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Spec**: [008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)
 - **Plan**: 2026-03-26-07-workflow-standardization.md
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../decisions/adr-0007-airflow-n8n-hybrid-workflow.md)

@@ -31,7 +31,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0020-ai-optimization-hardening.md](../../01.requirements/prd-0020-ai-optimization-hardening.md)
+- **PRD**: [../../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md](../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md)
@@ -156,7 +156,7 @@ This specification defines the technical design and implementation contract for 
 
 ### Related Inputs
 
-- **PRD**: [../../01.requirements/prd-0013-ai-open-webui.md](../../01.requirements/prd-0013-ai-open-webui.md)
+- **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0013-open-webui-architecture.md](../../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
 - **Related ADRs**: [../../02.architecture/decisions/adr-0016-open-webui-implementation.md](../../02.architecture/decisions/adr-0016-open-webui-implementation.md)
 

@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0027
 artifact_type: architecture-description
 parent_ids:
-  - prd-0024
+  - REQ-0024
 created: 2026-06-01
 updated: 2026-08-21
 ---
@@ -32,7 +32,7 @@ Stage 00은 active policy와 catalog를 소유한다. Provider directories는 ru
   - Hook, validator, and co-located Task evidence relationships.
   - Graphify advisory boundary for knowledge navigation.
 - **Consumes**:
-  - Product requirements from `docs/01.requirements/prd-0024-agent-governance-standardization.md`.
+  - Product requirements from `docs/01.requirements/0024-agent-governance-standardization.md`.
   - Existing Stage 00 policies, canonical roles and skills, and provider registry.
   - Runtime adapter files and sync/validation scripts.
   - Phase 1 diagnostic and Phase 2 alignment plan.
@@ -135,7 +135,7 @@ The Stage 00 canonical adapter model is the architecture boundary between policy
 
 ## Related Documents
 
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/prd-0024-agent-governance-standardization.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/0024-agent-governance-standardization.md)
 - **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - **Current Plan**: Agent Governance Decision Items and Attachment-Gap Plan
 - **Current Task**: Agent Governance Missing Items Implementation Task

@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0021
-artifact_type: prd
+artifact_id: REQ-0021
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 09-Tooling Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 경로 보안 강화, 네트워크 경계 명확화, 테스트/운영 도구 안정성 향상, 그리고 카탈로그 기반 확장 항목의 실행 로드맵 수립이다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, 성능/품질 회귀를 조기에 차단하는" 플랫폼 엔지니어링 기반 계층으로 표준화한다.
 
@@ -37,23 +38,30 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
 - **STORY-TLG-03**: CI는 tooling tier 하드닝 회귀를 PR 단계에서 자동 차단한다.
 - **STORY-TLG-04**: 팀은 카탈로그 확장 항목을 Plan/Tasks/Operations에서 추적한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0021-R0001**: SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **PRD-0021-R0002**: tooling compose는 `infra_net` external 경계 선언을 명시해야 한다.
-- **PRD-0021-R0003**: locust-worker는 healthcheck를 제공해야 하며, k6 volume 참조 drift를 제거해야 한다.
-- **PRD-0021-R0004**: `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **PRD-0021-R0005**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **PRD-0021-R0006**: 카탈로그 기준으로 terraform 승인/백업/drift, terrakube 권한/감사로그, registry 서명/스캔 차단, sonarqube 품질게이트 재정의, k6 회귀 baseline, locust 분산 토폴로지/정리 루틴, syncthing ACL/암호화/충돌 정책을 작업 로드맵에 반영해야 한다.
+- **REQ-0021-FR-0001**: SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
+- **REQ-0021-FR-0002**: tooling compose는 `infra_net` external 경계 선언을 명시해야 한다.
+- **REQ-0021-FR-0003**: locust-worker는 healthcheck를 제공해야 하며, k6 volume 참조 drift를 제거해야 한다.
+- **REQ-0021-FR-0004**: `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **REQ-0021-FR-0005**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0021-FR-0006**: 카탈로그 기준으로 terraform 승인/백업/drift, terrakube 권한/감사로그, registry 서명/스캔 차단, sonarqube 품질게이트 재정의, k6 회귀 baseline, locust 분산 토폴로지/정리 루틴, syncthing ACL/암호화/충돌 정책을 작업 로드맵에 반영해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0021-AC0001**: `bash scripts/hardening/check-all-hardening.sh 09-tooling` 실패 0건.
-- **PRD-0021-AC0002**: tooling hardening check와 optional root-context compose 검증 경계가 문서화되고 실패 0건을 유지한다.
-- **PRD-0021-AC0003**: tooling optimization-hardening 문서 간 양방향 링크 정합성 확보.
-- **PRD-0021-AC0004**: 카탈로그 09-tooling 확장 항목이 Plan/Tasks/Operations에 반영.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0021-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 09-tooling` 실패 0건.
+- **REQ-0021-FR-0002**: tooling hardening check와 optional root-context compose 검증 경계가 문서화되고 실패 0건을 유지한다.
+- **REQ-0021-FR-0003**: tooling optimization-hardening 문서 간 양방향 링크 정합성 확보.
+- **REQ-0021-FR-0004**: 카탈로그 09-tooling 확장 항목이 Plan/Tasks/Operations에 반영.
+
+## Constraints
 
 - **In Scope**:
   - `infra/09-tooling/*/docker-compose.yml`
@@ -67,7 +75,7 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
   - Terrakube/SonarQube major version migration
   - Registry backend 아키텍처 전환
 
-## Risks and Dependencies
+## Risks
 
 - SSO 강화로 기존 테스트/운영 접근 경로 일부 조정이 필요할 수 있다.
 - tooling tier는 `01-gateway` Traefik, `02-auth` SSO, `04-data` PostgreSQL/Valkey/MinIO에 의존한다.
@@ -80,7 +88,7 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
 - **Human-in-the-loop Requirement**: 접근제어 완화/승인 게이트 완화/로그 보존 완화는 승인 필수
 - **Evaluation Expectation**: `check-all-hardening.sh 09-tooling` + 공통 기준선 + 문서 추적성 통과
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../03.specs/spec-0010-tooling/spec.md)

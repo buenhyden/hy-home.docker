@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0013
-artifact_type: prd
+artifact_id: REQ-0013
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-27
 updated: 2026-08-13
 ---
 # Open WebUI Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 Open WebUI의 제품 요구사항을 정의한다. Open WebUI는 로컬 LLM과의 상호작용 및 RAG(Retrieval-Augmented Generation) 오케스트레이션을 위한 종합적인 웹 인터페이스를 제공한다. 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 Provide a premium, ChatGPT-like interface for the `hy-home.docker` ecosystem that empowers users to interact with local LLMs and manage document-based knowledge sharing via RAG.
 
@@ -32,19 +33,26 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 - **STORY-02**: As an AI engineer, I want to upload PDF/Text documents and query them using RAG.
 - **STORY-03**: As an operator, I want to ensure only authenticated users can access the AI interface via SSO.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0013-R0001**: Support multi-model selection from the Ollama backend.
-- **PRD-0013-R0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
-- **PRD-0013-R0003**: Support persistent chat history and document metadata storage.
-- **PRD-0013-R0004**: Integration with Traefik for SSL termination and SSO middleware.
+- **REQ-0013-FR-0001**: Support multi-model selection from the Ollama backend.
+- **REQ-0013-FR-0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
+- **REQ-0013-FR-0003**: Support persistent chat history and document metadata storage.
+- **REQ-0013-FR-0004**: Integration with Traefik for SSL termination and SSO middleware.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0013-AC0001**: Successful connection to Ollama and Qdrant services within the local network.
-- **PRD-0013-AC0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0013-FR-0001**: Successful connection to Ollama and Qdrant services within the local network.
+- **REQ-0013-FR-0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
+
+## Constraints
 
 - **In Scope**:
   - Web interface (Svelte-based) configuration.
@@ -56,7 +64,7 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 - **Non-goals**:
   - Building a custom LLM training platform.
 
-## Risks and Dependencies
+## Risks
 
 - **Dependency**: Requires `ollama` service to be healthy for inference.
 - **Dependency**: Requires `qdrant` service for vector storage.
@@ -68,7 +76,7 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 - **Disallowed Actions**: Disabling SSO middlewares without approval.
 - **Human-in-the-loop Requirement**: Required for upgrading major image versions.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [Open WebUI architecture descriptions](../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
 - **Spec**: [Open WebUI technical specification](../03.specs/spec-0009-ai/spec.md)

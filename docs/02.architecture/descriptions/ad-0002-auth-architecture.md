@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0002
 artifact_type: architecture-description
 parent_ids:
-  - prd-0002
+  - REQ-0002
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -111,6 +111,6 @@ The existing architecture diagram, component, constraint, or reliability section
 
 ## Related Documents
 
-- **PRD**: [Auth product requirements](../../01.requirements/prd-0002-auth.md)
+- **PRD**: [Auth product requirements](../../01.requirements/0002-auth.md)
 - **Spec**: [Auth technical specification](../../03.specs/spec-0002-auth/spec.md)
 - **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/adr-0002-keycloak-oauth2-proxy-choice.md)

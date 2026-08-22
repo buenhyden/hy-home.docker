@@ -75,7 +75,12 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     RegistryError,
     classify_path as classify_registered_path,
     load_registry,
+    load_trusted_requirement_allocation_baseline,
     validate_frontmatter,
+)
+from scripts.lib.document_governance.requirements import (  # noqa: E402
+    RequirementPackageError,
+    load_requirement_packages,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     classify_path as classify_taxonomy_path,
@@ -1189,6 +1194,11 @@ LEGACY_SPEC_RELATION_PATH = re.compile(
     r"docs/03\.specs/spec-(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*/spec\.md"
 )
 LEGACY_SPEC_RELATION_ID = re.compile(r"spec-(?P<number>[0-9]{4})")
+CANONICAL_REQUIREMENT_RELATION_PATH = re.compile(
+    r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md"
+)
+CANONICAL_REQUIREMENT_RELATION_ID = re.compile(r"REQ-(?P<number>[0-9]{4})")
+LEGACY_REQUIREMENT_RELATION_ID = re.compile(r"prd-[0-9]{4}")
 
 
 def _legacy_spec_relation_alias(record: Record) -> str | None:
@@ -1211,6 +1221,42 @@ def _legacy_spec_relation_alias(record: Record) -> str | None:
     if path_match.group("number") != id_match.group("number"):
         return None
     return f"SPEC-{id_match.group('number')}"
+
+
+def _legacy_requirement_relation_alias(record: Record) -> str | None:
+    """Expose one read-only relation alias for immutable pre-migration evidence."""
+
+    if record.artifact_type != "requirements-package":
+        return None
+    path_match = CANONICAL_REQUIREMENT_RELATION_PATH.fullmatch(
+        record.path.as_posix()
+    )
+    artifact_id = record.metadata.get("artifact_id")
+    id_match = (
+        CANONICAL_REQUIREMENT_RELATION_ID.fullmatch(artifact_id)
+        if isinstance(artifact_id, str)
+        else None
+    )
+    if path_match is None or id_match is None:
+        return None
+    if path_match.group("number") != id_match.group("number"):
+        return None
+    return f"prd-{id_match.group('number')}"
+
+
+def _legacy_requirement_reference_permitted(
+    referencing_record: Record, artifact_id: str
+) -> bool:
+    """Limit legacy Requirement aliases to immutable Stage 98 evidence."""
+
+    if LEGACY_REQUIREMENT_RELATION_ID.fullmatch(artifact_id) is None:
+        return True
+    return (
+        referencing_record.path.as_posix().startswith("docs/98.archive/")
+        and referencing_record.artifact_type in {"archive", "migration", "tombstone"}
+        and referencing_record.metadata.get("status")
+        in {"archived", "completed", "superseded"}
+    )
 
 
 def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
@@ -1239,6 +1285,9 @@ def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
         alias = _legacy_spec_relation_alias(record)
         if alias is not None:
             relation_candidates[alias].append(record)
+        requirement_alias = _legacy_requirement_relation_alias(record)
+        if requirement_alias is not None:
+            relation_candidates[requirement_alias].append(record)
 
     relation_records_by_id: dict[str, Record] = {}
     relation_conflicts: dict[str, tuple[pathlib.Path, ...]] = {}
@@ -1741,19 +1790,37 @@ def _typed_target_types(profiles: dict[str, object]) -> set[str]:
     }
 
 
-def _relation_record(manifest: Manifest, artifact_id: str) -> Record | None:
+def _relation_record(
+    manifest: Manifest,
+    artifact_id: str,
+    referencing_record: Record | None = None,
+) -> Record | None:
     """Resolve exact IDs or one-way legacy Spec aliases for relations only."""
 
+    if referencing_record is not None and not _legacy_requirement_reference_permitted(
+        referencing_record, artifact_id
+    ):
+        return None
     if artifact_id in manifest.relation_conflicts:
         return None
     return manifest.relation_records_by_id.get(artifact_id)
 
 
-def _relation_reference_exists(manifest: Manifest, artifact_id: str) -> bool:
+def _relation_reference_exists(
+    manifest: Manifest,
+    artifact_id: str,
+    referencing_record: Record | None = None,
+) -> bool:
     """Return whether an exact or unique transition relation is resolvable."""
 
     return (
-        artifact_id not in manifest.relation_conflicts
+        (
+            referencing_record is None
+            or _legacy_requirement_reference_permitted(
+                referencing_record, artifact_id
+            )
+        )
+        and artifact_id not in manifest.relation_conflicts
         and (
             artifact_id in manifest.relation_records_by_id
             or artifact_id in manifest
@@ -1769,6 +1836,9 @@ def _relation_ids_for_record(record: Record) -> frozenset[str]:
     alias = _legacy_spec_relation_alias(record)
     if alias is not None:
         relation_ids.add(alias)
+    requirement_alias = _legacy_requirement_relation_alias(record)
+    if requirement_alias is not None:
+        relation_ids.add(requirement_alias)
     return frozenset(relation_ids)
 
 
@@ -1777,20 +1847,23 @@ def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest)
     if not relation_ids:
         return False
     pending = list(parent_ids)
+    referrers = [record for _ in parent_ids]
     visited: set[str] = set()
     while pending:
         candidate = pending.pop()
+        referrer = referrers.pop()
         if candidate in relation_ids:
             return True
         if candidate in visited:
             continue
         visited.add(candidate)
-        parent_record = _relation_record(manifest, candidate)
+        parent_record = _relation_record(manifest, candidate, referrer)
         if parent_record is None:
             continue
         nested = _string_list(parent_record.metadata.get("parent_ids"))
         if nested:
             pending.extend(nested)
+            referrers.extend(parent_record for _ in nested)
     return False
 
 
@@ -2675,6 +2748,12 @@ def validate_record(
         if isinstance(registry, DocumentRegistry)
         else None
     )
+    uses_legacy_parent_contract = record.artifact_type == "archive" or (
+        isinstance(registry, DocumentRegistry)
+        and registry_classification is None
+        and isinstance(legacy_map, Mapping)
+        and isinstance(legacy_map.get(record.artifact_type), dict)
+    )
     if record.artifact_type == "readme" and registry_classification != "readme":
         try:
             readme_profile_name = classify_readme_profile(record.path, profiles)
@@ -2930,7 +3009,7 @@ def validate_record(
             if parent_id in relation_ids:
                 findings.append(_finding(record, "self-parent", f"artifact references itself as parent: {parent_id}"))
                 continue
-            parent_record = _relation_record(typed_manifest, parent_id)
+            parent_record = _relation_record(typed_manifest, parent_id, record)
             if parent_id in typed_manifest.relation_conflicts:
                 findings.append(
                     _finding(
@@ -2939,9 +3018,17 @@ def validate_record(
                         f"parent relation resolves to multiple exact or legacy Spec records: {parent_id}",
                     )
                 )
-            elif not _relation_reference_exists(typed_manifest, parent_id):
+            elif not _relation_reference_exists(typed_manifest, parent_id, record):
                 findings.append(_finding(record, "unresolved-parent", f"parent artifact_id is unresolved: {parent_id}"))
-            elif parent_record and allowed_parent_types and parent_record.artifact_type not in allowed_parent_types:
+            elif parent_record and allowed_parent_types:
+                parent_type = parent_record.artifact_type
+                if (
+                    uses_legacy_parent_contract
+                    and parent_type == "requirements-package"
+                ):
+                    parent_type = "prd"
+                if parent_type in allowed_parent_types:
+                    continue
                 findings.append(
                     _finding(
                         record,
@@ -2962,7 +3049,8 @@ def validate_record(
                 parent_type: index for index, parent_type in enumerate(parent_type_order)
             }
             resolved_parents = [
-                _relation_record(typed_manifest, parent_id) for parent_id in parent_ids
+                _relation_record(typed_manifest, parent_id, record)
+                for parent_id in parent_ids
             ]
             if all(
                 parent_record is not None and parent_record.artifact_type in type_precedence
@@ -2972,7 +3060,9 @@ def validate_record(
                     parent_ids,
                     key=lambda parent_id: (
                         type_precedence[
-                            _relation_record(typed_manifest, parent_id).artifact_type  # type: ignore[union-attr]
+                            _relation_record(
+                                typed_manifest, parent_id, record
+                            ).artifact_type  # type: ignore[union-attr]
                         ],
                         parent_id,
                     ),
@@ -3006,12 +3096,16 @@ def validate_record(
                             f"supersedes relation resolves to multiple exact or legacy Spec records: {replaced_id}",
                         )
                     )
-                elif not _relation_reference_exists(typed_manifest, replaced_id):
+                elif not _relation_reference_exists(
+                    typed_manifest, replaced_id, record
+                ):
                     findings.append(
                         _finding(record, "unresolved-supersedes", f"superseded artifact_id is unresolved: {replaced_id}")
                     )
                 else:
-                    replaced_record = _relation_record(typed_manifest, replaced_id)
+                    replaced_record = _relation_record(
+                        typed_manifest, replaced_id, record
+                    )
                     if replaced_record and replaced_record.metadata.get("status") != "superseded":
                         findings.append(
                             _finding(
@@ -3031,7 +3125,9 @@ def validate_record(
                 if (
                     replaced_id not in candidate_relation_ids
                     and replaced_id not in typed_manifest.relation_conflicts
-                    and _relation_reference_exists(typed_manifest, replaced_id)
+                    and _relation_reference_exists(
+                        typed_manifest, replaced_id, candidate
+                    )
                 ):
                     replacement_ids.add(replaced_id)
         relation_ids = _relation_ids_for_record(record)
@@ -5223,7 +5319,23 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     tracked_markdown = _tracked_repository_markdown(root)
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
 
-    for path in tracked_markdown:
+    if registry_native:
+        active_registry = profiles.get("_registry")
+        assert isinstance(active_registry, DocumentRegistry)
+        requirement_root = root / "docs/01.requirements"
+        if requirement_root.exists() or requirement_root.is_symlink():
+            try:
+                load_requirement_packages(requirement_root, registry=active_registry)
+            except RequirementPackageError as error:
+                findings.append(
+                    Finding(
+                        "docs/01.requirements",
+                        "requirement-package-invalid",
+                        str(error),
+                    )
+                )
+
+    for path in (() if registry_native else tracked_markdown):
         if not any(
             pattern.fullmatch(path.as_posix())
             for pattern, _, _, _ in _REQUIREMENT_INTERNAL_CONTRACTS
@@ -6467,17 +6579,72 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.history_scope == "full" and args.mode != "check-contracts":
         parser.error("--history-scope full requires --mode check-contracts")
     root = args.root.resolve()
+    base = BaseSelection("not-applicable", None, None)
+    contract_base = BaseSelection("not-applicable", None, None)
     registry = None
     try:
+        if args.mode == "check-changed":
+            _require_git_worktree(root)
+            base = resolve_base_selection(root, args.base_ref)
+        elif args.mode == "check-contracts":
+            _require_git_worktree(root)
+            contract_base = resolve_base_selection(root, args.base_ref)
         if args.profiles.suffix.lower() == ".json":
-            registry = load_registry(args.profiles)
+            trusted_requirement_baseline = None
+            canonical_registry_path = root / "docs/99.templates/registry.json"
+            try:
+                profile_status = args.profiles.lstat()
+            except OSError as error:
+                raise RegistryError(f"cannot stat registry input: {error}") from error
+            if stat.S_ISLNK(profile_status.st_mode) or not stat.S_ISREG(
+                profile_status.st_mode
+            ):
+                raise RegistryError(
+                    "registry input must be a regular non-symlink file"
+                )
+            allocation_transition_mode = (
+                args.mode in {"check-changed", "check-contracts"}
+                and args.profiles.resolve(strict=False)
+                == canonical_registry_path.resolve(strict=False)
+            )
+            if allocation_transition_mode:
+                selected_base = base if args.mode == "check-changed" else contract_base
+                revision = (
+                    selected_base.merge_base
+                    if args.base_ref is not None
+                    else _verified_commit(root, "HEAD")
+                )
+                if revision is None:
+                    raise ProfileError(
+                        "Requirement allocation transition requires a trusted base commit"
+                    )
+                trusted_requirement_baseline = (
+                    load_trusted_requirement_allocation_baseline(
+                        revision, root=root
+                    )
+                )
+            registry = load_registry(
+                args.profiles,
+                trusted_requirement_baseline=trusted_requirement_baseline,
+                allow_requirement_allocation_transition=allocation_transition_mode,
+            )
             profiles = build_registry_transition_profiles(
                 registry,
                 load_profiles(LEGACY_TRANSITION_PROFILES),
             )
+            requirement_root = root / "docs/01.requirements"
+            if allocation_transition_mode and (
+                requirement_root.exists() or requirement_root.is_symlink()
+            ):
+                load_requirement_packages(
+                    requirement_root,
+                    registry=registry,
+                    trusted_requirement_baseline=trusted_requirement_baseline,
+                    allow_requirement_allocation_transition=True,
+                )
         else:
             profiles = load_profiles(args.profiles.resolve())
-    except (ProfileError, RegistryError) as error:
+    except (ProfileError, RegistryError, RequirementPackageError) as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     if args.mode == "check-contracts" and args.profiles.suffix.lower() == ".json":
@@ -6672,13 +6839,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"{finding.code}: {finding.path}: {finding.message}")
         print(f"metadata repository contracts: violations={len(contract_findings)}")
         return 1 if contract_findings else 0
-    base = BaseSelection("not-applicable", None, None)
     transition_overrides: dict[tuple[str, str, str], TransitionOverride] = {}
     changed_selection: set[str] = set()
     if args.mode == "check-changed":
         try:
-            _require_git_worktree(root)
-            base = resolve_base_selection(root, args.base_ref)
             if args.transition_override_file:
                 transition_overrides = load_transition_overrides(
                     args.transition_override_file.resolve(),

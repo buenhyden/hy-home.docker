@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0015
-artifact_type: prd
+artifact_id: REQ-0015
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/03-security` Vault 계층의 최적화/하드닝 요구사항을 정의한다. 즉시 적용 가능한 구성 하드닝과 검증 자동화를 구현하고, auto-unseal 및 원격 audit 적재는 운영 정책/전환 절차로 설계 고정한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 `03-security`를 플랫폼의 신뢰 가능한 비밀 관리 계층으로 유지하면서, 운영 회귀를 CI에서 사전 차단하고 단계적 HA 확장(raft 3-node + auto-unseal) 준비 상태를 확보한다.
 
@@ -35,23 +36,30 @@ updated: 2026-08-13
 - **STORY-02**: 개발자는 `secret/data/hy-home/...` 경로 계약에 맞춰 템플릿 렌더 결과를 서비스에 연결한다.
 - **STORY-03**: 장애 대응자는 runbook 절차로 seal/unseal, raft 상태, agent 렌더 실패를 복구한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0015-R0001**: Vault Agent 템플릿은 placeholder 경로를 금지하고 서비스별 정규 경로(`secret/data/hy-home/...`)를 사용해야 한다.
-- **PRD-0015-R0002**: `vault-agent`는 PID 기반 프로세스 헬스체크를 제공해야 한다.
-- **PRD-0015-R0003**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
-- **PRD-0015-R0004**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`infrastructure-hardening`)를 제공해야 한다.
-- **PRD-0015-R0005**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
+- **REQ-0015-FR-0001**: Vault Agent 템플릿은 placeholder 경로를 금지하고 서비스별 정규 경로(`secret/data/hy-home/...`)를 사용해야 한다.
+- **REQ-0015-FR-0002**: `vault-agent`는 PID 기반 프로세스 헬스체크를 제공해야 한다.
+- **REQ-0015-FR-0003**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
+- **REQ-0015-FR-0004**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`infrastructure-hardening`)를 제공해야 한다.
+- **REQ-0015-FR-0005**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0015-AC0001**: `bash scripts/hardening/check-all-hardening.sh 03-security`가 로컬/CI에서 성공한다.
-- **PRD-0015-AC0002**: `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 성공한다.
-- **PRD-0015-AC0003**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
-- **PRD-0015-AC0004**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
-- **PRD-0015-AC0005**: Stage 01~05 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0015-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 03-security`가 로컬/CI에서 성공한다.
+- **REQ-0015-FR-0002**: `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 성공한다.
+- **REQ-0015-FR-0003**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
+- **REQ-0015-FR-0004**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
+- **REQ-0015-FR-0005**: Stage 01~05 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
+
+## Constraints
 
 - **In Scope**:
   - `infra/03-security/vault/*` 구성 하드닝
@@ -65,7 +73,7 @@ updated: 2026-08-13
   - Vault API 기능 확장
   - 애플리케이션 비즈니스 로직 변경
 
-## Risks and Dependencies
+## Risks
 
 - Vault는 단일 노드 raft 기준으로 운영 중이며, HA 확장은 단계적 전환 전제다.
 - 템플릿 경로 변경 시 Vault 내부 시크릿 데이터가 사전 준비되어야 한다.
@@ -78,7 +86,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: 운영 전환(auto-unseal/원격 audit)은 운영 승인 후 진행.
 - **Evaluation Expectation**: security/auth/doc/template baseline 스크립트 통과.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../03.specs/spec-0003-security/spec.md)

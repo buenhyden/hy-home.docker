@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0023
 artifact_type: architecture-description
 parent_ids:
-  - prd-0020
+  - REQ-0020
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -115,7 +115,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0020-ai-optimization-hardening.md](../../01.requirements/prd-0020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md)

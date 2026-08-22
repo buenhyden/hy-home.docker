@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0025
 artifact_type: architecture-description
 parent_ids:
-  - prd-0022
+  - REQ-0022
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -102,7 +102,7 @@ This hardening Architecture Description does not introduce production data owner
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-0022-laboratory-optimization-hardening.md](../../01.requirements/prd-0022-laboratory-optimization-hardening.md)
+- **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0022-laboratory-optimization-hardening.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)

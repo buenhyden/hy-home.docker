@@ -1,18 +1,19 @@
 ---
+profile_id: requirements-package
 status: active
-artifact_id: prd-0016
-artifact_type: prd
+artifact_id: REQ-0016
+artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-08-13
 ---
 # 04-Data Optimization & Hardening Product Requirements
 
-## Overview
+## Problem and Goals
 
 이 문서는 `infra/04-data` 전 계층(analytics, cache-and-kv, lake-and-object, nosql, operational, relational, specialized)의 최적화/하드닝 요구사항을 정의한다. 즉시 적용 가능한 구성 하드닝을 우선 반영하고, 서비스별 확장 항목은 운영 정책과 단계별 전환 계획으로 관리한다.
 
-## Problem and Stakeholders
+## Stakeholders and User Needs
 
 `04-data`를 서비스별 장애 격리와 복구 가능성이 높은 상태로 유지하고, CI 게이트를 통해 구성 회귀를 사전에 차단하며, 카탈로그 기반 확장(HA/성능/운영성)을 안정적으로 추진한다.
 
@@ -35,23 +36,30 @@ updated: 2026-08-13
 - **STORY-02**: 엔지니어는 `supabase` 스택의 healthcheck 기반 의존 순서가 안정적으로 동작하는지 점검한다.
 - **STORY-03**: 장애 대응자는 runbook 절차로 Valkey exporter, SeaweedFS expose, Supabase health 문제를 빠르게 복구한다.
 
-## Requirements
+## Functional Requirements
 
-- **PRD-0016-R0001**: `supabase` 핵심 서비스(`studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `analytics`, `db`, `vector`, `supavisor`)에 healthcheck 계약을 적용해야 한다.
-- **PRD-0016-R0002**: `valkey-cluster-exporter`는 `service_valkey_password` 시크릿 계약을 사용해야 한다.
-- **PRD-0016-R0003**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
-- **PRD-0016-R0004**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
-- **PRD-0016-R0005**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
-- **PRD-0016-R0006**: Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
+- **REQ-0016-FR-0001**: `supabase` 핵심 서비스(`studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `analytics`, `db`, `vector`, `supavisor`)에 healthcheck 계약을 적용해야 한다.
+- **REQ-0016-FR-0002**: `valkey-cluster-exporter`는 `service_valkey_password` 시크릿 계약을 사용해야 한다.
+- **REQ-0016-FR-0003**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
+- **REQ-0016-FR-0004**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
+- **REQ-0016-FR-0005**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
+- **REQ-0016-FR-0006**: Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
 
-## Acceptance and Verification
+## Non-functional Requirements
 
-- **PRD-0016-AC0001**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.
-- **PRD-0016-AC0002**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`가 오류 없이 통과한다.
-- **PRD-0016-AC0003**: `valkey-cluster` exporter 시크릿 경로가 단일 계약으로 정합화된다.
-- **PRD-0016-AC0004**: 04-data Spec/Plan/Tasks/Guide/Ops/Runbook 문서가 상호 추적 링크를 포함한다.
+No separately numbered non-functional requirement was identified in the source package.
 
-## Scope and Non-goals
+## Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+## Acceptance Criteria
+
+- **REQ-0016-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.
+- **REQ-0016-FR-0002**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`가 오류 없이 통과한다.
+- **REQ-0016-FR-0003**: `valkey-cluster` exporter 시크릿 경로가 단일 계약으로 정합화된다.
+- **REQ-0016-FR-0004**: 04-data Spec/Plan/Tasks/Guide/Ops/Runbook 문서가 상호 추적 링크를 포함한다.
+
+## Constraints
 
 - **In Scope**:
   - `infra/04-data/operational/supabase/docker-compose.yml` healthcheck 보강
@@ -68,7 +76,7 @@ updated: 2026-08-13
   - 모든 카탈로그 확장 항목의 즉시 구현
   - 서비스 기능 변경
 
-## Risks and Dependencies
+## Risks
 
 - 일부 healthcheck는 프로세스 liveness 중심으로 시작하며, 서비스 레벨 readiness는 단계적으로 보강한다.
 - 04-data 카탈로그 확장 항목은 운영 승인/용량 계획/성능 검증이 필요하다.
@@ -81,7 +89,7 @@ updated: 2026-08-13
 - **Human-in-the-loop Requirement**: HA 확장, 보존 정책 변경, 운영 노출 정책 변경은 승인 후 수행.
 - **Evaluation Expectation**: `infrastructure-hardening`, `template-security-baseline`, `doc-traceability` 통과.
 
-## Related Documents
+## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../03.specs/spec-0004-data/spec.md)
