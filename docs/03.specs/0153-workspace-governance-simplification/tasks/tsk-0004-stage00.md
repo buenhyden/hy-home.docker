@@ -1,13 +1,14 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0004
 artifact_type: task
 parent_ids:
   - SPEC-0153
   - plan-0153
 created: 2026-08-21
-updated: 2026-08-21
+updated: 2026-08-22
+completed_at: 2026-08-22
 ---
 
 # Task 0004: Stage 00
@@ -38,8 +39,9 @@ Converge Stage 00 and provider surfaces on Claude and Codex while removing Gemin
 | Fix round 1 | Preserved the staged implementation digest and completed 14 review findings as unstaged fixes: strict typed provider/workflow records, confined descriptor-safe rendering, registry-native Stage 99 consumers and body contracts, provider-neutral hooks, historical correction, durable dirty/scratch safeguards, strong hook parity, fail-closed active scans, and the exact executable Migration verifier. Final amended focused selection: 53 tests in 9.185 seconds, PASS. |
 | Fix round 2 | Preserved the same staged digest and completed all eight follow-up findings as unstaged fixes: active Stage 01/02/05/pre-commit authority cleanup, identity-bound renderer cleanup, pre-write post-tool path confinement, Stage 01/02/03/05 active inventory, exact loop/layer/state typing, approval-policy body-envelope alignment, immutable provider/event commands, and layer-specific Migration negatives. Focused RED was 39 tests with 34 failures and one test-fixture error; corrected focused GREEN was 39 tests in 16.376 seconds. |
 | Fix round 3 | Replaced the remaining quarantine validation-to-unlink boundary with owner-only retained quarantine and fail-closed behavior, rejected multi-link formatter targets, and replaced the blanket Stage 03 package exemption with exact path plus document-digest evidence. Exact RED: 4 tests, 5 intended failures in 0.892 seconds. Exact GREEN: the same 4 tests in 0.855 seconds; amended modules pass 33 tests in 6.143 seconds. |
-| Final approval | Governance review and Python/security review both approved the complete round-3 packet at `C0/I0/M0`. The reviewed packet SHA is `10c7cd003d46a31900afc9071dab6471b730eb3c8ba4835da93af261f2edc8f3`; implementation remains uncommitted for the parent-owned logical commit. |
+| Final approval | Governance review and Python/security review both approved the complete round-3 packet at `C0/I0/M0`. The reviewed packet SHA is `10c7cd003d46a31900afc9071dab6471b730eb3c8ba4835da93af261f2edc8f3`; implementation was approved for the parent-owned logical commit. |
 | Post-review evidence stability | Replaced this mutable Task's whole-file token-evidence digest with three exact, single-use removal statements while retaining whole-file digests for immutable historical evidence. Focused RED was one intended failure in 0.364 seconds; focused GREEN was 1/1 in 0.394 seconds, and the three directly affected regressions passed in 1.464 seconds. |
+| Controlled closeout | The final controller gate passed 42/42 with governance repository/all failures 0, renderer 2/0, parity 13/4/8, and Migration 128/81/47/1,134. The parent then created the 386-path logical commit `6daa5e2a1713300ab0076da71ad02087da5ac126` (`refactor(governance): converge claude and codex authority`). |
 
 ### Delete-source disposition
 
@@ -89,6 +91,7 @@ Converge Stage 00 and provider surfaces on Claude and Codex while removing Gemin
 | Fix-round-3 bounded gates | Renderer, governance contract/repository/inventory, focused Ruff, `py_compile`, post-tool `bash -n`, `git diff --check` | PASS: drift 0; 14 roles, 23 skills, 2 providers; repository failures 0; active paths 703; static checks exit zero. |
 | Final approved local gate packet | Governance reviewer; Python exact-four and amended-module suites; renderer; governance; parity; Migration; one-file metadata; static checks | PASS: governance reviewer 41/41; Python exact 4/4 and amended modules 33/33; renderer `providers=2 drift=0`; governance failures 0; parity 13 dispatchers, 4 loops, 8 states; Migration 128 rows, 81 renames, 47 deletes, 1,134 edges; metadata selected 1 with 0 violations; Ruff, `py_compile`, bash syntax, and `git diff --check` all pass. |
 | Post-review mutable-evidence regression | Exact mutable-Task mutation test; affected Stage 03/current-repository tests; governance repository/all; focused static checks | PASS: evidence-only non-token edits remain clean; new active-authority text and altered allowed statements fail; 3/3 affected regressions pass; governance failures 0; Ruff, `py_compile`, and `git diff --check` pass. |
+| Controlled pre-commit and final controller gate | Controller-focused suite and Task 4 contract gates | PASS: 42/42; governance repository/all failures 0; renderer `providers=2 drift=0`; parity 13 dispatchers, 4 loops, 8 workflow states; Migration 128 rows, 81 renames, 47 deletes, 1,134 edges. |
 
 ## Review Evidence
 
@@ -96,12 +99,14 @@ Converge Stage 00 and provider surfaces on Claude and Codex while removing Gemin
 | :--- | :--- | :--- |
 | Independent governance review | APPROVED — `C0/I0/M0` | All 41 governance reviewer checks pass against round-3 packet SHA `10c7cd003d46a31900afc9071dab6471b730eb3c8ba4835da93af261f2edc8f3`; no Critical, Important, or Minor finding remains. |
 | Independent Python/security review | APPROVED — `C0/I0/M0` | The exact four round-3 regressions and all 33 amended-module tests pass; no Critical, Important, or Minor finding remains. |
+| Final governance evidence-stability review | APPROVED — `C0/I0/M0` | The 42/42 controller packet and governance repository/all result close the mutable-evidence regression with no remaining finding. |
+| Final Python/security evidence-stability review | APPROVED — `C0/I0/M0` | The exact single-use statement boundary remains fail closed for unmatched authority text; no Critical, Important, or Minor finding remains. |
 
 ## Commit Ledger
 
 | Commit | Description |
 | :--- | :--- |
-| Pending parent commit | Worker intentionally left the complete Task 4 change set uncommitted; the parent will review, stage the remaining task-owned projections/consumers, and create the logical Conventional Commit. |
+| `6daa5e2a1713300ab0076da71ad02087da5ac126` | `refactor(governance): converge claude and codex authority`; parent-owned logical Task 4 commit, 386 paths. |
 
 ## Rulings
 
@@ -110,7 +115,7 @@ Converge Stage 00 and provider surfaces on Claude and Codex while removing Gemin
 ## Deferred Items
 
 - The final fix-round repository gate reports 15 baseline or later-task sections: the frozen operations manifest retains deleted historical consumers, legacy metadata/path/archive and Stage 03/05 routing remain outside Task 4, registry-profile enforcement now exposes unregistered legacy generated documents, executable interface templates need later Stage 99 ownership work, and service guides remain absent pending the operations task.
-- `Script reference integrity` observes deleted files through the current index because native `git mv` staged the 81 renames and 47 registered deletes while two generated projection deletes remain unstaged. Re-running after the parent stages the complete Task 4 set is required; no Task 4 active source references the retired paths.
+- The pre-commit script-reference check observed the staged native moves and deletes before the complete Task 4 set was assembled. The controlled final gate is green, and no Task 4 active source references a retired path.
 - The broad metadata suite observed 254 tests in 117.721 seconds with 2 failures and 1 error before the last bounded legacy-fixture correction. That Task 4 fixture regression then passed in the focused 11-test selection; the remaining failure/error are Task 2/Task 5 taxonomy expectations, and no further broad rerun was started.
 - `check-script-manifest.py` remained silent for 4.5 minutes and was interrupted before the five-minute limit. Focused manifest registration is covered by the green CI-routing test; the silent whole-manifest audit remains baseline tooling debt.
 - Round 2 intentionally did not rerun the broad repository, broad metadata, or silent manifest gates. The round-1 repository result (`failures=15`) remains the bounded baseline/later-task debt statement; every Task 4-owned amended gate is green.
