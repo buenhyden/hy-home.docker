@@ -208,7 +208,7 @@ result.
 | Human routing                    | Create new pack `README.md`; modify `docs/90.references/research/README.md` and other active clickable consumers discovered by the stale-path inventory                |
 | Machine routing                  | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` and `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`                                 |
 | Retiring pack                    | Delete exactly the twenty files under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` after Task 11 gates pass                                 |
-| Final evidence                   | Modify the Task and `docs/00.agent-governance/memory/current.md`; update a durable memory note only when the memory contract selects one                               |
+| Final evidence                   | Modify the Task and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`; update a durable memory note only when the memory contract selects one                               |
 
 ## Goals and Non-goals
 
@@ -385,8 +385,8 @@ Run and preserve the exact derivations in the Task:
 git ls-files > /tmp/agentic-research-tracked-paths.txt
 find docs/00.agent-governance/scopes -maxdepth 1 -type f -name '*.md' \
   -printf '%f\n' | sort
-sed -n '1,220p' docs/00.agent-governance/rules/persona.md
-sed -n '1,220p' docs/00.agent-governance/contracts/agent-catalog.yaml
+sed -n '1,220p' docs/00.agent-governance/policies/persona.md
+sed -n '1,220p' docs/00.agent-governance/providers/registry.yaml
 find docs/03.specs -mindepth 1 -maxdepth 1 -type d | wc -l
 find docs/98.archive/03.specs -type f -name spec.md | wc -l
 ```
@@ -581,9 +581,9 @@ entitlement/runtime limits, evaluation needs, and coupled change surfaces.
 Read the local owners explicitly:
 
 ```bash
-sed -n '1,260p' docs/00.agent-governance/contracts/provider-models.yaml
-sed -n '1,260p' docs/00.agent-governance/contracts/agent-catalog.yaml
-sed -n '1,260p' docs/00.agent-governance/subagent-protocol.md
+sed -n '1,260p' docs/00.agent-governance/providers/registry.yaml
+sed -n '1,260p' docs/00.agent-governance/providers/registry.yaml
+sed -n '1,260p' docs/00.agent-governance/policies/agentic.md
 git ls-files .claude .codex .agents .gemini docs/00.agent-governance/memory | sort
 ```
 
@@ -656,7 +656,7 @@ find docs/01.product docs/02.design docs/03.specs docs/04.execution \
   docs/05.operations -type f -name '*.md' | sort
 find docs/98.archive -type f -name '*.md' | sort
 find docs/99.templates -type f -name '*.md' | sort
-sed -n '1,280p' docs/00.agent-governance/rules/documentation-protocol.md
+sed -n '1,280p' docs/00.agent-governance/policies/documentation-protocol.md
 sed -n '1,260p' docs/99.templates/support/template-selection.md
 sed -n '1,260p' docs/99.templates/support/lifecycle-status.md
 ```
@@ -923,8 +923,8 @@ directly. Do not regenerate the known-invalid artifact.
 ```bash
 bash scripts/validation/generate-security-automation-readiness.sh --check
 bash scripts/validation/generate-security-automation-readiness.sh --dry-run
-sed -n '1,220p' docs/00.agent-governance/scopes/infra.md
-sed -n '1,220p' docs/00.agent-governance/scopes/security.md
+sed -n '1,220p' docs/00.agent-governance/roles/infra.md
+sed -n '1,220p' docs/00.agent-governance/roles/security.md
 ```
 
 The expected readiness check is FAIL for the known semantic predecessor. Task
@@ -4940,7 +4940,7 @@ checks before Task 12.
 **Files:**
 
 - Modify: execution Task
-- Modify: `docs/00.agent-governance/memory/current.md`
+- Modify: `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
 
 **Interfaces:**
 
@@ -4976,7 +4976,7 @@ action; do not copy command output.
 
 ```bash
 git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
-  docs/00.agent-governance/memory/current.md
+  docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
 git commit -m "docs(task): prepare agentic research rebuild closure"
 ```
 
@@ -5002,7 +5002,7 @@ and current memory to `completed`, and commit:
 
 ```bash
 git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
-  docs/00.agent-governance/memory/current.md
+  docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
 git commit -m "docs(task): close agentic research pack rebuild"
 ```
 
@@ -5205,6 +5205,6 @@ pack are forbidden.
 - [New canonical pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Reference template](../../99.templates/templates/common/reference.template.md)
 - [Task template](../../99.templates/templates/sdlc/task.template.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)

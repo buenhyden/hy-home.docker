@@ -61,17 +61,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         description="Validate typed Stage 00 agent-governance contracts."
     )
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
-    parser.add_argument("--mode", choices=("contract", "repository"), required=True)
+    parser.add_argument(
+        "--mode", choices=("contract", "repository"), default="repository"
+    )
     parser.add_argument(
         "--section",
         choices=("catalog", "providers", "harness", "all"),
-        help="Required only for repository mode.",
+        default="all",
+        help="Repository section; defaults to all.",
     )
     args = parser.parse_args(argv)
-    if args.mode == "contract" and args.section is not None:
+    if args.mode == "contract" and args.section != "all":
         parser.error("--section requires --mode repository")
-    if args.mode == "repository" and args.section is None:
-        parser.error("--mode repository requires --section")
     return args
 
 
@@ -101,8 +102,8 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         "agent_governance_contract: PASS "
-        f"contracts=3 agents={len(bundle.catalog['agents'])} "
-        f"functions={len(bundle.catalog['functions'])} "
+        f"roles={len(bundle.catalog['agents'])} "
+        f"skills={len(bundle.catalog['functions'])} "
         f"providers={len(bundle.providers['providers'])} failures=0"
     )
     return 0

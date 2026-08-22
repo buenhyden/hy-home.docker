@@ -57,4 +57,4 @@ canonical catalog다. Incident와 Release event record는 이 catalog에 속하�
 - [Incidents](../incidents/README.md)
 - [Releases](../releases/README.md)
 - [Operations templates](../../99.templates/templates/operations/README.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

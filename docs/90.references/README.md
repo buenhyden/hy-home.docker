@@ -240,5 +240,5 @@ Reference docs do not gate or block any other stage. They are supplementary, not
 - [glossary references](./data/glossary/README.md)
 - [reference template](../99.templates/templates/common/reference.template.md)
 - [README template](../99.templates/templates/common/readme.template.md)
-- [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
+- [documentation protocol](../00.agent-governance/policies/documentation-protocol.md)
+- [stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)

@@ -813,8 +813,8 @@ class TargetReadmeProfileTests(unittest.TestCase):
         self,
     ) -> None:
         canonical_targets = (
-            "docs/00.agent-governance/rules/agentic.md",
-            "docs/00.agent-governance/rules/documentation-protocol.md",
+            "docs/00.agent-governance/policies/agentic.md",
+            "docs/00.agent-governance/policies/documentation-protocol.md",
         )
         for relative in SHARED_AGENT_POLICY_READMES:
             with self.subTest(path=relative):

@@ -50,7 +50,7 @@ README-specific profile selection is owned separately by
 ## Source and Evidence Discipline
 
 - Apply the
-  [repository confidentiality boundary](../../00.agent-governance/rules/approval-boundaries.md)
+  [repository confidentiality boundary](../../00.agent-governance/policies/approval-boundaries.md)
   to Reference, Audit, generated output, and Repo-support artifacts: do not
   include secret values, credentials or tokens, private keys, shell history,
   or raw secret-bearing logs; retain only redacted evidence appropriate to the

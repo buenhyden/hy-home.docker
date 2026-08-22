@@ -74,9 +74,9 @@ must not be backdated into that catalog.
 - **Overlapping Audit Pack**:
   [../../90.references/audits/ref-0033-readme.md](../../90.references/audits/ref-0033-readme.md)
 - **Stage Authoring Matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - **Documentation Protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md)
 
 ## Contracts
 
@@ -318,7 +318,7 @@ escalated rather than overwritten.
 - Stage 04 task evidence records source checks, inventory counts, commands,
   wrapper results, protected surfaces, commits, review outcomes, and
   deviations.
-- `docs/00.agent-governance/memory/progress.md` records material milestones and
+- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` records material milestones and
   durable pointers, not raw transcripts.
 - Generated inventories are reproducible snapshots with freshness checks.
 - Graphify output is navigation-only when stale or advisory; tracked source
@@ -491,8 +491,8 @@ Specs 124-127 and their plans stay `draft` pending separate approval.
 - [Overlapping implementation audit pack](../../90.references/audits/ref-0033-readme.md)
 - [Research category](../../90.references/research/README.md)
 - [Audit category](../../90.references/audits/README.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)

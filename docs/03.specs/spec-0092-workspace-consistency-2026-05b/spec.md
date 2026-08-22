@@ -19,8 +19,8 @@ This document is the technical specification for follow-up work after PR #89 (`w
 
 **Scope:**
 
-- `docs/00.agent-governance/rules/documentation-protocol.md`: add R4 (Operations Profile Compliance) and R5 (Frontmatter Status) rules.
-- `docs/00.agent-governance/rules/github-governance.md`: add CI/CD job taxonomy section (Section 8).
+- `docs/00.agent-governance/policies/documentation-protocol.md`: add R4 (Operations Profile Compliance) and R5 (Frontmatter Status) rules.
+- `docs/00.agent-governance/policies/github-governance.md`: add CI/CD job taxonomy section (Section 8).
 - `scripts/validation/check-repo-contracts.sh`: add `## Common Checks` and `## Runbook Handoff` section requirements to guide profile checks.
 - `docs/99.templates/README.md`: add guide.template.md and runbook.template.md to the list and add a design note for link conventions.
 - `docs/99.templates/templates/spec-contracts/agent-design.template.md`: replace example filenames with directory links.
@@ -134,10 +134,10 @@ This document is the technical specification for follow-up work after PR #89 (`w
 cd /home/hy/projects/hy-home.docker
 
 # Confirm R4/R5 rules exist
-grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md
+grep -c "R4\|R5" docs/00.agent-governance/policies/documentation-protocol.md
 
 # Confirm CI/CD taxonomy section exists
-grep -c "CI/CD" docs/00.agent-governance/rules/github-governance.md
+grep -c "CI/CD" docs/00.agent-governance/policies/github-governance.md
 
 # Confirm guide profile check strengthening
 grep "Common Checks" scripts/validation/check-repo-contracts.sh

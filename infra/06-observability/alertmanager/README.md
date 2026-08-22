@@ -39,7 +39,7 @@ alertmanager/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. **Understand Routing**: Review `config/config.yml` to understand how alerts are grouped, inhibited, silenced, and dispatched.
 2. **Configuration Updates**: Edit `config/config.yml`; Compose mounts it as `/etc/alertmanager/config.yml.template` and renders secrets into `/tmp/config.yml` at startup.

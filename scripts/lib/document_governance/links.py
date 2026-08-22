@@ -45,7 +45,7 @@ _ROOT_FILES = frozenset(
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
-        "GEMINI.md",
+        "AGENTS.md",
         "RTK.md",
         "docker-compose.yml",
         "llms.txt",

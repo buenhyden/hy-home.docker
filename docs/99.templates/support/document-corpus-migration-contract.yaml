@@ -342,11 +342,11 @@ waves:
     manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
     scope_state: approved
     source_paths:
-      - docs/00.agent-governance/memory/progress.md
-      - docs/00.agent-governance/rules/documentation-protocol.md
-      - docs/00.agent-governance/rules/github-governance.md
-      - docs/00.agent-governance/rules/stage-authoring-matrix.md
-      - docs/00.agent-governance/rules/task-checklists.md
+      - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+      - docs/00.agent-governance/policies/documentation-protocol.md
+      - docs/00.agent-governance/policies/github-governance.md
+      - docs/00.agent-governance/policies/stage-authoring-matrix.md
+      - docs/00.agent-governance/policies/task-checklists.md
       - docs/03.specs/README.md
       - docs/04.execution/README.md
       - docs/04.execution/plans/README.md
@@ -404,10 +404,10 @@ waves:
       - .env.example
       - .pre-commit-config.yaml
       - .prettierignore
-      - docs/00.agent-governance/memory/progress.md
-      - docs/00.agent-governance/rules/documentation-protocol.md
-      - docs/00.agent-governance/rules/stage-authoring-matrix.md
-      - docs/00.agent-governance/rules/task-checklists.md
+      - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+      - docs/00.agent-governance/policies/documentation-protocol.md
+      - docs/00.agent-governance/policies/stage-authoring-matrix.md
+      - docs/00.agent-governance/policies/task-checklists.md
       - docs/01.requirements/005-data-analytics.md
       - docs/02.architecture/decisions/0015-analytics-engine-selection.md
       - docs/02.architecture/requirements/0012-data-analytics-architecture.md

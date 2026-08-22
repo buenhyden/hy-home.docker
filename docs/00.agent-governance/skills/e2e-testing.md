@@ -1,0 +1,44 @@
+---
+profile_id: governance-skill
+layer: agentic
+function_id: e2e-testing
+scope: qa
+status: active
+owner_agent: qa-engineer
+---
+
+# e2e-testing
+
+## Preconditions
+
+Acceptance criteria, runnable boundary, deterministic fixture strategy, and runtime authority must be approved.
+
+## Inputs
+
+- Acceptance criteria and runnable system boundary.
+- Test data, environment assumptions, health endpoints, and cleanup requirements.
+
+## Procedure
+
+1. Convert each user-visible acceptance criterion into an observable scenario with controlled setup and teardown.
+2. Execute through public interfaces, capture only sanitized evidence, and distinguish product failures from environment failures.
+3. Re-run the failing scenario to prove reproducibility, then run the focused suite after correction.
+
+## Outputs
+
+- End-to-end evidence with scenario, expected/actual result, and reproduction details.
+
+## Gates
+
+- Fixtures and timing are deterministic enough for repeat execution.
+- Every reported defect includes a reproducible failure path.
+
+## Failure Handling
+
+Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
+
+## Related Documents
+
+- [QA engineer](../roles/qa-engineer.md)
+- [Test automation](test-automator.md)
+- [QA scope](../roles/qa.md)

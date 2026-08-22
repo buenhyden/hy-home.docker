@@ -22,7 +22,7 @@ assigned to one canonical owner before edits begin.
 ## Repository Role
 
 This document supports audit and validation workflows. It does not replace
-`docs/00.agent-governance/rules/documentation-protocol.md`, create policy, or
+`docs/00.agent-governance/policies/documentation-protocol.md`, create policy, or
 authorize changes to runtime, remote, credential, secret, or provider surfaces.
 
 ## Scope
@@ -77,7 +77,7 @@ bash scripts/validation/recommend-gap-routing.sh --list
 ```
 
 The script parses the Stage 00 routing table from
-`docs/00.agent-governance/rules/documentation-protocol.md` and applies simple
+`docs/00.agent-governance/policies/documentation-protocol.md` and applies simple
 path-prefix and keyword heuristics. Low-confidence output means the gap should
 be recorded as a Stage 04 task or audit gap before editing.
 
@@ -90,8 +90,8 @@ be recorded as a Stage 04 task or audit gap before editing.
 
 ## Sources
 
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - canonical gap-to-stage routing table.
-- [Task checklists](../../../00.agent-governance/rules/task-checklists.md) - pre-task and gap routing checklist.
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - canonical gap-to-stage routing table.
+- [Task checklists](../../../00.agent-governance/policies/task-checklists.md) - pre-task and gap routing checklist.
 - [Gap routing recommender](../../../../scripts/validation/recommend-gap-routing.sh) - local advisory classifier.
 - [Automation candidates](../../audits/ref-0021-automation-candidates.md) - `AEA-AUTO-004` implementation context.
 
@@ -106,5 +106,5 @@ be recorded as a Stage 04 task or audit gap before editing.
 
 - [governance data index](README.md)
 - [reference data index](../README.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 - [automation candidates](../../audits/ref-0021-automation-candidates.md)

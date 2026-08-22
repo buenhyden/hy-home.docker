@@ -28,7 +28,6 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             ".agents/agent.md": "agent\n",
             ".claude/agent.md": "claude\n",
             ".codex/config.toml": "codex\n",
-            ".gemini/agent.md": "gemini\n",
             ".github/workflow.yml": "workflow\n",
             "README.md": "root\n",
             "docs/04.execution/plan.md": "plan\n",
@@ -120,7 +119,6 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             self.assertNotIn("scripts/tool.py", selected)
             self.assertIn("scripts/knowledge/generate-llm-wiki.py", selected)
             self.assertNotIn(".agents/agent.md", selected)
-            self.assertNotIn(".gemini/agent.md", selected)
             self.assertEqual("Runtime surfaces", selected[".claude/agent.md"])
             self.assertEqual("Runtime surfaces", selected[".codex/config.toml"])
             self.assertEqual("Active stage docs", selected["docs/04.execution/plan.md"])

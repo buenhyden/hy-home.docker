@@ -29,7 +29,7 @@ but its effective authority flows in both directions:
 - Codex TOML adapters omit current native required fields such as
   `description` and `developer_instructions`;
 - `.agents/` is described partly as Gemini runtime support even though current
-  Gemini CLI uses `.gemini/agents/*.md` and `.gemini/settings.json`;
+  Gemini CLI uses `.gemini/agents/*.md` and `docs/00.agent-governance/providers/registry.yaml`;
 - provider-neutral agent entries and rich provider prompts do not preserve the
   same role semantics;
 - several Stage 00 ownership rules overlap or conflict;
@@ -291,7 +291,7 @@ capability documentation does not retroactively prove historical model state.
 
 #### Gemini
 
-- Add project-native `.gemini/agents/*.md` and `.gemini/settings.json`.
+- Add project-native `.gemini/agents/*.md` and `docs/00.agent-governance/providers/registry.yaml`.
 - Add thin project hook wrappers only where needed to dispatch to shared logic.
 - Apply role-specific tools, MCP boundaries, turns, timeouts, and recursion
   protection.
@@ -538,5 +538,5 @@ permanent provider guarantees.
 - Parent audit harness specification
 - [Canonical Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
-- [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Provider capability matrix](../../00.agent-governance/policies/provider-capability-matrix.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)

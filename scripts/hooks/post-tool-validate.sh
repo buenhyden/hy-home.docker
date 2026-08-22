@@ -37,13 +37,8 @@ esac
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
 cd "$PROJECT_DIR"
 
-if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
-  # shellcheck source=../operations/use-qa-ci-tools.sh
-  source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
-fi
-
 INPUT="$(cat || true)"
-mapfile -t CHANGED_PATHS < <(
+mapfile -d '' -t CHANGED_PATHS < <(
   printf '%s' "$INPUT" | python3 -c '
 import json
 import re
@@ -90,12 +85,75 @@ seen = set()
 for path in paths:
     if path not in seen:
         seen.add(path)
-        print(path)
+        sys.stdout.buffer.write(path.encode("utf-8") + b"\0")
 '
 )
 
 if [[ "${#CHANGED_PATHS[@]}" -eq 0 ]]; then
   exit 0
+fi
+
+python3 - "$PROJECT_DIR" "${CHANGED_PATHS[@]}" <<'PY'
+from __future__ import annotations
+
+import os
+import pathlib
+import stat
+import sys
+
+
+def fail(value: str, reason: str) -> None:
+    raise SystemExit(f"ERROR: unsafe changed path {value!r}: {reason}")
+
+
+root_input = pathlib.Path(sys.argv[1])
+try:
+    root = root_input.resolve(strict=True)
+    root_metadata = root_input.lstat()
+except OSError as error:
+    raise SystemExit(f"ERROR: unsafe project root: {error}") from error
+if root_input.absolute() != root or not stat.S_ISDIR(root_metadata.st_mode):
+    raise SystemExit("ERROR: project root must be a canonical physical directory")
+
+for value in sys.argv[2:]:
+    if not value or any(ord(character) < 32 or ord(character) == 127 for character in value):
+        fail(value, "empty or control-character path")
+    if "\\" in value:
+        fail(value, "backslash path is noncanonical")
+    candidate = pathlib.PurePosixPath(value)
+    if candidate.is_absolute():
+        fail(value, "absolute paths are unsupported")
+    if candidate.as_posix() != value or any(part in {"", ".", ".."} for part in candidate.parts):
+        fail(value, "path is noncanonical or traverses a parent")
+    target = root.joinpath(*candidate.parts)
+    try:
+        if os.path.commonpath((str(root), str(target))) != str(root):
+            fail(value, "path escapes the repository")
+    except ValueError:
+        fail(value, "path escapes the repository")
+    current = root
+    for index, part in enumerate(candidate.parts):
+        current = current / part
+        try:
+            metadata = current.lstat()
+        except FileNotFoundError:
+            break
+        except OSError as error:
+            fail(value, f"path cannot be inspected: {error}")
+        if stat.S_ISLNK(metadata.st_mode):
+            fail(value, "symlink components are unsupported")
+        final = index == len(candidate.parts) - 1
+        if not final and not stat.S_ISDIR(metadata.st_mode):
+            fail(value, "parent component is not a directory")
+        if final and not stat.S_ISREG(metadata.st_mode):
+            fail(value, "changed target is not a regular file")
+        if final and metadata.st_nlink != 1:
+            fail(value, "changed target must have exactly one hard link")
+PY
+
+if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
+  # shellcheck source=../operations/use-qa-ci-tools.sh
+  source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
 fi
 
 EXISTING_CHANGED_FILES=()
@@ -137,6 +195,7 @@ PY
 run_compose=0
 run_governance=0
 run_json=0
+run_provider_registry=0
 run_bash=0
 run_style=0
 
@@ -167,18 +226,24 @@ for path in "${CHANGED_PATHS[@]}"; do
   esac
 
   case "$rel" in
-  AGENTS.md | CLAUDE.md | GEMINI.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .gemini/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
+  AGENTS.md | CLAUDE.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
     run_governance=1
     ;;
   esac
 
   case "$rel" in
-  .claude/settings.json | .codex/hooks.json | .gemini/settings.json | infra/tech-stack.versions.json)
+  .claude/settings.json | .codex/hooks.json | infra/tech-stack.versions.json)
     run_json=1
     ;;
   esac
 
-  if [[ "$rel" =~ ^(\.claude/hooks|\.gemini/hooks|scripts)/.*\.sh$ ]]; then
+  case "$rel" in
+  docs/00.agent-governance/providers/registry.yaml)
+    run_provider_registry=1
+    ;;
+  esac
+
+  if [[ "$rel" =~ ^(\.claude/hooks|scripts)/.*\.sh$ ]]; then
     run_bash=1
     if [[ -f "$rel" ]]; then
       SHELL_STYLE_FILES+=("$rel")
@@ -209,13 +274,16 @@ fi
 if [[ "$run_json" -eq 1 ]]; then
   python3 -m json.tool .claude/settings.json >/dev/null
   python3 -m json.tool .codex/hooks.json >/dev/null
-  python3 -m json.tool .gemini/settings.json >/dev/null
   python3 -m json.tool infra/tech-stack.versions.json >/dev/null
+fi
+
+if [[ "$run_provider_registry" -eq 1 ]]; then
+  python3 scripts/validation/check-agent-governance-contract.py --section providers
 fi
 
 if [[ "$run_bash" -eq 1 ]]; then
   shopt -s nullglob globstar
-  bash_files=(.claude/hooks/*.sh .gemini/hooks/*.sh scripts/*.sh scripts/**/*.sh)
+  bash_files=(.claude/hooks/*.sh scripts/*.sh scripts/**/*.sh)
   shopt -u nullglob globstar
   if [[ "${#bash_files[@]}" -gt 0 ]]; then
     bash -n "${bash_files[@]}"

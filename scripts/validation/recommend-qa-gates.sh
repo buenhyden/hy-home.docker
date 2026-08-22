@@ -192,7 +192,7 @@ recommend_for_path() {
   esac
 
   case "$path" in
-  AGENTS.md | CLAUDE.md | GEMINI.md | .agents/* | .claude/* | .codex/* | .gemini/*)
+  AGENTS.md | CLAUDE.md | .agents/* | .claude/* | .codex/*)
     add_gate "bash scripts/operations/sync-provider-surfaces.sh --check" "provider and root agent surfaces changed"
     add_gate "bash scripts/validation/validate-harness.sh" "agent harness surfaces changed"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "provider and harness contracts changed"
@@ -200,8 +200,8 @@ recommend_for_path() {
   esac
 
   case "$path" in
-  AGENTS.md | CLAUDE.md | GEMINI.md | \
-    .agents/* | .claude/* | .codex/* | .gemini/* | \
+  AGENTS.md | CLAUDE.md | \
+    .agents/* | .claude/* | .codex/* | \
     docs/00.agent-governance/* | \
     scripts/operations/provider_surface_renderer.py | \
     scripts/validation/agent_governance_contract.py | \

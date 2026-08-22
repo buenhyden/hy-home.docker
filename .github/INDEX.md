@@ -1,3 +1,7 @@
+---
+profile_id: github-navigation-index
+---
+
 # GitHub Control Surface Index
 
 ## Purpose
@@ -22,7 +26,7 @@ evidence.
 
 ## Authority and Change Routes
 
-- [Canonical GitHub governance](../docs/00.agent-governance/rules/github-governance.md)
+- [Canonical GitHub governance](../docs/00.agent-governance/policies/github-governance.md)
 - [Local main-protection proposal](./rulesets/main-protection.md)
 - [Dated GitHub Actions observation](../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml)
 
@@ -36,5 +40,5 @@ evidence.
 ## Related Documents
 
 - [Agent governance overview](../docs/00.agent-governance/README.md)
-- [Current project memory](../docs/00.agent-governance/memory/current.md)
+- [Current Stage 00 task evidence](../docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
 - [Active convergence task](../docs/03.specs/spec-0135-target-surface-delta-convergence/task.md)

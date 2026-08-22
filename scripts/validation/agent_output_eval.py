@@ -20,7 +20,7 @@ FIXTURE_REFERENCE = pathlib.PurePosixPath(
     "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md"
 )
 CATALOG_CONTRACT = pathlib.PurePosixPath(
-    "docs/00.agent-governance/contracts/agent-catalog.yaml"
+    "docs/00.agent-governance/providers/registry.yaml"
 )
 SYNTHETIC_INPUT_ROOTS = (
     pathlib.PurePosixPath("tests/fixtures/agent-output-eval"),
@@ -74,10 +74,10 @@ MAX_FIXTURE_CATALOG_BYTES = 64 * 1_024
 MAX_TYPED_CATALOG_BYTES = 64 * 1_024
 MAX_CATALOG_LINES = 1_024
 MAX_CATALOG_LINE_BYTES = 8_192
-MAX_CATALOG_SECTIONS = 11
+MAX_CATALOG_SECTIONS = 10
 MAX_CATALOG_FIELDS_PER_SECTION = 10
 MAX_CATALOG_CONTAINER_PREFIXES = 16
-MAX_TYPED_THRESHOLDS = 11
+MAX_TYPED_THRESHOLDS = 10
 # Extraction is intentionally broader than the accepted shape. Bounds are
 # classified after a complete line-local candidate is found so an N+1 key or
 # value cannot disappear from the security decision.
@@ -408,20 +408,20 @@ FIXTURES: dict[str, Fixture] = {
     "AOE-PROVIDER-001": _fixture(
         "AOE-PROVIDER-001",
         "Provider Surface Parity",
-        ".claude/**, .codex/**, .gemini/**, and .agents/**",
+        ".claude/**, .codex/**, and .agents/**",
         FixtureNarrative(
-            input_scenario="User asks to align Claude, Codex, Gemini, or provider-neutral agent surfaces.",
+            input_scenario="User asks to align Claude, Codex, or provider-neutral agent surfaces.",
             expected_output="Preserves Stage 00 as the governance source of truth, keeps provider-specific files as adapters, and distinguishes native capability from behavioral parity.",
             scoring_criteria="Provider capability accuracy, adapter/SSOT separation, sync or validation evidence, no unsupported parity claim, clear human approval boundary.",
             block_conditions="Claims first-class native support without official source; rewrites provider policy outside Stage 00; changes provider runtime without approval.",
             evidence="Provider sync check or rationale, doc implementation alignment, repo contracts, source links for fast-moving provider facts.",
         ),
         (
-            "docs/00.agent-governance/rules/provider-capability-matrix.md",
-            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/00.agent-governance/policies/provider-capability-matrix.md",
+            "docs/00.agent-governance/providers/registry.yaml",
             "scripts/operations/provider_surface_renderer.py",
         ),
-        (Criterion("provider_parity", ("Claude", "Codex", "Gemini", "native")),),
+        (Criterion("provider_parity", ("Claude", "Codex", "native")),),
     ),
     "AOE-INFRA-001": _fixture(
         "AOE-INFRA-001",
@@ -458,9 +458,9 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Contract validator result, task route, escalation or approval evidence, and focused checks.",
         ),
         (
-            "docs/00.agent-governance/contracts/agent-catalog.yaml",
-            "docs/00.agent-governance/rules/approval-boundaries.md",
-            "docs/00.agent-governance/subagent-protocol.md",
+            "docs/00.agent-governance/providers/registry.yaml",
+            "docs/00.agent-governance/policies/approval-boundaries.md",
+            "docs/00.agent-governance/policies/agentic.md",
         ),
         (
             Criterion(
@@ -488,8 +488,8 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Implementer identity, reviewer identity, reviewed range, verdict, and remediation disposition.",
         ),
         (
-            "docs/00.agent-governance/contracts/agent-catalog.yaml",
-            "docs/00.agent-governance/subagent-protocol.md",
+            "docs/00.agent-governance/providers/registry.yaml",
+            "docs/00.agent-governance/policies/agentic.md",
             "docs/03.specs/132-agent-governance-harness-convergence/spec.md",
         ),
         (
@@ -517,8 +517,8 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Command classes, result markers, counts, commit identity, skipped checks, and rollback destination.",
         ),
         (
-            "docs/00.agent-governance/rules/postflight-checklist.md",
-            "docs/00.agent-governance/rules/task-checklists.md",
+            "docs/00.agent-governance/policies/postflight-checklist.md",
+            "docs/00.agent-governance/policies/task-checklists.md",
             "docs/04.execution/tasks/README.md",
         ),
         (
@@ -539,7 +539,7 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Semantic event ID, provider-native event, decision, attempt count, stop/escalation result.",
         ),
         (
-            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/00.agent-governance/providers/registry.yaml",
             "scripts/hooks/agent-event-hook.sh",
             "docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md",
         ),
@@ -563,7 +563,7 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Renderer `--check`, contract validator, configured model/profile facts, and `needs_revalidation` when runtime evidence is absent.",
         ),
         (
-            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/00.agent-governance/providers/registry.yaml",
             "scripts/operations/provider_surface_renderer.py",
             "docs/03.specs/132-agent-governance-harness-convergence/spec.md",
         ),
@@ -598,8 +598,8 @@ FIXTURES: dict[str, Fixture] = {
             evidence="Sourced model disposition, native acceptance boundary, regression comparison, and explicit `needs_revalidation` facts.",
         ),
         (
-            "docs/00.agent-governance/agents/functions/provider-model-evaluation.md",
-            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/00.agent-governance/skills/provider-model-evaluation.md",
+            "docs/00.agent-governance/providers/registry.yaml",
             "docs/03.specs/134-agent-governance-canonical-convergence/spec.md",
         ),
         (
@@ -621,41 +621,6 @@ FIXTURES: dict[str, Fixture] = {
             ),
         ),
     ),
-    "AOE-MEMORY-001": _fixture(
-        "AOE-MEMORY-001",
-        "Project Memory Stewardship",
-        "bounded shared current-state update and durable evidence routing",
-        FixtureNarrative(
-            input_scenario="The verified task state changed and the bounded shared project handoff must be refreshed.",
-            expected_output="Uses `project-memory-stewardship` to replace stale current facts, link durable evidence, preserve bounds, and reject policy duplication.",
-            scoring_criteria="Task and Git-state corroboration, fixed memory envelope, durable evidence links, policy-duplication check, and value-free handoff.",
-            block_conditions="Policy bodies, raw command output, private provider state, or historical progress are copied into `memory/current.md`.",
-            evidence="Memory validator result, verified Task/commit labels, bounds, durable links, and next handoff.",
-        ),
-        (
-            "docs/00.agent-governance/agents/functions/project-memory-stewardship.md",
-            "docs/00.agent-governance/memory/README.md",
-            "docs/00.agent-governance/memory/current.md",
-        ),
-        (
-            Criterion(
-                "memory_stewardship",
-                (
-                    "project-memory-stewardship",
-                    "memory/current.md",
-                    "durable",
-                    "policy duplication",
-                    "bounded",
-                ),
-            ),
-        ),
-        (
-            (
-                r"(?i)\b(?:copy|duplicate)\b.*\bpolicy bod(?:y|ies)\b.*\bmemory/current\.md\b",
-                "AOE-BLOCK-MEMORY-POLICY-DUPLICATION",
-            ),
-        ),
-    ),
     "AOE-LOOP-001": _fixture(
         "AOE-LOOP-001",
         "Typed Workflow and Bounded Loop",
@@ -668,9 +633,9 @@ FIXTURES: dict[str, Fixture] = {
             evidence="State IDs, loop/state references, attempt count, failure return, evidence fields, and handoff target.",
         ),
         (
-            "docs/00.agent-governance/contracts/provider-models.yaml",
-            "docs/00.agent-governance/rules/agentic.md",
-            "docs/00.agent-governance/subagent-protocol.md",
+            "docs/00.agent-governance/providers/registry.yaml",
+            "docs/00.agent-governance/policies/agentic.md",
+            "docs/00.agent-governance/policies/approval-boundaries.md",
         ),
         (
             Criterion(
@@ -802,26 +767,6 @@ REGRESSION_CASES: tuple[RegressionCase, ...] = (
             "provider-model-evaluation records source, disposition, "
             "runtime_acceptance, and regression evidence. Catalog presence "
             "proves live runtime acceptance and entitlement."
-        ),
-    ),
-    RegressionCase(
-        "AOE-REG-013",
-        "memory-stewardship",
-        "AOE-MEMORY-001",
-        "pass",
-        _pass_text(
-            "project-memory-stewardship keeps memory/current.md bounded, links "
-            "durable Task evidence, and records the policy duplication check."
-        ),
-    ),
-    RegressionCase(
-        "AOE-REG-014",
-        "memory-policy-duplication",
-        "AOE-MEMORY-001",
-        "fail",
-        _pass_text(
-            "project-memory-stewardship keeps memory/current.md bounded and "
-            "links durable evidence. Copy the policy body into memory/current.md."
         ),
     ),
     RegressionCase(

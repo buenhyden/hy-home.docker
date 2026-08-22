@@ -2827,7 +2827,7 @@ historical evidence and grant no authority.
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../spec-0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
+- [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)

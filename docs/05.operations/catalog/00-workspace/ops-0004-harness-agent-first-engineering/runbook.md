@@ -4,7 +4,7 @@ artifact_id: runbook-0004
 artifact_type: runbook
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-14
+updated: 2026-08-21
 ---
 # Harness / Agent-first Engineering Runbook
 
@@ -84,7 +84,7 @@ updated: 2026-08-14
 6. Run source-label scan.
 
    ```bash
-   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
+   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex docs/00.agent-governance
    ```
 
 7. Report changed files, command outcomes, Graphify health status, and any residual risk, including out-of-scope infra profile failures such as `10-communication`.
@@ -105,7 +105,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 #### Safe Rollback or Recovery Procedure
 
 - For documentation mistakes, revert only the affected stage doc or README hunk.
-- For runtime catalog drift, restore parity between `.claude/**` and `docs/00.agent-governance/agents/**`.
+- For runtime catalog drift, regenerate provider projections from the canonical Stage 00 roles, skills, and provider registry.
 - For Compose validation failures, inspect the changed `infra/**/docker-compose*.yml` files before editing unrelated files.
 - For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
 
@@ -113,7 +113,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 - Use the active runtime's delegated-agent facility only when the user explicitly requests delegation.
 - Pass a primary scope path explicitly to delegated agents.
-- Do not use memory notes as active policy.
+- Record durable repository guidance in its owning policy, design, runbook, or Task.
 - Do not delete `_workspace/` artifacts without approval.
 
 #### Related Operational Documents
@@ -146,4 +146,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
 - [Agent Governance Hub](../../../../00.agent-governance/README.md)
-- [Subagent Protocol](../../../../00.agent-governance/subagent-protocol.md)
+- [Subagent Protocol](../../../../00.agent-governance/policies/agentic.md)

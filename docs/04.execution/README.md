@@ -125,7 +125,7 @@ Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document li
 
 ## Stage Handoff
 
-구현과 검증이 완료된 운영 절차, 통제 기준, 반복 절차는 [`docs/05.operations/`](../05.operations/README.md)로 이관한다. Plan은 "무엇을 어떤 순서로 할지", Task는 "무엇을 실제로 했고 무엇으로 검증했는지"를 유지한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
+구현과 검증이 완료된 운영 절차, 통제 기준, 반복 절차는 [`docs/05.operations/`](../05.operations/README.md)로 이관한다. Plan은 "무엇을 어떤 순서로 할지", Task는 "무엇을 실제로 했고 무엇으로 검증했는지"를 유지한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/policies/stage-authoring-matrix.md)를 따른다.
 
 ## Related Documents
 
@@ -136,7 +136,7 @@ Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document li
 - **Tasks**: [tasks/README.md](tasks/README.md)
 - **Operations**: [../05.operations/README.md](../05.operations/README.md)
 - **Templates**: [../99.templates/README.md](../99.templates/README.md)
-- **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/rules/documentation-protocol.md)
+- **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/policies/documentation-protocol.md)
 - **Active agent-governance convergence plan**: [plans/2026-07-26-agent-governance-canonical-convergence.md](plans/2026-07-26-agent-governance-canonical-convergence.md)
 - **Active agent-governance convergence task evidence**: [tasks/2026-07-26-agent-governance-canonical-convergence.md](tasks/2026-07-26-agent-governance-canonical-convergence.md)
 - **Infra team agent cross-validation plan**: [plans/2026-04-10-infra-team-agent-cross-validation.md](plans/2026-04-10-infra-team-agent-cross-validation.md)

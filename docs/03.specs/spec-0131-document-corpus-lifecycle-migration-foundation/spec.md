@@ -504,8 +504,8 @@ until the branch is explicitly finished and the user authorizes local merge.
 - [Stage 03 specifications](../README.md)
 - Spec 130
 - Spec 129
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)

@@ -230,4 +230,4 @@ out of scope instead of modifying infra files.
 - [90.references](../../90.references/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)
 - [README template](../../99.templates/templates/common/readme.template.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

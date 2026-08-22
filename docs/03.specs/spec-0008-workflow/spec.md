@@ -148,7 +148,7 @@ This document defines the workflow cross-validation agent design that sequential
 - **Spec**: [./spec.md](spec.md)
 - **PRD**: There is no dedicated PRD; the upper-level workflow tier context follows [../../01.requirements/prd-0019-workflow-optimization-hardening.md](../../01.requirements/prd-0019-workflow-optimization-hardening.md).
 - **ARD**: There is no dedicated ARD; the structural upper-level context follows [../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md).
-- **Related ADRs**: There is no dedicated ADR; agent governance follows [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md) and [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md).
+- **Related ADRs**: There is no dedicated ADR; agent governance follows [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md) and [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/policies/agentic.md).
 
 ### Scope & Non-goals
 
@@ -166,7 +166,7 @@ This document defines the workflow cross-validation agent design that sequential
 
 - **Primary Role**: cross-validation coordinator that safely orchestrates the independent validation chain after infrastructure changes
 - **Primary User / Caller**: `infra-implementer` or the routing `workflow-supervisor`
-- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/repo-support/` and `docs/00.agent-governance/memory/progress.md`.
+- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/repo-support/` and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 
 ### Inputs / Outputs
 
@@ -181,7 +181,7 @@ This document defines the workflow cross-validation agent design that sequential
   - `"validate-complete: PASS|WARN <summary>"`
   - `"BLOCK: <reason>"`
   - `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`
-  - `docs/00.agent-governance/memory/progress.md` append entry
+  - `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` append entry
 - **Expected Structured Format**:
   - message payloads are plain-text, deterministic, and severity-coded as `PASS`, `WARN`, or `BLOCK`
 
@@ -306,5 +306,5 @@ This document defines the workflow cross-validation agent design that sequential
 - **Implementation Task**: ../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
 - **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
-- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
-- **Subagent Protocol**: [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md)
+- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md)
+- **Subagent Protocol**: [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/policies/agentic.md)

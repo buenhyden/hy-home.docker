@@ -380,7 +380,7 @@ readme_profiles:
     optional_headings: [Getting Started, Documentation Standards, Verification and Quality Gates]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Repository entrypoint, navigation, and workspace-specific onboarding.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   stage-index:
     path_globs:
@@ -419,7 +419,7 @@ readme_profiles:
     optional_headings: [Status, Current Inventory, Documentation Standards, AI Agent Guidance]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Stage or document-set navigation, local inventory, and profile-specific workflow context.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/stage-authoring-matrix.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/stage-authoring-matrix.md
 
   governance-catalog:
     path_globs:
@@ -436,7 +436,7 @@ readme_profiles:
     canonical_shared_rule_owner: docs/00.agent-governance/README.md
 
   provider-runtime:
-    path_globs: [.agents/README.md, .codex/README.md, .gemini/README.md]
+    path_globs: [.agents/README.md, .codex/README.md]
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-repo-contracts.sh
     allowed_frontmatter_keys: [layer, runtime]
@@ -444,7 +444,7 @@ readme_profiles:
     optional_headings: []
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Provider runtime entrypoint, compatibility notes, and provider-specific navigation.
-    canonical_shared_rule_owner: docs/00.agent-governance/providers/agents-md.md
+    canonical_shared_rule_owner: docs/00.agent-governance/providers/README.md
 
   infrastructure-root:
     path_globs: [infra/README.md]
@@ -456,7 +456,7 @@ readme_profiles:
     optional_headings: [Infrastructure Tiers (01-11), Compose Inventory Snapshot, Execution Model]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Infrastructure catalog, compose entrypoint, and tier navigation.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   infrastructure-tier:
     path_globs: [infra/*/README.md]
@@ -468,7 +468,7 @@ readme_profiles:
     optional_headings: [Tech Stack, Service Matrix, Configuration, Validation]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Tier inventory, integration boundaries, and tier-specific operating context.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   infrastructure-service:
     path_globs: [infra/*/*/README.md, infra/*/*/*/README.md]
@@ -480,7 +480,7 @@ readme_profiles:
     optional_headings: [Service Readiness, Tech Stack, Configuration, Validation, Troubleshooting]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Service-local configuration, validation, troubleshooting, and implementation context.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   project-root:
     path_globs: [projects/README.md]
@@ -492,7 +492,7 @@ readme_profiles:
     optional_headings: [Available Scripts]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Project catalog and workspace navigation.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   project-leaf:
     path_globs: [projects/*/README.md, projects/*/*/README.md]
@@ -504,7 +504,7 @@ readme_profiles:
     optional_headings: [Available Scripts, Validation]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Project-local setup, commands, structure, and validation guidance.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   scripts:
     path_globs: [scripts/README.md]
@@ -516,7 +516,7 @@ readme_profiles:
     optional_headings: [Navigation / Inventory, Script Lifecycle, Utilities & Automation]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Script catalog, supported invocation examples, and lifecycle navigation.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   tests:
     path_globs: [tests/README.md]
@@ -528,7 +528,7 @@ readme_profiles:
     optional_headings: [Validation]
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Test-suite navigation and repository-specific execution guidance.
-    canonical_shared_rule_owner: docs/00.agent-governance/scopes/qa.md
+    canonical_shared_rule_owner: docs/00.agent-governance/roles/qa.md
 
   secrets:
     path_globs: [secrets/README.md]
@@ -540,7 +540,7 @@ readme_profiles:
     optional_headings: [Navigation / Inventory, Inventory Classification, Security Policy]
     forbidden_headings: [Secret Values, Canonical Shared Rules]
     allowed_local_content_role: Metadata-only secret workflow, ID/path navigation, and redacted safety guidance.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/documentation-protocol.md
 
   examples:
     path_globs: [examples/*/README.md]
@@ -565,7 +565,7 @@ readme_profiles:
     optional_headings: [Archive Ledger, Tombstone Contract]
     forbidden_headings: [Current Implementation]
     allowed_local_content_role: Archive navigation, tombstone inventory, and replacement routing.
-    canonical_shared_rule_owner: docs/00.agent-governance/rules/stage-authoring-matrix.md
+    canonical_shared_rule_owner: docs/00.agent-governance/policies/stage-authoring-matrix.md
 
   template-catalog:
     path_globs:
@@ -910,35 +910,6 @@ template_roles:
       ]
     conditional_headings: ['## Validation']
     forbidden_headings: ['## Canonical Shared Rules']
-  memory:
-    source: docs/99.templates/templates/governance/memory.template.md
-    artifact_profile: governance
-    target_globs: [docs/00.agent-governance/memory/*.md]
-    required_headings:
-      [
-        '## Problem',
-        '## Context',
-        '## Resolution',
-        '## Prevention',
-        '## Evidence',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Follow-up']
-    forbidden_headings: ['## Usage Contract']
-  progress:
-    source: docs/99.templates/templates/governance/progress.template.md
-    artifact_profile: governance
-    target_globs: [docs/00.agent-governance/memory/progress.md]
-    required_headings:
-      [
-        '## Current Work Log',
-        '## Phase Tracker',
-        '## Layer Audit',
-        '## Open Issues',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Durable Memory']
-    forbidden_headings: ['## Usage Contract']
   agent-design:
     source: docs/99.templates/templates/spec-contracts/agent-design.template.md
     artifact_profile: spec

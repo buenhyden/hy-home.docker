@@ -86,7 +86,7 @@ EXPECTED_OVERVIEW_CATEGORIES = [
     "Loop engineering",
     "Claude provider harness/loop",
     "Codex provider harness/loop",
-    "Gemini provider harness/loop",
+    "Provider harness/loop",
     "Common provider-neutral rules/environment",
     "Agent instructions, catalogs, vibe coding, and model routing",
     "Automation, pipeline, workflow",

@@ -68,14 +68,14 @@ bash scripts/knowledge/generate-llm-wiki-index.sh --check
 
 ## Prompt / Policy Contract
 
-- **System / Instruction Contract**: `wiki-curator` imports `docs/00.agent-governance/scopes/docs.md`.
+- **System / Instruction Contract**: `wiki-curator` imports `docs/00.agent-governance/roles/docs.md`.
 - **Policy Constraints**: no secret contents, no public wiki, no Graphify authority, no full-content bundle.
 - **Versioning Rule**: update generated index and stage evidence whenever the LLM Wiki contract changes.
 
 ## Memory & Context Strategy
 
 - **Short-term Context**: use current changed paths and repository contract output.
-- **Long-term Memory**: record final progress in `docs/00.agent-governance/memory/progress.md`.
+- **Long-term Memory**: record final progress in `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 - **Retrieval Boundary**: memory supports context only and cannot override current repo rules.
 
 ## Guardrails

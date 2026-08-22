@@ -32,10 +32,10 @@ DOC_ROOTS = (
 SUPPORT_DOCS = (
     pathlib.Path("README.md"),
     pathlib.Path("docs/README.md"),
-    pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"),
-    pathlib.Path("docs/00.agent-governance/rules/stage-authoring-matrix.md"),
-    pathlib.Path("docs/00.agent-governance/scopes/qa.md"),
-    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"),
+    pathlib.Path("docs/00.agent-governance/policies/documentation-protocol.md"),
+    pathlib.Path("docs/00.agent-governance/policies/stage-authoring-matrix.md"),
+    pathlib.Path("docs/00.agent-governance/roles/qa.md"),
+    pathlib.Path("docs/00.agent-governance/policies/github-governance.md"),
     pathlib.Path("docs/99.templates/README.md"),
     pathlib.Path("scripts/README.md"),
 )

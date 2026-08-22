@@ -81,7 +81,7 @@ Compose files, and registry references.
 | Loop engineering | Partial |
 | Claude provider harness/loop | Partial |
 | Codex provider harness/loop | Partial |
-| Gemini provider harness/loop | Partial |
+| Provider harness/loop | Partial |
 | Common provider-neutral rules/environment | Partial |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial |
 | Automation, pipeline, workflow | Partially Implemented |

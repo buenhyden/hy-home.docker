@@ -592,7 +592,7 @@ def _baseline_consumer_lines(
         ":(exclude)graphify-out/**",
         ":(exclude)docs/98.archive/**",
         ":(exclude)docs/90.references/**",
-        ":(exclude)docs/00.agent-governance/memory/progress.md",
+        ":(exclude)docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
     )
     generated = _git(
         pathlib.Path(repo_root),
@@ -630,7 +630,7 @@ def _current_consumer(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
     if (
         value.startswith("graphify-out/")
-        or value == "docs/00.agent-governance/memory/progress.md"
+        or value == "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"
     ):
         return False
     if value.startswith("docs/98.archive/"):
@@ -1277,7 +1277,7 @@ def _semantic_rewrite_rule_task10d_remaining(
             "- [Usage Guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
             "- [Operations Policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
             "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
-            "- [Subagent Protocol](../../../00.agent-governance/subagent-protocol.md)\n\n"
+            "- [Subagent Protocol](../../../00.agent-governance/policies/agentic.md)\n\n"
             "### Steps\n\n"
             "1. 이 runbook의 trigger와 checklist를 확인한다.\n"
             "2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.\n"
@@ -1321,7 +1321,7 @@ def _semantic_rewrite_rule_task10d_remaining(
                 "- [Usage guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
                 "- [Operations policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
                 "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
-                "- [Subagent Protocol](../../../00.agent-governance/subagent-protocol.md)",
+                "- [Subagent Protocol](../../../00.agent-governance/policies/agentic.md)",
             ),
         )
         return {

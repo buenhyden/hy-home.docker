@@ -529,10 +529,10 @@ This paragraph explains how verification evidence will be interpreted.
 
     def test_active_human_contracts_publish_only_the_canonical_incident_route(self) -> None:
         contracts = (
-            "docs/00.agent-governance/agents/functions/ops-runbook-agent.md",
-            "docs/00.agent-governance/agents/functions/incident-response.md",
-            "docs/00.agent-governance/rules/documentation-protocol.md",
-            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/00.agent-governance/skills/ops-runbook-agent.md",
+            "docs/00.agent-governance/skills/incident-response.md",
+            "docs/00.agent-governance/policies/documentation-protocol.md",
+            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
             "docs/05.operations/incidents/README.md",
             "docs/99.templates/support/template-selection.md",
         )

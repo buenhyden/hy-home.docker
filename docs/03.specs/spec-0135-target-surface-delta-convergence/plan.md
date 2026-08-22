@@ -198,7 +198,7 @@ dependency changes, or Graphify update.
   belongs to the owning work unit.
 - Use only the canonical `bounded-implementation-loop` and
   `independent-review-loop` from
-  `docs/00.agent-governance/contracts/provider-models.yaml`, each with
+  `docs/00.agent-governance/providers/registry.yaml`, each with
   `max_attempts: 2`. Exhaustion blocks the work unit and returns to
   design/plan; no prompt-local extra retry budget is created.
 - Never run `pre-commit run --all-files` directly. A final Agent all-files run
@@ -257,8 +257,8 @@ review verdicts. It does not duplicate planned implementation.
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../spec-0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
-- [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
+- [GitHub governance](../../00.agent-governance/policies/github-governance.md)
+- [Approval boundaries](../../00.agent-governance/policies/approval-boundaries.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
@@ -638,8 +638,8 @@ explicit and value-free.
 - [ ] Normalize only confirmed headings and duplication; do not translate or
   rewrite unrelated topic content.
 - [ ] Route shared policy to
-  `docs/00.agent-governance/rules/agentic.md` and
-  `docs/00.agent-governance/rules/documentation-protocol.md`.
+  `docs/00.agent-governance/policies/agentic.md` and
+  `docs/00.agent-governance/policies/documentation-protocol.md`.
 - [ ] Register the typed sample fixture and update its current metadata and
   topic-specific sections.
 - [ ] Update the manifest rows and regenerate the delta summary.
@@ -2535,8 +2535,8 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
   `scripts/requirements-pre-commit.txt`; register the existing CI wrapper as a
   typed leaf without turning it into an Agent route.
 - Modify `.github/INDEX.md` and `.github/rulesets/main-protection.md`.
-- Modify `docs/00.agent-governance/rules/github-governance.md` and
-  `docs/00.agent-governance/scopes/qa.md`.
+- Modify `docs/00.agent-governance/policies/github-governance.md` and
+  `docs/00.agent-governance/roles/qa.md`.
 - Modify exact existing Task 4 manifest rows, regenerate the summary, and
   append Task evidence.
 - Do not create `.github/README.md` or modify `.pre-commit-config.yaml`.
@@ -2764,8 +2764,8 @@ git add \
   .github/workflows/ci-quality.yml \
   .github/INDEX.md \
   .github/rulesets/main-protection.md \
-  docs/00.agent-governance/rules/github-governance.md \
-  docs/00.agent-governance/scopes/qa.md \
+  docs/00.agent-governance/policies/github-governance.md \
+  docs/00.agent-governance/roles/qa.md \
   scripts/validation/check-agent-governance-contract.py \
   scripts/validation/check-document-corpus-lifecycle.py \
   scripts/validation/check-document-metadata.py \
@@ -15665,7 +15665,7 @@ git commit -m "docs(task): record audit reconciliation review"
 - Modify this Plan status to `completed`.
 - Modify the sibling Task ledger status to `completed` only after all closure
   evidence exists.
-- Modify `docs/00.agent-governance/memory/current.md` for the bounded handoff.
+- Modify `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` for the bounded handoff.
 - Modify generated owners only through their registered generators.
 
 **Closure interface:**
@@ -15864,7 +15864,7 @@ git commit -m "feat(governance): promote target delta enforcement"
 git add \
   docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
-  docs/00.agent-governance/memory/current.md
+  docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
 git commit -m "docs(task): close target surface delta convergence"
 ```
 
@@ -18985,7 +18985,7 @@ is not applicable because neither surface is mutated.
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../spec-0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical audit](../../90.references/audits/ref-0019-readme.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
+- [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)

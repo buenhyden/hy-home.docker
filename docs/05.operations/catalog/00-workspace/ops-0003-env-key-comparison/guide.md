@@ -138,4 +138,4 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 - [Secrets Key Comparison](../ops-0010-sensitive-env-vars-comparison/guide.md)
 - [Spec](../../../../03.specs/spec-0090-workspace-audit-2026-05/spec.md)
 - [secrets/README.md](../../../../../secrets/README.md)
-- [Stage Authoring Matrix](../../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage Authoring Matrix](../../../../00.agent-governance/policies/stage-authoring-matrix.md)

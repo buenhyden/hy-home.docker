@@ -63,7 +63,7 @@ oauth2-proxy/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. Read the [Auth Guides](../../../docs/05.operations/catalog/02-auth/README.md) for OIDC/ForwardAuth configuration.
 2. Refer to the [OAuth2 Proxy Guide](../../../docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md) for detailed configuration steps.

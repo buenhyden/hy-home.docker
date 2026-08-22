@@ -53,8 +53,8 @@ This reference is shared vocabulary for explaining role boundaries between docum
 
 ## Sources
 
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - documentation stage boundaries and DOCS 3 rules
-- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage roles and template mapping
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - documentation stage boundaries and DOCS 3 rules
+- [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - stage roles and template mapping
 - [90.references](../../README.md) - reference stage purpose and lifecycle
 - [LLM Wiki repository map](../../llm-wiki/ref-0083-repository-map.md) - tracked-source boundary and Graphify advisory rules
 
@@ -69,5 +69,5 @@ This reference is shared vocabulary for explaining role boundaries between docum
 - [Glossary references](README.md)
 - [90.references](../../README.md)
 - [docs index](../../README.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)

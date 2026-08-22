@@ -54,12 +54,7 @@ _REPOSITORY_DIRECTORY = str(ROOT)
 if _REPOSITORY_DIRECTORY not in sys.path:
     sys.path.insert(0, _REPOSITORY_DIRECTORY)
 
-from agent_governance_contract import (  # noqa: E402
-    ContractLoadError,
-    load_artifact_contract,
-    normalize_repo_relative_path,
-    path_matches_artifact_pattern,
-)
+from agent_governance_contract import normalize_repo_relative_path  # noqa: E402
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     FrontmatterError,
     parse_frontmatter_text as _parse_frontmatter_text,
@@ -97,9 +92,7 @@ DEFAULT_PROFILES = DEFAULT_REGISTRY
 LEGACY_TRANSITION_PROFILES = (
     ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 )
-DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
-    ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
-)
+DEFAULT_AGENT_GOVERNANCE_REGISTRY = ROOT / "docs/99.templates/registry.json"
 DEFAULT_MIGRATION_CONTRACT = (
     ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 )
@@ -481,10 +474,10 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     ".env.example",
     ".pre-commit-config.yaml",
     ".prettierignore",
-    "docs/00.agent-governance/memory/progress.md",
-    "docs/00.agent-governance/rules/documentation-protocol.md",
-    "docs/00.agent-governance/rules/stage-authoring-matrix.md",
-    "docs/00.agent-governance/rules/task-checklists.md",
+    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
+    "docs/00.agent-governance/policies/documentation-protocol.md",
+    "docs/00.agent-governance/policies/stage-authoring-matrix.md",
+    "docs/00.agent-governance/policies/task-checklists.md",
     "docs/01.requirements/005-data-analytics.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
@@ -814,12 +807,10 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
         "data-model",
         "guide",
         "incident",
-        "memory",
         "plan",
         "policy",
         "postmortem",
         "prd",
-        "progress",
         "readme",
         "reference",
         "release",
@@ -1076,50 +1067,30 @@ def registered_generated_owner(
 
 def _stage00_specialization_entry(
     path: pathlib.Path,
-    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_ARTIFACTS,
+    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_REGISTRY,
 ) -> Mapping[str, object] | None:
-    """Return the one registered Stage 00 artifact envelope matching ``path``."""
+    """Return the one Stage 99 profile registered for a Stage 00 path."""
 
     normalized = normalize_repo_relative_path(path)
     try:
-        if contract_path.is_absolute():
-            try:
-                contract_path.absolute().relative_to(ROOT.absolute())
-            except ValueError:
-                contract_root = contract_path.parent
-            else:
-                contract_root = ROOT
-        else:
-            contract_root = ROOT
-        loaded = load_artifact_contract(contract_root, contract_path)
-    except ContractLoadError:
+        registry = load_registry(contract_path)
+    except RegistryError:
         return None
-    if not isinstance(loaded, Mapping):
+    profile_id = classify_registered_path(normalized, registry)
+    if profile_id is None or not normalized.startswith("docs/00.agent-governance/"):
         return None
-    entries = loaded.get("artifacts")
-    if not isinstance(entries, Sequence) or isinstance(entries, (str, bytes)):
-        return None
-    matches: list[Mapping[str, object]] = []
-    for entry in entries:
-        if not isinstance(entry, Mapping):
-            continue
-        pattern = entry.get("path_pattern")
-        if not isinstance(pattern, str):
-            continue
-        if path_matches_artifact_pattern(normalized, pattern):
-            matches.append(entry)
-    return matches[0] if len(matches) == 1 else None
+    return registry.profiles.get(profile_id)
 
 
 def infer_stage00_specialization(
     path: pathlib.Path,
-    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_ARTIFACTS,
+    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_REGISTRY,
 ) -> str | None:
-    """Infer an exact Stage 00 subtype without changing the generic profile."""
+    """Infer the exact Stage 99 profile for a registered Stage 00 path."""
 
     entry = _stage00_specialization_entry(path, contract_path)
-    artifact_type = entry.get("artifact_type") if entry is not None else None
-    return artifact_type if isinstance(artifact_type, str) else None
+    profile_id = entry.get("profile_id") if entry is not None else None
+    return profile_id if isinstance(profile_id, str) else None
 
 
 def infer_artifact_type(
@@ -1873,19 +1844,6 @@ def _validate_template_source(
             if record.metadata == {"status": "draft"}
             else [_finding(record, "invalid-template-metadata", "README source metadata must be exactly status: draft")]
         )
-    if role_name in {"memory", "progress"}:
-        expected = {"layer": "agentic", "status": "draft"}
-        return (
-            []
-            if record.metadata == expected
-            else [
-                _finding(
-                    record,
-                    "invalid-template-metadata",
-                    f"{role_name} source metadata must be exactly layer: agentic plus status: draft",
-                )
-            ]
-        )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
     if target_type == "archive":
@@ -2314,7 +2272,43 @@ def validate_body_contract(
             and isinstance(profile, Mapping)
             and profile.get("template_id") is None
         ):
-            return []
+            findings: list[Finding] = []
+            h1, h2 = extract_markdown_headings(text)
+            if len(h1) != 1:
+                findings.append(
+                    _finding(
+                        record,
+                        "body-h1-count",
+                        f"profile {record.artifact_type} requires exactly one H1; found {len(h1)}",
+                    )
+                )
+            required = {
+                f"## {heading}"
+                for heading in profile.get("required_sections", ())
+                if isinstance(heading, str)
+            }
+            optional = {
+                f"## {heading}"
+                for heading in profile.get("optional_sections", ())
+                if isinstance(heading, str)
+            }
+            for heading in sorted(required - set(h2)):
+                findings.append(
+                    _finding(
+                        record,
+                        "body-heading-missing",
+                        f"profile {record.artifact_type} is missing required heading: {heading}",
+                    )
+                )
+            for heading in sorted(set(h2) - required - optional):
+                findings.append(
+                    _finding(
+                        record,
+                        "body-heading-forbidden",
+                        f"profile {record.artifact_type} contains unregistered heading: {heading}",
+                    )
+                )
+            return sorted(set(findings))
 
     source_roles = _source_roles_for_path(record.path, profiles)
     is_markdown_source = (
@@ -2755,9 +2749,9 @@ def validate_record(
         else None
     )
     specialization_type = (
-        specialization.get("artifact_type") if specialization is not None else None
+        specialization.get("profile_id") if specialization is not None else None
     )
-    if specialization_type == "hookify-rule":
+    if specialization_type == "governance-hook-policy":
         # Hookify owns a native metadata schema. Its exact envelope is enforced
         # by the focused Stage 00 validator, not duplicated here.
         return sorted(set(findings))
@@ -2765,7 +2759,10 @@ def validate_record(
     specialization_keys = {
         key
         for key in (
-            specialization.get("required_keys", [])
+            [
+                *specialization.get("required_frontmatter", []),
+                *specialization.get("optional_frontmatter", []),
+            ]
             if specialization is not None
             else []
         )
@@ -3487,11 +3484,11 @@ def load_migration_contract(
     if not isinstance(waves, dict) or tuple(waves) != expected_wave_names:
         raise ProfileError("waves must define the exact ordered migration lifecycle")
     foundation_sources = (
-        "docs/00.agent-governance/memory/progress.md",
-        "docs/00.agent-governance/rules/documentation-protocol.md",
-        "docs/00.agent-governance/rules/github-governance.md",
-        "docs/00.agent-governance/rules/stage-authoring-matrix.md",
-        "docs/00.agent-governance/rules/task-checklists.md",
+        "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
+        "docs/00.agent-governance/policies/documentation-protocol.md",
+        "docs/00.agent-governance/policies/github-governance.md",
+        "docs/00.agent-governance/policies/stage-authoring-matrix.md",
+        "docs/00.agent-governance/policies/task-checklists.md",
         "docs/03.specs/README.md",
         "docs/04.execution/README.md",
         "docs/04.execution/plans/README.md",
@@ -5465,7 +5462,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         release_route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         route_contracts = {
             "docs/99.templates/support/template-selection.md": (release_route, release_name),
-            "docs/00.agent-governance/rules/stage-authoring-matrix.md": (release_route, release_source),
+            "docs/00.agent-governance/policies/stage-authoring-matrix.md": (release_route, release_source),
         }
         for path_text, required_literals in route_contracts.items():
             path = root / path_text

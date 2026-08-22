@@ -46,7 +46,7 @@ from dataclasses import dataclass
 
 LEDGER_HEADING = "### Old-claim migration ledger"
 DESTINATION_HEADING = "### Gate 3 carried claims"
-SCOPES_DIR = "docs/00.agent-governance/scopes"
+SCOPES_DIR = "docs/00.agent-governance/roles"
 CODEOWNERS = ".github/CODEOWNERS"
 LEDGER_COLUMNS = 11
 DISPOSITION_COLUMN = 5
@@ -382,7 +382,7 @@ def check_pairing(records: list[Record]) -> list[Finding]:
 
     ledger = [record for record in records if record.surface == "ledger"]
     destination = [record for record in records if record.surface == "destination"]
-    # A paragraph may serve several rows: three rows state one Gemini claim from
+    # A paragraph may serve several rows: three rows state one retired-provider claim from
     # three old leaves, so the marker is collected as a list rather than a scalar.
     by_key: dict[str, Record] = {}
     for record in destination:

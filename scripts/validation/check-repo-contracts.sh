@@ -131,12 +131,11 @@ section "Stage 99 template and frontmatter contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import subprocess
 import sys
-
-import yaml
 
 failures: list[str] = []
 templates_root = pathlib.Path("docs/99.templates/templates")
@@ -157,17 +156,11 @@ durable_marker_re = re.compile(
     r")\b",
     flags=re.I,
 )
-profiles = yaml.safe_load(
-    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
-)
+profiles = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 registered_markdown_sources = {
     pathlib.Path(role["source"])
     for role in profiles["template_roles"].values()
     if role["source"].endswith(".md")
-}
-governance_markdown_sources = {
-    pathlib.Path(profiles["template_roles"][role_name]["source"])
-    for role_name in ("memory", "progress")
 }
 
 
@@ -210,15 +203,9 @@ def nearby_routes_to_support(lines: list[str], index: int, window: int = 2) -> b
 for path in sorted(templates_root.rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     frontmatter = top_frontmatter(text)
-    frontmatter_values = [value for _, value in frontmatter]
-    if path in governance_markdown_sources:
-        if frontmatter_values != ["layer: agentic", "status: draft"]:
-            failures.append(
-                f"{path}: governance template frontmatter must be exactly layer: agentic and status: draft"
-            )
-    elif not frontmatter or frontmatter[0][1] != "status: draft":
+    if not frontmatter or not frontmatter[0][1].startswith("profile_id: "):
         failures.append(
-            f"{path}: Markdown template frontmatter must start with status: draft"
+            f"{path}: Markdown template frontmatter must start with its registered profile_id"
         )
     if path not in registered_markdown_sources:
         if "Target:" not in text:
@@ -285,7 +272,7 @@ if ! grep -q "^## Approval Evidence" docs/99.templates/templates/sdlc/task.templ
   echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include conditional Approval Evidence" >&2
   failures=$((failures + 1))
 fi
-if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub" docs/00.agent-governance/rules/task-checklists.md; then
+if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub" docs/00.agent-governance/policies/task-checklists.md; then
   echo "FAIL: Stage 00 task checklist must retain high-risk surface classes" >&2
   failures=$((failures + 1))
 fi
@@ -344,11 +331,10 @@ section "Target-stage frontmatter status vocabulary"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
-
-import yaml
 
 failures: list[str] = []
 stage_roots = tuple(
@@ -365,11 +351,13 @@ stage_roots = tuple(
 )
 active_statuses = {"draft", "active", "completed", "superseded"}
 archive_statuses = {"archived"}
-profiles = yaml.safe_load(
-    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
-)
+registry = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 generated_outputs = {
-    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+    pathlib.Path(profile["path_pattern"])
+    for profile in registry["profiles"]
+    if profile.get("profile_id") == "generated"
+    and isinstance(profile.get("path_pattern"), str)
+    and "{" not in profile["path_pattern"]
 }
 
 
@@ -418,10 +406,9 @@ fi
 rm -f /tmp/check-repo-contracts-english-only-surfaces.txt
 
 section "Banned stale references"
-if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
-  --glob '!docs/00.agent-governance/memory/**' \
   --glob '!scripts/validation/check-repo-contracts.sh' \
   --glob '!scripts/validation/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
   fail "stale docs taxonomy, removed operations-stage, harness-catalog, or .agent references remain"
@@ -466,8 +453,8 @@ legacy_patterns = [
 ]
 scan_roots = [
     pathlib.Path("docs/99.templates"),
-    pathlib.Path("docs/00.agent-governance/rules"),
-    pathlib.Path("docs/00.agent-governance/scopes"),
+    pathlib.Path("docs/00.agent-governance/policies"),
+    pathlib.Path("docs/00.agent-governance/roles"),
     pathlib.Path(".github/ISSUE_TEMPLATE"),
 ]
 scan_files = {
@@ -498,10 +485,9 @@ PY
 fi
 
 section "Active docs taxonomy shorthand"
-if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|(^|[^[:alnum:]_/.-])01~09([^[:alnum:]_/.-]|$)|PRD~Runbook[[:space:]]*\(01~09\)|문서 계층[[:space:]]*\(01~09\)|문서 체계[[:space:]]*\(01~09\)|optimization-hardening 문서 세트[[:space:]]*\(01~09\)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|(^|[^[:alnum:]_/.-])01~09([^[:alnum:]_/.-]|$)|PRD~Runbook[[:space:]]*\(01~09\)|문서 계층[[:space:]]*\(01~09\)|문서 체계[[:space:]]*\(01~09\)|optimization-hardening 문서 세트[[:space:]]*\(01~09\)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
-  --glob '!docs/00.agent-governance/memory/**' \
   --glob '!scripts/validation/check-repo-contracts.sh' \
   --glob '!scripts/validation/check-repo-contracts.sh' >/tmp/check-repo-contracts-taxonomy-shorthand.txt; then
   fail "active docs taxonomy shorthand or legacy stage shorthand remains"
@@ -743,7 +729,7 @@ literal_requirements = {
         "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
         "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/documentation-protocol.md"): [
         "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"): [
@@ -793,6 +779,7 @@ section "Stage 00 GitHub routing contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
@@ -927,7 +914,7 @@ else:
     failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
 
 governance_path = pathlib.Path(
-    "docs/00.agent-governance/rules/github-governance.md"
+    "docs/00.agent-governance/policies/github-governance.md"
 )
 if not governance_path.is_file():
     failures.append(f"missing active GitHub governance surface: {governance_path}")
@@ -964,7 +951,7 @@ required_index_sections = (
 required_index_links = (
     "./workflows/ci-quality.yml",
     "./rulesets/main-protection.md",
-    "../docs/00.agent-governance/rules/github-governance.md",
+    "../docs/00.agent-governance/policies/github-governance.md",
     "../scripts/validation/run-local-qa-gates.sh",
     "../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml",
 )
@@ -996,7 +983,7 @@ else:
         failures.append(f"{github_index}: navigation-only authority was exceeded")
 
 artifact_contract = pathlib.Path(
-    "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
+    "docs/99.templates/registry.json"
 )
 if not artifact_contract.is_file():
     failures.append(f"missing agent-governance artifact contract: {artifact_contract}")
@@ -1014,17 +1001,21 @@ else:
         artifact_data = None
     expected_index_profile = {
         "profile_id": "github-navigation-index",
-        "artifact_type": "github-navigation-index",
+        "frontmatter_policy": "required",
         "path_pattern": ".github/INDEX.md",
-        "repository_section": "harness",
-        "canonical": False,
-        "required_keys": [],
-        "key_order": [],
+        "artifact_id_pattern": None,
+        "identity_relation": "none",
+        "template_id": None,
+        "required_frontmatter": ["profile_id"],
+        "optional_frontmatter": [],
         "required_sections": list(required_index_sections),
-        "expected_values": {},
+        "optional_sections": [],
+        "lifecycle_id": None,
+        "traceability": {},
+        "exceptions": [],
     }
     profiles = (
-        artifact_data.get("artifacts") or []
+        artifact_data.get("profiles") or []
         if isinstance(artifact_data, dict)
         else []
     )
@@ -1203,7 +1194,7 @@ stale_remote_patterns = (
     r"enforce_admins=false",
 )
 for active_path in (
-    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"),
+    pathlib.Path("docs/00.agent-governance/policies/github-governance.md"),
     ruleset,
 ):
     if not active_path.is_file():
@@ -1251,7 +1242,7 @@ if not codeowners.is_file():
 required_patterns = {
     "AGENTS.md",
     "CLAUDE.md",
-    "GEMINI.md",
+    "AGENTS.md",
     "RTK.md",
     ".github/**",
     ".claude/**",
@@ -1423,7 +1414,6 @@ scan_roots = [
     pathlib.Path(".agents"),
     pathlib.Path(".claude"),
     pathlib.Path(".codex"),
-    pathlib.Path(".gemini"),
 ]
 scan_files: set[pathlib.Path] = set()
 allowed_suffixes = {".md", ".toml", ".json"}
@@ -1585,8 +1575,8 @@ import sys
 failures: list[str] = []
 active_paths = [
     pathlib.Path(".claude/agents/infra-implementer.md"),
-    pathlib.Path("docs/00.agent-governance/scopes/infra.md"),
-    pathlib.Path("docs/00.agent-governance/scopes/security.md"),
+    pathlib.Path("docs/00.agent-governance/roles/infra.md"),
+    pathlib.Path("docs/00.agent-governance/roles/security.md"),
 ]
 patterns = [
     re.compile(r"scripts/validate-\*\.sh"),
@@ -1614,37 +1604,28 @@ section "Related Documents phased coverage"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
 
-import yaml
-
 failures: list[str] = []
-profiles = yaml.safe_load(
-    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
-)
+profiles = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 registered_markdown_sources = {
     pathlib.Path(role["source"])
     for role in profiles["template_roles"].values()
     if role["source"].endswith(".md")
 }
-governance_markdown_sources = {
-    pathlib.Path(profiles["template_roles"][role_name]["source"])
-    for role_name in ("memory", "progress")
-}
 for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     lines = text.splitlines()
-    if path in governance_markdown_sources:
-        valid_frontmatter = len(lines) >= 4 and lines[:4] == [
-            "---",
-            "layer: agentic",
-            "status: draft",
-            "---",
-        ]
-    else:
-        valid_frontmatter = len(lines) >= 3 and lines[:2] == ["---", "status: draft"] and "---" in lines[2:]
+    valid_frontmatter = (
+        len(lines) >= 4
+        and lines[0] == "---"
+        and lines[1].startswith("profile_id: ")
+        and "status: draft" in lines[2:]
+        and "---" in lines[2:]
+    )
     if not valid_frontmatter:
         failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
     if path not in registered_markdown_sources:
@@ -1677,45 +1658,24 @@ section "Markdown documentation contract"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
-
-import yaml
 
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
 generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
-profiles = yaml.safe_load(
-    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
-)
+registry = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 generated_outputs = {
-    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+    pathlib.Path(profile["path_pattern"])
+    for profile in registry["profiles"]
+    if profile.get("profile_id") == "generated"
+    and isinstance(profile.get("path_pattern"), str)
+    and "{" not in profile["path_pattern"]
 }
-artifact_contract = yaml.safe_load(
-    pathlib.Path(
-        "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
-    ).read_text()
-)
-current_memory_path = pathlib.Path(
-    "docs/00.agent-governance/memory/current.md"
-)
-current_memory_profiles = [
-    profile
-    for profile in artifact_contract.get("artifacts", [])
-    if isinstance(profile, dict)
-    and profile.get("profile_id") == "governance-current-memory"
-]
-if (
-    len(current_memory_profiles) != 1
-    or current_memory_profiles[0].get("path_pattern")
-    != current_memory_path.as_posix()
-):
-    failures.append("governance current-memory profile path mismatch")
-    related_documents_exemptions: set[pathlib.Path] = set()
-else:
-    related_documents_exemptions = {current_memory_path}
+related_documents_exemptions: set[pathlib.Path] = set()
 
 markdown_link = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\(([^)\n]+)\)")
 pseudo_doc_link = re.compile(r"`\[((?:\.{1,2}/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
@@ -2215,141 +2175,25 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Governance memory contract"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import sys
-
-sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
-import agent_governance_contract as governance_contract
-
-failures: list[str] = []
-
-required_files = [
-    pathlib.Path("docs/00.agent-governance/memory/README.md"),
-    pathlib.Path("docs/00.agent-governance/memory/current.md"),
-    pathlib.Path("docs/00.agent-governance/memory/progress.md"),
-    pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
-    pathlib.Path("docs/99.templates/templates/governance/progress.template.md"),
-]
-
-for path in required_files:
-    if not path.is_file():
-        failures.append(f"missing governance memory file: {path}")
-
-route_checks = {
-    pathlib.Path("docs/00.agent-governance/README.md"): [
-        "[LOAD:MEMORY]",
-        "memory/current.md",
-        "memory/README.md",
-        "applicable Stage 04 Task",
-    ],
-    pathlib.Path("docs/00.agent-governance/rules/bootstrap.md"): [
-        "[LOAD:MEMORY]",
-        "Memory is advisory",
-        "memory/current.md",
-        "applicable Stage 04 Task",
-    ],
-    pathlib.Path("docs/00.agent-governance/rules/agentic.md"): [
-        "memory/current.md",
-        "applicable Stage 04 Task",
-    ],
-    pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
-        "memory/current.md",
-        "applicable Stage 04 Task",
-    ],
-    pathlib.Path("docs/00.agent-governance/rules/stage-authoring-matrix.md"): [
-        "memory/current.md",
-        "Stage 04 Task evidence recorded",
-    ],
-    pathlib.Path("docs/00.agent-governance/memory/README.md"): [
-        "current.md",
-        "Stage 04 Task",
-        "progress.md",
-    ],
-}
-
-for path, literals in route_checks.items():
-    if not path.is_file():
-        failures.append(f"missing file for memory contract check: {path}")
-        continue
-    text = path.read_text(errors="ignore")
-    for literal in literals:
-        if literal not in text:
-            failures.append(f"{path}: missing memory contract literal: {literal}")
-
-memory_note_required = [
-    "- Date:",
-    "- Layer:",
-    "- Status:",
-    "- Applies To:",
-    "- Tags:",
-    "- Retrieval Keywords:",
-    "- Last Verified:",
-    "## Problem",
-    "## Context",
-    "## Resolution",
-    "## Prevention",
-    "## Evidence",
-]
-memory_dir = pathlib.Path("docs/00.agent-governance/memory")
-for path in sorted(memory_dir.glob("*.md")) if memory_dir.exists() else []:
-    if path.name in {"README.md", "current.md", "progress.md", "template.md"}:
-        continue
-    text = path.read_text(errors="ignore")
-    for literal in memory_note_required:
-        if literal not in text:
-            failures.append(f"{path}: missing memory note template literal: {literal}")
-
-try:
-    contract_bundle = governance_contract.load_contract_bundle(
-        pathlib.Path(".").resolve()
-    )
-except governance_contract.ContractLoadError as error:
-    failures.append(
-        f"{error.code} path={error.path} location={error.location}"
-    )
-except (OSError, UnicodeError, ValueError, TypeError):
-    failures.append("governance current-memory contract unavailable")
-else:
-    current_memory_findings = governance_contract._validate_current_memory(
-        pathlib.Path(".").resolve(),
-        contract_bundle,
-    )
-    if current_memory_findings:
-        failures.extend(
-            governance_contract.render_findings([finding])
-            for finding in current_memory_findings
-        )
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
 section "Reference stage contract"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
 
-import yaml
-
 failures: list[str] = []
 root = pathlib.Path("docs/90.references")
 template = pathlib.Path("docs/99.templates/templates/common/reference.template.md")
-profiles = yaml.safe_load(
-    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
-)
+registry = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 generated_outputs = {
-    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+    pathlib.Path(profile["path_pattern"])
+    for profile in registry["profiles"]
+    if profile.get("profile_id") == "generated"
+    and isinstance(profile.get("path_pattern"), str)
+    and "{" not in profile["path_pattern"]
 }
 
 if not root.is_dir():
@@ -2513,8 +2357,8 @@ required_files = [
     pathlib.Path("docs/90.references/data/knowledge/README.md"),
     pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md"),
     pathlib.Path(".claude/agents/doc-writer.md"),
-    pathlib.Path("docs/00.agent-governance/agents/agents/doc-writer.md"),
-    pathlib.Path("docs/00.agent-governance/agents/functions/knowledge-map-agent.md"),
+    pathlib.Path("docs/00.agent-governance/roles/doc-writer.md"),
+    pathlib.Path("docs/00.agent-governance/skills/knowledge-map-agent.md"),
     pathlib.Path("docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md"),
 ]
 
@@ -2876,37 +2720,37 @@ required_surface_fragments = {
         "never writes task evidence",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/environment-constraints.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/environment-constraints.md"): [
         "Direct `pre-commit run` execution by agents is prohibited",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/postflight-checklist.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/postflight-checklist.md"): [
         "Direct `pre-commit run` was not used",
         "Controlled wrapper reports exit 20",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/task-checklists.md"): [
         "Never run `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/github-governance.md"): [
         "must not invoke `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/rules/workflows.md"): [
+    pathlib.Path("docs/00.agent-governance/policies/workflows.md"): [
         "run all-files pre-commit only through",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/scopes/common.md"): [
+    pathlib.Path("docs/00.agent-governance/roles/common.md"): [
         "direct `pre-commit run`",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Git-visible, non-ignored repository",
     ],
-    pathlib.Path("docs/00.agent-governance/scopes/qa.md"): [
+    pathlib.Path("docs/00.agent-governance/roles/qa.md"): [
         "must not invoke `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "unexpected-path exit",
@@ -2995,7 +2839,7 @@ roots = [
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
-        "GEMINI.md",
+        "AGENTS.md",
         "docs",
         "infra",
         "scripts",
@@ -3037,9 +2881,7 @@ deleted_entrypoints = {
     "scripts/validation/preflight-compose.sh",
 }
 
-historical_reference_roots = (
-    pathlib.Path("docs/00.agent-governance/memory"),
-)
+historical_reference_roots = ()
 
 reference_artifact_roots = ()
 
@@ -3611,7 +3453,7 @@ scan_roots = [
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
-        "GEMINI.md",
+        "AGENTS.md",
         "docs",
         "infra",
         "scripts",

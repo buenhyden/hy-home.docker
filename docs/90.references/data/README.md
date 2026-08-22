@@ -110,4 +110,4 @@ data/
 - [LLM Wiki references](../llm-wiki/README.md)
 - [research references](../research/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)

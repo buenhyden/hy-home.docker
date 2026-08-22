@@ -36,7 +36,7 @@ This specification revalidates the 2026-05-25 `hy-home.docker` workspace audit r
 
 - **Config Contract**: `.env.example`, `.env`, secret registries, Compose files, and validation scripts are evidence sources only; this follow-up must not edit runtime config or value-bearing files.
 - **Data / Interface Contract**: No service API, data schema, Docker network, Docker volume, port, or deployment interface changes are allowed.
-- **Governance Contract**: Revalidation evidence must live in canonical Stage 03/04 artifacts and `docs/00.agent-governance/memory/progress.md`; Graphify is advisory when health is advisory.
+- **Governance Contract**: Revalidation evidence must live in canonical Stage 03/04 artifacts and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`; Graphify is advisory when health is advisory.
 
 ## Core Design
 
@@ -88,7 +88,7 @@ Not applicable. This follow-up does not expose or change an external API.
 ## Memory & Context Strategy (If Applicable)
 
 - Use the workspace-audit revalidation memory pattern for no-touch and evidence-driven closure.
-- Record final progress in `docs/00.agent-governance/memory/progress.md`.
+- Record final progress in `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 - Do not create a new durable memory note unless a reusable out-of-scope issue is found beyond the existing deferred register.
 
 ## Guardrails (If Applicable)
@@ -153,5 +153,5 @@ bash scripts/knowledge/report-graphify-health.sh
 - **Baseline Plan**: 2026-05-25 home docker workspace audit improvement plan
 - **Baseline Task**: 2026-05-25 home docker workspace audit improvement task
 - **Release Runbook**: [release-management.md](../../05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md)
-- **Governance Memory Progress**: [progress.md](../../00.agent-governance/memory/progress.md)
+- **Governance Memory Progress**: [progress.md](../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
 - **Graphify Report**: [GRAPH_REPORT.md](../../../graphify-out/GRAPH_REPORT.md)

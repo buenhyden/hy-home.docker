@@ -99,5 +99,5 @@ governance/
 
 - [reference data](../README.md)
 - [90.references](../../README.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 - [gap routing recommender](../../../../scripts/validation/recommend-gap-routing.sh)

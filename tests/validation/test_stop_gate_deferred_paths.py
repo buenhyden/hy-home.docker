@@ -16,7 +16,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
-REGISTRY_RELATIVE = "docs/00.agent-governance/contracts/deferred-paths.yaml"
+REGISTRY_RELATIVE = "docs/00.agent-governance/policies/approval-boundaries.md"
 
 OWNING_TASK_RELATIVE = "docs/04.execution/tasks/owning-task.md"
 

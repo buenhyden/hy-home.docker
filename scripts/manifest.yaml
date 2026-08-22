@@ -27,7 +27,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -40,7 +40,7 @@ files:
   - tests/validation/test_provider_surface_renderer.py
 - path: scripts/hooks/patch-graphify-post-commit.sh
   kind: hook
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -50,7 +50,7 @@ files:
   tests: []
 - path: scripts/hooks/post-tool-validate.sh
   kind: hook
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -93,7 +93,7 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - README.md
-  - docs/00.agent-governance/scopes/qa.md
+  - docs/00.agent-governance/roles/qa.md
   - docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md
   - docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md
@@ -172,7 +172,7 @@ files:
   - tests/validation/test_identity_history.py
 - path: scripts/lib/document_governance/links.py
   kind: library
-  authority: docs/00.agent-governance/rules/documentation-protocol.md
+  authority: docs/00.agent-governance/policies/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -298,7 +298,7 @@ files:
   tests: []
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -425,7 +425,7 @@ files:
   - tests/validation/test_tech_stack_version_contract.py
 - path: scripts/validation/agent_governance_contract.py
   kind: validator
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -627,6 +627,17 @@ files:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+- path: scripts/validation/check-task4-migration.py
+  kind: validator
+  authority: docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_task4_migration_verifier.py
 - path: scripts/validation/check-target-surface-contract.py
   kind: validator
   authority: .github/workflow-contract.yml
@@ -770,7 +781,7 @@ files:
   consumers:
   - scripts/validation/check-repo-contracts.sh
   disposition: delete
-  successor: docs/00.agent-governance/rules/documentation-protocol.md
+  successor: docs/00.agent-governance/policies/documentation-protocol.md
   tests: []
 - path: scripts/validation/recommend-qa-gates.sh
   kind: validator
@@ -810,15 +821,16 @@ files:
   - tests/validation/test_audit_criterion_contract.py
 - path: scripts/validation/report-provider-hook-parity.sh
   kind: validator
-  authority: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
-  lifecycle: transition
+  authority: docs/00.agent-governance/providers/registry.yaml
+  lifecycle: active
   mutation: check-write
   consumers:
   - scripts/validation/check-repo-contracts.sh
-  disposition: merge
-  successor: scripts/operations/provider_surface_renderer.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_provider_hook_parity.py
 - path: scripts/validation/run-agent-output-eval-fixtures.sh
   kind: runner
   authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md

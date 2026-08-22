@@ -1,148 +1,59 @@
 ---
+profile_id: readme
 layer: agentic
+status: active
 ---
 
-# AI Agent Governance Hub
-
-> Canonical governance system for coding agents in this repository.
+# AI Agent Governance
 
 ## Overview
 
-- Purpose: deterministic, auditable, token-efficient agent execution for a shared harness-engineering and agent-first engineering workspace.
-- Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub.
-- Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/05`, plus `docs/90` and `docs/99`.
-
-## Audience
-
-- AI Agents
-- Documentation Writers
-- Repository Maintainers
+Stage 00 is the sole human and AI-agent authority for policy, roles, delegation,
+handoff, provider differences, and reusable procedures. Claude and Codex are the
+only supported providers. Runtime directories are generated adapters and never
+own policy.
 
 ## Scope
 
-- Language: every file in `docs/00.agent-governance/` must be English-only.
-- Root files must stay thin; detailed policy must live under this directory.
-- `docs/01` to `docs/99` are read-only by default and require explicit user approval for mutation.
+- `policies/` owns normative approval, security, quality, Git, documentation,
+  workflow, and SDLC constraints.
+- `roles/` owns responsibilities, permissions, inputs, outputs, and handoff.
+- `skills/` owns reusable provider-neutral procedures.
+- `providers/` owns only Claude/Codex capability and syntax differences.
+- `sdlc.md` owns the Requirements to Operations lifecycle.
 
-## Core Concepts
-
-- **Governance SSoT**: `docs/00.agent-governance/` owns policy, provider
-  overlays, agent catalog contracts, and validation expectations. Runtime
-  directories expose those contracts; they do not define separate governance.
-- **Agent**: a named role in `agents/agents/` with a scope, purpose, expected
-  inputs/outputs, provider adapter bindings, and model tier.
-- **Skill / Function**: a reusable capability in `agents/functions/` and, when
-  supported by a runtime, a provider adapter under `.claude/skills/` or
-  `.agents/skills/`. Shared skill policy defines when a
-  skill should be considered, what artifact it may produce, and which provider
-  surface exposes it; provider-local skill files may not create separate
-  governance.
-- **Rule**: a shared policy in `rules/` or `scopes/`. Provider files may bind
-  rules to runtime mechanics but may not redefine the policy.
-- **Hook**: runtime event wiring that routes to shared scripts or behavioral
-  gates. Hooks provide enforcement and advisory context; active policy remains
-  in Stage 00.
-- **Sub-agent**: a delegated agent invocation governed by
-  `subagent-protocol.md`; it imports exactly one primary scope and follows the
-  shared model policy.
-- **Output Style**: the workspace-wide response contract in
-  `rules/output-style.md`, with provider-native bindings only where supported.
-- **Workflow**: an ordered execution path in `rules/workflows.md` and related
-  stage docs that maps context, planning, implementation, validation, and
-  evidence capture. External workflow disciplines such as brainstorming,
-  implementation planning, TDD, systematic debugging, verification, and branch
-  finalization are adapted into the repository stage taxonomy rather than
-  copied into non-canonical active docs paths.
-- **Memory**: `memory/current.md` is the bounded active handoff; other notes are
-  advisory durable context, and `memory/progress.md` is append-preserved
-  historical navigation. Execution evidence belongs in the applicable co-located
-  Task, and memory never overrides active governance.
-- **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,
-  `scopes/qa.md`, scripts, and CI docs. Providers execute the same policy with
-  provider-native mechanics.
-- **Model Policy**: provider-equivalent model and reasoning-effort mapping in
-  `subagent-protocol.md`. Runtime surfaces must use only values permitted by
-  that policy.
-- **Template Contract**: target-stage documents use the mapped template from
-  `docs/99.templates/` before editing and retain required headings, lifecycle
-  metadata, target-relative links, and one `## Related Documents` section.
-- **Provider Adapter Model**: Stage 00 is the canonical runtime catalog.
-  Claude, Codex, and Gemini expose provider-specific adapters that must match
-  Stage 00 name sets, roles, scopes, models, and validation rules.
-- **Clarification Duty**: when the task is underspecified, constraints conflict,
-  or a likely assumption could change the outcome, stop and ask before changing
-  state. This duty is blocking before planning, implementation, model/config
-  changes, and completion claims. Do not silently choose a risky interpretation.
-
-## Governance Coverage Matrix
-
-This matrix records the current Stage 00 coverage and the desired completion
-evidence for the shared governance concepts. It is a routing aid; detailed
-policy remains in the linked Stage 00 documents.
-
-| Concept           | Current Canonical Surface                                                                  | Desired State / Evidence                                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Agent             | `agents/agents/`, `subagent-protocol.md`                                                   | Role, scope, model tier, provider adapter, and delegated-agent lifecycle stay synchronized across provider surfaces.    |
-| Skill / Function  | `agents/functions/`, provider skill adapters, `rules/workflows.md`                         | Work uses the lifecycle: discovery -> applicability -> provider loading -> canonical artifact -> validation evidence.   |
-| Rule              | `rules/`, `scopes/`                                                                        | Provider overlays bind rules to runtime mechanics without redefining policy.                                            |
-| Hook              | Runtime hook configs and `scripts/hooks/`                                                  | Hooks provide enforcement or advisory context and point back to Stage 00 for policy.                                    |
-| Sub-agent         | `subagent-protocol.md`                                                                     | Delegation imports exactly one primary scope and follows the shared communication and model policy.                     |
-| Output Style      | `rules/output-style.md`                                                                    | Provider output bindings remain behavioral adapters, not separate writing policy.                                       |
-| Workflow          | `rules/workflows.md`, stage docs                                                           | Planning, execution, verification, and evidence land in canonical stage paths.                                          |
-| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, co-located Task evidence stays durable, and progress remains historical navigation.       |
-| QA & CI/CD        | `scopes/qa.md`, `rules/github-governance.md`                                               | Each change type has local checks, CI-only gates, hook/script evidence, and skipped-check rationale.                    |
-| Model Policy      | `subagent-protocol.md`, provider notes                                                     | Model and reasoning-effort values change only when policy, sync script, and validators agree.                           |
-| Template Contract | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/` | Template deviations are audited with file, expected template, reason, approval/evidence owner, and validation evidence. |
+Document profiles, paths, identifiers, lifecycle states, and template mappings
+belong to [Stage 99](../99.templates/README.md). Executable enforcement belongs
+to registered scripts. Current execution state and durable evidence belong to
+the active Spec Package Task; Git history is the recovery boundary.
 
 ## Structure
 
-- `rules/`: shared governance policies, completion gates, and [JIT Markers](rules/jit-markers.md) (e.g. `[LOAD:MEMORY]`). Includes the cross-provider [Capability Matrix](rules/provider-capability-matrix.md), [Output Style Contract](rules/output-style.md), and [Workflows](rules/workflows.md).
-- `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
-- `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
-- `agents/`: canonical typed catalog of 14 workspace roles and 22 reusable
-  orchestration functions. Provider skill bodies are projections, not policy
-  inputs.
-- `contracts/`: typed artifact, agent/function, provider/model, path-authority,
-  and adoption contracts. Repository projection modes are read-only
-  diagnostics until the corresponding convergence task adds them to the
-  aggregate gate.
-- `memory/`: bounded current handoff, durable governance notes, audit findings,
-  and append-preserved historical navigation.
-  - `memory/README.md` — memory policy.
-  - `memory/current.md` — bounded active task and verified-state handoff.
-  - `memory/progress.md` — append-preserved historical navigation.
-- `subagent-protocol.md`: spawn rules, communication protocol, and agent lifecycle.
-- `harness-implementation-map.md`: routing map from harness surfaces to their canonical Stage 00 / script sources.
-- `rules/approval-boundaries.md`: protected-surface and approval matrix for harness work.
+```text
+00.agent-governance/
+├── README.md
+├── sdlc.md
+├── policies/
+├── roles/
+├── providers/
+└── skills/
+```
+
+No other active top-level entry is permitted.
 
 ## How to Work in This Area
 
-- Use the sole repository load order in
-  `rules/bootstrap.md#3-canonical-load-order`.
-- Route orchestration through `rules/workflows.md`, delegated work through
-  `subagent-protocol.md`, and write authority through
-  `rules/approval-boundaries.md`.
-- Read `memory/README.md` and `memory/current.md` as the bounded handoff;
-  `memory/progress.md` is historical navigation only.
-- Use `contracts/provider-models.yaml` for model and provider values, and use
-  the registered provider renderer for projection changes.
-- Decide completion only through
-  `rules/task-checklists.md#3-completion-contract`; record the resulting
-  evidence in the applicable co-located Task.
+1. Enter through `AGENTS.md` or `CLAUDE.md`.
+2. Follow [bootstrap policy](policies/bootstrap.md).
+3. Load only the policy, role, skill, provider adapter, and stage documents
+   needed for the active request.
+4. Record implementation and verification evidence in the active Task.
+5. Regenerate adapters with `scripts/operations/sync-provider-surfaces.sh`.
 
 ## Related Documents
 
-- `../01.requirements/prd-0024-agent-governance-standardization.md`
-- `../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
-- `../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
-- `rules/agentic.md`
-- `rules/bootstrap.md`
-- `rules/jit-markers.md`
-- `rules/github-governance.md`
-- `rules/approval-boundaries.md`
-- `contracts/agent-governance-artifacts.yaml`
-- `contracts/agent-catalog.yaml`
-- `contracts/provider-models.yaml`
-- `harness-implementation-map.md`
-- `subagent-protocol.md`
-- `providers/agents-md.md`
+- [SDLC](sdlc.md)
+- [Bootstrap policy](policies/bootstrap.md)
+- [Provider registry](providers/registry.yaml)
+- [Stage 99 authority](../99.templates/README.md)
+- [Active governance specification](../03.specs/0153-workspace-governance-simplification/spec.md)

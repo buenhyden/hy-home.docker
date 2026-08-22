@@ -111,8 +111,8 @@ The restructure program has four design components:
 
 ### Key Dependencies
 
-- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
-- `docs/00.agent-governance/rules/documentation-protocol.md`
+- `docs/00.agent-governance/policies/stage-authoring-matrix.md`
+- `docs/00.agent-governance/policies/documentation-protocol.md`
 - `docs/99.templates/support/*.md`
 - `scripts/validation/check-repo-contracts.sh`
 - `scripts/validation/check-document-links.py --mode traceability`
@@ -350,4 +350,4 @@ relevant Compose and hardening checks defined by the affected task evidence.
 - **Template governance**: [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
 - **Template selection**: [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
 - **Lifecycle status**: [../../99.templates/support/lifecycle-status.md](../../99.templates/support/lifecycle-status.md)
-- **Stage authoring matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- **Stage authoring matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)

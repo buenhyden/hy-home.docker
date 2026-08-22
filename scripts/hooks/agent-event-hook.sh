@@ -197,24 +197,6 @@ if not tool_name or tool_name in edit_tools:
         if short_path.startswith(project_prefix):
             short_path = short_path[len(project_prefix):]
         short_path = short_path.removeprefix("./")
-        if short_path.startswith("docs/00.agent-governance/memory/") and short_path.endswith(".md"):
-            system_messages.append(
-                "Governance memory edit detected.\n\n"
-                f"Path: `{short_path}`\n\n"
-                "Memory notes are advisory retrieval context, not active policy. "
-                "Use `docs/99.templates/templates/governance/memory.template.md` for durable notes, "
-                "do not store transcripts, raw logs, shell history, credentials, "
-                "tokens, private keys, or secret values, and update "
-                "`docs/00.agent-governance/memory/progress.md` when creating or "
-                "materially changing a memory note."
-            )
-            break
-    for path in paths:
-        short_path = path
-        project_prefix = str(project) + "/"
-        if short_path.startswith(project_prefix):
-            short_path = short_path[len(project_prefix):]
-        short_path = short_path.removeprefix("./")
         if re.match(r"docs/(01\.requirements|02\.architecture|03\.specs|04\.execution|05\.operations|90\.references)/", short_path):
             system_messages.append(
                 "Target-stage documentation edit detected.\n\n"
@@ -298,7 +280,7 @@ changed_count = len([line for line in changed.splitlines() if line.strip()]) if 
 
 msg = f"""Session ending — governance reminder:
 
-- Update `docs/00.agent-governance/memory/progress.md` with a work log entry before this session closes.
+- Update the active co-located Stage 03 Task named by the current bootstrap/spec context before this session closes.
 - Record changed files, verification evidence, and any residual risk or open gap.
 - When repository-modifying work is complete, create small Conventional Commits by logical unit before the final response unless the user explicitly asked not to commit, the work is incomplete, or required checks/approvals are missing.
 - Stage only task-owned files or hunks, and leave unrelated untracked files untouched.
@@ -439,7 +421,7 @@ try:
 except subprocess.CalledProcessError:
     raise SystemExit(0)
 
-REGISTRY = "docs/00.agent-governance/contracts/deferred-paths.yaml"
+REGISTRY = "docs/00.agent-governance/policies/approval-boundaries.md"
 SCHEMA = "agent-governance/deferred-paths/v1"
 
 
@@ -583,7 +565,7 @@ prompt = str(data.get("prompt", "")).lower()
 FUNCTIONS = [
     {
         "label": "compose-stack-agent",
-        "path": "docs/00.agent-governance/agents/functions/compose-stack-agent.md",
+        "path": "docs/00.agent-governance/skills/compose-stack-agent.md",
         "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
         "keywords": [
             "healthcheck", "health check", "restart policy",
@@ -593,7 +575,7 @@ FUNCTIONS = [
     },
     {
         "label": "requirements-to-design-agent",
-        "path": "docs/00.agent-governance/agents/functions/requirements-to-design-agent.md",
+        "path": "docs/00.agent-governance/skills/requirements-to-design-agent.md",
         "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
         "keywords": [
             "prd", "ard", "requirements to design", "architecture decision",
@@ -602,7 +584,7 @@ FUNCTIONS = [
     },
     {
         "label": "execution-plan-agent",
-        "path": "docs/00.agent-governance/agents/functions/execution-plan-agent.md",
+        "path": "docs/00.agent-governance/skills/execution-plan-agent.md",
         "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
             "execution plan", "spec to plan", "stage 03", "stage 04",
@@ -611,7 +593,7 @@ FUNCTIONS = [
     },
     {
         "label": "task-breakdown-agent",
-        "path": "docs/00.agent-governance/agents/functions/task-breakdown-agent.md",
+        "path": "docs/00.agent-governance/skills/task-breakdown-agent.md",
         "desc": "플랜→태스크 분해 및 실행 증거 기록",
         "keywords": [
             "task breakdown", "task evidence", "plan to task",
@@ -620,7 +602,7 @@ FUNCTIONS = [
     },
     {
         "label": "ops-runbook-agent",
-        "path": "docs/00.agent-governance/agents/functions/ops-runbook-agent.md",
+        "path": "docs/00.agent-governance/skills/ops-runbook-agent.md",
         "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
         "keywords": [
             "runbook", "stage 05", "05.operations", "backup procedure",
@@ -629,7 +611,7 @@ FUNCTIONS = [
     },
     {
         "label": "knowledge-map-agent",
-        "path": "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
+        "path": "docs/00.agent-governance/skills/knowledge-map-agent.md",
         "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
         "keywords": [
             "graphify", "knowledge graph", "traceability gap", "orphaned doc",
@@ -638,7 +620,7 @@ FUNCTIONS = [
     },
     {
         "label": "policy-gate-agent",
-        "path": "docs/00.agent-governance/agents/functions/policy-gate-agent.md",
+        "path": "docs/00.agent-governance/skills/policy-gate-agent.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
             "policy gate", "validation suite", "check-quickwin",
@@ -697,9 +679,9 @@ msg = f"""Context compaction imminent — state snapshot:
 - Uncommitted changes: `{changed_count}` files
 
 Before compaction, ensure:
-- Active work is committed or stashed.
-- `docs/00.agent-governance/memory/progress.md` reflects current progress.
-- Any in-flight plan or decision is recorded in a memory note."""
+- Current tracked, staged, and untracked state is preserved without hiding unrelated work.
+- The active co-located Stage 03 Task named by the current bootstrap/spec context reflects current progress.
+- Any in-flight plan or decision is recorded in that Task or its governing Spec/Plan."""
 
 print(json.dumps({
     "hookSpecificOutput": {

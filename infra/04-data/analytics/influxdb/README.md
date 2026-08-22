@@ -58,7 +58,7 @@ influxdb/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md)를 참조한다.
 2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md)을 따른다.

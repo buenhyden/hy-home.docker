@@ -36,7 +36,7 @@ This document is the technical specification for the May 2026 workspace-wide aud
 ## Core Design
 
 - **Component Boundary**: this specification applies only to the workspace governance layer. It does not change infrastructure runtime behavior, CI/CD deployment behavior, or secret values.
-- **Key Dependencies**: `docs/99.templates/templates/sdlc/spec.template.md`, `docs/99.templates/templates/sdlc/plan.template.md`, `docs/99.templates/templates/sdlc/task.template.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- **Key Dependencies**: `docs/99.templates/templates/sdlc/spec.template.md`, `docs/99.templates/templates/sdlc/plan.template.md`, `docs/99.templates/templates/sdlc/task.template.md`, `docs/00.agent-governance/policies/stage-authoring-matrix.md`
 - **Tech Stack**: Markdown documents, Bash validation scripts, and the Claude `skill.md` format
 
 ## Historical Gap Registry Snapshot (2026-05-26)
@@ -90,5 +90,5 @@ bash scripts/validation/check-doc-traceability.sh
 - **Task**: ../../04.execution/tasks/2026-05-26-workspace-audit.md
 - **Env Key Comparison**: [../../05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md)
 - **Secrets Key Comparison**: [../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md)
-- **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Progress Log**: [../../00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md)
+- **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- **Progress Log**: [../../00.agent-governance/memory/progress.md](../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)

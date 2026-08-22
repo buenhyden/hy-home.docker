@@ -22,7 +22,7 @@ ROOT_ENTRYPOINTS = frozenset(
         ".pre-commit-config.yaml",
         "AGENTS.md",
         "CLAUDE.md",
-        "GEMINI.md",
+        "AGENTS.md",
         "README.md",
         "RTK.md",
         "docker-compose.yml",

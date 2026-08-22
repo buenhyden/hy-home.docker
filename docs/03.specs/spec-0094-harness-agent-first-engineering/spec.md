@@ -32,11 +32,11 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 - `scripts/README.md`
 - `AGENTS.md`
 - `CLAUDE.md`
-- `GEMINI.md`
+- `AGENTS.md`
 - `RTK.md`
 - `docs/00.agent-governance/README.md`
-- `docs/00.agent-governance/rules/agentic.md`
-- `docs/00.agent-governance/rules/documentation-protocol.md`
+- `docs/00.agent-governance/policies/agentic.md`
+- `docs/00.agent-governance/policies/documentation-protocol.md`
 - `.claude/CLAUDE.md`
 - `.codex/README.md`
 - `scripts/validation/check-repo-contracts.sh`
@@ -77,7 +77,7 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 - Entry shims: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 - Governance hub: `docs/00.agent-governance/`.
 - Runtime mirror: `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `docs/00.agent-governance/agents/**`.
-- Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`.
+- Delegation protocol: `docs/00.agent-governance/policies/agentic.md`.
 - Provider overlays: `docs/00.agent-governance/providers/*.md`.
 - Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
 - Validation gates: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`, security/hardening baseline scripts.
@@ -224,4 +224,4 @@ bash scripts/hardening/check-all-hardening.sh
 - [Operations Policy](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)
 - [Validation Runbook](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
-- [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Documentation Protocol](../../00.agent-governance/policies/documentation-protocol.md)

@@ -76,8 +76,8 @@ Infrastructure profiles distinguish a `Folder index README` from a
 Generic `AI Agent Guidance` and `AI Agent Operation Policy` sections are not
 local content. Replace shared execution or documentation rules with a short
 link to the Stage 00
-[`agentic.md`](../../00.agent-governance/rules/agentic.md) and
-[`documentation-protocol.md`](../../00.agent-governance/rules/documentation-protocol.md)
+[`agentic.md`](../../00.agent-governance/policies/agentic.md) and
+[`documentation-protocol.md`](../../00.agent-governance/policies/documentation-protocol.md)
 owners. Keep service-specific commands, constraints, validation, and
 troubleshooting as local subsections under the profile-admitted README
 envelope.

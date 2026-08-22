@@ -552,7 +552,7 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             "tests/",
         )
         excluded_exact = {
-            "docs/00.agent-governance/memory/progress.md",
+            "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
             "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md",
         }
         candidates = subprocess.run(

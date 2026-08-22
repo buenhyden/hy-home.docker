@@ -43,8 +43,8 @@ boundary that paused
 - Existing canonical pack: fifteen leaves and one folder-index README
 - [Research category README](../../90.references/research/README.md)
 - [Reference template](../../99.templates/templates/common/reference.template.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 
 ## Goals and Non-goals
 
@@ -92,7 +92,7 @@ the predecessor drift. It narrowly extends the allowed set to
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**`
 - `docs/90.references/research/README.md`
 - `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
-- `docs/00.agent-governance/memory/current.md` (handoff refresh only)
+- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (handoff refresh only)
 - Generated artifacts whose freshness contracts the above changes trip, limited
   to regeneration by their registered generators:
   `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`,
@@ -410,5 +410,5 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 - [Research category README](../../90.references/research/README.md)
 - [Spec 123 audit remediation](spec.md)
 - [Predecessor convergence Task](../spec-0134-agent-governance-canonical-convergence/task.md)
-- [Current project memory](../../00.agent-governance/memory/current.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
+- [Current project memory](../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
+- [Task checklists](../../00.agent-governance/policies/task-checklists.md)

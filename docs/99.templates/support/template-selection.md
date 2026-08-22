@@ -64,13 +64,6 @@ contract. Its structural and semantic dispositions remain non-executable while
 | GraphQL | `docs/03.specs/spec-####-<slug>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
 | Protobuf | `docs/03.specs/spec-####-<slug>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
 
-## Governance Template Mapping
-
-| Role | Target Location | Template |
-| --- | --- | --- |
-| Memory | `docs/00.agent-governance/memory/<note>.md` | [memory.template.md](../templates/governance/memory.template.md) |
-| Progress | `docs/00.agent-governance/memory/progress.md` | [progress.template.md](../templates/governance/progress.template.md) |
-
 ## Selection Rules
 
 - Choose exactly one primary template for each target document.

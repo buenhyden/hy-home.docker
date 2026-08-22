@@ -167,7 +167,7 @@ service directory and cover the following agent-verifiable fields:
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
 4. **Validation**: `scripts/validation/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
-공유 실행 및 문서 규칙은 [Stage 00 agentic governance](../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../docs/00.agent-governance/rules/documentation-protocol.md)로 라우팅한다.
+공유 실행 및 문서 규칙은 [Stage 00 agentic governance](../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../docs/00.agent-governance/policies/documentation-protocol.md)로 라우팅한다.
 
 1. 타겟 계층과 기존 서비스 패턴을 파악한다.
 2. 새 서비스가 `common-optimizations.yml` 템플릿을 준수하는지 확인한다.

@@ -578,7 +578,10 @@ def _validate_requirement_child_spaces(
             )
 
 
-_TOKEN_PATTERN = re.compile(r"\{(?:number|package_number|task_number|subject_number|year):4\}|\{(?:slug|domain|stage)\}")
+_TOKEN_PATTERN = re.compile(
+    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"|\{(?:slug|hook_slug|domain|stage)\}"
+)
 _ARTIFACT_TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|subject_number|year):4\}"
 )
@@ -589,7 +592,7 @@ def _safe_path_pattern(value: str) -> bool:
     tokens = re.findall(r"\{[^{}]+\}", value)
     without_tokens = _TOKEN_PATTERN.sub("", value)
     return bool(
-        value.startswith("docs/")
+        (value.startswith("docs/") or value == ".github/INDEX.md")
         and not value.startswith("/")
         and "\\" not in value
         and all(character.isprintable() for character in value)
@@ -633,6 +636,8 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
         token = match.group(0)
         if token.endswith(":4}"):
             rendered.append(r"[0-9]{4}")
+        elif token == "{hook_slug}":
+            rendered.append(r"[a-z0-9][a-z0-9.-]*")
         elif token == "{slug}":
             rendered.append(r"[a-z0-9][a-z0-9-]*")
         elif token == "{stage}":

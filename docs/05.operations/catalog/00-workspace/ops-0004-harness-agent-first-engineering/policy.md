@@ -4,7 +4,7 @@ artifact_id: policy-0004
 artifact_type: policy
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-14
+updated: 2026-08-21
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md -->
 
@@ -17,11 +17,11 @@ updated: 2026-08-14
 ## Policy Scope
 
 - Agent entry shims.
-- Governance rules and scopes.
+- Governance policies, roles, skills, and provider registry.
 - Claude runtime mirror.
 - Codex hook/context surface.
 - Stage documentation and validators.
-- `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
+- `AGENTS.md`, `CLAUDE.md`
 - `.claude/**`
 - `.codex/**`
 - `docs/00.agent-governance/**`
@@ -52,7 +52,7 @@ updated: 2026-08-14
 
 ## Exceptions
 
-- Historical notes under `docs/00.agent-governance/memory/` may mention prior source labels for audit context.
+- Historical Stage 90 or Stage 98 evidence may mention prior source labels when it is clearly non-authoritative.
 - `bash scripts/knowledge/report-graphify-health.sh` may report `status=advisory`; that is evidence for downgraded confidence, not a repository validation failure.
 - `graphify` refresh may be skipped when the CLI is unavailable, but the skip must be reported.
 - `rtk` may be bypassed when it is unavailable in the active shell.
@@ -82,7 +82,7 @@ bash scripts/hardening/check-all-hardening.sh
 
 - Run repository contract checks after any root, governance, runtime, provider, script, or stage documentation change.
 - Re-run the full verification bundle before declaring a broad harness or Agent-first migration complete.
-- Review this policy when `.claude`, `.codex`, or `docs/00.agent-governance/agents` changes.
+- Review this policy when `.claude`, `.codex`, or the canonical Stage 00 role/skill catalogs change.
 - Record out-of-scope infra profile failures separately instead of expanding HAFE acceptance criteria silently.
 
 ## Related Documents

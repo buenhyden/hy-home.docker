@@ -68,5 +68,5 @@ releases/
 - [Operations index](../README.md)
 - [Release template](../../99.templates/templates/operations/release.template.md)
 - [Template selection](../../99.templates/support/template-selection.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - Spec 127

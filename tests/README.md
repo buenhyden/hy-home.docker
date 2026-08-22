@@ -58,5 +58,5 @@ Task 8 승인 전에는 changed/new blocking gate를 활성화하지 않습니�
 
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
-- [Documentation protocol](../docs/00.agent-governance/rules/documentation-protocol.md)
-- [Task checklists](../docs/00.agent-governance/rules/task-checklists.md)
+- [Documentation protocol](../docs/00.agent-governance/policies/documentation-protocol.md)
+- [Task checklists](../docs/00.agent-governance/policies/task-checklists.md)

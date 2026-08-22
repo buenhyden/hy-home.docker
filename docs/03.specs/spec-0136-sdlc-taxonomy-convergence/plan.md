@@ -348,10 +348,10 @@ git commit -m "feat(validation): add stable document taxonomy engine"
 
 **Files:**
 
-- Modify: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
-- Modify: docs/00.agent-governance/rules/documentation-protocol.md
-- Modify: docs/00.agent-governance/rules/stage-authoring-matrix.md
-- Modify: docs/00.agent-governance/scopes/docs.md
+- Modify: docs/99.templates/registry.json
+- Modify: docs/00.agent-governance/policies/documentation-protocol.md
+- Modify: docs/00.agent-governance/policies/stage-authoring-matrix.md
+- Modify: docs/00.agent-governance/roles/docs.md
 - Modify: docs/99.templates/support/document-metadata-profiles.yaml
 - Modify: docs/99.templates/support/frontmatter-contract.md
 - Modify: docs/99.templates/support/lifecycle-status.md
@@ -960,18 +960,18 @@ git commit -m "docs: consolidate references and archive identities"
 
 **Files:**
 
-- Modify: docs/00.agent-governance/rules/bootstrap.md
+- Modify: docs/00.agent-governance/policies/bootstrap.md
 - Modify: documentation-protocol.md, output-style.md, standards.md,
   agentic.md, workflows.md, task-checklists.md, postflight-checklist.md,
   persona.md, and stage-authoring-matrix.md
 - Modify or delete: docs/00.agent-governance/scopes/backend.md, entry.md,
   frontend.md, meta.md, mobile.md, and product.md
-- Modify: docs/00.agent-governance/providers/agents-md.md
+- Modify: docs/00.agent-governance/providers/README.md
 - Modify: docs/00.agent-governance/providers/claude.md
 - Modify: docs/00.agent-governance/providers/codex.md
-- Modify: docs/00.agent-governance/providers/gemini.md
-- Modify: docs/00.agent-governance/contracts/provider-models.yaml
-- Modify: docs/00.agent-governance/memory/current.md
+- Modify: docs/00.agent-governance/providers/README.md
+- Modify: docs/00.agent-governance/providers/registry.yaml
+- Modify: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
 - Modify generated provider surfaces owned by provider_surface_renderer.py
 - Modify: tests/validation/test_agent_governance_contract.py
 - Modify: tests/validation/test_provider_surface_renderer.py
@@ -1376,7 +1376,7 @@ git commit -m "docs: normalize four-digit identities and incident routing"
 - Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
 - Modify: `docs/99.templates/support/template-selection.md`
 - Modify: `docs/99.templates/support/corpus-migration-contract.md`
-- Modify: `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- Modify: `docs/00.agent-governance/policies/stage-authoring-matrix.md`
 - Modify: `scripts/manifest.yaml`
 - Modify: `.github/workflow-contract.yml`
 - Modify: `.pre-commit-config.yaml`
@@ -1529,7 +1529,7 @@ approved manifest.
 
 ~~~bash
 git add docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md \
-  docs/99.templates/support docs/00.agent-governance/rules/stage-authoring-matrix.md \
+  docs/99.templates/support docs/00.agent-governance/policies/stage-authoring-matrix.md \
   scripts/lib/document_governance/operations_catalog.py \
   scripts/validation/check-operations-catalog.py scripts/manifest.yaml \
   .github/workflow-contract.yml .pre-commit-config.yaml \
@@ -2159,7 +2159,7 @@ git commit -m "ci: align local and remote document governance gates"
 **Files:**
 
 - Modify: docs/README.md and stage README files
-- Modify: docs/00.agent-governance/memory/current.md
+- Modify: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
 - Modify: active Markdown links reported by check-document-links.py
 - Modify: scripts/README.md
 - Modify: .github/INDEX.md and CODEOWNERS when paths changed
@@ -2225,7 +2225,7 @@ git commit -m "docs: repair navigation memory and generated evidence"
 - Modify: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
 - Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
 - Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md
-- Modify: docs/00.agent-governance/contracts/agent-catalog.yaml only if the
+- Modify: docs/00.agent-governance/providers/registry.yaml only if the
   final typed audit finds a duplicate or consumerless active role
 - Modify: tests/validation/test_agent_governance_contract.py
 - Modify: scripts/manifest.yaml
@@ -2392,8 +2392,8 @@ history rewriting.
 ## Related Documents
 
 - [Approved specification](spec.md)
-- [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
 - [Workflow contract](../../../.github/workflow-contract.yml)

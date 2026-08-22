@@ -5,7 +5,7 @@ artifact_type: adr
 parent_ids:
   - ad-0027
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-21
 ---
 
 # ADR-0029: Workspace Governance Authority
@@ -16,8 +16,8 @@ The repository currently distributes document-shape rules across Stage 00,
 Stage 99 support files, templates, validators, generated provider surfaces, and
 aggregate gates. That distribution permits a validator, template, provider
 adapter, or historical reference to conflict with the current SDLC taxonomy.
-Project memory and three-provider projections also keep retired policy surfaces
-active after their purpose has ended.
+Parallel handoff files and unsupported provider experiments also kept obsolete
+policy surfaces active after their purpose had ended.
 
 The successor must make authority resolvable before the corpus moves, retain
 recoverable stable identities, support Claude and Codex without provider-owned
@@ -64,8 +64,8 @@ Adopt the separated authority model.
   for document paths, profiles, stable identity spaces, required sections,
   lifecycle transitions, templates, traceability, and registered exceptions.
 - Claude and Codex are the only supported providers. Root shims and provider
-  runtime files adapt Stage 00 without defining policy. Gemini and Antigravity
-  surfaces are retired.
+  runtime files adapt Stage 00 without defining policy. Unsupported provider
+  experiments are historical evidence only and have no active surface.
 - `.agents/skills/` is a generated compatibility projection of canonical Stage
   00 skills and cannot become a source authority.
 - Migration 0003 is the review boundary for structural source dispositions.
@@ -111,7 +111,7 @@ Confirmation requires all of the following after implementation:
 
 1. Stage 99 registry/schema tests prove one machine authority and monotonic ID
    allocation.
-2. Stage 00 contract tests prove the exact two-provider, no-memory taxonomy and
+2. Stage 00 contract tests prove the exact two-provider simplified taxonomy and
    generated projection parity.
 3. Migration validation proves deterministic, collision-free, recoverable
    source dispositions before corpus mutation.

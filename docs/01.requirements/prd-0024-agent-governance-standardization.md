@@ -4,13 +4,13 @@ artifact_id: prd-0024
 artifact_type: prd
 parent_ids: []
 created: 2026-06-01
-updated: 2026-08-13
+updated: 2026-08-21
 ---
 # Agent Governance Standardization Product Requirements
 
 ## Overview
 
-이 문서는 `hy-home.docker`의 AI Agent 거버넌스 표준화 요구사항을 정의한다. 목표는 Stage 00을 공통 정책과 catalog의 SSoT로 유지하면서 Claude, Codex, Gemini 및 호환 agent surface가 같은 규칙, 작업 흐름, 검증 기준을 따르도록 하는 것이다.
+이 문서는 `hy-home.docker`의 AI Agent 거버넌스 표준화 요구사항을 정의한다. 목표는 Stage 00을 공통 정책과 catalog의 SSoT로 유지하면서 Claude, Codex 및 provider-neutral compatibility surface가 같은 규칙, 작업 흐름, 검증 기준을 따르도록 하는 것이다.
 
 ## Problem and Stakeholders
 
@@ -34,13 +34,13 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 ## Key Use Cases
 
 - **STORY-01**: Maintainer는 agent governance 변경 전에 PRD, Architecture Description, ADR, plan, task evidence를 따라가며 왜 변경이 필요한지 확인한다.
-- **STORY-02**: Codex, Claude, Gemini adapter는 같은 Stage 00 catalog를 provider-specific 형식으로 노출하되 별도 정책을 만들지 않는다.
+- **STORY-02**: Codex와 Claude adapter는 같은 Stage 00 catalog를 provider-specific 형식으로 노출하되 별도 정책을 만들지 않는다.
 - **STORY-03**: Agent는 Superpowers, HADS, Docker, QA, DevOps strategy를 사용할 때 active repository stage path와 검증 절차로 변환한다.
 - **STORY-04**: Reviewer는 Phase 2/3 같은 governance work가 Docker runtime, secrets, deployment, remote GitHub state를 변경하지 않았음을 evidence로 확인한다.
 
 ## Requirements
 
-- **PRD-0024-R0001**: Stage 00은 agent catalog, function catalog, workflow rules, provider overlays, memory/progress rules의 canonical source of truth여야 한다.
+- **PRD-0024-R0001**: Stage 00은 role catalog, skill catalog, policies, provider registry, workflow states, and bounded evidence rules의 canonical source of truth여야 한다.
 - **PRD-0024-R0002**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
 - **PRD-0024-R0003**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
 - **PRD-0024-R0004**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
@@ -62,7 +62,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 - **PRD-0024-AC0001**: Agent governance PRD, Architecture Description, ADR, Phase 1 diagnostic, and Phase 2 alignment plan are cross-linked.
 - **PRD-0024-AC0002**: `check-repo-contracts.sh`, `check-document-links.py --mode traceability`, provider surface sync, LLM Wiki freshness, and diff hygiene pass after changes.
 - **PRD-0024-AC0003**: No Docker runtime, secrets, deployment state, remote GitHub settings, or user-global Codex settings are changed during governance documentation alignment.
-- **PRD-0024-AC0004**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, Stage 04 evidence, or advisory memory.
+- **PRD-0024-AC0004**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, or the co-located active Task evidence.
 
 ## Scope and Non-goals
 
@@ -83,7 +83,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 ## Risks and Dependencies
 
-- Stage 00 provider adapter policy must remain aligned with `providers/agents-md.md` and `subagent-protocol.md`.
+- Stage 00 provider adapter policy must remain aligned with `providers/registry.yaml`, `policies/agentic.md`, and the canonical role and skill catalogs.
 - The repository may have graphify advisory findings; these are navigation signals, not proof of completion.
 - `/home/hy/.local/bin/node`, `npm`, and `rtk` exist, but command wrappers should not assume every non-interactive shell has that path loaded.
 - Future hard validators outside the current infrastructure hardening gate or bounded HADS reference profile require separate approval because they can create broad churn.

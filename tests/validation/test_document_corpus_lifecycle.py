@@ -1445,9 +1445,9 @@ class HumanContractRoutingTests(LifecycleTestCase):
             self.assertNotIn(contradictory_synopsis, archive_readme)
 
         stage00_paths = (
-            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md",
-            ROOT / "docs/00.agent-governance/rules/stage-authoring-matrix.md",
-            ROOT / "docs/00.agent-governance/rules/task-checklists.md",
+            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
+            ROOT / "docs/00.agent-governance/policies/stage-authoring-matrix.md",
+            ROOT / "docs/00.agent-governance/policies/task-checklists.md",
         )
         combined = "\n".join(path.read_text(encoding="utf-8") for path in stage00_paths)
         for literal in (

@@ -939,8 +939,8 @@ The work is complete only when:
 
 ## Related Documents
 
-- [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)

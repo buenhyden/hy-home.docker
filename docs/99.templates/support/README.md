@@ -103,5 +103,5 @@ support/
 
 - [template catalog](../README.md)
 - [template artifacts](../templates/README.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
+- [stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

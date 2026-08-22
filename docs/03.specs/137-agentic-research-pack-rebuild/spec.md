@@ -468,7 +468,7 @@ and rewritten into an identified new leaf. Some material claims in the retiring
 pack are not reference content with a reference destination. They are live
 unremediated repository conditions, corrections whose audit trail matters, or
 withdrawn findings that would otherwise be re-raised. For those the canonical
-routing owner is `docs/00.agent-governance/rules/documentation-protocol.md`,
+routing owner is `docs/00.agent-governance/policies/documentation-protocol.md`,
 which routes a governance, provider, agent-execution, approval-boundary, or
 memory-contract gap with no approved policy change to a memory note or task gap,
 and which requires that a `docs/90.references/` document not define active
@@ -1163,8 +1163,8 @@ artifact ID `task:2026-08-08-agentic-research-pack-rebuild` and direct parent
 
 ## Related Documents
 
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Stage 03 index](../README.md)
 - [Spec template](../../99.templates/templates/sdlc/spec.template.md)
 - [Stage 90 research index](../../90.references/research/README.md)
@@ -1173,5 +1173,5 @@ artifact ID `task:2026-08-08-agentic-research-pack-rebuild` and direct parent
   archived `spec:104-agentic-research-pack-refresh` and
   `spec:122-agentic-research-pack-consolidation`
 - [Spec 136](../136-sdlc-taxonomy-convergence/spec.md)
-- [Agent governance bootstrap](../../00.agent-governance/rules/bootstrap.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Agent governance bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)

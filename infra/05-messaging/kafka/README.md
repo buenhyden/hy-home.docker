@@ -62,7 +62,7 @@ kafka/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: root dev는 `docker-compose.dev.yml`, full cluster는 `docker-compose.yml`의 Broker ID 및 포트 매핑 설정을 확인한다.

@@ -35,7 +35,7 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 **[SPEC]**
 
-- This document supports `docs/00.agent-governance/rules/documentation-protocol.md`.
+- This document supports `docs/00.agent-governance/policies/documentation-protocol.md`.
 - This document supports `docs/99.templates/README.md`.
 - This document does not replace active governance policy, templates, plans, tasks, runbooks, or runtime files.
 
@@ -90,7 +90,7 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 **[SPEC]**
 
-- [Documentation Protocol](../../../00.agent-governance/rules/documentation-protocol.md) - repository documentation policy and HADS boundary.
+- [Documentation Protocol](../../../00.agent-governance/policies/documentation-protocol.md) - repository documentation policy and HADS boundary.
 - [Template Catalog](../../../99.templates/README.md) - reference template and target-stage mapping.
 - Task Evidence - approval-gate implementation history.
 
@@ -108,6 +108,6 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 - **References Index**: [../README.md](../../README.md)
 - **HADS Category README**: [README.md](README.md)
-- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
+- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/policies/documentation-protocol.md)
 - **Template Catalog**: [../../99.templates/README.md](../../../99.templates/README.md)
 - **Repo Contract Checker**: [../../../scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh)

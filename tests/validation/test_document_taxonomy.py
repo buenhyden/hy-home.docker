@@ -19,7 +19,7 @@ LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.m
 # not publish active document-routing contracts. Active Stage 00, Stage 01–03,
 # Stage 05, root/provider, template, and infrastructure surfaces remain scanned.
 LEGACY_PATH_EVIDENCE_ALLOWLIST = (
-    "docs/00.agent-governance/memory/progress.md",
+    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
     "docs/04.execution/",
     "docs/90.references/audits/",
     "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",

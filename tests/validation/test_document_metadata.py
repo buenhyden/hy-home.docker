@@ -924,7 +924,7 @@ def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
 
 
 def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
-    """Copy the bounded legacy YAML contract inputs from the approved baseline."""
+    """Copy the bounded legacy envelope without retired governance form roles."""
 
     result = subprocess.run(
         [
@@ -944,7 +944,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             "docs/99.templates/templates/spec-contracts/schema.template.graphql",
             "docs/99.templates/templates/spec-contracts/service.template.proto",
             "docs/99.templates/support",
-            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
         ],
         cwd=ROOT,
         capture_output=True,
@@ -962,21 +962,39 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         check=True,
     ).stdout
     profile_values = yaml.safe_load(profile_blob)
+    for retired_role in ("memory", "progress"):
+        profile_values["template_roles"].pop(retired_role, None)
+    profile_blob = yaml.safe_dump(profile_values, sort_keys=False).encode("utf-8")
+    authority_paths = {
+        PROFILES.relative_to(ROOT),
+        pathlib.Path("docs/00.agent-governance/policies/stage-authoring-matrix.md"),
+    }
     paths.update(
         pathlib.Path(role["source"])
         for role in profile_values["template_roles"].values()
     )
+    paths.update(authority_paths)
     for relative_path in sorted(paths):
-        contents = subprocess.run(
-            [
-                "git",
-                "show",
-                f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{relative_path.as_posix()}",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            check=True,
-        ).stdout
+        if relative_path == PROFILES.relative_to(ROOT):
+            contents = profile_blob
+        else:
+            source_path = relative_path
+            if relative_path == pathlib.Path(
+                "docs/00.agent-governance/policies/stage-authoring-matrix.md"
+            ):
+                source_path = pathlib.Path(
+                    "docs/00.agent-governance/rules/stage-authoring-matrix.md"
+                )
+            contents = subprocess.run(
+                [
+                    "git",
+                    "show",
+                    f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{source_path.as_posix()}",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                check=True,
+            ).stdout
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(contents)
@@ -2420,7 +2438,7 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_template_roles_require_exact_fields_and_unique_sources(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         roles = profiles["template_roles"]
-        self.assertEqual(25, len(roles))
+        self.assertEqual(23, len(roles))
         sources = [role["source"] for role in roles.values()]
         self.assertEqual(len(sources), len(set(sources)))
 
@@ -2511,15 +2529,15 @@ class ArtifactInferenceTests(unittest.TestCase):
         self.assertEqual("generated", metadata.infer_artifact_type(generated, profiles))
         self.assertEqual("reference", metadata.infer_artifact_type(adjacent, profiles))
 
-    def test_stage00_specializations_are_inferred_from_typed_artifact_contract(self) -> None:
+    def test_stage00_specializations_are_inferred_from_stage99_profiles(self) -> None:
         cases = {
-            "docs/00.agent-governance/agents/agents/code-reviewer.md": "agent-role",
-            "docs/00.agent-governance/agents/functions/code-reviewer.md": "agent-function",
-            "docs/00.agent-governance/providers/claude.md": "provider-overlay",
-            "docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md": "hookify-rule",
-            "docs/00.agent-governance/rules/bootstrap.md": "governance-document",
-            ".claude/CLAUDE.md": "provider-project-entry",
-            "./.claude/CLAUDE.md": "provider-project-entry",
+            "docs/00.agent-governance/roles/code-reviewer.md": "governance-role",
+            "docs/00.agent-governance/skills/code-reviewer.md": "governance-skill",
+            "docs/00.agent-governance/providers/claude.md": "governance-provider",
+            "docs/00.agent-governance/providers/README.md": "governance-provider-index",
+            "docs/00.agent-governance/policies/hooks/hookify.block-direct-main-push.md": "governance-hook-policy",
+            "docs/00.agent-governance/policies/bootstrap.md": "governance-policy",
+            "docs/00.agent-governance/sdlc.md": "governance-sdlc",
         }
         for path_text, expected in cases.items():
             with self.subTest(path=path_text):
@@ -2532,146 +2550,16 @@ class ArtifactInferenceTests(unittest.TestCase):
             metadata.infer_stage00_specialization(pathlib.Path("nested/CLAUDE.md"))
         )
 
-    def test_stage00_registry_matching_is_bounded_deduplicated_and_fail_closed(self) -> None:
+    def test_stage00_registry_matching_fails_closed_on_invalid_registry(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            registry = root / "agent-governance-artifacts.yaml"
-            duplicate_pattern = "fixture/" + "{a,a}" * 18 + ".md"
-            registry.write_text(
-                yaml.safe_dump(
-                    {
-                        "artifacts": [
-                            {
-                                "artifact_type": "duplicate-safe",
-                                "path_pattern": duplicate_pattern,
-                            }
-                        ]
-                    },
-                    sort_keys=False,
-                ),
-                encoding="utf-8",
-            )
-            self.assertEqual(
-                "duplicate-safe",
-                metadata.infer_stage00_specialization(
-                    pathlib.Path("fixture/" + "a" * 18 + ".md"), registry
-                ),
-            )
-
-            excessive_groups = "fixture/" + "{a,a}" * 1100 + ".md"
-            registry.write_text(
-                yaml.safe_dump(
-                    {
-                        "artifacts": [
-                            {
-                                "artifact_type": "must-not-recurse",
-                                "path_pattern": excessive_groups,
-                            }
-                        ]
-                    },
-                    sort_keys=False,
-                ),
-                encoding="utf-8",
-            )
+            registry = root / "registry.json"
+            registry.write_text('{"schema_version": 4, "schema_version": 4}\n')
             self.assertIsNone(
                 metadata.infer_stage00_specialization(
-                    pathlib.Path("fixture/a.md"), registry
+                    pathlib.Path("docs/00.agent-governance/sdlc.md"), registry
                 )
             )
-
-            registry.write_text(
-                yaml.safe_dump(
-                    {
-                        "artifacts": [
-                            {
-                                "artifact_type": "must-not-select-safe-sibling",
-                                "path_pattern": "{..,docs}/safe.md",
-                            }
-                        ]
-                    },
-                    sort_keys=False,
-                ),
-                encoding="utf-8",
-            )
-            self.assertIsNone(
-                metadata.infer_stage00_specialization(
-                    pathlib.Path("docs/safe.md"), registry
-                )
-            )
-
-            registry.write_text(
-                yaml.safe_dump(
-                    {
-                        "artifacts": [
-                            {
-                                "artifact_type": "must-not-expand",
-                                "path_pattern": "fixture/" + "x" * 5000,
-                            }
-                        ]
-                    },
-                    sort_keys=False,
-                ),
-                encoding="utf-8",
-            )
-            self.assertIsNone(
-                metadata.infer_stage00_specialization(
-                    pathlib.Path("fixture/a.md"), registry
-                )
-            )
-
-    def test_stage00_registry_rejects_symlink_duplicate_yaml_and_ambiguity(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            registry = root / "agent-governance-artifacts.yaml"
-            outside = root.parent / f"{root.name}-outside-registry.yaml"
-            outside.write_text(
-                "artifacts:\n"
-                "  - artifact_type: escaped\n"
-                "    path_pattern: docs/escaped.md\n",
-                encoding="utf-8",
-            )
-            try:
-                registry.symlink_to(outside)
-                self.assertIsNone(
-                    metadata.infer_stage00_specialization(
-                        pathlib.Path("docs/escaped.md"), registry
-                    )
-                )
-                registry.unlink()
-                registry.write_text(
-                    "artifacts: []\nartifacts: []\n",
-                    encoding="utf-8",
-                )
-                self.assertIsNone(
-                    metadata.infer_stage00_specialization(
-                        pathlib.Path("docs/escaped.md"), registry
-                    )
-                )
-                registry.write_text(
-                    yaml.safe_dump(
-                        {
-                            "artifacts": [
-                                {
-                                    "artifact_type": "first",
-                                    "path_pattern": "docs/*.md",
-                                },
-                                {
-                                    "artifact_type": "second",
-                                    "path_pattern": "docs/escaped.md",
-                                },
-                            ]
-                        },
-                        sort_keys=False,
-                    ),
-                    encoding="utf-8",
-                )
-                self.assertIsNone(
-                    metadata.infer_stage00_specialization(
-                        pathlib.Path("docs/escaped.md"), registry
-                    )
-                )
-            finally:
-                outside.unlink(missing_ok=True)
 
     def test_governance_profile_is_minimal_and_does_not_duplicate_specialized_schema(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -2682,10 +2570,10 @@ class ArtifactInferenceTests(unittest.TestCase):
         self.assertNotIn("title", governance["optional"])
 
         role = metadata.Record(
-            pathlib.Path("docs/00.agent-governance/agents/agents/code-reviewer.md"),
+            pathlib.Path("docs/00.agent-governance/roles/code-reviewer.md"),
             {
                 "layer": "agentic",
-                "artifact_type": "agent-role",
+                "profile_id": "governance-role",
                 "agent_id": "code-reviewer",
                 "scope": "common",
                 "tier": "worker",
@@ -2733,8 +2621,6 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/90.references/audits/fixture.md": ("audit", "audit"),
             "docs/98.archive/tombstones/03.specs/spec-0901-fixture.md": ("archive", "archive"),
             "README.md": ("readme", "readme"),
-            "docs/00.agent-governance/memory/fixture.md": ("governance", "memory"),
-            "docs/00.agent-governance/memory/progress.md": ("governance", "progress"),
         }
         for path_text, (profile, expected_role) in cases.items():
             with self.subTest(path=path_text):
@@ -3788,97 +3674,29 @@ class TemplateMetadataTests(unittest.TestCase):
         cls.registry = load_registry(REGISTRY)
 
     def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(self) -> None:
-        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+        for role_name, role in self.registry.template_roles.items():
             with self.subTest(role=role_name):
-                source = ROOT / self.profiles["template_roles"][role_name]["source"]
+                source = ROOT / str(role["source"])
+                if source.suffix != ".md":
+                    continue
                 text = source.read_text(encoding="utf-8")
                 self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
                 self.assertNotIn("> Rules:", text)
                 self.assertNotIn("<!-- Target:", text)
 
     def test_task_2_forms_match_their_registered_required_heading_envelopes(self) -> None:
-        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+        for role_name, role in self.registry.template_roles.items():
             with self.subTest(role=role_name):
-                role = self.profiles["template_roles"][role_name]
-                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                source = ROOT / str(role["source"])
+                if source.suffix != ".md":
+                    continue
+                profile = self.registry.profiles[str(role["profile_id"])]
+                text = source.read_text(encoding="utf-8")
                 headings = [line for line in text.splitlines() if line.startswith("## ")]
-                if role_name == "archive":
-                    self.assertLessEqual(set(role["required_headings"]), set(headings))
-                    self.assertEqual(
-                        set(headings),
-                        set(role["required_headings"]) | set(role["conditional_headings"]),
-                    )
-                else:
-                    self.assertEqual(role["required_headings"], headings)
-
-    def test_task_2_governance_forms_have_exact_source_frontmatter(self) -> None:
-        expected = {"layer": "agentic", "status": "draft"}
-        for role_name in ("memory", "progress"):
-            with self.subTest(role=role_name):
-                source = ROOT / self.profiles["template_roles"][role_name]["source"]
-                self.assertEqual(expected, metadata.parse_frontmatter(source))
-
-    def test_task_2_memory_form_instantiates_the_memory_note_target_contract(self) -> None:
-        source = ROOT / self.profiles["template_roles"]["memory"]["source"]
-        rendered = source.read_text(encoding="utf-8")
-        substitutions = {
-            "title": "Fixture Memory Note",
-            "date": "2026-07-13",
-            "layer": "agentic",
-            "status": "active",
-            "applies_to": "template contract system",
-            "tags": "templates, governance",
-            "retrieval_keywords": "memory template contract",
-            "last_verified": "2026-07-13",
-            "problem": "Fixture problem.",
-            "context": "Fixture context.",
-            "resolution": "Fixture resolution.",
-            "prevention": "Fixture prevention.",
-            "evidence": "Fixture evidence.",
-            "related_documents": "- Fixture link",
-        }
-        for token, value in substitutions.items():
-            rendered = rendered.replace(f"{{{{{token}}}}}", value)
-
-        self.assertNotIn("{{", rendered)
-        memory_note_required = (
-            "- Date:",
-            "- Layer:",
-            "- Status:",
-            "- Applies To:",
-            "- Tags:",
-            "- Retrieval Keywords:",
-            "- Last Verified:",
-            "## Problem",
-            "## Context",
-            "## Resolution",
-            "## Prevention",
-            "## Evidence",
-        )
-        for literal in memory_note_required:
-            with self.subTest(literal=literal):
-                self.assertIn(literal, rendered)
-
-    def test_task_2_stage00_protocol_matches_registered_template_source_metadata(self) -> None:
-        protocol = (
-            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
-        ).read_text(encoding="utf-8")
-        normalized = " ".join(protocol.split())
-        self.assertIn(
-            "Governance Memory and Progress template sources use exactly "
-            "`layer: agentic` and `status: draft`",
-            normalized,
-        )
-        self.assertIn(
-            "the README template source remains the registered status-only source",
-            normalized,
-        )
-        self.assertIn(
-            "other typed template sources follow their registry-defined source metadata",
-            normalized,
-        )
-        self.assertNotIn("instead of `layer:`", normalized)
-        self.assertNotIn("exempt from the `layer:` requirement", normalized)
+                required = [f"## {item}" for item in profile["required_sections"]]
+                optional = [f"## {item}" for item in profile["optional_sections"]]
+                self.assertLessEqual(set(required), set(headings))
+                self.assertLessEqual(set(headings), set(required) | set(optional))
 
     def test_task_2_common_confidentiality_boundary_covers_evidence_roles(self) -> None:
         contract = (
@@ -3906,20 +3724,20 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertEqual("audit", role["artifact_profile"])
         self.assertTrue((ROOT / role["source"]).is_file())
 
-    def test_memory_mirror_is_absent_and_stage99_is_referenced(self) -> None:
-        self.assertFalse((ROOT / "docs/00.agent-governance/memory/template.md").exists())
-        text = (ROOT / "docs/00.agent-governance/memory/README.md").read_text(encoding="utf-8")
-        self.assertIn("docs/99.templates/templates/governance/memory.template.md", text)
+    def test_retired_governance_forms_have_no_active_registry_role(self) -> None:
+        roles = self.registry.template_roles
+        self.assertNotIn("memory", roles)
+        self.assertNotIn("progress", roles)
 
     def test_task_has_one_source_and_no_harness_competitor(self) -> None:
-        roles = self.profiles["template_roles"]
+        roles = self.registry.template_roles
         task_sources = [
             role["source"]
             for role in roles.values()
-            if role["artifact_profile"] == "task"
+            if role["profile_id"] == "task"
         ]
         self.assertEqual(
-            ["docs/99.templates/templates/sdlc/task.template.md"],
+            ["docs/99.templates/templates/specs/task.template.md"],
             task_sources,
         )
         self.assertFalse(
@@ -3931,11 +3749,11 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_task_form_contains_protected_surface_and_qa_evidence(self) -> None:
         text = (
-            ROOT / "docs/99.templates/templates/sdlc/task.template.md"
+            ROOT / "docs/99.templates/templates/specs/task.template.md"
         ).read_text(encoding="utf-8")
         for heading in (
-            "## Scope and Change Boundaries",
-            "## Approval Evidence",
+            "## Objective",
+            "## Inputs",
             "## Work Log",
             "## Verification Evidence",
             "## Review Evidence",
@@ -3950,11 +3768,11 @@ class TemplateMetadataTests(unittest.TestCase):
             "harness-task-contract.template.md"
         )
         active_route_files = (
-            "docs/00.agent-governance/harness-implementation-map.md",
-            "docs/00.agent-governance/rules/approval-boundaries.md",
-            "docs/00.agent-governance/rules/documentation-protocol.md",
-            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
-            "docs/00.agent-governance/rules/task-checklists.md",
+            "docs/00.agent-governance/README.md",
+            "docs/00.agent-governance/policies/approval-boundaries.md",
+            "docs/00.agent-governance/policies/documentation-protocol.md",
+            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
+            "docs/00.agent-governance/policies/task-checklists.md",
             "docs/99.templates/README.md",
             "docs/99.templates/support/template-selection.md",
             "docs/99.templates/templates/governance/README.md",
@@ -3963,6 +3781,18 @@ class TemplateMetadataTests(unittest.TestCase):
             with self.subTest(path=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertNotIn(deleted_path, text)
+
+    def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
+        profile = self.registry.profiles["governance-policy"]
+        self.assertEqual(("Related Documents",), profile["required_sections"])
+        text = (
+            ROOT / "docs/00.agent-governance/policies/approval-boundaries.md"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(["## Related Documents"], [
+            line for line in text.splitlines() if line.startswith("## ")
+        ])
+        for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
+            self.assertIn(f"**{label}**", text)
 
     def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
         catalogs = {
@@ -4036,8 +3866,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/service.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/tests.template.md": "spec",
-            "docs/99.templates/templates/governance/memory.template.md": "governance",
-            "docs/99.templates/templates/governance/progress.template.md": "governance",
+            "docs/99.templates/templates/governance/README.md": "governance",
         }
         role_sources = {
             role["source"]: role["artifact_profile"]
@@ -4284,7 +4113,7 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_governance_template_source_rejects_typed_leaf_metadata(self) -> None:
         record = metadata.Record(
-            pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
+            pathlib.Path("docs/99.templates/templates/governance/README.md"),
             {
                 "status": "draft",
                 "artifact_id": "template-source:invalid",
@@ -4302,7 +4131,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 metadata.build_manifest([record]),
             )
         }
-        self.assertIn("invalid-template-metadata", codes)
+        self.assertIn("type-inappropriate-key", codes)
 
 
 class TemplateBodyContractTests(unittest.TestCase):
@@ -4342,29 +4171,12 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Preserved Evidence",
             "## Related Documents",
         ),
-        "memory": (
-            "## Problem",
-            "## Context",
-            "## Resolution",
-            "## Prevention",
-            "## Evidence",
-            "## Related Documents",
-        ),
-        "progress": (
-            "## Current Work Log",
-            "## Phase Tracker",
-            "## Layer Audit",
-            "## Open Issues",
-            "## Related Documents",
-        ),
     }
     TASK_2_ROLE_PROFILES = {
         "readme": "readme",
         "reference": "reference",
         "audit": "audit",
         "archive": "archive",
-        "memory": "governance",
-        "progress": "governance",
     }
     TASK_2_ROLE_TOKENS = {
         "readme": {
@@ -4382,15 +4194,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "archive": {
             "title", "overview", "archive_metadata", "current_replacement",
             "archive_ledger", "preserved_evidence", "related_documents",
-        },
-        "memory": {
-            "title", "date", "layer", "status", "applies_to", "tags",
-            "retrieval_keywords", "last_verified", "problem", "context",
-            "resolution", "prevention", "evidence", "related_documents",
-        },
-        "progress": {
-            "title", "current_work_log", "phase_tracker", "layer_audit",
-            "open_issues", "related_documents",
         },
     }
     TASK_3_ROLE_HEADINGS = {
@@ -4922,8 +4725,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "reference": "docs/99.templates/templates/common/reference.template.md",
         "audit": "docs/99.templates/templates/common/audit.template.md",
         "archive": "docs/99.templates/templates/common/archive.template.md",
-        "memory": "docs/99.templates/templates/governance/memory.template.md",
-        "progress": "docs/99.templates/templates/governance/progress.template.md",
         "prd": "docs/99.templates/templates/sdlc/prd.template.md",
         "srs": "docs/99.templates/templates/sdlc/srs.template.md",
         "interface-requirement": "docs/99.templates/templates/sdlc/interface-requirement.template.md",
@@ -6350,7 +6151,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         release_source = "docs/99.templates/templates/operations/release.template.md"
         route_files = (
             "docs/99.templates/support/template-selection.md",
-            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
         )
         for route_file in route_files:
             with self.subTest(path=route_file), tempfile.TemporaryDirectory() as directory:
@@ -6683,17 +6484,22 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertGreaterEqual(
-            text.count("docs/99.templates/support/document-metadata-profiles.yaml"),
-            3,
+            text.count("docs/99.templates/registry.json"),
+            5,
         )
         self.assertGreaterEqual(
             text.count('for role in profiles["template_roles"].values()'),
             2,
         )
+        self.assertGreaterEqual(
+            text.count('for profile in registry["profiles"]'),
+            3,
+        )
         self.assertNotIn("required_templates=(", text)
         self.assertNotIn("heading_requirements:", text)
         self.assertNotIn("operation_forbidden =", text)
-        self.assertGreaterEqual(text.count('profiles["common"]["generated_outputs"]'), 3)
+        self.assertNotIn("document-metadata-profiles.yaml", text)
+        self.assertNotIn('profiles["common"]["generated_outputs"]', text)
 
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -8393,7 +8199,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertFalse(set(role["forbidden_headings"]) & headings)
 
         protocol = (
-            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
+            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md"
         ).read_text(encoding="utf-8")
         operations_contract = protocol.split(
             "**R4 — Operations Profile Compliance (BLOCKING):**", 1
@@ -8452,9 +8258,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         }
         violations: list[str] = []
         for relative_path in tracked:
-            if relative_path in bounded_contexts or relative_path.startswith(
-                "docs/00.agent-governance/memory/"
-            ):
+            if relative_path in bounded_contexts:
                 continue
             path = ROOT / relative_path
             if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:

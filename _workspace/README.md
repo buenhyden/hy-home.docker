@@ -52,5 +52,5 @@ tracked `_workspace` files appear without a future approved contract change.
 - [repo-support README](./repo-support/README.md)
 - retired workspace support surface Spec 0106 (historical evidence only)
 - task evidence
-- [subagent protocol](../docs/00.agent-governance/subagent-protocol.md)
-- [environment constraints](../docs/00.agent-governance/rules/environment-constraints.md)
+- [subagent protocol](../docs/00.agent-governance/policies/agentic.md)
+- [environment constraints](../docs/00.agent-governance/policies/environment-constraints.md)

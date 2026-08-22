@@ -70,9 +70,9 @@ Out of scope for this spec:
 - **Frontmatter Contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
 - **Template Governance**: [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
 - **Template Selection**: [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
-- **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
-- **Task Checklists**: [../../00.agent-governance/rules/task-checklists.md](../../00.agent-governance/rules/task-checklists.md)
+- **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md)
+- **Task Checklists**: [../../00.agent-governance/rules/task-checklists.md](../../00.agent-governance/policies/task-checklists.md)
 - **CI Quality Workflow**: [../../../.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml)
 - **Repository Contracts**: [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)
 
@@ -128,7 +128,7 @@ The audit pack has four workstreams:
 
 - `docs/99.templates/support/frontmatter-contract.md`
 - `docs/99.templates/support/template-selection.md`
-- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/policies/stage-authoring-matrix.md`
 - `scripts/validation/check-repo-contracts.sh`
 - `scripts/validation/check-document-links.py --mode traceability`
 - `scripts/validation/check-document-links.py --mode alignment`
@@ -309,6 +309,6 @@ later includes that drift.
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [Template governance](../../99.templates/support/template-governance.md)
 - [Template selection](../../99.templates/support/template-selection.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Repository README](../../../README.md)

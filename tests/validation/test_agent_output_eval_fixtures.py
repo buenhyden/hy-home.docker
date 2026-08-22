@@ -12,12 +12,14 @@ import tempfile
 import unittest
 from unittest import mock
 
+import yaml
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE = ROOT / "scripts/validation/agent_output_eval.py"
 RUNNER = ROOT / "scripts/validation/run-agent-output-eval-fixtures.sh"
 CATALOG = ROOT / "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md"
-CONTRACT = ROOT / "docs/00.agent-governance/contracts/agent-catalog.yaml"
+CONTRACT = ROOT / "docs/00.agent-governance/providers/registry.yaml"
 
 EXPECTED_FIXTURE_IDS = (
     "AOE-ADAPTER-001",
@@ -26,7 +28,6 @@ EXPECTED_FIXTURE_IDS = (
     "AOE-HOOK-001",
     "AOE-INFRA-001",
     "AOE-LOOP-001",
-    "AOE-MEMORY-001",
     "AOE-MODEL-001",
     "AOE-PROVIDER-001",
     "AOE-ROLE-001",
@@ -66,7 +67,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         shutil.copy2(CONTRACT, contract)
         return directory, root
 
-    def test_fixture_catalog_has_exact_eleven_ids_and_calibration(self) -> None:
+    def test_fixture_catalog_has_exact_ten_ids_and_calibration(self) -> None:
         evaluator = load_eval_module()
 
         self.assertEqual(EXPECTED_FIXTURE_IDS, tuple(sorted(evaluator.FIXTURES)))
@@ -77,12 +78,12 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             self.assertTrue(fixture.required_context)
             self.assertTrue(fixture.criteria)
 
-    def test_regression_catalog_has_exact_sixteen_positive_negative_cases(self) -> None:
+    def test_regression_catalog_has_exact_fourteen_positive_negative_cases(self) -> None:
         evaluator = load_eval_module()
 
         regressions = evaluator.REGRESSION_CASES
-        self.assertEqual(16, len(regressions))
-        self.assertEqual(16, len({case.case_id for case in regressions}))
+        self.assertEqual(14, len(regressions))
+        self.assertEqual(14, len({case.case_id for case in regressions}))
         self.assertEqual(
             {"pass", "fail"}, {case.expected_result for case in regressions}
         )
@@ -99,8 +100,6 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "calibration",
                 "model-evaluation",
                 "model-live-claim",
-                "memory-stewardship",
-                "memory-policy-duplication",
                 "workflow-loop",
                 "second-lifecycle",
             }.issubset({case.category for case in regressions})
@@ -112,15 +111,11 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         evaluator = load_eval_module()
         expected = {
             "AOE-MODEL-001": (
-                "docs/00.agent-governance/agents/functions/provider-model-evaluation.md",
+                "docs/00.agent-governance/skills/provider-model-evaluation.md",
                 "provider-model-evaluation",
             ),
-            "AOE-MEMORY-001": (
-                "docs/00.agent-governance/agents/functions/project-memory-stewardship.md",
-                "project-memory-stewardship",
-            ),
             "AOE-LOOP-001": (
-                "docs/00.agent-governance/contracts/provider-models.yaml",
+                "docs/00.agent-governance/providers/registry.yaml",
                 "workflow_states",
             ),
         }
@@ -128,6 +123,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             with self.subTest(fixture_id=fixture_id):
                 fixture = evaluator.FIXTURES[fixture_id]
                 self.assertIn(context_path, fixture.required_context)
+                self.assertEqual(
+                    len(fixture.required_context), len(set(fixture.required_context))
+                )
                 self.assertTrue(
                     any(
                         required_term in criterion.terms
@@ -144,6 +142,25 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                     {"pass", "fail"}, {case.expected_result for case in cases}
                 )
 
+        registry = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
+        self.assertEqual(
+            [
+                "discover",
+                "design/plan",
+                "approval",
+                "implement",
+                "validate",
+                "independent-review",
+                "evidence",
+                "handoff",
+            ],
+            [state["state_id"] for state in registry["workflow_states"]],
+        )
+        state_ids = {state["state_id"] for state in registry["workflow_states"]}
+        for loop in registry["harness_loops"].values():
+            self.assertTrue(loop["workflow_states"])
+            self.assertTrue(set(loop["workflow_states"]).issubset(state_ids))
+
     def test_regressions_are_deterministic_and_failure_output_is_value_free(
         self,
     ) -> None:
@@ -155,7 +172,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         first = evaluator.run_regressions()
         second = evaluator.run_regressions()
         self.assertEqual(first, second)
-        self.assertEqual(16, len(first))
+        self.assertEqual(14, len(first))
         self.assertTrue(all(result.matched_expectation for result in first))
         rendered = evaluator.render_regression_results(first)
         self.assertNotRegex(rendered, r"sk-[A-Za-z0-9_-]+")
@@ -166,8 +183,8 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         result = self.run_runner("--check-fixtures", "--check-regressions")
 
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn("fixtures_expected=11", result.stdout)
-        self.assertIn("regressions_expected=16", result.stdout)
+        self.assertIn("fixtures_expected=10", result.stdout)
+        self.assertIn("regressions_expected=14", result.stdout)
         self.assertIn("fixtures_check=pass", result.stdout)
         self.assertIn("regressions_check=pass", result.stdout)
 
@@ -523,7 +540,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
     ) -> None:
         evaluator = load_eval_module()
         sensitive_keys = (
-            "GEMINI_API_KEY",
+            "PROVIDER_API_KEY",
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GITHUB_TOKEN",
@@ -537,7 +554,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             "X-Auth-Token",
         )
         safe_assignments = (
-            "GEMINI_API_KEY_ROTATION_POLICY=quarterly",
+            "PROVIDER_API_KEY_ROTATION_POLICY=quarterly",
             "OPENAI_API_KEY_ROTATION_POLICY=quarterly",
             "GITHUB_TOKENIZER=enabled",
             "AWS_SESSION_TOKENIZER=enabled",
@@ -545,7 +562,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             "GOOGLE_APPLICATION_CREDENTIALS_ROTATION_POLICY=quarterly",
         )
         safe_prose = (
-            "GEMINI_API_KEY is named in provider documentation",
+            "PROVIDER_API_KEY is named in provider documentation",
             "Use X-API-Key only as a synthetic field label",
             "The local policy discusses GITHUB_TOKEN rotation",
         )
@@ -627,7 +644,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             "OPENAI_API_KEY=fixture-value",
             "OPENAI_KEY=fixture-value",
             "ANTHROPIC_KEY=fixture-value",
-            "GEMINI_KEY=fixture-value",
+            "PROVIDER_KEY=fixture-value",
             "GITHUB_KEY=fixture-value",
             "AWS_KEY=fixture-value",
             "AZURE_KEY=fixture-value",
@@ -639,7 +656,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             "TLS_PRIVATE_KEY=fixture-value",
             "RELEASE_SIGNING_KEY=fixture-value",
             "BACKUP_ENCRYPTION_KEY=fixture-value",
-            "GEMINI_PROVIDER_KEY=fixture-value",
+            "PROVIDER_PROVIDER_KEY=fixture-value",
             "AWS_ACCESS_KEY_ID=fixture-value",
             "DATABASE_URL=fixture-value",
             "OAUTH_CLIENT_ID=fixture-value",
@@ -1538,9 +1555,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self.assertEqual(64 * 1_024, evaluator.MAX_TYPED_CATALOG_BYTES)
         self.assertEqual(1_024, evaluator.MAX_CATALOG_LINES)
         self.assertEqual(8_192, evaluator.MAX_CATALOG_LINE_BYTES)
-        self.assertEqual(11, evaluator.MAX_CATALOG_SECTIONS)
+        self.assertEqual(10, evaluator.MAX_CATALOG_SECTIONS)
         self.assertEqual(10, evaluator.MAX_CATALOG_FIELDS_PER_SECTION)
-        self.assertEqual(11, evaluator.MAX_TYPED_THRESHOLDS)
+        self.assertEqual(10, evaluator.MAX_TYPED_THRESHOLDS)
 
         source = MODULE.read_text(encoding="utf-8")
         fixture_parser = source.split("def _typed_fixture_thresholds", 1)[1].split(

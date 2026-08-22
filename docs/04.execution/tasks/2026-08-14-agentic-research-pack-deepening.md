@@ -80,7 +80,7 @@ branch `docs/agentic-research-pack-deepening`.
 - `docs/90.references/research/README.md` (only if routes or counts change)
 - `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
 - `docs/04.execution/tasks/README.md` (task index row)
-- `docs/00.agent-governance/memory/current.md` (bounded handoff refresh)
+- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (bounded handoff refresh)
 - `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`,
   through their generators only, never by hand
@@ -916,4 +916,4 @@ strengthens the claim-migration evidence that gate consumes but does not open it
 - [Rebuild Task holding the deletion gate](./2026-08-08-agentic-research-pack-rebuild.md)
 - [Source refresh Task](./2026-08-11-agentic-research-pack-source-refresh.md)
 - [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)

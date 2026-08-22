@@ -85,5 +85,5 @@ docs/90.references/data/hads/
 
 - [references index](../../README.md)
 - [HADS profile](ref-0075-profile.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

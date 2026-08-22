@@ -103,11 +103,11 @@ does not duplicate this implementation design.
 - [Spec 134](spec.md)
 - [Spec 132](../spec-0132-agent-governance-harness-convergence/spec.md)
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
-- [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
-- [Agent catalog](../../00.agent-governance/contracts/agent-catalog.yaml)
-- [Provider model contract](../../00.agent-governance/contracts/provider-models.yaml)
-- [Artifact contract](../../00.agent-governance/contracts/agent-governance-artifacts.yaml)
-- [Memory contract](../../00.agent-governance/memory/README.md)
+- [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [Agent catalog](../../00.agent-governance/providers/registry.yaml)
+- [Provider model contract](../../00.agent-governance/providers/registry.yaml)
+- [Artifact contract](../../99.templates/registry.json)
+- [Memory contract](../../00.agent-governance/README.md)
 - [Canonical audit](../../90.references/audits/ref-0019-readme.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 
@@ -228,9 +228,9 @@ fast-moving claim:
 **Files:**
 
 - Modify
-  `docs/00.agent-governance/contracts/agent-catalog.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
-  `docs/00.agent-governance/contracts/provider-models.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
   `scripts/validation/agent_governance_contract.py`.
 - Modify
@@ -333,9 +333,9 @@ git diff --check
 **Files:**
 
 - Modify
-  `docs/00.agent-governance/contracts/provider-models.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
-  `docs/00.agent-governance/contracts/agent-catalog.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
   `scripts/validation/agent_governance_contract.py`.
 - Modify
@@ -350,7 +350,7 @@ git diff --check
   `.agents/agents/`, `.claude/agents/`, `.codex/agents/`, and
   `.gemini/agents/`.
 - Regenerate `.claude/settings.json`, `.codex/hooks.json`, and
-  `.gemini/settings.json` only through the renderer.
+  `docs/00.agent-governance/providers/registry.yaml` only through the renderer.
 - Update the Stage 90 retirement ledger for legacy models displaced by the
   current catalog.
 - Modify the sibling Task ledger.
@@ -483,14 +483,14 @@ git diff --check
 **Files:**
 
 - Create
-  `docs/00.agent-governance/memory/current.md`.
+  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 - Modify
-  `docs/00.agent-governance/memory/README.md`.
+  `docs/00.agent-governance/README.md`.
 - Modify
-  `docs/00.agent-governance/memory/progress.md` only for historical-navigation
+  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` only for historical-navigation
   semantics or a compacted pointer; do not rewrite historical rows.
 - Modify
-  `docs/00.agent-governance/contracts/agent-governance-artifacts.yaml`.
+  `docs/99.templates/registry.json`.
 - Modify root `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`.
 - Modify provider overlays under
   `docs/00.agent-governance/providers/` only where their bootstrap route names
@@ -504,7 +504,7 @@ git diff --check
 **Memory validator constants:**
 
 ```python
-CURRENT_MEMORY_PATH = "docs/00.agent-governance/memory/current.md"
+CURRENT_MEMORY_PATH = "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"
 CURRENT_MEMORY_MAX_BYTES = 32 * 1024
 CURRENT_MEMORY_MAX_LINES = 400
 CURRENT_MEMORY_SECTIONS = (
@@ -584,19 +584,19 @@ git diff --check
 **Files:**
 
 - Create
-  `docs/00.agent-governance/agents/functions/provider-model-evaluation.md`.
+  `docs/00.agent-governance/skills/provider-model-evaluation.md`.
 - Create
-  `docs/00.agent-governance/agents/functions/project-memory-stewardship.md`.
+  `docs/00.agent-governance/policies/agentic.md`.
 - Modify
-  `docs/00.agent-governance/contracts/agent-catalog.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
-  `docs/00.agent-governance/contracts/provider-models.yaml`.
+  `docs/00.agent-governance/providers/registry.yaml`.
 - Modify
-  `docs/00.agent-governance/rules/agentic.md`.
+  `docs/00.agent-governance/policies/agentic.md`.
 - Modify
-  `docs/00.agent-governance/subagent-protocol.md`.
+  `docs/00.agent-governance/policies/agentic.md`.
 - Modify
-  `docs/00.agent-governance/rules/provider-capability-matrix.md`.
+  `docs/00.agent-governance/policies/provider-capability-matrix.md`.
 - Modify
   `scripts/validation/agent_governance_contract.py`.
 - Modify
@@ -729,15 +729,15 @@ git diff --check
 - Preserve `.github/workflows/greetings.yml`; its welcome purpose remains
   current and non-gating.
 - Modify `.github/rulesets/main-protection.md`.
-- Modify `docs/00.agent-governance/rules/github-governance.md`.
+- Modify `docs/00.agent-governance/policies/github-governance.md`.
 - Modify
-  `docs/00.agent-governance/contracts/agent-governance-artifacts.yaml` to
+  `docs/99.templates/registry.json` to
   register the non-canonical GitHub navigation index and remove the deleted
   memo's active artifact registration.
 - Delete
   `docs/00.agent-governance/memory/github-ci-contract-audit.md` after its
   current local contract routes and historical provenance are preserved.
-- Modify `docs/00.agent-governance/memory/README.md`.
+- Modify `docs/00.agent-governance/README.md`.
 - Modify `scripts/validation/check-repo-contracts.sh`.
 - Modify `tests/validation/test_agent_governance_ci_routing.py`.
 - Create
@@ -906,12 +906,12 @@ git diff --check
 - Modify the two active Stage 00 direct-impact consumers discovered by the
   closure RED scan:
   `docs/00.agent-governance/providers/codex.md` and
-  `docs/00.agent-governance/rules/postflight-checklist.md`; add only the narrow
+  `docs/00.agent-governance/policies/postflight-checklist.md`; add only the narrow
   regression assertions required in
   `tests/validation/test_agent_governance_contract.py`.
 - Modify Stage 03/04 README indexes when Spec/Plan/Task lifecycle transitions
   require them.
-- Modify `docs/00.agent-governance/memory/current.md` and historical progress
+- Modify `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` and historical progress
   navigation with compact closure evidence.
 - Modify the sibling Task ledger and this Plan for final lifecycle state.
 
@@ -1006,7 +1006,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
   --task docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md \
   --allow-prefix AGENTS.md \
   --allow-prefix CLAUDE.md \
-  --allow-prefix GEMINI.md \
+  --allow-prefix AGENTS.md \
   --allow-prefix .agents \
   --allow-prefix .claude \
   --allow-prefix .codex \
@@ -1038,7 +1038,7 @@ review only. It does not authorize another all-files wrapper execution.
   `tests/validation/test_run_agent_precommit_all_files.sh`.
 - Modify `scripts/README.md` only to describe the new value-free result.
 - Modify this Plan, the sibling Task ledger, and
-  `docs/00.agent-governance/memory/current.md` for bounded approval and
+  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` for bounded approval and
   evidence synchronization.
 
 **Interfaces and safety bounds:**
@@ -1232,9 +1232,9 @@ Every task must produce:
 - [Spec 134](spec.md)
 - [Task ledger](task.md)
 - [Agent governance overview](../../00.agent-governance/README.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
-- [Quality scope](../../00.agent-governance/scopes/qa.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)
+- [GitHub governance](../../00.agent-governance/policies/github-governance.md)
+- [Quality scope](../../00.agent-governance/roles/qa.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical audit](../../90.references/audits/ref-0019-readme.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)

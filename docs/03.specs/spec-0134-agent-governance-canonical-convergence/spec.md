@@ -133,14 +133,14 @@ Task ledger. Adjacency alone is not authorization.
 
 - [Spec 132: Agent Governance Harness Convergence](../spec-0132-agent-governance-harness-convergence/spec.md)
 - [Spec 133: Target Surface Contract Convergence](../spec-0133-target-surface-contract-convergence/spec.md)
-- [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
-- [Provider-neutral adapter contract](../../00.agent-governance/providers/agents-md.md)
-- [Agent catalog](../../00.agent-governance/contracts/agent-catalog.yaml)
-- [Provider model contract](../../00.agent-governance/contracts/provider-models.yaml)
-- [Agent-governance artifact contract](../../00.agent-governance/contracts/agent-governance-artifacts.yaml)
-- [Shared-memory contract](../../00.agent-governance/memory/README.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
+- [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [Provider-neutral adapter contract](../../00.agent-governance/providers/README.md)
+- [Agent catalog](../../00.agent-governance/providers/registry.yaml)
+- [Provider model contract](../../00.agent-governance/providers/registry.yaml)
+- [Agent-governance artifact contract](../../99.templates/registry.json)
+- [Shared-memory contract](../../00.agent-governance/README.md)
+- [Subagent protocol](../../00.agent-governance/policies/agentic.md)
+- [Provider capability matrix](../../00.agent-governance/policies/provider-capability-matrix.md)
 - [Canonical agentic implementation audit](../../90.references/audits/ref-0019-readme.md)
 - [Document metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
 
@@ -319,16 +319,16 @@ native agent frontmatter does not expose the field. Codex uses the supported
 
 The repository provides one provider-neutral current-state route:
 
-- `docs/00.agent-governance/memory/README.md` defines purpose, precedence,
+- `docs/00.agent-governance/README.md` defines purpose, precedence,
   allowed content, compaction, ownership, and failure handling.
-- `docs/00.agent-governance/memory/current.md` contains only the active branch
+- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` contains only the active branch
   or task, approved decisions, current blockers, last verified commit and
   checks, direct evidence links, and next handoff.
-- the existing `docs/00.agent-governance/memory/progress.md` is converted to
+- the existing `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` is converted to
   historical navigation or compacted only after durable Stage 04 evidence and
   Git provenance are confirmed.
 
-`docs/00.agent-governance/memory/current.md` is bounded to 32 KiB and 400 lines.
+`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` is bounded to 32 KiB and 400 lines.
 Entries must be dated, source-linked, value-free, and replace stale current
 state rather than append forever. Policy text, full command logs, raw output,
 secrets, credentials, tokens, shell history, and private provider memory are
@@ -661,11 +661,11 @@ substituted another model.
 ## Related Documents
 
 - [Agent governance overview](../../00.agent-governance/README.md)
-- [Agentic rules](../../00.agent-governance/rules/agentic.md)
-- [Agentic scope](../../00.agent-governance/scopes/agentic.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Agentic rules](../../00.agent-governance/policies/agentic.md)
+- [Agentic scope](../../00.agent-governance/roles/agentic.md)
+- [GitHub governance](../../00.agent-governance/policies/github-governance.md)
+- [Task checklists](../../00.agent-governance/policies/task-checklists.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [Canonical audit implementation overview](../../90.references/audits/ref-0026-implementation-overview.md)
 - [Provider harness and loop audit](../../90.references/audits/ref-0028-provider-harness-loop-implementation.md)

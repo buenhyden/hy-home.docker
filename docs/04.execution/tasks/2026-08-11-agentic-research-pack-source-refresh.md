@@ -65,7 +65,7 @@ branch `codex/agentic-research-rebuild`.
 - `docs/90.references/research/README.md` (only if leaf counts or routes change)
 - `docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`
 - `docs/04.execution/tasks/README.md` (task index row)
-- `docs/00.agent-governance/memory/current.md` (bounded handoff refresh)
+- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (bounded handoff refresh)
 
 ### Forbidden paths
 
@@ -277,7 +277,7 @@ all-files pre-commit entry point and is reserved for an approved final QA gate.
 
 `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`,
 `docs/90.references/research/README.md`, `docs/04.execution/tasks/`,
-`docs/00.agent-governance/memory/current.md`.
+`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 
 ### Controlled wrapper exit status
 

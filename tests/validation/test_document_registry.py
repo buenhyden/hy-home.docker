@@ -76,6 +76,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/03.specs/0153-workspace-governance-simplification"
         )
         expected_profiles = {
+            ".github/INDEX.md": "github-navigation-index",
             package / "README.md": "spec-package-readme",
             package / "spec.md": "spec",
             package / "plan.md": "plan",
@@ -332,6 +333,9 @@ class DocumentRegistryTests(unittest.TestCase):
             "reviewed_at": "2026-08-20",
             "occurred_at": "2026-08-20T00:00:00Z",
             "layer": "governance",
+            "scope": "common",
+            "function_id": "example",
+            "owner_agent": "rules-engineer",
             "generated_by": "scripts/validation/check-document-metadata.py",
         }
         markdown_profiles = {
@@ -345,7 +349,12 @@ class DocumentRegistryTests(unittest.TestCase):
                 "operations-domain-readme",
                 "operations-subject-readme",
                 "readme",
-                "governance",
+                "governance-policy",
+                "governance-hook-policy",
+                "governance-role",
+                "governance-skill",
+                "governance-provider",
+                "governance-sdlc",
                 "generated",
                 "repo-support",
             }
@@ -647,32 +656,42 @@ class DocumentRegistryTests(unittest.TestCase):
             },
         )
 
-    def test_null_template_profile_skips_body_role_but_keeps_frontmatter_contract(self) -> None:
+    def test_null_template_profile_enforces_registry_native_body_sections(self) -> None:
         registry = load_registry()
         adapted = build_registry_transition_profiles(
             registry, load_profiles(LEGACY_TRANSITION_PROFILES)
         )
-        path = pathlib.Path("docs/03.specs/0153-example/README.md")
+        path = pathlib.Path("docs/00.agent-governance/sdlc.md")
         valid = Record(
             path,
-            {"profile_id": "spec-package-readme"},
-            "spec-package-readme",
+            {"profile_id": "governance-sdlc"},
+            "governance-sdlc",
             frontmatter_present=True,
         )
-
+        body = (
+            "# Lifecycle\n\n## Purpose\n\nPurpose.\n\n## Lifecycle\n\nLifecycle.\n\n"
+            "## Authority Boundaries\n\nBoundaries.\n\n## Related Documents\n\nLinks.\n"
+        )
         self.assertEqual(
             [],
             validate_body_contract(
                 valid,
-                "# Example\n\nPackage index.\n",
+                body,
                 adapted,
                 changed_boundary=True,
             ),
         )
+        findings = validate_body_contract(
+            valid,
+            body.replace("## Authority Boundaries\n\nBoundaries.\n\n", ""),
+            adapted,
+            changed_boundary=True,
+        )
+        self.assertIn("body-heading-missing", {item.code for item in findings})
         invalid = Record(
             path,
             {},
-            "spec-package-readme",
+            "governance-sdlc",
             frontmatter_present=True,
         )
         self.assertTrue(

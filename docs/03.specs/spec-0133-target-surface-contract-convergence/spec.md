@@ -487,5 +487,5 @@ commit.
 - [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
 - [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
-- [Postflight checklist](../../00.agent-governance/rules/postflight-checklist.md)
+- [Task checklists](../../00.agent-governance/policies/task-checklists.md)
+- [Postflight checklist](../../00.agent-governance/policies/postflight-checklist.md)

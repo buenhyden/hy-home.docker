@@ -58,7 +58,7 @@ airflow/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. [진입 가이드](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md)를 읽고 시스템 전반을 이해합니다.
 2. [DAG 개발 가이드](../../../docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md)를 참조하여 파이프라인을 작성합니다.

@@ -129,6 +129,6 @@ Plan과 Task의 상태가 완료되면 먼저 구현된 동작을 Spec과 필요
 - [Architecture](../02.architecture/README.md)
 - [Operations](../05.operations/README.md)
 - [Archive](../98.archive/README.md)
-- [Stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Document metadata profiles](../99.templates/support/document-metadata-profiles.yaml)
 - [Archive retention contract](../99.templates/support/archive-retention-contract.md)

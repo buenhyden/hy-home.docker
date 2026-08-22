@@ -48,7 +48,7 @@ This specification owns documentation structure, README contracts, stage documen
 ## Core Design
 
 - **Component Boundary**: documentation strengthening is limited to `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, and `docs/90.references`.
-- **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
+- **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/policies/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
 ## Data Modeling & Storage Strategy

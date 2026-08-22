@@ -13,7 +13,7 @@ import re
 import sys
 from dataclasses import dataclass
 
-PROTOCOL = pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md")
+PROTOCOL = pathlib.Path("docs/00.agent-governance/policies/documentation-protocol.md")
 
 
 @dataclass(frozen=True)

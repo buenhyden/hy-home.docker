@@ -214,7 +214,7 @@ docker compose --profile core up -d
 
 - 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.
 - Bootstrap 순서는 `bootstrap.md` → `persona.md` → `task-checklists.md` → `agentic.md` → `memory/README.md`와 `memory/progress.md` review → 해당 scope 순서를 따릅니다.
-- 문서 작성/갱신 작업은 [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성합니다.
+- 문서 작성/갱신 작업은 [`docs/00.agent-governance/policies/stage-authoring-matrix.md`](./docs/00.agent-governance/policies/stage-authoring-matrix.md)를 기준으로 작성합니다.
 - 공식 stage 문서는 기본적으로 읽기 전용이며, 명시적 사용자 지시가 있을 때만 수정합니다.
 
 ## Verification and Quality Gates
@@ -267,20 +267,20 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme.template.md`](./docs/99.templates/templates/common/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme.template.md`](./docs/99.templates/templates/common/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
-5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
+5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/policies/github-governance.md`](./docs/00.agent-governance/policies/github-governance.md)와 [`docs/00.agent-governance/policies/git-workflow.md`](./docs/00.agent-governance/policies/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
 ## Related Documents
 
 - [`docs/README.md`](./docs/README.md)
 - [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md)
-- [`docs/00.agent-governance/scopes/docs.md`](./docs/00.agent-governance/scopes/docs.md)
-- [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)
-- [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)
-- [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)
-- [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)
+- [`docs/00.agent-governance/roles/docs.md`](./docs/00.agent-governance/roles/docs.md)
+- [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)
+- [`docs/00.agent-governance/policies/github-governance.md`](./docs/00.agent-governance/policies/github-governance.md)
+- [`docs/00.agent-governance/policies/git-workflow.md`](./docs/00.agent-governance/policies/git-workflow.md)
+- [`docs/00.agent-governance/policies/stage-authoring-matrix.md`](./docs/00.agent-governance/policies/stage-authoring-matrix.md)
 - [`docs/05.operations/README.md`](./docs/05.operations/README.md)
 - [`docs/90.references/README.md`](./docs/90.references/README.md)
 - [`docs/90.references/data/docker/README.md`](./docs/90.references/data/docker/README.md)

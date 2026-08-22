@@ -5,7 +5,7 @@ artifact_type: adr
 parent_ids:
   - ad-0027
 created: 2026-06-01
-updated: 2026-08-10
+updated: 2026-08-21
 ---
 # ADR-0027: Stage 00 Canonical Adapter Model
 
@@ -17,11 +17,11 @@ updated: 2026-08-10
 
 Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provider runtime surface도 정렬되어 있음을 확인했다. 동시에 Agent Governance, Codex/provider harness, external strategy skill, HADS, Docker/QA/DevOps guidance를 직접 다루는 Stage 01/02 근거 문서가 없다는 traceability gap도 확인했다.
 
-여러 provider가 같은 저장소에서 동작하면 정책 분산 위험이 커진다. Claude Markdown agents, Codex TOML agents, Gemini-compatible `.agents/` surface는 각기 다른 형식을 갖지만, repository 목적과 safety boundary는 동일해야 한다. 따라서 정책 source와 adapter mechanics를 명확히 분리하는 formal decision이 필요하다.
+여러 provider가 같은 저장소에서 동작하면 정책 분산 위험이 커진다. Claude Markdown agents, Codex TOML agents, and provider-neutral `.agents/` compatibility projections는 각기 다른 형식을 갖지만, repository 목적과 safety boundary는 동일해야 한다. 따라서 정책 source와 adapter mechanics를 명확히 분리하는 formal decision이 필요하다.
 
 ## Decision
 
-- Stage 00 under `docs/00.agent-governance/` is the only canonical source for agent policy, workflow rules, scopes, provider-neutral catalog entries, template expectations, and governance memory contract.
+- Stage 00 under `docs/00.agent-governance/` is the only canonical source for agent policy, workflow states, canonical roles and skills, provider registry, and bounded evidence rules.
 - `.claude/`, `.codex/`, and `.agents/` are provider runtime adapters. They may express Stage 00 catalog entries in provider-native formats, but they must not redefine policy.
 - `.codex/agents/*.toml` is the only active Codex agent adapter surface. `.codex/agents/*.md` prompt files are retired and must not be recreated.
 - External strategy skills must be adapted into canonical repository stage paths rather than creating active non-stage specs, plans, or task logs.
@@ -66,7 +66,7 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
   - The current requested workflow is Codex-heavy, so Codex TOML and hooks could become highly optimized.
   - Codex-specific fields such as reasoning effort could be first-class.
 - Bad:
-  - Claude and Gemini surfaces would become secondary or stale.
+  - Other supported provider surfaces would become secondary or stale.
   - Repository-local governance would be coupled to one provider.
   - Existing Stage 00 provider-neutral catalog would lose authority.
 
@@ -92,8 +92,8 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 
 ## Agent-related Example Decisions (If Applicable)
 
-- Model selection belongs in `subagent-protocol.md` and provider overlays, not provider adapter files alone.
-- Tool gating belongs in Stage 00 rules and hooks; adapters route execution.
+- Model selection belongs in `providers/registry.yaml` and provider overlays, not provider adapter files alone.
+- Tool gating belongs in Stage 00 policies and hooks; adapters route execution.
 - Guardrail strategy is shared across providers and validated by repository scripts.
 - Planner/executor patterns map to canonical Stage 04 plan/task documents.
 - Fallback model policy requires Stage 00 update and validation before adapter changes.
