@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0005
 artifact_type: task
 parent_ids:
@@ -30,7 +30,7 @@ Unify Stage 01 into prefixless Requirement Packages with package-qualified FR, N
 | Boundary freeze | Migration rows `mig-0003-r0132` through `mig-0003-r0156` resolve to exactly 25 tracked sources, 25 absent targets before execution, 74 declared edges across 72 unique declared consumers, and 78 live current consumers. The union is 79 because `docs/00.agent-governance/providers/codex.md` was already converged while predecessor Spec 0136 and five focused tests exposed additional live references. |
 | RED | `PYTHONPATH=. python3 -m unittest tests.validation.test_requirement_packages tests.validation.test_four_digit_document_identity -v` ran 29 tests with 8 failures: 7 exact Task 5 assertions failed because `requirements.py` did not exist; the eighth was the pre-existing Stage 00 incident-route publication residual. |
 | Conversion preview | A deterministic `/tmp` preview reviewed all 25 package mappings, 152 requirement mappings, and 82 acceptance mappings. SHA-256: `c234c49062970553ed424a0400962fc67976e1de16b8c04a76d7bf181d53deab`. No ambiguous owner, kind, or acceptance mapping existed; the helper and output were removed after review. |
-| Native moves | Executed exactly one literal native `git mv` for each approved row `r0132`–`r0156`. All 25 prefixless targets exist and all 25 legacy sources are absent. The parent-prepared initial Task 5 implementation occupies 113 immutable staged paths; round-1 through round-5 review fixes remain unstaged. |
+| Native moves | Executed exactly one literal native `git mv` for each approved row `r0132`–`r0156`. All 25 prefixless targets exist and all 25 legacy sources are absent. The reviewed 113-path initial packet and 12-path fix set were combined into the logical Task 5 commit. |
 | Package rewrite | Preserved the problem, goals, stakeholders, constraints, acceptance meaning, risks, dependencies, and trace links in every package. Current declarations are 152 unique child IDs: 138 FR and 14 NFR; no source declared a distinct solution-independent interface requirement, so no IF ID was invented. The 82 acceptance entries reference their corresponding full FR IDs. |
 | Allocation and consumers | Advanced only issued NFR high-water state: `REQ-0003.NFR=7/8`, `REQ-0024.NFR=13/14`, and `REQ-0025.NFR=16/17`; no FR or IF high-water was lowered. Rewrote 78 live current consumer/template paths and identities while preserving the frozen Migration packet, its selection/edge digests, recovery fields, and archived evidence. |
 | Validation implementation | Added frozen bounded parsing for regular non-symlink UTF-8 files, exact path/package ownership, required registered sections, typed/monotonic child declarations, item/byte limits, and fail-closed legacy, bare, malformed, duplicate, reused, wrong-kind, foreign-owner, and executable OpenAPI/GraphQL/Proto rejection. Metadata validation consumes the canonical parser and exposes only a read-only legacy relation alias for immutable pre-migration evidence. |
@@ -44,6 +44,7 @@ Unify Stage 01 into prefixless Requirement Packages with package-qualified FR, N
 | Fix round 4 implementation | Root package high-water is now append-only and every child-space package is bounded by it. Metadata changed/contracts gates validate both Registry and the complete Stage 01 corpus in transition mode. Git refs resolve once to commit OIDs; explicitly requested index snapshots capture path-to-blob mappings once; all later reads use immutable blob OIDs through an argv-only, timeout-bound, streaming stdout/stderr cap with package/path/high-water bounds. Bounded syntax grammars cover quoted, multiline, tagged, and anchored OpenAPI flow values, multiline GraphQL declarations/directives/extensions, and Proto services using imported request/response types. |
 | Fix round 5 RED | Seven exact failures remained: a candidate `high_water=10000` expanded 9,975 missing-space findings; changed/contracts modes trusted a staged reserved-ID reclassification whenever the worktree Registry differed harmlessly; and folded/literal block-scalar OpenAPI, comment-separated GraphQL with balanced nested directive input, and Proto aggregate service options before RPC were accepted. Prose controls remained positive. |
 | Fix round 5 implementation | Schema and runtime now cap identity values, arrays, child mappings, trusted paths, and package counts at 9,999 before range/set/finding expansion. Production metadata gates always compare against the pinned explicit merge-base, or pinned `HEAD` as the no-ref safe default; the Git index is available only through an explicit internal `":"` revision. Legacy predecessor packages are deterministically translated from their section/subsection declarations without consulting candidate allocation fields. Bounded comment stripping, tokenization, and balanced delimiter scanning close the remaining OpenAPI, GraphQL, and Proto variants. |
+| Final approval and closeout | Independent contract and Python/security reviewers approved the final packet at `C0/I0/M0`. The controller reran 69 focused tests, changed metadata, repository contracts, syntax, and diff checks, then created logical commit `218d66934828da41fce9a9a14cb35d3d7e94bd04` (`refactor(requirements): unify requirement packages`). |
 
 ## Verification Evidence
 
@@ -60,19 +61,19 @@ Unify Stage 01 into prefixless Requirement Packages with package-qualified FR, N
 | Frozen Migration contract | `rtk python3 -m unittest tests.validation.test_workspace_governance_migration -q`; SHA-256 | Digest/selection checks pass; suite is `8/17` with nine Task 3/4 and current uncommitted Task-evidence state assertions. Migration bytes remain SHA-256 `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`; no YAML row, digest, or recovery commit changed. |
 | Traceability links | `python3 scripts/validation/check-document-links.py --mode traceability` | One shared-worktree residual only: `document-not-regular` for Task 1-moved `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`; `documents=362 links=2747 failures=1`. |
 | Python quality | Ruff and `python3 -m py_compile` over the three implementation modules and four focused test files | PASS. |
-| Git hygiene | staged packet SHA/path count; `git diff --check` | Initial 113-path staged binary diff remains SHA-256 `1e3377c538ee9faa06174a709cb84fa12bc7bc7795c280b45525e186236da781`; the frozen review packet remains SHA-256 `b7167ab66c05ae7f443c9723fff757c12f3f652ed6a9976de3ea612fc9835010`. All round-1 through round-5 fixes are unstaged and diff check passes. No stage, commit, push, remote, runtime, or secret operation was performed. |
+| Git hygiene | reviewed packet hashes; `git diff --check`; controller commit | Initial 113-path staged binary diff SHA-256 was `1e3377c538ee9faa06174a709cb84fa12bc7bc7795c280b45525e186236da781`; the frozen initial review packet SHA-256 was `b7167ab66c05ae7f443c9723fff757c12f3f652ed6a9976de3ea612fc9835010`. The combined reviewed implementation passed cached and working-tree diff checks and was committed as `218d66934828da41fce9a9a14cb35d3d7e94bd04`. No push, remote, runtime, credential, or secret operation occurred. |
 
 ## Review Evidence
 
 | Review | Status | Findings and disposition |
 | :--- | :--- | :--- |
-| Fix round 5 implementer review | READY FOR RE-REVIEW | The final Python re-review reported `C0/I3/M0`. All three Important findings now have focused RED/GREEN coverage for bounded allocation expansion, mixed staged/worktree CLI predecessor selection, and balanced executable syntax; staged implementation and frozen Migration bytes remain unchanged. Independent re-review and commit remain parent-owned. |
+| Final independent reviews | APPROVED (`C0/I0/M0`) | Contract and Python/security reviewers independently verified bounded allocation expansion, mixed staged/worktree predecessor isolation, executable-contract detection, evidence accuracy, frozen Migration bytes, and controller gate results. |
 
 ## Commit Ledger
 
 | Commit | Description |
 | :--- | :--- |
-| Pending | `DONE_UNCOMMITTED`; no commit was created and Migration recovery commits remain unbound. |
+| `218d66934828da41fce9a9a14cb35d3d7e94bd04` | `refactor(requirements): unify requirement packages`; parent-owned logical Task 5 implementation commit. Migration recovery commits remain intentionally unbound until Task 13. |
 
 ## Rulings
 
@@ -85,4 +86,4 @@ Unify Stage 01 into prefixless Requirement Packages with package-qualified FR, N
 
 ## Deferred Items
 
-- Independent review, logical commit, and Task 13 recovery binding remain parent-owned.
+- Task 13 recovery binding remains parent-owned.
