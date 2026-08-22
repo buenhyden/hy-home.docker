@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0004
 artifact_type: spec
 parent_ids:
-  - ad-0019
+  - AD-0019
 created: 2026-07-05
 updated: 2026-08-11
 ---
@@ -23,10 +23,10 @@ This document defines the optimization/hardening implementation contract for the
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0016-data-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md)
+- **ARD**: [../../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md](../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md)
-  - [../../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../02.architecture/decisions/0004-postgresql-ha-patroni.md)
+  - [../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

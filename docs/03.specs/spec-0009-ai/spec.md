@@ -3,8 +3,8 @@ status: active
 artifact_id: spec-0009
 artifact_type: spec
 parent_ids:
-  - ad-0013
-  - ad-0023
+  - AD-0013
+  - AD-0023
 created: 2026-07-05
 updated: 2026-08-14
 ---
@@ -32,10 +32,10 @@ This document is the optimization/hardening technical specification for the `inf
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
+- **ARD**: [../../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md](../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md)
-  - [../../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md](../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md)
+  - [../../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 
@@ -157,8 +157,8 @@ This specification defines the technical design and implementation contract for 
 ### Related Inputs
 
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0013-open-webui-architecture.md](../../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
-- **Related ADRs**: [../../02.architecture/decisions/adr-0016-open-webui-implementation.md](../../02.architecture/decisions/adr-0016-open-webui-implementation.md)
+- **ARD**: [../../02.architecture/descriptions/0013-open-webui-architecture.md](../../02.architecture/descriptions/0013-open-webui-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0016-open-webui-implementation.md](../../02.architecture/decisions/0016-open-webui-implementation.md)
 
 ### Contracts
 

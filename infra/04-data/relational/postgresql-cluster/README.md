@@ -113,7 +113,7 @@ postgresql-cluster/
 - **Guide**: [docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md](../../../../docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md)
 - **Policy**: [docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md](../../../../docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md)
 - **Runbook**: [docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md](../../../../docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md)
-- **ARD**: [docs/02.architecture/descriptions/ad-0004-data-architecture.md](../../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
+- **ARD**: [docs/02.architecture/descriptions/0004-data-architecture.md](../../../../docs/02.architecture/descriptions/0004-data-architecture.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

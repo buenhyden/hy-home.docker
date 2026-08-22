@@ -77,7 +77,7 @@ N/A
 
 ## Traceability
 
-- **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/ad-0009-tooling-architecture.md)
+- **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
 - **Spec**: [010-tooling/spec.md](../03.specs/spec-0010-tooling/spec.md)
 - **Plan**: 2026-03-26-09-tooling-standardization.md
-- **ADR**: [0009-tooling-services.md](../02.architecture/decisions/adr-0009-tooling-services.md)
+- **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)

@@ -28,8 +28,8 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [../../../02.architecture/descriptions/ad-0008-ai-architecture.md](../../../../02.architecture/descriptions/ad-0008-ai-architecture.md)
-- [../../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md](../../../../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md)
+- [../../../02.architecture/descriptions/0008-ai-architecture.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
+- [../../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md](../../../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md)
 - [../../../03.specs/009-ai/spec.md](../../../../03.specs/spec-0009-ai/spec.md)
 - ../../../04.execution/plans/2026-03-26-08-ai-standardization.md
 

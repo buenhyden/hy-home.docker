@@ -246,7 +246,7 @@ docs/02.architecture/
 - ADR owns one structurally significant choice, alternatives, decision, and
   consequences.
 - Superseded ADRs remain in the decision log and cross-link the successor.
-- `02.architecture/requirements/` is not restored.
+- The forbidden Stage 02 requirements subdirectory is not restored.
 - Long-lived design material moves from old Stage 03 `design.md` content to an
   ADR or Architecture Description; change-local detail moves into `spec.md`.
 
@@ -573,7 +573,7 @@ fixtures are removed. One canonical provenance record is referenced by identity.
 
 1. Commit this approved specification and create `ADR-0029: Workspace
    Documentation and Agent Governance Authority` at the current-compatible
-   `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`;
+   `docs/02.architecture/decisions/0029-workspace-governance-authority.md`;
    move it natively to the prefixless path after the Stage 99/02 profiles permit
    that route.
 2. Establish Stage 99 registry/schema/template authority and registry-backed
@@ -698,7 +698,7 @@ transition executes.
 - [Archive and migration lookup](../../98.archive/README.md)
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Stage 99 template hub](../../99.templates/README.md)
-- [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
+- [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/0029-workspace-governance-authority.md)
 - [Migration 0003](../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
 
 ADR-0029 remains draft and Migration 0003 is approved; both remain uncommitted

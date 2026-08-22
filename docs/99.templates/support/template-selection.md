@@ -14,8 +14,8 @@ template source.
 | Role | Target Location | Template |
 | --- | --- | --- |
 | Requirement Package | `docs/01.requirements/####-<slug>.md` | [requirement-package.template.md](../templates/requirements/requirement-package.template.md) |
-| Architecture Description | `docs/02.architecture/descriptions/ad-####-<slug>.md` | [architecture-description.template.md](../templates/sdlc/architecture-description.template.md) |
-| ADR | `docs/02.architecture/decisions/adr-####-<slug>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
+| Architecture Description | `docs/02.architecture/descriptions/####-<slug>.md` | [architecture-description.template.md](../templates/sdlc/architecture-description.template.md) |
+| ADR | `docs/02.architecture/decisions/####-<slug>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
 | Spec | `docs/03.specs/spec-####-<capability>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
 | Plan | `docs/03.specs/spec-####-<capability>/plan.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
 | Task | `docs/03.specs/spec-####-<capability>/task.md` | [task.template.md](../templates/sdlc/task.template.md) |

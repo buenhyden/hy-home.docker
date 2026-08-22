@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0102
 artifact_type: spec
 parent_ids:
-  - ad-0027
+  - AD-0027
 created: 2026-07-05
 updated: 2026-08-11
 ---

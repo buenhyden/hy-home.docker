@@ -3,7 +3,7 @@ status: completed
 artifact_id: spec-0131
 artifact_type: spec
 parent_ids:
-  - ad-0027
+  - AD-0027
 created: 2026-08-08
 updated: 2026-08-11
 ---
@@ -98,8 +98,8 @@ change, not directory-name symmetry.
 - Spec 130: Template Contract System Canonicalization
 - Spec 129: Document Contract Canonicalization
 - [Agent Governance PRD](../../01.requirements/0024-agent-governance-standardization.md)
-- [Agent Governance Architecture Description](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
-- [Stage 00 adapter ADR](../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
+- [Agent Governance Architecture Description](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
+- [Stage 00 adapter ADR](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
 - [Stage 99 metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
 - [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)

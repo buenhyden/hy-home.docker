@@ -18,6 +18,10 @@ _INTERNAL_REQUIREMENT_ID_PATTERN = re.compile(
 _REQUIREMENT_PACKAGE_PATH_PATTERN = re.compile(
     r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
+_ARCHITECTURE_PATH_PATTERN = re.compile(
+    r"docs/02\.architecture/(?P<directory>descriptions|decisions)/"
+    r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
+)
 _REGISTERED_TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|subject_number|year):4\}"
     r"|\{(?:slug|domain|stage)\}"
@@ -179,6 +183,17 @@ def requirement_package_identity(path: PurePosixPath) -> str | None:
     return None if match is None else f"REQ-{match.group('number')}"
 
 
+def architecture_identity(path: PurePosixPath) -> tuple[str, str] | None:
+    """Return the Stage 02 profile and stable ID owned by a prefixless path."""
+
+    match = _ARCHITECTURE_PATH_PATTERN.fullmatch(path.as_posix())
+    if match is None:
+        return None
+    if match.group("directory") == "descriptions":
+        return "architecture-description", f"AD-{match.group('number')}"
+    return "adr", f"ADR-{match.group('number')}"
+
+
 def is_valid_incident_path(path: PurePosixPath) -> bool:
     """Return whether ``path`` is one fixed-role file in a canonical packet."""
 
@@ -243,6 +258,14 @@ def _matches_path_identity(
 ) -> bool:
     """Return whether ``path`` carries direct or inherited profile identity."""
 
+    owned_architecture_identity = architecture_identity(path)
+    if (
+        owned_architecture_identity is not None
+        and owned_architecture_identity[1] == artifact_id
+    ):
+        return True
+    if requirement_package_identity(path) == artifact_id:
+        return True
     path_identity = str(profile.get("path_identity", "direct"))
     if path_identity == "direct":
         return any(

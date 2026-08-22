@@ -81,7 +81,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Traceability
 
-- **Architecture Description**: [Messaging architecture descriptions](../02.architecture/descriptions/ad-0005-messaging-architecture.md)
+- **Architecture Description**: [Messaging architecture descriptions](../02.architecture/descriptions/0005-messaging-architecture.md)
 - **Spec**: [Messaging technical specification](../03.specs/spec-0006-messaging/spec.md)
 - **Plan**: Messaging standardization plan
-- **ADR**: [Kafka vs RabbitMQ selection decision](../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md)
+- **ADR**: [Kafka vs RabbitMQ selection decision](../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md)

@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0003
 artifact_type: spec
 parent_ids:
-  - ad-0018
+  - AD-0018
 created: 2026-07-05
 updated: 2026-08-11
 ---
@@ -23,10 +23,10 @@ This document defines the optimization/hardening implementation contract for `in
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0015-security-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
+- **ARD**: [../../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md)
-  - [../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/0003-vault-as-secrets-manager.md](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
+  - [../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

@@ -130,7 +130,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 | :--- | :--- |
 | Approved behavior | `docs/03.specs/0153-workspace-governance-simplification/spec.md` |
 | Program sequence | `docs/03.specs/0153-workspace-governance-simplification/plan.md` |
-| Cross-stage decision | `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`, later prefixless |
+| Cross-stage decision | `docs/02.architecture/decisions/0029-workspace-governance-authority.md`, later prefixless |
 | Migration ledger | `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`, later prefixless |
 | Document registry | `docs/99.templates/registry.json` |
 | Registry schemas | `docs/99.templates/contracts/frontmatter.schema.json`, `document-profile.schema.json` |
@@ -193,7 +193,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 
 **Files:**
 
-- Create: `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`
+- Create: `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
 - Create: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
 - Create: `docs/03.specs/0153-workspace-governance-simplification/task.md`
 - Create: `tests/validation/test_workspace_governance_migration.py`
@@ -215,7 +215,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 from pathlib import Path
 import unittest
 
-ADR = Path("docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md")
+ADR = Path("docs/02.architecture/decisions/0029-workspace-governance-authority.md")
 MIGRATION = Path("docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md")
 
 class WorkspaceGovernanceMigrationTests(unittest.TestCase):
@@ -239,7 +239,7 @@ Expected: FAIL because both approved control-plane files are absent.
 
 Record context, authority alternatives, the chosen Stage 00/99 split, generated
 provider projections, six public suites, consequences, and confirmation tests.
-Use `artifact_id: adr-0029`, `status: draft`, and link Spec 0153. Do not move or
+Use `artifact_id: ADR-0029`, `status: draft`, and link Spec 0153. Do not move or
 uppercase it until Task 6 installs the Stage 02 target profile.
 
 - [x] **Step 4: Create Migration mig-0003 from the current archive template**
@@ -267,8 +267,8 @@ final_compaction:
   top_level_keys: [schema_version, migration_id, rows]
   row_keys: [source_path, target_path, artifact_id, action, recovery_commit]
 planned_creations:
-  - path: docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md
-    artifact_id: adr-0029
+  - path: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+    artifact_id: ADR-0029
     owner_task: 1
 rows:
   - row_id: mig-0003-r0001
@@ -360,7 +360,7 @@ PYTHONPATH=. python3 -m unittest \
 Only after that command passes may the control plane be staged:
 
 ```bash
-git add docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md \
+git add docs/02.architecture/decisions/0029-workspace-governance-authority.md \
   docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md \
   docs/03.specs/0153-workspace-governance-simplification \
   tests/validation/test_workspace_governance_migration.py
@@ -934,10 +934,10 @@ git commit -m "refactor(requirements): unify requirement packages"
 **Files:**
 
 - Modify: `docs/02.architecture/README.md`
-- Move: the 25 tracked `docs/02.architecture/descriptions/ad-####-<slug>.md`
-  files to exact `docs/02.architecture/descriptions/####-<slug>.md` targets
-- Move: the 26 tracked `docs/02.architecture/decisions/adr-####-<slug>.md`
-  files after Task 1, including ADR-0029, to exact
+- Move: the 25 tracked description files in Migration 0003 Task 6 rows to exact
+  `docs/02.architecture/descriptions/####-<slug>.md` targets
+- Move: the 26 tracked decision files in Migration 0003 Task 6 rows after Task 1,
+  including ADR-0029, to exact
   `docs/02.architecture/decisions/####-<slug>.md` targets
 - Create: `scripts/lib/document_governance/architecture.py`
 - Create: `tests/validation/test_architecture_documents.py`
@@ -970,8 +970,8 @@ class ArchitectureDocumentTests(unittest.TestCase):
 ```
 
 Mutation cases cover lowercase stable IDs, number mismatch, cycles, dangling
-`supersedes`/`superseded_by`, archived superseded ADRs, and a restored
-`02.architecture/requirements/` root.
+`supersedes`/`superseded_by`, archived superseded ADRs, and a restored forbidden
+Stage 02 requirements subdirectory.
 
 - [ ] **Step 2: Run RED, then move files natively**
 
@@ -1893,7 +1893,7 @@ history rewrite. Reverts are logical-commit scoped or exact Git-object restores.
 ## Related Documents
 
 - `docs/03.specs/0153-workspace-governance-simplification/spec.md`
-- `docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`
+- `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
 - `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/rules/documentation-protocol.md`

@@ -77,7 +77,7 @@ N/A
 
 ## Traceability
 
-- **Architecture Description**: [0010-communication-architecture.md](../02.architecture/descriptions/ad-0010-communication-architecture.md)
+- **Architecture Description**: [0010-communication-architecture.md](../02.architecture/descriptions/0010-communication-architecture.md)
 - **Spec**: [011-communication/spec.md](../03.specs/spec-0011-communication/spec.md)
 - **Plan**: 2026-03-26-10-communication-standardization.md
-- **ADR**: [0010-communication-services.md](../02.architecture/decisions/adr-0010-communication-services.md)
+- **ADR**: [0010-communication-services.md](../02.architecture/decisions/0010-communication-services.md)

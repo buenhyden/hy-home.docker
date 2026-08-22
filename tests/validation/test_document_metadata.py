@@ -2631,11 +2631,11 @@ class ProfileSchemaTests(unittest.TestCase):
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
         cases = {
-            "docs/01.requirements/prd-0123-example.md": "prd",
+            "docs/01.requirements/0123-example.md": "requirements-package",
             "docs/01.requirements/srs-123-example.md": "srs",
             "docs/01.requirements/interface-123-example.md": "interface-requirement",
-            "docs/02.architecture/descriptions/ad-0123-example.md": "architecture-description",
-            "docs/02.architecture/decisions/adr-0123-example.md": "adr",
+            "docs/02.architecture/descriptions/0123-example.md": "architecture-description",
+            "docs/02.architecture/decisions/0123-example.md": "adr",
             "docs/03.specs/spec-0123-example/spec.md": "spec",
             "docs/03.specs/spec-0123-example/plan.md": "plan",
             "docs/03.specs/spec-0123-example/task.md": "task",
@@ -8173,10 +8173,14 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
 
     def test_architecture_description_and_operation_subjects_have_stable_id_profiles(self) -> None:
         stable_profiles = self.profiles["profiles"]
-        ad = stable_profiles["architecture-description"]
+        ad = metadata.load_registry(REGISTRY).profiles["architecture-description"]
         runbook = stable_profiles["runbook"]
-        self.assertEqual("ad-[0-9]{4}", ad["id_pattern"])
-        self.assertEqual("direct", ad["path_identity"])
+        self.assertEqual("AD-{number:4}", ad["artifact_id_pattern"])
+        self.assertEqual(
+            "docs/02.architecture/descriptions/{number:4}-{slug}.md",
+            ad["path_pattern"],
+        )
+        self.assertEqual("direct", ad["identity_relation"])
         self.assertEqual("runbook-(?P<identity>[0-9]{4})", runbook["id_pattern"])
         self.assertEqual("inherited", runbook["path_identity"])
         self.assertNotIn("ard", stable_profiles)

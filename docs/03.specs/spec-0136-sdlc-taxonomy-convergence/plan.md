@@ -255,10 +255,10 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_accepts_architecture_description_identity(self):
         findings = validate_stable_identity(
             PurePosixPath(
-                "docs/02.architecture/descriptions/ad-0001-gateway.md"
+                "docs/02.architecture/descriptions/0001-gateway.md"
             ),
             {
-                "artifact_id": "ad-0001",
+                "artifact_id": "AD-0001",
                 "artifact_type": "architecture-description",
             },
             {
@@ -388,7 +388,7 @@ git commit -m "feat(validation): add stable document taxonomy engine"
 
 - [ ] **Step 1: Add failing contract fixtures**
 
-Add fixtures that accept ad-0001-*.md and reject ARD, accept stable operation
+Add fixtures that accept AD-0001-*.md and reject ARD, accept stable operation
 subjects, reject date prefixes, require created and updated after promotion,
 and identify Rules Engineer as the Stage 00 policy owner.
 
@@ -515,9 +515,9 @@ git commit -m "docs: freeze SDLC and script migration dispositions"
 - Rename: docs/01.requirements/[0-9][0-9][0-9]-*.md to
   docs/01.requirements/[0-9][0-9][0-9][0-9]-*.md
 - Rename: the legacy Architecture Requirements rows recorded in `mig-0001` to
-  docs/02.architecture/descriptions/ad-*.md
-- Rename: docs/02.architecture/decisions/*.md to
-  docs/02.architecture/decisions/adr-*.md
+  docs/02.architecture/descriptions/*.md
+- Rename: docs/02.architecture/decisions/*.md to the canonical
+  docs/02.architecture/decisions/*.md inventory
 - Modify: all inbound paths enumerated for these rows in mig-0001
 - Modify: docs/01.requirements/README.md
 - Modify: docs/02.architecture/README.md

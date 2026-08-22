@@ -3,7 +3,7 @@ status: completed
 artifact_id: spec-0098
 artifact_type: spec
 parent_ids:
-  - ad-0026
+  - AD-0026
 created: 2026-07-05
 updated: 2026-08-11
 ---
@@ -28,8 +28,8 @@ This document defines detailed instructions for applying the `infra_net` network
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0023-standardize-infra-net.md](../../01.requirements/0023-standardize-infra-net.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
-- **Related ADRs**: [../../02.architecture/decisions/adr-0026-standardize-infra-net.md](../../02.architecture/decisions/adr-0026-standardize-infra-net.md)
+- **ARD**: [../../02.architecture/descriptions/0026-standardize-infra-net.md](../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- **Related ADRs**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
 
 ## Contracts
 

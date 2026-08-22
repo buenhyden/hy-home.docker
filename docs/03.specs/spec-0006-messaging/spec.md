@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0006
 artifact_type: spec
 parent_ids:
-  - ad-0020
+  - AD-0020
 created: 2026-07-05
 updated: 2026-08-14
 ---
@@ -23,10 +23,10 @@ This document defines the optimization/hardening implementation contract for the
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
+- **ARD**: [../../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md](../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md)
-  - [../../02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md](../../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md)
+  - [../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

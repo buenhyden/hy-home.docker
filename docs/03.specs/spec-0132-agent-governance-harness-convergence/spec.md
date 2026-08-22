@@ -3,7 +3,7 @@ status: completed
 artifact_id: spec-0132
 artifact_type: spec
 parent_ids:
-  - ad-0027
+  - AD-0027
 created: 2026-08-08
 updated: 2026-08-11
 ---

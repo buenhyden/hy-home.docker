@@ -19,42 +19,45 @@ ADR은 구현 명세나 운영 절차가 아니다.
 
 ## Scope
 
-이 디렉터리는 현재 25개의 ADR을 보유한다. 각 ADR은 하나의 material
+이 디렉터리는 현재 26개의 ADR을 보유한다. 각 ADR은 하나의 material
 choice를 소유하고 실제 Architecture Description을 parent로 연결한다.
 
 ## Structure
 
 ```text
 docs/02.architecture/decisions/
-├── adr-0001-traefik-nginx-hybrid.md
-├── adr-0002-keycloak-oauth2-proxy-choice.md
+├── 0001-traefik-nginx-hybrid.md
+├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
-├── adr-0027-stage-00-canonical-adapter-model.md
-├── adr-0028-local-isolated-readiness-evidence.md
+├── 0027-stage-00-canonical-adapter-model.md
+├── 0028-local-isolated-readiness-evidence.md
+├── 0029-workspace-governance-authority.md
 └── README.md
 ```
 
 ## Current Inventory
 
-- `adr-0001`부터 `adr-0011`: 기본 tier와 service selection decisions.
-- `adr-0015`부터 `adr-0026`: analytics, hardening, HA와 network decisions.
-- [`adr-0027-stage-00-canonical-adapter-model.md`](./adr-0027-stage-00-canonical-adapter-model.md):
-  Stage 00 adapter decision.
-- [`adr-0028-local-isolated-readiness-evidence.md`](./adr-0028-local-isolated-readiness-evidence.md):
+- `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
+- `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
+- [`ADR-0027`](./0027-stage-00-canonical-adapter-model.md):
+  ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
+- [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence strategy.
+- [`ADR-0029`](./0029-workspace-governance-authority.md):
+  active workspace governance authority decision; ADR-0027을 supersede한다.
 
 ## How to Work in This Area
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
-3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/sdlc/adr.template.md)를 사용한다.
+3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/architecture/adr.template.md)를 사용한다.
 4. 선택, alternatives, rationale와 consequences를 보존한다.
 5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
    supersession을 명시한다.
 
 ## Documentation Standards
 
-- `adr-<4-digit-id>-<slug>.md`, `artifact_id: adr-<id>`,
+- `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
   `artifact_type: adr`을 일치시킨다.
 - `parent_ids`는 실제 Architecture Description만 포함한다.
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
@@ -73,4 +76,4 @@ supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 AD
 - [Product Requirements](../../01.requirements/README.md)
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
-- [ADR Template](../../99.templates/templates/sdlc/adr.template.md)
+- [ADR Template](../../99.templates/templates/architecture/adr.template.md)

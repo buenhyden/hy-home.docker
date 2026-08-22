@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0012
 artifact_type: spec
 parent_ids:
-  - ad-0025
+  - AD-0025
 created: 2026-07-05
 updated: 2026-08-14
 ---
@@ -32,10 +32,10 @@ This document is the optimization/hardening technical specification for the `inf
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0022-laboratory-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
+- **ARD**: [../../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/adr-0011-laboratory-services.md](../../02.architecture/decisions/adr-0011-laboratory-services.md)
-  - [../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/0011-laboratory-services.md](../../02.architecture/decisions/0011-laboratory-services.md)
+  - [../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

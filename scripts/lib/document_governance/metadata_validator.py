@@ -55,6 +55,11 @@ if _REPOSITORY_DIRECTORY not in sys.path:
     sys.path.insert(0, _REPOSITORY_DIRECTORY)
 
 from agent_governance_contract import normalize_repo_relative_path  # noqa: E402
+from scripts.lib.document_governance.architecture import (  # noqa: E402
+    ArchitectureDocumentError,
+    load_architecture_documents,
+    validate_supersession_graph,
+)
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     FrontmatterError,
     parse_frontmatter_text as _parse_frontmatter_text,
@@ -84,6 +89,7 @@ from scripts.lib.document_governance.requirements import (  # noqa: E402
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     classify_path as classify_taxonomy_path,
+    requirement_package_identity,
     validate_stable_identity,
 )
 
@@ -1105,6 +1111,8 @@ def infer_artifact_type(
     """Infer a supported artifact profile from a repository-relative path."""
 
     normalized = normalize_repo_relative_path(path)
+    if requirement_package_identity(pathlib.PurePosixPath(normalized)) is not None:
+        return "requirements-package"
     registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
     if isinstance(registry, DocumentRegistry):
         registered = classify_registered_path(normalized, registry)
@@ -1797,8 +1805,12 @@ def _relation_record(
 ) -> Record | None:
     """Resolve exact IDs or one-way legacy Spec aliases for relations only."""
 
-    if referencing_record is not None and not _legacy_requirement_reference_permitted(
-        referencing_record, artifact_id
+    if (
+        referencing_record is not None
+        and artifact_id not in manifest.records_by_id
+        and not _legacy_requirement_reference_permitted(
+            referencing_record, artifact_id
+        )
     ):
         return None
     if artifact_id in manifest.relation_conflicts:
@@ -1816,6 +1828,7 @@ def _relation_reference_exists(
     return (
         (
             referencing_record is None
+            or artifact_id in manifest.records_by_id
             or _legacy_requirement_reference_permitted(
                 referencing_record, artifact_id
             )
@@ -6642,9 +6655,26 @@ def main(argv: Sequence[str] | None = None) -> int:
                     trusted_requirement_baseline=trusted_requirement_baseline,
                     allow_requirement_allocation_transition=True,
                 )
+            architecture_root = root / "docs/02.architecture"
+            if architecture_root.exists() or architecture_root.is_symlink():
+                architecture_documents = load_architecture_documents(
+                    architecture_root,
+                    registry=registry,
+                )
+                graph_findings = validate_supersession_graph(architecture_documents)
+                if graph_findings:
+                    finding = graph_findings[0]
+                    raise ArchitectureDocumentError(
+                        f"{finding.code}: {finding.path}: {finding.message}"
+                    )
         else:
             profiles = load_profiles(args.profiles.resolve())
-    except (ProfileError, RegistryError, RequirementPackageError) as error:
+    except (
+        ArchitectureDocumentError,
+        ProfileError,
+        RegistryError,
+        RequirementPackageError,
+    ) as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     if args.mode == "check-contracts" and args.profiles.suffix.lower() == ".json":

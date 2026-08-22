@@ -90,10 +90,10 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Traceability
 
-- **Architecture Description**: [../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
+- **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../03.specs/spec-0010-tooling/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
-- **ADR**: [../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md)
+- **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/09-tooling/optimization-hardening.md](../05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md)
 - **Operation**: [../05.operations/policies/09-tooling/optimization-hardening.md](../05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md)

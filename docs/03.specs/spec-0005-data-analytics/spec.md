@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0005
 artifact_type: spec
 parent_ids:
-  - ad-0012
+  - AD-0012
 created: 2026-07-05
 updated: 2026-08-11
 ---
@@ -27,8 +27,8 @@ This document defines the technical design and interface contracts for the `04-d
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0012-data-analytics-architecture.md](../../02.architecture/descriptions/ad-0012-data-analytics-architecture.md)
-- **Related ADRs**: [../../02.architecture/decisions/adr-0015-analytics-engine-selection.md](../../02.architecture/decisions/adr-0015-analytics-engine-selection.md)
+- **ARD**: [../../02.architecture/descriptions/0012-data-analytics-architecture.md](../../02.architecture/descriptions/0012-data-analytics-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0015-analytics-engine-selection.md](../../02.architecture/decisions/0015-analytics-engine-selection.md)
 
 ## Contracts
 

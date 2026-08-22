@@ -436,7 +436,7 @@ containment directory described below.
 Canonical identities include:
 
 - REQ-0001;
-- ad-0001, adr-0001;
+- AD-0001, ADR-0001;
 - spec-0136;
 - ops-0001, guide-0001, policy-0001, runbook-0001;
 - inc-0001, postmortem-0001, rel-0001;

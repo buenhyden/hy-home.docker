@@ -23,7 +23,7 @@ Task 1.
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [ADR-0029](../../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
+- [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md)
 - [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
 - Frozen baseline commit `889d3868ecd0913cddac79a718584a54a8453525`
 
@@ -122,7 +122,7 @@ FAILED (failures=1)
 ```
 
 The failure was specifically the missing
-`docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`.
+`docs/02.architecture/decisions/0029-workspace-governance-authority.md`.
 
 ### Focused GREEN
 
@@ -227,5 +227,5 @@ performed.
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [ADR-0029](../../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
+- [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md)
 - [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)

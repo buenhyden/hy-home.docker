@@ -78,7 +78,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Traceability
 
-- **Architecture Description**: [Open WebUI architecture descriptions](../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
+- **Architecture Description**: [Open WebUI architecture descriptions](../02.architecture/descriptions/0013-open-webui-architecture.md)
 - **Spec**: [Open WebUI technical specification](../03.specs/spec-0009-ai/spec.md)
 - **Plan**: Open WebUI plan
-- **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/adr-0016-open-webui-implementation.md)
+- **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/0016-open-webui-implementation.md)

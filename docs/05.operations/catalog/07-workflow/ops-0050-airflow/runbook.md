@@ -28,7 +28,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- ARD: [07-workflow Architecture](../../../../02.architecture/descriptions/ad-0007-workflow-architecture.md)
+- ARD: [07-workflow Architecture](../../../../02.architecture/descriptions/0007-workflow-architecture.md)
 - Usage: [Airflow System Usage](guide.md)
 - Policy: [Airflow Operations Policy](policy.md)
 

@@ -196,8 +196,8 @@ escape 0건, secret exposure 0건, unowned Docker resource mutation 0건이다.
 
 ## Traceability
 
-- **Architecture Description**: [Operational readiness closure architecture](../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
+- **Architecture Description**: [Operational readiness closure architecture](../02.architecture/descriptions/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Compose Spec**: Spec 124
 - **Infrastructure Spec**: Spec 125
 - **Supply-chain Spec**: Spec 126

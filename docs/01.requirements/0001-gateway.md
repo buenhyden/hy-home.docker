@@ -80,7 +80,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Traceability
 
-- **Architecture Description**: [Gateway architecture descriptions](../02.architecture/descriptions/ad-0001-gateway-architecture.md)
+- **Architecture Description**: [Gateway architecture descriptions](../02.architecture/descriptions/0001-gateway-architecture.md)
 - **Spec**: [Gateway technical specification](../03.specs/spec-0001-gateway/spec.md)
 - **Plan**: Gateway standardization plan
-- **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md)
+- **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)

@@ -7,6 +7,7 @@ from pathlib import Path, PurePosixPath
 import yaml
 
 from scripts.lib.document_governance.taxonomy import (
+    architecture_identity,
     find_dated_identity_parts,
     validate_stable_identity,
 )
@@ -44,59 +45,60 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
 )
 
 AD_TO_REQUIREMENT_PACKAGE = {
-    "ad-0001": "REQ-0001",
-    "ad-0002": "REQ-0002",
-    "ad-0003": "REQ-0003",
-    "ad-0004": "REQ-0004",
-    "ad-0005": "REQ-0006",
-    "ad-0006": "REQ-0007",
-    "ad-0007": "REQ-0008",
-    "ad-0008": "REQ-0009",
-    "ad-0009": "REQ-0010",
-    "ad-0010": "REQ-0011",
-    "ad-0011": "REQ-0012",
-    "ad-0012": "REQ-0005",
-    "ad-0013": "REQ-0013",
-    "ad-0014": "REQ-0014",
-    "ad-0018": "REQ-0015",
-    "ad-0019": "REQ-0016",
-    "ad-0020": "REQ-0017",
-    "ad-0021": "REQ-0018",
-    "ad-0022": "REQ-0019",
-    "ad-0023": "REQ-0020",
-    "ad-0024": "REQ-0021",
-    "ad-0025": "REQ-0022",
-    "ad-0026": "REQ-0023",
-    "ad-0027": "REQ-0024",
-    "ad-0028": "REQ-0025",
+    "AD-0001": "REQ-0001",
+    "AD-0002": "REQ-0002",
+    "AD-0003": "REQ-0003",
+    "AD-0004": "REQ-0004",
+    "AD-0005": "REQ-0006",
+    "AD-0006": "REQ-0007",
+    "AD-0007": "REQ-0008",
+    "AD-0008": "REQ-0009",
+    "AD-0009": "REQ-0010",
+    "AD-0010": "REQ-0011",
+    "AD-0011": "REQ-0012",
+    "AD-0012": "REQ-0005",
+    "AD-0013": "REQ-0013",
+    "AD-0014": "REQ-0014",
+    "AD-0018": "REQ-0015",
+    "AD-0019": "REQ-0016",
+    "AD-0020": "REQ-0017",
+    "AD-0021": "REQ-0018",
+    "AD-0022": "REQ-0019",
+    "AD-0023": "REQ-0020",
+    "AD-0024": "REQ-0021",
+    "AD-0025": "REQ-0022",
+    "AD-0026": "REQ-0023",
+    "AD-0027": "REQ-0024",
+    "AD-0028": "REQ-0025",
 }
 
 ADR_TO_AD = {
-    "adr-0001": "ad-0001",
-    "adr-0002": "ad-0002",
-    "adr-0003": "ad-0003",
-    "adr-0004": "ad-0004",
-    "adr-0005": "ad-0005",
-    "adr-0006": "ad-0006",
-    "adr-0007": "ad-0007",
-    "adr-0008": "ad-0008",
-    "adr-0009": "ad-0009",
-    "adr-0010": "ad-0010",
-    "adr-0011": "ad-0011",
-    "adr-0015": "ad-0012",
-    "adr-0016": "ad-0013",
-    "adr-0017": "ad-0014",
-    "adr-0018": "ad-0018",
-    "adr-0019": "ad-0019",
-    "adr-0020": "ad-0020",
-    "adr-0021": "ad-0021",
-    "adr-0022": "ad-0022",
-    "adr-0023": "ad-0023",
-    "adr-0024": "ad-0024",
-    "adr-0025": "ad-0025",
-    "adr-0026": "ad-0026",
-    "adr-0027": "ad-0027",
-    "adr-0028": "ad-0028",
+    "ADR-0001": "AD-0001",
+    "ADR-0002": "AD-0002",
+    "ADR-0003": "AD-0003",
+    "ADR-0004": "AD-0004",
+    "ADR-0005": "AD-0005",
+    "ADR-0006": "AD-0006",
+    "ADR-0007": "AD-0007",
+    "ADR-0008": "AD-0008",
+    "ADR-0009": "AD-0009",
+    "ADR-0010": "AD-0010",
+    "ADR-0011": "AD-0011",
+    "ADR-0015": "AD-0012",
+    "ADR-0016": "AD-0013",
+    "ADR-0017": "AD-0014",
+    "ADR-0018": "AD-0018",
+    "ADR-0019": "AD-0019",
+    "ADR-0020": "AD-0020",
+    "ADR-0021": "AD-0021",
+    "ADR-0022": "AD-0022",
+    "ADR-0023": "AD-0023",
+    "ADR-0024": "AD-0024",
+    "ADR-0025": "AD-0025",
+    "ADR-0026": "AD-0026",
+    "ADR-0027": "AD-0027",
+    "ADR-0028": "AD-0028",
+    "ADR-0029": "AD-0027",
 }
 
 
@@ -193,7 +195,14 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 
     def test_stage_02_description_filename_metadata_and_parent_agree_exactly(self):
-        paths = tracked_paths("docs/02.architecture/descriptions/ad-*.md")
+        paths = [
+            path
+            for path in tracked_paths("docs/02.architecture/descriptions")
+            if re.fullmatch(
+                r"docs/02\.architecture/descriptions/[0-9]{4}-[a-z0-9-]+\.md",
+                path,
+            )
+        ]
         self.assertEqual(25, len(paths))
         self.assertEqual(
             set(AD_TO_REQUIREMENT_PACKAGE),
@@ -202,13 +211,14 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
-                    r"docs/02\.architecture/descriptions/(?P<id>ad-[0-9]{4})-[a-z0-9-]+\.md",
+                    r"docs/02\.architecture/descriptions/(?P<number>[0-9]{4})-[a-z0-9-]+\.md",
                     path,
                 )
                 self.assertIsNotNone(match)
                 metadata = metadata_for(path)
-                artifact_id = match.group("id")
+                artifact_id = f"AD-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
+                self.assertEqual("architecture-description", metadata["profile_id"])
                 self.assertEqual("architecture-description", metadata["artifact_type"])
                 self.assertEqual(
                     [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
@@ -217,19 +227,27 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 
     def test_stage_02_adr_filename_metadata_and_parent_agree_exactly(self):
-        paths = tracked_paths("docs/02.architecture/decisions/adr-*.md")
-        self.assertEqual(25, len(paths))
+        paths = [
+            path
+            for path in tracked_paths("docs/02.architecture/decisions")
+            if re.fullmatch(
+                r"docs/02\.architecture/decisions/[0-9]{4}-[a-z0-9-]+\.md",
+                path,
+            )
+        ]
+        self.assertEqual(26, len(paths))
         self.assertEqual(set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths})
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
-                    r"docs/02\.architecture/decisions/(?P<id>adr-[0-9]{4})-[a-z0-9-]+\.md",
+                    r"docs/02\.architecture/decisions/(?P<number>[0-9]{4})-[a-z0-9-]+\.md",
                     path,
                 )
                 self.assertIsNotNone(match)
                 metadata = metadata_for(path)
-                artifact_id = match.group("id")
+                artifact_id = f"ADR-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
+                self.assertEqual("adr", metadata["profile_id"])
                 self.assertEqual("adr", metadata["artifact_type"])
                 self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -254,6 +272,8 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 str(row["legacy_path"]).startswith("docs/01.requirements/")
                 or str(row["legacy_path"]).startswith("docs/02.architecture/")
             )
+            and architecture_identity(PurePosixPath(str(row["legacy_path"])))
+            is None
         }
         destinations = re.compile(
             r"!?\[[^\]\n]*\]\(([^\s)]+)|"
@@ -276,7 +296,8 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         forbidden = re.compile(
             r"01\.requirements/[0-9]{3}-[a-z0-9-]+\.md|"
             r"02\.architecture/requirements/|"
-            r"02\.architecture/decisions/[0-9]{4}-[a-z0-9-]+\.md"
+            r"02\.architecture/descriptions/ad-[0-9]{4}-[a-z0-9-]+\.md|"
+            r"02\.architecture/decisions/adr-[0-9]{4}-[a-z0-9-]+\.md"
         )
         violations: list[str] = []
         for relative in tracked_paths("*.md"):
@@ -324,17 +345,24 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         )
 
     def test_accepts_architecture_description_identity(self):
+        path = PurePosixPath(
+            "docs/02.architecture/descriptions/0001-gateway.md"
+        )
+        self.assertEqual(
+            ("architecture-description", "AD-0001"),
+            architecture_identity(path),
+        )
         findings = validate_stable_identity(
-            PurePosixPath(
-                "docs/02.architecture/descriptions/ad-0001-gateway.md"
-            ),
+            path,
             {
-                "artifact_id": "ad-0001",
+                "artifact_id": "AD-0001",
                 "artifact_type": "architecture-description",
             },
             {
                 "architecture-description": {
-                    "id_pattern": r"ad-[0-9]{4}",
+                    "path_pattern": "docs/02.architecture/descriptions/{number:4}-{slug}.md",
+                    "artifact_id_pattern": "AD-{number:4}",
+                    "identity_relation": "direct",
                 }
             },
         )

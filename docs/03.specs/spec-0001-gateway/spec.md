@@ -3,7 +3,7 @@ status: active
 artifact_id: spec-0001
 artifact_type: spec
 parent_ids:
-  - ad-0001
+  - AD-0001
 created: 2026-07-05
 updated: 2026-08-11
 ---
@@ -28,8 +28,8 @@ This specification defines the technical design and implementation details for t
 ## Related Inputs
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
-- **ARD**: [../../02.architecture/descriptions/ad-0001-gateway-architecture.md](../../02.architecture/descriptions/ad-0001-gateway-architecture.md)
-- **Related ADRs**: [../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md)
+- **ARD**: [../../02.architecture/descriptions/0001-gateway-architecture.md](../../02.architecture/descriptions/0001-gateway-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
 
 ## Contracts
 

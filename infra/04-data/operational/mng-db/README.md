@@ -94,7 +94,7 @@ mng-db/
 
 ## Related Documents
 
-- **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
+- **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/descriptions/0004-data-architecture.md)
 - **Spec**: [spec.md](../../../../docs/03.specs/spec-0004-data/spec.md)
 - **Guide**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/ops-0028-management-database/guide.md)
 - **Policy**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md)
