@@ -24,7 +24,7 @@ Homer 설정을 검증하고, direct host port 재노출이나 SSO/allowlist 누
 
 ### Canonical References
 
-- **Spec**: [Laboratory spec](../../../../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [Laboratory spec](../../../../03.specs/0012-laboratory/spec.md)
 - **Policy**: [Dashboard policy](policy.md)
 - **Guide**: [Dashboard guide](guide.md)
 

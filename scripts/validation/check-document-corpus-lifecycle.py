@@ -61,6 +61,11 @@ from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     resolve_git_provenance,
 )
 from scripts.lib.document_governance import metadata_contract  # noqa: E402
+from scripts.lib.document_governance.spec_packages import (  # noqa: E402
+    SpecPackageError,
+    load_spec_packages,
+    validate_repository_spec_package_lifecycle,
+)
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
 LEGACY_MIGRATION_PROFILES = (
@@ -383,6 +388,7 @@ SAFETY_FINDING_CODES = frozenset(
         "exception-static-invalid",
         "exception-safety-code-forbidden",
         "contract-invalid",
+        "spec-package-invalid",
         "diagnostic-redaction-unsafe",
         "internal-error",
     }
@@ -5791,6 +5797,45 @@ def _load_declared_manifests(
     return tuple(documents), sorted(set(findings))
 
 
+def _spec_package_lifecycle_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    stage03 = root / "docs/03.specs"
+    spec_package_authority = (
+        root
+        / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+    )
+    if not spec_package_authority.is_file() or not (
+        stage03.exists() or stage03.is_symlink()
+    ):
+        return findings
+    registry = profiles.get("_registry")
+    if not isinstance(registry, metadata.DocumentRegistry):
+        return findings
+    try:
+        packages = load_spec_packages(stage03, registry=registry)
+        lifecycle_findings = validate_repository_spec_package_lifecycle(
+            root,
+            packages,
+        )
+    except SpecPackageError as error:
+        findings.append(
+            _finding(
+                "docs/03.specs",
+                "spec-package-invalid",
+                str(error),
+            )
+        )
+    else:
+        findings.extend(
+            _finding(finding.path, finding.code, finding.message)
+            for finding in lifecycle_findings
+        )
+    return findings
+
+
 def _full_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -5799,6 +5844,7 @@ def _full_findings(
     records = _collect_records(root, profiles)
     manifest = metadata.build_manifest(records)
     findings: list[Finding] = []
+    findings.extend(_spec_package_lifecycle_findings(root, profiles))
     for record in records:
         findings.extend(metadata.validate_record(record, profiles, manifest))
         findings.extend(validate_archive_provenance(root, record))
@@ -5957,8 +6003,12 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                     contract, args.wave, "summary_path"
                 )
         if args.mode == "check-contract":
-            print("document corpus lifecycle contract: violations=0")
-            return 0
+            findings = _spec_package_lifecycle_findings(root, profiles)
+            _print_findings(findings)
+            print(f"document corpus lifecycle contract: violations={len(findings)}")
+            return 3 if any(_is_safety_finding(item) for item in findings) else (
+                1 if findings else 0
+            )
         if args.mode == "generate-manifest":
             document = _generate_manifest_skeleton(
                 root,

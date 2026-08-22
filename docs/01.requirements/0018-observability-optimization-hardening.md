@@ -93,7 +93,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/007-observability/spec.md](../03.specs/spec-0007-observability/spec.md)
+- **Spec**: [../03.specs/007-observability/spec.md](../03.specs/0007-observability/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md

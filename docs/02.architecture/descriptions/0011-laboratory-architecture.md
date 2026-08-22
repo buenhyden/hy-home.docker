@@ -101,6 +101,6 @@ graph TD
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
-- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)
 - **Plan**: ../../04.execution/plans/2026-03-26-11-laboratory-standardization.md
 - **ADR**: [../decisions/0011-laboratory-services.md](../decisions/0011-laboratory-services.md)

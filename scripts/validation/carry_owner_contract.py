@@ -487,7 +487,7 @@ def main() -> int:
     parser.add_argument("--root", default=".", help="repository root")
     parser.add_argument(
         "--task",
-        default="docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md",
+        default="docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
         help="owning Task that holds the ledger and the carried-claims section",
     )
     parser.add_argument(

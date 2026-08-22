@@ -97,7 +97,7 @@ minio/
 - **Guide**: [Technical Guide](../../../../docs/05.operations/catalog/04-data/ops-0023-minio/guide.md)
 - **Policy**: [Operations Policy](../../../../docs/05.operations/catalog/04-data/ops-0023-minio/policy.md)
 - **Runbook**: [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md)
-- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/spec-0004-data/spec.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/0004-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

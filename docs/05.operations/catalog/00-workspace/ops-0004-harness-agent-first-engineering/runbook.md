@@ -142,7 +142,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 ## Related Documents
 
 - [Operations index](../../../README.md)
-- [Specification](../../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
+- [Specification](../../../../03.specs/0094-harness-agent-first-engineering/spec.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
 - [Agent Governance Hub](../../../../00.agent-governance/README.md)

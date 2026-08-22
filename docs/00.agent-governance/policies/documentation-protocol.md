@@ -47,13 +47,13 @@ guidance may follow the audience language when its template permits it.
 | Long-lived need | `docs/01.requirements/` | Record solution-independent requirements and acceptance. |
 | Structure or durable decision | `docs/02.architecture/` | Update a description or ADR. |
 | Change contract | `docs/03.specs/` | Update the bounded Spec Package. |
-| Implementation sequencing | `docs/04.execution/plans/` | Record the approved implementation order. |
-| Implementation evidence | `docs/04.execution/tasks/` | Record result, deviation, and validation evidence. |
+| Implementation sequencing | `docs/03.specs/####-<slug>/plan.md` | Record the approved implementation order. |
+| Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
 | Historical lookup | `docs/98.archive/` | Add only minimal migration or tombstone navigation. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
-| Protected or ambiguous change | Stage 04 task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
+| Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
 ## Related Documents
 

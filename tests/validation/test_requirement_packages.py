@@ -675,8 +675,8 @@ class RequirementPackageTests(unittest.TestCase):
             item.identity for package in packages for item in package.items
         }
         consumers = (
-            ROOT / "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
-            ROOT / "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md",
+            ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
+            ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
         )
         referenced = {
             identity

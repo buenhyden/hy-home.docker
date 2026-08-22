@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import os
 import pathlib
 import subprocess
 import sys
@@ -65,7 +64,7 @@ class OldPathGateFixtureTests(unittest.TestCase):
     def _repo(self, directory: str) -> pathlib.Path:
         root = pathlib.Path(directory)
         subprocess.run(["git", "init", "-q", str(root)], check=True)
-        (root / "docs/04.execution/tasks").mkdir(parents=True)
+        (root / contract.TASK_PATH).parent.mkdir(parents=True)
         (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
         return root
 
@@ -761,9 +760,9 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     # verdict. The count therefore falls and then rises, and both directions are
     # recorded rather than smoothed.
     EXPECTED_UNREVIEWED = {
-        "docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md",
-        "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md",
-        "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md",
+        "docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md",
+        "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md",
+        "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
         "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
         "scripts/validation/check-document-corpus-lifecycle.py",
         "tests/validation/test_document_corpus_lifecycle.py",
@@ -804,9 +803,9 @@ class OldPathGateRepositoryTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
-            task = root / "docs" / "04.execution" / "tasks"
-            task.mkdir(parents=True)
-            (task / "2026-08-08-agentic-research-pack-rebuild.md").write_text(
+            task = root / contract.TASK_PATH
+            task.parent.mkdir(parents=True)
+            task.write_text(
                 "### Old-path allowlist\n\n"
                 "| Path | Line or stable anchor | Literal class | Reason | Review verdict |\n"
                 "| --- | --- | --- | --- | --- |\n"

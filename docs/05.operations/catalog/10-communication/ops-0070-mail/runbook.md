@@ -24,7 +24,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [Communication tier spec](../../../../03.specs/spec-0011-communication/spec.md)
+- **Spec**: [Communication tier spec](../../../../03.specs/0011-communication/spec.md)
 - **Policy**: [Mail operations policy](policy.md)
 - **Guide**: [Mail usage guide](guide.md)
 
@@ -62,7 +62,7 @@ updated: 2026-08-11
 ### Observability and Evidence Sources
 
 - **Logs**: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`
-- **Static config**: [mail compose](../../../../../infra/10-communication/mail/docker-compose.yml), [infra_net spec](../../../../03.specs/spec-0098-standardize-infra-net/spec.md)
+- **Static config**: [mail compose](../../../../../infra/10-communication/mail/docker-compose.yml), [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)
 - **Runtime signals**: container status, host port probe output, Traefik route response, DNS/TLS probe output
 
 ### Safe Rollback or Recovery Procedure

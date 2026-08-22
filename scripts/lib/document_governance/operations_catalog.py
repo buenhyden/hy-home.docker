@@ -1273,7 +1273,7 @@ def _semantic_rewrite_rule_task10d_remaining(
             "#### Purpose\n\n"
             "Root shim, governance, runtime mirror, Codex boundary, stage documentation, validation script drift를 안전하게 확인한다.\n\n"
             "#### Canonical References\n\n"
-            "- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)\n"
+            "- [Specification](../../../03.specs/0094-harness-agent-first-engineering/spec.md)\n"
             "- [Usage Guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
             "- [Operations Policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
             "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
@@ -1317,7 +1317,7 @@ def _semantic_rewrite_rule_task10d_remaining(
             (
                 "- [Operations index](../../README.md)",
                 "- [Operations index](../../README.md)\n"
-                "- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)\n"
+                "- [Specification](../../../03.specs/0094-harness-agent-first-engineering/spec.md)\n"
                 "- [Usage guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
                 "- [Operations policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
                 "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
@@ -1330,7 +1330,7 @@ def _semantic_rewrite_rule_task10d_remaining(
                 "# Harness / Agent-first Engineering Runbook",
                 "- Command output from validation scripts.",
                 "The current co-located Task when a new implementation change is active.",
-                "- [Specification](../../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)",
+                "- [Specification](../../../../03.specs/0094-harness-agent-first-engineering/spec.md)",
             ),
             "forbidden_target": (
                 r"Harness Agent First Engineering Validation Operations",

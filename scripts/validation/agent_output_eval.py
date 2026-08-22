@@ -519,7 +519,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/policies/postflight-checklist.md",
             "docs/00.agent-governance/policies/task-checklists.md",
-            "docs/04.execution/tasks/README.md",
+            "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
         ),
         (
             Criterion(

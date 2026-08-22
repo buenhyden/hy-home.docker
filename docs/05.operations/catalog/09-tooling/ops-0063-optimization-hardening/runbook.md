@@ -24,7 +24,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../../03.specs/spec-0010-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../../03.specs/0010-tooling/spec.md)
 - **Policy**: [Optimization hardening policy](policy.md)
 - **Guide**: [Optimization hardening guide](guide.md)
 - **Plan**: Optimization hardening plan

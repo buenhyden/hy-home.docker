@@ -87,7 +87,7 @@ common:
     content_sha256: <content-sha256>
     snapshot_reason: <snapshot-reason>
   root_exceptions:
-    docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent.
+    docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent.
 
 document_families:
   sdlc:

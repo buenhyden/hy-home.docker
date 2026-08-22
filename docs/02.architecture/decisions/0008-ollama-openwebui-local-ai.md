@@ -68,4 +68,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
 - **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)
-- **Spec**: [009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)
+- **Spec**: [009-ai/spec.md](../../03.specs/0009-ai/spec.md)

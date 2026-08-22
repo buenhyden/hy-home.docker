@@ -553,7 +553,7 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         )
         excluded_exact = {
             "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
-            "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md",
+            "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
         }
         candidates = subprocess.run(
             ["git", "ls-files", "--cached", "--others", "--exclude-standard"],

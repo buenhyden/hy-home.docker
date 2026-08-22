@@ -1873,6 +1873,15 @@ class ProfileSchemaTests(unittest.TestCase):
             {"schema_version"},
             set(contract) & set(profiles),
         )
+        self.assertEqual(
+            {
+                "docs/04.execution/plans": "docs/03.specs/####-<capability>/plan.md",
+                "docs/04.execution/tasks": (
+                    "docs/03.specs/####-<capability>/tasks/tsk-####-<slug>.md"
+                ),
+            },
+            contract["planned_partitions"],
+        )
 
         mutations = []
         duplicate = MIGRATION_CONTRACT.read_text(encoding="utf-8") + "\nschema_version: 1\n"
@@ -1890,6 +1899,10 @@ class ProfileSchemaTests(unittest.TestCase):
             ),
             lambda values: values["waves"]["foundation"]["declared_outputs"].append(
                 "docs/../unsafe.md"
+            ),
+            lambda values: values["planned_partitions"].__setitem__(
+                "docs/04.execution/plans",
+                "docs/04.execution/plans/<plan>.md",
             ),
         ):
             values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
@@ -2364,6 +2377,15 @@ class ProfileSchemaTests(unittest.TestCase):
         profiles = metadata.load_profiles(PROFILES)
         valid = self.valid_static_manifest()
         metadata.validate_static_migration_manifest(valid, contract, profiles)
+        canonical_partition = copy.deepcopy(valid)
+        canonical_partition["entries"][0]["partition_plan"] = (
+            "docs/03.specs/0001-example/plan.md"
+        )
+        metadata.validate_static_migration_manifest(
+            canonical_partition,
+            contract,
+            profiles,
+        )
 
         mutations = {
             "schema-type": lambda value: value.__setitem__("schema_version", True),
@@ -2398,7 +2420,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "status_before", None
             ),
             "partition-plan-path": lambda value: value["entries"][0].__setitem__(
-                "partition_plan", "docs/03.specs/spec-not-a-plan/task.md"
+                "partition_plan", "docs/04.execution/plans/retired.md"
             ),
             "unordered-parent-list": lambda value: value["entries"][0].__setitem__(
                 "parent_ids", ["spec:z", "spec:a"]
@@ -2927,7 +2949,7 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_approved_crosscutting_spec_root_is_explicitly_permitted(self) -> None:
         record = self.record(
-            "docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md",
+            "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md",
             {
                 "status": "active",
                 "artifact_id": "spec:123-agentic-engineering-audit-remediation",
@@ -6348,6 +6370,14 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             {finding.code for finding in findings},
         )
 
+    def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        findings = metadata.validate_repository_contracts(ROOT, profiles)
+        self.assertNotIn(
+            "spec-package-invalid",
+            {finding.code for finding in findings},
+        )
+
     def test_repository_contracts_enforce_machine_source_safety(self) -> None:
         relative_path = (
             "docs/99.templates/templates/specs/openapi.template.yaml"
@@ -8339,9 +8369,13 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             wave["manifest_path"],
         )
         self.assertIn("archive", wave["source_roots"])
-        self.assertIn("docs/04.execution", wave["source_roots"])
+        self.assertNotIn("docs/04.execution", wave["source_roots"])
         self.assertIn(
-            "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
+            "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
+            wave["evidence_paths"],
+        )
+        self.assertIn(
+            "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
             wave["evidence_paths"],
         )
 

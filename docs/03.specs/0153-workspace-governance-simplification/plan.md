@@ -272,7 +272,7 @@ planned_creations:
     owner_task: 1
 rows:
   - row_id: mig-0003-r0001
-    source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md
+    source_path: docs/03.specs/0153-workspace-governance-simplification/spec.md
     target_path: docs/03.specs/0153-workspace-governance-simplification/spec.md
     artifact_id: SPEC-0153
     action: rename
@@ -579,7 +579,7 @@ git commit -m "refactor(docs): establish stage 99 registry authority"
 - Create: `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md`
 - Modify: moved `spec.md` and `plan.md`
 - Delete after evidence migration: moved legacy `task.md`
-- Modify: `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md`
+- Modify: `docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`
 - Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
 - Modify: all active consumers returned by `rg -l 'SPEC-0153-workspace-governance-simplification|SPEC-0153|plan-0153' docs scripts tests .github .agents .claude .codex AGENTS.md CLAUDE.md`
 - Test: `tests/validation/test_document_registry.py`
@@ -611,7 +611,7 @@ class WorkspaceGovernancePackageTests(unittest.TestCase):
         package = Path("docs/03.specs/0153-workspace-governance-simplification")
         current = read_frontmatter_values(package.joinpath("spec.md"))
         predecessor = read_frontmatter_values(
-            Path("docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md")
+            Path("docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md")
         )
         self.assertIn("SPEC-0136", current["supersedes"])
         self.assertEqual(predecessor["superseded_by"], "SPEC-0153")
@@ -1020,11 +1020,11 @@ git commit -m "refactor(architecture): use prefixless document paths"
 - Move or integrate: the seven tracked Stage 04 files:
   `docs/04.execution/README.md`,
   `docs/04.execution/plans/README.md`,
-  `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`,
+  `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`,
   `docs/04.execution/tasks/README.md`,
-  `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`,
-  `docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`,
-  and `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
+  `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md`,
+  `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md`,
+  and `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md`
 - Delete: `docs/04.execution/` after all seven rows are executed
 - Create: `scripts/lib/document_governance/spec_packages.py`
 - Create: `tests/validation/test_spec_packages.py`

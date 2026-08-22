@@ -110,7 +110,7 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
-- **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/spec-0006-messaging/spec.md)
+- **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md

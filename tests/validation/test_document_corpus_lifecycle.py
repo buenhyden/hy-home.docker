@@ -21,6 +21,8 @@ from unittest import mock
 
 import yaml
 
+from scripts.lib.document_governance.spec_packages import load_spec_packages
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
@@ -539,16 +541,22 @@ class CoLocatedExecutionTests(unittest.TestCase):
     )
 
     def test_all_capability_directories_use_stable_identity(self) -> None:
-        legacy_capabilities = sorted(
-            path.name
-            for path in (ROOT / "docs/03.specs").iterdir()
-            if path.is_dir() and not path.name.startswith("spec-")
+        packages = load_spec_packages(ROOT / "docs/03.specs")
+        self.assertEqual(34, len(packages))
+        self.assertTrue(
+            all(re.fullmatch(r"\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*", package.path.name)
+                for package in packages)
         )
-        self.assertEqual([], legacy_capabilities)
 
-    def test_active_capability_has_no_child_readme(self) -> None:
-        readmes = sorted((ROOT / "docs/03.specs").glob("spec-*/README.md"))
-        self.assertEqual([], readmes)
+    def test_registered_package_readme_exception_is_exact(self) -> None:
+        readmes = sorted((ROOT / "docs/03.specs").glob("[0-9][0-9][0-9][0-9]-*/README.md"))
+        self.assertEqual(
+            [
+                ROOT
+                / "docs/03.specs/0153-workspace-governance-simplification/README.md"
+            ],
+            readmes,
+        )
 
     def test_stage_04_is_absent(self) -> None:
         self.assertFalse((ROOT / "docs/04.execution").exists())
@@ -592,15 +600,23 @@ class CoLocatedExecutionTests(unittest.TestCase):
         self.assertEqual([], violations)
 
     def test_active_change_uses_only_canonical_role_names(self) -> None:
-        for capability in sorted((ROOT / "docs/03.specs").glob("spec-*")):
+        for capability in sorted(
+            (ROOT / "docs/03.specs").glob("[0-9][0-9][0-9][0-9]-*")
+        ):
             with self.subTest(capability=capability.name):
-                execution_documents = {
-                    path.name
-                    for path in capability.iterdir()
-                    if path.is_file()
-                    and ("plan" in path.stem.casefold() or "task" in path.stem.casefold())
-                }
-                self.assertLessEqual(execution_documents, {"plan.md", "task.md"})
+                self.assertFalse((capability / "design.md").exists())
+                self.assertFalse((capability / "tests.md").exists())
+                self.assertFalse((capability / "task.md").exists())
+                task_paths = sorted((capability / "tasks").glob("*.md"))
+                self.assertTrue(
+                    all(
+                        re.fullmatch(
+                            r"tsk-\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md",
+                            task.name,
+                        )
+                        for task in task_paths
+                    )
+                )
 
     def test_task7_promoted_reconciliation_is_exactly_bounded(self) -> None:
         profiles = metadata.load_profiles(PROFILES)

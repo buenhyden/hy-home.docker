@@ -109,7 +109,7 @@ KNOWN_TOMBSTONE_REPLACEMENTS = {
         "docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md",
     ),
     "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
-        "docs/03.specs/spec-0008-workflow/spec.md",
+        "docs/03.specs/0008-workflow/spec.md",
     ),
     "docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md": (
         "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
@@ -122,10 +122,10 @@ KNOWN_TOMBSTONE_REPLACEMENTS = {
         "docs/05.operations/09-tooling/ops-0068-terraform/guide.md",
     ),
     "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
-        "docs/03.specs/spec-0008-workflow/spec.md",
+        "docs/03.specs/0008-workflow/spec.md",
     ),
     "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
-        "docs/03.specs/spec-0008-workflow/spec.md",
+        "docs/03.specs/0008-workflow/spec.md",
     ),
 }
 LINK_FORM_BASELINE_DECLARATIONS = {
@@ -541,7 +541,7 @@ class ScriptManifestTests(unittest.TestCase):
             "docs/05.operations/runbooks/03-security/vault.md",
             "docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md",
         }
-        migration_authority = "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md"
+        migration_authority = "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 authority = row["authority"]

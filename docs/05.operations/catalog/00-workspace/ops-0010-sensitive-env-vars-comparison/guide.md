@@ -130,6 +130,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 ## Related Documents
 
 - [Env Key Comparison](../ops-0003-env-key-comparison/guide.md)
-- [Spec](../../../../03.specs/spec-0090-workspace-audit-2026-05/spec.md)
+- [Spec](../../../../03.specs/0090-workspace-audit-2026-05/spec.md)
 - [secrets/SENSITIVE_ENV_VARS.md.example](../../../../../secrets/SENSITIVE_ENV_VARS.md.example)
 - [secrets/README.md](../../../../../secrets/README.md)

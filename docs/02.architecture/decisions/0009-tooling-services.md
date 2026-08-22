@@ -75,5 +75,5 @@ The decision context above records the applicable drivers and evidence.
 
 - [Tooling PRD](../../01.requirements/0010-tooling.md)
 - [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
-- [Tooling spec](../../03.specs/spec-0010-tooling/spec.md)
+- [Tooling spec](../../03.specs/0010-tooling/spec.md)
 - Tooling standardization plan

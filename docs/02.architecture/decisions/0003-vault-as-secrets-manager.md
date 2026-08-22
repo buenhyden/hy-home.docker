@@ -71,5 +71,5 @@ The decision context above records the applicable drivers and evidence.
 
 - [Security PRD](../../01.requirements/0003-security.md)
 - [Security Architecture Description](../descriptions/0003-security-architecture.md)
-- [Security spec](../../03.specs/spec-0003-security/spec.md)
+- [Security spec](../../03.specs/0003-security/spec.md)
 - Security standardization plan

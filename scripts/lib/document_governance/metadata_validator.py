@@ -87,6 +87,11 @@ from scripts.lib.document_governance.requirements import (  # noqa: E402
     RequirementPackageError,
     load_requirement_packages,
 )
+from scripts.lib.document_governance.spec_packages import (  # noqa: E402
+    SpecPackageError,
+    load_spec_packages,
+    validate_repository_spec_package_lifecycle,
+)
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     classify_path as classify_taxonomy_path,
     requirement_package_identity,
@@ -429,7 +434,7 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
 }
 TARGET_SURFACE_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
 TARGET_SURFACE_COMPLETION_PATH = (
-    "docs/03.specs/133-target-surface-contract-convergence/spec.md"
+    "docs/03.specs/0133-target-surface-contract-convergence/spec.md"
 )
 TARGET_SURFACE_COMPLETION_ARTIFACT_ID = (
     "spec:133-target-surface-contract-convergence"
@@ -454,21 +459,19 @@ SDLC_TAXONOMY_SOURCE_ROOTS = (
     "docs/01.requirements",
     "docs/02.architecture",
     "docs/03.specs",
-    "docs/04.execution",
     "docs/05.operations",
     "docs/90.references",
     "docs/98.archive",
 )
 SDLC_TAXONOMY_EVIDENCE_PATHS = (
-    "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
-    "docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md",
-    "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md",
+    "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
+    "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
+    "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md",
 )
 SDLC_TAXONOMY_BOUNDED_README_INPUTS = frozenset(
     {
-        "docs/04.execution/README.md",
-        "docs/04.execution/plans/README.md",
-        "docs/04.execution/tasks/README.md",
+        "docs/03.specs/README.md",
+        "docs/03.specs/0153-workspace-governance-simplification/README.md",
     }
 )
 TARGET_SURFACE_SOURCE_ROOTS = (
@@ -492,12 +495,12 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/01.requirements/005-data-analytics.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
-    "docs/03.specs/005-data-analytics/README.md",
-    "docs/03.specs/005-data-analytics/spec.md",
-    "docs/03.specs/133-target-surface-contract-convergence/spec.md",
+    "docs/03.specs/0005-data-analytics/README.md",
+    "docs/03.specs/0005-data-analytics/spec.md",
+    "docs/03.specs/0133-target-surface-contract-convergence/spec.md",
     "docs/03.specs/README.md",
-    "docs/04.execution/plans/README.md",
-    "docs/04.execution/tasks/README.md",
+    "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md",
+    "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
     "docs/05.operations/guides/04-data/analytics/README.md",
     "docs/05.operations/guides/04-data/analytics/influxdb.md",
     "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
@@ -3415,6 +3418,19 @@ def _safe_contract_path(value: object) -> bool:
     )
 
 
+CANONICAL_PARTITION_PLAN_PATH = re.compile(
+    r"docs/03\.specs/[0-9]{4}-[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/plan\.md"
+)
+
+
+def _canonical_partition_plan_path(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and _safe_contract_path(value)
+        and CANONICAL_PARTITION_PLAN_PATH.fullmatch(value) is not None
+    )
+
+
 def load_migration_contract(
     path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
 ) -> dict[str, object]:
@@ -3599,9 +3615,8 @@ def load_migration_contract(
         "docs/00.agent-governance/policies/stage-authoring-matrix.md",
         "docs/00.agent-governance/policies/task-checklists.md",
         "docs/03.specs/README.md",
-        "docs/04.execution/README.md",
-        "docs/04.execution/plans/README.md",
-        "docs/04.execution/tasks/README.md",
+        "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md",
+        "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
         "docs/90.references/README.md",
         "docs/90.references/data/README.md",
         "docs/90.references/data/governance/README.md",
@@ -3791,8 +3806,10 @@ def load_migration_contract(
             raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
 
     if loaded.get("planned_partitions") != {
-        "docs/04.execution/plans": "docs/03.specs/spec-####-<capability>/plan.md",
-        "docs/04.execution/tasks": "docs/03.specs/spec-####-<capability>/task.md",
+        "docs/04.execution/plans": "docs/03.specs/####-<capability>/plan.md",
+        "docs/04.execution/tasks": (
+            "docs/03.specs/####-<capability>/tasks/tsk-####-<slug>.md"
+        ),
     }:
         raise ProfileError("planned_partitions must define the canonical stable target routes")
     return loaded
@@ -3967,13 +3984,12 @@ def _validate_static_migration_manifest_v2(
         if disposition not in replacement_required | replacement_optional | replacement_forbidden:
             raise ProfileError(f"{label} disposition lacks replacement semantics")
         partition_plan = entry.get("partition_plan")
-        if partition_plan is not None and (
-            not isinstance(partition_plan, str)
-            or not _safe_contract_path(partition_plan)
-            or not partition_plan.startswith("docs/04.execution/plans/")
-            or not partition_plan.endswith(".md")
+        if partition_plan is not None and not _canonical_partition_plan_path(
+            partition_plan
         ):
-            raise ProfileError(f"{label} partition_plan must be a safe approved Plan path")
+            raise ProfileError(
+                f"{label} partition_plan must be a canonical Spec Package Plan path"
+            )
         preservation_class = entry.get("preservation_class")
         if preservation_class is not None and preservation_class not in preservation_classes:
             raise ProfileError(f"{label} preservation_class must be registered")
@@ -4155,13 +4171,12 @@ def validate_static_migration_manifest(
             raise ProfileError(f"{label} disposition lacks replacement semantics")
 
         partition_plan = entry.get("partition_plan")
-        if partition_plan is not None and (
-            not _safe_contract_path(partition_plan)
-            or not isinstance(partition_plan, str)
-            or not partition_plan.startswith("docs/04.execution/plans/")
-            or not partition_plan.endswith(".md")
+        if partition_plan is not None and not _canonical_partition_plan_path(
+            partition_plan
         ):
-            raise ProfileError(f"{label} partition_plan must be a safe approved Plan path")
+            raise ProfileError(
+                f"{label} partition_plan must be a canonical Spec Package Plan path"
+            )
 
         preservation_class = entry.get("preservation_class")
         if preservation_class is not None and (
@@ -5346,6 +5361,33 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                         "requirement-package-invalid",
                         str(error),
                     )
+                )
+        spec_root = root / "docs/03.specs"
+        spec_package_authority = (
+            root
+            / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+        )
+        if spec_package_authority.is_file() and (
+            spec_root.exists() or spec_root.is_symlink()
+        ):
+            try:
+                spec_packages = load_spec_packages(spec_root, registry=active_registry)
+                spec_lifecycle_findings = validate_repository_spec_package_lifecycle(
+                    root,
+                    spec_packages,
+                )
+            except SpecPackageError as error:
+                findings.append(
+                    Finding(
+                        "docs/03.specs",
+                        "spec-package-invalid",
+                        str(error),
+                    )
+                )
+            else:
+                findings.extend(
+                    Finding(finding.path, finding.code, finding.message)
+                    for finding in spec_lifecycle_findings
                 )
 
     for path in (() if registry_native else tracked_markdown):

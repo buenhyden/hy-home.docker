@@ -288,21 +288,13 @@ import sys
 failures: list[str] = []
 
 execution_readmes = [
-    pathlib.Path("docs/04.execution/README.md"),
-    pathlib.Path("docs/04.execution/plans/README.md"),
-    pathlib.Path("docs/04.execution/tasks/README.md"),
+    pathlib.Path("docs/03.specs/README.md"),
 ]
 
 completed_docs: list[pathlib.Path] = []
-for root in [
-    pathlib.Path("docs/04.execution/plans"),
-    pathlib.Path("docs/04.execution/tasks"),
-]:
-    if not root.exists():
-        continue
-    for path in sorted(root.glob("*.md")):
-        if path.name == "README.md":
-            continue
+spec_root = pathlib.Path("docs/03.specs")
+for pattern in ("[0-9][0-9][0-9][0-9]-*/plan.md", "[0-9][0-9][0-9][0-9]-*/tasks/*.md"):
+    for path in sorted(spec_root.glob(pattern)):
         text = path.read_text(errors="ignore")
         head = "\n".join(text.splitlines()[:8])
         if re.search(r"(?m)^status:\s*completed\s*$", head):
@@ -343,7 +335,6 @@ stage_roots = tuple(
         "docs/01.requirements",
         "docs/02.architecture",
         "docs/03.specs",
-        "docs/04.execution",
         "docs/05.operations",
         "docs/90.references",
         "docs/98.archive",
@@ -2359,7 +2350,7 @@ required_files = [
     pathlib.Path(".claude/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/roles/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/skills/knowledge-map-agent.md"),
-    pathlib.Path("docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md"),
+    pathlib.Path("docs/03.specs/0096-llm-wiki-agent-first-completion/spec.md"),
 ]
 
 for path in required_files:

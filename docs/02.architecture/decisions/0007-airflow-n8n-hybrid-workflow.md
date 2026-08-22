@@ -68,4 +68,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)

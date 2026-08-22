@@ -78,7 +78,7 @@ runtime 시작/중지는 root include 활성화와 운영 승격 evidence가 준
 - [PRD](../../docs/01.requirements/0011-communication.md)
 - [Architecture Description](../../docs/02.architecture/descriptions/0010-communication-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/0010-communication-services.md)
-- [Technical Spec](../../docs/03.specs/spec-0011-communication/spec.md)
+- [Technical Spec](../../docs/03.specs/0011-communication/spec.md)
 - [Guide](../../docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md)
 - [Policy](../../docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md)
 - [Runbook](../../docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md)

@@ -55,4 +55,4 @@ acceptance, entitlement, quality, cost, or latency.
 - [Evaluation engineer role](../roles/eval-engineer.md)
 - [Provider model contract](../providers/registry.yaml)
 - [Agent output evaluation fixtures](../../../90.references/data/governance/ref-0064-agent-output-eval-fixtures.md)
-- [Spec 134](../../../03.specs/spec-0134-agent-governance-canonical-convergence/spec.md)
+- [Spec 134](../../../03.specs/0134-agent-governance-canonical-convergence/spec.md)

@@ -78,5 +78,5 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
-- **Spec**: [spec.md](../../03.specs/spec-0005-data-analytics/spec.md)
+- **Spec**: [spec.md](../../03.specs/0005-data-analytics/spec.md)
 - **Guide**: [README.md](../../05.operations/catalog/04-data/README.md)

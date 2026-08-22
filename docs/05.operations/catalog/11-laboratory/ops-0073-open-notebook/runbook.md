@@ -24,7 +24,7 @@ Open Notebook 관리/실험 작업 환경의 가용성을 확인하되, secret �
 
 ### Canonical References
 
-- **Spec**: [Laboratory spec](../../../../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [Laboratory spec](../../../../03.specs/0012-laboratory/spec.md)
 - **Policy**: [Open Notebook policy](policy.md)
 - **Guide**: [Open Notebook guide](guide.md)
 

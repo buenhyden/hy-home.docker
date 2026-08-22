@@ -26,7 +26,7 @@ updated: 2026-08-11
 
 - [../../../02.architecture/descriptions/0026-standardize-infra-net.md](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - [../../../02.architecture/decisions/0026-standardize-infra-net.md](../../../../02.architecture/decisions/0026-standardize-infra-net.md)
-- [../../../03.specs/098-standardize-infra-net/spec.md](../../../../03.specs/spec-0098-standardize-infra-net/spec.md)
+- [../../../03.specs/098-standardize-infra-net/spec.md](../../../../03.specs/0098-standardize-infra-net/spec.md)
 - ../../../04.execution/plans/2026-04-01-standardize-infra-net.md
 - [../../policies/12-infra-net/standardize-infra-net.md](policy.md)
 - [../../guides/12-infra-net/standardize-infra-net.md](guide.md)
@@ -106,4 +106,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
-- [infra_net spec](../../../../03.specs/spec-0098-standardize-infra-net/spec.md)
+- [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)

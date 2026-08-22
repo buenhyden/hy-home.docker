@@ -71,6 +71,6 @@ N/A
 ## Traceability
 
 - **Architecture Description**: [Laboratory architecture descriptions](../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Spec**: [Laboratory technical specification](../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [Laboratory technical specification](../03.specs/0012-laboratory/spec.md)
 - **Plan**: Laboratory standardization plan
 - **ADR**: [Laboratory services decision](../02.architecture/decisions/0011-laboratory-services.md)

@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 - [../../../02.architecture/descriptions/0013-open-webui-architecture.md](../../../../02.architecture/descriptions/0013-open-webui-architecture.md)
 - [../../../02.architecture/decisions/0016-open-webui-implementation.md](../../../../02.architecture/decisions/0016-open-webui-implementation.md)
-- [../../../03.specs/009-ai/open-webui.md](../../../../03.specs/spec-0009-ai/spec.md)
+- [../../../03.specs/009-ai/open-webui.md](../../../../03.specs/0009-ai/spec.md)
 - ../../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md
 
 ## When to Use

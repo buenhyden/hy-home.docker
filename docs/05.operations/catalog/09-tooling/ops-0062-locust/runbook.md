@@ -26,7 +26,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../../03.specs/spec-0010-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../../03.specs/0010-tooling/spec.md)
 - **Policy**: [Locust policy](policy.md)
 - **Guide**: [Locust guide](guide.md)
 

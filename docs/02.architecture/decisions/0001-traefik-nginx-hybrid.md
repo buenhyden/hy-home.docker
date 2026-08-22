@@ -70,4 +70,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
 - **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)
-- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/spec-0001-gateway/spec.md)
+- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/0001-gateway/spec.md)

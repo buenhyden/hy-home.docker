@@ -115,7 +115,7 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0016-data-optimization-hardening.md)
-- **Spec**: [../03.specs/004-data/spec.md](../../03.specs/spec-0004-data/spec.md)
+- **Spec**: [../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md

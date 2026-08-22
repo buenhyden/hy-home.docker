@@ -56,4 +56,4 @@ updated: 2026-08-11
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [infra_net spec](../../../../03.specs/spec-0098-standardize-infra-net/spec.md)
+- [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)

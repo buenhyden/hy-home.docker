@@ -2,7 +2,7 @@ schema_version: 1
 files:
 - path: scripts/README.md
   kind: contract
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers: []
@@ -61,7 +61,7 @@ files:
   - tests/validation/test_provider_native_surfaces.py
 - path: scripts/knowledge/generate-llm-wiki-coverage.sh
   kind: generator
-  authority: docs/03.specs/137-agentic-research-pack-rebuild/spec.md
+  authority: docs/03.specs/0137-agentic-research-pack-rebuild/spec.md
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -74,7 +74,7 @@ files:
   - tests/validation/test_llm_wiki_retiring_pack_exclusion.py
 - path: scripts/knowledge/generate-llm-wiki-index.sh
   kind: generator
-  authority: docs/03.specs/137-agentic-research-pack-rebuild/spec.md
+  authority: docs/03.specs/0137-agentic-research-pack-rebuild/spec.md
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -255,7 +255,7 @@ files:
   tests: []
 - path: scripts/manifest.yaml
   kind: contract
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers:
@@ -266,7 +266,7 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: runtime
   consumers:
@@ -277,7 +277,7 @@ files:
   tests: []
 - path: scripts/operations/generate-compose-profile-service-coverage.sh
   kind: generator
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -287,7 +287,7 @@ files:
   tests: []
 - path: scripts/operations/generate-tech-stack-version-provenance.sh
   kind: generator
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: check-write
   consumers:
@@ -350,7 +350,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: none
   consumers:
@@ -400,7 +400,7 @@ files:
   - tests/validation/test_tech_stack_version_contract.py
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: runtime
   consumers:
@@ -411,7 +411,7 @@ files:
   - tests/validation/test_grype_db_seed.py
 - path: scripts/security/verify-sample-service-supply-chain.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: runtime
   consumers:
@@ -691,7 +691,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/ci_gate_contract.py
   kind: validator
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers: []
@@ -702,7 +702,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/ci_gate_runner.py
   kind: runner
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers: []
@@ -713,7 +713,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/compose-core-readiness.lib.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -750,7 +750,7 @@ files:
   - tests/validation/test_security_automation_readiness.py
 - path: scripts/validation/github_workflow_contract.py
   kind: validator
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers: []
@@ -762,7 +762,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/grype_db_seed.py
   kind: validator
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers:
@@ -833,7 +833,7 @@ files:
   - tests/validation/test_provider_hook_parity.py
 - path: scripts/validation/run-agent-output-eval-fixtures.sh
   kind: runner
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers: []
@@ -886,7 +886,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/run-compose-core-readiness.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -935,7 +935,7 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/validate-docker-compose.sh
   kind: operations
-  authority: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: transition
   mutation: runtime
   consumers:

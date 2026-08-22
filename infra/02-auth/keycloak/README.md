@@ -118,4 +118,4 @@ healthcheck:
 - **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md)
 - **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md)
 - **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md)
-- **Spec**: [02-auth Spec](../../../docs/03.specs/spec-0002-auth/spec.md)
+- **Spec**: [02-auth Spec](../../../docs/03.specs/0002-auth/spec.md)

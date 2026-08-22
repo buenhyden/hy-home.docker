@@ -42,7 +42,7 @@ from dataclasses import dataclass, field
 
 SLUG = "2026-07-05-agentic-research-pack-refresh"
 RETIRING_DIR = f"docs/90.references/research/{SLUG}"
-TASK_PATH = "docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md"
+TASK_PATH = "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
 ALLOWLIST_HEADING = "### Old-path allowlist"
 
 # Generated advisory navigation. Spec 137's generated-artifact inventory closes

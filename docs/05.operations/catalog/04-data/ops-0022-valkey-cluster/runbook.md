@@ -26,7 +26,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/spec-0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
 - **Policy**: [Valkey Cluster policy](policy.md)
 - **Guide**: [Valkey Cluster guide](guide.md)
 - **Repo**: [Valkey Cluster infrastructure](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)

@@ -91,6 +91,6 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
-- **Spec**: [008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)
 - **Plan**: 2026-03-26-07-workflow-standardization.md
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../decisions/0007-airflow-n8n-hybrid-workflow.md)

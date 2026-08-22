@@ -53,13 +53,13 @@ EVIDENCE_REF_PATTERN: Final = re.compile(
     rf"{re.escape(REF_PREFIX)}/attempt-[12]/[0-9a-f]{{64}}"
 )
 SPEC_PATH: Final = pathlib.PurePosixPath(
-    "docs/03.specs/137-agentic-research-pack-rebuild/spec.md"
+    "docs/03.specs/0137-agentic-research-pack-rebuild/spec.md"
 )
 PLAN_PATH: Final = pathlib.PurePosixPath(
-    "docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md"
+    "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md"
 )
 TASK_PATH: Final = pathlib.PurePosixPath(
-    "docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md"
+    "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
 )
 ROLES: Final = ("migration-specification", "quality")
 PACKAGE_ATTACHMENTS: Final = (

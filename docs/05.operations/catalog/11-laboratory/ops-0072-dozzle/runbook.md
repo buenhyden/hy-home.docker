@@ -24,7 +24,7 @@ Dozzle의 read-only Docker socket 경계와 SSO/allowlist route 경계를 유지
 
 ### Canonical References
 
-- **Spec**: [Laboratory spec](../../../../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [Laboratory spec](../../../../03.specs/0012-laboratory/spec.md)
 - **Policy**: [Dozzle policy](policy.md)
 - **Guide**: [Dozzle guide](guide.md)
 

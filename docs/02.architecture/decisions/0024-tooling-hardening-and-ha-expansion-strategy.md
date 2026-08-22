@@ -83,7 +83,7 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../01.requirements/0021-tooling-optimization-hardening.md](../../01.requirements/0021-tooling-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../descriptions/0024-tooling-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/spec-0010-tooling/spec.md)
+- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/0010-tooling/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Related ADR**: [ADR-0009](0009-tooling-services.md)

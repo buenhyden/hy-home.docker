@@ -65,4 +65,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Architecture Description**: [../descriptions/0006-observability-architecture.md](../descriptions/0006-observability-architecture.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)

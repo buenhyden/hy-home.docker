@@ -26,7 +26,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [Analytics spec](../../../../03.specs/spec-0005-data-analytics/spec.md)
+- **Spec**: [Analytics spec](../../../../03.specs/0005-data-analytics/spec.md)
 - **Policy**: [InfluxDB policy](policy.md)
 - **Guide**: [InfluxDB guide](guide.md)
 

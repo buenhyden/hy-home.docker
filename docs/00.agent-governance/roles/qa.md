@@ -116,7 +116,7 @@ with the fake-binary regression.
 - **Regression**: Add regression tests for every bug fix.
 - **Refactor evidence**: For behavior-preserving refactors, run checks that cover the touched behavior and state that no behavior change is intended.
 - **Reporting**: Publish test results to the session summary or the owning
-  Spec's co-located `task.md`.
+  Spec's `tasks/tsk-####-<slug>.md` record.
 - **Controlled all-files hooks**: Run the wrapper only at the approved final QA
   gate. Preserve its hook exit unless it reports distinct unexpected-path exit
   `20`; review all hook-managed edits and record evidence manually. Never reset,

@@ -692,9 +692,9 @@ transition executes.
 
 ## Traceability
 
-- [Predecessor taxonomy specification](../spec-0136-sdlc-taxonomy-convergence/spec.md)
-- [Predecessor implementation plan](../spec-0136-sdlc-taxonomy-convergence/plan.md)
-- [Predecessor task evidence](../spec-0136-sdlc-taxonomy-convergence/task.md)
+- [Predecessor taxonomy specification](../0136-sdlc-taxonomy-convergence/spec.md)
+- [Predecessor implementation plan](../0136-sdlc-taxonomy-convergence/plan.md)
+- [Predecessor task evidence](../0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md)
 - [Archive and migration lookup](../../98.archive/README.md)
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Stage 99 template hub](../../99.templates/README.md)

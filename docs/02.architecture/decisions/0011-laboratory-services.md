@@ -58,4 +58,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Architecture Description**: [../descriptions/0011-laboratory-architecture.md](../descriptions/0011-laboratory-architecture.md)
-- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)

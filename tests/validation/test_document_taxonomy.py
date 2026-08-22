@@ -285,7 +285,10 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         for source in tracked_paths("*.md"):
             if source == str(LEDGER.relative_to(ROOT)):
                 continue
-            for match in destinations.finditer((ROOT / source).read_text()):
+            source_path = ROOT / source
+            if not source_path.is_file():
+                continue
+            for match in destinations.finditer(source_path.read_text()):
                 destination = next(group for group in match.groups() if group is not None)
                 resolved = resolved_repo_path(source, destination)
                 if resolved in legacy_paths:

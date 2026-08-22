@@ -26,7 +26,7 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/spec-0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
 - **Policy**: [Supabase policy](policy.md)
 - **Guide**: [Supabase guide](guide.md)
 - **Repo**: [Supabase infrastructure](../../../../../infra/04-data/operational/supabase/README.md)

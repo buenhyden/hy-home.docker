@@ -26,7 +26,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/spec-0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
 - **Policy**: [Management Database policy](policy.md)
 - **Guide**: [Management Database guide](guide.md)
 - **Repo**: [mng-db infrastructure](../../../../../infra/04-data/operational/mng-db/README.md)

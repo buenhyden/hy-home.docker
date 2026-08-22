@@ -94,7 +94,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Traceability
 
 - **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/spec-0012-laboratory/spec.md)
+- **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/0012-laboratory/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md

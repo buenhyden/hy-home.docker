@@ -1,0 +1,337 @@
+---
+profile_id: spec
+status: active
+artifact_id: SPEC-0008
+artifact_type: spec
+parent_ids:
+  - AD-0022
+created: 2026-07-05
+updated: 2026-08-14
+---
+# 07-Workflow Optimization Hardening Technical Specification
+
+## Overview
+
+This document is the optimization/hardening technical specification for the `infra/07-workflow` tier (Airflow, n8n). It defines gateway boundary security, health-based startup stability, n8n container hardening, CI policy gates, and catalog-based expansion requirements as implementation contracts.
+
+## Strategic Boundaries & Non-goals
+
+- **Owns**:
+  - Airflow/n8n Traefik middleware contract
+  - Airflow/n8n dependency/healthcheck contract
+  - n8n custom image runtime hardening contract
+  - `check-all-hardening.sh 07-workflow` policy gate contract
+- **Does Not Own**:
+  - Individual Airflow DAG business logic
+  - Internal n8n workflow business logic
+  - Production deployment of new workflow services
+
+## Related Inputs
+
+- **PRD**: [../../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md)
+- **Related ADRs**:
+  - [../../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md](../../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
+  - [../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
+
+## Contracts
+
+- **Config Contract**:
+  - Airflow UI/Flower routers use `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - The n8n UI router uses `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - service-local Airflow core services (`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`, `flower`) have `airflow-valkey` health-based dependencies.
+  - root-included dev Airflow compose documents the shared `mng-valkey` broker boundary.
+  - n8n `worker` and `task-runner` provide healthchecks, and the service-local `task-runner` has `n8n`/`n8n-valkey` health-based dependencies.
+  - root-included dev n8n compose documents the shared `mng-valkey` broker boundary.
+- **Data / Interface Contract**:
+  - Airflow: CeleryExecutor + Valkey broker + PostgreSQL result backend
+  - n8n: Queue mode + external runner + PostgreSQL metadata backend
+- **Governance Contract**:
+  - Passing `scripts/hardening/check-all-hardening.sh 07-workflow` is the workflow tier hardening baseline.
+  - The CI `infrastructure-hardening` job blocks regressions at PR time.
+
+## Core Design
+
+- **Gateway Security Plane**:
+  - Externally exposed management paths enforce the standard chain and SSO chain after TLS termination.
+- **Orchestration Runtime Plane**:
+  - Airflow orders dependencies in service-local compose with Valkey health as a prerequisite.
+  - n8n separates main/worker/task-runner and operates in queue mode.
+- **Image Hardening Plane**:
+  - n8n keeps non-root execution through a multi-stage Dockerfile and `USER node`.
+  - The n8n entrypoint fails closed immediately when required secret files are missing.
+
+## Data Modeling & Storage Strategy
+
+- Airflow DAG/log/config/plugins use `${DEFAULT_WORKFLOW_DIR}/airflow/*` bind volumes.
+- n8n state/custom/task-runner data uses `${DEFAULT_WORKFLOW_DIR}/n8n*` bind volumes.
+- Workflow metadata uses management PostgreSQL (`infra/04-data`).
+
+## Interfaces & Data Structures
+
+### Workflow Hardening Control Surface
+
+```yaml
+workflow_hardening_controls:
+  ingress_security:
+    airflow: gateway-standard-chain + sso-errors + sso-auth
+    flower: gateway-standard-chain + sso-errors + sso-auth
+    n8n: gateway-standard-chain + sso-errors + sso-auth
+  startup_health_contract:
+    airflow_depends_on: service_healthy
+    n8n_worker_healthcheck: required
+    n8n_task_runner_healthcheck: required
+  container_hardening:
+    n8n_runtime_user: node
+    n8n_entrypoint_secret_guard: required
+```
+
+## Edge Cases & Error Handling
+
+- If automation paths fail after SSO chain hardening, apply the operations-approved exception procedure.
+- If Airflow Valkey health does not pass, orchestrator startup fails fast.
+- If required n8n secrets are missing, the entrypoint exits immediately and exposes the failure explicitly.
+
+## Failure Modes & Fallback / Human Escalation
+
+- **Failure Mode**: UI access failure due to middleware misconfiguration
+  - **Fallback**: roll back to the most recent working compose version
+  - **Human Escalation**: Gateway/Auth operations approver
+- **Failure Mode**: worker/task-runner startup failure
+  - **Fallback**: reapply the healthcheck/depends_on contract, then restart
+  - **Human Escalation**: Workflow on-call
+
+## Verification
+
+```bash
+HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 07-workflow
+bash scripts/validation/check-template-security-baseline.sh
+python3 scripts/validation/check-document-links.py --mode traceability
+```
+
+## Success Criteria & Verification Plan
+
+- **VAL-WRK-001**: Airflow/n8n compose static validation passes.
+- **VAL-WRK-002**: workflow hardening baseline script has zero failures.
+- **VAL-WRK-003**: PRD~Runbook optimization-hardening document links remain consistent.
+- **VAL-WRK-004**: catalog `07-workflow` expansion items (Airflow DAG quality gate, n8n backup/Vault) are reflected in documents/tasks.
+
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
+## Related Documents
+
+- **Agent Design**: [./agent-design.md](spec.md)
+- **Plan**: ../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md
+- **Cross-Validation Plan**: ../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
+- **Tasks**: ../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md
+- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)
+
+## Merged Cross-Validation Agent Contract
+
+### Overview
+
+This document defines the workflow cross-validation agent design that sequentially calls `security-auditor` and `iac-reviewer` immediately after infrastructure changes. Its purpose is to manage infrastructure-change validation through canonical stage documents and record security, drift, and performance validation results through a consistent message contract and memory rule.
+
+### Parent Documents
+
+- **Spec**: [./spec.md](spec.md)
+- **PRD**: There is no dedicated PRD; the upper-level workflow tier context follows [../../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md).
+- **ARD**: There is no dedicated ARD; the structural upper-level context follows [../../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md).
+- **Related ADRs**: There is no dedicated ADR; agent governance follows [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md) and [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/policies/agentic.md).
+
+### Scope & Non-goals
+
+- **Covers**:
+  - cross-validation orchestration after infrastructure changes
+  - agent-to-agent handoff contract
+  - audit result persistence and reporting rules
+  - memory/context strategy for the workflow
+- **Does Not Cover**:
+  - individual infrastructure service implementation details
+  - creation of new PRD/ARD/ADR stage artifacts
+  - global skill repository changes
+
+### Agent Role
+
+- **Primary Role**: cross-validation coordinator that safely orchestrates the independent validation chain after infrastructure changes
+- **Primary User / Caller**: `infra-implementer` or the routing `workflow-supervisor`
+- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/repo-support/` and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
+
+### Inputs / Outputs
+
+- **Inputs**:
+  - changed file list
+  - `infra-validate` pre/post results
+  - active governance context (`AGENTS.md`, `documentation-protocol.md`, relevant scopes)
+  - downstream agent responses
+- **Outputs**:
+  - `"audit-request: <file-list>"`
+  - `"validate-request: <file-list>"`
+  - `"validate-complete: PASS|WARN <summary>"`
+  - `"BLOCK: <reason>"`
+  - `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`
+  - `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` append entry
+- **Expected Structured Format**:
+  - message payloads are plain-text, deterministic, and severity-coded as `PASS`, `WARN`, or `BLOCK`
+
+### Orchestration Model
+
+- `handoff`
+- **Why this model**:
+  - The existing agent catalog already separates role-level responsibilities, so ordered handoff is smaller and clearer than a central orchestrator.
+  - `security-auditor` and `iac-reviewer` own different validation responsibilities, so phased delegation is appropriate.
+- **Escalation / Handoff rules**:
+  - `infra-implementer` → `security-auditor`: `"audit-request"` after post-flight success
+  - `security-auditor` → `infra-implementer`: `"BLOCK"` on critical findings
+  - `security-auditor` → `iac-reviewer`: `"validate-request"` after critical findings are clear
+  - `iac-reviewer` → `infra-implementer`: `"validate-complete: PASS|WARN <summary>"`
+  - `BLOCK` immediately escalates to the user.
+
+### Tools & Permissions
+
+| Tool | Purpose | Allowed Actions | Forbidden Actions | Failure Handling |
+| --- | --- | --- | --- | --- |
+| `docker compose config` | Compose static validation | Read-only config expansion | Applying infra mutations | Stop and report validation failure |
+| `docker compose ps` | Post-flight health check | Read service health | Restarting or tearing down services | Record missing health evidence |
+| `docker image ls` | Image audit evidence | Inspect image tag/digest state | Pulling or retagging images | Downgrade to WARN when audit evidence is partial |
+| `docker inspect` | Drift/performance inspection | Read container config and limits | Modifying live containers | Report unreachable target as validation gap |
+| `bash scripts/validation/check-*.sh` | Policy gate execution | Run approved repository validation scripts | Running unrelated mutation scripts | Attach stderr/stdout summary to report |
+| `Read` / workspace file writes | Evidence persistence | Write `_workspace/repo-support/` report and progress note | Writing plaintext secrets | Redact and halt on secret exposure |
+
+### Prompt / Policy Contract
+
+- **System Instruction Summary**:
+  - root shims stay thin
+  - governance lives in `docs/00.agent-governance/`
+  - active docs must use canonical stage paths only
+- **Policy Constraints**:
+  - never create active spec/plan content under `docs/superpowers/`
+  - never store plaintext secrets in reports or memory
+  - keep provider-specific behavior out of generic governance files
+- **Versioning Rule**:
+  - canonical workflow agent behavior changes belong in `docs/03.specs/008-workflow/agent-design.md`
+  - execution sequencing changes belong in `docs/04.execution/plans/`
+
+### Context & Memory Strategy
+
+- **Session Context**:
+  - changed file set
+  - current post-flight validation result
+  - active scope/rule documents for infra and docs layers
+  - latest agent responses in the current validation chain
+- **Retrieval Strategy**:
+  - filter by layer (`infra`, `docs`) and artifact type before reading broader history
+  - prefer canonical stage docs (`docs/03.specs`, `docs/04.execution/plans`) over ad-hoc notes
+  - use `progress.md` only for durable outcome recall, not as a source of full design detail
+- **Persistent Memory Rule**:
+  - persist only stable outcomes: changed file list summary, severity, blocking reason, follow-up requirement
+  - keep transient reasoning inside the current session; do not store speculative notes
+- **Privacy / Retention Notes**:
+  - never store secret values, tokens, or raw credentials
+  - reports may reference secret mount paths or policy names, but not materialized secret contents
+
+### Guardrails
+
+- **Input Guardrails**:
+  - cross-validation starts only after `infra-validate(post)` success
+  - changed file list must be explicit and traceable
+- **Output Guardrails**:
+  - every terminal state must be one of `PASS`, `WARN`, or `BLOCK`
+  - every warning or block must include evidence and next action
+- **Blocked Conditions**:
+  - post-flight validation absent or failed
+  - plaintext secret exposure detected
+  - destructive rollback or infra mutation required without user-authorized path
+  - active design or plan attempts to use non-stage `docs/*` paths
+- **Human Escalation Rule**:
+  - any `BLOCK`, ambiguous rollback decision, or permissions gap escalates to the user immediately
+
+### Failure Modes & Fallback
+
+- **Failure Mode 1**: `security-auditor` unreachable or returns incomplete response
+- **Fallback 1**: record agent response gap in `_workspace/repo-support/` and escalate to user without fabricating audit completion
+- **Failure Mode 2**: `iac-reviewer` can inspect drift but lacks performance evidence
+- **Fallback 2**: return `WARN` with explicit missing evidence instead of `PASS`
+- **Failure Mode 3**: legacy references point to removed non-stage docs
+- **Fallback 3**: treat as documentation defect, rewrite to canonical path, and fail verification until fixed
+
+### Evaluation Plan
+
+- **Offline Evals**:
+  - clean infra change path: audit passes and reviewer returns `PASS`
+  - critical finding path: auditor emits deterministic `BLOCK`
+  - partial evidence path: reviewer emits `WARN`
+- **Online Signals**:
+  - `_workspace/repo-support/cross-validate_<date>.md` created
+  - `progress.md` receives durable summary
+  - no active references remain to removed `docs/superpowers` artifacts
+- **Acceptance Thresholds**:
+  - 100% deterministic terminal status vocabulary
+  - 0 active spec/plan documents in non-stage paths
+  - 0 broken related-document links in changed files
+- **Linked Plan / Task / Eval Docs**: ../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md, ../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
+
+### Observability
+
+- **Trace fields**:
+  - `task_id`
+  - `changed_files`
+  - `audit_phase`
+  - `severity`
+  - `report_path`
+- **Logs / Events**:
+  - audit request sent
+  - audit decision received
+  - drift/performance review completed
+  - durable memory append completed
+- **Redaction / Privacy Rules**:
+  - redact secret values and tokens
+  - log only policy names, paths, and high-level findings
+
+### Related Documents
+
+- **Workflow Spec**: [./spec.md](spec.md)
+- **Implementation Plan**: ../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
+- **Implementation Task**: ../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
+- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
+- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md)
+- **Subagent Protocol**: [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/policies/agentic.md)
+
+## Boundaries and Inputs
+
+The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+
+## Behavior Contract
+
+The behaviors and invariants already specified above remain the package behavior contract.
+
+## Technical Approach
+
+The implementation and component design recorded above remain the technical approach.
+
+## Interfaces and Data
+
+The interfaces, configuration, and data shapes recorded above remain authoritative.
+
+## Failure Modes and Guardrails
+
+The safety, validation, and operational constraints above remain the package guardrails.
+
+## Acceptance Contract
+
+The verification and success conditions above remain the acceptance contract.
+
+## Traceability
+
+The requirement, architecture, operations, and evidence links above provide traceability.

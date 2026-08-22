@@ -98,7 +98,7 @@ Runtime이 실행 중이면 Airflow와 n8n의 internal health를 각각 `airflow
 ## Traceability
 
 - **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../03.specs/spec-0008-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../03.specs/0008-workflow/spec.md)
 - **Plan**: 2026-03-26-07-workflow-standardization.md
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
 - **Guide**: [airflow.md](../05.operations/catalog/07-workflow/ops-0050-airflow/guide.md), [n8n.md](../05.operations/catalog/07-workflow/ops-0053-n8n/guide.md)

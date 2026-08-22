@@ -24,7 +24,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../../03.specs/spec-0010-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../../03.specs/0010-tooling/spec.md)
 - **Policy**: [Performance testing policy](policy.md)
 - **Guide**: [Performance testing guide](guide.md)
 

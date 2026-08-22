@@ -85,6 +85,6 @@ updated: 2026-08-10
 
 - **PRD**: [infra_net product requirements](../../01.requirements/0023-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision](../decisions/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../../03.specs/spec-0098-standardize-infra-net/spec.md)
+- **Spec**: [infra_net technical specification](../../03.specs/0098-standardize-infra-net/spec.md)
 - **Plan**: infra_net implementation plan
 - **Task**: infra_net task evidence
