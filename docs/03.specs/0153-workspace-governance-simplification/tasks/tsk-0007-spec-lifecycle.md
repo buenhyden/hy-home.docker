@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0007
 artifact_type: task
 parent_ids:
@@ -8,6 +8,7 @@ parent_ids:
   - plan-0153
 created: 2026-08-21
 updated: 2026-08-23
+completed_at: 2026-08-23
 ---
 
 # Task 0007: Spec Lifecycle
@@ -36,6 +37,7 @@ Converge Stage 03 packages on spec.md, plan.md, and numbered Task records withou
 | Review round 1 fixes | Canonicalized active routing, moved parsing to stable directory descriptors, enforced cumulative budgets, wired Git-base/Migration lifecycle checks into both production validators, constrained one-time retirement, and restored Task 10-owned tombstone literals. |
 | Re-review round 1 RED | Reproduced two remaining active-route models plus unbounded Git stdout/stderr capture and missing per-file base-blob enforcement. |
 | Review round 2 fixes | Canonicalized the residual Stage 00, Stage 99, validator, and wrapper routes; streamed both Git pipes under one deadline/byte budget with forced reap; and rejected base blobs at limit plus one. |
+| Final approval and closeout | Both independent reviewers approved the final packet at `C0/I0/M0`; the controller reran the 16 parser tests, 14 taxonomy tests, lifecycle, changed metadata, provider projections, three generator freshness checks, syntax, Ruff, compilation, and diff gates before creating implementation commit `4e2e71cc60dbe54514d73d63dcef79acb74b4a61`. |
 
 ## Verification Evidence
 
@@ -76,7 +78,7 @@ Converge Stage 03 packages on spec.md, plan.md, and numbered Task records withou
 
 | Commit | Description |
 | :--- | :--- |
-| Uncommitted | Task 7 handoff intentionally left with native move index entries and unstaged content changes. |
+| `4e2e71cc60dbe54514d73d63dcef79acb74b4a61` | `refactor(specs): unify specification execution lifecycle`; parent-owned logical Task 7 implementation commit. Migration recovery commits remain intentionally unbound until Task 13. |
 
 ## Rulings
 
