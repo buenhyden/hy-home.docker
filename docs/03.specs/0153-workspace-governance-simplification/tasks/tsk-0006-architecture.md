@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0006
 artifact_type: task
 parent_ids:
