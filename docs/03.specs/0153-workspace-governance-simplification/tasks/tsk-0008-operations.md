@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0008
 artifact_type: task
 parent_ids:
@@ -38,6 +38,7 @@ Converge Stage 05 catalog/domain/subject documents, remove ops- path prefixes an
 | Review-fix round 4 | Converged the controller gate on current per-service catalog Guide links, the exact incident packet role paths, and exact role-leaf links for Specs 0001/0002/0005/0095. Reproduced the script-reference unsafe-surface failure as the two authorized Task 8 Release deletions, exempted only those exact bounded Git-reported deletions, and retained fail-closed missing/symlink/type/race behavior. The remaining nine script-reference occurrences are exact inherited Spec 0135/0136/0137 evidence; re-review remains pending. |
 | Review-fix round 5 | Addressed the four important round-4 review findings with strict mutation-first coverage: bounded script-reference Git discovery with process-group cleanup and one batched ignore query; shared CommonMark-aware rendered-link parsing; exact confined regular Spec-role targets; and bounded tracked service discovery plus descriptor-safe reads. Count, file, aggregate, timeout, partial-output, symlink, FIFO, race, false-link, and target-depth/type boundaries all fail closed. Re-review remains pending. |
 | Review-fix round 6 | Addressed Python/shell re-review `C0/I2/M0` while specification review remained `C0/I0/M0`: inline-code comment openers no longer alter cross-line HTML-comment state, and angle-bracket Spec role destinations cannot bypass validation. `DocumentLink` now carries the parser-owned label alongside its existing line, raw destination, and normalized target; Spec and service gates consume that typed occurrence directly with no raw-regex rebinding. Final independent specification and Python reviews both approved the result at `C0/I0/M0`. |
+| Implementation commit | Recorded the verified Operations catalog, consumers, validators, and tests in `76ba680cde2b582fc2348d670868f7734d12a09b`. |
 
 ## Verification Evidence
 
@@ -82,7 +83,7 @@ Converge Stage 05 catalog/domain/subject documents, remove ops- path prefixes an
 
 | Commit | Description |
 | :--- | :--- |
-| None | Work remains uncommitted; no commit or review evidence is claimed. |
+| `76ba680cde2b582fc2348d670868f7734d12a09b` | `refactor(operations): normalize catalog subjects` |
 
 ## Rulings
 
@@ -95,4 +96,3 @@ Converge Stage 05 catalog/domain/subject documents, remove ops- path prefixes an
 ## Deferred Items
 
 - The 13 full-gate residual sections and nine inherited script references are routed to their owning Tasks 9–12; Task 8 introduced no exception for them.
-- Shared index state contains exactly 192 `R100` entries inherent to the required native `git mv` commands until the implementation commit is created.
