@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0009
 artifact_type: task
 parent_ids:
@@ -36,6 +36,7 @@ Converge Stage 90 to non-normative Research, Audit, and Data packages with numer
 | Review fix round 3 | Closed the remaining Python review finding `C0/I1/M0`: a fence-info `<!--` can no longer leak comment state, negation is scoped to the authority predicate rather than an unrelated adjective, and same-line substantive prose prevents a `# Deprecated` document from being classified as redirect-only. |
 | Review fix round 4 | Closed the plain-path redirect regression `C0/I1/M0`: replaced the unregistered-package false-green with a registered-package mutation and allowed exactly one parser-owned Markdown link or one confined raw relative/repository path as the complete transition destination. |
 | Review fix round 5 | Closed the Markdown-target safety asymmetry `C0/I1/M0`: Markdown links and raw paths now share one confined decoded-local-path predicate, so absolute, escaping, and percent-encoded scheme targets are rejected identically. |
+| Implementation commit | Recorded the approved Stage 90 package simplification and its validators as `49522aa1d782838706bd558b8e139b107918ffee`. |
 
 ## Verification Evidence
 
@@ -91,7 +92,7 @@ The final combined bounded state available before handoff was: the round-5 focus
 
 ## Commit Ledger
 
-None. The implementation remains uncommitted for controller review.
+- `49522aa1d782838706bd558b8e139b107918ffee` — `refactor(references): simplify evidence packages`
 
 ## Rulings
 
