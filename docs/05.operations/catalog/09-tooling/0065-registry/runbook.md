@@ -1,0 +1,106 @@
+---
+profile_id: runbook
+status: active
+artifact_id: runbook-0065
+artifact_type: runbook
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/09-tooling/0065-registry/runbook.md -->
+
+# Docker Registry Runbook
+
+## Overview
+
+이 런북은 `docs/05.operations/catalog/09-tooling/0065-registry/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
+## Registry Recovery Procedure
+
+Procedure for recovering the local Docker registry in the `09-tooling` tier.
+
+### Symptoms
+
+- `Error: response from daemon: Get https://registry.hy-home.com/v2/: dial tcp ...`
+- Container `registry` is in `restarting` state.
+
+### Recovery Steps
+
+1. Verify storage mounts: `df -h ${DEFAULT_DATA_DIR}/registry`
+2. Restart service: `docker compose restart registry`
+3. Verify logs: `docker compose logs -f registry`
+
+### Purpose
+
+운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+
+### Canonical References
+
+- [../README.md](../../../README.md)
+- [../../05.operations/README.md](../../../README.md)
+- [../../05.operations/README.md](../../../README.md)
+
+## When to Use
+
+- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
+- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+
+## Procedure
+
+### Checklist
+
+- [ ] 관련 operation policy를 확인한다.
+- [ ] 현재 compose/config/docs 상태를 확인한다.
+- [ ] 필요한 절차를 수행한다.
+- [ ] 검증 결과와 evidence를 기록한다.
+
+### Steps
+
+1. 관련 README와 operation 문서를 확인한다.
+2. 작업 전 현재 상태를 기록한다.
+3. 절차를 최소 변경으로 수행한다.
+4. 검증 명령 또는 수동 확인을 실행한다.
+
+### Verification Steps
+
+- [ ] 관련 validation script를 실행한다.
+- [ ] 문서 변경이면 template/heading audit를 확인한다.
+- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+
+### Observability and Evidence Sources
+
+- **Signals**: command output, validation logs, service health status, documentation diff
+- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Evidence
+
+- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Usage guide](guide.md)
+- [Operations policy](policy.md)

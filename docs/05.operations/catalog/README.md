@@ -9,7 +9,7 @@ status: active
 ## Overview
 
 `docs/05.operations/catalog/`는 current Operations subject를 domain별로 찾는
-canonical catalog다. Incident와 Release event record는 이 catalog에 속하지
+canonical catalog다. Incident event record는 이 catalog에 속하지
 않는다.
 
 ## Audience
@@ -23,7 +23,7 @@ canonical catalog다. Incident와 Release event record는 이 catalog에 속하�
 ## Scope
 
 - current Guide, Policy, Runbook subject 탐색
-- stable `ops-####` identity와 domain owner routing
+- stable four-digit subject identity와 domain owner routing
 - domain README navigation
 
 ## Structure
@@ -49,12 +49,11 @@ canonical catalog다. Incident와 Release event record는 이 catalog에 속하�
 1. owning domain README에서 stable subject를 찾는다.
 2. subject leaf의 기존 Guide, Policy, Runbook 역할만 사용한다.
 3. subject README를 만들지 않는다.
-4. Incident는 `../incidents/`, Release는 `../releases/`로 route한다.
+4. Incident는 sibling `../incidents/`로 route한다.
 
 ## Related Documents
 
 - [Operations](../README.md)
 - [Incidents](../incidents/README.md)
-- [Releases](../releases/README.md)
 - [Operations templates](../../99.templates/templates/operations/README.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

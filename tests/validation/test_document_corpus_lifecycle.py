@@ -537,7 +537,7 @@ class CoLocatedExecutionTests(unittest.TestCase):
         ROOT / "archive/Windows-Network-IP.md",
         ROOT / "examples/sample-web-service/service.md",
         ROOT
-        / "docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md",
+        / "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md",
     )
 
     def test_all_capability_directories_use_stable_identity(self) -> None:

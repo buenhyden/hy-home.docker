@@ -192,9 +192,9 @@ openssl s_client -starttls smtp -connect mail.${DEFAULT_URL}:587
 - **ADR**: [0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
 - **Plan**: ../../04.execution/plans/2026-03-26-10-communication-standardization.md
 - **Tasks**: ../../04.execution/tasks/2026-03-26-10-communication-tasks.md
-- **Guide**: [../../05.operations/catalog/10-communication/ops-0070-mail/guide.md](../../05.operations/catalog/10-communication/ops-0070-mail/guide.md)
-- **Policy**: [../../05.operations/catalog/10-communication/ops-0070-mail/policy.md](../../05.operations/catalog/10-communication/ops-0070-mail/policy.md)
-- **Runbook**: [../../05.operations/catalog/10-communication/ops-0070-mail/runbook.md](../../05.operations/catalog/10-communication/ops-0070-mail/runbook.md)
+- **Guide**: [../../05.operations/catalog/10-communication/0070-mail/guide.md](../../05.operations/catalog/10-communication/0070-mail/guide.md)
+- **Policy**: [../../05.operations/catalog/10-communication/0070-mail/policy.md](../../05.operations/catalog/10-communication/0070-mail/policy.md)
+- **Runbook**: [../../05.operations/catalog/10-communication/0070-mail/runbook.md](../../05.operations/catalog/10-communication/0070-mail/runbook.md)
 
 ## Boundaries and Inputs
 

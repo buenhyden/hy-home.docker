@@ -728,7 +728,7 @@
       "entrypoint": "scripts/validation/check-operations-catalog.py",
       "argv": [
         "--mode",
-        "manifest"
+        "complete"
       ],
       "cwd": ".",
       "allowed_env_keys": [],

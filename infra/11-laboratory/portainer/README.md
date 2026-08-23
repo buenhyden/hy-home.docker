@@ -39,7 +39,7 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.portainer.rule`, `traefik.http.routers.portainer.entrypoints`, `traefik.http.routers.portainer.tls`, `traefik.http.middlewares.portainer-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.portainer.middlewares`, `traefik.http.services.portainer.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `portainer` |
-| Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) after root include promotion; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
@@ -92,6 +92,6 @@ labels:
 
 ## Related Documents
 
-- **Guide**: [Portainer usage guide](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md)
-- **Policy**: [Portainer operations policy](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md)
-- **Runbook**: [Portainer recovery runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md)
+- **Guide**: [Portainer usage guide](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md)
+- **Policy**: [Portainer operations policy](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md)
+- **Runbook**: [Portainer recovery runbook](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md)

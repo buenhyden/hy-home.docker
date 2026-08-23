@@ -42,7 +42,7 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Read the [Vault Operations Guide](../../docs/05.operations/catalog/03-security/ops-0016-vault/guide.md) for initialization and AppRole bootstrap boundaries.
+1. Read the [Vault Operations Guide](../../docs/05.operations/catalog/03-security/0016-vault/guide.md) for initialization and AppRole bootstrap boundaries.
 2. Follow the [Operations Policy](../../docs/05.operations/catalog/03-security/README.md) for unseal protocols.
 3. Use the [Security Runbook](../../docs/05.operations/catalog/03-security/README.md) for emergency recovery.
 4. Vault must be manually unsealed after each restart.

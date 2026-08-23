@@ -28,7 +28,7 @@ This document is the technical specification for the May 2026 workspace-wide aud
 
 ## Contracts
 
-- **Config Contract**: `.env.example` and `.env` keep the same key set. Key comparison reports are created under `docs/05.operations/guides/`.
+- **Config Contract**: `.env.example` and `.env` keep the same key set. Key comparison reports are created under `docs/05.operations/catalog/*/*/guide.md`.
 - **Data / Interface Contract**: skill stubs include the `name`, `description`, `version`, `purpose`, `trigger`, `inputs`, `outputs`, `constraints`, and `related-skills` fields.
 - **Governance Contract**: all changes must satisfy the completion criteria in `task-checklists.md`. Only low-risk changes are implemented; medium/high-risk changes are recorded as deferred.
 
@@ -87,8 +87,8 @@ bash scripts/validation/check-doc-traceability.sh
 
 - **Plan**: ../../04.execution/plans/2026-05-26-workspace-audit.md
 - **Task**: ../../04.execution/tasks/2026-05-26-workspace-audit.md
-- **Env Key Comparison**: [../../05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md)
-- **Secrets Key Comparison**: [../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md)
+- **Env Key Comparison**: [../../05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md)
+- **Secrets Key Comparison**: [../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md)
 - **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - **Progress Log**: [../../00.agent-governance/memory/progress.md](../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
 

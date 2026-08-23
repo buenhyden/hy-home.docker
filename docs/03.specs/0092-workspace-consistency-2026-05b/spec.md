@@ -23,7 +23,7 @@ This document is the technical specification for follow-up work after PR #89 (`w
 - `scripts/validation/check-repo-contracts.sh`: add `## Common Checks` and `## Runbook Handoff` section requirements to guide profile checks.
 - `docs/99.templates/README.md`: add guide.template.md and runbook.template.md to the list and add a design note for link conventions.
 - `docs/99.templates/templates/spec-contracts/agent-design.template.md`: replace example filenames with directory links.
-- `docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md`: remove duplicate `## Policy Scope` heading.
+- `docs/05.operations/catalog/01-gateway/0011-nginx/policy.md`: remove duplicate `## Policy Scope` heading.
 
 **Non-goals:**
 
@@ -50,7 +50,7 @@ This document is the technical specification for follow-up work after PR #89 (`w
 
 ## Core Design
 
-- **Component Boundary**: `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, `docs/05.operations/policies/`
+- **Component Boundary**: `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, `docs/05.operations/catalog/*/*/policy.md`
 - **Key Dependencies**: `docs/99.templates` (baseline documents), `scripts/validation/` (validation scripts)
 - **Tech Stack**: bash, git (Conventional Commits)
 - **Execution Strategy**: Documentation-first: add rule documents -> strengthen scripts -> update templates/documents.
@@ -87,7 +87,7 @@ This document is the technical specification for follow-up work after PR #89 (`w
 ## Tools & Tool Contract (If Applicable)
 
 - **Tool List**: bash, git
-- **Permission Boundary**: only files under `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, and `docs/05.operations/policies/` may be modified.
+- **Permission Boundary**: only files under `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, and `docs/05.operations/catalog/*/*/policy.md` may be modified.
 - **Failure Handling**: when scripts fail, review `git diff` and roll back.
 
 ## Prompt / Policy Contract (If Applicable)

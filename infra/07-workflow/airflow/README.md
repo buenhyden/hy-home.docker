@@ -52,7 +52,7 @@ airflow/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.airflow.rule`, `traefik.http.routers.airflow.entrypoints`, `traefik.http.routers.airflow.tls`, `traefik.http.routers.airflow.middlewares`, `traefik.http.services.airflow.loadbalancer.server.port`, `traefik.http.routers.flower.rule`, plus 4 more |
 | Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `airflow_www_password`, `mng_valkey_password`, `airflow_valkey_password`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/airflow_www_password`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, and `flower`; init/exporter services are validated through compose and hardening checks |
-| Operations | [Guide](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md), [Policy](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md), [Runbook](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/07-workflow/0050-airflow/guide.md), [Policy](../../../docs/05.operations/catalog/07-workflow/0050-airflow/policy.md), [Runbook](../../../docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
@@ -60,10 +60,10 @@ airflow/
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. [진입 가이드](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md)를 읽고 시스템 전반을 이해합니다.
-2. [DAG 개발 가이드](../../../docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md)를 참조하여 파이프라인을 작성합니다.
-3. [운영 정책](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
-4. 장애 발생 시 [장애 조치 런북](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md)을 따릅니다.
+1. [진입 가이드](../../../docs/05.operations/catalog/07-workflow/0050-airflow/guide.md)를 읽고 시스템 전반을 이해합니다.
+2. [DAG 개발 가이드](../../../docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/guide.md)를 참조하여 파이프라인을 작성합니다.
+3. [운영 정책](../../../docs/05.operations/catalog/07-workflow/0050-airflow/policy.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
+4. 장애 발생 시 [장애 조치 런북](../../../docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md)을 따릅니다.
 
 5. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
 6. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
@@ -112,6 +112,6 @@ airflow/
 ## Related Documents
 
 - **ARD**: [07-workflow Architecture](../../../docs/02.architecture/descriptions/0007-workflow-architecture.md)
-- **Guide**: [Airflow usage guide](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md)
-- **Policy**: [Airflow operations policy](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md)
-- **Runbook**: [Airflow recovery runbook](../../../docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md)
+- **Guide**: [Airflow usage guide](../../../docs/05.operations/catalog/07-workflow/0050-airflow/guide.md)
+- **Policy**: [Airflow operations policy](../../../docs/05.operations/catalog/07-workflow/0050-airflow/policy.md)
+- **Runbook**: [Airflow recovery runbook](../../../docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md)

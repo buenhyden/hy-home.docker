@@ -20,9 +20,9 @@ one `ops-` subject folder. Roles remain separate and no missing role is added.
 
 | Subject | Available documents |
 | --- | --- |
-| [Nginx](ops-0011-nginx/guide.md) | [Guide](ops-0011-nginx/guide.md), [Policy](ops-0011-nginx/policy.md), [Runbook](ops-0011-nginx/runbook.md) |
-| [edge routing stack](ops-0012-edge-routing-stack/guide.md) | Guide |
-| [Traefik](ops-0013-traefik/guide.md) | [Guide](ops-0013-traefik/guide.md), [Policy](ops-0013-traefik/policy.md), [Runbook](ops-0013-traefik/runbook.md) |
+| [Nginx](0011-nginx/guide.md) | [Guide](0011-nginx/guide.md), [Policy](0011-nginx/policy.md), [Runbook](0011-nginx/runbook.md) |
+| [edge routing stack](0012-edge-routing-stack/guide.md) | Guide |
+| [Traefik](0013-traefik/guide.md) | [Guide](0013-traefik/guide.md), [Policy](0013-traefik/policy.md), [Runbook](0013-traefik/runbook.md) |
 
 ## How to Work in This Area
 

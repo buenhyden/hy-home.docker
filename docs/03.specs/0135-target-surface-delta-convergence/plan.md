@@ -692,11 +692,11 @@ paths only; links and metadata pass.
   `infra/06-observability/tempo/README.md`, and
   `infra/08-ai/README.md`.
 - Modify direct-impact operations documents:
-  `docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md`,
-  `docs/05.operations/catalog/06-observability/ops-0045-prometheus/guide.md`,
-  `docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md`,
-  `docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md`, and
-  `docs/05.operations/catalog/06-observability/ops-0040-alloy/runbook.md`.
+  `docs/05.operations/catalog/06-observability/0040-alloy/guide.md`,
+  `docs/05.operations/catalog/06-observability/0045-prometheus/guide.md`,
+  `docs/05.operations/catalog/06-observability/0040-alloy/policy.md`,
+  `docs/05.operations/catalog/06-observability/0045-prometheus/policy.md`, and
+  `docs/05.operations/catalog/06-observability/0040-alloy/runbook.md`.
 - Modify `scripts/validation/check-repo-contracts.sh` only where an exact stale
   version assertion exists; preserve historical prose and negative fixtures.
 - Modify the Task 1 manifest/summary and sibling Task ledger.

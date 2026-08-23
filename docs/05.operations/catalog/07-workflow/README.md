@@ -21,11 +21,11 @@ This domain co-locates each existing guide, policy, and runbook under its frozen
 
 | Subject | Available documents |
 | --- | --- |
-| [Airflow](ops-0050-airflow/guide.md) | [Guide](ops-0050-airflow/guide.md), [Policy](ops-0050-airflow/policy.md), [Runbook](ops-0050-airflow/runbook.md) |
-| [Airflow DAG basics](ops-0051-airflow-dag-lifecycle/guide.md) | [Guide](ops-0051-airflow-dag-lifecycle/guide.md) |
-| [DAG deployment](ops-0051-airflow-dag-lifecycle/policy.md) | [Policy](ops-0051-airflow-dag-lifecycle/policy.md) |
-| [n8n](ops-0053-n8n/guide.md) | [Guide](ops-0053-n8n/guide.md), [Policy](ops-0053-n8n/policy.md), [Runbook](ops-0053-n8n/runbook.md) |
-| [Optimization hardening](ops-0054-optimization-hardening/guide.md) | [Guide](ops-0054-optimization-hardening/guide.md), [Policy](ops-0054-optimization-hardening/policy.md), [Runbook](ops-0054-optimization-hardening/runbook.md) |
+| [Airflow](0050-airflow/guide.md) | [Guide](0050-airflow/guide.md), [Policy](0050-airflow/policy.md), [Runbook](0050-airflow/runbook.md) |
+| [Airflow DAG basics](0051-airflow-dag-lifecycle/guide.md) | [Guide](0051-airflow-dag-lifecycle/guide.md) |
+| [DAG deployment](0051-airflow-dag-lifecycle/policy.md) | [Policy](0051-airflow-dag-lifecycle/policy.md) |
+| [n8n](0053-n8n/guide.md) | [Guide](0053-n8n/guide.md), [Policy](0053-n8n/policy.md), [Runbook](0053-n8n/runbook.md) |
+| [Optimization hardening](0054-optimization-hardening/guide.md) | [Guide](0054-optimization-hardening/guide.md), [Policy](0054-optimization-hardening/policy.md), [Runbook](0054-optimization-hardening/runbook.md) |
 
 ## How to Work in This Area
 

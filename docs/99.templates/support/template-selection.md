@@ -19,12 +19,11 @@ template source.
 | Spec | `docs/03.specs/spec-####-<capability>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
 | Plan | `docs/03.specs/spec-####-<capability>/plan.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
 | Task | `docs/03.specs/spec-####-<capability>/task.md` | [task.template.md](../templates/sdlc/task.template.md) |
-| Guide | `docs/05.operations/catalog/<domain>/ops-####-<subject>/guide.md` | [guide.template.md](../templates/operations/guide.template.md) |
-| Policy | `docs/05.operations/catalog/<domain>/ops-####-<subject>/policy.md` | [policy.template.md](../templates/operations/policy.template.md) |
-| Runbook | `docs/05.operations/catalog/<domain>/ops-####-<subject>/runbook.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
+| Guide | `docs/05.operations/catalog/<domain>/####-<subject>/guide.md` | [guide.template.md](../templates/operations/guide.template.md) |
+| Policy | `docs/05.operations/catalog/<domain>/####-<subject>/policy.md` | [policy.template.md](../templates/operations/policy.template.md) |
+| Runbook | `docs/05.operations/catalog/<domain>/####-<subject>/runbook.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
 | Incident | `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md` | [incident.template.md](../templates/operations/incident.template.md) |
 | Postmortem | `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
-| Release | `docs/05.operations/releases/rel-####-<slug>/release.md` | [release.template.md](../templates/operations/release.template.md) |
 | Reference | `docs/90.references/{data,learning,llm-wiki,research}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
 | Audit | `docs/90.references/audits/**/*.md` except the generated metadata inventory | [audit.template.md](../templates/common/audit.template.md) |
 | Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-####-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |
@@ -44,10 +43,10 @@ whether a validated archive result uses the Archive form and which conditional
 fields and sections apply. This file only maps the resulting target role to its
 copyable source.
 
-Operations convergence uses the separate frozen
-`docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
-contract. Its structural and semantic dispositions remain non-executable while
-`approval.status` is `pending`; template selection never grants that approval.
+Current Operations structure follows the Registry and the frozen
+`docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+contract. Migration 0002 remains a read-only semantic witness and does not
+authorize current paths.
 
 ## Spec Child Template Mapping
 
@@ -82,10 +81,10 @@ contract. Its structural and semantic dispositions remain non-executable while
   work. Include conditional approval and controlled-wrapper sections only when
   applicable; no Task subtype or competing governance form is selected.
 - Use operations templates by purpose: guide for usage context, policy for
-  controls and exceptions, runbook for ordered procedures and evidence, and
-  release for evidence from a real release event.
-- Do not create a Release record from changelog or release-readiness evidence
-  alone; deployment runtime remains in its separately approved Spec chain.
+  controls and exceptions, and runbook for ordered procedures and evidence.
+- Record delivery history in Tasks, `CHANGELOG.md`, Git tags, and the applicable
+  deployment Runbook evidence; deployment runtime remains in its separately
+  approved Spec chain.
 - Use Reference for stable facts and Audit for bounded criteria, evidence,
   findings, and disposition. Neither owns active policy or runbook procedure.
 - Use archive templates only for tombstones, not for preserving stale body text.

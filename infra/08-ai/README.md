@@ -42,8 +42,8 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Read the [Ollama Usage Guide](../../docs/05.operations/catalog/08-ai/ops-0056-ollama/guide.md).
-2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md) and [RAG Workflow Guide](../../docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md).
+1. Read the [Ollama Usage Guide](../../docs/05.operations/catalog/08-ai/0056-ollama/guide.md).
+2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md) and [RAG Workflow Guide](../../docs/05.operations/catalog/08-ai/0059-rag-workflow/guide.md).
 3. Check the [operations policy index](../../docs/05.operations/catalog/08-ai/README.md) for GPU, model, access, and logging controls.
 4. Consult the [AI Runbooks](../../docs/05.operations/catalog/08-ai/README.md) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
 

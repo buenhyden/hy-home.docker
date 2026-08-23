@@ -16,7 +16,7 @@ This specification defines the second document-system restructure wave for
 `hy-home.docker`. The wave combines an evidence-first audit pack with a
 template-contract baseline, then prepares archive-centered restructuring for
 historical `docs/03.specs` work products and operations buckets under
-`docs/05.operations/{guides,policies,runbooks}`.
+`docs/05.operations/catalog/<domain>/<####-subject>/{guide,policy,runbook}.md`.
 
 The work is intentionally staged. The design commit creates no target document
 moves, deletions, validator changes, GitHub workflow changes, or runtime
@@ -49,7 +49,7 @@ task explicitly retires this restructure model with replacement evidence.
 - Define archive-centered treatment for completed historical `docs/03.specs`
   work products.
 - Define archive-centered treatment for operations bucket documents under
-  `docs/05.operations/{guides,policies,runbooks}` across `00-workspace`,
+  `docs/05.operations/catalog/<domain>/<####-subject>/{guide,policy,runbook}.md` across `00-workspace`,
   `01-*` through `12-*`, and the legacy `90-knowledge` bucket.
 - Remove or archive conflicting and duplicate active documents only when a
   canonical replacement, tombstone, or gap record preserves traceability.
@@ -150,7 +150,7 @@ The audit pack will live under
 | `template-contract-drift.md` | Conflicts among templates, support contracts, governance, README catalog text, and legacy sections. |
 | `frontmatter-profile-inventory.md` | Current frontmatter keys and values by document type, including legacy or duplicate-purpose keys. |
 | `sdlc-spec-archive-candidates.md` | `docs/03.specs` active, archive, duplicate, conflict, and evidence-preserve candidates. |
-| `operations-bucket-restructure.md` | `docs/05.operations/{guides,policies,runbooks}` bucket-level archive/consolidation candidates across `00-workspace`, `01-*` through `12-*`, and `90-knowledge`. |
+| `operations-bucket-restructure.md` | `docs/05.operations/catalog/<domain>/<####-subject>/{guide,policy,runbook}.md` bucket-level archive/consolidation candidates across `00-workspace`, `01-*` through `12-*`, and `90-knowledge`. |
 | `ci-qa-formatting-contract.md` | Current CI/CD, QA, and formatting coverage plus manual-review and future-hardening candidates. |
 | `restructure-gap-register.md` | Stable gap IDs, batch assignments, approvals, validation commands, and residual risks. |
 
@@ -183,9 +183,9 @@ stage authoring policy, or validation expectations change.
 
 The operations target includes the full purpose and service-bucket taxonomy:
 
-- `docs/05.operations/guides/{00-workspace,01-*...12-*,90-knowledge}`
-- `docs/05.operations/policies/{00-workspace,01-*...12-*,90-knowledge}`
-- `docs/05.operations/runbooks/{00-workspace,01-*...12-*,90-knowledge}`
+- `docs/05.operations/catalog/*/*/guide.md{00-workspace,01-*...12-*,90-knowledge}`
+- `docs/05.operations/catalog/*/*/policy.md{00-workspace,01-*...12-*,90-knowledge}`
+- `docs/05.operations/catalog/*/*/runbook.md{00-workspace,01-*...12-*,90-knowledge}`
 
 The model keeps active canonical guide/policy/runbook documents that map to
 current operations and tracked implementation. Completed historical bucket

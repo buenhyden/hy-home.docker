@@ -24,7 +24,7 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 ## Outputs
 
-- One typed runbook at `docs/05.operations/<domain>/ops-####-<slug>/runbook.md` with executable, topic-specific procedure.
+- One typed runbook at `docs/05.operations/catalog/<domain>/####-<slug>/runbook.md` with executable, topic-specific procedure.
 
 ## Gates
 

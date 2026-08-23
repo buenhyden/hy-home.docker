@@ -5,7 +5,7 @@
 ## Overview
 
 This domain co-locates the existing Stalwart and MailHog guide, policy, and
-runbook under the frozen `ops-0070-mail` identity. No operational role is
+runbook under the frozen `0070-mail` identity. No operational role is
 created beyond the three roles recorded in the migration ledger.
 
 ## Audience
@@ -23,7 +23,7 @@ created beyond the three roles recorded in the migration ledger.
 
 | Subject | Available documents |
 | --- | --- |
-| [Mail](ops-0070-mail/guide.md) | [Guide](ops-0070-mail/guide.md), [Policy](ops-0070-mail/policy.md), [Runbook](ops-0070-mail/runbook.md) |
+| [Mail](0070-mail/guide.md) | [Guide](0070-mail/guide.md), [Policy](0070-mail/policy.md), [Runbook](0070-mail/runbook.md) |
 
 ## How to Work in This Area
 
@@ -36,4 +36,3 @@ guide hands off to the sibling runbook only because that runbook exists.
 - [Operations index](../../README.md)
 - [Communication infrastructure](../../../../infra/10-communication/README.md)
 - [Incident records](../../incidents/README.md)
-- [Release records](../../releases/README.md)

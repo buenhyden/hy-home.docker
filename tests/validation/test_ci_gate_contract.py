@@ -397,7 +397,7 @@ class CiGateContractTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
 
-    def test_operations_catalog_manifest_is_an_exact_required_ci_leaf(self) -> None:
+    def test_operations_catalog_current_authority_is_an_exact_required_ci_leaf(self) -> None:
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT),
             ".github/workflow-contract.yml",
@@ -408,7 +408,7 @@ class CiGateContractTests(unittest.TestCase):
             pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
             leaf.entrypoint,
         )
-        self.assertEqual(("--mode", "manifest"), leaf.argv)
+        self.assertEqual(("--mode", "complete"), leaf.argv)
         self.assertIn("ci", leaf.profiles)
         self.assertIn(
             leaf.gate_id,

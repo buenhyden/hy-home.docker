@@ -5,7 +5,7 @@
 ## Overview
 
 This domain co-locates the existing guide, policy, and runbook under the frozen
-`ops-0077-ip-address-management` identity. The three roles preserve their
+`0077-ip-address-management` identity. The three roles preserve their
 separate usage, control, and procedure responsibilities.
 
 ## Audience
@@ -23,7 +23,7 @@ separate usage, control, and procedure responsibilities.
 
 | Subject | Available documents |
 | --- | --- |
-| [`infra_net` standardization](ops-0077-ip-address-management/guide.md) | [Guide](ops-0077-ip-address-management/guide.md), [Policy](ops-0077-ip-address-management/policy.md), [Runbook](ops-0077-ip-address-management/runbook.md) |
+| [`infra_net` standardization](0077-ip-address-management/guide.md) | [Guide](0077-ip-address-management/guide.md), [Policy](0077-ip-address-management/policy.md), [Runbook](0077-ip-address-management/runbook.md) |
 
 ## How to Work in This Area
 
@@ -37,4 +37,3 @@ Runtime-changing network actions remain separately approval-gated.
 - [Infrastructure index](../../../../infra/README.md)
 - [`infra_net` specification](../../../03.specs/0098-standardize-infra-net/spec.md)
 - [Incident records](../../incidents/README.md)
-- [Release records](../../releases/README.md)

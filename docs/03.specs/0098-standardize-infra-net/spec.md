@@ -152,9 +152,9 @@ docker compose config | grep "k3d-hyhome"
 
 - **Plan**: ../../04.execution/plans/2026-04-01-standardize-infra-net.md
 - **Tasks**: ../../04.execution/tasks/2026-04-01-standardize-infra-net.md
-- **Guide**: [../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md)
-- **Policy**: [../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md)
-- **Runbook**: [../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md](../../05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md)
+- **Guide**: [../../05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md](../../05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md)
+- **Policy**: [../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md](../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md)
+- **Runbook**: [../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md](../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md)
 
 ## Boundaries and Inputs
 

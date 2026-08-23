@@ -41,7 +41,7 @@ Plan은 prospective strategy, Task는 실제 작업 상태와 검증 evidence를
 
 - 제품 요구사항과 사용자 가치 정의 (`docs/01.requirements`)
 - Architecture Description과 ADR (`docs/02.architecture`)
-- 운영 가이드, 정책, 런북, incident, release (`docs/05.operations`)
+- 운영 가이드, 정책, 런북, incident (`docs/05.operations`)
 - 완료된 Plan/Task 본문과 retired capability body (`docs/98.archive`)
 - Docker Compose runtime 원문과 secret 값
 

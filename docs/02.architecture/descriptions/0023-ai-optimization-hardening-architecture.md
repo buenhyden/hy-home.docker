@@ -121,6 +121,6 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 - **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md)
-- **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/guide.md)
+- **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md)

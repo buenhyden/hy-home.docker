@@ -49,13 +49,13 @@ open-webui/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `open-webui` |
-| Operations | [Guide](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md), [Policy](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md), [Runbook](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md), [Policy](../../../docs/05.operations/catalog/08-ai/0057-open-webui/policy.md), [Runbook](../../../docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Read the [Open WebUI Interface & RAG Guide](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md).
+1. Read the [Open WebUI Interface & RAG Guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md).
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify connection to Ollama and Qdrant before document indexing.
 
@@ -69,9 +69,9 @@ open-webui/
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
-- [Open WebUI usage guide](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md)
-- [Open WebUI operations policy](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md)
-- [Open WebUI recovery runbook](../../../docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md)
+- [Open WebUI usage guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md)
+- [Open WebUI operations policy](../../../docs/05.operations/catalog/08-ai/0057-open-webui/policy.md)
+- [Open WebUI recovery runbook](../../../docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md)
 
 ## Validation
 

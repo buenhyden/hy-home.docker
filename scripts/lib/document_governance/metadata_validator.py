@@ -501,21 +501,21 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/03.specs/README.md",
     "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md",
     "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
-    "docs/05.operations/guides/04-data/analytics/README.md",
-    "docs/05.operations/guides/04-data/analytics/influxdb.md",
-    "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
-    "docs/05.operations/guides/09-tooling/k6.md",
-    "docs/05.operations/guides/09-tooling/locust.md",
-    "docs/05.operations/guides/09-tooling/performance-testing.md",
-    "docs/05.operations/policies/04-data/analytics/influxdb.md",
-    "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",
-    "docs/05.operations/policies/09-tooling/k6.md",
-    "docs/05.operations/policies/09-tooling/locust.md",
-    "docs/05.operations/policies/09-tooling/performance-testing.md",
-    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
-    "docs/05.operations/runbooks/09-tooling/k6.md",
-    "docs/05.operations/runbooks/09-tooling/locust.md",
-    "docs/05.operations/runbooks/09-tooling/performance-testing.md",
+    "docs/05.operations/" "guides/04-data/analytics/README.md",
+    "docs/05.operations/" "guides/04-data/analytics/influxdb.md",
+    "docs/05.operations/" "guides/04-data/lake-and-object/seaweedfs.md",
+    "docs/05.operations/" "guides/09-tooling/k6.md",
+    "docs/05.operations/" "guides/09-tooling/locust.md",
+    "docs/05.operations/" "guides/09-tooling/performance-testing.md",
+    "docs/05.operations/" "policies/04-data/analytics/influxdb.md",
+    "docs/05.operations/" "policies/04-data/lake-and-object/seaweedfs.md",
+    "docs/05.operations/" "policies/09-tooling/k6.md",
+    "docs/05.operations/" "policies/09-tooling/locust.md",
+    "docs/05.operations/" "policies/09-tooling/performance-testing.md",
+    "docs/05.operations/" "runbooks/04-data/analytics/influxdb.md",
+    "docs/05.operations/" "runbooks/09-tooling/k6.md",
+    "docs/05.operations/" "runbooks/09-tooling/locust.md",
+    "docs/05.operations/" "runbooks/09-tooling/performance-testing.md",
     "docs/90.references/audits/ref-0019-readme.md",
     "docs/90.references/audits/ref-0021-automation-candidates.md",
     "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
@@ -652,7 +652,6 @@ EXPECTED_PROFILE_TYPES = {
     "prd",
     "readme",
     "reference",
-    "release",
     "repo-support",
     "runbook",
     "srs",
@@ -676,7 +675,6 @@ EXPECTED_FRONTMATTER_ORDER = (
     "next_review_at",
     "occurred_at",
     "resolved_at",
-    "released_at",
     "generated_by",
     "archived_from",
     "archived_at",
@@ -740,7 +738,6 @@ EXPECTED_DOCUMENT_FAMILIES = {
         "runbook",
         "incident",
         "postmortem",
-        "release",
     ),
     "common": (
         "reference",
@@ -827,7 +824,6 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
         "prd",
         "readme",
         "reference",
-        "release",
         "runbook",
         "srs",
         "service",
@@ -917,7 +913,6 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "next_review_at",
         "occurred_at",
         "resolved_at",
-        "released_at",
         "archived_from",
         "archived_at",
         "archive_reason",
@@ -1192,8 +1187,6 @@ def infer_artifact_type(
             return "runbook"
     if normalized.startswith("docs/05.operations/incidents/"):
         return "postmortem" if name == "postmortem.md" else "incident"
-    if normalized.startswith("docs/05.operations/releases/"):
-        return "release"
     if normalized.startswith("docs/90.references/audits/"):
         return "audit"
     if normalized.startswith("docs/90.references/"):
@@ -3170,7 +3163,6 @@ def validate_record(
         "next_review_at",
         "occurred_at",
         "resolved_at",
-        "released_at",
         "archived_at",
     )
     for temporal_field in temporal_fields:
@@ -5093,6 +5085,7 @@ def _tracked_markdown(root: pathlib.Path, *, require_git: bool = False) -> list[
             path
             for path in paths
             if path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            and (root / path).is_file()
         },
         key=lambda path: path.as_posix(),
     )
@@ -5107,7 +5100,11 @@ def _tracked_repository_markdown(root: pathlib.Path) -> list[pathlib.Path]:
     if result.returncode != 0:
         raise ProfileError("cannot establish local Git snapshot: repository contract Markdown discovery failed")
     return sorted(
-        set(_decode_git_paths(result.stdout, "repository contract Markdown discovery")),
+        {
+            path
+            for path in _decode_git_paths(result.stdout, "repository contract Markdown discovery")
+            if (root / path).is_file()
+        },
         key=lambda path: path.as_posix(),
     )
 
@@ -5125,6 +5122,7 @@ def _tracked_machine_templates(root: pathlib.Path) -> list[pathlib.Path]:
             path
             for path in _decode_git_paths(result.stdout, "machine template discovery")
             if _machine_template_path(path)
+            and (root / path).is_file()
         },
         key=lambda path: path.as_posix(),
     )
@@ -5610,43 +5608,6 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             )
         )
 
-    release_sources = sorted(
-        source_path
-        for source_path, (_, role) in roles_by_source.items()
-        if role.get("artifact_profile") == "release"
-    )
-    if not registry_native and len(release_sources) != 1:
-        findings.append(
-            Finding(
-                "docs/99.templates/support/document-metadata-profiles.yaml",
-                "release-template-cardinality",
-                f"registry must map exactly one Release template; found {len(release_sources)}",
-            )
-        )
-    elif not registry_native:
-        release_source = release_sources[0]
-        release_name = pathlib.PurePosixPath(release_source).name
-        release_route = "docs/05.operations/releases/rel-####-<slug>/release.md"
-        route_contracts = {
-            "docs/99.templates/support/template-selection.md": (release_route, release_name),
-            "docs/00.agent-governance/policies/stage-authoring-matrix.md": (release_route, release_source),
-        }
-        for path_text, required_literals in route_contracts.items():
-            path = root / path_text
-            try:
-                text = path.read_text(encoding="utf-8")
-            except (OSError, UnicodeError):
-                text = ""
-            missing = [literal for literal in required_literals if literal not in text]
-            if missing:
-                findings.append(
-                    Finding(
-                        path_text,
-                        "release-route-incomplete",
-                        f"missing canonical Release route literals: {', '.join(missing)}",
-                    )
-                )
-
     human_support = (
         []
         if registry_native
@@ -6022,6 +5983,17 @@ def _legacy_deficit_identity(finding: Finding) -> tuple[str, str]:
     return finding.code, finding.message
 
 
+def _exact_task8_profile_addition(record: Record, base_record: Record) -> bool:
+    """Allow only the Registry-required profile key on a verified Task 8 move."""
+
+    if record.artifact_type not in {"guide", "policy", "runbook"}:
+        return False
+    if "profile_id" in base_record.metadata:
+        return False
+    expected = {**base_record.metadata, "profile_id": record.artifact_type}
+    return record.metadata == expected
+
+
 def _legacy_exception_evidence(
     record: Record,
     findings: Sequence[Finding],
@@ -6030,10 +6002,14 @@ def _legacy_exception_evidence(
     body_findings: Sequence[Finding],
     link_only_change: bool,
     task5_legacy_parent_ids: set[str],
+    approved_structural_move: bool = False,
 ) -> tuple[int, int] | None:
     if record.parse_error or base_record is None:
         return None
-    if base_record.parse_error or record.metadata != base_record.metadata:
+    metadata_preserved = record.metadata == base_record.metadata or (
+        approved_structural_move and _exact_task8_profile_addition(record, base_record)
+    )
+    if base_record.parse_error or not metadata_preserved:
         return None
     if any(finding.severity == "error" for finding in body_findings):
         return None
@@ -6054,6 +6030,8 @@ def _legacy_exception_evidence(
         }
         if not link_only_change or not new_deficits <= proven_parent_deficits:
             return None
+    if approved_structural_move:
+        return len(current_deficits), len(base_deficits)
     if link_only_change:
         return len(current_deficits), len(base_deficits)
     if record.path.as_posix() in APPROVED_MIGRATION_PATHS:
@@ -6169,27 +6147,56 @@ def _task5_moved_body_baseline(
     return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
 
 
+def _task8_operations_move_sources(root: pathlib.Path) -> dict[str, str]:
+    """Return exact Task 8 target-to-source paths from frozen Migration 0003."""
+
+    from scripts.lib.document_governance.operations_catalog import (
+        MIGRATION_PATH,
+        OperationsAuthorityError,
+        load_task8_migration,
+    )
+
+    if not (root / MIGRATION_PATH).is_file():
+        return {}
+    try:
+        migration = load_task8_migration(root)
+    except OperationsAuthorityError as error:
+        raise ProfileError(f"cannot load Task 8 Operations move authority: {error}") from error
+    return {
+        row.target_path.as_posix(): row.source_path.as_posix()
+        for row in migration.rows
+        if row.target_path is not None
+    }
+
+
 def _operations_catalog_moved_body_baseline(
     root: pathlib.Path,
     target: pathlib.Path,
     profiles: dict[str, object],
     base_ref: str | None,
+    mappings: Mapping[str, str],
 ) -> tuple[Record | None, str | None]:
-    """Read the exact pre-catalog baseline for an approved structural domain move."""
+    """Read the exact Migration 0003 source baseline for a Task 8 target."""
 
-    prefix = "docs/05.operations/catalog/"
-    target_text = target.as_posix()
-    if not target_text.startswith(prefix):
+    legacy = mappings.get(target.as_posix())
+    if legacy is None:
         return None, None
-    suffix = target_text.removeprefix(prefix)
-    domain, separator, remainder = suffix.partition("/")
-    if domain not in OPERATIONS_CATALOG_DOMAINS or not separator or not remainder:
-        return None, None
-    legacy_path = pathlib.Path("docs/05.operations") / suffix
-    legacy_text = _text_at_ref(root, legacy_path, base_ref)
+    legacy_text = _text_at_ref(root, pathlib.Path(legacy), base_ref)
     if legacy_text is None:
         return None, None
     return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
+
+
+_TASK8_OPERATIONS_README_TRANSITION_PATHS = frozenset(
+    {
+        "docs/05.operations/README.md",
+        "docs/05.operations/catalog/03-security/README.md",
+        "docs/05.operations/catalog/10-communication/README.md",
+        "docs/05.operations/catalog/11-laboratory/README.md",
+        "docs/05.operations/catalog/12-infra-net/README.md",
+    }
+)
+_TASK8_RELEASE_DELETION_SOURCE = pathlib.Path("docs/05.operations/releases/README.md")
 
 
 def _relation_impact_findings(
@@ -6939,7 +6946,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
         return 2
     base_records: list[Record] = []
+    task8_operations_move_sources: dict[str, str] = {}
+    verified_task8_move_targets: set[str] = set()
+    task8_release_deletion_at_base = False
     promoted_transition_witnesses: dict[str, PromotedTransitionWitness] = {}
+    if args.mode == "check-changed":
+        try:
+            task8_operations_move_sources = _task8_operations_move_sources(root)
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
     if base.merge_base:
         try:
             base_records = collect_records_at_ref(root, profiles, base.merge_base)
@@ -6952,7 +6968,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
+    if task8_operations_move_sources and base.merge_base:
+        task8_release_deletion_at_base = (
+            _text_at_ref(root, _TASK8_RELEASE_DELETION_SOURCE, base.merge_base) is not None
+        )
     base_records_by_path = {record.path.as_posix(): record for record in base_records}
+    if args.mode == "check-changed" and base.merge_base:
+        for path_text in sorted(changed_selection):
+            if path_text in base_records_by_path:
+                continue
+            moved_record, _ = _operations_catalog_moved_body_baseline(
+                root,
+                pathlib.Path(path_text),
+                profiles,
+                base.merge_base,
+                task8_operations_move_sources,
+            )
+            if moved_record is not None:
+                base_records_by_path[path_text] = moved_record
+                verified_task8_move_targets.add(path_text)
     try:
         records = collect_records(
             root,
@@ -6967,9 +7001,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     manifest = build_manifest(records)
     base_manifest = build_manifest(base_records)
     base_findings_by_path = {
-        record.path.as_posix(): validate_record(record, profiles, base_manifest)
-        for record in base_records
-        if record.path.as_posix() in changed_selection
+        path_text: validate_record(record, profiles, base_manifest)
+        for path_text, record in base_records_by_path.items()
+        if path_text in changed_selection
     }
     findings_by_path = {
         record.path.as_posix(): validate_record(
@@ -7012,9 +7046,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                     record.path,
                     profiles,
                     base.merge_base,
+                    task8_operations_move_sources,
                 )
                 base_record = moved_record or base_record
                 base_text = moved_text or base_text
+            if (
+                base_text is not None
+                and current_text != base_text
+                and _link_target_neutral_text(current_text)
+                == _link_target_neutral_text(base_text)
+            ):
+                link_only_changes.add(path_text)
             if base_record is None or base_text is None:
                 moved_record, moved_text = _task5_moved_body_baseline(
                     root,
@@ -7087,6 +7129,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 changed_body_findings.get(path, []),
                 path in link_only_changes,
                 task5_legacy_parent_ids,
+                path in verified_task8_move_targets
+                or (
+                    task8_release_deletion_at_base
+                    and path in _TASK8_OPERATIONS_README_TRANSITION_PATHS
+                    and path in base_records_by_path
+                ),
             )
         )
         is not None
@@ -7094,7 +7142,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     legacy_exceptions = set(legacy_exception_evidence)
     for path, (current_count, base_count) in sorted(legacy_exception_evidence.items()):
         print(
-            f"{path}: legacy metadata exception: base-existing unmigrated document outside approved Task 8 scope; "
+            f"{path}: legacy metadata exception: base-existing deficits preserved by an approved structural migration; "
             f"current_deficits={current_count} base_deficits={base_count} new_deficits=0",
             file=sys.stderr,
         )

@@ -179,7 +179,7 @@ The proposed common keys are:
 | --- | --- | --- |
 | `status` | Required | Existing lifecycle status vocabulary. |
 | `artifact_id` | Required after migration | Stable identifier independent of path. |
-| `artifact_type` | Required after migration | PRD, ARD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Incident, Postmortem, Release, Reference, Audit, or README profile. |
+| `artifact_type` | Required after migration | PRD, ARD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Incident, Postmortem, Reference, Audit, or README profile; delivery evidence remains Task- and Git-owned. |
 | `parent_ids` | Type-dependent | Direct upstream artifact IDs. Empty only when the type contract permits a root artifact. |
 | `supersedes` | Conditional | Artifact IDs replaced by this artifact. |
 | `reviewed_at` | Type-dependent | Last evidence-backed review date. |

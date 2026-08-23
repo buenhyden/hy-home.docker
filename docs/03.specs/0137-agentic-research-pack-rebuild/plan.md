@@ -683,10 +683,10 @@ commits for any spec-driven tool evaluated.
 - [ ] **Step 3: Separate every document role**
 
 Give PRD, ARD, ADR, Spec/child contract, Plan, Task, Guide, Incident,
-Postmortem, Policy, Release, and Runbook separate rows for purpose, question,
-trigger, owner, consumer, stage/path, template, lifecycle, relations, and
-forbidden substitutions. Label ARD as local coinage and Release as distinct
-from deployment proof.
+Postmortem, Policy, and Runbook separate rows for purpose, question, trigger,
+owner, consumer, stage/path, template, lifecycle, relations, and forbidden
+substitutions. Label ARD as local coinage and record deployment/release proof
+as Task- and Git-owned evidence rather than a separate document role.
 
 - [ ] **Step 4: Validate, self-review, and commit**
 

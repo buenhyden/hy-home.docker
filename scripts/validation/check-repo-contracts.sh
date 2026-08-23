@@ -16,9 +16,9 @@ section() {
   echo "==> $1"
 }
 
-section "Operations catalog approval manifest"
-if ! python3 scripts/validation/check-operations-catalog.py --mode manifest; then
-  fail "Operations catalog approval manifest is invalid"
+section "Operations catalog current authority"
+if ! python3 scripts/validation/check-operations-catalog.py --mode complete; then
+  fail "Operations catalog current authority is invalid"
 fi
 
 section "Docs top-level structure"
@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 import sys
 
 contract_path = pathlib.Path(".github/workflow-contract.yml")
@@ -496,7 +497,7 @@ fi
 rm -f /tmp/check-repo-contracts-ip-placeholders.txt
 
 section "Metadata comparison guide drift"
-env_comparison_doc="docs/05.operations/guides/00-workspace/env-key-comparison.md"
+env_comparison_doc="docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md"
 if [[ -f ".env.example" && -f ".env" && -f "$env_comparison_doc" ]]; then
   env_example_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env.example)"
   env_actual_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env)"
@@ -515,7 +516,7 @@ if [[ -f ".env.example" && -f ".env" && -f "$env_comparison_doc" ]]; then
   fi
 fi
 
-sensitive_comparison_doc="docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md"
+sensitive_comparison_doc="docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md"
 if [[ -f "secrets/SENSITIVE_ENV_VARS.md.example" && -f "secrets/SENSITIVE_ENV_VARS.md" && -f "$sensitive_comparison_doc" ]]; then
   sensitive_example_lines="$(wc -l <secrets/SENSITIVE_ENV_VARS.md.example | tr -d '[:space:]')"
   sensitive_actual_lines="$(wc -l <secrets/SENSITIVE_ENV_VARS.md | tr -d '[:space:]')"
@@ -541,15 +542,8 @@ import sys
 
 failures: list[str] = []
 allowed_prefixes = (
-    "docs/05.operations/guides/",
-    "docs/05.operations/policies/",
-    "docs/05.operations/runbooks/",
-    "docs/05.operations/incidents/",
-    "docs/05.operations/{guides,policies,runbooks}/",
-    # Taxonomy convergence (Spec 136) moves operations into a domain-first
-    # catalog whose leaves keep the guide/policy/runbook role in the filename.
-    # Both layouts are accepted while the migration's remaining slices land.
     "docs/05.operations/catalog/",
+    "docs/05.operations/incidents/",
 )
 pattern = re.compile(r"<!--\s*Target:\s*(docs/05\.operations/[^ >]+)\s*-->")
 
@@ -566,7 +560,7 @@ for path in sorted(pathlib.Path("docs").rglob("*.md")):
             continue
         target = match.group(1)
         if not target.startswith(allowed_prefixes):
-            failures.append(f"{path}:{line_no}: operations target must use guides/policies/runbooks/incidents: {target}")
+            failures.append(f"{path}:{line_no}: operations target must use catalog/incidents: {target}")
         if path.parts[:2] == ("docs", "05.operations") and target != path.as_posix():
             failures.append(f"{path}:{line_no}: operations target must match file path: {target}")
 
@@ -712,15 +706,15 @@ if incidents_root.exists():
 
 literal_requirements = {
     pathlib.Path("docs/05.operations/incidents/README.md"): [
-        "YYYY/inc-####-incident-title/",
-        "incident.md",
-        "postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path("docs/99.templates/support/template-selection.md"): [
         "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
         "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path("docs/00.agent-governance/policies/documentation-protocol.md"): [
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
         "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"): [
@@ -753,7 +747,6 @@ for path in [
         "docs/05.operations/incidents/postmortems/",
         "PM-<INC-ID>-postmortem.md",
         "place both files under `incidents/YYYY/`",
-        "YYYY-MM-DD-<incident-title>-postmortem.md",
     ]:
         if forbidden in text:
             failures.append(f"{path}: stale postmortem routing literal remains: {forbidden}")
@@ -1721,19 +1714,19 @@ scoped_label_paths = {
         "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
         "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
         "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
-        "docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md",
-        "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
-        "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
-        "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
-        "docs/05.operations/runbooks/04-data/analytics/warehouses.md",
-        "docs/05.operations/runbooks/04-data/operational/supabase.md",
-        "docs/05.operations/runbooks/04-data/relational.md",
-        "docs/05.operations/runbooks/05-messaging/kafka.md",
-        "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
-        "docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md",
-        "docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md",
-        "docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md",
-        "docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md",
+        "docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md",
+        "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
+        "docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md",
+        "docs/05.operations/catalog/04-data/0019-opensearch/runbook.md",
+        "docs/05.operations/catalog/04-data/0020-starrocks/runbook.md",
+        "docs/05.operations/catalog/04-data/0029-supabase/runbook.md",
+        "docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md",
+        "docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md",
+        "docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md",
+        "docs/05.operations/catalog/08-ai/0056-ollama/runbook.md",
+        "docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/0072-dozzle/runbook.md",
     ]
 }
 
@@ -1989,41 +1982,89 @@ import pathlib
 import re
 import sys
 
-failures: list[str] = []
-pseudo_link = re.compile(r"`\[((?:\.\.?/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
-related_link = re.compile(
-    r"\*\*(Guide|Policy|Operation|Operations|Runbook)\*\*:\s*\[[^\]]+\]\(([^)]+)\)"
+from scripts.lib.document_governance.links import parse_local_markdown_links
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    read_bounded_regular,
 )
-# Each label accepts the pre-migration bucket path or the converged catalog
-# form, where the role is carried by the leaf filename rather than by a
-# directory. Both are listed while the taxonomy migration's remaining slices
-# land; a link matching neither is still a failure.
+
+failures: list[str] = []
+pseudo_link = re.compile(
+    r"`\[((?:\.\.?/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`"
+)
+# Current Operations traceability is domain/subject catalog based, with the
+# document role carried only by the leaf filename.
 expected_bucket = {
-    "Guide": ("05.operations/guides/", "/guide.md"),
-    "Policy": ("05.operations/policies/", "/policy.md"),
-    "Operation": ("05.operations/policies/", "/policy.md"),
-    "Operations": ("05.operations/policies/", "/policy.md"),
-    "Runbook": ("05.operations/runbooks/", "/runbook.md"),
+    "Guide": "guide.md",
+    "Policy": "policy.md",
+    "Runbook": "runbook.md",
 }
+catalog_role_path = re.compile(
+    r"^docs/05\.operations/catalog/[0-9]{2}-[a-z0-9][a-z0-9-]*/"
+    r"[0-9]{4}-[a-z0-9][a-z0-9-]*/(?P<role>guide|policy|runbook)\.md$"
+)
+repository_root = pathlib.Path.cwd()
+
+
+def expected_role_leaf(label: str) -> str | None:
+    stripped = label.strip()
+    direct = expected_bucket.get(stripped)
+    if direct is not None:
+        return direct
+    lowered = stripped.lower()
+    for role, leaf in (
+        ("guides", "guide.md"),
+        ("policies", "policy.md"),
+        ("runbooks", "runbook.md"),
+    ):
+        if f"/{role}/" in lowered or lowered.endswith(f"/{leaf}"):
+            return leaf
+    return None
 
 for path in sorted(pathlib.Path("docs/03.specs").rglob("*.md")):
-    text = path.read_text(errors="ignore")
+    relative = pathlib.PurePosixPath(path.as_posix())
+    try:
+        text = read_bounded_regular(repository_root, relative).decode("utf-8")
+    except (OperationsAuthorityError, UnicodeError):
+        failures.append(f"{path}: cannot read confined regular Spec source")
+        continue
+    rendered_links = parse_local_markdown_links(relative, text)
     for line_no, line in enumerate(text.splitlines(), start=1):
         for match in pseudo_link.finditer(line):
             failures.append(
                 f"{path}:{line_no}: active spec uses pseudo-link instead of Markdown link: {match.group(1)}"
             )
 
-        for match in related_link.finditer(line):
-            label = match.group(1)
-            href = match.group(2).strip().split()[0]
-            if "05.operations/" not in href:
+    for link in rendered_links:
+        expected_leaf = expected_role_leaf(link.label)
+        if expected_leaf is None:
+            if (
+                "05.operations/" not in link.raw_target
+                or link.target.name not in expected_bucket.values()
+            ):
                 continue
-            accepted = expected_bucket[label]
-            if not any(form in href for form in accepted):
-                failures.append(
-                    f"{path}:{line_no}: {label} link must target one of {accepted}: {href}"
-                )
+            expected_leaf = link.target.name
+        href = link.raw_target
+        line_no = link.line
+        label = link.label or expected_leaf
+        current = catalog_role_path.fullmatch(link.target.as_posix())
+        target_valid = False
+        if (
+            not link.has_unsafe_target
+            and current is not None
+            and current.group("role") + ".md" == expected_leaf
+        ):
+            try:
+                read_bounded_regular(repository_root, link.target)
+            except OperationsAuthorityError:
+                pass
+            else:
+                target_valid = True
+        if not target_valid:
+            failures.append(
+                f"{path}:{line_no}: {label} link must resolve to an existing confined "
+                f"regular current catalog {expected_leaf}: {href}"
+            )
 
 if failures:
     for failure in failures:
@@ -2341,7 +2382,7 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
-    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
@@ -2415,7 +2456,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md"),
     *wiki_files,
 ]
 for path in safety_files:
@@ -2799,9 +2840,13 @@ import os
 import pathlib
 import re
 import stat
-import subprocess
 import sys
 from typing import Final
+
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    _run_git_bounded,
+)
 
 
 # Baseline 2026-07-16: 1,338 surfaces, 23,602,312 aggregate bytes, and a
@@ -2812,6 +2857,7 @@ MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576
 MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576
 MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192
 MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576
+MAX_REFERENCE_GIT_SECONDS: Final = 5.0
 MAX_REFERENCE_PATH_BYTES: Final = 4_096
 MAX_REFERENCE_CONTEXT_CHARS: Final = 4_096
 MAX_REFERENCE_CONTEXT_BYTES: Final = 4_096
@@ -2913,90 +2959,85 @@ def allows_absence_record_reference(path: pathlib.Path, ref: str) -> bool:
         return False
     return any(is_relative_to(path, root) for root in absence_record_roots)
 
-def git_paths(*arguments: str) -> tuple[pathlib.Path, ...] | None:
+def git_paths(
+    *arguments: str,
+    max_paths: int = MAX_REFERENCE_SURFACES,
+) -> tuple[pathlib.Path, ...] | None:
     try:
-        process = subprocess.Popen(
+        result = _run_git_bounded(
+            pathlib.Path.cwd(),
             [
-                "git",
                 "ls-files",
                 "-z",
                 *arguments,
                 "--",
                 *(root.as_posix() for root in roots),
             ],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            timeout_seconds=MAX_REFERENCE_GIT_SECONDS,
+            max_stdout=MAX_REFERENCE_GIT_OUTPUT_BYTES,
         )
-    except OSError:
+    except OperationsAuthorityError:
         return None
-    if process.stdout is None:
-        process.kill()
-        process.wait()
+    if result.returncode != 0:
         return None
 
     paths: list[pathlib.Path] = []
     pending = bytearray()
-    output_bytes = 0
     try:
-        while True:
-            chunk = process.stdout.read(
-                min(64 * 1_024, MAX_REFERENCE_GIT_OUTPUT_BYTES - output_bytes + 1)
-            )
-            if not chunk:
-                break
-            output_bytes += len(chunk)
-            if output_bytes > MAX_REFERENCE_GIT_OUTPUT_BYTES:
+        for byte in result.stdout:
+            if byte == 0:
+                if pending:
+                    paths.append(
+                        pathlib.Path(pending.decode("utf-8", errors="strict"))
+                    )
+                    if len(paths) > max_paths:
+                        raise ValueError
+                    pending.clear()
+                continue
+            if len(pending) >= MAX_REFERENCE_PATH_BYTES:
                 raise ValueError
-            for byte in chunk:
-                if byte == 0:
-                    if pending:
-                        paths.append(
-                            pathlib.Path(pending.decode("utf-8", errors="strict"))
-                        )
-                        if len(paths) > MAX_REFERENCE_SURFACES:
-                            raise ValueError
-                        pending.clear()
-                    continue
-                if len(pending) >= MAX_REFERENCE_PATH_BYTES:
-                    raise ValueError
-                pending.append(byte)
+            pending.append(byte)
         if pending:
             raise ValueError
-    except (OSError, UnicodeError, ValueError):
-        try:
-            process.kill()
-        except OSError:
-            pass
-        process.wait()
-        return None
-    if process.wait() != 0:
+    except (UnicodeError, ValueError):
         return None
     return tuple(paths)
 
 
 tracked = git_paths("--cached")
+deleted = git_paths("--deleted")
 untracked = git_paths("--others", "--exclude-standard")
-if tracked is None or untracked is None:
+ignored = git_paths(
+    "--others",
+    "--ignored",
+    "--exclude-standard",
+    "--directory",
+    max_paths=MAX_REFERENCE_DISCOVERY_ENTRIES,
+)
+if tracked is None or deleted is None or untracked is None or ignored is None:
     print("FAIL: unsafe script-reference surface", file=sys.stderr)
     sys.exit(1)
 
 tracked_set = set(tracked)
+deleted_set = set(deleted)
+registered_worktree_deletions = {
+    pathlib.Path("docs/05.operations/releases/README.md"),
+    pathlib.Path("docs/99.templates/templates/operations/release.template.md"),
+}
+if not deleted_set.issubset(registered_worktree_deletions):
+    print("FAIL: unsafe script-reference surface", file=sys.stderr)
+    sys.exit(1)
 
 
 def is_untracked_python_cache(path: pathlib.Path) -> bool:
     return path.suffix == ".pyc" and "__pycache__" in path.parts
 
 
+ignored_set = set(ignored)
+
+
 def is_ignored(path: pathlib.Path) -> bool:
-    result = subprocess.run(
-        ["git", "check-ignore", "-q", "--", path.as_posix()],
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-    return result.returncode == 0
+    return any(candidate in ignored_set for candidate in (path, *path.parents))
 
 
 def untracked_special_paths() -> set[pathlib.Path] | None:
@@ -3065,6 +3106,8 @@ def add_surface(path: pathlib.Path) -> None:
 
 try:
     for path in tracked_set:
+        if path in deleted_set:
+            continue
         add_surface(path)
     for path in untracked:
         if path not in tracked_set and not is_untracked_python_cache(path):
@@ -3289,41 +3332,163 @@ if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
+from typing import Final
 
-stages = ["05.operations/guides"]
+from scripts.lib.document_governance.links import DocumentLink, parse_local_markdown_links
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    _run_git_bounded,
+    read_bounded_regular,
+)
 
-# Implementation path names sometimes differ from product names. Keep those
-# differences explicit so missing docs do not get hidden by ad-hoc conventions.
-document_path_overrides = {
-    pathlib.Path("04-data/analytics/ksql"): pathlib.Path("04-data/analytics/ksqldb.md"),
-}
+MAX_SERVICE_TRACKED_PATHS: Final = 4_096
+MAX_SERVICE_FILE_BYTES: Final = 2 * 1_048_576
+MAX_SERVICE_TOTAL_BYTES: Final = 16 * 1_048_576
+MAX_SERVICE_GIT_OUTPUT_BYTES: Final = 2 * 1_048_576
+MAX_SERVICE_GIT_SECONDS: Final = 5.0
+MAX_SERVICE_PATH_BYTES: Final = 4_096
+
+repository_root = pathlib.Path.cwd()
+catalog_guide = re.compile(
+    r"^docs/05\.operations/catalog/(?P<domain>[0-9]{2}-[a-z0-9][a-z0-9-]*)/"
+    r"[0-9]{4}-[a-z0-9][a-z0-9-]*/guide\.md$"
+)
+compose_name = re.compile(r"docker-compose[^/]*\.yml$")
 
 # Aggregate compose files are documented by component-level docs in the same
 # stage folder, not by a single service markdown file.
 aggregate_compose_dirs = {
-    pathlib.Path("06-observability"),
+    pathlib.PurePosixPath("06-observability"),
 }
 
-service_dirs = sorted(
-    {
-        path.parent.relative_to("infra")
-        for path in pathlib.Path("infra").rglob("docker-compose*.yml")
-        if path.is_file()
-    }
-)
-
 failures: list[str] = []
+payload_cache: dict[pathlib.PurePosixPath, bytes] = {}
+total_service_bytes = 0
 
-for service_dir in service_dirs:
-    if service_dir in aggregate_compose_dirs:
-        continue
 
-    doc_rel = document_path_overrides.get(service_dir, pathlib.Path(f"{service_dir}.md"))
-    for stage in stages:
-        doc_path = pathlib.Path("docs") / stage / doc_rel
-        if not doc_path.is_file():
-            failures.append(f"missing {stage} service documentation for infra/{service_dir}: expected {doc_path}")
+def tracked_paths() -> tuple[pathlib.PurePosixPath, ...]:
+    try:
+        result = _run_git_bounded(
+            repository_root,
+            [
+                "ls-files",
+                "-z",
+                "--cached",
+                "--",
+                "infra",
+                "docs/05.operations/catalog",
+            ],
+            timeout_seconds=MAX_SERVICE_GIT_SECONDS,
+            max_stdout=MAX_SERVICE_GIT_OUTPUT_BYTES,
+        )
+    except OperationsAuthorityError as error:
+        raise OperationsAuthorityError("service-git-invalid", str(error)) from error
+    if result.returncode != 0:
+        raise OperationsAuthorityError("service-git-invalid", "tracked discovery failed")
+    raw = result.stdout.split(b"\0")
+    if raw and raw[-1] == b"":
+        raw.pop()
+    if len(raw) > MAX_SERVICE_TRACKED_PATHS:
+        raise OperationsAuthorityError("service-count-bounds", "tracked path bound exceeded")
+    paths: list[pathlib.PurePosixPath] = []
+    for value in raw:
+        if len(value) > MAX_SERVICE_PATH_BYTES:
+            raise OperationsAuthorityError("service-path-bounds", "tracked path is too long")
+        try:
+            decoded = value.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise OperationsAuthorityError("service-path-invalid", "non-UTF-8 path") from error
+        path = pathlib.PurePosixPath(decoded)
+        if path.is_absolute() or ".." in path.parts or path.as_posix() != decoded:
+            raise OperationsAuthorityError("service-path-invalid", decoded)
+        paths.append(path)
+    if len(paths) != len(set(paths)):
+        raise OperationsAuthorityError("service-path-invalid", "paths are not unique")
+    return tuple(sorted(paths, key=lambda item: item.as_posix()))
+
+
+def read_service_surface(path: pathlib.PurePosixPath) -> bytes:
+    global total_service_bytes
+    cached = payload_cache.get(path)
+    if cached is not None:
+        return cached
+    payload = read_bounded_regular(
+        repository_root,
+        path,
+        max_bytes=MAX_SERVICE_FILE_BYTES,
+    )
+    if total_service_bytes + len(payload) > MAX_SERVICE_TOTAL_BYTES:
+        raise OperationsAuthorityError("service-byte-bounds", "aggregate byte bound exceeded")
+    total_service_bytes += len(payload)
+    payload_cache[path] = payload
+    return payload
+
+
+def current_catalog_guide(
+    link: DocumentLink,
+    domain: str,
+    tracked: set[pathlib.PurePosixPath],
+) -> bool:
+    raw_target = link.raw_target
+    target = link.target
+    if (
+        link.has_unsafe_target
+        or "\\" in raw_target
+        or "%" in raw_target
+        or "?" in raw_target
+        or target not in tracked
+    ):
+        return False
+    match = catalog_guide.fullmatch(target.as_posix())
+    if match is None or match.group("domain") != domain:
+        return False
+    try:
+        read_service_surface(target)
+    except OperationsAuthorityError:
+        return False
+    return True
+
+
+try:
+    tracked = tracked_paths()
+    tracked_set = set(tracked)
+    compose_paths = tuple(
+        path
+        for path in tracked
+        if path.parts
+        and path.parts[0] == "infra"
+        and compose_name.fullmatch(path.name)
+    )
+    service_dirs: set[pathlib.PurePosixPath] = set()
+    for compose in compose_paths:
+        read_service_surface(compose)
+        service_dirs.add(pathlib.PurePosixPath(*compose.parts[1:-1]))
+
+    for service_dir in sorted(service_dirs):
+        if service_dir in aggregate_compose_dirs:
+            continue
+        readme = pathlib.PurePosixPath("infra", *service_dir.parts, "README.md")
+        if readme not in tracked_set:
+            failures.append(f"infra/{service_dir}: missing tracked regular service README.md")
+            continue
+        try:
+            text = read_service_surface(readme).decode("utf-8")
+        except (OperationsAuthorityError, UnicodeDecodeError):
+            failures.append(f"infra/{service_dir}: missing tracked regular service README.md")
+            continue
+        domain = service_dir.parts[0]
+        links = parse_local_markdown_links(readme, text)
+        if not any(
+            current_catalog_guide(link, domain, tracked_set)
+            for link in links
+        ):
+            failures.append(
+                f"{readme}: must link an existing current Operations catalog Guide for {domain}"
+            )
+except OperationsAuthorityError as error:
+    failures.append(f"unsafe bounded service documentation surface: {error}")
 
 if failures:
     for failure in failures:
@@ -3820,7 +3985,7 @@ security_files = [path for path in security_files if path.is_file() and path.suf
 stale_literals = {
     "hashicorp/vault:1.21.4": "Vault current image is hashicorp/vault:2.0.3",
     "v1.21.4": "Vault current image is hashicorp/vault:2.0.3",
-    "docs/05.operations/guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
+    "docs/05.operations/" "guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
     "guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
     "docker compose -f infra/03-security/vault/docker-compose.yml config": "03-security validation must use root profile validator",
     "docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent": "runtime starts must use root compose context",

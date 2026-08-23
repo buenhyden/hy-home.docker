@@ -86,10 +86,10 @@ docs/
 | `docs/04.specs/` | `docs/03.specs/` |
 | `docs/05.plans/` | `docs/04.execution/plans/` |
 | `docs/06.tasks/` | `docs/04.execution/tasks/` |
-| `docs/07.guides/` | `docs/05.operations/guides/` |
-| `docs/07.operations/` | `docs/05.operations/guides/` |
-| `docs/08.operations/` | `docs/05.operations/policies/` |
-| `docs/09.runbooks/` | `docs/05.operations/runbooks/` |
+| `docs/07.guides/` | `docs/05.operations/catalog/` |
+| `docs/07.operations/` | `docs/05.operations/catalog/` |
+| `docs/08.operations/` | `docs/05.operations/catalog/` |
+| `docs/09.runbooks/` | `docs/05.operations/catalog/` |
 | `docs/10.incidents/` | `docs/05.operations/incidents/` |
 
 이 표는 과거 경로 해석을 돕기 위한 compatibility note입니다. 새 active artifact는 반드시 새 경로에 작성합니다.
@@ -110,7 +110,7 @@ docs/
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
 - Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
 - `docs/03.specs/**`, `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`의 leaf 문서는 영어로 작성합니다.
-- `docs/05.operations/{guides,policies,runbooks,incidents}/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
+- `docs/05.operations/catalog/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
 | Surface | Language Rule |
@@ -214,7 +214,7 @@ bash scripts/validation/check-doc-traceability.sh
 | Task evidence | 04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md |
 | Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/ref-0083-repository-map.md) |
 | Generated index | [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/ref-0082-llm-wiki-index.md) |
-| Operations guide | [05.operations/guides/00-workspace/llm-wiki-maintenance.md](./05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md) |
+| Operations guide | [05.operations/guides/00-workspace/llm-wiki-maintenance.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
 
 ## Related Documents
 

@@ -67,9 +67,9 @@ k6/
 
 ## Related Documents
 
-- **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md)
-- **Policy**: [k6 operations policy](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md)
-- **Runbook**: [k6 recovery runbook](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md)
+- **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/catalog/09-tooling/0061-k6/guide.md)
+- **Policy**: [k6 operations policy](../../../docs/05.operations/catalog/09-tooling/0061-k6/policy.md)
+- **Runbook**: [k6 recovery runbook](../../../docs/05.operations/catalog/09-tooling/0061-k6/runbook.md)
 
 ## Service Readiness
 
@@ -85,7 +85,7 @@ k6/
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `k6-master` |
-| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0061-k6/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0061-k6/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0061-k6/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

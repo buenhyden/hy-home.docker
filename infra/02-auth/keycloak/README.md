@@ -52,7 +52,7 @@ keycloak/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.keycloak.rule`, `traefik.http.routers.keycloak.entrypoints`, `traefik.http.routers.keycloak.tls`, `traefik.http.routers.keycloak.middlewares`, `traefik.http.services.keycloak.loadbalancer.server.port` |
 | Secret refs | names: `keycloak_db_password`, `keycloak_admin_password`; mounts: `/run/secrets/keycloak_db_password`, `/run/secrets/keycloak_admin_password` |
 | Healthcheck | Compose healthcheck declared for `keycloak` |
-| Operations | [Guide](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/02-auth/0014-keycloak/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/0014-keycloak/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -115,7 +115,7 @@ healthcheck:
 
 ## Related Documents
 
-- **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md)
-- **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md)
-- **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md)
+- **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/catalog/02-auth/0014-keycloak/guide.md)
+- **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/catalog/02-auth/0014-keycloak/policy.md)
+- **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md)
 - **Spec**: [02-auth Spec](../../../docs/03.specs/0002-auth/spec.md)

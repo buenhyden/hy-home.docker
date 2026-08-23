@@ -25,7 +25,6 @@ common:
       next_review_at,
       occurred_at,
       resolved_at,
-      released_at,
       archived_at,
     ]
   frontmatter_order:
@@ -42,7 +41,6 @@ common:
     - next_review_at
     - occurred_at
     - resolved_at
-    - released_at
     - generated_by
     - archived_from
     - archived_at
@@ -74,7 +72,6 @@ common:
     completed_at: <completed-at>
     occurred_at: <occurred-at>
     resolved_at: <resolved-at>
-    released_at: <released-at>
     archived_from: docs/<original-path>.md
     archived_at: <archived-at>
     archive_reason: <archive-reason>
@@ -105,7 +102,6 @@ document_families:
       runbook,
       incident,
       postmortem,
-      release,
     ]
   common:
     [
@@ -164,7 +160,6 @@ archive_profiles:
         runbook,
         incident,
         postmortem,
-        release,
         reference,
         audit,
         archive,
@@ -225,7 +220,6 @@ archive_profiles:
         runbook,
         incident,
         postmortem,
-        release,
         reference,
         audit,
         archive,
@@ -290,7 +284,6 @@ archive_profiles:
         runbook,
         incident,
         postmortem,
-        release,
         reference,
         audit,
         archive,
@@ -351,7 +344,6 @@ archive_profiles:
         runbook,
         incident,
         postmortem,
-        release,
         reference,
         audit,
         archive,
@@ -406,7 +398,6 @@ readme_profiles:
       - docs/05.operations/catalog/11-laboratory/README.md
       - docs/05.operations/catalog/12-infra-net/README.md
       - docs/05.operations/incidents/README.md
-      - docs/05.operations/releases/README.md
       - docs/90.references/README.md
       - docs/90.references/*/README.md
       - docs/90.references/*/*/README.md
@@ -744,7 +735,7 @@ template_roles:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
     target_globs:
-      - docs/05.operations/catalog/*/ops-*/guide.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/guide.md
     required_headings: ['## Usage', '## Common Checks', '## Related Documents']
     conditional_headings:
       ['## Overview', '## Audience and Prerequisites', '## Runbook Handoff', '## Troubleshooting']
@@ -753,7 +744,7 @@ template_roles:
     source: docs/99.templates/templates/operations/policy.template.md
     artifact_profile: policy
     target_globs:
-      - docs/05.operations/catalog/*/ops-*/policy.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/policy.md
     required_headings:
       [
         '## Overview',
@@ -770,7 +761,7 @@ template_roles:
     source: docs/99.templates/templates/operations/runbook.template.md
     artifact_profile: runbook
     target_globs:
-      - docs/05.operations/catalog/*/ops-*/runbook.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/runbook.md
     required_headings:
       [
         '## When to Use',
@@ -816,24 +807,6 @@ template_roles:
       ]
     conditional_headings: ['## Detection Analysis']
     forbidden_headings: ['## Current Response State']
-  release:
-    source: docs/99.templates/templates/operations/release.template.md
-    artifact_profile: release
-    target_globs: [docs/05.operations/releases/rel-*/release.md]
-    required_headings:
-      [
-        '## Overview',
-        '## Identity and Scope',
-        '## Included Changes',
-        '## Artifacts',
-        '## Validation Evidence',
-        '## Approvals',
-        '## Rollout and Rollback',
-        '## Outcome and Known Issues',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Compatibility Notes']
-    forbidden_headings: ['## Readiness Checklist']
   reference:
     source: docs/99.templates/templates/common/reference.template.md
     artifact_profile: reference
@@ -1233,10 +1206,10 @@ profiles:
 
   guide:
     path_globs:
-      - docs/05.operations/catalog/*/ops-*/guide.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/guide.md
     id_pattern: 'guide-(?P<identity>[0-9]{4})'
     path_identity: inherited
-    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    parent_id_pattern: '(?P<identity>[0-9]{4})-[a-z0-9-]+'
     artifact_id_identity_pattern: 'guide-(?P<identity>[0-9]{4})'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
@@ -1262,10 +1235,10 @@ profiles:
 
   policy:
     path_globs:
-      - docs/05.operations/catalog/*/ops-*/policy.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/policy.md
     id_pattern: 'policy-(?P<identity>[0-9]{4})'
     path_identity: inherited
-    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    parent_id_pattern: '(?P<identity>[0-9]{4})-[a-z0-9-]+'
     artifact_id_identity_pattern: 'policy-(?P<identity>[0-9]{4})'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
@@ -1291,10 +1264,10 @@ profiles:
 
   runbook:
     path_globs:
-      - docs/05.operations/catalog/*/ops-*/runbook.md
+      - docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/runbook.md
     id_pattern: 'runbook-(?P<identity>[0-9]{4})'
     path_identity: inherited
-    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    parent_id_pattern: '(?P<identity>[0-9]{4})-[a-z0-9-]+'
     artifact_id_identity_pattern: 'runbook-(?P<identity>[0-9]{4})'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
@@ -1374,31 +1347,6 @@ profiles:
     allow_empty_parents: false
     disposition: migration candidate
 
-  release:
-    path_globs: [docs/05.operations/releases/rel-*/release.md]
-    id_pattern: 'rel-[0-9]{4}'
-    path_identity: direct
-    required: [status, artifact_id, artifact_type, parent_ids, created, updated, released_at]
-    optional: [supersedes, reviewed_at]
-    forbidden:
-      [
-        type,
-        document_type,
-        template_type,
-        owner,
-        links,
-        next_review_at,
-        generated_by,
-        layer,
-        archived_from,
-        archived_at,
-        archive_reason,
-        current_replacement,
-      ]
-    allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task]
-    allow_empty_parents: false
-    disposition: migration candidate
 
   reference:
     required: [status, artifact_id, artifact_type, parent_ids]
@@ -1630,7 +1578,6 @@ profiles:
         runbook,
         incident,
         postmortem,
-        release,
         reference,
         audit,
       ]

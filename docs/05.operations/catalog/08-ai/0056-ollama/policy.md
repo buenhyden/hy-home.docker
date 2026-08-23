@@ -1,0 +1,72 @@
+---
+profile_id: policy
+status: active
+artifact_id: policy-0056
+artifact_type: policy
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/08-ai/0056-ollama/policy.md -->
+
+# Ollama Operations Policy
+
+## Overview
+
+이 문서는 Ollama 운영 정책을 정의한다. 제한된 GPU 자원에서 안정적으로 추론 서비스를 제공하기 위해 모델 도입 기준, 리소스 사용 한계, 장애 대응 기준을 규정한다.
+
+## Policy Scope
+
+Ollama 추론 엔진 운영 전반:
+
+- 모델 도입/승격/퇴출 기준
+- GPU/VRAM 자원 통제
+- 추론 계층 변경 승인 및 검증
+
+- **Systems**: `ollama`, `ollama-exporter`, `open-webui`
+- **Agents**: 모델 배포/교체 자동화 에이전트, 추론 호출 에이전트
+- **Environments**: Local, Dev, Homelab, Production-like rehearsal
+
+## Controls
+
+- **Required**:
+  - 모델 변경 전 승인된 local/dev rehearsal에서 성능 및 안정성 검증을 수행해야 한다.
+  - 운영 모델은 검증된 태그/소스만 사용해야 한다.
+  - VRAM/메모리 사용량을 exporter 및 대시보드로 상시 관측해야 한다.
+  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
+- **Allowed**:
+  - 승인된 경량/양자화 모델 배포.
+  - `keep_alive` 정책 기반 모델 언로드 최적화.
+- **Disallowed**:
+  - 승인 없는 대형 모델 상시 로드.
+  - 출처 불명/무검증 모델 운영 반영.
+  - 운영 시간대 무단 리소스 상향.
+
+## Exceptions
+
+- 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
+- 예외 종료 후 기본 정책으로 즉시 복귀하고 기록을 남겨야 한다.
+
+## Verification
+
+- 배포 전:
+  - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+  - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+  - `nvidia-smi` 정상
+  - `/api/tags` 응답 정상
+  - 대상 모델 추론 smoke test 성공
+- 운영 중:
+  - VRAM 과점유, 응답 지연, 모델 로드 실패율 모니터링
+- 증적:
+  - 배포 로그, 모델 태그 기록, hardening/compose 검증 결과, 롤백 결과
+
+## Review Cadence
+
+- **Quarterly**: 모델 포트폴리오/자원 정책 검토
+- **Per Model Change**: 모델 도입/교체 건별 검토
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Usage guide](guide.md)
+- [Recovery runbook](runbook.md)

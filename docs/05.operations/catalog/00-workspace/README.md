@@ -23,15 +23,15 @@ policy for controls, and runbook for ordered recovery or validation.
 
 | Subject | Available documents |
 | --- | --- |
-| [common optimization exceptions](ops-0001-common-optimizations-template-exceptions/policy.md) | Policy |
-| [developer environment](ops-0002-developer-environment/guide.md) | Guide |
-| [environment-key comparison](ops-0003-env-key-comparison/guide.md) | Guide |
-| [harness engineering](ops-0004-harness-agent-first-engineering/guide.md) | [Guide](ops-0004-harness-agent-first-engineering/guide.md), [Policy](ops-0004-harness-agent-first-engineering/policy.md), [Runbook](ops-0004-harness-agent-first-engineering/runbook.md) |
-| [infrastructure optimization governance](ops-0006-infrastructure-optimization-governance/policy.md) | Policy |
-| [LLM Wiki maintenance](ops-0007-llm-wiki-maintenance/guide.md) | [Guide](ops-0007-llm-wiki-maintenance/guide.md), [Policy](ops-0007-llm-wiki-maintenance/policy.md), [Runbook](ops-0007-llm-wiki-maintenance/runbook.md) |
-| [new-service onboarding](ops-0008-new-service-onboarding/guide.md) | Guide |
-| [release management](ops-0009-release-management/runbook.md) | Runbook |
-| [sensitive environment comparison](ops-0010-sensitive-env-vars-comparison/guide.md) | Guide |
+| [common optimization exceptions](0001-common-optimizations-template-exceptions/policy.md) | Policy |
+| [developer environment](0002-developer-environment/guide.md) | Guide |
+| [environment-key comparison](0003-env-key-comparison/guide.md) | Guide |
+| [harness engineering](0004-harness-agent-first-engineering/guide.md) | [Guide](0004-harness-agent-first-engineering/guide.md), [Policy](0004-harness-agent-first-engineering/policy.md), [Runbook](0004-harness-agent-first-engineering/runbook.md) |
+| [infrastructure optimization governance](0006-infrastructure-optimization-governance/policy.md) | Policy |
+| [LLM Wiki maintenance](0007-llm-wiki-maintenance/guide.md) | [Guide](0007-llm-wiki-maintenance/guide.md), [Policy](0007-llm-wiki-maintenance/policy.md), [Runbook](0007-llm-wiki-maintenance/runbook.md) |
+| [new-service onboarding](0008-new-service-onboarding/guide.md) | Guide |
+| [release management](0009-release-management/runbook.md) | Runbook |
+| [sensitive environment comparison](0010-sensitive-env-vars-comparison/guide.md) | Guide |
 
 ## How to Work in This Area
 

@@ -21,17 +21,17 @@ retention roles under their frozen `ops-0039` through `ops-0049` identities.
 
 | Subject | Available documents |
 | --- | --- |
-| [Alertmanager](ops-0039-alertmanager/guide.md) | [Guide](ops-0039-alertmanager/guide.md), [Policy](ops-0039-alertmanager/policy.md), [Runbook](ops-0039-alertmanager/runbook.md) |
-| [Alloy](ops-0040-alloy/guide.md) | [Guide](ops-0040-alloy/guide.md), [Policy](ops-0040-alloy/policy.md), [Runbook](ops-0040-alloy/runbook.md) |
-| [Grafana](ops-0041-grafana/guide.md) | [Guide](ops-0041-grafana/guide.md), [Policy](ops-0041-grafana/policy.md), [Runbook](ops-0041-grafana/runbook.md) |
-| [LGTM stack](ops-0042-lgtm-stack/guide.md) | [Guide](ops-0042-lgtm-stack/guide.md) |
-| [Loki](ops-0043-loki/guide.md) | [Guide](ops-0043-loki/guide.md), [Policy](ops-0043-loki/policy.md), [Runbook](ops-0043-loki/runbook.md) |
-| [Optimization hardening](ops-0044-optimization-hardening/guide.md) | [Guide](ops-0044-optimization-hardening/guide.md), [Policy](ops-0044-optimization-hardening/policy.md), [Runbook](ops-0044-optimization-hardening/runbook.md) |
-| [Prometheus](ops-0045-prometheus/guide.md) | [Guide](ops-0045-prometheus/guide.md), [Policy](ops-0045-prometheus/policy.md), [Runbook](ops-0045-prometheus/runbook.md) |
-| [Pushgateway](ops-0046-pushgateway/guide.md) | [Guide](ops-0046-pushgateway/guide.md), [Policy](ops-0046-pushgateway/policy.md), [Runbook](ops-0046-pushgateway/runbook.md) |
-| [Pyroscope](ops-0047-pyroscope/guide.md) | [Guide](ops-0047-pyroscope/guide.md), [Policy](ops-0047-pyroscope/policy.md), [Runbook](ops-0047-pyroscope/runbook.md) |
-| [Retention](ops-0048-telemetry-retention/policy.md) | [Policy](ops-0048-telemetry-retention/policy.md) |
-| [Tempo](ops-0049-tempo/guide.md) | [Guide](ops-0049-tempo/guide.md), [Policy](ops-0049-tempo/policy.md), [Runbook](ops-0049-tempo/runbook.md) |
+| [Alertmanager](0039-alertmanager/guide.md) | [Guide](0039-alertmanager/guide.md), [Policy](0039-alertmanager/policy.md), [Runbook](0039-alertmanager/runbook.md) |
+| [Alloy](0040-alloy/guide.md) | [Guide](0040-alloy/guide.md), [Policy](0040-alloy/policy.md), [Runbook](0040-alloy/runbook.md) |
+| [Grafana](0041-grafana/guide.md) | [Guide](0041-grafana/guide.md), [Policy](0041-grafana/policy.md), [Runbook](0041-grafana/runbook.md) |
+| [LGTM stack](0042-lgtm-stack/guide.md) | [Guide](0042-lgtm-stack/guide.md) |
+| [Loki](0043-loki/guide.md) | [Guide](0043-loki/guide.md), [Policy](0043-loki/policy.md), [Runbook](0043-loki/runbook.md) |
+| [Optimization hardening](0044-optimization-hardening/guide.md) | [Guide](0044-optimization-hardening/guide.md), [Policy](0044-optimization-hardening/policy.md), [Runbook](0044-optimization-hardening/runbook.md) |
+| [Prometheus](0045-prometheus/guide.md) | [Guide](0045-prometheus/guide.md), [Policy](0045-prometheus/policy.md), [Runbook](0045-prometheus/runbook.md) |
+| [Pushgateway](0046-pushgateway/guide.md) | [Guide](0046-pushgateway/guide.md), [Policy](0046-pushgateway/policy.md), [Runbook](0046-pushgateway/runbook.md) |
+| [Pyroscope](0047-pyroscope/guide.md) | [Guide](0047-pyroscope/guide.md), [Policy](0047-pyroscope/policy.md), [Runbook](0047-pyroscope/runbook.md) |
+| [Retention](0048-telemetry-retention/policy.md) | [Policy](0048-telemetry-retention/policy.md) |
+| [Tempo](0049-tempo/guide.md) | [Guide](0049-tempo/guide.md), [Policy](0049-tempo/policy.md), [Runbook](0049-tempo/runbook.md) |
 
 ## How to Work in This Area
 

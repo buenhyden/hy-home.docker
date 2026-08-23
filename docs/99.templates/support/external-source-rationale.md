@@ -31,7 +31,6 @@ and repository contracts remain canonical for this workspace.
 | [Google SRE On-call](https://sre.google/workbook/on-call/) and [Emergency Response](https://sre.google/sre-book/emergency-response/) | Inform trigger, procedure, verification, recovery, escalation, and automation boundaries in Runbooks. |
 | [NIST SP 800-61r3 announcement](https://www.nist.gov/news-events/news/2025/04/nist-revises-sp-800-61-incident-response-recommendations-and-considerations) | Supports keeping live Incident evidence distinct from later retrospective analysis. |
 | [Google SRE Postmortem Culture](https://sre.google/workbook/postmortem-culture/) | Informs factual, blameless analysis and owned follow-up actions in Postmortems. |
-| [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) | Supports treating a Release as evidence tied to an actual tag or commit and associated artifacts, not a readiness template. |
 | [SLSA v1.2 provenance](https://slsa.dev/spec/v1.2/provenance) | Informs recording command, tool, commit, result, and evidence location without claiming SLSA conformance. |
 | [W3C PROV-O](https://www.w3.org/TR/prov-o/) | Supports distinguishing original entities, derived records, activities, and responsible agents without treating a tombstone or preserved copy as current truth. |
 | [Git log](https://git-scm.com/docs/git-log) | Supports using immutable commit and blob identities as the repository's default original-body provenance route. |
@@ -44,7 +43,7 @@ and repository contracts remain canonical for this workspace.
   parent rules, and heading envelopes are local contracts, not international
   standards or claims of conformance.
 - External sources justify conservative separation of concerns. They do not
-  authorize invented metadata, review evidence, release events, or runtime
+  authorize invented metadata, review evidence, delivery events, or runtime
   facts.
 - Deterministic frontmatter serialization stabilizes diffs but does not assign
   semantic priority.

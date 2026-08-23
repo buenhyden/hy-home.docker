@@ -1,674 +1,809 @@
+from __future__ import annotations
+
 import os
+import pathlib
 import re
+import shutil
+import signal
+import stat
 import subprocess
+import sys
+import tempfile
+import time
 import unittest
-from pathlib import Path, PurePosixPath
+from unittest import mock
 
 import yaml
 
 from scripts.lib.document_governance.operations_catalog import (
-    load_operations_catalog_manifest,
+    MIGRATION_PATH,
+    SEMANTIC_WITNESS_PATH,
+    TASK8_ROW_IDS,
+    GitCommandResult,
+    OperationsAuthorityError,
+    _markdown_body_text,
+    _validate_semantic_witnesses,
+    extract_task8_consumers,
+    load_task8_migration,
+    validate_active_operations_references,
 )
 
 
-ROOT = Path(__file__).resolve().parents[2]
-LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
-OPERATIONS_MANIFEST = (
-    ROOT / "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md"
-)
-TARGET_SURFACE_MANIFEST = (
-    ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
-)
-TARGET_SURFACE_SUMMARY = TARGET_SURFACE_MANIFEST.with_name(
-    "ref-0068-target-surface-convergence-summary.md"
-)
-FRONTMATTER_SEMANTIC_INVENTORY = (
-    ROOT / "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md"
-)
-MIGRATED_DOMAINS = (
-    "00-workspace",
-    "01-gateway",
-    "02-auth",
-    "03-security",
-    "04-data",
-    "05-messaging",
-    "06-observability",
-    "07-workflow",
-    "08-ai",
-    "09-tooling",
-    "10-communication",
-    "11-laboratory",
-    "12-infra-net",
-)
-
-# Frozen Task 6A/6B/6C/6D boundary: each tuple is (domain, exact ledger subject path,
-# shared ops identity, existing role set).  A subject is intentionally absent
-# from a role when mig-0001 has no row for that role.
-EXPECTED_SUBJECTS = (
-    ("00-workspace", "common-optimizations-template-exceptions", "0001", {"policy"}),
-    ("00-workspace", "developer-setup", "0002", {"guide"}),
-    ("00-workspace", "env-key-comparison", "0003", {"guide"}),
-    ("00-workspace", "harness-agent-first-engineering", "0004", {"guide", "policy"}),
-    ("00-workspace", "harness-agent-first-engineering-validation", "0005", {"runbook"}),
-    ("00-workspace", "infra-service-optimization-catalog", "0006", {"policy"}),
-    ("00-workspace", "llm-wiki-maintenance", "0007", {"guide", "policy", "runbook"}),
-    ("00-workspace", "new-service-onboarding", "0008", {"guide"}),
-    ("00-workspace", "release-management", "0009", {"runbook"}),
-    ("00-workspace", "sensitive-env-vars-comparison", "0010", {"guide"}),
-    ("01-gateway", "nginx", "0011", {"guide", "policy", "runbook"}),
-    ("01-gateway", "setup", "0012", {"guide"}),
-    ("01-gateway", "traefik", "0013", {"guide", "policy", "runbook"}),
-    ("02-auth", "keycloak", "0014", {"guide", "policy", "runbook"}),
-    ("02-auth", "oauth2-proxy", "0015", {"guide", "policy", "runbook"}),
-    ("03-security", "vault", "0016", {"guide", "policy", "runbook"}),
-    ("04-data", "analytics-influxdb", "0017", {"guide", "policy", "runbook"}),
-    ("04-data", "analytics-ksqldb", "0018", {"guide", "policy", "runbook"}),
-    ("04-data", "analytics-opensearch", "0019", {"guide", "policy", "runbook"}),
-    ("04-data", "analytics-warehouses", "0020", {"guide", "policy", "runbook"}),
-    ("04-data", "backup-backup-policy", "0021", {"policy"}),
-    ("04-data", "cache-and-kv-valkey-cluster", "0022", {"guide", "policy", "runbook"}),
-    ("04-data", "lake-and-object-minio", "0023", {"guide", "policy", "runbook"}),
-    ("04-data", "lake-and-object-seaweedfs", "0024", {"guide", "policy", "runbook"}),
-    ("04-data", "nosql-cassandra", "0025", {"guide", "policy", "runbook"}),
-    ("04-data", "nosql-couchdb", "0026", {"guide", "policy", "runbook"}),
-    ("04-data", "nosql-mongodb", "0027", {"guide", "policy", "runbook"}),
-    ("04-data", "operational-mng-db", "0028", {"guide", "policy", "runbook"}),
-    ("04-data", "operational-supabase", "0029", {"guide", "policy", "runbook"}),
-    (
-        "04-data",
-        "optimization-optimization-hardening",
-        "0030",
-        {"guide", "policy", "runbook"},
-    ),
-    (
-        "04-data",
-        "relational-postgresql-cluster",
-        "0031",
-        {"guide", "policy", "runbook"},
-    ),
-    (
-        "04-data",
-        "relational-postgresql-logical-upgrade-restore-rehearsal",
-        "0032",
-        {"runbook"},
-    ),
-    ("04-data", "specialized-neo4j", "0033", {"guide", "policy", "runbook"}),
-    ("04-data", "specialized-qdrant", "0034", {"guide", "policy", "runbook"}),
-    ("04-data", "storage-storage-exhaustion", "0035", {"runbook"}),
-    ("05-messaging", "kafka", "0036", {"guide", "policy", "runbook"}),
-    ("05-messaging", "optimization-hardening", "0037", {"guide", "policy", "runbook"}),
-    ("05-messaging", "rabbitmq", "0038", {"guide", "policy", "runbook"}),
-    ("06-observability", "alertmanager", "0039", {"guide", "policy", "runbook"}),
-    ("06-observability", "alloy", "0040", {"guide", "policy", "runbook"}),
-    ("06-observability", "grafana", "0041", {"guide", "policy", "runbook"}),
-    ("06-observability", "lgtm-stack", "0042", {"guide"}),
-    ("06-observability", "loki", "0043", {"guide", "policy", "runbook"}),
-    (
-        "06-observability",
-        "optimization-hardening",
-        "0044",
-        {"guide", "policy", "runbook"},
-    ),
-    ("06-observability", "prometheus", "0045", {"guide", "policy", "runbook"}),
-    ("06-observability", "pushgateway", "0046", {"guide", "policy", "runbook"}),
-    ("06-observability", "pyroscope", "0047", {"guide", "policy", "runbook"}),
-    ("06-observability", "retention", "0048", {"policy"}),
-    ("06-observability", "tempo", "0049", {"guide", "policy", "runbook"}),
-    ("07-workflow", "airflow", "0050", {"guide", "policy", "runbook"}),
-    ("07-workflow", "airflow-dag-basics", "0051", {"guide"}),
-    ("07-workflow", "dag-deployment", "0052", {"policy"}),
-    ("07-workflow", "n8n", "0053", {"guide", "policy", "runbook"}),
-    ("07-workflow", "optimization-hardening", "0054", {"guide", "policy", "runbook"}),
-    ("08-ai", "gpu-recovery", "0055", {"runbook"}),
-    ("08-ai", "ollama", "0056", {"guide", "policy", "runbook"}),
-    ("08-ai", "open-webui", "0057", {"guide", "policy", "runbook"}),
-    ("08-ai", "optimization-hardening", "0058", {"guide", "policy", "runbook"}),
-    ("08-ai", "rag-workflow", "0059", {"guide"}),
-    ("09-tooling", "iac-deployment-policy", "0060", {"policy"}),
-    ("09-tooling", "k6", "0061", {"guide", "policy", "runbook"}),
-    ("09-tooling", "locust", "0062", {"guide", "policy", "runbook"}),
-    ("09-tooling", "optimization-hardening", "0063", {"guide", "policy", "runbook"}),
-    ("09-tooling", "performance-testing", "0064", {"guide", "policy", "runbook"}),
-    ("09-tooling", "registry", "0065", {"guide", "policy", "runbook"}),
-    ("09-tooling", "sonarqube", "0066", {"guide", "policy", "runbook"}),
-    ("09-tooling", "syncthing", "0067", {"guide", "policy", "runbook"}),
-    ("09-tooling", "terraform", "0068", {"guide", "policy", "runbook"}),
-    ("09-tooling", "terrakube", "0069", {"guide", "policy", "runbook"}),
-    ("10-communication", "mail", "0070", {"guide", "policy", "runbook"}),
-    ("11-laboratory", "dashboard", "0071", {"guide", "policy", "runbook"}),
-    ("11-laboratory", "dozzle", "0072", {"guide", "policy", "runbook"}),
-    ("11-laboratory", "open-notebook", "0073", {"guide", "policy", "runbook"}),
-    (
-        "11-laboratory",
-        "optimization-hardening",
-        "0074",
-        {"guide", "policy", "runbook"},
-    ),
-    ("11-laboratory", "portainer", "0075", {"guide", "policy", "runbook"}),
-    ("11-laboratory", "redisinsight", "0076", {"guide", "policy", "runbook"}),
-    (
-        "12-infra-net",
-        "standardize-infra-net",
-        "0077",
-        {"guide", "policy", "runbook"},
-    ),
-)
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
-def metadata_for(path: Path) -> dict[str, object]:
-    match = re.match(r"\A---\n(.*?)\n---\n", path.read_text(), flags=re.S)
-    if match is None:
-        raise AssertionError(f"missing frontmatter: {path.relative_to(ROOT)}")
-    return yaml.safe_load(match.group(1))
+def _repo_contract_python_section(name: str) -> str:
+    source = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
+        encoding="utf-8"
+    )
+    section = source.split(f'section "{name}"', 1)[1]
+    return section.split("if ! python3 - <<'PY'; then\n", 1)[1].split(
+        "\nPY\n", 1
+    )[0]
 
 
-def ledger_records() -> list[dict[str, object]]:
-    match = re.search(r"```yaml\n(.*?)\n```", LEDGER.read_text(), flags=re.S)
-    if match is None:
-        raise AssertionError("migration ledger YAML block is missing")
-    return yaml.safe_load(match.group(1))["records"]
-
-
-def current_operations_path(row) -> PurePosixPath:
-    if row.final_path is not None and (
-        row.final_path == row.catalog_path or not (ROOT / row.catalog_path).exists()
-    ):
-        return row.final_path
-    return row.catalog_path
-
-
-def current_operation_roles():
-    manifest = load_operations_catalog_manifest(OPERATIONS_MANIFEST)
-    return tuple(
-        (row, current_operations_path(row))
-        for row in manifest.files
-        if row.role != "domain-readme"
+def _run_repo_contract_python_section(
+    name: str,
+    root: pathlib.Path,
+    *,
+    source: str | None = None,
+    environment: dict[str, str] | None = None,
+    timeout: float = 10.0,
+) -> subprocess.CompletedProcess[str]:
+    process_environment = os.environ.copy()
+    python_path = process_environment.get("PYTHONPATH")
+    process_environment["PYTHONPATH"] = (
+        str(ROOT) if not python_path else f"{ROOT}{os.pathsep}{python_path}"
+    )
+    if environment is not None:
+        process_environment.update(environment)
+    return subprocess.run(
+        [sys.executable, "-c", source or _repo_contract_python_section(name)],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=process_environment,
+        timeout=timeout,
     )
 
 
-def resolve_repo_path(source: Path, destination: str) -> Path | None:
-    if destination.startswith(("#", "http://", "https://", "mailto:", "data:")):
-        return None
-    target = re.split(r"[?#]", destination, maxsplit=1)[0]
-    if not target:
-        return None
-    candidate = (
-        ROOT / target.lstrip("/")
-        if target.startswith(("/", "docs/"))
-        else source.parent / PurePosixPath(target)
+def _initialize_fixture_repository(root: pathlib.Path, *paths: str) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+    if paths:
+        subprocess.run(["git", "add", *paths], cwd=root, check=True)
+
+
+def _write_service_fixture(root: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path]:
+    service = root / "infra/01-gateway/traefik"
+    service.mkdir(parents=True)
+    (service / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    guide = root / "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
+    guide.parent.mkdir(parents=True)
+    guide.write_text("# Guide\n", encoding="utf-8")
+    readme = service / "README.md"
+    readme.write_text(
+        "[Guide](../../../docs/05.operations/catalog/01-gateway/"
+        "0013-traefik/guide.md)\n",
+        encoding="utf-8",
     )
-    return Path(os.path.normpath(candidate))
+    _initialize_fixture_repository(root, "infra", "docs")
+    return service, readme
 
 
-class OperationsTaxonomyTests(unittest.TestCase):
-    def test_migrated_domains_leave_no_role_root_copy(self):
-        for role in ("guides", "policies", "runbooks"):
-            for domain in MIGRATED_DOMAINS:
-                self.assertFalse((ROOT / "docs/05.operations" / role / domain).exists())
-
-    def test_each_subject_has_only_ledger_declared_roles_at_its_ops_path(self):
-        expected_paths = {ROOT / path for _row, path in current_operation_roles()}
-        for path in sorted(expected_paths):
-            with self.subTest(path=path):
-                self.assertTrue(path.is_file())
-
-        actual_paths = {
-            path
-            for domain in MIGRATED_DOMAINS
-            for path in (ROOT / "docs/05.operations/catalog" / domain).glob(
-                "ops-*/*.md"
-            )
-        }
-        self.assertEqual(expected_paths, actual_paths)
-
-    def test_subject_metadata_uses_role_identity_and_noninvented_parents(self):
-        for row, current_path in current_operation_roles():
-            path = ROOT / current_path
-            identity = re.search(r"ops-([0-9]{4})-", current_path.as_posix())
-            self.assertIsNotNone(identity)
-            metadata = metadata_for(path)
-            with self.subTest(path=path):
-                self.assertEqual(
-                    f"{row.role}-{identity.group(1)}", metadata["artifact_id"]
-                )
-                self.assertEqual(row.role, metadata["artifact_type"])
-                self.assertEqual([], metadata["parent_ids"])
-                self.assertRegex(str(metadata["created"]), r"^\d{4}-\d{2}-\d{2}$")
-                self.assertRegex(str(metadata["updated"]), r"^\d{4}-\d{2}-\d{2}$")
-                if int(identity.group(1)) >= 50:
-                    self.assertEqual("2026-08-11", str(metadata["updated"]))
-
-    def test_subject_links_resolve_without_legacy_role_roots(self):
-        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
-        legacy_root = re.compile(r"docs/05\.operations/(guides|policies|runbooks)/")
-        violations: list[str] = []
-        for _row, current_path in current_operation_roles():
-            path = ROOT / current_path
-            for destination in link_pattern.findall(path.read_text()):
-                resolved = resolve_repo_path(path, destination)
-                if legacy_root.search(destination) or (
-                    resolved is not None and not resolved.exists()
-                ):
-                    violations.append(f"{path.relative_to(ROOT)}: {destination}")
-        self.assertEqual([], violations)
-
-    def test_current_stage05_rejects_parallel_role_root_publications(self):
-        parallel_root = re.compile(
-            r"docs/05\.operations/(guides|policies|runbooks)(?:/|\b)"
+class OperationsAuthorityTests(unittest.TestCase):
+    def test_operations_checker_is_executable_and_publishes_required_mode_usage(self) -> None:
+        checker = ROOT / "scripts/validation/check-operations-catalog.py"
+        self.assertTrue(checker.stat().st_mode & stat.S_IXUSR)
+        result = subprocess.run(
+            [str(checker), "--help"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
         )
-        for role in ("guides", "policies", "runbooks"):
-            with self.subTest(mutation=role):
-                self.assertRegex(f"docs/05.operations/{role}/**", parallel_root)
-        for stable in (
-            "docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md",
-            "docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md",
-            "docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md",
-        ):
-            with self.subTest(stable=stable):
-                self.assertNotRegex(stable, parallel_root)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("--mode", result.stdout)
+        self.assertIn("complete", result.stdout)
 
-        violations = [
-            f"{path.relative_to(ROOT)}:{line_number}: {line.strip()}"
-            for path in (ROOT / "docs/05.operations").rglob("*.md")
-            for line_number, line in enumerate(path.read_text().splitlines(), 1)
-            if parallel_root.search(line)
-        ]
-        self.assertEqual([], violations)
+    def test_active_corpus_has_no_generic_predecessor_or_release_role_routes(self) -> None:
+        self.assertEqual((), validate_active_operations_references(ROOT))
 
-    def test_scoped_active_consumers_do_not_name_deleted_role_roots(self):
-        deleted_root = re.compile(
-            r"docs/05\.operations/(guides|policies|runbooks)/"
-            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|"
-            r"10-communication|11-laboratory|12-infra-net)"
-            r"(?:/|\b)"
+    def test_active_reference_scan_has_explicit_history_and_negative_exclusions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            fixtures = {
+                "docs/00.agent-governance/active.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-subject/guide.md.\n"
+                ),
+                "docs/90.references/history.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-historical/guide.md.\n"
+                ),
+                "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-evidence/guide.md.\n"
+                ),
+                "docs/03.specs/0153-workspace-governance-simplification/plan.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-migration/guide.md.\n"
+                ),
+                "docs/03.specs/0999-new-active-spec/spec.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-active-spec/guide.md.\n"
+                ),
+                "tests/fixtures/negative.md": (
+                    "See docs/05.operations/catalog/00-workspace/ops-####-negative/guide.md.\n"
+                ),
+                "docs/00.agent-governance/negative.md": "No separate Release document role.\n",
+            }
+            for relative, content in fixtures.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            subprocess.run(["git", "add", *fixtures], cwd=root, check=True)
+            findings = validate_active_operations_references(root)
+            self.assertEqual(2, len(findings))
+            self.assertEqual(
+                {
+                    "docs/00.agent-governance/active.md",
+                    "docs/03.specs/0999-new-active-spec/spec.md",
+                },
+                {finding.path.split(":", 1)[0] for finding in findings},
+            )
+
+    def test_active_reference_scan_covers_scripts_and_config(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            fixtures = {
+                "scripts/validation/active.sh": (
+                    'guide="docs/05.operations/guides/00-workspace/example.md"\n'
+                ),
+                ".github/operations.yaml": (
+                    "policy: docs/05.operations/policies/00-workspace/example.md\n"
+                ),
+                "tests/fixtures/negative.sh": (
+                    'runbook="docs/05.operations/runbooks/00-workspace/example.md"\n'
+                ),
+                "docs/98.archive/migrations/history.toml": (
+                    'route = "docs/05.operations/guides/00-workspace/example.md"\n'
+                ),
+                "docs/99.templates/support/document-corpus-migration-contract.yaml": (
+                    "source: docs/05.operations/policies/00-workspace/example.md\n"
+                ),
+            }
+            for relative, content in fixtures.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            subprocess.run(["git", "add", *fixtures], cwd=root, check=True)
+            findings = validate_active_operations_references(root)
+            self.assertEqual(
+                {
+                    ".github/operations.yaml",
+                    "scripts/validation/active.sh",
+                },
+                {finding.path.split(":", 1)[0] for finding in findings},
+            )
+
+    def test_repo_contract_drift_guides_use_existing_current_catalog_paths(self) -> None:
+        checker = ROOT / "scripts/validation/check-repo-contracts.sh"
+        text = checker.read_text(encoding="utf-8")
+        expected = (
+            "docs/05.operations/catalog/00-workspace/"
+            "0003-env-key-comparison/guide.md",
+            "docs/05.operations/catalog/00-workspace/"
+            "0010-sensitive-env-vars-comparison/guide.md",
         )
-        active_roots = (
-            ROOT / "docs/01.requirements",
-            ROOT / "docs/02.architecture",
-            ROOT / "docs/03.specs",
-            ROOT / "docs/05.operations",
-            ROOT / "infra/07-workflow",
-            ROOT / "infra/08-ai",
-            ROOT / "infra/09-tooling",
-            ROOT / "infra/10-communication",
-            ROOT / "infra/11-laboratory",
+        self.assertIn(f'env_comparison_doc="{expected[0]}"', text)
+        self.assertIn(f'sensitive_comparison_doc="{expected[1]}"', text)
+        self.assertIn('-f "$env_comparison_doc"', text)
+        self.assertIn('-f "$sensitive_comparison_doc"', text)
+        for relative in expected:
+            with self.subTest(path=relative):
+                self.assertTrue((ROOT / relative).is_file())
+
+    def test_execution_evidence_status_section_has_its_regex_dependency(self) -> None:
+        result = _run_repo_contract_python_section(
+            "Execution evidence status wording", ROOT
         )
-        active_consumers = [
-            path for active_root in active_roots for path in active_root.rglob("*.md")
-        ] + [
-            ROOT / "infra/04-data/lake-and-object/README.md",
-            ROOT / "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
-        ]
-        violations: list[str] = []
-        for path in active_consumers:
-            for line_number, line in enumerate(path.read_text().splitlines(), 1):
-                if deleted_root.search(line):
-                    violations.append(
-                        f"{path.relative_to(ROOT)}:{line_number}: {line.strip()}"
-                    )
-        self.assertEqual([], violations)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
-    def test_each_readme_merge_preserves_relevant_current_navigation(self):
-        scoped_prefix = "docs/05.operations/"
-        merge_rows = [
-            row
-            for row in ledger_records()
-            if row["action"] == "merge"
-            and re.fullmatch(
-                r"docs/05\.operations/(guides|policies|runbooks)/"
-                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                r"(?:/[^/]+)?/README\.md",
-                str(row["legacy_path"]),
+    def test_service_documentation_gate_resolves_current_catalog_guide_links(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            service, readme = _write_service_fixture(root)
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root
             )
-        ]
-        self.assertEqual(52, len(merge_rows))
-        stable_paths = {
-            str(row["legacy_path"]): str(row["stable_path"])
-            for row in ledger_records()
-            if str(row["legacy_path"]).startswith(scoped_prefix)
-        }
-        semantic_paths = {}
-        for semantic_row, current_path in current_operation_roles():
-            semantic_paths[semantic_row.legacy_path.as_posix()] = (
-                current_path.as_posix()
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+            legacy = root / "docs/05.operations/guides/01-gateway/traefik.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("# Retired guide\n", encoding="utf-8")
+            readme.write_text(
+                "[Guide](../../../docs/05.operations/guides/01-gateway/traefik.md)\n",
+                encoding="utf-8",
             )
-            semantic_paths[semantic_row.catalog_path.as_posix()] = (
-                current_path.as_posix()
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root
             )
-            if semantic_row.final_path is not None:
-                semantic_paths[semantic_row.final_path.as_posix()] = (
-                    current_path.as_posix()
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+            readme.write_text(
+                "[Guide](../../../docs/05.operations/catalog/01-gateway/"
+                "0999-missing/guide.md)\n",
+                encoding="utf-8",
+            )
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+    def test_service_documentation_gate_ignores_nonrendered_markdown_links(self) -> None:
+        false_links = (
+            "```markdown\n[Guide](../../../docs/05.operations/catalog/01-gateway/"
+            "0013-traefik/guide.md)\n```\n",
+            "<!-- [Guide](../../../docs/05.operations/catalog/01-gateway/"
+            "0013-traefik/guide.md) -->\n",
+            "`[Guide](../../../docs/05.operations/catalog/01-gateway/"
+            "0013-traefik/guide.md)`\n",
+            "![Guide](../../../docs/05.operations/catalog/01-gateway/"
+            "0013-traefik/guide.md)\n",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _service, readme = _write_service_fixture(root)
+            for text in false_links:
+                with self.subTest(text=text.splitlines()[0]):
+                    readme.write_text(text, encoding="utf-8")
+                    result = _run_repo_contract_python_section(
+                        "Service documentation coverage", root
+                    )
+                    self.assertEqual(
+                        1, result.returncode, result.stdout + result.stderr
+                    )
+
+    def test_service_documentation_gate_rejects_compose_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            service, _readme = _write_service_fixture(root)
+            compose = service / "docker-compose.yml"
+            compose.unlink()
+            compose.symlink_to("docker-compose.real.yml")
+            (service / "docker-compose.real.yml").write_text(
+                "services: {}\n", encoding="utf-8"
+            )
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+    def test_service_documentation_gate_accepts_git_byte_sorted_component_prefixes(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            service, _readme = _write_service_fixture(root)
+            (service / "config").mkdir()
+            (service / "config/value.txt").write_text("value\n", encoding="utf-8")
+            sibling = service.parent / "traefik-extra"
+            sibling.mkdir()
+            (sibling / "value.txt").write_text("value\n", encoding="utf-8")
+            subprocess.run(["git", "add", "infra"], cwd=root, check=True)
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_service_documentation_gate_rejects_readme_fifo_without_hanging(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _service, readme = _write_service_fixture(root)
+            readme.unlink()
+            os.mkfifo(readme)
+            result = _run_repo_contract_python_section(
+                "Service documentation coverage", root, timeout=2.0
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+    def test_service_documentation_gate_enforces_count_file_and_aggregate_bounds(self) -> None:
+        mutations = (
+            (r"MAX_SERVICE_TRACKED_PATHS: Final = [^\n]+", "MAX_SERVICE_TRACKED_PATHS: Final = 1"),
+            (r"MAX_SERVICE_FILE_BYTES: Final = [^\n]+", "MAX_SERVICE_FILE_BYTES: Final = 32"),
+            (r"MAX_SERVICE_TOTAL_BYTES: Final = [^\n]+", "MAX_SERVICE_TOTAL_BYTES: Final = 64"),
+        )
+        for pattern, replacement in mutations:
+            with self.subTest(bound=replacement), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                _service, readme = _write_service_fixture(root)
+                readme.write_text(
+                    "[Guide](../../../docs/05.operations/catalog/01-gateway/"
+                    "0013-traefik/guide.md)\n" + "bounded payload\n" * 8,
+                    encoding="utf-8",
                 )
-        merge_rows_by_source = {str(row["legacy_path"]): row for row in merge_rows}
-        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
-
-        preserved_navigation_indexes = {
-            "docs/05.operations/README.md",
-            "docs/05.operations/incidents/README.md",
-            "docs/05.operations/releases/README.md",
-        }
-
-        def structural_path(path: str) -> str:
-            return re.sub(
-                r"^docs/05\.operations/"
-                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)(?=/)",
-                r"docs/05.operations/catalog/\1",
-                path,
-            )
-
-        def linked_current_navigation_paths(
-            source: str, body: str, seen: set[str] | None = None
-        ) -> set[str]:
-            visited = set() if seen is None else seen
-            paths: set[str] = set()
-            for destination in link_pattern.findall(body):
-                resolved = resolve_repo_path(ROOT / source, destination)
-                if resolved is None:
-                    continue
-                resolved_path = str(resolved.relative_to(ROOT))
-                child_row = merge_rows_by_source.get(resolved_path)
-                if child_row is not None and resolved_path not in visited:
-                    result = subprocess.run(
-                        [
-                            "git",
-                            "show",
-                            f"{child_row['source_commit']}:{resolved_path}",
-                        ],
-                        cwd=ROOT,
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                    )
-                    paths.update(
-                        linked_current_navigation_paths(
-                            resolved_path,
-                            result.stdout,
-                            visited | {resolved_path},
-                        )
-                    )
-                canonical = structural_path(
-                    stable_paths.get(resolved_path, resolved_path)
+                section = re.sub(
+                    pattern,
+                    replacement,
+                    _repo_contract_python_section("Service documentation coverage"),
                 )
-                canonical = semantic_paths.get(canonical, canonical)
-                if (
-                    re.fullmatch(
-                        r"docs/05\.operations/catalog/"
-                        r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                        r"/ops-[^/]+/(guide|policy|runbook)\.md",
-                        canonical,
-                    )
-                    or re.fullmatch(
-                        r"docs/05\.operations/catalog/"
-                        r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                        r"/README\.md",
-                        canonical,
-                    )
-                    or (
-                        re.match(
-                            r"docs/05\.operations/"
-                            r"(?:(guides|policies|runbooks|catalog)/)?"
-                            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
-                            source,
-                        )
-                        and canonical in preserved_navigation_indexes
-                    )
-                ):
-                    paths.add(canonical)
-            return paths
+                result = _run_repo_contract_python_section(
+                    "Service documentation coverage", root, source=section
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
 
-        for row in merge_rows:
-            source = str(row["legacy_path"])
-            target = structural_path(str(row["stable_path"]))
-            source_commit = str(row["source_commit"])
-            result = subprocess.run(
-                ["git", "show", f"{source_commit}:{source}"],
-                cwd=ROOT,
-                check=True,
-                capture_output=True,
+    def test_spec_role_gate_resolves_existing_confined_regular_targets(self) -> None:
+        cases = (
+            ("regular", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 0),
+            ("angle-regular", "<../../05.operations/catalog/01-gateway/0013-traefik/guide.md>", 0),
+            ("wrong-depth", "../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
+            ("nonexistent", "../../05.operations/catalog/01-gateway/0999-missing/guide.md", 1),
+            ("angle-nonexistent", "<../../05.operations/catalog/01-gateway/0999-missing/guide.md>", 1),
+            ("symlink", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
+            ("nonregular", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
+        )
+        for mutation, href, expected in cases:
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                spec = root / "docs/03.specs/0001-example/spec.md"
+                spec.parent.mkdir(parents=True)
+                spec.write_text(
+                    f"- **Guide**: [Guide]({href})\n", encoding="utf-8"
+                )
+                guide = root / "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
+                guide.parent.mkdir(parents=True)
+                if mutation == "symlink":
+                    real = root / "real-guide.md"
+                    real.write_text("# Guide\n", encoding="utf-8")
+                    guide.symlink_to(real)
+                elif mutation == "nonregular":
+                    guide.mkdir()
+                else:
+                    guide.write_text("# Guide\n", encoding="utf-8")
+                result = _run_repo_contract_python_section(
+                    "Spec document traceability contract", root
+                )
+                self.assertEqual(expected, result.returncode, result.stdout + result.stderr)
+
+    def test_spec_role_gate_does_not_treat_operations_index_label_as_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            spec = root / "docs/03.specs/README.md"
+            spec.parent.mkdir(parents=True)
+            spec.write_text(
+                "[Operations](../05.operations/README.md)\n", encoding="utf-8"
+            )
+            operations = root / "docs/05.operations/README.md"
+            operations.parent.mkdir(parents=True)
+            operations.write_text("# Operations\n", encoding="utf-8")
+            result = _run_repo_contract_python_section(
+                "Spec document traceability contract", root
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_incident_contract_uses_only_exact_packet_role_paths(self) -> None:
+        surfaces = (
+            ROOT / "docs/05.operations/incidents/README.md",
+            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
+        )
+        exact_paths = (
+            "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
+            "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
+        )
+        for surface in surfaces:
+            text = surface.read_text(encoding="utf-8")
+            with self.subTest(surface=surface):
+                self.assertNotIn("incident-title", text)
+                for exact_path in exact_paths:
+                    self.assertIn(exact_path, text)
+
+        gate = _repo_contract_python_section("Operations postmortem routing contract")
+        self.assertNotIn('"YYYY/inc-####-incident-title/"', gate)
+        for exact_path in exact_paths:
+            self.assertGreaterEqual(gate.count(exact_path), 2)
+
+    def test_selected_spec_role_links_use_exact_current_role_leaves(self) -> None:
+        expected = {
+            "docs/03.specs/0001-gateway/spec.md": {
+                "Guide": "../../05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md",
+                "Policy": "../../05.operations/catalog/01-gateway/0013-traefik/policy.md",
+                "Runbook": "../../05.operations/catalog/01-gateway/0013-traefik/runbook.md",
+            },
+            "docs/03.specs/0002-auth/spec.md": {
+                role: f"../../05.operations/catalog/02-auth/0014-keycloak/{role.lower()}.md"
+                for role in ("Guide", "Policy", "Runbook")
+            },
+            "docs/03.specs/0005-data-analytics/spec.md": {
+                role: f"../../05.operations/catalog/04-data/0017-influxdb/{role.lower()}.md"
+                for role in ("Guide", "Policy", "Runbook")
+            },
+            "docs/03.specs/0095-infra-secrets-docs-refresh/spec.md": {
+                role: f"../../05.operations/catalog/03-security/0016-vault/{role.lower()}.md"
+                for role in ("Guide", "Policy", "Runbook")
+            },
+        }
+        for relative, roles in expected.items():
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            for role, href in roles.items():
+                with self.subTest(path=relative, role=role):
+                    self.assertIn(f"- **{role}**: [{href}]({href})", text)
+
+    def test_script_reference_gate_accepts_exact_tracked_worktree_deletions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            docs = root / "docs"
+            scripts = root / "scripts"
+            docs.mkdir()
+            scripts.mkdir()
+            (docs / "keep.md").write_text("No script references.\n", encoding="utf-8")
+            registered = docs / "05.operations/releases/README.md"
+            registered.parent.mkdir(parents=True)
+            registered.write_text("No script references.\n", encoding="utf-8")
+            (scripts / "exists.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            subprocess.run(["git", "add", "docs", "scripts"], cwd=root, check=True)
+            registered.unlink()
+            result = _run_repo_contract_python_section("Script reference integrity", root)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+            unexpected = docs / "unexpected.md"
+            unexpected.write_text("No script references.\n", encoding="utf-8")
+            subprocess.run(["git", "add", "docs/unexpected.md"], cwd=root, check=True)
+            unexpected.unlink()
+            result = _run_repo_contract_python_section("Script reference integrity", root)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+    def test_script_reference_gate_rejects_symlink_nonregular_and_race(self) -> None:
+        for mutation in ("broken-symlink", "nonregular", "race"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+                docs = root / "docs"
+                scripts = root / "scripts"
+                docs.mkdir()
+                scripts.mkdir()
+                victim = docs / "victim.md"
+                victim.write_text("No script references.\n", encoding="utf-8")
+                (scripts / "exists.sh").write_text(
+                    "#!/usr/bin/env bash\n", encoding="utf-8"
+                )
+                subprocess.run(["git", "add", "docs", "scripts"], cwd=root, check=True)
+
+                section = _repo_contract_python_section("Script reference integrity")
+                if mutation == "broken-symlink":
+                    victim.unlink()
+                    victim.symlink_to("missing.md")
+                elif mutation == "nonregular":
+                    victim.unlink()
+                    os.mkfifo(victim)
+                else:
+                    section = section.replace(
+                        "    initial = os.lstat(path)\n",
+                        "    initial = os.lstat(path)\n"
+                        "    if path == pathlib.Path('docs/victim.md'):\n"
+                        "        os.replace(path, path.with_suffix('.saved'))\n"
+                        "        path.write_text('replacement\\n', encoding='utf-8')\n",
+                        1,
+                    )
+
+                result = subprocess.run(
+                    [sys.executable, "-c", section],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+
+    def test_script_reference_git_enumeration_deadlines_and_reaps_partial_hang(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _initialize_fixture_repository(root)
+            fake_bin = root / "fake-bin"
+            fake_bin.mkdir()
+            fake_git = fake_bin / "git"
+            fake_git.write_text(
+                "#!/usr/bin/env python3\n"
+                "import os\n"
+                "import time\n"
+                "child = os.fork()\n"
+                "if child == 0:\n"
+                "    open('git-child.pid', 'w', encoding='ascii').write(str(os.getpid()))\n"
+                "    while True:\n"
+                "        time.sleep(1)\n"
+                "open('git-parent.pid', 'w', encoding='ascii').write(str(os.getpid()))\n"
+                "os.write(1, b'docs/keep.md\\0')\n"
+                "while True:\n"
+                "    time.sleep(1)\n",
+                encoding="utf-8",
+            )
+            fake_git.chmod(0o755)
+            section = re.sub(
+                r"MAX_REFERENCE_GIT_SECONDS: Final = [^\n]+",
+                "MAX_REFERENCE_GIT_SECONDS: Final = 0.2",
+                _repo_contract_python_section("Script reference integrity"),
+            )
+            environment = os.environ.copy()
+            environment["PATH"] = f"{fake_bin}{os.pathsep}{environment['PATH']}"
+            python_path = environment.get("PYTHONPATH")
+            environment["PYTHONPATH"] = (
+                str(ROOT) if not python_path else f"{ROOT}{os.pathsep}{python_path}"
+            )
+            process = subprocess.Popen(
+                [sys.executable, "-c", section],
+                cwd=root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
+                env=environment,
+                start_new_session=True,
             )
-            target_body = (ROOT / target).read_text()
-            source_paths = linked_current_navigation_paths(source, result.stdout)
-            target_paths = linked_current_navigation_paths(target, target_body)
-            source_paths.discard(target)
-            target_paths.discard(target)
-            with self.subTest(source=source):
-                self.assertTrue(source_paths)
-                self.assertTrue(
-                    source_paths.issubset(target_paths),
-                    f"missing current navigation: {sorted(source_paths - target_paths)}",
-                )
-                if re.match(
-                    r"docs/05\.operations/catalog/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
-                    target,
-                ):
-                    archive_links = []
-                    for destination in link_pattern.findall(target_body):
-                        resolved = resolve_repo_path(ROOT / target, destination)
-                        if resolved is not None and resolved.is_relative_to(
-                            ROOT / "docs/98.archive"
-                        ):
-                            archive_links.append(destination)
-                    self.assertEqual([], archive_links)
-
-    def test_root_readme_merge_preserves_immutable_role_index_navigation(self):
-        root_sources = {
-            "docs/05.operations/guides/README.md",
-            "docs/05.operations/policies/README.md",
-            "docs/05.operations/runbooks/README.md",
-        }
-        records = ledger_records()
-        rows = [row for row in records if str(row["legacy_path"]) in root_sources]
-        self.assertEqual(3, len(rows))
-        stable_paths = {
-            str(row["legacy_path"]): str(row["stable_path"])
-            for row in records
-            if str(row["legacy_path"]).startswith("docs/05.operations/")
-        }
-        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
-
-        def structural_path(path: str) -> str:
-            return re.sub(
-                r"^docs/05\.operations/"
-                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)(?=/)",
-                r"docs/05.operations/catalog/\1",
-                path,
+            started = time.monotonic()
+            try:
+                stdout, stderr = process.communicate(timeout=1.5)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.communicate()
+                self.fail("script-reference Git read exceeded its deadline after partial output")
+            self.assertLess(time.monotonic() - started, 1.0)
+            self.assertEqual(1, process.returncode, stdout + stderr)
+            child_pid = int((root / "git-child.pid").read_text(encoding="ascii"))
+            child_state = pathlib.Path(f"/proc/{child_pid}/stat")
+            deadline = time.monotonic() + 1.0
+            while child_state.exists() and time.monotonic() < deadline:
+                state = child_state.read_text(encoding="ascii").split()[2]
+                if state == "Z":
+                    break
+                time.sleep(0.02)
+            self.assertTrue(
+                not child_state.exists()
+                or child_state.read_text(encoding="ascii").split()[2] == "Z"
             )
 
-        def current_navigation(source: str, body: str) -> set[str]:
-            navigation: set[str] = set()
-            for destination in link_pattern.findall(body):
-                resolved = resolve_repo_path(ROOT / source, destination)
-                if resolved is None or resolved.is_relative_to(
-                    ROOT / "docs/98.archive"
-                ):
-                    continue
-                resolved_path = str(resolved.relative_to(ROOT))
-                canonical = structural_path(
-                    stable_paths.get(resolved_path, resolved_path)
-                )
-                if canonical in {
-                    "docs/05.operations/README.md",
-                    "docs/05.operations/incidents/README.md",
-                    "docs/05.operations/releases/README.md",
-                } or re.fullmatch(
-                    r"docs/05\.operations/catalog/"
-                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                    r"/README\.md",
-                    canonical,
-                ):
-                    navigation.add(canonical)
-            return navigation
+    def test_script_reference_ignored_discovery_is_batched(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "docs/ignored").mkdir(parents=True)
+            (root / "scripts").mkdir()
+            (root / "docs/keep.md").write_text(
+                "No script references.\n", encoding="utf-8"
+            )
+            (root / "scripts/exists.sh").write_text(
+                "#!/usr/bin/env bash\n", encoding="utf-8"
+            )
+            (root / ".gitignore").write_text("docs/ignored/\n", encoding="utf-8")
+            os.mkfifo(root / "docs/ignored/pipe")
+            _initialize_fixture_repository(root, ".gitignore", "docs/keep.md", "scripts")
+            log = root / "git-calls.log"
+            real_git = shutil.which("git")
+            self.assertIsNotNone(real_git)
+            fake_bin = root / "fake-bin"
+            fake_bin.mkdir()
+            wrapper = fake_bin / "git"
+            wrapper.write_text(
+                "#!/bin/sh\n"
+                f"printf '%s\\n' \"$*\" >> {log.as_posix()}\n"
+                f"exec {real_git} \"$@\"\n",
+                encoding="utf-8",
+            )
+            wrapper.chmod(0o755)
+            result = _run_repo_contract_python_section(
+                "Script reference integrity",
+                root,
+                environment={"PATH": f"{fake_bin}{os.pathsep}{os.environ['PATH']}"},
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            calls = log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual([], [call for call in calls if "check-ignore" in call])
+            self.assertEqual(
+                1,
+                sum("--ignored" in call and "--directory" in call for call in calls),
+            )
 
-        target = "docs/05.operations/catalog/README.md"
-        target_navigation = current_navigation(target, (ROOT / target).read_text())
+    def test_script_reference_git_output_overflow_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            document = root / "docs/a-deliberately-long-tracked-path.md"
+            document.parent.mkdir(parents=True)
+            document.write_text("No script references.\n", encoding="utf-8")
+            _initialize_fixture_repository(root, "docs")
+            section = re.sub(
+                r"MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = [^\n]+",
+                "MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 16",
+                _repo_contract_python_section("Script reference integrity"),
+            )
+            result = _run_repo_contract_python_section(
+                "Script reference integrity", root, source=section
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("unsafe script-reference surface", result.stderr)
+
+    def test_migration0003_slice_is_exact_and_preconditions_are_resolved(self) -> None:
+        migration = load_task8_migration(ROOT)
+        self.assertEqual(TASK8_ROW_IDS, tuple(row.row_id for row in migration.rows))
+        self.assertEqual(192, sum(row.action == "rename" for row in migration.rows))
+        self.assertEqual(1, sum(row.action == "delete" for row in migration.rows))
+        for row in migration.rows:
+            source_exists = (ROOT / row.source_path).is_file()
+            target_exists = row.target_path is not None and (ROOT / row.target_path).is_file()
+            with self.subTest(row=row.row_id):
+                if row.action == "rename":
+                    self.assertNotEqual(source_exists, target_exists)
+                else:
+                    self.assertIsNone(row.target_path)
+
+    def test_migration0002_is_rejected_as_current_structural_authority(self) -> None:
+        with self.assertRaisesRegex(OperationsAuthorityError, "Migration 0003"):
+            load_task8_migration(ROOT, SEMANTIC_WITNESS_PATH)
+
+    def test_consumer_extractor_freezes_exact_declared_and_live_union(self) -> None:
+        inventory = extract_task8_consumers(ROOT, load_task8_migration(ROOT))
+        self.assertEqual(315, len(inventory.declared_raw))
+        self.assertEqual(tuple(sorted(set(inventory.union))), inventory.union)
+        self.assertTrue(inventory.declared_current)
+        self.assertGreater(inventory.tracked_files, 0)
+        self.assertLessEqual(inventory.tracked_files, 10_000)
+        self.assertLessEqual(inventory.tracked_bytes, 300_000_000)
+
+    def test_consumer_extractor_rejects_unbounded_file_count_and_bytes(self) -> None:
+        migration = load_task8_migration(ROOT)
+        with self.assertRaisesRegex(OperationsAuthorityError, "file bound"):
+            extract_task8_consumers(ROOT, migration, max_files=1)
+        with self.assertRaisesRegex(OperationsAuthorityError, "bound"):
+            extract_task8_consumers(ROOT, migration, max_bytes=1)
+
+    def test_semantic_merge_witnesses_are_body_derived_and_present(self) -> None:
+        self.assertEqual([], _validate_semantic_witnesses(ROOT))
+        text = (ROOT / SEMANTIC_WITNESS_PATH).read_text(encoding="utf-8")
+        ledger = yaml.safe_load(
+            text.split("## Archive Ledger", 1)[1]
+            .split("```yaml", 1)[1]
+            .split("```", 1)[0]
+        )
+        rows = [row for row in ledger["files"] if row["semantic_action"] == "merge"]
+        self.assertEqual(2, len(rows))
         for row in rows:
-            source = str(row["legacy_path"])
-            result = subprocess.run(
-                ["git", "show", f"{row['source_commit']}:{source}"],
+            source = subprocess.run(
+                ["git", "show", f"{row['source_commit']}:{row['legacy_path']}"],
                 cwd=ROOT,
                 check=True,
                 capture_output=True,
                 text=True,
+            ).stdout
+            target_parts = pathlib.PurePosixPath(row["final_path"]).parts
+            target = pathlib.PurePosixPath(
+                *(target_parts[:4] + (target_parts[4][4:],) + target_parts[5:])
             )
-            source_navigation = current_navigation(source, result.stdout)
-            source_navigation.discard(target)
-            with self.subTest(source=source):
-                self.assertTrue(source_navigation)
-                self.assertTrue(source_navigation.issubset(target_navigation))
+            current_path = ROOT / target
+            if not current_path.is_file():
+                current_path = ROOT / row["final_path"]
+            current = current_path.read_text(encoding="utf-8")
+            witnesses = [
+                value.split(":", 2)[2]
+                for value in row["preserved_semantics"]
+                if value.startswith("text:")
+            ]
+            with self.subTest(target=target):
+                self.assertTrue(witnesses)
+                self.assertTrue(all(value in source for value in witnesses))
+                self.assertTrue(all(value in current for value in witnesses))
 
-    def test_final_operations_root_has_only_root_and_domain_role_indexes(self):
-        operations_root = ROOT / "docs/05.operations"
-        for name in ("guides", "policies", "runbooks"):
-            self.assertFalse((operations_root / name).exists())
-
-        expected_indexes = {
-            operations_root / "README.md",
-            operations_root / "catalog/README.md",
-            operations_root / "incidents/README.md",
-            operations_root / "releases/README.md",
-            *(
-                operations_root / "catalog" / domain / "README.md"
-                for domain in MIGRATED_DOMAINS
-            ),
-        }
-        self.assertEqual(expected_indexes, set(operations_root.rglob("README.md")))
-
-        root_body = (operations_root / "README.md").read_text()
-        self.assertNotRegex(
-            root_body,
-            r"(?:\./|docs/05\.operations/)(guides|policies|runbooks)(?:/|\b)",
+    def test_frozen_migration_hash_is_unchanged(self) -> None:
+        result = subprocess.run(
+            ["sha256sum", str(MIGRATION_PATH)],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
         )
-        for index in (
-            operations_root / "catalog/README.md",
-            operations_root / "incidents/README.md",
-            operations_root / "releases/README.md",
+        self.assertTrue(
+            result.stdout.startswith(
+                "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
+            )
+        )
+
+
+class SemanticWitnessBoundaryTests(unittest.TestCase):
+    TARGETS = (
+        pathlib.PurePosixPath(
+            "docs/05.operations/catalog/00-workspace/"
+            "0004-harness-agent-first-engineering/runbook.md"
+        ),
+        pathlib.PurePosixPath(
+            "docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md"
+        ),
+    )
+
+    def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        migration = root / SEMANTIC_WITNESS_PATH
+        migration.parent.mkdir(parents=True)
+        shutil.copy2(ROOT / SEMANTIC_WITNESS_PATH, migration)
+        for relative in self.TARGETS:
+            target = root / relative
+            target.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / relative, target)
+        return directory, root
+
+    @staticmethod
+    def _source_result(arguments: object) -> GitCommandResult:
+        assert isinstance(arguments, list)
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+        return GitCommandResult(result.returncode, result.stdout, result.stderr)
+
+    def _validate(self, root: pathlib.Path) -> list[object]:
+        def bounded_git(_root: pathlib.Path, arguments: list[str], **_kwargs: object) -> GitCommandResult:
+            return self._source_result(arguments)
+
+        with mock.patch(
+            "scripts.lib.document_governance.operations_catalog._run_git_bounded",
+            side_effect=bounded_git,
         ):
-            with self.subTest(index=index):
-                relative = index.relative_to(operations_root).as_posix()
-                self.assertIn(f"./{relative}", root_body)
-        catalog_body = (operations_root / "catalog/README.md").read_text()
-        for domain in MIGRATED_DOMAINS:
-            with self.subTest(domain=domain):
-                self.assertIn(f"./{domain}/README.md", catalog_body)
+            return _validate_semantic_witnesses(root)
 
-    def test_operations_handoff_sections_remain_conditional(self):
-        profiles = yaml.safe_load(
-            (
-                ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
-            ).read_text()
-        )
-        guide_role = profiles["template_roles"]["guide"]
-        runbook_role = profiles["template_roles"]["runbook"]
-        self.assertIn("## Runbook Handoff", guide_role["conditional_headings"])
-        self.assertNotIn("## Runbook Handoff", guide_role["required_headings"])
-        self.assertIn("## Automation Handoff", runbook_role["conditional_headings"])
-        self.assertNotIn("## Automation Handoff", runbook_role["required_headings"])
-        self.assertNotIn(
-            "## Runbook Handoff", (ROOT / guide_role["source"]).read_text()
-        )
-        self.assertNotIn(
-            "## Automation Handoff", (ROOT / runbook_role["source"]).read_text()
-        )
+    def test_markdown_body_excludes_frontmatter_and_headings(self) -> None:
+        text = "---\nnote: frontmatter-only\n---\n# heading-only\nbody-only\n"
+        body = _markdown_body_text(text)
+        self.assertNotIn("frontmatter-only", body)
+        self.assertNotIn("heading-only", body)
+        self.assertIn("body-only", body)
 
-        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
-        for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            if int(identity) < 70 or "guide" not in roles:
-                continue
-            subject_root = (
-                ROOT
-                / "docs/05.operations/catalog"
-                / domain
-                / f"ops-{identity}-{subject}"
+    def test_exact_merge_row_identity_is_required(self) -> None:
+        context, root = self._fixture()
+        with context:
+            path = root / SEMANTIC_WITNESS_PATH
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "  final_path: docs/05.operations/catalog/00-workspace/"
+                    "ops-0004-harness-agent-first-engineering/runbook.md\n"
+                    "  semantic_action: merge",
+                    "  final_path: docs/05.operations/catalog/00-workspace/"
+                    "ops-0006-infrastructure-optimization-governance/runbook.md\n"
+                    "  semantic_action: merge",
+                    1,
+                ),
+                encoding="utf-8",
             )
-            guide_path = subject_root / "guide.md"
-            if not guide_path.is_file():
-                continue
-            guide_body = guide_path.read_text()
-            with self.subTest(guide=guide_path):
-                self.assertIn("## Runbook Handoff", guide_body)
-                handoff_targets = {
-                    resolve_repo_path(guide_path, destination)
-                    for destination in link_pattern.findall(guide_body)
-                }
-                self.assertIn(subject_root / "runbook.md", handoff_targets)
-
-            runbook_path = subject_root / "runbook.md"
-            runbook_body = runbook_path.read_text()
-            if "## Automation Handoff" in runbook_body:
-                automation_targets = [
-                    resolve_repo_path(runbook_path, destination)
-                    for destination in link_pattern.findall(runbook_body)
-                    if destination.startswith(("scripts/", "../../../../scripts/"))
-                ]
-                self.assertTrue(automation_targets)
-                self.assertTrue(
-                    all(path and path.is_file() for path in automation_targets)
-                )
-
-    def test_task6c_immutable_target_surface_summary_rows_match_owner(self):
-        source_pattern = re.compile(
-            r"docs/05\.operations/(guides|policies|runbooks)/09-tooling/"
-            r"(k6|locust|performance-testing)\.md"
-        )
-        owner = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text())
-        owner_entries = [
-            entry
-            for entry in owner["entries"]
-            if source_pattern.fullmatch(str(entry["source_path"]))
-        ]
-        self.assertEqual(9, len(owner_entries))
-
-        owner_sources = {str(entry["source_path"]) for entry in owner_entries}
-        stable_targets = {
-            str(row["stable_path"])
-            for row in ledger_records()
-            if str(row["legacy_path"]) in owner_sources
-        }
-        self.assertEqual(9, len(stable_targets))
-
-        summary_rows = {
-            tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-            for line in TARGET_SURFACE_SUMMARY.read_text().splitlines()
-            if line.startswith("|")
-        }
-        relevant_rows = {
-            row
-            for row in summary_rows
-            if len(row) == 5 and (row[0] in owner_sources | stable_targets)
-        }
-        expected_rows = {
-            (
-                str(entry["source_path"]),
-                str(entry["target_path"] or ""),
-                str(entry["disposition"]),
-                str(entry["review_verdict"]["specification"]),
-                str(entry["review_verdict"]["quality"]),
+            self.assertIn(
+                "semantic-witness-row-invalid",
+                {finding.code for finding in self._validate(root)},
             )
-            for entry in owner_entries
-        }
-        self.assertEqual(expected_rows, relevant_rows)
 
-    def test_task6d_current_path_rewrite_preserves_immutable_audit_provenance(self):
-        task6d_legacy = re.compile(
-            r"docs/05\.operations/(guides|policies|runbooks)/"
-            r"(10-communication|11-laboratory|12-infra-net)(?:/|$)"
+    def test_stale_prefixed_target_is_never_a_fallback(self) -> None:
+        context, root = self._fixture()
+        with context:
+            current = root / self.TARGETS[0]
+            stale = root / (
+                "docs/05.operations/catalog/00-workspace/"
+                "ops-0004-harness-agent-first-engineering/runbook.md"
+            )
+            stale.parent.mkdir(parents=True, exist_ok=True)
+            current.rename(stale)
+            codes = {finding.code for finding in self._validate(root)}
+            self.assertIn("file-unreadable", codes)
+
+    def test_empty_and_oversize_text_witnesses_are_rejected(self) -> None:
+        marker = (
+            "text:graphify-advisory-corroboration:"
+            "bash scripts/knowledge/report-graphify-health.sh"
         )
-        records = [
-            row
-            for row in ledger_records()
-            if task6d_legacy.match(str(row["legacy_path"]))
-        ]
-        self.assertEqual(33, len(records))
-
-        immutable_body = FRONTMATTER_SEMANTIC_INVENTORY.read_text()
-        for row in records:
-            legacy_path = str(row["legacy_path"])
-            stable_path = str(row["stable_path"])
-            with self.subTest(legacy_path=legacy_path):
-                self.assertIn(f"`{legacy_path}`", immutable_body)
-                self.assertNotIn(f"`{stable_path}`", immutable_body)
+        for replacement in ("text:graphify-advisory-corroboration:", f"text:oversize:{'x' * 4097}"):
+            with self.subTest(length=len(replacement)):
+                context, root = self._fixture()
+                with context:
+                    path = root / SEMANTIC_WITNESS_PATH
+                    path.write_text(
+                        path.read_text(encoding="utf-8").replace(marker, replacement, 1),
+                        encoding="utf-8",
+                    )
+                    self.assertIn(
+                        "semantic-witness-invalid",
+                        {finding.code for finding in self._validate(root)},
+                    )
 
 
 if __name__ == "__main__":

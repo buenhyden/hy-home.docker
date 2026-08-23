@@ -114,9 +114,9 @@ mysql -h starrocks-fe -P 9030 -u root -e "SHOW FRONTENDS;"
 
 - **Plan**: ../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md
 - **Tasks**: ../../04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md
-- **Guide**: [../../05.operations/guides/04-data/analytics/README.md](../../05.operations/catalog/04-data/README.md)
-- **Policy**: [../../05.operations/policies/04-data/analytics/README.md](../../05.operations/catalog/04-data/README.md)
-- **Runbook**: [../../05.operations/runbooks/04-data/analytics/influxdb.md](../../05.operations/catalog/04-data/ops-0017-influxdb/runbook.md)
+- **Guide**: [../../05.operations/catalog/04-data/0017-influxdb/guide.md](../../05.operations/catalog/04-data/0017-influxdb/guide.md)
+- **Policy**: [../../05.operations/catalog/04-data/0017-influxdb/policy.md](../../05.operations/catalog/04-data/0017-influxdb/policy.md)
+- **Runbook**: [../../05.operations/catalog/04-data/0017-influxdb/runbook.md](../../05.operations/catalog/04-data/0017-influxdb/runbook.md)
 
 ## Boundaries and Inputs
 

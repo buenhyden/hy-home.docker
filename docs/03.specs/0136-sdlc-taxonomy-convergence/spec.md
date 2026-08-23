@@ -360,7 +360,7 @@ subjects:
 
     catalog/06-observability/
     ├── README.md
-    └── ops-0045-prometheus/
+    └── 0045-prometheus/
         ├── guide.md
         ├── policy.md
         └── runbook.md

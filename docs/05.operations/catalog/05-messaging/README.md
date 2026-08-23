@@ -20,12 +20,12 @@ This domain co-locates each existing guide, policy, and runbook under its frozen
 
 | Subject | Available documents |
 | --- | --- |
-| [Kafka](ops-0036-kafka/guide.md) | [Guide](ops-0036-kafka/guide.md), [Policy](ops-0036-kafka/policy.md), [Runbook](ops-0036-kafka/runbook.md) |
-| [Optimization hardening](ops-0037-optimization-hardening/guide.md) | [Guide](ops-0037-optimization-hardening/guide.md), [Policy](ops-0037-optimization-hardening/policy.md), [Runbook](ops-0037-optimization-hardening/runbook.md) |
-| [RabbitMQ](ops-0038-rabbitmq/guide.md) | [Guide](ops-0038-rabbitmq/guide.md), [Policy](ops-0038-rabbitmq/policy.md), [Runbook](ops-0038-rabbitmq/runbook.md) |
+| [Kafka](0036-kafka/guide.md) | [Guide](0036-kafka/guide.md), [Policy](0036-kafka/policy.md), [Runbook](0036-kafka/runbook.md) |
+| [Optimization hardening](0037-optimization-hardening/guide.md) | [Guide](0037-optimization-hardening/guide.md), [Policy](0037-optimization-hardening/policy.md), [Runbook](0037-optimization-hardening/runbook.md) |
+| [RabbitMQ](0038-rabbitmq/guide.md) | [Guide](0038-rabbitmq/guide.md), [Policy](0038-rabbitmq/policy.md), [Runbook](0038-rabbitmq/runbook.md) |
 
 ksqlDB remains a data analytics subject; use the
-[ksqlDB guide](../04-data/ops-0018-ksqldb/guide.md).
+[ksqlDB guide](../04-data/0018-ksqldb/guide.md).
 
 ## How to Work in This Area
 

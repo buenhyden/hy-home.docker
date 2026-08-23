@@ -20,8 +20,8 @@ roles in domain-first `ops-` subject folders; no new role is inferred.
 
 | Subject | Available documents |
 | --- | --- |
-| [Keycloak](ops-0014-keycloak/guide.md) | [Guide](ops-0014-keycloak/guide.md), [Policy](ops-0014-keycloak/policy.md), [Runbook](ops-0014-keycloak/runbook.md) |
-| [OAuth2 Proxy](ops-0015-oauth2-proxy/guide.md) | [Guide](ops-0015-oauth2-proxy/guide.md), [Policy](ops-0015-oauth2-proxy/policy.md), [Runbook](ops-0015-oauth2-proxy/runbook.md) |
+| [Keycloak](0014-keycloak/guide.md) | [Guide](0014-keycloak/guide.md), [Policy](0014-keycloak/policy.md), [Runbook](0014-keycloak/runbook.md) |
+| [OAuth2 Proxy](0015-oauth2-proxy/guide.md) | [Guide](0015-oauth2-proxy/guide.md), [Policy](0015-oauth2-proxy/policy.md), [Runbook](0015-oauth2-proxy/runbook.md) |
 
 ## How to Work in This Area
 

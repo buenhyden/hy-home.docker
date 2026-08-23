@@ -42,7 +42,7 @@ research_plan="docs/03.specs/0137-agentic-research-pack-rebuild/plan.md"
 research_task="docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
 ops_readme="docs/05.operations/README.md"
 priority_plan="docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md"
-catalog="docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md"
+catalog="docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
 
 check_file_exists "$spec_readme" || true
 check_file_exists "$research_plan" || true
@@ -57,7 +57,7 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains_literal "$research_plan" "$research_task" "Spec 0137 plan missing numbered Task path"
   check_contains_literal "$research_task" "$research_plan" "Spec 0137 Task missing co-located Plan path"
 
-  check_contains_literal "$priority_plan" "../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
+  check_contains_literal "$priority_plan" "../../05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md" "priority plan missing operations policy catalog link"
   check_contains_literal "$priority_plan" "../../05.operations/README.md" "priority plan missing operations index link"
 
   catalog_dir="$(dirname "$catalog")"

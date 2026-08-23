@@ -7,7 +7,7 @@ layer: agentic
 ## Overview
 
 이 디렉터리는 Stage 05의 사용 안내, 운영 통제, 실행 절차, 사고 대응,
-회고, 실제 릴리스 증거를 위한 복사 가능 양식을 제공한다. 역할과 경로
+회고를 위한 복사 가능 양식을 제공한다. 역할과 경로
 선택 규칙은 이 카탈로그가 아니라 Stage 99 support가 소유한다.
 
 ## Audience
@@ -15,16 +15,15 @@ layer: agentic
 - Documentation Writers
 - Operations/SRE Engineers
 - Incident Responders
-- Release Owners
 - AI Agents
 
 ## Scope
 
-이 카탈로그는 여섯 Operations 양식의 위치와 역할만 안내한다. 메타데이터,
+이 카탈로그는 다섯 Operations 양식의 위치와 역할만 안내한다. 메타데이터,
 선택, lifecycle, 승인, 이관 및 검증 규칙은 support 문서를 따른다.
 
 새 Guide, Policy, Runbook은 역할별 병렬 root가 아니라
-`docs/05.operations/<domain>/ops-####-<subject>/`에 함께 둔다. 기존 역할이
+`docs/05.operations/catalog/<domain>/####-<subject>/`에 함께 둔다. 기존 역할이
 없는 subject에 새 문서를 만들려면 별도 승인과 inventory 근거가 필요하다.
 
 ## Structure
@@ -36,11 +35,10 @@ layer: agentic
 | 순서화된 절차, 증거, 복구, escalation | [runbook.template.md](./runbook.template.md) |
 | 사고 영향, 시간선, 대응 상태 | [incident.template.md](./incident.template.md) |
 | 원인, 교훈, 재발 방지 조치 | [postmortem.template.md](./postmortem.template.md) |
-| 실제 릴리스 산출물과 결과 증거 | [release.template.md](./release.template.md) |
 
 Operations subject navigation은 Stage root와 13개 domain `README.md`만
-발행한다. subject 폴더에는 `README.md`를 만들지 않으며, incident와 release는
-각 stable event 경로와 전용 인덱스를 사용한다.
+발행한다. subject 폴더에는 `README.md`를 만들지 않으며, incident는 catalog의
+sibling인 stable event 경로와 전용 인덱스를 사용한다.
 
 ## How to Work in This Area
 

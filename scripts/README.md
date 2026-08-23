@@ -107,7 +107,7 @@ script.
 | Compose Core Readiness Library         | [compose-core-readiness.lib.sh](./validation/compose-core-readiness.lib.sh)                 | Shared fail-closed identity, path, render, readiness, recovery, evidence, redaction, and cleanup functions; source only through the harness or focused tests                                                     |
 | PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./validation/rehearse-postgres-logical-upgrade.sh)   | `scripts/validation/rehearse-postgres-logical-upgrade.sh` checks or runs the pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
 | Harness Validation                     | [validate-harness.sh](./validation/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
-| Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce the canonical document registry, typed template and README ownership, Release routes, `_workspace` independence, docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts               |
+| Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce the canonical document registry, typed template and README ownership, `_workspace` independence, docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts               |
 | Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed Stage 00 artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
 | Task 4 Migration Verifier              | [check-task4-migration.py](./validation/check-task4-migration.py)                           | Verify the exact approved mig-0003 Task 4 row identities, source/target/actions, counts, and frozen selection/edge digests                                                                                       |
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
@@ -246,7 +246,7 @@ advisory; parser/configuration failures remain errors. Use `--output <path>` to
 generate the canonical snapshot and add `--check` for freshness. The
 `--mode check-contracts` repository gate reuses that loaded registry to require
 exact README ownership, complete and type-consistent copyable Markdown template
-mapping, consistent Release selection and Stage 00/05 routes, sole machine
+mapping, sole machine
 ownership of full registry arrays, and `_workspace` exclusion from docs
 inventory inference. `check-changed` is the pre-push blocking mode for a safely
 selected diff;
@@ -548,7 +548,7 @@ generators; it never invokes runtime-changing rows.
 - [🤖 Agent Governance](../AGENTS.md)
 - [⚙️ Operations Baseline](../docs/05.operations/README.md)
 - [📘 Runbooks](../docs/05.operations/README.md)
-- [LLM Wiki Maintenance](../docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md)
+- [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
 - [LLM Wiki Generated Index](../docs/90.references/llm-wiki/llm-wiki-index.md)
 - [Scripts CI/CD & QA Cleanup Plan](../docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)

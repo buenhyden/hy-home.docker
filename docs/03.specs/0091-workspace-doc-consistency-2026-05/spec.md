@@ -22,8 +22,8 @@ This document is the technical specification for the May 2026 workspace document
 - docs/01.requirements: add missing sections (Overview, AI Agent Requirements)
 - docs/03.specs: add Agent Role & IO Contract sections to 15 spec files, marked N/A where applicable
 - docs/04.execution: standardize task file title prefixes and add suffixes to active plan titles
-- docs/05.operations/policies: standardize `## Applies To` -> `## Policy Scope` headings across about 50 files
-- docs/05.operations/guides, runbooks: add frontmatter `status:` fields
+- docs/05.operations/catalog/*/*/policy.md: standardize `## Applies To` -> `## Policy Scope` headings across about 50 files
+- docs/05.operations/catalog/*/*/guide.md, runbooks: add frontmatter `status:` fields
 - docs/05.operations/incidents: add README template links
 - docs/99.templates: confirm baseline, with no changes
 - scripts/: fix executable permissions and shebangs for 2 files
@@ -152,7 +152,7 @@ grep "^# " docs/02.architecture/descriptions/*.md | grep -v "Architecture Descri
 grep -rL "## Agent Role" docs/03.specs/*/spec.md
 
 # Policies Policy Scope heading
-grep -rl "^## Applies To" docs/05.operations/policies/
+grep -rl "^## Applies To" docs/05.operations/catalog/*/*/policy.md
 
 # Operations status frontmatter
 find docs/05.operations -name "*.md" ! -name "README.md" | xargs grep -rL "^status:" | wc -l
@@ -172,7 +172,7 @@ bash scripts/validation/check-doc-traceability.sh
 - **VAL-SPC-001**: `grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"` returns an empty result, excluding README; ADR title format is 100% compliant.
 - **VAL-SPC-002**: `grep "^# " docs/02.architecture/descriptions/*.md | grep -v "Architecture Description"` returns an empty result, excluding README; Architecture Description title format is 100% compliant.
 - **VAL-SPC-003**: `grep -rL "## Agent Role" docs/03.specs/*/spec.md` returns an empty result; all specs have the Agent Role section.
-- **VAL-SPC-004**: `grep -rl "^## Applies To" docs/05.operations/policies/` returns an empty result; Policy Scope headings are 100% unified.
+- **VAL-SPC-004**: `grep -rl "^## Applies To" docs/05.operations/catalog/*/*/policy.md` returns an empty result; Policy Scope headings are 100% unified.
 - **VAL-SPC-005**: operations docs have 0 missing status frontmatter fields.
 - **VAL-SPC-006**: `scripts/lib/hardening-lib.sh` has executable permission 755.
 - **VAL-SPC-007**: `bash scripts/validation/check-repo-contracts.sh` passes.

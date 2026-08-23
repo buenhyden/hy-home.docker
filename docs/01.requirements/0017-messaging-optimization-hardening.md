@@ -97,6 +97,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md
-- **Guide**: [../05.operations/guides/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md)
-- **Policy**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md)
-- **Runbook**: [../05.operations/runbooks/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md)
+- **Guide**: [../05.operations/guides/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md)
+- **Policy**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md)
+- **Runbook**: [../05.operations/runbooks/05-messaging/optimization-hardening.md](../05.operations/catalog/05-messaging/0037-optimization-hardening/runbook.md)

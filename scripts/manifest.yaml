@@ -17,8 +17,8 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md
-  - docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md
+  - docs/05.operations/catalog/01-gateway/0011-nginx/guide.md
+  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
   disposition: retain
   successor: null
   tests:
@@ -31,7 +31,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
   disposition: retain
   successor: null
   tests:
@@ -54,7 +54,7 @@ files:
   lifecycle: transition
   mutation: check-write
   consumers:
-  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
   disposition: rewrite
   successor: scripts/hooks/post-tool-validate.sh
   tests:
@@ -94,9 +94,9 @@ files:
   - .github/workflow-contract.yml
   - README.md
   - docs/00.agent-governance/roles/qa.md
-  - docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md
-  - docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md
-  - docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md
+  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
+  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
+  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
   - docs/90.references/data/knowledge/README.md
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/generate-audit-implementation-matrix.sh
@@ -119,9 +119,9 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
-  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md
-  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -207,7 +207,12 @@ files:
   - tests/validation/test_four_digit_document_identity.py
 - path: scripts/lib/document_governance/operations_catalog.py
   kind: library
-  authority: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  authority: docs/99.templates/registry.json
+  current_authorities:
+  - docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  - docs/99.templates/registry.json
+  semantic_witnesses:
+  - docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -270,7 +275,7 @@ files:
   lifecycle: transition
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md
+  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
   - scripts/validation/check-repo-contracts.sh
   disposition: rewrite
   successor: scripts/operations/gen-secrets.sh
@@ -312,11 +317,11 @@ files:
   - tests/validation/test_provider_native_surfaces.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md
+  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
   lifecycle: transition
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md
+  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -555,7 +560,12 @@ files:
   - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/check-operations-catalog.py
   kind: validator
-  authority: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  authority: docs/99.templates/registry.json
+  current_authorities:
+  - docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  - docs/99.templates/registry.json
+  semantic_witnesses:
+  - docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -572,7 +582,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md
+  - docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md
   disposition: rewrite
   successor: scripts/validation/check-quickwin-baseline.sh
   tests: []
@@ -672,7 +682,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/03-security/ops-0016-vault/guide.md
+  - docs/05.operations/catalog/03-security/0016-vault/guide.md
   disposition: rewrite
   successor: scripts/validation/check-template-security-baseline.sh
   tests: []
@@ -798,11 +808,11 @@ files:
   - tests/validation/test_ci_gate_adapters.py
 - path: scripts/validation/rehearse-postgres-logical-upgrade.sh
   kind: validator
-  authority: docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  - docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -902,7 +912,7 @@ files:
   mutation: none
   consumers:
   - .github/INDEX.md
-  - docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md
+  - docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md
   disposition: retain
   successor: null
   tests:

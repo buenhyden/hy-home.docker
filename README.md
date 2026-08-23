@@ -175,7 +175,7 @@ docker compose --profile core up -d
 | `docs/03.specs/**` | English-only technical contracts |
 | `docs/03.specs/####-*/plan.md` | English-only implementation plans |
 | `docs/03.specs/####-*/tasks/tsk-####-*.md` | English-only task evidence |
-| `docs/05.operations/{guides,policies,runbooks,incidents}/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
+| `docs/05.operations/catalog/**`, `docs/05.operations/incidents/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
 | `docs/90.references/**` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
 | `docs/98.archive/**` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
 | `docs/99.templates/**` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |

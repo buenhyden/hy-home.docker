@@ -66,8 +66,8 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Follow the [LGTM Stack Guide](../../docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md).
-2. Refer to the [Alloy Collector Guide](../../docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md) for data piping.
+1. Follow the [LGTM Stack Guide](../../docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md).
+2. Refer to the [Alloy Collector Guide](../../docs/05.operations/catalog/06-observability/0040-alloy/guide.md) for data piping.
 3. Check the [Operations Policy](../../docs/05.operations/catalog/06-observability/README.md) for retention.
 4. Consult the [Observability Runbook](../../docs/05.operations/catalog/06-observability/README.md) for recovery.
 

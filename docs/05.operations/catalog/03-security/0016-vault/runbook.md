@@ -1,0 +1,123 @@
+---
+profile_id: runbook
+status: active
+artifact_id: runbook-0016
+artifact_type: runbook
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/03-security/0016-vault/runbook.md -->
+
+# 03-Security Vault Runbook
+
+## Overview
+
+이 런북은 Vault seal/unseal, raft 상태 점검, audit 활성/검증, Vault Agent 렌더 실패 복구, 안전 롤백 절차를 즉시 실행 가능 형태로 제공한다.
+
+## 03-Security Vault Procedure
+
+> Scope: Vault Secret Management Recovery & Maintenance
+
+### Purpose
+
+- Vault 장애/오작동 상황에서 복구 시간을 줄인다.
+- 하드닝 계약 위반을 빠르게 진단하고 원복한다.
+
+### Canonical References
+
+- [Spec](../../../../03.specs/0003-security/spec.md)
+- [Operations Policy](policy.md)
+- Plan
+- Tasks
+
+## When to Use
+
+- Vault가 `Sealed: true` 상태일 때
+- raft peer 상태가 비정상일 때
+- audit device가 비활성화되었을 때
+- Vault Agent healthcheck 또는 템플릿 렌더가 실패할 때
+
+## Procedure
+
+### Checklist
+
+- [ ] `docker compose --profile security exec vault vault status` 확인
+- [ ] `docker inspect --format '{{json .State.Health}}' vault` 확인
+- [ ] `docker inspect --format '{{json .State.Health}}' vault-agent` 확인
+- [ ] 최근 변경 파일/커밋 식별
+
+### Steps
+
+1. Seal/Unseal 복구
+   - 상태 확인: `docker compose --profile security exec vault vault status`
+   - 필요한 경우 unseal 키 3회 입력
+2. Raft 상태 점검
+   - `docker compose --profile security exec vault vault operator raft list-peers`
+   - 비정상 peer 식별 후 정책에 따라 조치
+3. Audit 활성/검증
+   - `docker compose --profile security exec vault vault audit list`
+   - 로컬 audit 활성 확인, 원격 audit는 정책 승인 상태 확인
+4. Vault Agent 렌더 실패 복구
+   - `docker compose --profile security logs vault-agent --tail=200`
+   - `/vault/agent/role_id`, `/vault/agent/secret_id`, `/vault/agent/token` 확인
+   - 인증 정보(`role_id`/`secret_id`) 부재/오류 시 위 AppRole bootstrap 절차를 재실행한다. 생성값은 파일로 직접 저장하고 문서/PR/로그에 노출하지 않는다.
+   - `docker compose --profile security exec vault-agent ls -la /vault/out`로 출력 파일 재검증
+5. 재검증
+   - `bash scripts/hardening/check-all-hardening.sh 03-security`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+
+### Verification Steps
+
+- [ ] `bash scripts/hardening/check-all-hardening.sh 03-security` 통과
+- [ ] `docker compose --profile security exec vault vault status`에서 `Sealed: false` 확인
+- [ ] `docker inspect`에서 `vault`, `vault-agent` health가 정상
+- [ ] `/vault/out` 하위 템플릿 파일 생성 확인
+
+### Observability and Evidence Sources
+
+- **Signals**: container health, Vault status, audit list, agent render logs
+- **Evidence to Capture**:
+  - `docker compose --profile security logs vault --tail=200`
+  - `docker compose --profile security logs vault-agent --tail=200`
+  - `vault status`, `vault operator raft list-peers`, `vault audit list` 출력
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 롤백 대상 파일
+  - `infra/03-security/vault/docker-compose.yml`
+  - `infra/03-security/vault/config/templates/*.ctmpl`
+  - `scripts/hardening/check-all-hardening.sh 03-security`
+  - `.github/workflows/ci-quality.yml`
+- [ ] compose 재반영
+  - `docker compose --profile security up -d vault vault-agent`
+- [ ] 하드닝/추적성 검증 재실행
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: CI `infrastructure-hardening` 임시 비활성은 승인 후만 수행
+- **Eval Re-run**: `check-all-hardening.sh 03-security`, root profile validation, `check-doc-traceability`
+- **Trace Capture**: CI job logs + container logs
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Usage guide](guide.md)
+- [Operations policy](policy.md)

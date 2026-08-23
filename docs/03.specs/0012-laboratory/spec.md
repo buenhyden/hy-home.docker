@@ -141,10 +141,10 @@ common template context.
 
 - **Plan**: ../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md)
-- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)
+- **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md)
 
 ## Boundaries and Inputs
 

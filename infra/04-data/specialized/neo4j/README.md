@@ -26,9 +26,9 @@ The `neo4j` service provides a specialized graph storage layer for relationship-
 
 ### Out of Scope
 
-- Application-level graph modeling (See [Technical Guide](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md))
-- Operational controls (See [Operations Policy](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md))
-- Health and recovery triage (See [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md))
+- Application-level graph modeling (See [Technical Guide](../../../../docs/05.operations/catalog/04-data/0033-neo4j/guide.md))
+- Operational controls (See [Operations Policy](../../../../docs/05.operations/catalog/04-data/0033-neo4j/policy.md))
+- Health and recovery triage (See [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/0033-neo4j/runbook.md))
 
 ## Structure
 
@@ -54,13 +54,13 @@ neo4j/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.neo4j.rule`, `traefik.http.routers.neo4j.entrypoints`, `traefik.http.routers.neo4j.tls`, `traefik.http.services.neo4j.loadbalancer.server.port`, `traefik.http.routers.neo4j.middlewares` |
 | Secret refs | names: `neo4j_password`; mounts: `/run/secrets/neo4j_password` |
 | Healthcheck | Compose healthcheck declared for `neo4j` |
-| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0033-neo4j/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0033-neo4j/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0033-neo4j/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Start by reviewing the [Technical Guide](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md) for architectural context.
+1. Start by reviewing the [Technical Guide](../../../../docs/05.operations/catalog/04-data/0033-neo4j/guide.md) for architectural context.
 2. Ensure the `neo4j_password` secret is provisioned before starting the service.
 3. Follow the `template-stateful-med` service extension in `docker-compose.yml` for resource consistency.
 4. Verify connectivity via container-local `cypher-shell` or the Traefik-backed Neo4j Browser route.
@@ -87,6 +87,6 @@ neo4j/
 ## Related Documents
 
 - [Specialized Guides](../../../../docs/05.operations/catalog/04-data/README.md)
-- [Neo4j Technical Guide](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md)
-- [Neo4j Operations Policy](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md)
-- [Neo4j Recovery Runbook](../../../../docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md)
+- [Neo4j Technical Guide](../../../../docs/05.operations/catalog/04-data/0033-neo4j/guide.md)
+- [Neo4j Operations Policy](../../../../docs/05.operations/catalog/04-data/0033-neo4j/policy.md)
+- [Neo4j Recovery Runbook](../../../../docs/05.operations/catalog/04-data/0033-neo4j/runbook.md)

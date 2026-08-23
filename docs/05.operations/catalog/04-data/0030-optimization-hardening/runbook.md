@@ -1,0 +1,127 @@
+---
+profile_id: runbook
+status: active
+artifact_id: runbook-0030
+artifact_type: runbook
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/04-data/0030-optimization-hardening/runbook.md -->
+
+# 04-Data Optimization Hardening Runbook
+
+## Overview
+
+이 런북은 04-data 하드닝 항목에서 발생 가능한 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. `supabase` healthcheck 이상, `valkey` exporter 인증 실패, `seaweedfs` compose 파싱 오류, `ksql` 라벨 회귀를 중심으로 점검/복구 절차를 정의한다.
+
+## 04-Data Optimization Hardening Procedure
+
+> Scope: 04-data Configuration Recovery & Baseline Restoration
+
+### Purpose
+
+- 04-data 하드닝 회귀를 신속하게 감지하고 복구한다.
+- 배포 전후 정적 검증/증적 수집 절차를 표준화한다.
+
+### Canonical References
+
+- [Spec](../../../../03.specs/0004-data/spec.md)
+- [Operations Policy](policy.md)
+- [Usage Guide](guide.md)
+- Plan
+- Tasks
+
+## When to Use
+
+- `infrastructure-hardening` CI가 실패할 때
+- `supabase` 서비스들이 `service_healthy` 대기 상태에서 시작되지 않을 때
+- `valkey-cluster-exporter`가 인증 실패로 기동되지 않을 때
+- `seaweedfs` compose 파싱/기동 오류가 발생할 때
+
+## Procedure
+
+### Checklist
+
+- [ ] 실패한 검증 항목과 대상 파일 식별
+- [ ] 최근 변경 커밋/파일 범위 확인
+- [ ] 영향 범위(analytics/cache/storage/operational) 식별
+
+### Steps
+
+1. 정적 구성 점검
+   - `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
+   - `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config`
+   - `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
+   - `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
+2. 하드닝 기준 점검
+   - `bash scripts/hardening/check-all-hardening.sh 04-data`
+3. 증상별 복구
+   - Supabase healthcheck 누락/오류:
+     - 대상 서비스 블록에 healthcheck 복원
+     - `db`는 `pg_isready` 계약 유지
+   - Valkey exporter 인증 실패:
+     - `/run/secrets/service_valkey_password` 경로로 복원
+   - SeaweedFS compose 파싱 오류:
+     - expose 포트 토큰에서 오타(`]`) 제거
+   - ksql 라벨 회귀:
+     - `hy-home.tier: data`로 복원
+4. 재검증
+   - `bash scripts/hardening/check-all-hardening.sh 04-data`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
+
+### Verification Steps
+
+- [ ] 4개 compose `config` 검증 통과
+- [ ] `infrastructure-hardening` 실패 0건
+- [ ] 관련 문서 링크/인덱스가 최신 상태
+
+### Observability and Evidence Sources
+
+- **Signals**: CI `infrastructure-hardening` job 상태, compose config 결과, 컨테이너 health 상태
+- **Evidence to Capture**:
+  - 실패/복구 전후 `check-all-hardening.sh 04-data` 출력
+  - `docker inspect --format '{{json .State.Health}}'` 결과
+  - 수정 파일 diff
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 롤백 대상 파일
+  - `infra/04-data/operational/supabase/docker-compose.yml`
+  - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
+  - `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`
+  - `infra/04-data/analytics/ksql/docker-compose.yml`
+  - `scripts/hardening/check-all-hardening.sh 04-data`
+  - `.github/workflows/ci-quality.yml`
+- [ ] 롤백 후 정적 검증 재실행
+- [ ] 운영 정책/가이드/태스크 문서 동기화 재확인
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: `infrastructure-hardening` 게이트 임시 비활성은 승인 후만 수행
+- **Eval Re-run**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `check-doc-traceability`
+- **Trace Capture**: CI logs + compose config output
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Usage guide](guide.md)
+- [Operations policy](policy.md)

@@ -96,6 +96,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Plan**: ../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md
-- **Guide**: [../05.operations/guides/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md)
-- **Operation**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
-- **Runbook**: [../05.operations/runbooks/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
+- **Guide**: [../05.operations/guides/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md)
+- **Operation**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md)
+- **Runbook**: [../05.operations/runbooks/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md)

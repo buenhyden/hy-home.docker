@@ -5,7 +5,7 @@
 ## Overview
 
 This domain keeps the existing Vault guide, policy, and runbook together under
-one stable `ops-0016-vault` subject without changing their operational content.
+one stable `0016-vault` subject without changing their operational content.
 
 ## Audience
 
@@ -20,7 +20,7 @@ one stable `ops-0016-vault` subject without changing their operational content.
 
 | Subject | Available documents |
 | --- | --- |
-| [Vault](ops-0016-vault/guide.md) | [Guide](ops-0016-vault/guide.md), [Policy](ops-0016-vault/policy.md), [Runbook](ops-0016-vault/runbook.md) |
+| [Vault](0016-vault/guide.md) | [Guide](0016-vault/guide.md), [Policy](0016-vault/policy.md), [Runbook](0016-vault/runbook.md) |
 
 ## How to Work in This Area
 

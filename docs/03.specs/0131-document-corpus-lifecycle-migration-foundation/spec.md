@@ -462,8 +462,8 @@ and after path sets, hook-managed changes, and disposition. Agents must not run
 - Every supersession has verified direction and replacement semantics.
 - Every tombstone has valid Git commit/blob provenance.
 - Every immutable snapshot has matching SHA-256 and approved eligibility.
-- Guide, Policy, Runbook, Incident, Postmortem, and Release roles remain
-  distinct.
+- Guide, Policy, Runbook, Incident, and Postmortem roles remain distinct;
+  delivery evidence remains Task- and Git-owned.
 - Every README matches exactly one profile and declared consumer boundary.
 - Stage 04 is year-partitioned and all immediate directories satisfy the
   configured budget.

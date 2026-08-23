@@ -61,7 +61,7 @@ couchdb/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.couchdb.rule`, `traefik.http.routers.couchdb.entrypoints`, `traefik.http.routers.couchdb.tls`, `traefik.http.routers.couchdb.service`, `traefik.http.routers.couchdb.middlewares`, `traefik.http.services.couchdb-cluster.loadbalancer.server.port`, plus 2 more |
 | Secret refs | names: `couchdb_password`, `couchdb_cookie`; mounts: `/run/secrets/couchdb_password`, `/run/secrets/couchdb_cookie` |
 | Healthcheck | Compose healthcheck declared for `couchdb-1`, `couchdb-2`, `couchdb-3`; not declared for `couchdb-cluster-init` |
-| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0026-couchdb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0026-couchdb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0026-couchdb/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -104,9 +104,9 @@ couchdb/
 
 ## Related Documents
 
-- **Guide**: [CouchDB Guide](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md)
-- **Policy**: [CouchDB Operation](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md)
-- **Runbook**: [CouchDB Runbook](../../../../docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md)
+- **Guide**: [CouchDB Guide](../../../../docs/05.operations/catalog/04-data/0026-couchdb/guide.md)
+- **Policy**: [CouchDB Operation](../../../../docs/05.operations/catalog/04-data/0026-couchdb/policy.md)
+- **Runbook**: [CouchDB Runbook](../../../../docs/05.operations/catalog/04-data/0026-couchdb/runbook.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

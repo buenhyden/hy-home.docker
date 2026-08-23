@@ -12,7 +12,7 @@ updated: 2026-08-11
 
 ## Overview
 
-This document specifies how to refresh operations documents and READMEs based on the actual file contents under `infra/`, `secrets/`, `docs/05.operations/guides/`, `docs/05.operations/policies/`, `docs/05.operations/runbooks/`, and `docs/90.references/`. The goal is to strengthen implementation elements and operations documents so they follow the `docs/99.templates/` contract without changing Docker Compose runtime behavior or secret value files.
+This document specifies how to refresh operations documents and READMEs based on the actual file contents under `infra/`, `secrets/`, `docs/05.operations/catalog/*/*/guide.md`, `docs/05.operations/catalog/*/*/policy.md`, `docs/05.operations/catalog/*/*/runbook.md`, and `docs/90.references/`. The goal is to strengthen implementation elements and operations documents so they follow the `docs/99.templates/` contract without changing Docker Compose runtime behavior or secret value files.
 
 Current baseline structural validation is passing. `infra/` contains 48 Compose variant files and 40 Compose service directories, with 0 missing service READMEs. Root Compose has 17 active includes, so owned Compose files and root-active Compose files are documented separately. `secrets/` has 95 secret/cert filenames excluding Markdown registry/README documents, 70 root Compose declarations, and 0 missing declared secrets; values are not read. The target README audit scope is currently 134 README files, and the stage audit scope is currently 217 non-README Markdown files.
 
@@ -41,12 +41,12 @@ This specification owns documentation structure, README contracts, stage documen
 | Secret inventory      | 69 root Compose declarations, 94 value/cert filenames, 0 missing declared files                                                                              |
 | Secret classification | `compose-declared`, `bind-mounted-cert`, `registry/local-only`, `private-registry`, `example-registry`                                                       |
 | README audit          | 134 README files, heading gaps 0                                                                                                                             |
-| Stage audit           | 217 non-README docs under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`, heading gaps 0    |
+| Stage audit           | 217 non-README docs under `docs/05.operations/catalog/*/*/guide.md`, `docs/05.operations/catalog/*/*/policy.md`, `docs/05.operations/catalog/*/*/runbook.md`, `docs/90.references`, heading gaps 0    |
 | Semantic QA           | Duplicate legacy/template blocks, non-link references, secret-value wording, and shell-history-sensitive examples are reviewed separately from heading audit |
 
 ## Core Design
 
-- **Component Boundary**: documentation strengthening is limited to `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, and `docs/90.references`.
+- **Component Boundary**: documentation strengthening is limited to `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/catalog/*/*/guide.md`, `docs/05.operations/catalog/*/*/policy.md`, `docs/05.operations/catalog/*/*/runbook.md`, and `docs/90.references`.
 - **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/policies/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
@@ -69,9 +69,9 @@ README base headings:
 - Related Documents
 
 Stage document template families:
-- docs/05.operations/guides -> guide.template.md
-- docs/05.operations/policies -> policy.template.md
-- docs/05.operations/runbooks -> runbook.template.md
+- docs/05.operations/catalog/*/*/guide.md -> guide.template.md
+- docs/05.operations/catalog/*/*/policy.md -> policy.template.md
+- docs/05.operations/catalog/*/*/runbook.md -> runbook.template.md
 - docs/90.references -> reference.template.md
 ```
 
@@ -149,7 +149,7 @@ git diff --check
 
 - **VAL-SPC-001**: new stage documents include the required sections from the matching templates.
 - **VAL-SPC-002**: target READMEs include base headings.
-- **VAL-SPC-003**: non-README Markdown under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, and `docs/90.references` includes the matching template headings.
+- **VAL-SPC-003**: non-README Markdown under `docs/05.operations/catalog/*/*/guide.md`, `docs/05.operations/catalog/*/*/policy.md`, `docs/05.operations/catalog/*/*/runbook.md`, and `docs/90.references` includes the matching template headings.
 - **VAL-SPC-004**: secret value files are not read or modified.
 - **VAL-SPC-005**: repository validation scripts pass.
 - **VAL-SPC-006**: documents do not confuse root-active, optional, standalone, and variant Compose states.
@@ -159,9 +159,9 @@ git diff --check
 
 - **Plan**: ../../04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md
 - **Tasks**: ../../04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md
-- **Guide**: [../../05.operations/README.md](../../05.operations/README.md)
-- **Policy**: [../../05.operations/README.md](../../05.operations/README.md)
-- **Runbook**: [../../05.operations/README.md](../../05.operations/README.md)
+- **Guide**: [../../05.operations/catalog/03-security/0016-vault/guide.md](../../05.operations/catalog/03-security/0016-vault/guide.md)
+- **Policy**: [../../05.operations/catalog/03-security/0016-vault/policy.md](../../05.operations/catalog/03-security/0016-vault/policy.md)
+- **Runbook**: [../../05.operations/catalog/03-security/0016-vault/runbook.md](../../05.operations/catalog/03-security/0016-vault/runbook.md)
 - **References**: [../../90.references/README.md](../../90.references/README.md)
 
 ## Boundaries and Inputs

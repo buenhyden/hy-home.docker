@@ -21,11 +21,11 @@ procedures under their frozen `ops-0055` through `ops-0059` identities.
 
 | Subject | Available documents |
 | --- | --- |
-| [GPU recovery](ops-0055-gpu-recovery/runbook.md) | [Runbook](ops-0055-gpu-recovery/runbook.md) |
-| [Ollama](ops-0056-ollama/guide.md) | [Guide](ops-0056-ollama/guide.md), [Policy](ops-0056-ollama/policy.md), [Runbook](ops-0056-ollama/runbook.md) |
-| [Open WebUI](ops-0057-open-webui/guide.md) | [Guide](ops-0057-open-webui/guide.md), [Policy](ops-0057-open-webui/policy.md), [Runbook](ops-0057-open-webui/runbook.md) |
-| [Optimization hardening](ops-0058-optimization-hardening/guide.md) | [Guide](ops-0058-optimization-hardening/guide.md), [Policy](ops-0058-optimization-hardening/policy.md), [Runbook](ops-0058-optimization-hardening/runbook.md) |
-| [RAG workflow](ops-0059-rag-workflow/guide.md) | [Guide](ops-0059-rag-workflow/guide.md) |
+| [GPU recovery](0055-gpu-recovery/runbook.md) | [Runbook](0055-gpu-recovery/runbook.md) |
+| [Ollama](0056-ollama/guide.md) | [Guide](0056-ollama/guide.md), [Policy](0056-ollama/policy.md), [Runbook](0056-ollama/runbook.md) |
+| [Open WebUI](0057-open-webui/guide.md) | [Guide](0057-open-webui/guide.md), [Policy](0057-open-webui/policy.md), [Runbook](0057-open-webui/runbook.md) |
+| [Optimization hardening](0058-optimization-hardening/guide.md) | [Guide](0058-optimization-hardening/guide.md), [Policy](0058-optimization-hardening/policy.md), [Runbook](0058-optimization-hardening/runbook.md) |
+| [RAG workflow](0059-rag-workflow/guide.md) | [Guide](0059-rag-workflow/guide.md) |
 
 ## How to Work in This Area
 

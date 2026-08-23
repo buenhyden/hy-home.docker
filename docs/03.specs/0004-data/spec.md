@@ -142,9 +142,9 @@ docker inspect --format '{{json .State.Health}}' supabase-pooler
 
 - **Plan**: ../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/ops-0030-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/ops-0030-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/04-data/optimization/optimization-hardening.md](../../05.operations/catalog/04-data/0030-optimization-hardening/runbook.md)
 
 ## Boundaries and Inputs
 

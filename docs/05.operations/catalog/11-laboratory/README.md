@@ -24,12 +24,12 @@ is absent from the migration ledger.
 
 | Subject | Available documents |
 | --- | --- |
-| [Dashboard](ops-0071-homer-dashboard/guide.md) | [Guide](ops-0071-homer-dashboard/guide.md), [Policy](ops-0071-homer-dashboard/policy.md), [Runbook](ops-0071-homer-dashboard/runbook.md) |
-| [Dozzle](ops-0072-dozzle/guide.md) | [Guide](ops-0072-dozzle/guide.md), [Policy](ops-0072-dozzle/policy.md), [Runbook](ops-0072-dozzle/runbook.md) |
-| [Open Notebook](ops-0073-open-notebook/guide.md) | [Guide](ops-0073-open-notebook/guide.md), [Policy](ops-0073-open-notebook/policy.md), [Runbook](ops-0073-open-notebook/runbook.md) |
-| [Optimization hardening](ops-0074-optimization-hardening/guide.md) | [Guide](ops-0074-optimization-hardening/guide.md), [Policy](ops-0074-optimization-hardening/policy.md), [Runbook](ops-0074-optimization-hardening/runbook.md) |
-| [Portainer](ops-0075-portainer/guide.md) | [Guide](ops-0075-portainer/guide.md), [Policy](ops-0075-portainer/policy.md), [Runbook](ops-0075-portainer/runbook.md) |
-| [RedisInsight](ops-0076-redisinsight/guide.md) | [Guide](ops-0076-redisinsight/guide.md), [Policy](ops-0076-redisinsight/policy.md), [Runbook](ops-0076-redisinsight/runbook.md) |
+| [Dashboard](0071-homer-dashboard/guide.md) | [Guide](0071-homer-dashboard/guide.md), [Policy](0071-homer-dashboard/policy.md), [Runbook](0071-homer-dashboard/runbook.md) |
+| [Dozzle](0072-dozzle/guide.md) | [Guide](0072-dozzle/guide.md), [Policy](0072-dozzle/policy.md), [Runbook](0072-dozzle/runbook.md) |
+| [Open Notebook](0073-open-notebook/guide.md) | [Guide](0073-open-notebook/guide.md), [Policy](0073-open-notebook/policy.md), [Runbook](0073-open-notebook/runbook.md) |
+| [Optimization hardening](0074-optimization-hardening/guide.md) | [Guide](0074-optimization-hardening/guide.md), [Policy](0074-optimization-hardening/policy.md), [Runbook](0074-optimization-hardening/runbook.md) |
+| [Portainer](0075-portainer/guide.md) | [Guide](0075-portainer/guide.md), [Policy](0075-portainer/policy.md), [Runbook](0075-portainer/runbook.md) |
+| [RedisInsight](0076-redisinsight/guide.md) | [Guide](0076-redisinsight/guide.md), [Policy](0076-redisinsight/policy.md), [Runbook](0076-redisinsight/runbook.md) |
 
 ## How to Work in This Area
 
@@ -42,4 +42,3 @@ safety, evidence, rollback or recovery, and escalation limits.
 - [Operations index](../../README.md)
 - [Laboratory infrastructure](../../../../infra/11-laboratory/README.md)
 - [Incident records](../../incidents/README.md)
-- [Release records](../../releases/README.md)

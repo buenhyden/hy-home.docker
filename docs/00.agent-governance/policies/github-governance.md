@@ -240,7 +240,7 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `.github/INDEX.md`
 - `.github/rulesets/main-protection.md`
 - `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`
-- `docs/05.operations/catalog/00-workspace/ops-####-release-management/runbook.md`
+- `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
 
 ## References
 

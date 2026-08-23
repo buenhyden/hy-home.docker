@@ -463,7 +463,7 @@ TASK5_STAGE_PREFIXES = (
     "docs/98.archive/03.specs/",
 )
 TASK5_OPERATIONS_EXCEPTION = (
-    "docs/05.operations/policies/00-workspace/"
+    "docs/05.operations/" "policies/00-workspace/"
     "infra-service-optimization-catalog.md"
 )
 TASK5_RELATIVE_LINK = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^)\n]+)\)")

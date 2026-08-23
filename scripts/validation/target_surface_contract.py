@@ -42,10 +42,10 @@ INFLUX_ACTIVE_PATHS: Final = (
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
     "docs/03.specs/005-data-analytics/README.md",
     "docs/03.specs/005-data-analytics/spec.md",
-    "docs/05.operations/guides/04-data/analytics/README.md",
-    "docs/05.operations/guides/04-data/analytics/influxdb.md",
-    "docs/05.operations/policies/04-data/analytics/influxdb.md",
-    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+    "docs/05.operations/catalog/04-data/README.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
 )
 REMOVED_ACTIVE_PATTERNS: Final = (
     re.compile(r"(?<![A-Za-z0-9_])influxdb[ \t]+v?2(?![A-Za-z0-9_])", re.IGNORECASE),

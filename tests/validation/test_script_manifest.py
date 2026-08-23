@@ -19,6 +19,17 @@ ROOT = Path(__file__).resolve().parents[2]
 BASELINE = "232effd9a5e00907bdbe30efc6665023fb2d07f4"
 MANIFEST = ROOT / "scripts/manifest.yaml"
 LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+OPERATIONS_MANIFEST_PATHS = (
+    "scripts/lib/document_governance/operations_catalog.py",
+    "scripts/validation/check-operations-catalog.py",
+)
+OPERATIONS_CURRENT_AUTHORITIES = (
+    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+    "docs/99.templates/registry.json",
+)
+OPERATIONS_SEMANTIC_WITNESSES = (
+    "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+)
 MIGRATION_ROOTS = (
     "docs/01.requirements",
     "docs/02.architecture",
@@ -408,6 +419,11 @@ class ScriptManifestTests(unittest.TestCase):
                 and row["disposition"] == "retain"
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
+            if row["path"] in OPERATIONS_MANIFEST_PATHS:
+                expected_fields = expected_fields | {
+                    "current_authorities",
+                    "semantic_witnesses",
+                }
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
@@ -514,7 +530,7 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
-            "docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
+            "docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
             postgres["authority"],
         )
         self.assertEqual(
@@ -539,7 +555,7 @@ class ScriptManifestTests(unittest.TestCase):
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
             "docs/05.operations/runbooks/03-security/vault.md",
-            "docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md",
+            "docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md",
         }
         migration_authority = "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
@@ -559,11 +575,29 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(migration_authority, authority)
 
+    def test_operations_implementation_and_gate_declare_current_and_witness_authority(self) -> None:
+        for path in OPERATIONS_MANIFEST_PATHS:
+            with self.subTest(path=path):
+                row = self.rows_by_path[path]
+                self.assertEqual("docs/99.templates/registry.json", row["authority"])
+                self.assertEqual(
+                    list(OPERATIONS_CURRENT_AUTHORITIES),
+                    row["current_authorities"],
+                )
+                self.assertEqual(
+                    list(OPERATIONS_SEMANTIC_WITNESSES),
+                    row["semantic_witnesses"],
+                )
+                self.assertNotIn(
+                    OPERATIONS_SEMANTIC_WITNESSES[0],
+                    row["current_authorities"],
+                )
+
     def test_runbook_authority_accepts_only_canonical_catalog_leaf_shape(self) -> None:
         self.assertTrue(
             is_runbook_authority(
                 "docs/05.operations/catalog/04-data/"
-                "ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
+                "0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
             )
         )
         rejected = (
@@ -1039,6 +1073,26 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn("fields-missing", self.codes({key: value for key, value in self.row().items() if key != "authority"}))
         self.assertIn("authority-invalid", self.codes(self.row(authority="")))
         self.assertIn("authority-untracked", self.codes(self.row(authority="docs/unknown.md")))
+
+    def test_operations_rows_reject_semantic_witness_as_current_authority(self) -> None:
+        tracked = self.tracked | set(OPERATIONS_CURRENT_AUTHORITIES) | set(
+            OPERATIONS_SEMANTIC_WITNESSES
+        )
+        valid = self.row(
+            path=OPERATIONS_MANIFEST_PATHS[0],
+            authority="docs/99.templates/registry.json",
+            current_authorities=list(OPERATIONS_CURRENT_AUTHORITIES),
+            semantic_witnesses=list(OPERATIONS_SEMANTIC_WITNESSES),
+        )
+        self.assertNotIn("operations-authority-invalid", self.codes(valid, tracked))
+        mutated = {
+            **valid,
+            "current_authorities": [
+                OPERATIONS_SEMANTIC_WITNESSES[0],
+                "docs/99.templates/registry.json",
+            ],
+        }
+        self.assertIn("operations-authority-invalid", self.codes(mutated, tracked))
 
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
         self.assertIn("disposition-invalid", self.codes(self.row(disposition="deprecated")))

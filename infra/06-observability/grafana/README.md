@@ -56,7 +56,7 @@ grafana/
 | Ports | `traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}` |
 | Labels | `traefik.http.routers.grafana.*`, `traefik.http.routers.grafana-static.*`, `traefik.http.services.grafana-svc.*` |
 | Healthcheck | `http://localhost:${GRAFANA_PORT:-3000}/api/health` |
-| Operations | [Guide](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/06-observability/0041-grafana/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/0041-grafana/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/0041-grafana/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the linked runbook, compose config rendering, service logs, healthcheck, and redacted OAuth/datasource evidence |
 
@@ -88,8 +88,8 @@ grafana/
 
 ## How to Work in This Area
 
-1. Follow the [Grafana guide](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md) for usage and provisioning context.
-2. Follow the [Grafana runbook](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md) for readiness, SSO, datasource, dashboard provisioning, restart, and rollback steps.
+1. Follow the [Grafana guide](../../../docs/05.operations/catalog/06-observability/0041-grafana/guide.md) for usage and provisioning context.
+2. Follow the [Grafana runbook](../../../docs/05.operations/catalog/06-observability/0041-grafana/runbook.md) for readiness, SSO, datasource, dashboard provisioning, restart, and rollback steps.
 3. Keep admin passwords, OAuth client secrets, tokens, and rendered secret values out of docs, logs, task evidence, and commit messages.
 4. Do not change role mapping, datasource UIDs, dashboard provider locks, secret references, image version, or route middleware without plan/task evidence and rollback notes.
 
@@ -114,6 +114,6 @@ grafana/
 
 - [infra/README.md](../../README.md)
 - [Operations index](../../../docs/05.operations/README.md)
-- [Grafana guide](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md)
-- [Grafana policy](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md)
-- [Grafana runbook](../../../docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md)
+- [Grafana guide](../../../docs/05.operations/catalog/06-observability/0041-grafana/guide.md)
+- [Grafana policy](../../../docs/05.operations/catalog/06-observability/0041-grafana/policy.md)
+- [Grafana runbook](../../../docs/05.operations/catalog/06-observability/0041-grafana/runbook.md)

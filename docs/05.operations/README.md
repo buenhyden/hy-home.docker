@@ -6,14 +6,14 @@ status: active
 
 # Operations
 
-> 도메인별로 Guide, Policy, Runbook을 함께 찾고 사고와 릴리스 증거로 연결하는 canonical Stage 05 인덱스
+> 도메인별로 Guide, Policy, Runbook을 함께 찾고 사고 증거로 연결하는 canonical Stage 05 인덱스
 
 ## Overview
 
 `docs/05.operations/`는 운영자가 서비스 사용 맥락, 통제 기준, 실행 절차를
 같은 stable subject identity 아래에서 찾는 canonical operations stage다. 최종
 탐색 구조는 `catalog/` 아래의 domain-first이며, 역할별 병렬 인덱스를
-발행하지 않는다. Incident와 Release event record는 catalog 밖에 둔다.
+발행하지 않는다. Incident event record는 catalog 밖에 둔다.
 
 ## Audience
 
@@ -31,7 +31,7 @@ status: active
 - 운영 통제, 예외, 검토 주기를 정의하는 Policy
 - 검증, 복구, rollback, escalation을 위한 Runbook
 - 실제 사고 packet과 사후 분석
-- 실제 릴리스 artifact, 승인, rollout/rollback, 결과 증거
+- 배포 결과는 Task, `CHANGELOG.md`, Git tag와 관련 Runbook evidence로 추적한다.
 
 ### Out of Scope
 
@@ -46,16 +46,15 @@ status: active
 | --- | --- |
 | [Catalog](./catalog/README.md) | domain별 current Operations subjects |
 | [Incidents](./incidents/README.md) | incident packets and postmortems |
-| [릴리스](./releases/README.md) | executed release evidence |
 
 각 domain `README.md`가 subject navigation을 소유하며, subject 폴더에는
 `README.md`를 만들지 않는다. subject의 기존 역할만
-`catalog/<domain>/ops-####-<subject>/{guide,policy,runbook}.md`에 둔다.
+`catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`에 둔다.
 
 ## How to Work in This Area
 
 1. [Catalog](./catalog/README.md)의 domain 인덱스에서 stable
-   `ops-####-<subject>`를 찾는다.
+   `####-<subject>`를 찾는다.
 2. 정상 사용 맥락과 common checks는 `guide.md`에 둔다.
 3. 필수·금지 통제, 예외, 검토 주기는 `policy.md`에 둔다.
 4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
@@ -65,8 +64,7 @@ status: active
    자동화 artifact와 검증 가능한 link가 있을 때만 작성한다.
 6. 모든 subject가 세 역할을 모두 가질 필요는 없다. frozen inventory에
    존재하거나 별도 승인된 역할만 추가한다.
-7. 사고는 `incidents/<year>/inc-####-<slug>/`, 실제 릴리스는
-   `releases/rel-####-<slug>/` 아래에 기록한다.
+7. 사고는 `incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 owning domain `README.md`와 관련 inbound
    link를 함께 갱신한다.
 

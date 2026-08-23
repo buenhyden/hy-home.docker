@@ -155,10 +155,10 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 
 - **Plan**: ../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md)
-- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)
+- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/runbook.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md)
 
 ## Boundaries and Inputs
 

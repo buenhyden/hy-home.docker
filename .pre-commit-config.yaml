@@ -109,10 +109,10 @@ repos:
         stages: [pre-push]
 
       - id: check-operations-catalog
-        name: Operations catalog frozen manifest
-        entry: python3 scripts/validation/check-operations-catalog.py --mode manifest
+        name: Operations catalog current authority
+        entry: python3 scripts/validation/check-operations-catalog.py --mode complete
         language: system
-        files: ^(docs/05\.operations/|docs/98\.archive/migrations/mig-0002-|scripts/lib/document_governance/operations_catalog\.py|scripts/validation/check-operations-catalog\.py|tests/validation/test_operations_catalog\.py)
+        files: ^(docs/05\.operations/|docs/98\.archive/migrations/mig-000[23]-|docs/99\.templates/(registry\.json|support/document-metadata-profiles\.yaml|templates/operations/)|scripts/lib/document_governance/operations_catalog\.py|scripts/validation/check-operations-catalog\.py|tests/validation/test_operations_(catalog|taxonomy)\.py)
         pass_filenames: false
         stages: [pre-push]
 

@@ -127,9 +127,9 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 - **Plan**: ../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/02-auth/README.md](../../05.operations/catalog/02-auth/README.md)
-- **Policy**: [../../05.operations/policies/02-auth/README.md](../../05.operations/catalog/02-auth/README.md)
-- **Runbook**: [../../05.operations/runbooks/02-auth/README.md](../../05.operations/catalog/02-auth/README.md)
+- **Guide**: [../../05.operations/catalog/02-auth/0014-keycloak/guide.md](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)
+- **Policy**: [../../05.operations/catalog/02-auth/0014-keycloak/policy.md](../../05.operations/catalog/02-auth/0014-keycloak/policy.md)
+- **Runbook**: [../../05.operations/catalog/02-auth/0014-keycloak/runbook.md](../../05.operations/catalog/02-auth/0014-keycloak/runbook.md)
 
 ## Boundaries and Inputs
 

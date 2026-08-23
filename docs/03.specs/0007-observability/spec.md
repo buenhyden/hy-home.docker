@@ -147,10 +147,10 @@ docker inspect --format '{{json .State.Health}}' cadvisor
 
 - **Plan**: ../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/ops-0044-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md)
-- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md)
 
 ## Boundaries and Inputs
 

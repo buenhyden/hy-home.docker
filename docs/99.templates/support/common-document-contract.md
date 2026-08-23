@@ -32,7 +32,7 @@ README-specific profile selection is owned separately by
 
 - Put reusable human rules in the named support contract, copyable form in a
   template, machine semantics in the registry, current policy in governance,
-  and observed results in a Task, Audit, Incident, Postmortem, or Release as
+  and observed results in a Task, Audit, Incident, or Postmortem as
   appropriate.
 - A Reference or Audit may compare external guidance with repository evidence,
   but adoption requires an approved canonical owner outside Stage 90.

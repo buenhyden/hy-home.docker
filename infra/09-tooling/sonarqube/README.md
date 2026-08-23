@@ -77,9 +77,9 @@ sonarqube/
 
 ## Related Documents
 
-- **Guide**: [SonarQube Guide](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md)
-- **Policy**: [SonarQube Operations](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md)
-- **Runbook**: [SonarQube Runbook](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md)
+- **Guide**: [SonarQube Guide](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/guide.md)
+- **Policy**: [SonarQube Operations](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/policy.md)
+- **Runbook**: [SonarQube Runbook](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/runbook.md)
 
 ---
 
@@ -97,7 +97,7 @@ sonarqube/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.sonarqube.rule`, `traefik.http.routers.sonarqube.entrypoints`, `traefik.http.routers.sonarqube.tls`, `traefik.http.routers.sonarqube.middlewares`, `traefik.http.services.sonarqube.loadbalancer.server.port` |
 | Secret refs | names: `sonarqube_db_password`; mounts: `/run/secrets/sonarqube_db_password` |
 | Healthcheck | Compose healthcheck declared for `sonarqube` |
-| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0066-sonarqube/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

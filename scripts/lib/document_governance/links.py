@@ -17,7 +17,7 @@ from scripts.lib.document_governance.frontmatter import (
 
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-_LINK_OPEN = re.compile(r"(?<!!)\[[^\]]*\]\(")
+_LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 _CATALOG_PAIR = re.compile(
     r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)"
@@ -76,6 +76,7 @@ class DocumentLink:
     line: int
     absolute: bool = False
     outside_repository: bool = False
+    label: str = ""
 
     @property
     def decoded_target(self) -> str:
@@ -122,9 +123,37 @@ class LinkFinding:
     severity: str = "error"
 
 
+def _without_html_comments(line: str, active: bool) -> tuple[str, bool]:
+    """Blank HTML comments without shifting link offsets or line numbers."""
+
+    rendered = list(line)
+    opening_source = _without_inline_code(line)
+    cursor = 0
+    while cursor < len(line):
+        if active:
+            closing = line.find("-->", cursor)
+            end = len(line) if closing < 0 else closing + 3
+            for offset in range(cursor, end):
+                rendered[offset] = " "
+            if closing < 0:
+                return "".join(rendered), True
+            active = False
+            cursor = end
+            continue
+        opening = opening_source.find("<!--", cursor)
+        if opening < 0:
+            break
+        active = True
+        cursor = opening
+    return "".join(rendered), active
+
+
 def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
     fence: str | None = None
+    html_comment = False
     for line_no, line in enumerate(text.splitlines(), start=1):
+        if fence is None:
+            line, html_comment = _without_html_comments(line, html_comment)
         stripped = line.lstrip()
         marker = "```" if stripped.startswith("```") else "~~~" if stripped.startswith("~~~") else None
         if marker is not None:
@@ -159,8 +188,8 @@ def _without_inline_code(line: str) -> str:
     return "".join(rendered)
 
 
-def _markdown_destinations(line: str) -> Iterable[str]:
-    """Yield destinations with angle-bracket and nested-parenthesis support."""
+def _markdown_destinations(line: str) -> Iterable[tuple[str, str]]:
+    """Yield labeled destinations with angle and nested-parenthesis support."""
 
     text = _without_inline_code(line)
     for opening in _LINK_OPEN.finditer(text):
@@ -172,7 +201,7 @@ def _markdown_destinations(line: str) -> Iterable[str]:
         if text[cursor] == "<":
             closing = text.find(">", cursor + 1)
             if closing >= 0:
-                yield text[cursor + 1 : closing]
+                yield opening.group("label"), text[cursor + 1 : closing]
             continue
         start = cursor
         depth = 0
@@ -184,13 +213,13 @@ def _markdown_destinations(line: str) -> Iterable[str]:
                 if depth == 0:
                     destination = text[start:cursor].strip()
                     if destination:
-                        yield destination.split(maxsplit=1)[0]
+                        yield opening.group("label"), destination.split(maxsplit=1)[0]
                     break
                 depth -= 1
             elif character.isspace() and depth == 0:
                 destination = text[start:cursor]
                 if destination:
-                    yield destination
+                    yield opening.group("label"), destination
                 break
             cursor += 1
 
@@ -249,20 +278,21 @@ def parse_local_markdown_links(
 
     links: list[DocumentLink] = []
     for line_no, line in _unfenced_lines(text):
-        for raw in _markdown_destinations(line):
+        for label, raw in _markdown_destinations(line):
             resolved = _normalized_target(source, raw)
             if resolved is None:
                 continue
             target, fragment, absolute, outside = resolved
             links.append(
                 DocumentLink(
-                    source,
-                    target,
-                    raw,
-                    fragment,
-                    line_no,
-                    absolute,
-                    outside,
+                    source=source,
+                    target=target,
+                    raw_target=raw,
+                    fragment=fragment,
+                    line=line_no,
+                    absolute=absolute,
+                    outside_repository=outside,
+                    label=label,
                 )
             )
     return tuple(links)
@@ -513,7 +543,7 @@ def _link_targets(graph: DocumentGraph, source: pathlib.PurePosixPath) -> set[st
 
 def traceability_pair_total(graph: DocumentGraph) -> int:
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md"
+        "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
     )
     node = _node_map(graph).get(catalog)
     return 0 if node is None else len(_CATALOG_PAIR.findall(node.text))
@@ -548,7 +578,7 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     specs = pathlib.PurePosixPath("docs/03.specs/README.md")
     operations = pathlib.PurePosixPath("docs/05.operations/README.md")
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md"
+        "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
     )
     for path in (specs, operations, catalog):
         if path not in nodes:

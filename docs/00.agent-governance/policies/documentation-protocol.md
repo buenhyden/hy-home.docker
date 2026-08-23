@@ -31,10 +31,11 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 1. Select the registry profile before creating or moving a document.
 2. Use four-digit numbered slugs where the profile requires an identity.
 3. Keep dates in frontmatter; the incident year directory is the only path exception.
-4. Link canonical IDs in full and never reuse an issued ID.
-5. Update cross-links in the same logical change.
-6. Record execution evidence in the co-located Stage 03 Task.
-7. Validate metadata, links, and stage-specific contracts before completion.
+4. Store incident packets only at `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md` and `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
+5. Link canonical IDs in full and never reuse an issued ID.
+6. Update cross-links in the same logical change.
+7. Record execution evidence in the co-located Stage 03 Task.
+8. Validate metadata, links, and stage-specific contracts before completion.
 
 Governance and internal technical authority is written in English. User-facing
 guidance may follow the audience language when its template permits it.

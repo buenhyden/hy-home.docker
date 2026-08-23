@@ -244,6 +244,16 @@ PRD_TARGET_BODY = body_with_headings(
     "## Related Documents",
 )
 
+POLICY_TARGET_BODY = body_with_headings(
+    "## Purpose",
+    "## Scope",
+    "## Policy Statements",
+    "## Enforcement",
+    "## Exceptions",
+    "## Verification",
+    "## Traceability",
+)
+
 ARCHITECTURE_DESCRIPTION_TARGET_BODY = body_with_headings(
     "## Overview and Context",
     "## Stakeholders and Concerns",
@@ -1098,7 +1108,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             "README.md",
             "_workspace/README.md",
             "_workspace/repo-support/README.md",
-            "docs/05.operations/releases/README.md",
+            "docs/05.operations/incidents/README.md",
             "docs/99.templates/templates/**/*.template.md",
             "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
             "docs/99.templates/templates/spec-contracts/schema.template.graphql",
@@ -1124,6 +1134,35 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     profile_values = yaml.safe_load(profile_blob)
     for retired_role in ("memory", "progress"):
         profile_values["template_roles"].pop(retired_role, None)
+    profile_values["profiles"].pop("release", None)
+    profile_values["template_roles"].pop("release", None)
+    profile_values["document_families"]["sdlc"] = [
+        role
+        for role in profile_values["document_families"]["sdlc"]
+        if role != "release"
+    ]
+    for key in ("typed_keys", "frontmatter_order"):
+        profile_values["common"][key] = [
+            field
+            for field in profile_values["common"][key]
+            if field != "released_at"
+        ]
+    profile_values["common"]["template_placeholders"].pop("released_at", None)
+    profile_values["readme_profiles"]["stage-index"]["path_globs"] = [
+        path
+        for path in profile_values["readme_profiles"]["stage-index"]["path_globs"]
+        if path != "docs/05.operations/releases/README.md"
+    ]
+    for profile in [
+        *profile_values["profiles"].values(),
+        *profile_values["archive_profiles"].values(),
+    ]:
+        if "allowed_parent_types" in profile:
+            profile["allowed_parent_types"] = [
+                parent
+                for parent in profile["allowed_parent_types"]
+                if parent != "release"
+            ]
     profile_blob = yaml.safe_dump(profile_values, sort_keys=False).encode("utf-8")
     authority_paths = {
         PROFILES.relative_to(ROOT),
@@ -1397,7 +1436,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 for profile_name, profile in profiles["profiles"].items()
             },
         )
-        self.assertIn("release", profiles["profiles"])
+        self.assertNotIn("release", profiles["profiles"])
         self.assertNotIn("release", metadata.load_profiles(REGISTRY))
 
     def test_transitions_reject_unknown_statuses(self) -> None:
@@ -1434,7 +1473,6 @@ class ProfileSchemaTests(unittest.TestCase):
                 "next_review_at",
                 "occurred_at",
                 "resolved_at",
-                "released_at",
                 "generated_by",
                 "archived_from",
                 "archived_at",
@@ -1473,7 +1511,6 @@ class ProfileSchemaTests(unittest.TestCase):
                 "next_review_at": "<next-review-at>",
                 "occurred_at": "<occurred-at>",
                 "resolved_at": "<resolved-at>",
-                "released_at": "<released-at>",
                 "archived_from": "docs/<original-path>.md",
                 "archived_at": "<archived-at>",
                 "archive_reason": "<archive-reason>",
@@ -1564,7 +1601,6 @@ class ProfileSchemaTests(unittest.TestCase):
                 "next_review_at",
                 "occurred_at",
                 "resolved_at",
-                "released_at",
                 "generated_by",
                 "archived_from",
                 "archived_at",
@@ -2573,7 +2609,6 @@ class ProfileSchemaTests(unittest.TestCase):
                     "runbook",
                     "incident",
                     "postmortem",
-                    "release",
                 ],
                 "common": [
                     "reference",
@@ -2661,12 +2696,12 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/03.specs/spec-0123-example/spec.md": "spec",
             "docs/03.specs/spec-0123-example/plan.md": "plan",
             "docs/03.specs/spec-0123-example/task.md": "task",
-            "docs/05.operations/catalog/00-workspace/ops-0001-example/guide.md": "guide",
-            "docs/05.operations/catalog/00-workspace/ops-0001-example/policy.md": "policy",
-            "docs/05.operations/catalog/00-workspace/ops-0001-example/runbook.md": "runbook",
+            "docs/05.operations/catalog/00-workspace/0001-example/guide.md": "guide",
+            "docs/05.operations/catalog/00-workspace/0001-example/policy.md": "policy",
+            "docs/05.operations/catalog/00-workspace/0001-example/runbook.md": "runbook",
             "docs/05.operations/incidents/2026/inc-0001-example/incident.md": "incident",
             "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md": "postmortem",
-            "docs/05.operations/releases/rel-0001-example/release.md": "release",
+            "docs/05.operations/releases/rel-0001-example/release.md": "unsupported",
             "docs/90.references/research/example.md": "reference",
             "docs/90.references/audits/example.md": "audit",
             "docs/98.archive/migrations/mig-0001-example.md": "archive",
@@ -2793,12 +2828,11 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/03.specs/spec-0901-fixture/tests.md": ("spec", "tests"),
             "docs/03.specs/spec-0901-fixture/plan.md": ("plan", "plan"),
             "docs/03.specs/spec-0901-fixture/task.md": ("task", "task"),
-            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md": ("guide", "guide"),
-            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md": ("policy", "policy"),
-            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md": ("runbook", "runbook"),
+            "docs/05.operations/catalog/00-workspace/0901-fixture/guide.md": ("guide", "guide"),
+            "docs/05.operations/catalog/00-workspace/0901-fixture/policy.md": ("policy", "policy"),
+            "docs/05.operations/catalog/00-workspace/0901-fixture/runbook.md": ("runbook", "runbook"),
             "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md": ("incident", "incident"),
             "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md": ("postmortem", "postmortem"),
-            "docs/05.operations/releases/rel-0901-fixture/release.md": ("release", "release"),
             "docs/90.references/research/fixture.md": ("reference", "reference"),
             "docs/90.references/audits/fixture.md": ("audit", "audit"),
             "docs/98.archive/tombstones/03.specs/spec-0901-fixture.md": ("archive", "archive"),
@@ -3774,17 +3808,15 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertNotIn("template-placeholder-in-target", self.codes(record))
 
-    def test_incident_profile_allows_root_but_event_children_stay_strict(self) -> None:
+    def test_incident_profile_allows_root_but_postmortem_stays_strict(self) -> None:
         incident = self.profiles["profiles"]["incident"]
         postmortem = self.profiles["profiles"]["postmortem"]
-        release = self.profiles["profiles"]["release"]
 
         self.assertTrue(incident["allow_empty_parents"])
         self.assertEqual(["runbook"], incident["allowed_parent_types"])
         self.assertEqual(["incident"], postmortem["allowed_parent_types"])
         self.assertFalse(postmortem["allow_empty_parents"])
-        self.assertEqual(["spec", "plan", "task"], release["allowed_parent_types"])
-        self.assertFalse(release["allow_empty_parents"])
+        self.assertNotIn("release", self.profiles["profiles"])
 
 
 class ReadmeProfileTests(unittest.TestCase):
@@ -3799,7 +3831,13 @@ class ReadmeProfileTests(unittest.TestCase):
             capture_output=True,
             check=True,
         )
-        paths = [pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw]
+        paths = [
+            path
+            for raw in result.stdout.split(b"\0")
+            if raw
+            for path in (pathlib.Path(raw.decode("utf-8")),)
+            if (ROOT / path).is_file()
+        ]
         before = {path: (ROOT / path).read_bytes() for path in paths}
 
         for path in paths:
@@ -4038,7 +4076,6 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/runbook.template.md": "runbook",
             "docs/99.templates/templates/operations/incident.template.md": "incident",
             "docs/99.templates/templates/operations/postmortem.template.md": "postmortem",
-            "docs/99.templates/templates/operations/release.template.md": "release",
             "docs/99.templates/templates/common/reference.template.md": "reference",
             "docs/99.templates/templates/common/audit.template.md": "audit",
             "docs/99.templates/templates/common/archive.template.md": "archive",
@@ -4100,12 +4137,11 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/spec-0901-fixture/spec.md",
             "docs/99.templates/templates/sdlc/plan.template.md": "docs/03.specs/spec-0901-fixture/plan.md",
             "docs/99.templates/templates/sdlc/task.template.md": "docs/03.specs/spec-0901-fixture/task.md",
-            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md",
-            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md",
-            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md",
+            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/catalog/00-workspace/0901-fixture/guide.md",
+            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/catalog/00-workspace/0901-fixture/policy.md",
+            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/catalog/00-workspace/0901-fixture/runbook.md",
             "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md",
             "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md",
-            "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/rel-0901-fixture/release.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
             "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
             "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/migrations/mig-0901-fixture.md",
@@ -4147,7 +4183,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "spec",
             ),
             "runbook": metadata.Record(
-                pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0900-parent/runbook.md"),
+                pathlib.Path("docs/05.operations/catalog/00-workspace/0900-parent/runbook.md"),
                 {
                     "status": "active",
                     "artifact_id": "runbook-0900",
@@ -4182,7 +4218,6 @@ class TemplateMetadataTests(unittest.TestCase):
             "runbook": "spec",
             "incident": "runbook",
             "postmortem": "incident",
-            "release": "spec",
         }
         placeholder_replacements = {
             "<created-at>": "2026-07-13",
@@ -4192,7 +4227,6 @@ class TemplateMetadataTests(unittest.TestCase):
             "<next-review-at>": "2027-07-13",
             "<occurred-at>": "2026-07-13",
             "<resolved-at>": "2026-07-13",
-            "<released-at>": "2026-07-13",
             "docs/<original-path>.md": "docs/03.specs/spec-0899-retired/spec.md",
             "<archived-at>": "2026-07-13",
             "<archive-reason>": "Fixture retirement",
@@ -4218,7 +4252,6 @@ class TemplateMetadataTests(unittest.TestCase):
             "runbook": "runbook-0901",
             "incident": "inc-0901",
             "postmortem": "postmortem-0901",
-            "release": "rel-0901",
             "archive": "mig-0901",
         }
         for source_path, target_type in typed_roles.items():
@@ -4272,21 +4305,15 @@ class TemplateMetadataTests(unittest.TestCase):
                     ),
                 )
 
-    def test_release_routing_is_complete_without_an_event_record(self) -> None:
+    def test_release_authority_is_absent(self) -> None:
         self.assertNotIn("release", self.registry.profiles)
         self.assertNotIn("release", self.registry.template_roles)
-        self.assertTrue(
-            (ROOT / "docs/99.templates/templates/operations/release.template.md").is_file()
+        self.assertNotIn("release", self.profiles["profiles"])
+        self.assertNotIn("release", self.profiles["template_roles"])
+        self.assertFalse(
+            (ROOT / "docs/99.templates/templates/operations/release.template.md").exists()
         )
-        self.assertIn("release", self.profiles["profiles"])
-
-    def test_release_template_does_not_create_an_event_leaf(self) -> None:
-        leaves = [
-            path
-            for path in (ROOT / "docs/05.operations/releases").glob("*.md")
-            if path.name != "README.md"
-        ]
-        self.assertEqual([], leaves)
+        self.assertFalse((ROOT / "docs/05.operations/releases").exists())
 
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
         path_text = "docs/99.templates/templates/common/readme.template.md"
@@ -4817,17 +4844,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Feedback Loop",
             "## Related Documents",
         ),
-        "release": (
-            "## Overview",
-            "## Identity and Scope",
-            "## Included Changes",
-            "## Artifacts",
-            "## Validation Evidence",
-            "## Approvals",
-            "## Rollout and Rollback",
-            "## Outcome and Known Issues",
-            "## Related Documents",
-        ),
     }
     TASK_5_ROLE_PROFILES = {
         "guide": "guide",
@@ -4835,7 +4851,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "runbook": "runbook",
         "incident": "incident",
         "postmortem": "postmortem",
-        "release": "release",
     }
     TASK_5_ROLE_TOKENS = {
         "guide": {
@@ -4869,16 +4884,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             "prevention_and_verification", "feedback_loop",
             "related_documents",
         },
-        "release": {
-            "title", "overview", "immutable_release_identity", "version_or_tag",
-            "commit_identity", "release_scope", "included_changes",
-            "artifact_identifier", "artifact_digest_or_immutable_evidence",
-            "validation_check", "validation_result",
-            "validation_evidence_location", "approval_authority",
-            "approval_decision", "approval_evidence", "rollout_execution",
-            "rollback_disposition", "rollout_evidence", "release_outcome",
-            "known_issues", "related_documents",
-        },
     }
     TASK_5_MANDATORY_EVIDENCE_TOKENS = {
         "runbook": {
@@ -4893,13 +4898,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "postmortem": {
             "reviewed_action_description", "action_owner", "action_priority",
             "action_tracking_identity", "verification_owner",
-        },
-        "release": {
-            "immutable_release_identity", "version_or_tag", "commit_identity",
-            "artifact_identifier", "artifact_digest_or_immutable_evidence",
-            "validation_result", "approval_decision",
-            "rollout_execution", "rollback_disposition", "release_outcome",
-            "known_issues",
         },
     }
     ALL_ROLE_SOURCES = {
@@ -4920,7 +4918,6 @@ class TemplateBodyContractTests(unittest.TestCase):
         "runbook": "docs/99.templates/templates/operations/runbook.template.md",
         "incident": "docs/99.templates/templates/operations/incident.template.md",
         "postmortem": "docs/99.templates/templates/operations/postmortem.template.md",
-        "release": "docs/99.templates/templates/operations/release.template.md",
         "agent-design": "docs/99.templates/templates/spec-contracts/agent-design.template.md",
         "api-spec": "docs/99.templates/templates/spec-contracts/api-spec.template.md",
         "data-model": "docs/99.templates/templates/spec-contracts/data-model.template.md",
@@ -5619,9 +5616,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             )
         elif role_name == "postmortem":
             expected_frontmatter["reviewed_at"] = "<reviewed-at>"
-        elif role_name == "release":
-            expected_frontmatter["released_at"] = "<released-at>"
-
         self.assertEqual(["# {{title}}"], h1_headings)
         self.assertEqual(list(self.TASK_5_ROLE_HEADINGS[role_name]), h2_headings)
         registered = [*role["required_headings"], *role["conditional_headings"]]
@@ -5824,7 +5818,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "rules-block": text.replace("## When to Use", "> Rules:\n\n## When to Use", 1),
             "target-comment": text.replace(
                 "# {{title}}",
-                "<!-- Target: docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md -->\n\n# {{title}}",
+                "<!-- Target: docs/05.operations/catalog/00-workspace/0901-fixture/runbook.md -->\n\n# {{title}}",
                 1,
             ),
             "frontmatter-drift": text.replace(
@@ -5876,7 +5870,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         legacy = metadata.load_profiles(PROFILES)
         current = metadata.load_profiles(REGISTRY)
 
-        self.assertIn("release", legacy["profiles"])
+        self.assertNotIn("release", legacy["profiles"])
         self.assertNotIn("release", current)
         self.assertIn("requirements-package", current)
         self.assertNotIn("prd", current)
@@ -6118,9 +6112,9 @@ class TemplateBodyContractTests(unittest.TestCase):
             self.profiles = original_profiles
 
     def test_task_5_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
-        source = (ROOT / self.ALL_ROLE_SOURCES["release"]).read_text(encoding="utf-8")
+        source = (ROOT / self.ALL_ROLE_SOURCES["postmortem"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
-            "release",
+            "postmortem",
             artifact_profile="task",
         )
         original_profiles = self.profiles
@@ -6128,8 +6122,8 @@ class TemplateBodyContractTests(unittest.TestCase):
         try:
             with self.assertRaises(AssertionError):
                 self.assert_task_5_markdown_contract(
-                    "release",
-                    source.replace("artifact_type: release", "artifact_type: task", 1),
+                    "postmortem",
+                    source.replace("artifact_type: postmortem", "artifact_type: task", 1),
                 )
         finally:
             self.profiles = original_profiles
@@ -6210,17 +6204,17 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             ),
             (
                 "optional allowed key",
-                "docs/05.operations/releases/README.md",
+                "docs/05.operations/incidents/README.md",
                 "---\nstatus: active\n---\n\n",
                 0,
                 "metadata repository contracts: violations=0",
             ),
             (
                 "optional disallowed key",
-                "docs/05.operations/releases/README.md",
+                "docs/05.operations/incidents/README.md",
                 "---\nlayer: ops\n---\n\n",
                 1,
-                "readme-frontmatter-key: docs/05.operations/releases/README.md",
+                "readme-frontmatter-key: docs/05.operations/incidents/README.md",
             ),
         )
         for label, path_text, contents, expected_exit, expected_output in cases:
@@ -6245,9 +6239,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 "readme-frontmatter-forbidden: README.md",
             ),
             (
-                "optional releases README",
-                "docs/05.operations/releases/README.md",
-                "readme-frontmatter-key: docs/05.operations/releases/README.md",
+                "optional incidents README",
+                "docs/05.operations/incidents/README.md",
+                "readme-frontmatter-key: docs/05.operations/incidents/README.md",
             ),
         )
         for label, path_text, expected_output in cases:
@@ -6327,48 +6321,6 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 result = self.run_contracts(root, profiles)
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"template-source-missing-type: {source}", result.stdout)
-
-    def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
-        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
-        release_source = "docs/99.templates/templates/operations/release.template.md"
-        route_files = (
-            "docs/99.templates/support/template-selection.md",
-            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
-        )
-        for route_file in route_files:
-            with self.subTest(path=route_file), tempfile.TemporaryDirectory() as directory:
-                root, profiles = self.fixture(directory)
-                path = root / route_file
-                text = path.read_text(encoding="utf-8")
-                path.write_text(
-                    text.replace(route, "docs/05.operations/releases/MISSING/release.md")
-                    .replace(
-                        release_source,
-                        "docs/99.templates/templates/operations/MISSING.template.md",
-                    )
-                    .replace("release.template.md", "MISSING.template.md"),
-                    encoding="utf-8",
-                )
-                result = self.run_contracts(root, profiles)
-                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-                self.assertIn(f"release-route-incomplete: {route_file}", result.stdout)
-
-    def test_release_is_in_required_inventory(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        release_sources = [
-            role["source"]
-            for role in profiles["template_roles"].values()
-            if role["artifact_profile"] == "release"
-        ]
-        self.assertEqual(
-            ["docs/99.templates/templates/operations/release.template.md"],
-            release_sources,
-        )
-        findings = metadata.validate_repository_contracts(ROOT, profiles)
-        self.assertNotIn(
-            "release-template-cardinality",
-            {finding.code for finding in findings},
-        )
 
     def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -7549,38 +7501,63 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("template-body-token-in-target", result.stdout)
 
-    def test_approved_operations_catalog_move_uses_legacy_body_baseline(self) -> None:
+    def test_registered_operations_catalog_move_uses_migration_0003_body_baseline(self) -> None:
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
-        legacy = root / "docs/05.operations/00-workspace/ops-0901-fixture/guide.md"
-        catalog = root / "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md"
+        legacy = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "ops-0001-common-optimizations-template-exceptions/policy.md"
+        )
+        catalog = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "0001-common-optimizations-template-exceptions/policy.md"
+        )
         metadata_values = {
             "status": "active",
-            "artifact_id": "guide-0901",
-            "artifact_type": "guide",
+            "artifact_id": "policy-0001",
+            "artifact_type": "policy",
             "parent_ids": [],
         }
         body = body_with_headings(
-            "## Usage",
-            "## Common Checks",
+            "## Scope",
+            "## Policy Statements",
+            "## Exceptions",
+            "## Enforcement",
             "## Related Documents",
         ) + "\n> Rules:\n"
         with directory:
             init_git(root)
+            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(
+                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                migration,
+            )
             write_doc(legacy, metadata_values, body)
             commit_all(root, "legacy operations body baseline")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             catalog.parent.mkdir(parents=True, exist_ok=True)
             legacy.rename(catalog)
-            result = self.run_explicit_base(root, base)
+            write_doc(
+                catalog,
+                {"profile_id": "policy", **metadata_values},
+                body,
+            )
+            result = run_checker(
+                root,
+                "check-changed",
+                "--base-ref",
+                base,
+                profiles=REGISTRY,
+            )
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertIn("violations=0", result.stdout)
 
-    def test_unapproved_operations_catalog_domain_cannot_borrow_legacy_baseline(self) -> None:
+    def test_unregistered_operations_catalog_move_cannot_infer_a_body_baseline(self) -> None:
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
         legacy = root / "docs/05.operations/99-unapproved/ops-0901-fixture/guide.md"
-        catalog = root / "docs/05.operations/catalog/99-unapproved/ops-0901-fixture/guide.md"
+        catalog = root / "docs/05.operations/catalog/99-unapproved/0901-fixture/guide.md"
         metadata_values = {
             "status": "active",
             "artifact_id": "guide-0901",
@@ -7602,6 +7579,158 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             result = self.run_explicit_base(root, base)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("template-instruction-in-target", result.stdout)
+
+    def test_registered_operations_profile_transition_rejects_any_additional_metadata(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        legacy = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "ops-0001-common-optimizations-template-exceptions/policy.md"
+        )
+        catalog = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "0001-common-optimizations-template-exceptions/policy.md"
+        )
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "policy-0001",
+            "artifact_type": "policy",
+            "parent_ids": [],
+            "created": "2026-08-01",
+            "updated": "2026-08-01",
+        }
+        with directory:
+            init_git(root)
+            migration = root / (
+                "docs/98.archive/migrations/"
+                "mig-0003-workspace-governance-simplification.md"
+            )
+            migration.parent.mkdir(parents=True)
+            shutil.copyfile(
+                ROOT
+                / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                migration,
+            )
+            write_doc(legacy, metadata_values, POLICY_TARGET_BODY)
+            commit_all(root, "legacy operations profile baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                catalog,
+                {
+                    "profile_id": "policy",
+                    **metadata_values,
+                    "reviewed_at": "2026-08-02",
+                },
+                POLICY_TARGET_BODY,
+            )
+            legacy.unlink()
+            result = run_checker(
+                root,
+                "check-changed",
+                "--base-ref",
+                base,
+                profiles=REGISTRY,
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("missing-parent", result.stdout)
+
+    def test_registered_operations_move_requires_its_exact_source_at_base(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        target = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "0001-common-optimizations-template-exceptions/policy.md"
+        )
+        with directory:
+            init_git(root)
+            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration.parent.mkdir(parents=True)
+            shutil.copyfile(
+                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                migration,
+            )
+            commit_all(root, "migration without registered source")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                target,
+                {"status": "active", "artifact_id": "policy-0001", "artifact_type": "policy", "parent_ids": []},
+                POLICY_TARGET_BODY + "\n> Rules:\n",
+            )
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+
+    def test_preexisting_target_cannot_borrow_registered_source_baseline(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        source = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "ops-0001-common-optimizations-template-exceptions/policy.md"
+        )
+        target = root / (
+            "docs/05.operations/catalog/00-workspace/"
+            "0001-common-optimizations-template-exceptions/policy.md"
+        )
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "policy-0001",
+            "artifact_type": "policy",
+            "parent_ids": [],
+        }
+        with directory:
+            init_git(root)
+            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration.parent.mkdir(parents=True)
+            shutil.copyfile(
+                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                migration,
+            )
+            write_doc(source, metadata_values, POLICY_TARGET_BODY + "\n> Rules:\n")
+            write_doc(target, metadata_values, POLICY_TARGET_BODY)
+            commit_all(root, "preexisting target and registered source")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(target, metadata_values, POLICY_TARGET_BODY + "\n> Rules:\n")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+
+    def test_unrelated_operations_readme_does_not_receive_transition_authorization(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        source_relative = (
+            "docs/05.operations/catalog/00-workspace/"
+            "ops-0001-common-optimizations-template-exceptions/policy.md"
+        )
+        readme_relative = "docs/05.operations/catalog/00-workspace/README.md"
+        with directory:
+            init_git(root)
+            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration.parent.mkdir(parents=True)
+            shutil.copyfile(
+                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                migration,
+            )
+            source = root / source_relative
+            write_doc(
+                source,
+                {"status": "active", "artifact_id": "policy-0001", "artifact_type": "policy", "parent_ids": []},
+                POLICY_TARGET_BODY,
+            )
+            readme = root / readme_relative
+            readme.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / readme_relative, readme)
+            readme.write_text(
+                "---\nprofile_id: guide\nstatus: active\nartifact_id: guide-0999\n"
+                "artifact_type: guide\nparent_ids: []\ncreated: 2026-08-23\nupdated: 2026-08-23\n---\n"
+                + readme.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            commit_all(root, "unrelated README baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            readme.write_text(readme.read_text(encoding="utf-8") + "\nUnrelated editorial change.\n", encoding="utf-8")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertNotIn("legacy metadata exception", result.stderr)
 
     def test_preserved_body_deficit_does_not_suppress_relation_impact(self) -> None:
         directory = tempfile.TemporaryDirectory()
@@ -8220,7 +8349,6 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             "docs/05.operations/README.md",
             "docs/05.operations/catalog/README.md",
             "docs/05.operations/incidents/README.md",
-            "docs/05.operations/releases/README.md",
             *{
                 f"docs/05.operations/catalog/{domain}/README.md"
                 for domain in (
@@ -8249,7 +8377,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             "docs/05.operations/guides/README.md",
             "docs/05.operations/policies/README.md",
             "docs/05.operations/runbooks/README.md",
-            "docs/05.operations/catalog/10-communication/ops-0070-mail/README.md",
+            "docs/05.operations/catalog/10-communication/0070-mail/README.md",
         ):
             with self.subTest(retired=retired):
                 self.assertEqual(
@@ -8263,7 +8391,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         for role in (
             "prd", "srs", "interface-requirement", "architecture-description",
             "adr", "spec", "plan", "task", "guide", "policy", "runbook",
-            "incident", "postmortem", "release",
+            "incident", "postmortem",
         ):
             with self.subTest(role=role):
                 self.assertIn("created", self.profiles["profiles"][role]["required"])
@@ -8459,6 +8587,8 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             if relative_path in bounded_contexts:
                 continue
             path = ROOT / relative_path
+            if not path.is_file():
+                continue
             if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
                 continue
             in_bounded_archive_ledger = False
@@ -8536,7 +8666,8 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         self.assertIn("completed_at", profiles["task"]["optional"])
         self.assertIn("occurred_at", profiles["incident"]["required"])
         self.assertIn("resolved_at", profiles["incident"]["optional"])
-        self.assertIn("released_at", profiles["release"]["required"])
+        self.assertNotIn("release", profiles)
+        self.assertNotIn("released_at", self.profiles["common"]["frontmatter_order"])
         archive_profiles = self.profiles["archive_profiles"]
         self.assertEqual(
             ["change-plan", "change-task", "tombstone", "migration"],
@@ -8611,7 +8742,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
                 "task",
             ),
             metadata.Record(
-                pathlib.Path("docs/05.operations/platform/ops-0136-example/runbook.md"),
+                pathlib.Path("docs/05.operations/catalog/00-workspace/0136-example/runbook.md"),
                 {
                     "status": "active",
                     "artifact_id": "runbook-0136",

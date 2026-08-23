@@ -45,7 +45,7 @@ nosql/
 1. **Selection**: 요구사항(단일 노드 wide-column, 문서 sync cluster, replica set)에 맞는 엔진을 선택한다.
 2. **Deployment**: 루트 compose include 상태를 확인한 뒤 각 서브디렉터리의 `docker-compose.yml`을 함께 렌더링한다.
 3. **Standards**: 각 엔진은 `common-optimizations.yml`을 확장하고, exporter가 선언된 Cassandra/MongoDB는 `obs` 프로파일 경계를 유지한다.
-4. **Documentation**: 변경 사항 발생 시 하위 README와 상위 `docs/05.operations/{guides,policies,runbooks}/04-data/nosql/` 문서를 함께 업데이트한다.
+4. **Documentation**: 변경 사항 발생 시 하위 README와 상위 `docs/05.operations/catalog/04-data/` 문서를 함께 업데이트한다.
 
 ## Related Documents
 

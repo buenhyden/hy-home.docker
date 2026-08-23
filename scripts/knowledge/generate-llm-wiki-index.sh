@@ -94,7 +94,7 @@ ROOT_ENTRYPOINTS = {
 
 REQUIRED_LOCAL_PATHS = {
     "scripts/knowledge/generate-llm-wiki-index.sh",
-    "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
+    "docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md",
     "docs/00.agent-governance/roles/doc-writer.md",
     "docs/00.agent-governance/skills/knowledge-map-agent.md",
     ".claude/agents/doc-writer.md",

@@ -233,6 +233,49 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_inline_code_comment_opener_does_not_hide_later_rendered_links(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            """`<!--`
+[visible](visible.md)
+<!--
+[hidden](hidden.md)
+-->
+[after](after.md)
+""",
+        )
+
+        self.assertEqual(
+            ("docs/visible.md", "docs/after.md"),
+            tuple(link.target.as_posix() for link in links),
+        )
+        self.assertEqual(("visible", "after"), tuple(link.label for link in links))
+
+    def test_local_markdown_link_parser_ignores_nonrendered_links(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            """[rendered](rendered.md)
+`[inline](inline.md)`
+![image](image.md)
+```markdown
+[fenced](fenced.md)
+```
+<!-- [single-comment](single-comment.md) -->
+<!--
+[multi-comment](multi-comment.md)
+-->
+""",
+        )
+
+        self.assertEqual(
+            ("docs/rendered.md",),
+            tuple(link.target.as_posix() for link in links),
+        )
+
     def test_local_markdown_link_parser_is_immutable_and_normalizes_without_io(
         self,
     ) -> None:
@@ -511,7 +554,7 @@ class DocumentGraphTests(unittest.TestCase):
             ops = root / "docs/05.operations/README.md"
             catalog = (
                 root
-                / "docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md"
+                / "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
             )
             guide = catalog.parent / "subject/guide.md"
             runbook = catalog.parent / "subject/runbook.md"
