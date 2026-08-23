@@ -54,14 +54,14 @@ common:
     - content_sha256
     - snapshot_reason
   inventory_excludes:
-    - docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
+    - docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md
   archive_source_prefixes:
     - docs/
     - archive/
   generated_outputs:
-    docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
+    docs/90.references/data/0066-foundation-summary/README.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/0068-target-surface-convergence-summary/README.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/0074-target-surface-delta-summary/README.md: scripts/validation/check-target-surface-delta-contract.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
@@ -401,7 +401,6 @@ readme_profiles:
       - docs/90.references/README.md
       - docs/90.references/*/README.md
       - docs/90.references/*/*/README.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-document-metadata.py
     allowed_frontmatter_keys: [status]
@@ -813,8 +812,7 @@ template_roles:
     target_globs:
       [
         docs/90.references/data/**/*.md,
-        docs/90.references/learning/**/*.md,
-        docs/90.references/llm-wiki/**/*.md,
+        docs/90.references/data/0082-llm-wiki-index/**/*.md,
         docs/90.references/research/**/*.md,
       ]
     required_headings:

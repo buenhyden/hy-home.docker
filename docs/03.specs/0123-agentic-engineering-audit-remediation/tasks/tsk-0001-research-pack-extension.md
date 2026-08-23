@@ -13,7 +13,7 @@ updated: 2026-08-11
 ## Overview
 
 This Task extended the then-canonical agentic research pack at
-`docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` with
+`docs/90.references/research/0001-agentic-research-pack-refresh/` with
 three new Stage 90 reference leaves and revalidated the fifteen existing
 leaves against the repository state and official external sources current at
 the time of execution.
@@ -90,15 +90,15 @@ the predecessor drift. It narrowly extends the allowed set to
 `scripts/hardening/check-all-hardening.sh` image-tag expectations,
 `infra/tech-stack.versions.json`, and the two Stage 05 comparison guides.
 
-- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**`
+- `docs/90.references/research/0001-agentic-research-pack-refresh/**`
 - `docs/90.references/research/README.md`
 - `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
 - `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (handoff refresh only)
 - Generated artifacts whose freshness contracts the above changes trip, limited
   to regeneration by their registered generators:
-  `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`,
-  `docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md`, and
-  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`
+  `docs/90.references/data/0082-llm-wiki-index/README.md`,
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`, and
+  `docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md`
 - For T-ARPE-012 only, inbound-link repair in
   `docs/03.specs/122-agentic-research-pack-consolidation/spec.md`,
   `docs/03.specs/122-agentic-research-pack-consolidation/README.md`,

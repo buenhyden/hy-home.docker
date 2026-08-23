@@ -516,18 +516,17 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/05.operations/" "runbooks/09-tooling/k6.md",
     "docs/05.operations/" "runbooks/09-tooling/locust.md",
     "docs/05.operations/" "runbooks/09-tooling/performance-testing.md",
-    "docs/90.references/audits/ref-0019-readme.md",
-    "docs/90.references/audits/ref-0021-automation-candidates.md",
-    "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
-    "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md",
-    "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
-    "docs/90.references/audits/ref-0026-implementation-overview.md",
-    "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
-    "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
-    "docs/90.references/audits/ref-0031-security-framework-maturity.md",
-    "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
-    "docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md",
-    "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+    "docs/90.references/audits/0019-readme/README.md",
+    "docs/90.references/audits/0021-automation-candidates/README.md",
+    "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
+    "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md",
+    "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
+    "docs/90.references/audits/0026-implementation-overview/README.md",
+    "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
+    "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
+    "docs/90.references/audits/0031-security-framework-maturity/README.md",
+    "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md",
+    "docs/90.references/data/0082-llm-wiki-index/README.md",
     "docs/90.references/research/ref-0039-readme.md",
     "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
     "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
@@ -550,8 +549,8 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
 TARGET_SURFACE_DECLARED_OUTPUTS = (
     "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
     "docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md",
-    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
-    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml",
+    "docs/90.references/data/0068-target-surface-convergence-summary/README.md",
+    "docs/90.references/data/0069-target-surface-convergence/data.yaml",
     "docs/99.templates/templates/common/content-archive.template.md",
     "scripts/validation/check-target-surface-contract.py",
     "scripts/validation/target_surface_contract.py",
@@ -870,19 +869,19 @@ APPROVED_MIGRATION_PATHS = frozenset(
         "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
         "docs/90.references/research/ref-0056-security-governance.md",
         "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
-        "docs/90.references/audits/ref-0019-readme.md",
-        "docs/90.references/audits/ref-0026-implementation-overview.md",
-        "docs/90.references/audits/ref-0025-harness-engineering-implementation.md",
-        "docs/90.references/audits/ref-0027-loop-engineering-implementation.md",
-        "docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md",
-        "docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md",
-        "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
-        "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
-        "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
-        "docs/90.references/audits/ref-0021-automation-candidates.md",
-        "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
-        "docs/90.references/audits/ref-0031-security-framework-maturity.md",
-        "docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md",
+        "docs/90.references/audits/0019-readme/README.md",
+        "docs/90.references/audits/0026-implementation-overview/README.md",
+        "docs/90.references/audits/0025-harness-engineering-implementation/README.md",
+        "docs/90.references/audits/0027-loop-engineering-implementation/README.md",
+        "docs/90.references/audits/0028-provider-harness-loop-implementation/README.md",
+        "docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md",
+        "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
+        "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
+        "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
+        "docs/90.references/audits/0021-automation-candidates/README.md",
+        "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
+        "docs/90.references/audits/0031-security-framework-maturity/README.md",
+        "docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md",
         "docs/99.templates/templates/sdlc/prd.template.md",
         "docs/99.templates/templates/sdlc/ard.template.md",
         "docs/99.templates/templates/sdlc/adr.template.md",
@@ -1150,10 +1149,10 @@ def infer_artifact_type(
             return "template-source"
         return "unsupported"
     name = pathlib.PurePosixPath(normalized).name
-    if name == "README.md":
-        return "readme"
     if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
         return "generated"
+    if name == "README.md":
+        return "readme"
     if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
@@ -3397,6 +3396,8 @@ def _exact_string_list(
         isinstance(item, str) and item for item in value
     ):
         raise ProfileError(f"{field} must be a list of non-empty strings")
+    if len(value) != len(set(value)):
+        raise ProfileError(f"{field} must not contain duplicates")
     if tuple(value) != tuple(expected):
         raise ProfileError(f"{field} must define the exact canonical values")
     return value
@@ -3611,7 +3612,6 @@ def load_migration_contract(
         "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
         "docs/90.references/README.md",
         "docs/90.references/data/README.md",
-        "docs/90.references/data/governance/README.md",
         "docs/98.archive/README.md",
         "docs/99.templates/support/README.md",
         "docs/99.templates/support/common-document-contract.md",
@@ -3630,9 +3630,8 @@ def load_migration_contract(
         "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
         "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
         "docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
-        "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
-        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md",
-        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml",
+        "docs/90.references/data/0066-foundation-summary/README.md",
+        "docs/90.references/data/0067-foundation/data.yaml",
         "docs/99.templates/support/archive-retention-contract.md",
         "docs/99.templates/support/corpus-migration-contract.md",
         "docs/99.templates/support/document-corpus-migration-contract.yaml",
@@ -3655,10 +3654,12 @@ def load_migration_contract(
     if manifest_path is not None and (
         not _safe_contract_path(manifest_path)
         or not isinstance(manifest_path, str)
-        or not manifest_path.startswith("docs/90.references/data/governance/")
-        or not manifest_path.endswith(".yaml")
+        or not re.fullmatch(
+            r"docs/90\.references/data/[0-9]{4}-[a-z0-9][a-z0-9-]*/data\.yaml",
+            manifest_path,
+        )
     ):
-        raise ProfileError("Foundation manifest_path must be null or a safe governance YAML path")
+        raise ProfileError("Foundation manifest_path must be null or a registered Data package YAML path")
     if foundation.get("scope_state") != "approved":
         raise ProfileError("Foundation scope_state must be approved")
     _exact_string_list(
@@ -3709,11 +3710,11 @@ def load_migration_contract(
             "target-surface-convergence enforcement must be advisory or blocking"
         )
     if target_wave.get("manifest_path") != (
-        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+        "docs/90.references/data/0069-target-surface-convergence/data.yaml"
     ):
         raise ProfileError("target-surface-convergence manifest_path must be exact")
     if target_wave.get("summary_path") != (
-        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md"
+        "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
     ):
         raise ProfileError("target-surface-convergence summary_path must be exact")
     _exact_string_list(
@@ -4522,13 +4523,20 @@ def _load_legacy_profiles(
         normalized_output = (
             _normalized_target_path(output_path) if isinstance(output_path, str) else None
         )
+        generated_package_readme = bool(
+            isinstance(output_path, str)
+            and re.fullmatch(
+                r"docs/90\.references/data/[0-9]{4}-[a-z0-9][a-z0-9-]*/README\.md",
+                output_path,
+            )
+        )
         if (
             normalized_output is None
-            or normalized_output.name == "README.md"
+            or (normalized_output.name == "README.md" and not generated_package_readme)
             or any(character in output_path for character in "*?[]")
         ):
             raise ProfileError(
-                "common.generated_outputs keys must be exact canonical non-README target Markdown paths"
+                "common.generated_outputs keys must be exact canonical target Markdown paths"
             )
         if not _safe_repo_path(owner, "scripts/"):
             raise ProfileError(
@@ -4957,7 +4965,10 @@ def build_registry_transition_profiles(
             "forbidden": [],
             "allowed_statuses": statuses,
             "allowed_parent_types": parents,
-            "allow_empty_parents": not parents,
+            "allow_empty_parents": (
+                profile_id in {"research", "audit", "data"}
+                or not parents
+            ),
             "allow_additional": False,
             "disposition": "registry-canonical",
             "path_pattern": profile.get("path_pattern"),
@@ -5775,10 +5786,21 @@ def _record_from_text(
         values = {}
         parse_error = str(error)
         parse_error_code = error.code
+    inferred_type = infer_artifact_type(relative_path, profiles)
+    registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
+    registered_data_package_readme = bool(
+        inferred_type == "data"
+        and isinstance(registry, DocumentRegistry)
+        and classify_registered_path(relative_path.as_posix(), registry) == "data"
+    )
+    # Only an exact Registry-classified Data package README retains Data
+    # ownership; generated_by is provenance there. Every other generated
+    # Markdown artifact, including README envelopes, keeps the generated
+    # classification used before the Stage 90 transition.
     artifact_type = (
         "generated"
-        if "generated_by" in values
-        else infer_artifact_type(relative_path, profiles)
+        if "generated_by" in values and not registered_data_package_readme
+        else inferred_type
     )
     return Record(
         relative_path,
@@ -6423,7 +6445,7 @@ def render_report(
         "generated_by: scripts/validation/check-document-metadata.py",
         "---",
         "",
-        "<!-- Target: docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md -->",
+        "<!-- Target: docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md -->",
         "",
         "# Reference: Frontmatter Semantic Inventory",
         "",

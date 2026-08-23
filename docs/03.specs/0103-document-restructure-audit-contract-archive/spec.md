@@ -196,7 +196,7 @@ recorded.
 `90-knowledge` is a legacy operations purpose bucket, not a service tier. LLM
 Wiki maintenance operations belong under `00-workspace` because they govern the
 repository-wide reference index and agent navigation workflow. The reference
-facts remain under `docs/90.references/llm-wiki/`; only operational guide,
+facts remain under `docs/90.references/data/0082-llm-wiki-index/`; only operational guide,
 policy, and runbook procedures move into `00-workspace`.
 
 The approved `PLN-DRA-005` implementation closes this legacy-bucket case by

@@ -202,6 +202,6 @@ escape 0건, secret exposure 0건, unowned Docker resource mutation 0건이다.
 - **Infrastructure Spec**: Spec 125
 - **Supply-chain Spec**: Spec 126
 - **Deployment Spec**: Spec 127
-- **Canonical audit matrix**: [Audit implementation matrix](../90.references/data/governance/ref-0065-audit-implementation-matrix.md)
+- **Canonical audit matrix**: [Audit implementation matrix](../90.references/data/0065-audit-implementation-matrix/README.md)
 - **Docker startup-order guidance**: [Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - **SLSA provenance model**: [SLSA provenance](https://slsa.dev/spec/v1.2/provenance)

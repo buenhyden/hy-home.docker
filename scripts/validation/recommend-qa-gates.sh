@@ -144,7 +144,7 @@ add_target_surface_gates() {
 
 is_target_surface_path() {
   local path="$1"
-  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+  local manifest="docs/90.references/data/0069-target-surface-convergence/data.yaml"
 
   case "$path" in
   .github/workflows/ci-quality.yml | \
@@ -184,7 +184,7 @@ recommend_for_path() {
     scripts/validation/check-supply-chain-policy.py | \
     tests/fixtures/supply-chain/* | \
     tests/validation/test_supply_chain_policy.py | \
-    docs/90.references/data/security/ref-0079-supply-chain-sample-service.md)
+    docs/90.references/data/0079-supply-chain-sample-service/README.md)
     add_gate "python3 scripts/validation/check-supply-chain-policy.py --check" "local supply-chain policy or fixture surface changed"
     add_gate "bash scripts/security/generate-supply-chain-sample-service-summary.sh --check" "local supply-chain summary may be stale"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "supply-chain CI and script contracts changed"
@@ -293,8 +293,14 @@ recommend_for_path() {
     docs/99.templates/support/corpus-migration-contract.md | \
     docs/99.templates/support/archive-retention-contract.md | \
     docs/99.templates/templates/common/archive.template.md | \
-    docs/90.references/data/governance/document-corpus-lifecycle/* | \
-    docs/90.references/data/governance/document-corpus-lifecycle/**)
+    docs/90.references/data/0066-foundation-summary/* | \
+    docs/90.references/data/0066-foundation-summary/** | \
+    docs/90.references/data/0067-foundation/* | \
+    docs/90.references/data/0067-foundation/** | \
+    docs/90.references/data/0068-target-surface-convergence-summary/* | \
+    docs/90.references/data/0068-target-surface-convergence-summary/** | \
+    docs/90.references/data/0069-target-surface-convergence/* | \
+    docs/90.references/data/0069-target-surface-convergence/**)
     add_lifecycle_gates
     ;;
   esac

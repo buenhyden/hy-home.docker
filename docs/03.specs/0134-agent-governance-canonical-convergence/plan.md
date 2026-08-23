@@ -109,7 +109,7 @@ does not duplicate this implementation design.
 - [Provider model contract](../../00.agent-governance/providers/registry.yaml)
 - [Artifact contract](../../99.templates/registry.json)
 - [Memory contract](../../00.agent-governance/README.md)
-- [Canonical audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical audit](../../90.references/audits/0019-readme/README.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 
 ### Current External Sources
@@ -239,9 +239,9 @@ fast-moving claim:
 - Modify
   `tests/validation/test_provider_native_surfaces.py`.
 - Create
-  `docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml`.
+  `docs/90.references/data/0063-agent-governance-retirement-ledger/data.yaml`.
 - Modify
-  `docs/90.references/data/governance/README.md`.
+  `docs/90.references/data/README.md`.
 - Modify the sibling Task ledger.
 
 **Historical ledger shape:**
@@ -265,7 +265,7 @@ records:
 
 ```python
 RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml"
+    "docs/90.references/data/0063-agent-governance-retirement-ledger/data.yaml"
 )
 
 def validate_retirement_ledger(
@@ -606,7 +606,7 @@ git diff --check
 - Modify
   `scripts/validation/agent_output_eval.py`.
 - Modify
-  `docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md`.
+  `docs/90.references/data/0064-agent-output-eval-fixtures/README.md`.
 - Modify
   `tests/validation/test_agent_governance_contract.py`.
 - Modify
@@ -742,13 +742,13 @@ git diff --check
 - Modify `scripts/validation/check-repo-contracts.sh`.
 - Modify `tests/validation/test_agent_governance_ci_routing.py`.
 - Create
-  `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`.
+  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`.
 - Modify
-  `docs/90.references/data/governance/README.md`.
+  `docs/90.references/data/README.md`.
 - Regenerate
-  `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`,
-  `docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md`, and
-  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`
+  `docs/90.references/data/0082-llm-wiki-index/README.md`,
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`, and
+  `docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md`
   as direct generated-owner fallout.
 - Modify the sibling Task ledger.
 
@@ -886,7 +886,7 @@ git diff --check
   does not retain displaced 14-role/22-function/seven-intake, 8/10 semantic
   evaluation, or 15-job local-CI summaries.
 - Modify canonical audit:
-  `docs/90.references/audits/ref-0019-readme.md`,
+  `docs/90.references/audits/0019-readme/README.md`,
   `implementation-overview.md`,
   `agent-instructions-catalog-vibe-models.md`,
   `harness-engineering-implementation.md`,
@@ -897,12 +897,12 @@ git diff --check
   `security-framework-maturity.md`, and
   `workspace-rules-environment-implementation.md`.
 - Regenerate
-  `docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md`,
-  `docs/90.references/data/security/ref-0078-security-automation-readiness.md`,
-  `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`, and
-  `docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md`.
+  `docs/90.references/data/0065-audit-implementation-matrix/README.md`,
+  `docs/90.references/data/0078-security-automation-readiness/README.md`,
+  `docs/90.references/data/0082-llm-wiki-index/README.md`, and
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`.
 - Regenerate
-  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`
+  `docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md`
   only through its registered owner.
 - Modify the two active Stage 00 direct-impact consumers discovered by the
   closure RED scan:
@@ -1237,7 +1237,7 @@ Every task must produce:
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Quality scope](../../00.agent-governance/roles/qa.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Canonical audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical audit](../../90.references/audits/0019-readme/README.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 
 ## Objective

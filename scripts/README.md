@@ -549,7 +549,7 @@ generators; it never invokes runtime-changing rows.
 - [⚙️ Operations Baseline](../docs/05.operations/README.md)
 - [📘 Runbooks](../docs/05.operations/README.md)
 - [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
-- [LLM Wiki Generated Index](../docs/90.references/llm-wiki/llm-wiki-index.md)
+- [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
 - [Scripts CI/CD & QA Cleanup Plan](../docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 

@@ -25,10 +25,10 @@ TARGET_ROOTS: Final[tuple[str, ...]] = (
     "tests",
 )
 DELTA_MANIFEST: Final[pathlib.PurePosixPath] = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml"
+    "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
 DELTA_SUMMARY: Final[pathlib.PurePosixPath] = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md"
+    "docs/90.references/data/0074-target-surface-delta-summary/README.md"
 )
 PROFILE_REGISTRY: Final[pathlib.PurePosixPath] = pathlib.PurePosixPath(
     "docs/99.templates/support/document-metadata-profiles.yaml"

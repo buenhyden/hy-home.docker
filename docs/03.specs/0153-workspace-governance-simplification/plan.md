@@ -1218,10 +1218,10 @@ git commit -m "refactor(operations): normalize catalog subjects"
   `docs/90.references/data/####-<slug>/` Migration target
 - Move: each tracked `docs/90.references/learning/` document to either its
   approved Stage 05 Guide owner or Stage 90 Research target
-- Move: generated `docs/90.references/llm-wiki/` outputs to the approved Data
+- Move: generated `docs/90.references/data/0082-llm-wiki-index/` outputs to the approved Data
   package and preserve generator ownership
 - Delete: empty `docs/90.references/learning/` and
-  `docs/90.references/llm-wiki/` roots
+  `docs/90.references/data/0082-llm-wiki-index/` roots
 - Delete: every registered deprecated redirect document
 - Create: `scripts/lib/document_governance/references.py`
 - Create: `tests/validation/test_reference_packages.py`

@@ -391,7 +391,7 @@ if rg -n '[가-힣]' \
   docs/03.specs docs/04.execution/plans docs/04.execution/tasks docs/90.references \
   --glob '*.md' \
   --glob '!**/README.md' \
-  --glob '!docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
+  --glob '!docs/90.references/data/0082-llm-wiki-index/README.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
   fail "closed English-only doc surfaces contain Korean text"
   cat /tmp/check-repo-contracts-english-only-surfaces.txt >&2
 fi
@@ -937,7 +937,7 @@ required_index_links = (
     "./rulesets/main-protection.md",
     "../docs/00.agent-governance/policies/github-governance.md",
     "../scripts/validation/run-local-qa-gates.sh",
-    "../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml",
+    "../docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml",
 )
 if github_readme.exists():
     failures.append(f"{github_readme}: GitHub navigation README is forbidden")
@@ -1019,8 +1019,7 @@ else:
         )
 
 observation_path = pathlib.Path(
-    "docs/90.references/data/governance/"
-    "github-actions-control-plane-observation.yaml"
+    "docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml"
 )
 observation: dict[object, object] | None = None
 if not observation_path.is_file():
@@ -1650,7 +1649,7 @@ import sys
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
-generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
+generated_llm_index = pathlib.Path("docs/90.references/data/0082-llm-wiki-index/README.md")
 registry = json.loads(pathlib.Path("docs/99.templates/registry.json").read_text())
 generated_outputs = {
     pathlib.Path(profile["path_pattern"])
@@ -2231,17 +2230,24 @@ generated_outputs = {
 if not root.is_dir():
     failures.append("missing reference stage folder: docs/90.references")
 
-allowed_top_level = {"README.md", "audits", "data", "research", "learning", "llm-wiki"}
-required_top_level = {"audits", "data", "research", "learning", "llm-wiki"}
+allowed_top_level = {"README.md", "audits", "data", "research"}
+required_top_level = {"audits", "data", "research"}
 if root.exists():
     present_top_level = {child.name for child in root.iterdir()}
     for required_name in sorted(required_top_level):
         if required_name not in present_top_level:
             failures.append(f"missing reference top-level folder: docs/90.references/{required_name}")
+        elif not (root / required_name).is_dir() or (root / required_name).is_symlink():
+            failures.append(
+                f"reference category is not a directory: docs/90.references/{required_name}"
+            )
+    root_readme = root / "README.md"
+    if not root_readme.is_file() or root_readme.is_symlink():
+        failures.append("missing reference top-level file: docs/90.references/README.md")
     for child in sorted(root.iterdir()):
         if child.name not in allowed_top_level:
             failures.append(
-                f"{child}: unsupported reference top-level entry; expected one of audits, data, research, learning, llm-wiki, README.md"
+                f"unsupported reference top-level entry: {child}; expected one of audits, data, research, README.md"
             )
 
 template_required = [
@@ -2383,11 +2389,11 @@ failures: list[str] = []
 required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md"),
-    pathlib.Path("docs/90.references/llm-wiki/README.md"),
-    pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
-    pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
-    pathlib.Path("docs/90.references/data/knowledge/README.md"),
-    pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md"),
+    pathlib.Path("docs/90.references/data/0082-llm-wiki-index/README.md"),
+    pathlib.Path("docs/90.references/data/0082-llm-wiki-index/README.md"),
+    pathlib.Path("docs/90.references/data/0083-repository-map/README.md"),
+    pathlib.Path("docs/90.references/data/README.md"),
+    pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"),
     pathlib.Path(".claude/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/roles/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/skills/knowledge-map-agent.md"),
@@ -2402,8 +2408,8 @@ llms_path = pathlib.Path("llms.txt")
 if llms_path.is_file():
     text = llms_path.read_text(errors="ignore")
     required_literals = [
-        "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
-        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
+        "docs/90.references/data/0082-llm-wiki-index/README.md",
+        "docs/90.references/data/0083-repository-map/README.md",
         "generated tracked repo-local path index",
         "tracked source files",
         "Runtime truth",
@@ -2422,17 +2428,17 @@ if llms_path.is_file():
 readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
-        "docs/90.references/llm-wiki/",
-        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
+        "docs/90.references/data/0082-llm-wiki-index/",
+        "docs/90.references/data/0083-repository-map/README.md",
     ],
     pathlib.Path("docs/README.md"): [
-        "90.references/llm-wiki/",
+        "90.references/data/0082-llm-wiki-index/",
         "LLM Wiki contract",
         "generated index freshness",
     ],
     pathlib.Path("docs/90.references/README.md"): [
-        "llm-wiki/README.md",
-        "llm-wiki/ref-0082-llm-wiki-index.md",
+        "./data/README.md",
+        "LLM navigation outputs",
     ],
     pathlib.Path("scripts/README.md"): [
         "generate-llm-wiki.py",
@@ -2440,8 +2446,9 @@ readme_checks = {
         "--check",
     ],
     pathlib.Path("docs/90.references/data/README.md"): [
-        "knowledge/README.md",
-        "knowledge/ref-0076-llm-wiki-stage-category-coverage.md",
+        "0076-llm-wiki-stage-category-coverage/README.md",
+        "0082-llm-wiki-index/README.md",
+        "0083-repository-map/README.md",
     ],
 }
 for path, literals in readme_checks.items():
@@ -2453,7 +2460,7 @@ for path, literals in readme_checks.items():
         if literal not in text:
             failures.append(f"{path}: missing LLM Wiki registration literal: {literal}")
 
-wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
+wiki_files = [path for path in pathlib.Path("docs/90.references/data/0082-llm-wiki-index").glob("*.md")]
 safety_files = [
     llms_path,
     pathlib.Path("docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md"),
@@ -2487,7 +2494,7 @@ for path in safety_files:
     ):
         failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
 
-map_path = pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md")
+map_path = pathlib.Path("docs/90.references/data/0083-repository-map/README.md")
 if map_path.is_file():
     text = map_path.read_text(errors="ignore")
     for literal in [
@@ -2502,7 +2509,7 @@ if map_path.is_file():
         if literal not in text:
             failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
 
-index_path = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
+index_path = pathlib.Path("docs/90.references/data/0082-llm-wiki-index/README.md")
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [
@@ -2534,7 +2541,7 @@ if index_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
 
-coverage_path = pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md")
+coverage_path = pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")
 if coverage_path.is_file():
     text = coverage_path.read_text(errors="ignore")
     for literal in [

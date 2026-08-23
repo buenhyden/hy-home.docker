@@ -98,7 +98,7 @@ validator owns profile precedence and ordering behavior. Human-readable
 - Diagnostics expose bounded paths, identities, counts, and finding codes, not
   raw bodies, logs, credentials, or secret values.
 - The canonical pre/post-migration snapshot is
-  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`.
+  `docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md`.
 
 Registered typed Markdown template sources declare their target `artifact_type` and
 use only the placeholder forms registered in the machine-readable profile.

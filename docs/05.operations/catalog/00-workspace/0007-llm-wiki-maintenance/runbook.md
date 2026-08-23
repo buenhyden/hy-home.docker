@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0007
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0096
 created: 2026-07-04
 updated: 2026-08-14
 ---

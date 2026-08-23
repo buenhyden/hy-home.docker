@@ -223,7 +223,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
         ).read_text(encoding="utf-8")
         matrix = (
-            ROOT / "docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md"
+            ROOT / "docs/90.references/data/0065-audit-implementation-matrix/README.md"
         ).read_text(encoding="utf-8")
         return workflow, repo_contracts, generator, matrix
 

@@ -23,7 +23,7 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
     "docs/04.execution/",
     "docs/90.references/audits/",
-    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
+    "docs/90.references/data/0068-target-surface-convergence-summary/README.md",
     # Widened 2026-08-19 from the retiring research pack's own directory to the
     # whole research namespace, under the user-approved resolution of a Spec 137
     # gate 4 finding. An independent seat ruled that the narrower entry was

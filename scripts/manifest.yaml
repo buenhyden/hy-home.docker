@@ -97,7 +97,7 @@ files:
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  - docs/90.references/data/knowledge/README.md
+  - docs/90.references/data/README.md
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/generate-audit-implementation-matrix.sh
   - scripts/validation/recommend-qa-gates.sh
@@ -111,8 +111,8 @@ files:
   - scripts/knowledge/generate-llm-wiki.py
   - --check
   outputs:
-  - docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md
-  - docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md
+  - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
+  - docs/90.references/data/0082-llm-wiki-index/README.md
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
   authority: .github/workflow-contract.yml

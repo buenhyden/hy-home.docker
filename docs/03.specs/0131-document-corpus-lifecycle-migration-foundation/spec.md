@@ -101,7 +101,7 @@ change, not directory-name symmetry.
 - [Agent Governance PRD](../../01.requirements/0024-agent-governance-standardization.md)
 - [Agent Governance Architecture Description](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [Stage 00 adapter ADR](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [Stage 99 metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
 - [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
 - [Common document contract](../../99.templates/support/common-document-contract.md)
@@ -507,7 +507,7 @@ until the branch is explicitly finished and the user authorizes local merge.
 - Spec 129
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
 - [Template governance](../../99.templates/support/template-governance.md)

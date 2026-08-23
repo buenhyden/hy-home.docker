@@ -140,7 +140,7 @@ target consumer in the Task ledger. Directory adjacency is not authorization.
 
 - [Spec 133: Target Surface Contract Convergence](../0133-target-surface-contract-convergence/spec.md)
 - [Spec 134: Agent Governance Canonical Convergence](../0134-agent-governance-canonical-convergence/spec.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Approval boundaries](../../00.agent-governance/policies/approval-boundaries.md)
 - [Task checklists](../../00.agent-governance/policies/task-checklists.md)
@@ -772,7 +772,7 @@ and the distinction between local, remote, skipped, and unverified evidence.
 
 - [Spec 133: Target Surface Contract Convergence](../0133-target-surface-contract-convergence/spec.md)
 - [Spec 134: Agent Governance Canonical Convergence](../0134-agent-governance-canonical-convergence/spec.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)

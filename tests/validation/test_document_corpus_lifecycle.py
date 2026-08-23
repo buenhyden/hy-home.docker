@@ -36,7 +36,7 @@ TASK7_LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-converg
 TARGET_WAVE = "target-surface-convergence"
 TARGET_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
 SUCCESSOR_MANIFEST = (
-    "docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml"
+    "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
 SAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 SAMPLE_PREDECESSOR_EQUALITY_CODES = {
@@ -136,14 +136,14 @@ class Task7LedgerRepairTests(unittest.TestCase):
             "32c40e11747bc0bd03789c24861d2e5d60c0e999",
         ),
         (
-            "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md",
-            "docs/90.references/research/ref-0084-github-actions-platform.md",
+            "docs/90.references/research/0001-agentic-research-pack-refresh/github-actions-platform.md",
+            "docs/90.references/research/0084-github-actions-platform/README.md",
             "ref-0084",
             "move",
             "f2f8f8a441b5977d55e516ba59ea7865c06d6c55",
         ),
         (
-            "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md",
+            "docs/90.references/research/0001-agentic-research-pack-refresh/verification-validation.md",
             "docs/90.references/research/ref-0085-verification-validation.md",
             "ref-0085",
             "move",
@@ -351,10 +351,10 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         "archived_at",
     }
     PACK_INDEX_ROLES = {
-        "docs/90.references/audits/ref-0001-readme.md": "audit",
-        "docs/90.references/audits/ref-0012-readme.md": "audit",
-        "docs/90.references/audits/ref-0019-readme.md": "audit",
-        "docs/90.references/audits/ref-0033-readme.md": "audit",
+        "docs/90.references/audits/0001-readme/README.md": "audit",
+        "docs/90.references/audits/0012-readme/README.md": "audit",
+        "docs/90.references/audits/0019-readme/README.md": "audit",
+        "docs/90.references/audits/0033-readme/README.md": "audit",
         "docs/90.references/research/ref-0039-readme.md": "reference",
     }
 
@@ -508,11 +508,11 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
     def test_immutable_target_surface_evidence_is_not_blindly_translated(self) -> None:
         manifest_path = (
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
         summary_path = (
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md"
+            / "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
         )
         self.assertTrue(manifest_path.is_file())
         self.assertTrue(summary_path.is_file())
@@ -667,7 +667,7 @@ class CoLocatedExecutionTests(unittest.TestCase):
     def test_task7_consumer_reconciliation_rejects_unrelated_drift(self) -> None:
         document = lifecycle.load_migration_manifest(
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
         rows = lifecycle._task7_migration_rows(ROOT)
         legacy, ledger_row = next(
@@ -713,7 +713,7 @@ class CoLocatedExecutionTests(unittest.TestCase):
         contract = lifecycle.load_migration_contract(CONTRACT)
         document = lifecycle.load_migration_manifest(
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
         self.assertTrue(
             lifecycle._task7_registered_manifest_matches(
@@ -1578,7 +1578,7 @@ class ManifestValidationTests(LifecycleTestCase):
     def target_manifest(self) -> lifecycle.MigrationManifestDocument:
         return lifecycle.load_migration_manifest(
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
 
     def target_row(
@@ -3703,7 +3703,7 @@ class ArchiveProvenanceTests(LifecycleTestCase):
 
         document = lifecycle.load_migration_manifest(
             ROOT
-            / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
         row = next(
             item

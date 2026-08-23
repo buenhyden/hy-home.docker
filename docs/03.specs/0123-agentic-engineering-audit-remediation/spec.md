@@ -71,9 +71,9 @@ must not be backdated into that catalog.
 - **Canonical Research Pack**:
   `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - **Canonical Audit Pack**:
-  [../../90.references/audits/ref-0019-readme.md](../../90.references/audits/ref-0019-readme.md)
+  [../../90.references/audits/0019-readme/README.md](../../90.references/audits/0019-readme/README.md)
 - **Overlapping Audit Pack**:
-  [../../90.references/audits/ref-0033-readme.md](../../90.references/audits/ref-0033-readme.md)
+  [../../90.references/audits/0033-readme/README.md](../../90.references/audits/0033-readme/README.md)
 - **Stage Authoring Matrix**:
   [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - **Documentation Protocol**:
@@ -488,8 +488,8 @@ Specs 124-127 and their plans stay `draft` pending separate approval.
 - Task evidence
 - Previous research consolidation specification
 - `Canonical research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Canonical implementation audit pack](../../90.references/audits/ref-0019-readme.md)
-- [Overlapping implementation audit pack](../../90.references/audits/ref-0033-readme.md)
+- [Canonical implementation audit pack](../../90.references/audits/0019-readme/README.md)
+- [Overlapping implementation audit pack](../../90.references/audits/0033-readme/README.md)
 - [Research category](../../90.references/research/README.md)
 - [Audit category](../../90.references/audits/README.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

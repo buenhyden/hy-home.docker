@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/security/ref-0078-security-automation-readiness.md"
+OUTPUT="docs/90.references/data/0078-security-automation-readiness/README.md"
 
 usage() {
   cat <<'EOF'
@@ -357,7 +357,7 @@ has_tech_stack_provenance = all(
         "infra/tech-stack.versions.json",
         "infra/image-tag-policy.exceptions.json",
         "scripts/operations/generate-tech-stack-version-provenance.sh",
-        "docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md",
+        "docs/90.references/data/0061-tech-stack-version-provenance/README.md",
     )
 )
 
@@ -455,7 +455,7 @@ controls: list[Control] = [
             "infra/tech-stack.versions.json",
             "infra/image-tag-policy.exceptions.json",
             "scripts/operations/generate-tech-stack-version-provenance.sh",
-            "docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md",
+            "docs/90.references/data/0061-tech-stack-version-provenance/README.md",
         ),
         "Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations." if has_tech_stack_provenance else "Regenerate or add the tech-stack provenance snapshot.",
     ),

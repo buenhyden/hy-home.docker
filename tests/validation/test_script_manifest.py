@@ -71,7 +71,7 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "graphify-out/",
     "docs/98.archive/",
     "docs/04.execution/",
-    "docs/90.references/llm-wiki/",
+    "docs/90.references/data/0082-llm-wiki-index/",
 )
 MUTATION_OVERRIDES = {
     "scripts/hooks/patch-graphify-post-commit.sh": "check-write",

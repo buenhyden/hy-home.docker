@@ -37,10 +37,10 @@ NEW_PACK: Final = pathlib.PurePosixPath(
     "docs/90.references/research/2026-08-08-agentic-engineering-research-pack"
 )
 INDEX: Final = pathlib.PurePosixPath(
-    "docs/90.references/llm-wiki/llm-wiki-index.md"
+    "docs/90.references/data/0082-llm-wiki-index/README.md"
 )
 COVERAGE: Final = pathlib.PurePosixPath(
-    "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
+    "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"
 )
 INDEX_GENERATOR: Final = pathlib.PurePosixPath(
     "scripts/knowledge/generate-llm-wiki-index.sh"

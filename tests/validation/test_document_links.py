@@ -233,6 +233,23 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_fence_info_comment_opener_does_not_hide_later_rendered_links(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            """```text <!--
+[hidden](hidden.md)
+```
+[visible](visible.md)
+""",
+        )
+
+        self.assertEqual(
+            ("docs/visible.md",),
+            tuple(link.target.as_posix() for link in links),
+        )
+
     def test_inline_code_comment_opener_does_not_hide_later_rendered_links(self) -> None:
         from scripts.lib.document_governance.links import parse_local_markdown_links
 

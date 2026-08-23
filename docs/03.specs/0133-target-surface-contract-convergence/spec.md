@@ -110,7 +110,7 @@ that requires it. An adjacent file is not in scope merely because it is nearby.
 - [Data analytics Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - [Analytics engine ADR](../../02.architecture/decisions/0015-analytics-engine-selection.md)
 - [Data analytics Spec](../0005-data-analytics/spec.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
@@ -481,7 +481,7 @@ commit.
 - Spec 130: Template Contract System Canonicalization
 - Spec 129: Document Contract Canonicalization
 - [Data analytics Spec](../0005-data-analytics/spec.md)
-- [Canonical audit pack](../../90.references/audits/ref-0019-readme.md)
+- [Canonical audit pack](../../90.references/audits/0019-readme/README.md)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Common document contract](../../99.templates/support/common-document-contract.md)

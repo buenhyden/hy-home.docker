@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md"
+OUTPUT="docs/90.references/data/0065-audit-implementation-matrix/README.md"
 
 usage() {
   cat <<'EOF'
@@ -264,11 +264,11 @@ def build_output() -> tuple[str, list[str]]:
 
     expected_generated_surfaces = [
         ("Audit-pack coverage report", "AEA-AUTO-007", pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"), None),
-        ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki.py"), pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md")),
-        ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md")),
-        ("Provider hook parity matrix", "AEA-AUTO-010", pathlib.Path("scripts/validation/report-provider-hook-parity.sh"), pathlib.Path("docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md")),
-        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md")),
-        ("Security automation readiness", "AEA-AUTO-012", pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"), pathlib.Path("docs/90.references/data/security/ref-0078-security-automation-readiness.md")),
+        ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki.py"), pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")),
+        ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/0061-tech-stack-version-provenance/README.md")),
+        ("Provider hook parity matrix", "AEA-AUTO-010", pathlib.Path("scripts/validation/report-provider-hook-parity.sh"), pathlib.Path("docs/90.references/data/0072-provider-hook-parity-matrix/README.md")),
+        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/0064-agent-output-eval-fixtures/README.md")),
+        ("Security automation readiness", "AEA-AUTO-012", pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"), pathlib.Path("docs/90.references/data/0078-security-automation-readiness/README.md")),
         ("Audit implementation matrix", "AEA-AUTO-013", pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"), OUTPUT),
     ]
 

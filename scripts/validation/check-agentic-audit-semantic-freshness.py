@@ -34,7 +34,7 @@ EXPECTED_TOP_LEVEL_PATHS = {
     "task_evidence": EXPECTED_TASK_EVIDENCE,
 }
 SUPERSEDED_2026_07_07_README = pathlib.Path(
-    "docs/90.references/audits/ref-0033-readme.md"
+    "docs/90.references/audits/0033-readme/README.md"
 )
 EXPECTED_ASSERTION_IDS = {
     "DML-01",

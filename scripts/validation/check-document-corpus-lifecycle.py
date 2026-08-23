@@ -489,14 +489,14 @@ TASK7_EXTENSION_IDENTITIES = (
         "32c40e11747bc0bd03789c24861d2e5d60c0e999",
     ),
     (
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md",
-        "docs/90.references/research/ref-0084-github-actions-platform.md",
+        "docs/90.references/research/0001-agentic-research-pack-refresh/github-actions-platform.md",
+        "docs/90.references/research/0084-github-actions-platform/README.md",
         "ref-0084",
         "move",
         "f2f8f8a441b5977d55e516ba59ea7865c06d6c55",
     ),
     (
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md",
+        "docs/90.references/research/0001-agentic-research-pack-refresh/verification-validation.md",
         "docs/90.references/research/ref-0085-verification-validation.md",
         "ref-0085",
         "move",
@@ -515,8 +515,7 @@ TASK7_LEDGER_FIELDS = {
 TASK7_DATE_COMPONENT = re.compile(r"^\d{4}-\d{2}-\d{2}(?:-|$)")
 TASK7_YEAR_COMPONENT = re.compile(r"^\d{4}$")
 TASK7_IMMUTABLE_MANIFEST = (
-    "docs/90.references/data/governance/document-corpus-lifecycle/"
-    "ref-0069-target-surface-convergence.yaml"
+    "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
 TASK7_IMMUTABLE_MANIFEST_SHA256 = (
     "4c061d2a4d9bb494db97318280d451f9cdcc7748bfcbbe021fb1436fe6398a67"

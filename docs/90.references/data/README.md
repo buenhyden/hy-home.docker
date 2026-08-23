@@ -2,112 +2,47 @@
 status: active
 ---
 
-<!-- Target: docs/90.references/data/README.md -->
-
-# Reference Data
-
-> stable reference data, profiles, inventories, and glossary material
+# Data Packages
 
 ## Overview
 
-`docs/90.references/data`는 active stage 문서가 반복해서 참조하는 stable data와 interpretation context를 관리합니다. 이 category는 glossary, HADS profile, Docker/Kubernetes 해석 규칙처럼 느리게 변하는 reference material을 담습니다.
+Repository inventories, generated navigation outputs, structured datasets, glossaries, and stable reference facts.
 
-이 category는 runtime source of truth가 아닙니다. 최신 Compose, registry, validator, script, secret-handling 원문은 `infra/`, `scripts/`, `secrets/`, `docs/00.agent-governance/`가 담당합니다.
+The Stage 90 authority boundary and package lifecycle rules are defined by the [References index](../README.md) and Stage 99 Registry.
 
-## Category Role
+## Packages
 
-`docs/90.references/data`는 Stage 90의 안정 데이터 축입니다. 구조화된 reference data와 interpretation profile을 모으되, 학습 로드맵은 [learning](../learning/README.md), LLM 탐색 인덱스는 [llm-wiki](../llm-wiki/README.md), 연구 분석은 [research](../research/README.md), 감사·비교 보고서는 [audits](../audits/README.md)에 둡니다.
+| Stable ID | Package | Status |
+| :--- | :--- | :--- |
+| [DATA-0059](./0059-compose-profile-service-coverage/README.md) | Reference: Docker Compose Profile Service Coverage | active |
+| [DATA-0060](./0060-image-version-interpretation/README.md) | Reference: Docker Image and Version Interpretation | active |
+| [DATA-0061](./0061-tech-stack-version-provenance/README.md) | Reference: Tech-Stack Version Provenance | active |
+| [DATA-0062](./0062-stable-reference-terms/README.md) | Reference: Stable Reference Terms | active |
+| [DATA-0063](./0063-agent-governance-retirement-ledger/README.md) | Agent Governance Retirement Ledger | active |
+| [DATA-0064](./0064-agent-output-eval-fixtures/README.md) | Reference: Agent Output Eval Fixtures | active |
+| [DATA-0065](./0065-audit-implementation-matrix/README.md) | Reference: Audit Implementation Matrix | active |
+| [DATA-0066](./0066-foundation-summary/README.md) | Document Corpus Migration Summary | active |
+| [DATA-0067](./0067-foundation/README.md) | Foundation | active |
+| [DATA-0068](./0068-target-surface-convergence-summary/README.md) | Document Corpus Migration Summary | active |
+| [DATA-0069](./0069-target-surface-convergence/README.md) | Target Surface Convergence | active |
+| [DATA-0070](./0070-gap-to-stage-routing/README.md) | Reference: Gap-to-Stage Routing | active |
+| [DATA-0071](./0071-github-actions-control-plane-observation/README.md) | Github Actions Control Plane Observation | active |
+| [DATA-0072](./0072-provider-hook-parity-matrix/README.md) | Provider Hook Parity Matrix | active |
+| [DATA-0073](./0073-target-surface-delta-manifest/README.md) | Target Surface Delta Manifest | active |
+| [DATA-0074](./0074-target-surface-delta-summary/README.md) | Target Surface Delta Summary | active |
+| [DATA-0075](./0075-profile/README.md) | Reference: HADS Profile | active |
+| [DATA-0076](./0076-llm-wiki-stage-category-coverage/README.md) | LLM Wiki Stage Category Coverage | active |
+| [DATA-0077](./0077-docker-compose-to-k3s-migration/README.md) | Reference: Docker Compose to k3s/k3d Migration | active |
+| [DATA-0078](./0078-security-automation-readiness/README.md) | Reference: Security Automation Readiness | active |
+| [DATA-0079](./0079-supply-chain-sample-service/README.md) | Reference: Sample-service Local Supply-chain Verification | active |
+| [DATA-0082](./0082-llm-wiki-index/README.md) | LLM Wiki Generated Index | active |
+| [DATA-0083](./0083-repository-map/README.md) | Reference: LLM Wiki Repository Map | active |
 
-## Audience
+## Authoring
 
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
-
-## Scope
-
-### In Scope
-
-- Docker image/version interpretation references
-- Generated Docker Compose profile/service coverage inventory
-- Stable governance routing reference data
-- Stable audit implementation matrix reference data
-- Reviewed document-corpus lifecycle manifests and generated safe summaries
-- Stable agent-output eval fixture reference data
-- Stable glossary and stage-boundary vocabulary
-- HADS profile and validation boundary
-- Generated LLM Wiki coverage and knowledge-index reference data
-- Kubernetes/k3s/k3d migration reference context
-- Generated security automation readiness reference data
-
-### Out of Scope
-
-- Source-backed research packs
-- Audit reports and implementation-status comparison reports
-- Learning roadmap and theory references
-- Repo-local LLM Wiki generated index and repository map
-- Active policy, plan, task evidence, runbook, incident, or postmortem
-- Runtime configuration source files or secret values
-
-## Structure
-
-```text
-data/
-├── README.md      # This file
-├── docker/        # Docker image/version and registry interpretation
-├── glossary/      # Stable vocabulary and stage-boundary terms
-├── governance/    # Governance routing and validation reference data
-├── hads/          # HADS reference profile and validator boundary
-├── knowledge/     # Generated LLM Wiki coverage and knowledge-index data
-├── kubernetes/    # Kubernetes and k3s/k3d migration reference context
-└── security/      # Generated security automation readiness data
-```
-
-## Current References
-
-- [docker/README.md](./docker/README.md) - Docker image/version drift, registry, and runtime reference rules
-- [docker/compose-profile-service-coverage.md](docker/ref-0059-compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
-- [docker/image-version-interpretation.md](docker/ref-0060-image-version-interpretation.md) - Docker image/version source interpretation rules
-- [docker/tech-stack-version-provenance.md](docker/ref-0061-tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
-- [glossary/README.md](./glossary/README.md) - stable reference terminology category
-- [glossary/stable-reference-terms.md](glossary/ref-0062-stable-reference-terms.md) - shared terms for reference-stage boundaries
-- [governance/README.md](./governance/README.md) - governance routing reference data category
-- [governance/agent-output-eval-fixtures.md](governance/ref-0064-agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
-- [governance/audit-implementation-matrix.md](governance/ref-0065-audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
-- [governance/document-corpus-lifecycle/README.md](./governance/document-corpus-lifecycle/README.md) - document-corpus lifecycle manifest and summary category
-- [governance/document-corpus-lifecycle/foundation.yaml](governance/document-corpus-lifecycle/ref-0067-foundation.yaml) - reviewed blocking Foundation migration manifest
-- [governance/document-corpus-lifecycle/foundation-summary.md](governance/document-corpus-lifecycle/ref-0066-foundation-summary.md) - generator-owned safe Foundation summary
-- [governance/gap-to-stage-routing.md](governance/ref-0070-gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
-- [governance/provider-hook-parity-matrix.md](governance/ref-0072-provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
-- [hads/README.md](./hads/README.md) - HADS profile category
-- [hads/profile.md](hads/ref-0075-profile.md) - HADS profile and validation contract
-- [knowledge/README.md](./knowledge/README.md) - generated LLM Wiki coverage and knowledge-index data category
-- [knowledge/llm-wiki-stage-category-coverage.md](knowledge/ref-0076-llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
-- [kubernetes/README.md](./kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context
-- [kubernetes/docker-compose-to-k3s-migration.md](kubernetes/ref-0077-docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
-- [security/README.md](./security/README.md) - generated security automation readiness data category
-- [security/security-automation-readiness.md](security/ref-0078-security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
-
-## How to Work in This Area
-
-1. Use this category for stable data or interpretation material only.
-2. Put learning roadmaps under [learning](../learning/README.md).
-3. Put LLM navigation output under [llm-wiki](../llm-wiki/README.md).
-4. Put research analysis under [research](../research/README.md).
-5. Put stable audit reports under [audits](../audits/README.md).
-6. New non-README reference docs must follow [reference.template.md](../../99.templates/templates/common/reference.template.md).
-7. Update this README and [90.references](../README.md) when adding, moving, or deleting data references.
-8. Run `bash scripts/validation/check-repo-contracts.sh` after changing reference data docs or generated-index paths.
+Create packages only under `data/####-<slug>/` and use the matching Stage 99 template. Preserve observation dates, citations, provenance, and active-owner Traceability.
 
 ## Related Documents
 
-- [90.references](../README.md)
-- [audit references](../audits/README.md)
-- [learning references](../learning/README.md)
-- [LLM Wiki references](../llm-wiki/README.md)
-- [research references](../research/README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
-- [documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
+- [References index](../README.md)
+- [Stage 99 Registry](../../99.templates/registry.json)

@@ -538,7 +538,7 @@ permanent provider guarantees.
 
 - Parent audit harness specification
 - [Canonical Stage 00 governance hub](../../00.agent-governance/README.md)
-- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [Provider capability matrix](../../00.agent-governance/policies/provider-capability-matrix.md)
 - [Subagent protocol](../../00.agent-governance/policies/agentic.md)
 

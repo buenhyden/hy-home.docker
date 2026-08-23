@@ -33,8 +33,8 @@ NEW_PACK = "docs/90.references/research/2026-08-08-agentic-engineering-research-
 TASK = "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
 SPEC = "docs/03.specs/0137-agentic-research-pack-rebuild/spec.md"
 PLAN = "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md"
-INDEX = "docs/90.references/llm-wiki/llm-wiki-index.md"
-COVERAGE = "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
+INDEX = "docs/90.references/data/0082-llm-wiki-index/README.md"
+COVERAGE = "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"
 ROLES = ("migration-specification", "quality")
 PACKAGE_ATTACHMENTS = (
     "HEAD.txt",

@@ -52,7 +52,7 @@ import yaml
 root = pathlib.Path(sys.argv[1]).absolute()
 mode = sys.argv[2]
 registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
-output = root / "docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md"
+output = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
 provider_ids = ("claude", "codex")
 events = (
     ("session-start", "SessionStart", "SessionStart"),

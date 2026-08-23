@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0007
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0096
 created: 2026-07-04
 updated: 2026-08-11
 ---
@@ -16,7 +17,7 @@ updated: 2026-08-11
 
 ## Policy Scope
 
-이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/knowledge/generate-llm-wiki.py`, `doc-writer` 역할과 `knowledge-map-agent` 함수의 운영 절차를 다룬다.
+이 가이드는 루트 `llms.txt`, `docs/90.references/data/0082-llm-wiki-index/`, `scripts/knowledge/generate-llm-wiki.py`, `doc-writer` 역할과 `knowledge-map-agent` 함수의 운영 절차를 다룬다.
 
 - **Systems**: `hy-home.docker` documentation and agent-governance surfaces
 - **Agents**: `doc-writer`, `workflow-supervisor`

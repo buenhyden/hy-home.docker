@@ -62,7 +62,7 @@ EXPECTED_CONSUMER_POLICY = {
         "graphify-out/",
         "docs/90.references/research/",
         "docs/90.references/audits/",
-        "docs/90.references/llm-wiki/",
+        "docs/90.references/data/0082-llm-wiki-index/",
         "docs/90.references/data/knowledge/",
         "docs/90.references/data/security/",
         "docs/90.references/data/governance/document-corpus-lifecycle/",
@@ -263,7 +263,7 @@ def _inactive_consumer(
         (
             "docs/90.references/research/",
             "docs/90.references/audits/",
-            "docs/90.references/llm-wiki/",
+            "docs/90.references/data/0082-llm-wiki-index/",
             "docs/90.references/data/knowledge/",
             "docs/90.references/data/security/",
             "docs/90.references/data/governance/document-corpus-lifecycle/",

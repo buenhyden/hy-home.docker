@@ -29,7 +29,7 @@ This specification strengthens the `hy-home.docker` LLM Wiki from a static refer
 ## Contracts
 
 - **Config Contract**: `scripts/knowledge/generate-llm-wiki-index.sh` supports default write mode and `--check` freshness mode.
-- **Data / Interface Contract**: `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md` is a generated tracked repo-local Markdown path index.
+- **Data / Interface Contract**: `docs/90.references/data/0082-llm-wiki-index/README.md` is a generated tracked repo-local Markdown path index.
 - **Governance Contract**: `wiki-curator` is mirrored across `.claude/agents/` and `docs/00.agent-governance/agents/agents/`, and `check-repo-contracts.sh` enforces parity and freshness.
 
 ## Core Design
@@ -122,7 +122,7 @@ bash scripts/validation/check-doc-traceability.sh
 - **Plan**: ../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md
 - **Tasks**: ../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md
 - **Guide**: [../../05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
-- **Reference**: [../../90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)
+- **Reference**: [../../90.references/data/0082-llm-wiki-index/README.md](../../90.references/data/0082-llm-wiki-index/README.md)
 
 ## Boundaries and Inputs
 

@@ -14,8 +14,7 @@ import yaml
 
 
 TARGET_MANIFEST: Final = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/document-corpus-lifecycle/"
-    "target-surface-convergence.yaml"
+    "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
 TARGET_ROOTS: Final = (
     ".github",

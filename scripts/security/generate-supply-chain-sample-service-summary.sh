@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/security/ref-0079-supply-chain-sample-service.md"
+OUTPUT="docs/90.references/data/0079-supply-chain-sample-service/README.md"
 CHECKER="scripts/validation/check-supply-chain-policy.py"
 MODE="${1:-write}"
 

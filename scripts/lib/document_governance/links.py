@@ -152,6 +152,21 @@ def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
     fence: str | None = None
     html_comment = False
     for line_no, line in enumerate(text.splitlines(), start=1):
+        raw_stripped = line.lstrip()
+        raw_marker = (
+            "```"
+            if raw_stripped.startswith("```")
+            else "~~~"
+            if raw_stripped.startswith("~~~")
+            else None
+        )
+        # A visible fence opener owns its entire info string. In particular,
+        # an example such as `````text <!--`` must not leak HTML-comment state
+        # beyond the fence. A marker already inside an active HTML comment is
+        # still masked by the comment scanner below.
+        if fence is None and not html_comment and raw_marker is not None:
+            fence = raw_marker
+            continue
         if fence is None:
             line, html_comment = _without_html_comments(line, html_comment)
         stripped = line.lstrip()

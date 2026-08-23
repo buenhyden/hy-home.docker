@@ -896,9 +896,14 @@ def _excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
     return value.startswith((
         "docs/98.archive/", "graphify-out/", "docs/90.references/research/",
-        "docs/90.references/audits/", "docs/90.references/llm-wiki/",
-        "docs/90.references/data/knowledge/", "docs/90.references/data/security/",
-        "docs/90.references/data/governance/document-corpus-lifecycle/",
+        "docs/90.references/audits/", "docs/90.references/data/0082-llm-wiki-index/",
+        "docs/90.references/data/0066-foundation-summary/",
+        "docs/90.references/data/0067-foundation/",
+        "docs/90.references/data/0068-target-surface-convergence-summary/",
+        "docs/90.references/data/0069-target-surface-convergence/",
+        "docs/90.references/data/0076-llm-wiki-stage-category-coverage/",
+        "docs/90.references/data/0078-security-automation-readiness/",
+        "docs/90.references/data/0079-supply-chain-sample-service/",
     ))
 
 

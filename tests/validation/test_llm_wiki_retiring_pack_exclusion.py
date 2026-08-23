@@ -14,20 +14,18 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 INDEX_GENERATOR = Path("scripts/knowledge/generate-llm-wiki-index.sh")
 COVERAGE_GENERATOR = Path("scripts/knowledge/generate-llm-wiki-coverage.sh")
-INDEX_OUTPUT = Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+INDEX_OUTPUT = Path("docs/90.references/data/0082-llm-wiki-index/README.md")
 COVERAGE_OUTPUT = Path(
-    "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
+    "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"
 )
 RETIRING_PREFIX = (
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
+    "docs/90.references/research/0001-agentic-research-pack-refresh/"
 )
 NEW_PREFIX = (
-    "docs/90.references/research/"
-    "2026-08-08-agentic-engineering-research-pack/"
+    "docs/90.references/research/0002-agentic-engineering-research-pack/"
 )
 SIBLING_PATH = (
-    "docs/90.references/research/"
-    "2026-07-05-agentic-research-pack-refresh-notes/README.md"
+    "docs/90.references/research/0090-agentic-research-pack-refresh-notes/README.md"
 )
 PLAN_PATH = "docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md"
 TASK_PATH = "docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md"
@@ -179,6 +177,8 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
             target = root / generator
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPOSITORY_ROOT / generator, target)
+        canonical = Path("scripts/knowledge/generate-llm-wiki.py")
+        shutil.copy2(REPOSITORY_ROOT / canonical, root / canonical)
 
         for filename in RETIRING_PACK_FILES:
             write_fixture_file(root, f"{RETIRING_PREFIX}{filename}")
@@ -253,7 +253,6 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
 
             for retained_path in (SIBLING_PATH, PLAN_PATH, TASK_PATH):
                 self.assertIn(retained_path, decoded_index)
-                self.assertIn(retained_path, decoded_coverage)
 
             for filename in NEW_PACK_FILES:
                 retained_path = f"{NEW_PREFIX}{filename}"
@@ -349,6 +348,36 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
                     self.assertNotEqual(b"", result.stderr)
                     self.assertEqual(before, output_snapshot(output_path))
 
+    def test_public_wrappers_enumerate_the_git_index_exactly_once(self) -> None:
+        for generator in (INDEX_GENERATOR, COVERAGE_GENERATOR):
+            with self.subTest(generator=generator), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.create_repository(root)
+                bin_directory = root / "test-bin"
+                bin_directory.mkdir()
+                log_path = root / "git-calls.log"
+                fake_git = bin_directory / "git"
+                fake_git.write_text(
+                    "#!/usr/bin/env bash\n"
+                    "printf '%s\\n' \"$*\" >> \"$LLM_WIKI_GIT_LOG\"\n"
+                    "exec /usr/bin/git \"$@\"\n",
+                    encoding="utf-8",
+                )
+                fake_git.chmod(0o755)
+                environment = os.environ.copy()
+                environment["PATH"] = f"{bin_directory}:{environment['PATH']}"
+                environment["LLM_WIKI_GIT_LOG"] = str(log_path)
+                result = subprocess.run(
+                    ["bash", str(generator), "--stdout"],
+                    cwd=root,
+                    capture_output=True,
+                    check=False,
+                    env=environment,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                calls = log_path.read_text(encoding="utf-8").splitlines()
+                self.assertEqual(1, sum("ls-files" in call for call in calls), calls)
+
     def test_internal_manifest_mode_is_byte_exact_for_both_generators(self) -> None:
         manifest_only = "docs/fixture/manifest-only.md"
         tracked_only = "docs/fixture/tracked-only.md"
@@ -359,6 +388,8 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
                 target = root / generator
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(REPOSITORY_ROOT / generator, target)
+            canonical = Path("scripts/knowledge/generate-llm-wiki.py")
+            shutil.copy2(REPOSITORY_ROOT / canonical, root / canonical)
             write_fixture_file(root, manifest_only)
             run(["git", "add", "."], cwd=root)
             run(

@@ -48,7 +48,7 @@ subagent-driven specification/quality review.
 - The active specification is
   [Spec 137](./spec.md).
 - The new canonical route is exactly
-  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`.
+  `docs/90.references/research/0002-agentic-engineering-research-pack/`.
 - The old pack remains intact until Task 11's pre-deletion gate passes.
 - Stage 90 analysis is advisory and never becomes policy, runtime truth, or
   remote-enforcement proof merely by being cited.
@@ -209,8 +209,8 @@ result.
 | Verification and validation      | Create `verification-validation.md`; update the pack README and supporting owner-leaf cross-links; update Spec/Task routing evidence and generated LLM Wiki navigation |
 | Infrastructure/security          | Create `docker-compose-infrastructure.md`, `security-governance.md`                                                                                                    |
 | Human routing                    | Create new pack `README.md`; modify `docs/90.references/research/README.md` and other active clickable consumers discovered by the stale-path inventory                |
-| Machine routing                  | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` and `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`                                 |
-| Retiring pack                    | Delete exactly the twenty files under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` after Task 11 gates pass                                 |
+| Machine routing                  | Regenerate `docs/90.references/data/0082-llm-wiki-index/README.md` and `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`                                 |
+| Retiring pack                    | Delete exactly the twenty files under `docs/90.references/research/0001-agentic-research-pack-refresh/` after Task 11 gates pass                                 |
 | Final evidence                   | Modify the Task and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`; update a durable memory note only when the memory contract selects one                               |
 
 ## Goals and Non-goals
@@ -363,8 +363,8 @@ scoped re-review before Task 2.
 
 **Files:**
 
-- Create: `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md`
-- Create: `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md`
+- Create: `docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md`
+- Create: `docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md`
 - Modify: execution Task ledgers
 
 **Interfaces:**
@@ -419,12 +419,12 @@ Run the literal-path checks below and update the Task rows with actual results:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
 rg -n '^## Scope Implications|agentic|architecture|backend|common|docs|entry|frontend|infra|meta|mobile|ops|product|qa|security' \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix}.md
+  docs/90.references/research/0002-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix}.md
 git diff --check
 ```
 
@@ -434,8 +434,8 @@ explicitly dispositions all fourteen scopes.
 - [ ] **Step 5: Commit the foundation unit**
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md \
+  docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): establish workspace and scope baseline"
 ```
@@ -521,16 +521,16 @@ Run the exact metadata and hygiene checks, expecting PASS, then commit:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/harness-engineering.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/loop-engineering.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/provider-implementation-comparison.md
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
 git diff --check
 ```
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{harness-engineering,loop-engineering,provider-implementation-comparison}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{harness-engineering,loop-engineering,provider-implementation-comparison}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): analyze harness loops and providers"
 ```
@@ -605,11 +605,11 @@ fourteen-scope implications, self-review, and run:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/memory-hierarchy.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/agent-instructions-vibe-coding.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/provider-model-landscape.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/agent-model-selection.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/ai-agent-catalogs.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/memory-hierarchy.md
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
 git diff --check
@@ -620,7 +620,7 @@ immutable, and all memory lifecycle dimensions have explicit evidence or gap
 dispositions. Then commit:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{agent-instructions-vibe-coding,provider-model-landscape,agent-model-selection,ai-agent-catalogs,memory-hierarchy}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{agent-instructions-vibe-coding,provider-model-landscape,agent-model-selection,ai-agent-catalogs,memory-hierarchy}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): analyze agents models instructions and memory"
 ```
@@ -696,9 +696,9 @@ their fourteen-scope implications, and all role rows. Run:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/spec-driven-sdlc.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/sdlc-document-roles.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/document-metadata-lifecycle.md
 bash scripts/validation/check-doc-traceability.sh
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
@@ -709,7 +709,7 @@ Expected: all checks PASS and every named document role has a separate row.
 Self-review, then commit:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): define spec driven SDLC contracts"
 ```
@@ -768,8 +768,8 @@ fourteen-scope implications, self-review, and run:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/documentation-architecture.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/llm-wiki-system.md
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
 git diff --check
@@ -779,7 +779,7 @@ Expected: document contracts and diff hygiene PASS; the Diataxis access result
 and both named freshness baselines are recorded without conflation. Then:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{documentation-architecture,llm-wiki-system}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{documentation-architecture,llm-wiki-system}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): analyze documentation and LLM wiki systems"
 ```
@@ -850,8 +850,8 @@ and self-review. Run:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/automation-pipeline-workflow.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/quality-ci-formatting.md
 python3 scripts/validation/check-github-workflow-contract.py
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
@@ -862,7 +862,7 @@ Expected: all local static checks PASS; remote enforcement remains separately
 `UNVERIFIED`. Then:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{automation-pipeline-workflow,quality-ci-formatting}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{automation-pipeline-workflow,quality-ci-formatting}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): analyze delivery automation and quality"
 ```
@@ -958,8 +958,8 @@ using `main` as immutable evidence. Then run:
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255 \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md \
-  --changed-path docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/docker-compose-infrastructure.md \
+  --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md
 bash scripts/operations/generate-compose-profile-service-coverage.sh --check
 bash scripts/operations/generate-tech-stack-version-provenance.sh --check
 env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
@@ -971,7 +971,7 @@ Expected: document, Compose coverage, provenance, repository, and diff checks
 PASS; the security-readiness check remains a named FAIL predecessor. Then:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{docker-compose-infrastructure,security-governance}.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/{docker-compose-infrastructure,security-governance}.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): analyze infrastructure and security"
 ```
@@ -1048,7 +1048,7 @@ Expected: all checks PASS, the parent research README points to the new pack,
 and the old pack still exists. Commit:
 
 ```bash
-git add docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md \
+git add docs/90.references/research/0002-agentic-engineering-research-pack/README.md \
   docs/90.references/research/README.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): route canonical agentic research pack"
@@ -1071,9 +1071,9 @@ the only current contract consumed by Task 10, Gate 9, and Task 12.
 **Files:**
 
 - Create:
-  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md`
+  `docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md`
 - Modify:
-  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md`
+  `docs/90.references/research/0002-agentic-engineering-research-pack/README.md`
 - Modify the parent category router:
   `docs/90.references/research/README.md`
 - Modify these supporting owner leaves only to add precise supporting
@@ -1091,8 +1091,8 @@ the only current contract consumed by Task 10, Gate 9, and Task 12.
   workspace-owner, fourteen-scope, generated-artifact, verification, review,
   and commit evidence.
 - Regenerate only through the canonical owners:
-  `docs/90.references/llm-wiki/llm-wiki-index.md` and
-  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`.
+  `docs/90.references/data/0082-llm-wiki-index/README.md` and
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`.
 - Modify `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` to pin
   separate old-pack exactly-20 and new-pack exactly-21 inventories, the one
   new tracked safe path, and the exact generated cardinality deltas.
@@ -1237,7 +1237,7 @@ python3 -m unittest \
   tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
   -v
 git add \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md
+  docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md
 git diff --cached --name-only
 ```
 
@@ -1315,15 +1315,15 @@ generated outputs:
 
 ```bash
 git add \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md \
-  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix,spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle,llm-wiki-system,automation-pipeline-workflow,quality-ci-formatting,docker-compose-infrastructure,security-governance}.md \
+  docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md \
+  docs/90.references/research/0002-agentic-engineering-research-pack/README.md \
+  docs/90.references/research/0002-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix,spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle,llm-wiki-system,automation-pipeline-workflow,quality-ci-formatting,docker-compose-infrastructure,security-governance}.md \
   docs/90.references/research/README.md \
   docs/03.specs/README.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md \
   tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 git diff --cached --name-only
 git diff --cached --check
 git commit -m "docs(research): add verification and validation system"
@@ -1400,8 +1400,8 @@ assert parent.count(pack_route) == 1
 assert "verification-validation.md" not in parent
 PY
 git diff --quiet "$VV_ROUTER_FIX_BASE" -- \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 test "$(git diff --numstat "$VV_ROUTER_FIX_BASE" -- \
   docs/90.references/research/README.md)" = \
   $'2\t2\tdocs/90.references/research/README.md'
@@ -1496,8 +1496,8 @@ python3 -m unittest \
   tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
   -v
 git diff --quiet "$VV_TASK9A_CLOSURE_BASE" -- \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 test "$(git diff --name-only "$VV_TASK9A_CLOSURE_BASE" -- | wc -l)" -eq 1
 test "$(git diff --name-only "$VV_TASK9A_CLOSURE_BASE" --)" = \
   "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
@@ -1558,8 +1558,8 @@ git revert --no-commit "$VV_TASK9A_CLOSURE_OID"
   `tests/validation/test_security_automation_readiness.py` and regenerate
   `docs/90.references/data/security/security-automation-readiness.md` only
   through its canonical generator
-- Modify: `docs/90.references/llm-wiki/llm-wiki-index.md` through its generator
-- Modify: `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` through its generator
+- Modify: `docs/90.references/data/0082-llm-wiki-index/README.md` through its generator
+- Modify: `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md` through its generator
 - Modify: `scripts/knowledge/generate-llm-wiki-index.sh` and
   `scripts/knowledge/generate-llm-wiki-coverage.sh` to exclude only the exact
   retiring research-pack directory while it remains tracked during the
@@ -1586,7 +1586,7 @@ Run:
 
 ```bash
 git grep -n -I '2026-07-05-agentic-research-pack-refresh' -- \
-  ':!docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**'
+  ':!docs/90.references/research/0001-agentic-research-pack-refresh/**'
 ```
 
 Classify every result as clickable route, current canonical statement, or
@@ -1711,7 +1711,7 @@ retiring prefix before the production change. Then add a shared, literal
 prefix exclusion for only:
 
 ```text
-docs/90.references/research/2026-07-05-agentic-research-pack-refresh/
+docs/90.references/research/0001-agentic-research-pack-refresh/
 ```
 
 The focused test must run both canonical generators in a temporary Git fixture
@@ -1766,7 +1766,7 @@ python3 scripts/validation/check-document-metadata.py --mode check-changed \
   --base-ref 35318255
 bash scripts/validation/check-doc-traceability.sh
 git grep -n -I '2026-07-05-agentic-research-pack-refresh' -- \
-  ':!docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**'
+  ':!docs/90.references/research/0001-agentic-research-pack-refresh/**'
 git diff --check
 ```
 
@@ -1784,8 +1784,8 @@ git add scripts/knowledge/generate-llm-wiki-index.sh \
   tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
   scripts/validation/check-document-metadata.py \
   tests/validation/test_document_metadata.py \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md \
   docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
 git commit -m "docs(research): switch agentic pack links and indexes"
 ```
@@ -1812,8 +1812,8 @@ verdicts. Complete the fix/re-review loop before Task 11.
   `tests/validation/test_agentic_research_gate9_evidence.py` for canonical
   package, receipt, closure, evidence-ref, and authorization validation
 - Verify, but expect no byte changes in:
-  `docs/90.references/llm-wiki/llm-wiki-index.md` and
-  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
+  `docs/90.references/data/0082-llm-wiki-index/README.md` and
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`
   after rerunning their generators against the proposed and actual deletion
 - Modify: `docs/90.references/data/governance/target-surface-delta-manifest.yaml`
   by adding exactly the six changed target paths missing at the Task 10b commit
@@ -2110,8 +2110,8 @@ Task 12, remote actions, and push remain closed throughout Step 0d.
 No generated-output file is in scope. The stdout bytes must remain identical
 to the two tracked canonical outputs, and the existing write and `--check`
 behaviors must remain byte-compatible. Therefore this recovery expects no diff
-in `docs/90.references/llm-wiki/llm-wiki-index.md` or
-`docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`; any
+in `docs/90.references/data/0082-llm-wiki-index/README.md` or
+`docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`; any
 generated-output diff is a blocker, not an additional file to stage.
 
 **Generator interfaces:**
@@ -2299,9 +2299,9 @@ Implement in small TDD slices:
 
    ```bash
    bash scripts/knowledge/generate-llm-wiki-index.sh --stdout | \
-     cmp - docs/90.references/llm-wiki/llm-wiki-index.md
+     cmp - docs/90.references/data/0082-llm-wiki-index/README.md
    bash scripts/knowledge/generate-llm-wiki-coverage.sh --stdout | \
-     cmp - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+     cmp - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
    bash scripts/knowledge/generate-llm-wiki-index.sh --check
    bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
    python3 -m unittest \
@@ -4232,9 +4232,9 @@ Then require public generator parity, static checks, metadata, and exact scope:
 
 ```bash
 bash scripts/knowledge/generate-llm-wiki-index.sh --stdout | \
-  cmp - docs/90.references/llm-wiki/llm-wiki-index.md
+  cmp - docs/90.references/data/0082-llm-wiki-index/README.md
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --stdout | \
-  cmp - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  cmp - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 python3 -m py_compile \
@@ -4315,8 +4315,8 @@ staging deletion that these exact commands recover representative files
 without changing the worktree:
 
 ```bash
-git show HEAD:docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md >/dev/null
-git show HEAD:docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md >/dev/null
+git show HEAD:docs/90.references/research/0001-agentic-research-pack-refresh/README.md >/dev/null
+git show HEAD:docs/90.references/research/0001-agentic-research-pack-refresh/harness-engineering.md >/dev/null
 ```
 
 - [ ] **Step 3: Build a non-destructive proposed-deletion package**
@@ -4754,8 +4754,8 @@ Then require byte-exact freshness:
 ```bash
 bash scripts/knowledge/generate-llm-wiki-index.sh
 bash scripts/knowledge/generate-llm-wiki-coverage.sh
-git diff -- docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+git diff -- docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 ```
@@ -4786,8 +4786,8 @@ This verifies the real index before a commit exists.
 STAGED_DELETION_REVIEW_PATCH=$(mktemp \
   /tmp/agentic-research-staged-deletion-review.XXXXXX.patch)
 git diff --quiet -- \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
 git diff --cached --binary \
   > "$STAGED_DELETION_REVIEW_PATCH"
 chmod 0444 "$STAGED_DELETION_REVIEW_PATCH"
@@ -5065,7 +5065,7 @@ python3 scripts/validation/check-document-corpus-lifecycle.py \
 python3 scripts/validation/check-document-corpus-lifecycle.py \
   --mode check-promoted
 git grep -n -I '2026-07-05-agentic-research-pack-refresh' -- \
-  ':!docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**'
+  ':!docs/90.references/research/0001-agentic-research-pack-refresh/**'
 git diff --name-status \
   78b60974164ff5427ba8c64aaf3ecde4a7faf41a..HEAD
 git diff --check \
@@ -5084,7 +5084,7 @@ both verdicts and requires the entire closure ladder and both reviews again.
 find docs/90.references/research/2026-08-08-agentic-engineering-research-pack \
   -maxdepth 1 -type f -printf '%f\n' | sort
 git grep -n -I '2026-07-05-agentic-research-pack-refresh' -- \
-  ':!docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**'
+  ':!docs/90.references/research/0001-agentic-research-pack-refresh/**'
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 ```
@@ -5205,7 +5205,7 @@ pack are forbidden.
 - [Spec 137](./spec.md)
 - [Execution Tasks index](./tasks/tsk-0001-rebuild.md)
 - [Research references](../../90.references/research/README.md)
-- [New canonical pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+- [New canonical pack](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Reference template](../../99.templates/templates/common/reference.template.md)
 - [Task template](../../99.templates/templates/sdlc/task.template.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

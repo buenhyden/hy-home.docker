@@ -18,14 +18,14 @@ PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
 TARGET_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+    / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
 TARGET_SUMMARY = TARGET_MANIFEST.with_name(
     "ref-0068-target-surface-convergence-summary.md"
 )
 CURRENT_DELTA_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml"
+    / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
 TARGET_VALIDATOR = ROOT / "scripts/validation/target_surface_contract.py"
 TARGET_CLI = ROOT / "scripts/validation/check-target-surface-contract.py"

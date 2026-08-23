@@ -40,11 +40,11 @@ branch `docs/agentic-research-pack-deepening`.
 - Approved user direction recorded in Approval Evidence.
 - Active Spec authority: `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md`.
 - Canonical pack under deepening:
-  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`.
+  `docs/90.references/research/0002-agentic-engineering-research-pack/`.
 - Immediate predecessor evidence:
   `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md`.
 - Superseded historical pack read as input only, never mutated:
-  `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
+  `docs/90.references/research/0001-agentic-research-pack-refresh/`.
 - Authoring contract: `docs/99.templates/templates/common/reference.template.md`.
 - Metadata contract: `scripts/validation/check-document-metadata.py`.
 - Repository contract: `scripts/validation/check-repo-contracts.sh`.
@@ -80,13 +80,13 @@ branch `docs/agentic-research-pack-deepening`.
 
 ### Allowed paths
 
-- `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/*.md`
+- `docs/90.references/research/0002-agentic-engineering-research-pack/*.md`
 - `docs/90.references/research/README.md` (only if routes or counts change)
 - `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md`
 - `docs/04.execution/tasks/README.md` (task index row)
 - `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (bounded handoff refresh)
-- `docs/90.references/llm-wiki/llm-wiki-index.md` and
-  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`,
+- `docs/90.references/data/0082-llm-wiki-index/README.md` and
+  `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`,
   through their generators only, never by hand
 - `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`, for the
   Plan-only Gate 9 correction the user approved on 2026-08-14, one file per
@@ -98,7 +98,7 @@ branch `docs/agentic-research-pack-deepening`.
 
 ### Forbidden paths
 
-- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`
+- `docs/90.references/research/0001-agentic-research-pack-refresh/`
 - `docs/03.specs/`, every Plan other than the Gate 9 rebuild Plan, and every
   part of the rebuild Task other than its review-receipt rows
 - `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md`
@@ -919,7 +919,7 @@ strengthens the claim-migration evidence that gate consumes but does not open it
 - [Rebuild Plan](../plan.md)
 - [Rebuild Task holding the deletion gate](./tsk-0001-rebuild.md)
 - [Source refresh Task](./tsk-0002-source-refresh.md)
-- [Canonical research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+- [Canonical research pack](../../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 
 ## Objective

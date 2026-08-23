@@ -36,7 +36,7 @@ branch `codex/agentic-research-rebuild`.
 - Approved user direction recorded in Approval Evidence.
 - Active Spec authority: `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md`.
 - Canonical pack under refresh:
-  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`.
+  `docs/90.references/research/0002-agentic-engineering-research-pack/`.
 - Authoring contract: `docs/99.templates/templates/common/reference.template.md`.
 - Metadata contract: `scripts/validation/check-document-metadata.py`.
 - Repository contract: `scripts/validation/check-repo-contracts.sh`.
@@ -65,7 +65,7 @@ branch `codex/agentic-research-rebuild`.
 
 ### Allowed paths
 
-- `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/*.md`
+- `docs/90.references/research/0002-agentic-engineering-research-pack/*.md`
 - `docs/90.references/research/README.md` (only if leaf counts or routes change)
 - `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md`
 - `docs/04.execution/tasks/README.md` (task index row)
@@ -73,9 +73,9 @@ branch `codex/agentic-research-rebuild`.
 
 ### Forbidden paths
 
-- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`
+- `docs/90.references/research/0001-agentic-research-pack-refresh/`
 - `docs/03.specs/`, `docs/04.execution/plans/`
-- `docs/90.references/llm-wiki/`, `llms.txt`, and their generators
+- `docs/90.references/data/0082-llm-wiki-index/`, `llms.txt`, and their generators
 - `infra/`, `secrets/`, any credential-bearing surface
 
 ### Compose impact
@@ -279,7 +279,7 @@ all-files pre-commit entry point and is reserved for an approved final QA gate.
 
 ### Controlled wrapper allowed prefixes
 
-`docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`,
+`docs/90.references/research/0002-agentic-engineering-research-pack/`,
 `docs/90.references/research/README.md`, `docs/04.execution/tasks/`,
 `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
 
@@ -430,7 +430,7 @@ Task 10b, Task 11, and Task 12 ownership.
 - [Spec 137](../spec.md)
 - [Rebuild Task](./tsk-0001-rebuild.md)
 - [Execution task index](../../README.md)
-- [Canonical research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+- [Canonical research pack](../../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Research category router](../../../90.references/research/README.md)
 - [Canonical Task template](../../../99.templates/templates/sdlc/task.template.md)
 

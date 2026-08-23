@@ -3,11 +3,11 @@ profile_id: guide
 status: active
 artifact_id: guide-0007
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0096
 created: 2026-07-04
 updated: 2026-08-14
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md -->
 
 # LLM Wiki Maintenance Usage Guide
 
@@ -62,8 +62,8 @@ updated: 2026-08-14
 
 ## Common Checks
 
-- `llms.txt`가 `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`와 `repository-map.md`를 가리키는지 확인한다.
-- `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`가 generated tracked repo-local index인지 확인한다.
+- `llms.txt`가 `docs/90.references/data/0082-llm-wiki-index/README.md`와 `repository-map.md`를 가리키는지 확인한다.
+- `docs/90.references/data/0082-llm-wiki-index/README.md`가 generated tracked repo-local index인지 확인한다.
 - Graphify output은 navigation aid로만 사용하고 source truth로 취급하지 않는다.
 
 ## Runbook Handoff

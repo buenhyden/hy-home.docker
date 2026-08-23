@@ -19,7 +19,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "scripts/validation/target_surface_delta_contract.py"
 MANIFEST_PATH = (
     ROOT
-    / "docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml"
+    / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
 SUMMARY_PATH = MANIFEST_PATH.with_name("ref-0074-target-surface-delta-summary.md")
 IMMUTABLE_SUMMARY_SHA256 = (

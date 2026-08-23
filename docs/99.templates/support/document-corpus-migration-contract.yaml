@@ -339,7 +339,7 @@ safe_diagnostics:
 waves:
   foundation:
     enforcement: blocking
-    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
+    manifest_path: docs/90.references/data/0067-foundation/data.yaml
     scope_state: approved
     source_paths:
       - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
@@ -352,7 +352,6 @@ waves:
       - docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
       - docs/90.references/README.md
       - docs/90.references/data/README.md
-      - docs/90.references/data/governance/README.md
       - docs/98.archive/README.md
       - docs/99.templates/support/README.md
       - docs/99.templates/support/common-document-contract.md
@@ -370,9 +369,8 @@ waves:
       - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
       - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
       - docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
+      - docs/90.references/data/0066-foundation-summary/README.md
+      - docs/90.references/data/0067-foundation/data.yaml
       - docs/99.templates/support/archive-retention-contract.md
       - docs/99.templates/support/corpus-migration-contract.md
       - docs/99.templates/support/document-corpus-migration-contract.yaml
@@ -381,8 +379,8 @@ waves:
   target-surface-convergence:
     baseline_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
     enforcement: blocking
-    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml
-    summary_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md
+    manifest_path: docs/90.references/data/0069-target-surface-convergence/data.yaml
+    summary_path: docs/90.references/data/0068-target-surface-convergence-summary/README.md
     scope_state: approved
     promotion_evidence:
       review_base_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
@@ -431,18 +429,17 @@ waves:
       - docs/05.operations/runbooks/09-tooling/k6.md
       - docs/05.operations/runbooks/09-tooling/locust.md
       - docs/05.operations/runbooks/09-tooling/performance-testing.md
-      - docs/90.references/audits/ref-0019-readme.md
-      - docs/90.references/audits/ref-0021-automation-candidates.md
-      - docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md
-      - docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
-      - docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md
-      - docs/90.references/audits/ref-0026-implementation-overview.md
-      - docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md
-      - docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md
-      - docs/90.references/audits/ref-0031-security-framework-maturity.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
-      - docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md
-      - docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md
+      - docs/90.references/audits/0019-readme/README.md
+      - docs/90.references/audits/0021-automation-candidates/README.md
+      - docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md
+      - docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md
+      - docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md
+      - docs/90.references/audits/0026-implementation-overview/README.md
+      - docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md
+      - docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md
+      - docs/90.references/audits/0031-security-framework-maturity/README.md
+      - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
+      - docs/90.references/data/0082-llm-wiki-index/README.md
       - docs/90.references/research/ref-0039-readme.md
       - docs/90.references/research/ref-0043-automation-pipeline-workflow.md
       - docs/90.references/research/ref-0044-docker-compose-infrastructure.md
@@ -464,8 +461,8 @@ waves:
     declared_outputs:
       - docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md
       - docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml
+      - docs/90.references/data/0068-target-surface-convergence-summary/README.md
+      - docs/90.references/data/0069-target-surface-convergence/data.yaml
       - docs/99.templates/templates/common/content-archive.template.md
       - scripts/validation/check-target-surface-contract.py
       - scripts/validation/target_surface_contract.py

@@ -10,11 +10,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 GENERATOR = "scripts/validation/generate-security-automation-readiness.sh"
 AUTOMATION_AUDIT = (
     ROOT
-    / "docs/90.references/audits/ref-0021-automation-candidates.md"
+    / "docs/90.references/audits/0021-automation-candidates/README.md"
 )
 SECURITY_AUDIT = (
     ROOT
-    / "docs/90.references/audits/ref-0031-security-framework-maturity.md"
+    / "docs/90.references/audits/0031-security-framework-maturity/README.md"
 )
 
 

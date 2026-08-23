@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md"
+OUTPUT="docs/90.references/data/0061-tech-stack-version-provenance/README.md"
 
 usage() {
   cat <<'EOF'

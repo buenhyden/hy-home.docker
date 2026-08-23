@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+from collections.abc import Mapping
 import copy
 import dataclasses
 import datetime as dt
@@ -34,7 +35,7 @@ MIGRATION_CONTRACT = (
 )
 TARGET_SURFACE_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
+    / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
 TARGET_SURFACE_SUMMARY = (
     ROOT
@@ -42,7 +43,7 @@ TARGET_SURFACE_SUMMARY = (
 )
 LEGACY_CONTRACT_FIXTURE_COMMIT = "71f89ba1"
 RETIRING_RESEARCH_PACK_PREFIX = (
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
+    "docs/90.references/research/0001-agentic-research-pack-refresh/"
 )
 NEW_RESEARCH_PACK_PREFIX = (
     "docs/90.references/research/"
@@ -78,19 +79,19 @@ PRESERVED_MIGRATION_SENTINELS = frozenset(
 )
 PRESERVED_AUDIT_MIGRATION_PATHS = frozenset(
     {
-        "docs/90.references/audits/ref-0019-readme.md",
-        "docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md",
-        "docs/90.references/audits/ref-0021-automation-candidates.md",
-        "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
-        "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
-        "docs/90.references/audits/ref-0025-harness-engineering-implementation.md",
-        "docs/90.references/audits/ref-0026-implementation-overview.md",
-        "docs/90.references/audits/ref-0027-loop-engineering-implementation.md",
-        "docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md",
-        "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
-        "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
-        "docs/90.references/audits/ref-0031-security-framework-maturity.md",
-        "docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md",
+        "docs/90.references/audits/0019-readme/README.md",
+        "docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md",
+        "docs/90.references/audits/0021-automation-candidates/README.md",
+        "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
+        "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
+        "docs/90.references/audits/0025-harness-engineering-implementation/README.md",
+        "docs/90.references/audits/0026-implementation-overview/README.md",
+        "docs/90.references/audits/0027-loop-engineering-implementation/README.md",
+        "docs/90.references/audits/0028-provider-harness-loop-implementation/README.md",
+        "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
+        "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
+        "docs/90.references/audits/0031-security-framework-maturity/README.md",
+        "docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md",
     }
 )
 PRESERVED_RESEARCH_MIGRATION_PATHS = frozenset(
@@ -202,13 +203,13 @@ def target_promotion_invariant_digest(path: pathlib.Path) -> str:
     attestation_fields = {
         "docs/03.specs/133-target-surface-contract-convergence/spec.md": "status_after",
         "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md": "artifact_type_after",
-        "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md": "artifact_type_after",
-        "docs/90.references/llm-wiki/llm-wiki-index.md": "artifact_type_after",
+        "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md": "artifact_type_after",
+        "docs/90.references/data/0082-llm-wiki-index/README.md": "artifact_type_after",
     }
     migrated_generated_outputs = {
         "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
-        "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
-        "docs/90.references/llm-wiki/llm-wiki-index.md",
+        "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md",
+        "docs/90.references/data/0082-llm-wiki-index/README.md",
     }
     output: list[bytes] = []
     current_source: str | None = None
@@ -1286,6 +1287,16 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.assertRaises(metadata.ProfileError):
                 metadata.load_migration_contract(target)
 
+    def test_exact_string_list_rejects_duplicates_even_when_expected_duplicates_match(
+        self,
+    ) -> None:
+        with self.assertRaisesRegex(metadata.ProfileError, "must not contain duplicates"):
+            metadata._exact_string_list(
+                ["docs/90.references/data/README.md"] * 2,
+                ["docs/90.references/data/README.md"] * 2,
+                "waves.foundation.source_paths",
+            )
+
     def valid_static_manifest(self) -> dict[str, object]:
         return {
             "schema_version": 1,
@@ -1555,11 +1566,11 @@ class ProfileSchemaTests(unittest.TestCase):
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(
             {
-                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md":
+                "docs/90.references/data/0066-foundation-summary/README.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md":
+                "docs/90.references/data/0068-target-surface-convergence-summary/README.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md":
+                "docs/90.references/data/0074-target-surface-delta-summary/README.md":
                     "scripts/validation/check-target-surface-delta-contract.py",
             },
             profiles["common"]["generated_outputs"],
@@ -2043,8 +2054,8 @@ class ProfileSchemaTests(unittest.TestCase):
         )
         for path in (
             "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
-            "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
-            "docs/90.references/llm-wiki/llm-wiki-index.md",
+            "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md",
+            "docs/90.references/data/0082-llm-wiki-index/README.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual("generated", rows[path]["artifact_type_after"])
@@ -2739,7 +2750,7 @@ class ArtifactInferenceTests(unittest.TestCase):
     def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         generated = pathlib.Path(
-            "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
+            "docs/90.references/data/0066-foundation-summary/README.md"
         )
         adjacent = generated.with_name("other-summary.md")
 
@@ -3256,12 +3267,12 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("type-inappropriate-key", self.codes(record))
 
     def test_registered_generator_owner_satisfies_generated_profile_without_frontmatter(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
+        path = "docs/90.references/data/0066-foundation-summary/README.md"
         record = self.record(path, {}, metadata.infer_artifact_type(pathlib.Path(path), self.profiles))
         self.assertEqual([], self.codes(record))
 
     def test_registered_generated_owner_rejects_conflicting_frontmatter_owner(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
+        path = "docs/90.references/data/0066-foundation-summary/README.md"
         record = self.record(
             path,
             {"generated_by": "scripts/example.py"},
@@ -3818,6 +3829,162 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertFalse(postmortem["allow_empty_parents"])
         self.assertNotIn("release", self.profiles["profiles"])
 
+    def test_registry_transition_limits_new_standalone_roots_to_stage90_profiles(
+        self,
+    ) -> None:
+        registry = metadata.load_registry(REGISTRY)
+        profiles = metadata.build_registry_transition_profiles(
+            registry,
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        cases = (
+            (
+                "research",
+                "docs/90.references/research/9991-example/README.md",
+                "RES-9991",
+                True,
+            ),
+            (
+                "audit",
+                "docs/90.references/audits/9991-example/README.md",
+                "AUD-9991",
+                True,
+            ),
+            (
+                "data",
+                "docs/90.references/data/9991-example/README.md",
+                "DATA-9991",
+                True,
+            ),
+            (
+                "spec",
+                "docs/03.specs/9991-example/spec.md",
+                "SPEC-9991",
+                False,
+            ),
+            (
+                "plan",
+                "docs/03.specs/9991-example/plan.md",
+                "plan-9991",
+                False,
+            ),
+            (
+                "task",
+                "docs/03.specs/9991-example/tasks/tsk-0001-example.md",
+                "task-9991-0001",
+                False,
+            ),
+            (
+                "postmortem",
+                "docs/05.operations/incidents/2026/inc-9991-example/postmortem.md",
+                "postmortem-9991",
+                False,
+            ),
+            (
+                "guide",
+                "docs/05.operations/catalog/workspace/9991-example/guide.md",
+                "guide-9991",
+                False,
+            ),
+            (
+                "policy",
+                "docs/05.operations/catalog/workspace/9991-example/policy.md",
+                "policy-9991",
+                False,
+            ),
+            (
+                "runbook",
+                "docs/05.operations/catalog/workspace/9991-example/runbook.md",
+                "runbook-9991",
+                False,
+            ),
+            (
+                "incident",
+                "docs/05.operations/incidents/2026/inc-9991-example/incident.md",
+                "inc-9991",
+                False,
+            ),
+        )
+        for profile_id, path, artifact_id, permits_root in cases:
+            with self.subTest(profile_id=profile_id):
+                profile = profiles["profiles"][profile_id]
+                self.assertEqual(permits_root, profile["allow_empty_parents"])
+                values: dict[str, object] = {
+                    "profile_id": profile_id,
+                    "status": "active",
+                    "artifact_id": artifact_id,
+                    "artifact_type": profile_id,
+                    "parent_ids": [],
+                    "created": "2026-08-23",
+                    "updated": "2026-08-23",
+                }
+                if profile_id in {"research", "audit", "data"}:
+                    values["observed_at"] = "2026-08-23"
+                if profile_id == "incident":
+                    values["occurred_at"] = "2026-08-23T00:00:00Z"
+                if profile_id == "postmortem":
+                    values["reviewed_at"] = "2026-08-23"
+                record = self.record(path, values, profile_id)
+                codes = {
+                    finding.code
+                    for finding in metadata.validate_record(
+                        record,
+                        profiles,
+                        metadata.build_manifest([record]),
+                    )
+                }
+                if permits_root:
+                    self.assertNotIn("missing-parent", codes)
+                else:
+                    self.assertIn("missing-parent", codes)
+
+        for profile_id, registry_profile in registry.profiles.items():
+            with self.subTest(profile_id=profile_id, projection="exhaustive"):
+                traceability = registry_profile.get("traceability")
+                parents = (
+                    tuple(traceability.get("allowed_parent_profiles", ()))
+                    if isinstance(traceability, Mapping)
+                    else ()
+                )
+                expected = profile_id in {"research", "audit", "data"} or not parents
+                self.assertEqual(
+                    expected,
+                    profiles["profiles"][profile_id]["allow_empty_parents"],
+                )
+
+    def test_record_parsing_preserves_generated_classification_outside_data_readmes(
+        self,
+    ) -> None:
+        profiles = metadata.build_registry_transition_profiles(
+            metadata.load_registry(REGISTRY),
+            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
+        )
+        generated = metadata._record_from_text(
+            pathlib.Path("docs/90.references/data/generated.md"),
+            "---\nstatus: active\ngenerated_by: scripts/example.py\n---\n",
+            profiles=profiles,
+        )
+        data_readme = metadata._record_from_text(
+            pathlib.Path("docs/90.references/data/9991-example/README.md"),
+            "---\nprofile_id: data\ngenerated_by: scripts/example.py\n---\n",
+            profiles=profiles,
+        )
+        root_readme = metadata._record_from_text(
+            pathlib.Path("README.md"),
+            "---\ngenerated_by: scripts/example.py\n---\n",
+            profiles=profiles,
+        )
+        nonnumeric_data_readme = metadata._record_from_text(
+            pathlib.Path("docs/90.references/data/example/README.md"),
+            "---\ngenerated_by: scripts/example.py\n---\n",
+            profiles=profiles,
+        )
+
+        self.assertEqual("generated", generated.artifact_type)
+        self.assertEqual("data", data_readme.artifact_type)
+        self.assertEqual("generated", root_readme.artifact_type)
+        self.assertEqual("generated", nonnumeric_data_readme.artifact_type)
+
 
 class ReadmeProfileTests(unittest.TestCase):
     @classmethod
@@ -3876,8 +4043,8 @@ class ReadmeProfileTests(unittest.TestCase):
     def test_audit_readme_count_preserves_its_historical_baseline(self) -> None:
         historical_claim = "all 231 tracked READMEs"
         claims = {
-            "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md": 2,
-            "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md": 1,
+            "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md": 2,
+            "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md": 1,
         }
         for path, expected_occurrences in claims.items():
             with self.subTest(path=path):

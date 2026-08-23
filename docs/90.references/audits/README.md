@@ -2,90 +2,62 @@
 status: active
 ---
 
-<!-- Target: docs/90.references/audits/README.md -->
-
-# Audit References
-
-> stable audit reports, comparison reports, and audit-reference indexes
+# Audit Packages
 
 ## Overview
 
-`docs/90.references/audits`는 active stage 문서를 보조하는 audit reference 공간입니다. 이 폴더는 특정 시점의 조사·비교·감사 결과 중 반복 참조할 가치가 있는 안정적 요약을 보관합니다.
+Point-in-time gap, implementation, and conformance assessments. Audit packages are evidence, not approval gates.
 
-Audit reference는 task evidence나 incident timeline을 대체하지 않습니다. 실행 중인 작업 증거는 `docs/04.execution/tasks/`, 운영 incident와 postmortem은 `docs/05.operations/incidents/`가 담당합니다.
+The Stage 90 authority boundary and package lifecycle rules are defined by the [References index](../README.md) and Stage 99 Registry.
 
-## Category Role
+## Packages
 
-`docs/90.references/audits`는 audit 결과를 장기 reference로 재사용할 수 있게 분리합니다. 이 category는 audit findings, comparison matrix, implementation-status snapshots, follow-up gap indexes를 담을 수 있지만, approval gate나 runtime source of truth가 아닙니다.
+| Stable ID | Package | Status |
+| :--- | :--- | :--- |
+| [AUD-0001](./0001-readme/README.md) | Reference: Document Contract Audit References | active |
+| [AUD-0002](./0002-automation-coverage-map/README.md) | Automation Coverage Map | active |
+| [AUD-0003](./0003-ci-qa-parser-graphify-decision/README.md) | Reference: CI, QA, Parser, and Graphify Decision | active |
+| [AUD-0004](./0004-contract-governance-map/README.md) | Contract Governance Map | active |
+| [AUD-0005](./0005-frontmatter-inventory/README.md) | Frontmatter Inventory | active |
+| [AUD-0006](./0006-frontmatter-routing-profile/README.md) | Reference: Frontmatter Routing Profile | active |
+| [AUD-0007](./0007-gap-register/README.md) | Gap Register | active |
+| [AUD-0008](./0008-historical-evidence-preservation/README.md) | Reference: Historical Evidence Preservation | active |
+| [AUD-0009](./0009-readme-profile-inventory/README.md) | README Profile Inventory | active |
+| [AUD-0010](./0010-section-profile-inventory/README.md) | Section Profile Inventory | active |
+| [AUD-0011](./0011-template-application-gaps/README.md) | Template Application Gaps | active |
+| [AUD-0012](./0012-readme/README.md) | Reference: Document Restructure Audit References | active |
+| [AUD-0013](./0013-ci-qa-formatting-contract/README.md) | Reference: CI, QA, and Formatting Contract | active |
+| [AUD-0014](./0014-frontmatter-profile-inventory/README.md) | Reference: Frontmatter Profile Inventory | active |
+| [AUD-0015](./0015-operations-bucket-restructure/README.md) | Reference: Operations Bucket Restructure | active |
+| [AUD-0016](./0016-restructure-gap-register/README.md) | Reference: Restructure Gap Register | active |
+| [AUD-0017](./0017-sdlc-spec-archive-candidates/README.md) | Reference: SDLC Spec Archive Candidates | active |
+| [AUD-0018](./0018-template-contract-drift/README.md) | Reference: Template Contract Drift | active |
+| [AUD-0019](./0019-readme/README.md) | Reference: Agentic Engineering Implementation Audit References | active |
+| [AUD-0020](./0020-agent-instructions-catalog-vibe-models/README.md) | Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing | active |
+| [AUD-0021](./0021-automation-candidates/README.md) | Reference: Agentic Engineering Automation Candidates | active |
+| [AUD-0022](./0022-compose-infrastructure-operations-readiness/README.md) | Reference: Compose, Infrastructure, and Operations Readiness | active |
+| [AUD-0023](./0023-frontmatter-semantic-inventory/README.md) | Reference: Frontmatter Semantic Inventory | active |
+| [AUD-0024](./0024-frontmatter-template-readme-implementation/README.md) | Reference: Frontmatter, Template, and README Implementation Audit | active |
+| [AUD-0025](./0025-harness-engineering-implementation/README.md) | Reference: Harness Engineering Implementation | active |
+| [AUD-0026](./0026-implementation-overview/README.md) | Reference: Agentic Engineering Implementation Overview | active |
+| [AUD-0027](./0027-loop-engineering-implementation/README.md) | Reference: Loop Engineering Implementation | active |
+| [AUD-0028](./0028-provider-harness-loop-implementation/README.md) | Reference: Provider Harness and Loop Implementation | active |
+| [AUD-0029](./0029-sdlc-document-contracts-implementation/README.md) | Reference: SDLC and Document Contracts Implementation Audit | active |
+| [AUD-0030](./0030-sdlc-quality-formatting-implementation/README.md) | Reference: SDLC Quality Formatting Implementation | active |
+| [AUD-0031](./0031-security-framework-maturity/README.md) | Reference: Security Framework Maturity Coverage | active |
+| [AUD-0032](./0032-workspace-rules-environment-implementation/README.md) | Reference: Workspace Rules and Environment Implementation | active |
+| [AUD-0033](./0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
+| [AUD-0034](./0034-agent-catalog-audit/README.md) | Reference: Superseded Agent Catalog Audit Mapping | superseded |
+| [AUD-0035](./0035-automation-candidates/README.md) | Reference: Superseded Automation Candidate Mapping | superseded |
+| [AUD-0036](./0036-harness-loop-audit/README.md) | Reference: Superseded Harness and Loop Audit Mapping | superseded |
+| [AUD-0037](./0037-implementation-overview/README.md) | Reference: Superseded 2026-07-07 Implementation Overview Mapping | superseded |
+| [AUD-0038](./0038-sdlc-qa-security-audit/README.md) | Reference: Superseded SDLC, QA, and Security Audit Mapping | superseded |
 
-## Audience
+## Authoring
 
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
-
-## Scope
-
-### In Scope
-
-- 안정화된 audit report 또는 comparison report
-- 구현 현황 snapshot과 gap summary
-- audit source, command, evidence path를 연결하는 reference index
-- active stage 문서가 반복해서 참조하는 audit-derived facts
-
-### Out of Scope
-
-- 현재 실행 중인 task evidence
-- incident timeline 또는 postmortem 본문
-- active approval gate, policy, runbook procedure
-- secret 값, credential, token, private key, shell history, raw log
-
-## Structure
-
-```text
-audits/
-├── ref-0001-readme.md # Workspace document contract audit index
-├── ref-0019-readme.md # Current implementation-status audit index
-├── ref-0033-readme.md # Superseded mapping-only audit history
-├── ref-<id>-<slug>.md # Stable audit reference artifact
-└── README.md # This file
-```
-
-## Canonical Current Audit
-
-- [Agentic engineering implementation audit references](ref-0019-readme.md)
-- Role: the sole current implementation-status audit.
-
-## Dated Historical Snapshots
-
-- [Workspace document contract audit references](ref-0001-readme.md) — evidence as of 2026-07-03; not current corpus truth.
-- [Document restructure audit references](ref-0012-readme.md) — evidence as of 2026-07-04; not current corpus truth.
-
-## Supersession Ledgers
-
-- [2026-07-07 implementation audit update mapping](ref-0033-readme.md) — mapping-only history; never a current status, count, or recommendation source.
-
-## Naming Rules
-
-- Audit artifacts use `ref-<id>-<slug>.md`; a pack index uses `ref-<id>-readme.md`.
-- Store the observation date in `observed_at`, not in the path. Preserve body timeline dates as historical evidence.
-- Do not use `part-*.md` prefixes for finalized report files.
-
-## How to Work in This Area
-
-1. 새 audit reference가 active task evidence를 대체하지 않는지 확인합니다.
-2. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
-3. audit source, checked date, command, evidence path, and known gaps를 명시합니다.
-4. 새 audit reference를 추가하면 이 README와 [90.references](../README.md)를 함께 갱신합니다.
-5. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
+Create packages only under `audits/####-<slug>/` and use the matching Stage 99 template. Preserve observation dates, citations, provenance, and active-owner Traceability.
 
 ## Related Documents
 
-- [90.references](../README.md)
-- [reference data](../data/README.md)
-- [research references](../research/README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [References index](../README.md)
+- [Stage 99 Registry](../../99.templates/registry.json)

@@ -2827,12 +2827,12 @@ historical evidence and grant no authority.
 - [Implementation Plan](plan.md)
 - [Spec 133](../../0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../../0134-agent-governance-canonical-convergence/spec.md)
-- [Canonical implementation audit](../../../90.references/audits/ref-0019-readme.md)
+- [Canonical implementation audit](../../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
 - [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)
-- [Existing target-surface manifest](../../../90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml)
+- [Existing target-surface manifest](../../../90.references/data/0069-target-surface-convergence/data.yaml)
 - [Controlled Agent pre-commit wrapper](../../../../scripts/validation/run-agent-precommit-all-files.sh)
 
 ## Objective
