@@ -1,18 +1,23 @@
 ---
 profile_id: task
-status: active
+status: cancelled
 artifact_id: task-0137-0002
 artifact_type: task
 parent_ids:
   - SPEC-0137
   - plan-0137
 created: 2026-08-11
-updated: 2026-08-22
+updated: 2026-08-23
 ---
 
 # Task: Agentic Engineering Research Pack Source Refresh
 
 ## Overview
+
+Disposition (2026-08-23): this historical execution record is cancelled under
+the corrected SPEC-0137 and Plan. Its body is retained as observed history, it
+makes no completion claim, and all prospective research authority moves to
+Task 0004 after its independent dependency gate is satisfied.
 
 This Task is the execution evidence ledger for an in-place source refresh of the
 canonical `2026-08-08-agentic-engineering-research-pack`. It re-verifies external
