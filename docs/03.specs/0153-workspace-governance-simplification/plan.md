@@ -1343,7 +1343,7 @@ git commit -m "refactor(references): simplify evidence packages"
   they are required to execute and review later transitions. Task 13 compacts
   the durable completed Migration to mapping and recovery fields only.
 
-- [ ] **Step 1: Write minimal-archive RED tests**
+- [x] **Step 1: Write minimal-archive RED tests**
 
 ```python
 import unittest
@@ -1366,7 +1366,7 @@ duplicated digest fields, and fixed-HEAD fixtures. Positive fixtures retain only
 external security pins, Migration/Tombstone recovery, canonical generated-output
 provenance, and runtime CI base/head selection.
 
-- [ ] **Step 2: Run RED and generate the preservation decision table**
+- [x] **Step 2: Run RED and generate the preservation decision table**
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -1382,7 +1382,7 @@ For all 184 existing Change/Tombstone files, select exactly one disposition:
 replacement, reason, and recovery commit. Require a reviewer decision for every
 non-`git-only` row before deletion.
 
-- [ ] **Step 3: Verify recovery before reducing content**
+- [x] **Step 3: Verify recovery before reducing content**
 
 Implement `validate_recovery_rows(rows, repo) -> tuple[Finding, ...]` with
 argument-vector Git calls (`git cat-file -e commit:path` and `git cat-file -t
@@ -1397,14 +1397,14 @@ for every deleted document body. It rejects NUL/control characters, leading
 hyphens, invalid object IDs, symlinks, trees, and unregistered row fields before
 constructing the argument vector.
 
-- [ ] **Step 4: Move Migrations, write minimal Tombstones, delete snapshots**
+- [x] **Step 4: Move Migrations, write minimal Tombstones, delete snapshots**
 
 Use native moves for the three Migrations. Tombstones contain only old path,
 replacement or `none`, reason, status, and recovery commit. Do not copy retired
 Spec/Plan/Task bodies. Preserve Migration 0003's reviewed execution ledger without
 expanding it; its per-mapping flow rows remain temporary execution evidence.
 
-- [ ] **Step 5: Run focused GREEN and provenance mutation tests**
+- [x] **Step 5: Run focused GREEN and provenance mutation tests**
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -1416,7 +1416,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 git diff --check
 ```
 
-- [ ] **Step 6: Review and commit Stage 98**
+- [x] **Step 6: Review and commit Stage 98**
 
 Stage each literal Task 10 File-list and reviewed consumer path, verify the
 cached-name list, then:

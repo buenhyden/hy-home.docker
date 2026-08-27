@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0010
 artifact_type: task
 parent_ids:
@@ -35,6 +35,7 @@ Minimize Stage 98 to migrations and stable-path tombstones backed by Git history
 | Recovery hardening | Centralized full-commit recovery proof behind fixed-argv Git with pre-Git identity validation, simultaneous bounded pipe drains, a 15-second per-process deadline, process-group cleanup, and three-step commit/tree/blob-object verification. |
 | Review remediation | Closed the first independent review's broad-scan, semantic-schema, and missing-blob fail-open findings. Repository provenance now covers authored `.github`, `infra`, Stage 90 Data, Stage 98, and Stage 99 support/template text; Migration 0003's frozen hash and exact Task 10 row semantics are enforced in production recovery mode. |
 | Metadata convergence | The first changed-metadata run exposed 136 Task 10-owned violations. Stage 98 README/Data consumers and Tombstone lifecycle metadata were repaired, while the three byte-preserved Migration moves use exact source-baseline recognition; the rerun selected 300 paths with zero violations. |
+| Implementation commit | `9ef889b516dd03fc32ff850f7bec33fb59d760bc` records the approved Stage 98 minimization, recovery authority, consumers, and focused tests. |
 
 ## Verification Evidence
 
@@ -77,6 +78,7 @@ status facts the current semantic gate consumes; the retired body is not copied.
 
 | Commit | Description |
 | :--- | :--- |
+| `9ef889b516dd03fc32ff850f7bec33fb59d760bc` | `refactor(archive): retain minimal recovery records` |
 
 ## Rulings
 
