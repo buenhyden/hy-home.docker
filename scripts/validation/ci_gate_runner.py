@@ -23,6 +23,7 @@ try:
         GateKind,
         GateRegistry,
         expand_gate_ids,
+        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
         validate_gate_registry,
@@ -33,6 +34,7 @@ except ModuleNotFoundError:  # Direct sibling-script execution.
         GateKind,
         GateRegistry,
         expand_gate_ids,
+        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
         validate_gate_registry,
@@ -80,6 +82,12 @@ class GateInvocation:
 
 
 GateExecutor = collections.abc.Callable[[GateInvocation], int]
+
+
+def public_suite_names() -> tuple[str, ...]:
+    """Return the immutable suite model without changing gate routing."""
+
+    return load_public_suite_registry().public_names
 
 
 @dataclasses.dataclass(slots=True)

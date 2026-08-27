@@ -12,6 +12,8 @@ files:
   - tests/validation/test_agent_governance_contract.py
 - path: scripts/hardening/check-all-hardening.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -22,9 +24,9 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
   authority: docs/99.templates/registry.json
@@ -36,8 +38,8 @@ files:
   successor: null
   tests:
   - tests/validation/test_agent_governance_contract.py
-  - tests/validation/test_provider_native_surfaces.py
   - tests/validation/test_provider_surface_renderer.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/patch-graphify-post-commit.sh
   kind: hook
   authority: docs/99.templates/registry.json
@@ -58,7 +60,7 @@ files:
   disposition: rewrite
   successor: scripts/hooks/post-tool-validate.sh
   tests:
-  - tests/validation/test_provider_native_surfaces.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/knowledge/generate-llm-wiki-coverage.sh
   kind: generator
   authority: docs/03.specs/0137-agentic-research-pack-rebuild/spec.md
@@ -97,15 +99,15 @@ files:
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  - docs/90.references/data/README.md
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/generate-audit-implementation-matrix.sh
   - scripts/validation/recommend-qa-gates.sh
+  - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_generate_llm_wiki.py
+  - tests/validation/test_validator_entrypoints.py
   check_command:
   - python3
   - scripts/knowledge/generate-llm-wiki.py
@@ -135,6 +137,29 @@ files:
   disposition: rewrite
   successor: scripts/lib/document_governance/__init__.py
   tests: []
+- path: scripts/lib/document_governance/architecture.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_architecture.py
+- path: scripts/lib/document_governance/archive.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_archive.py
+  - tests/lib/document_governance/test_provenance_policy.py
 - path: scripts/lib/document_governance/frontmatter.py
   kind: library
   authority: docs/99.templates/support/document-metadata-profiles.yaml
@@ -146,7 +171,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_links.py
+  - tests/lib/document_governance/test_links.py
 - path: scripts/lib/document_governance/git_provenance.py
   kind: library
   authority: docs/99.templates/support/document-metadata-profiles.yaml
@@ -158,7 +183,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_links.py
+  - tests/lib/document_governance/test_links.py
 - path: scripts/lib/document_governance/identity_history.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -169,7 +194,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_identity_history.py
+  - tests/lib/document_governance/test_identity_history.py
 - path: scripts/lib/document_governance/links.py
   kind: library
   authority: docs/00.agent-governance/policies/documentation-protocol.md
@@ -180,7 +205,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_links.py
+  - tests/lib/document_governance/test_links.py
 - path: scripts/lib/document_governance/metadata_contract.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -192,7 +217,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_links.py
+  - tests/lib/document_governance/test_links.py
 - path: scripts/lib/document_governance/metadata_validator.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -204,7 +229,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_four_digit_document_identity.py
+  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/operations_catalog.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -220,7 +245,29 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_operations_catalog.py
+  - tests/lib/document_governance/test_operations_catalog.py
+  - tests/lib/document_governance/test_operations_taxonomy.py
+- path: scripts/lib/document_governance/provenance_policy.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_provenance_policy.py
+- path: scripts/lib/document_governance/references.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_references.py
 - path: scripts/lib/document_governance/registry.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -234,8 +281,42 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_registry.py
-  - tests/validation/test_identity_history.py
+  - tests/lib/document_governance/test_identity_history.py
+  - tests/lib/document_governance/test_registry.py
+- path: scripts/lib/document_governance/requirements.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_requirements.py
+- path: scripts/lib/document_governance/spec_packages.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_spec_packages.py
+- path: scripts/lib/document_governance/suite_registry.py
+  kind: library
+  authority: scripts/manifest.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/ci_gate_contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_suite_registry.py
 - path: scripts/lib/document_governance/taxonomy.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -246,8 +327,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_metadata.py
-  - tests/validation/test_document_taxonomy.py
+  - tests/lib/document_governance/test_taxonomy.py
 - path: scripts/lib/hardening-lib.sh
   kind: library
   authority: .github/workflow-contract.yml
@@ -308,13 +388,13 @@ files:
   mutation: check-write
   consumers:
   - scripts/operations/sync-provider-surfaces.sh
-  - scripts/validation/agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
   disposition: rewrite
   successor: scripts/operations/provider_surface_renderer.py
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_provider_native_surfaces.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
@@ -333,13 +413,12 @@ files:
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  - scripts/validation/agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
   disposition: rewrite
   successor: scripts/operations/sync-provider-surfaces.sh
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_provider_surface_renderer.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/sync-tech-stack-versions.sh
   kind: operations
   authority: .github/workflow-contract.yml
@@ -351,8 +430,8 @@ files:
   disposition: rewrite
   successor: scripts/operations/sync-tech-stack-versions.sh
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -364,7 +443,7 @@ files:
   disposition: rewrite
   successor: scripts/operations/use-qa-ci-tools.sh
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/requirements-pre-commit.txt
   kind: dependency-manifest
   authority: .github/workflow-contract.yml
@@ -430,6 +509,8 @@ files:
   - tests/validation/test_tech_stack_version_contract.py
 - path: scripts/validation/agent_governance_contract.py
   kind: validator
+  public_suites:
+  - agent-governance
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
@@ -438,22 +519,23 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_tech_stack_version_contract.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/agent_output_eval.py
   kind: validator
+  public_suites:
+  - agent-governance
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/agentic-audit-semantic-contract.json
   kind: contract
   authority: .github/workflow-contract.yml
@@ -466,8 +548,23 @@ files:
   successor: null
   tests:
   - tests/validation/test_agentic_audit_semantic_freshness.py
+- path: scripts/validation/agentic-research-gate9-evidence.py
+  kind: validator
+  public_suites:
+  - document-lifecycle
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/audit_criterion_contract.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -479,8 +576,23 @@ files:
   successor: scripts/validation/audit_criterion_contract.py
   tests:
   - tests/validation/test_audit_criterion_contract.py
+- path: scripts/validation/carry_owner_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-agent-governance-contract.py
   kind: validator
+  public_suites:
+  - agent-governance
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -490,10 +602,12 @@ files:
   successor: null
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-agentic-audit-semantic-freshness.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -505,8 +619,34 @@ files:
   tests:
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_github_workflow_contract.py
+- path: scripts/validation/check-doc-implementation-alignment.sh
+  kind: validator
+  public_suites:
+  - document-graph
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/validation/check-repo-contracts.sh
+  disposition: rewrite
+  successor: scripts/validation/check-document-links.py
+  tests: []
+- path: scripts/validation/check-doc-traceability.sh
+  kind: validator
+  public_suites:
+  - document-graph
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/validation/check-repo-contracts.sh
+  disposition: rewrite
+  successor: scripts/validation/check-document-links.py
+  tests: []
 - path: scripts/validation/check-document-corpus-lifecycle.py
   kind: validator
+  public_suites:
+  - document-lifecycle
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
@@ -516,11 +656,13 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_document_corpus_lifecycle.py
   - tests/validation/test_document_metadata.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-document-links.py
   kind: validator
+  public_suites:
+  - document-graph
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -531,9 +673,11 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_links.py
+  - tests/lib/document_governance/test_links.py
 - path: scripts/validation/check-document-metadata.py
   kind: validator
+  public_suites:
+  - document-contract
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
@@ -542,12 +686,13 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_document_metadata.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-github-workflow-contract.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -558,8 +703,23 @@ files:
   successor: null
   tests:
   - tests/validation/test_target_surface_delta_contracts.py
+- path: scripts/validation/check-old-path-gate.py
+  kind: validator
+  public_suites:
+  - document-lifecycle
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-operations-catalog.py
   kind: validator
+  public_suites:
+  - operations
   authority: docs/99.templates/registry.json
   current_authorities:
   - docs/98.archive/migrations/0003-workspace-governance-simplification.md
@@ -574,9 +734,11 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_operations_catalog.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-quickwin-baseline.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -588,6 +750,8 @@ files:
   tests: []
 - path: scripts/validation/check-repo-contracts.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -602,6 +766,8 @@ files:
   - tests/validation/test_document_metadata.py
 - path: scripts/validation/check-script-manifest.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: scripts/manifest.yaml
   lifecycle: active
   mutation: none
@@ -614,6 +780,8 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/validation/check-storybook-contract.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -625,6 +793,8 @@ files:
   tests: []
 - path: scripts/validation/check-supply-chain-policy.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -634,22 +804,13 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_postgres_logical_upgrade_rehearsal.py
-- path: scripts/validation/check-task4-migration.py
-  kind: validator
-  authority: docs/98.archive/migrations/0003-workspace-governance-simplification.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_task4_migration_verifier.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-target-surface-contract.py
   kind: validator
+  public_suites:
+  - document-contract
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -659,11 +820,13 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-target-surface-delta-contract.py
   kind: validator
+  public_suites:
+  - document-contract
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
@@ -675,8 +838,23 @@ files:
   tests:
   - tests/validation/test_document_metadata.py
   - tests/validation/test_target_surface_delta_contracts.py
+- path: scripts/validation/check-task4-migration.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  authority: docs/98.archive/migrations/0003-workspace-governance-simplification.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_task4_migration_verifier.py
 - path: scripts/validation/check-template-security-baseline.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -688,6 +866,8 @@ files:
   tests: []
 - path: scripts/validation/ci_gate_adapters.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -696,11 +876,14 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_ci_gate_adapters.py
   - tests/validation/test_ci_gate_runner.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/ci_gate_contract.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
@@ -708,8 +891,9 @@ files:
   disposition: rewrite
   successor: scripts/validation/ci_gate_contract.py
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_ci_gate_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/ci_gate_runner.py
   kind: runner
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -719,8 +903,9 @@ files:
   disposition: rewrite
   successor: scripts/validation/ci_gate_runner.py
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_ci_gate_runner.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/compose-core-readiness.lib.sh
   kind: operations
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -760,6 +945,8 @@ files:
   - tests/validation/test_security_automation_readiness.py
 - path: scripts/validation/github_workflow_contract.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
@@ -767,11 +954,13 @@ files:
   disposition: rewrite
   successor: scripts/validation/github_workflow_contract.py
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/grype_db_seed.py
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
@@ -783,8 +972,23 @@ files:
   tests:
   - tests/validation/test_grype_db_seed.py
   - tests/validation/test_supply_chain_policy.py
+- path: scripts/validation/old_path_gate_contract.py
+  kind: validator
+  public_suites:
+  - document-lifecycle
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/recommend-gap-routing.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -795,6 +999,8 @@ files:
   tests: []
 - path: scripts/validation/recommend-qa-gates.sh
   kind: validator
+  public_suites:
+  - repository-integrity
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
@@ -804,10 +1010,12 @@ files:
   disposition: merge
   successor: scripts/validation/run-ci-gate.py
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_ci_gate_adapters.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/rehearse-postgres-logical-upgrade.sh
   kind: validator
+  public_suites:
+  - operations
   authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
   lifecycle: active
   mutation: runtime
@@ -819,6 +1027,8 @@ files:
   - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/validation/report-audit-pack-coverage.sh
   kind: validator
+  public_suites:
+  - document-lifecycle
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -831,16 +1041,18 @@ files:
   - tests/validation/test_audit_criterion_contract.py
 - path: scripts/validation/report-provider-hook-parity.sh
   kind: validator
+  public_suites:
+  - agent-governance
   authority: docs/00.agent-governance/providers/registry.yaml
-  lifecycle: active
+  lifecycle: transition
   mutation: check-write
   consumers:
   - scripts/validation/check-repo-contracts.sh
-  disposition: retain
-  successor: null
+  disposition: merge
+  successor: scripts/validation/check-repo-contracts.sh
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_provider_hook_parity.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/run-agent-output-eval-fixtures.sh
   kind: runner
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -850,23 +1062,21 @@ files:
   disposition: rewrite
   successor: scripts/validation/run-agent-output-eval-fixtures.sh
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
   consumers:
-  - scripts/validation/agent_governance_contract.py
   - scripts/validation/agentic-audit-semantic-contract.json
+  - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/run-ci-gate.py
   kind: runner
   authority: .github/workflow-contract.yml
@@ -916,11 +1126,12 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
   - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/target_surface_contract.py
   kind: validator
+  public_suites:
+  - document-contract
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -929,11 +1140,13 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/target_surface_delta_contract.py
   kind: validator
+  public_suites:
+  - document-contract
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
@@ -955,13 +1168,14 @@ files:
   tests: []
 - path: scripts/validation/validate-harness.sh
   kind: validator
+  public_suites:
+  - agent-governance
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py

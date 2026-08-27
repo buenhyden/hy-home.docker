@@ -31,7 +31,13 @@ REQUIRED_FIELDS = frozenset(
     }
 )
 OPTIONAL_FIELDS = frozenset(
-    {"check_command", "outputs", "current_authorities", "semantic_witnesses"}
+    {
+        "check_command",
+        "outputs",
+        "current_authorities",
+        "semantic_witnesses",
+        "public_suites",
+    }
 )
 KINDS = frozenset(
     {
@@ -63,9 +69,19 @@ REQUIRED_LOCAL_PATHS = frozenset(
         "tests/validation/test_generate_llm_wiki.py",
     }
 )
-APPROVED_TEST_PREFIXES = ("tests/validation/",)
+APPROVED_TEST_PREFIXES = ("tests/docs/", "tests/lib/", "tests/qa/", "tests/setup/", "tests/validation/")
+PUBLIC_SUITE_NAMES = frozenset(
+    {
+        "agent-governance",
+        "document-contract",
+        "document-graph",
+        "document-lifecycle",
+        "operations",
+        "repository-integrity",
+    }
+)
 RUNBOOK_AUTHORITY = __import__("re").compile(
-    r"docs/05\.operations/[0-9]{2}-[^/]+/ops-[0-9]{4}-[^/]+/runbook\.md"
+    r"docs/05\.operations/catalog/[0-9]{2}-[^/]+/[0-9]{4}-[^/]+/runbook\.md"
 )
 MACHINE_AUTHORITIES = frozenset({".github/workflow-contract.yml", "scripts/manifest.yaml"})
 MAX_OBSERVED_PATHS = 50_000
@@ -173,6 +189,29 @@ def validate_manifest_document(
 
         if row.get("kind") not in KINDS:
             findings.append(_finding("kind-invalid", path, f"invalid kind: {row.get('kind')!r}"))
+        public_suites = row.get("public_suites")
+        if row.get("kind") == "validator":
+            if (
+                not isinstance(public_suites, list)
+                or len(public_suites) != 1
+                or not isinstance(public_suites[0], str)
+                or public_suites[0] not in PUBLIC_SUITE_NAMES
+            ):
+                findings.append(
+                    _finding(
+                        "public-suite-invalid",
+                        path,
+                        "every validator requires exactly one canonical public_suites value",
+                    )
+                )
+        elif public_suites is not None:
+            findings.append(
+                _finding(
+                    "public-suite-kind-invalid",
+                    path,
+                    "only validator rows may declare public_suites",
+                )
+            )
         authority = row.get("authority")
         if not _safe_repo_path(authority):
             findings.append(_finding("authority-invalid", path, "authority must be a non-empty repository path"))
@@ -239,8 +278,25 @@ def validate_manifest_document(
             assert isinstance(values, list)
             if values != sorted(set(values)):
                 findings.append(_finding(f"{field}-unsorted", path, f"{field} must be unique and sorted"))
-            if disposition == "retain" and row.get("kind") not in ({"contract", "dependency-manifest"} if field == "tests" else set()) and not values:
+            is_library = row.get("kind") == "library"
+            is_document_governance_library = isinstance(path, str) and path.startswith(
+                "scripts/lib/document_governance/"
+            ) and not path.endswith("/__init__.py")
+            requires_evidence = (
+                field == "tests"
+                and row.get("kind") not in {"contract", "dependency-manifest"}
+            ) or (field == "consumers" and not is_library)
+            if disposition == "retain" and requires_evidence and not values:
                 findings.append(_finding(empty_code, path, f"retained {row.get('kind')} requires {field}"))
+            if disposition == "retain" and is_document_governance_library and field == "tests":
+                if not any(value.startswith("tests/lib/document_governance/") for value in values):
+                    findings.append(
+                        _finding(
+                            "tests-mirror-missing",
+                            path,
+                            "retained document-governance library requires a mirrored library test",
+                        )
+                    )
             for value in values:
                 if value not in tracked:
                     findings.append(_finding(f"{field}-untracked", path, f"{field} path is not tracked: {value}"))

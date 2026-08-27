@@ -20,6 +20,21 @@ from scripts.validation import ci_gate_contract as contract
 from scripts.validation import ci_gate_runner as runner
 
 
+class PublicSuiteModelTests(unittest.TestCase):
+    def test_runner_reads_the_closed_public_suite_model(self) -> None:
+        self.assertEqual(
+            (
+                "agent-governance",
+                "document-contract",
+                "document-graph",
+                "document-lifecycle",
+                "operations",
+                "repository-integrity",
+            ),
+            runner.public_suite_names(),
+        )
+
+
 REAL_SUBPROCESS_RUN = subprocess.run
 REAL_SHUTIL_RMTREE = shutil.rmtree
 

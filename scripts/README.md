@@ -176,6 +176,16 @@ tier. Without arguments, all supported tiers are checked.
 
 ## Script Lifecycle
 
+## Validation ownership
+
+`scripts/manifest.yaml` is the executable ownership registry. Atomic validator
+rows declare exactly one public suite: `agent-governance`,
+`document-contract`, `document-graph`, `document-lifecycle`, `operations`, or
+`repository-integrity`. `suite_registry.py` reads that mapping only; it contains
+no validation logic. Focused document-governance tests mirror their modules
+under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
+`tests/validation/`.
+
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CI / quality gate           | `scripts/validation/validate-harness.sh`, `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-github-workflow-contract.py`, `scripts/validation/run-ci-precommit.sh`, `scripts/validation/check-supply-chain-policy.py --check`, `scripts/validation/check-agent-governance-contract.py --mode contract`, `scripts/validation/check-agentic-audit-semantic-freshness.py`, `scripts/validation/check-document-corpus-lifecycle.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check`, `scripts/knowledge/generate-llm-wiki-coverage.sh --check` |

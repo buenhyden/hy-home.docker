@@ -14,6 +14,24 @@ from scripts.validation import ci_gate_contract as contract
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+class PublicSuiteRegistryTests(unittest.TestCase):
+    def test_gate_contract_consumes_the_immutable_public_suite_registry(self) -> None:
+        registry = contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        self.assertEqual(
+            (
+                "agent-governance",
+                "document-contract",
+                "document-graph",
+                "document-lifecycle",
+                "operations",
+                "repository-integrity",
+            ),
+            registry.public_names,
+        )
+
+
 REQUIRED_JOB_ROOTS = {
     "docs-traceability": "ci.docs-traceability",
     "docs-implementation-alignment": "ci.docs-implementation-alignment",

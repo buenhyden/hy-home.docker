@@ -67,6 +67,16 @@ KINDS = frozenset(
 LIFECYCLES = frozenset({"active", "transition"})
 MUTATIONS = frozenset({"none", "check-write", "runtime"})
 DISPOSITIONS = frozenset({"retain", "merge", "delete", "rewrite"})
+PUBLIC_SUITE_NAMES = frozenset(
+    {
+        "agent-governance",
+        "document-contract",
+        "document-graph",
+        "document-lifecycle",
+        "operations",
+        "repository-integrity",
+    }
+)
 FORBIDDEN_EVIDENCE_PREFIXES = (
     "graphify-out/",
     "docs/98.archive/",
@@ -74,6 +84,8 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/90.references/data/0082-llm-wiki-index/",
 )
 MUTATION_OVERRIDES = {
+    "scripts/knowledge/generate-llm-wiki-coverage.sh": "check-write",
+    "scripts/knowledge/generate-llm-wiki-index.sh": "check-write",
     "scripts/hooks/patch-graphify-post-commit.sh": "check-write",
     "scripts/hooks/post-tool-validate.sh": "check-write",
     "scripts/knowledge/generate-llm-wiki.py": "check-write",
@@ -231,6 +243,12 @@ def declared_tombstone_replacements(text: str, tombstone_path: str) -> list[str]
     return []
 
 
+def canonical_current_path(path: str) -> str:
+    """Resolve the Migration 0003 predecessor spelling to its live Stage03 path."""
+
+    return path.replace("docs/03.specs/spec-0008-workflow/", "docs/03.specs/0008-workflow/")
+
+
 def replacement_preservation_errors(
     row: dict[str, object], translated: list[str]
 ) -> list[str]:
@@ -239,9 +257,9 @@ def replacement_preservation_errors(
     errors: list[str] = []
     if row["replacement"] is None:
         errors.append("replacement-null")
-    elif row["replacement"] != translated[0]:
+    elif canonical_current_path(str(row["replacement"])) != translated[0]:
         errors.append("primary-replacement-mismatch")
-    evidence = f"{row['replacement']} {row['reason']}"
+    evidence = canonical_current_path(f"{row['replacement']} {row['reason']}")
     if any(target not in evidence for target in translated):
         errors.append("translated-replacement-evidence-missing")
     return errors
@@ -361,7 +379,7 @@ def is_runbook_authority(path: str) -> bool:
     return bool(
         re.fullmatch(
             r"docs/05\.operations/catalog/[0-9]{2}-[a-z0-9-]+/"
-            r"ops-[0-9]{4}-[a-z0-9-]+/runbook\.md",
+            r"[0-9]{4}-[a-z0-9-]+/runbook\.md",
             path,
         )
     )
@@ -372,6 +390,7 @@ def stable_target_type(path: str) -> str | None:
         (r"docs/01\.requirements/prd-[0-9]{4}-[^/]+\.md", "prd"),
         (r"docs/02\.architecture/descriptions/ad-[0-9]{4}-[^/]+\.md", "ad"),
         (r"docs/02\.architecture/decisions/adr-[0-9]{4}-[^/]+\.md", "adr"),
+        (r"docs/03\.specs/[0-9]{4}-[^/]+/spec\.md", "spec"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/spec\.md", "spec"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/plan\.md", "plan"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/task\.md", "task"),
@@ -424,11 +443,16 @@ class ScriptManifestTests(unittest.TestCase):
                     "current_authorities",
                     "semantic_witnesses",
                 }
+            if row["kind"] == "validator":
+                expected_fields = expected_fields | {"public_suites"}
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
             self.assertIn(row["mutation"], MUTATIONS)
             self.assertIn(row["disposition"], DISPOSITIONS)
+            if row["kind"] == "validator":
+                self.assertEqual(1, len(row["public_suites"]))
+                self.assertIn(row["public_suites"][0], PUBLIC_SUITE_NAMES)
             self.assertIsInstance(row["authority"], str)
             self.assertTrue(row["authority"])
             self.assertNotEqual(row["authority"], "sdlc-taxonomy-convergence")
@@ -455,7 +479,7 @@ class ScriptManifestTests(unittest.TestCase):
                 else:
                     self.assertIsInstance(successor, str)
                     self.assertIn(successor, self.repository_paths)
-                if row["disposition"] == "retain":
+                if row["disposition"] == "retain" and row["kind"] != "library":
                     self.assertTrue(row["consumers"])
                 if row["disposition"] == "retain" and row["kind"] not in {"contract", "dependency-manifest"}:
                     self.assertTrue(row["tests"])
@@ -484,10 +508,7 @@ class ScriptManifestTests(unittest.TestCase):
             row["consumers"],
         )
         self.assertEqual(
-            [
-                "tests/validation/test_document_metadata.py",
-                "tests/validation/test_document_taxonomy.py",
-            ],
+            ["tests/lib/document_governance/test_taxonomy.py"],
             row["tests"],
         )
 
@@ -861,9 +882,10 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertIn(declaration, self.ledger_by_path)
                     target = self.ledger_by_path[declaration]["stable_path"]
                     self.assertIsInstance(target, str)
-                    self.assertFalse(str(target).startswith("docs/98.archive/"))
-                    self.assertIsNotNone(stable_target_type(str(target)), target)
-                    translated.append(str(target))
+                    canonical_target = canonical_current_path(str(target))
+                    self.assertFalse(canonical_target.startswith("docs/98.archive/"))
+                    self.assertIsNotNone(stable_target_type(canonical_target), canonical_target)
+                    translated.append(canonical_target)
 
                 self.assertEqual([], replacement_preservation_errors(row, translated))
                 if legacy_path in KNOWN_TOMBSTONE_REPLACEMENTS:
@@ -1024,6 +1046,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
         row: dict[str, object] = {
             "path": "scripts/example.py",
             "kind": "validator",
+            "public_suites": ["repository-integrity"],
             "authority": "docs/authority.md",
             "lifecycle": "active",
             "mutation": "none",
@@ -1106,6 +1129,20 @@ class ScriptManifestValidationTests(unittest.TestCase):
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(self) -> None:
         self.assertIn("tests-missing", self.codes(self.row(tests=[])))
         self.assertIn("mutation-invalid", self.codes(self.row(mutation="default-write")))
+
+    def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(self) -> None:
+        library = self.row(
+            path="scripts/lib/document_governance/example.py",
+            kind="library",
+            consumers=[],
+            tests=[],
+        )
+        library.pop("public_suites")
+        tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
+        self.assertIn("tests-missing", self.codes(library, tracked))
+
+        library["tests"] = ["tests/validation/test_example.py"]
+        self.assertIn("tests-mirror-missing", self.codes(library, tracked))
 
     def test_manifest_rejects_invalid_generated_check_command(self) -> None:
         generator = self.row(
@@ -1214,19 +1251,19 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "import subprocess\nsubprocess.run(['python3', 'scripts/example.py', '--check'], check=False)\n",
             encoding="utf-8",
         )
+        generator = self.row(
+            path="scripts/example.py",
+            kind="generator",
+            mutation="check-write",
+            authority=".github/workflow-contract.yml",
+            check_command=["python3", "scripts/example.py", "--check"],
+            outputs=["docs/output.md"],
+        )
+        generator.pop("public_suites")
         manifest = {
             "schema_version": 1,
             "files": [
-                {
-                    **self.row(
-                        path="scripts/example.py",
-                        kind="generator",
-                        mutation="check-write",
-                        authority=".github/workflow-contract.yml",
-                        check_command=["python3", "scripts/example.py", "--check"],
-                        outputs=["docs/output.md"],
-                    )
-                },
+                generator,
                 {
                     "path": "scripts/manifest.yaml",
                     "kind": "contract",

@@ -11,6 +11,8 @@ import stat
 import subprocess
 from collections.abc import Mapping
 
+from scripts.lib.document_governance import suite_registry
+
 
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
@@ -52,6 +54,14 @@ _REQUIRED_JOB_ROOTS = {
     "storybook-coverage": "ci.storybook-coverage",
     "zizmor": "ci.zizmor",
 }
+
+
+def load_public_suite_registry(
+    manifest_path: pathlib.Path = pathlib.Path("scripts/manifest.yaml"),
+) -> suite_registry.SuiteRegistry:
+    """Expose the immutable validator-suite registry to gate contracts."""
+
+    return suite_registry.load(manifest_path)
 _REQUIRED_JOB_SUITES = {
     "docs-traceability": ("docs-traceability",),
     "docs-implementation-alignment": (
