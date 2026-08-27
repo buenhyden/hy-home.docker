@@ -36,10 +36,10 @@ EXPECTED_DOMAINS = (
 )
 EXPECTED_ROLE_COUNTS = {"guide": 66, "policy": 64, "runbook": 62}
 MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 )
 SEMANTIC_WITNESS_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md"
+    "docs/98.archive/migrations/0002-operations-catalog-convergence.md"
 )
 REGISTRY_PATH = pathlib.PurePosixPath("docs/99.templates/registry.json")
 OPERATIONS_ROOT = pathlib.PurePosixPath("docs/05.operations")

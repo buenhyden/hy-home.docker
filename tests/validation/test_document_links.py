@@ -465,7 +465,7 @@ class DocumentGraphTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             graph.nodes[0].metadata["status"] = "active"
 
-    def test_alignment_rejects_missing_and_current_to_archive_links(self) -> None:
+    def test_alignment_rejects_missing_and_current_to_tombstone_links(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
             check_alignment,
@@ -484,6 +484,33 @@ class DocumentGraphTests(unittest.TestCase):
             codes = {finding.code for finding in check_alignment(graph)}
         self.assertIn("missing-link-target", codes)
         self.assertIn("active-archive-link", codes)
+
+    def test_alignment_allows_current_to_archive_index_and_migration_links(self) -> None:
+        from scripts.lib.document_governance.links import (
+            archive_direct_link_total,
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/03.specs/0001-current/spec.md"
+            readme = root / "docs/98.archive/README.md"
+            migration = root / "docs/98.archive/migrations/0001-map.md"
+            source.parent.mkdir(parents=True)
+            readme.parent.mkdir(parents=True)
+            migration.parent.mkdir(parents=True)
+            source.write_text(
+                "# Source\n\n[archive](../../98.archive/README.md)\n"
+                "[migration](../../98.archive/migrations/0001-map.md)\n",
+                encoding="utf-8",
+            )
+            readme.write_text("# Archive\n", encoding="utf-8")
+            migration.write_text("# Migration\n", encoding="utf-8")
+            graph = build_document_graph([source, readme, migration], repo_root=root)
+            codes = {finding.code for finding in check_alignment(graph)}
+        self.assertNotIn("active-archive-link", codes)
+        self.assertEqual(0, archive_direct_link_total(graph))
 
     def test_alignment_preserves_removed_template_detection(self) -> None:
         from scripts.lib.document_governance.links import (

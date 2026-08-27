@@ -25,7 +25,7 @@ EXPECTED_CANONICAL_PACK = "docs/90.references/audits"
 EXPECTED_CANONICAL_README = f"{EXPECTED_CANONICAL_PACK}/ref-0019-readme.md"
 EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/ref-0026-implementation-overview.md"
 EXPECTED_TASK_EVIDENCE = (
-    "docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/task.md"
+    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md"
 )
 EXPECTED_TOP_LEVEL_PATHS = {
     "audit_index": EXPECTED_AUDIT_INDEX,

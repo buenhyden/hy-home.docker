@@ -52,7 +52,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         for source in (
             "docs/99.templates/registry.json",
             str(MIGRATION_PATH),
-            "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+            "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
         ):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)

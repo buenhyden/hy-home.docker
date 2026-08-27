@@ -14,7 +14,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-task4-migration.py"
-MIGRATION = ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+MIGRATION = ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 
 
 def load_verifier():

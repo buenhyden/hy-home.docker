@@ -544,8 +544,8 @@ if not has_scoped_ecosystem_gate:
         )
     )
 spec_126_route = (
-    "Spec 126 archived provenance: "
-    "`docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md`"
+    "Stage 98 migration lookup: "
+    "`docs/98.archive/migrations/0003-workspace-governance-simplification.md`"
 )
 if not has_sbom_generation:
     follow_up_rows.append(
@@ -603,26 +603,33 @@ else:
 
 lines: list[str] = [
     "---",
+    "profile_id: data",
     "status: active",
+    "artifact_id: DATA-0078",
+    "artifact_type: data",
+    "parent_ids: []",
+    "created: 2026-07-06",
+    "updated: 2026-08-23",
+    "observed_at: 2026-08-23",
     "generated_by: scripts/validation/generate-security-automation-readiness.sh",
     "---",
     "",
     "# Reference: Security Automation Readiness",
     "",
-    "## Overview",
+    "## Purpose",
     "",
     "This generated reference summarizes repository-local security automation",
     "readiness for scoped vulnerability gating, broad dependency SCA, container/image",
     "scanning, SBOM generation, provenance/attestation, workflow security, secret",
     "scanning, dependency updates, and hardening.",
     "",
-    "## Purpose",
+    "### Audit Intent",
     "",
     "The purpose is to make the remaining security automation gaps explicit from",
     "tracked repository evidence. It does not run scanners, generate SBOMs, sign",
     "artifacts, attest builds, query registries, or change CI behavior.",
     "",
-    "## Repository Role",
+    "## Consumers",
     "",
     "This reference supports Stage 90 security maturity audits and future Stage",
     "03/04 security automation planning. It does not replace Stage 00 security",
@@ -630,7 +637,7 @@ lines: list[str] = [
     "hardening scripts, branch protection, release workflows, or vulnerability",
     "management procedures.",
     "",
-    "## Scope",
+    "## Limitations",
     "",
     "### In Scope",
     "",
@@ -647,7 +654,7 @@ lines: list[str] = [
     "  branch protection, runtime Compose files, secrets, credentials, tokens,",
     "  private keys, shell history, raw logs, or `.env` values.",
     "",
-    "## Definitions / Facts",
+    "## Schema",
     "",
     "- **Implemented**: tracked local evidence exists for the automation surface.",
     "- **Partially Implemented**: tracked evidence exists, but live enforcement,",
@@ -658,7 +665,7 @@ lines: list[str] = [
     "  certification, score, vulnerability statement, SBOM, signature, or",
     "  attestation.",
     "",
-    "## Summary",
+    "## Inventory",
     "",
     "| Status | Count |",
     "| --- | ---: |",
@@ -666,7 +673,7 @@ lines: list[str] = [
     f"| Partially Implemented | {partial_count} |",
     f"| Gap | {gap_count} |",
     "",
-    "## Readiness Matrix",
+    "### Readiness Matrix",
     "",
     "| Control ID | Control | Status | Evidence | Gap / Next Step |",
     "| --- | --- | --- | --- | --- |",
@@ -690,7 +697,7 @@ for control in sorted(controls, key=lambda item: (readiness_order[item.status], 
 lines.extend(
     [
         "",
-        "## Findings",
+        "## Provenance",
         "",
         "- Security disclosure, workflow security, secret scanning, Dependabot,",
         "  hardening, and tracked image-version provenance all have repo-local",
@@ -703,7 +710,7 @@ lines.extend(
         "  advisory-rehearsal contract, not a live runtime or release claim.",
         residual_finding,
         "",
-        "## Gap / Follow-up",
+        "### Gap / Follow-up",
         "",
         "| Gap ID | Gap | Suggested Future Stage |",
         "| --- | --- | --- |",
@@ -719,7 +726,7 @@ else:
 lines.extend(
     [
         "",
-        "## Source Rules",
+        "### Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
         "- Admit typed commands and Actions only after complete canonical workflow",
@@ -730,7 +737,7 @@ lines.extend(
         "- Do not include secret values, private keys, tokens, shell history, raw",
         "  secret logs, or `.env` values.",
         "",
-        "## Sources",
+        "### Sources",
         "",
         "- [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) - CI quality and workflow-security evidence.",
         "- [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) - local pre-commit and secret-scanning hook evidence.",
@@ -741,7 +748,7 @@ lines.extend(
         "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
         "- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.",
         "",
-        "## Maintenance",
+        "## Refresh",
         "",
         "- **Owner**: Security Reviewer / QA Engineer.",
         "- **Review Cadence**: Regenerate after security workflow, Dependabot,",
@@ -751,7 +758,7 @@ lines.extend(
         "- **Update Trigger**: Update when tracked workflow/script security automation",
         "  changes or when Stage 90 security maturity audits are refreshed.",
         "",
-        "## Related Documents",
+        "## Traceability",
         "",
         "- [security data index](./README.md)",
         "- [reference data index](../README.md)",

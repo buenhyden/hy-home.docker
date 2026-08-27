@@ -72,7 +72,7 @@ Converge Stage 90 to non-normative Research, Audit, and Data packages with numer
 | Round-5 contracts/static | Current References/active-consumer validators, changed metadata, Ruff, `py_compile`, diff check, frozen hash, graphify | PASS — findings `0/0`, metadata `selected=150 violations=0`, Migration SHA exact, and graphify status/diff empty. |
 | Independent reviews | Task 9 specification and Python/validator reviews | APPROVED — specification `C0/I0/M0`; Python/validator final round `C0/I0/M0`. Five mutation-driven review rounds closed every reported Important finding without widening the repository gate. |
 | Controller verification | Focused 40-test suite; shared `DocumentGraphTests`; metadata; three generator entrypoints; References validators; static and frozen evidence checks | PASS — 40/40 and 16/16; metadata `selected=150 violations=0`; generator checks fresh; findings `0/0`; Ruff, `py_compile`, `bash -n`, diff check, frozen SHA, and graphify exclusion all pass. |
-| Frozen authority | `sha256sum docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md` | PASS — `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
+| Frozen authority | `sha256sum docs/98.archive/migrations/0003-workspace-governance-simplification.md` | PASS — `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
 
 ## Review Evidence
 

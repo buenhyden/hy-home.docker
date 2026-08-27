@@ -18,17 +18,17 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 BASELINE = "232effd9a5e00907bdbe30efc6665023fb2d07f4"
 MANIFEST = ROOT / "scripts/manifest.yaml"
-LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 OPERATIONS_MANIFEST_PATHS = (
     "scripts/lib/document_governance/operations_catalog.py",
     "scripts/validation/check-operations-catalog.py",
 )
 OPERATIONS_CURRENT_AUTHORITIES = (
-    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
     "docs/99.templates/registry.json",
 )
 OPERATIONS_SEMANTIC_WITNESSES = (
-    "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+    "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
 )
 MIGRATION_ROOTS = (
     "docs/01.requirements",

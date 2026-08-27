@@ -699,7 +699,7 @@ transition executes.
 - [Stage 00 governance hub](../../00.agent-governance/README.md)
 - [Stage 99 template hub](../../99.templates/README.md)
 - [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Migration 0003](../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../98.archive/migrations/0003-workspace-governance-simplification.md)
 
 ADR-0029 remains draft and Migration 0003 is approved; both remain uncommitted
 until the controller closes the Task 1 control-plane unit.

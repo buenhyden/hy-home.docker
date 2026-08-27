@@ -44,7 +44,7 @@ fields and sections apply. This file only maps the resulting target role to its
 copyable source.
 
 Current Operations structure follows the Registry and the frozen
-`docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+`docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 contract. Migration 0002 remains a read-only semantic witness and does not
 authorize current paths.
 

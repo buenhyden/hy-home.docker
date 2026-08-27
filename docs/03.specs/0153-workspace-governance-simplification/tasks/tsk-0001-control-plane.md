@@ -24,7 +24,7 @@ Task 1.
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
 - [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Frozen baseline commit `889d3868ecd0913cddac79a718584a54a8453525`
 
 ## Goals and Non-goals
@@ -228,4 +228,4 @@ performed.
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
 - [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)

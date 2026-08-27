@@ -21,7 +21,7 @@ Activate the canonical prefixless SPEC-0153 package, split bootstrap evidence in
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Stage 99 Registry, Task 1 and Task 2 evidence, SPEC-0136, Migration 0003.
 
 ## Work Log

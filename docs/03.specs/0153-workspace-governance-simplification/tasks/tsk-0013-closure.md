@@ -20,7 +20,7 @@ Close and compact Migration 0003, verify all final gates, and retire the one-tim
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Tasks 1 through 12 evidence, final Registry and gate state, approved Migration owner_task 13 rows.
 
 ## Work Log

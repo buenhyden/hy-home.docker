@@ -473,10 +473,10 @@ class SpecPackageTests(unittest.TestCase):
             root = pathlib.Path(directory)
             stage = root / "docs/03.specs"
             _write_package(stage, plan=True)
-            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copy2(
-                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)

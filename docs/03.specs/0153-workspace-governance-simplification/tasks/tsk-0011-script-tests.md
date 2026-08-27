@@ -20,7 +20,7 @@ Refactor document-governance scripts and tests by responsibility while preservin
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 10 archive convergence, scripts manifest, approved Migration owner_task 11 rows.
 
 ## Work Log

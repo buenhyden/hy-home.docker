@@ -21,7 +21,7 @@ Converge Stage 03 packages on spec.md, plan.md, and numbered Task records withou
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 6 architecture convergence, Stage 99 Spec profiles, approved Migration owner_task 7 rows.
 
 ## Work Log
@@ -50,7 +50,7 @@ Converge Stage 03 packages on spec.md, plan.md, and numbered Task records withou
 | Changed metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base HEAD` | PASS, `selected=169 violations=0 legacy_exceptions=1 transition_overrides=0`; exception is unchanged Task 8 scope. |
 | Quality | Ruff, `py_compile`, modified-shell `bash -n`, `git diff --check` | PASS. |
 | Inventory | Exact Task 7 row/package/path scan | 49/49 sources absent; 41 row targets plus five normalized finals present; 34 canonical packages; Stage 04 and forbidden roles absent. |
-| Preservation | `sha256sum docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md` | `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
+| Preservation | `sha256sum docs/98.archive/migrations/0003-workspace-governance-simplification.md` | `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
 | Active selected-old paths | Exact scan excluding five historical evidence files and five negative-fixture files | PASS, zero active authority occurrences; 16 historical and 139 fixture occurrences classified explicitly in the ignored report. |
 | Bounded baseline attribution | Traceability / alignment / repository contracts | Not green: 2 Task 8, 22 earlier-Task/legacy, and 17 earlier-Task failures respectively; no Task 7 pass claim. |
 | Broad suites | Combined metadata/lifecycle run | Interrupted at five-minute bound; not claimed as passing. |

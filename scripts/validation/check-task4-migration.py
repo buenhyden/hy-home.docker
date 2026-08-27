@@ -14,7 +14,7 @@ import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-MIGRATION = ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+MIGRATION = ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 EXPECTED_SELECTION_SHA256 = "9328d04dc01ad60faa9be3f805eaa9414af1bacfe4751c61ef133749390e30e1"
 EXPECTED_EDGES_SHA256 = "2f1840983d98ed93ffdc183305c49b389b17e5c8362538e5df97d451be2b9139"
 EXPECTED_TASK4_ROWS_SHA256 = "2fd01449c78581374d37153175455ca0d08e2ca05e36812dcab8189a97208f95"

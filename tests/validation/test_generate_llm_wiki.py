@@ -34,6 +34,9 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             ".github/workflow.yml": "workflow\n",
             "README.md": "root\n",
             "docs/04.execution/plan.md": "plan\n",
+            "docs/98.archive/README.md": "archive index\n",
+            "docs/98.archive/migrations/0001-map.md": "migration\n",
+            "docs/98.archive/tombstones/03.specs/0001-old.md": "tombstone\n",
             "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md": "coverage\n",
             "docs/90.references/data/0082-llm-wiki-index/README.md": "index\n",
             "docs/한글-경로.md": "unicode\n",
@@ -109,6 +112,16 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             paths = {candidate.path for candidate in generator.collect_candidates(root)}
             self.assertIn("docs/한글-경로.md", paths)
             self.assertNotIn("docs/arbitrary-untracked.md", paths)
+
+    def test_generated_index_excludes_individual_archive_evidence(self) -> None:
+        generator = load_generator()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._fixture_repo(root)
+            paths = {candidate.path for candidate in generator.collect_candidates(root)}
+            self.assertIn("docs/98.archive/README.md", paths)
+            self.assertIn("docs/98.archive/migrations/0001-map.md", paths)
+            self.assertNotIn("docs/98.archive/tombstones/03.specs/0001-old.md", paths)
 
     def test_retired_wrapper_selection_and_classification_parity(self) -> None:
         generator = load_generator()

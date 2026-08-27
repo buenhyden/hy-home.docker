@@ -20,7 +20,7 @@ Move Architecture Descriptions and ADRs to prefixless paths while preserving AD 
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 5 Requirement Packages, Stage 99 architecture profiles, approved Migration owner_task 6 rows.
 
 ## Work Log

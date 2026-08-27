@@ -5374,7 +5374,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         spec_root = root / "docs/03.specs"
         spec_package_authority = (
             root
-            / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         )
         if spec_package_authority.is_file() and (
             spec_root.exists() or spec_root.is_symlink()
@@ -6086,7 +6086,7 @@ def _link_target_neutral_text(text: str) -> str:
 def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
     """Return exact moved target -> immutable source mappings from mig-0001."""
 
-    ledger = root / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+    ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
     try:
         text = ledger.read_text(encoding="utf-8")
         fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
@@ -6116,7 +6116,7 @@ def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
 def _task5_legacy_parent_ids(root: pathlib.Path) -> set[str]:
     """Derive retired pre-taxonomy parent IDs only from frozen ledger rows."""
 
-    ledger = root / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+    ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
     try:
         text = ledger.read_text(encoding="utf-8")
         fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
@@ -6201,6 +6201,33 @@ def _operations_catalog_moved_body_baseline(
     """Read the exact Migration 0003 source baseline for a Task 8 target."""
 
     legacy = mappings.get(target.as_posix())
+    if legacy is None:
+        return None, None
+    legacy_text = _text_at_ref(root, pathlib.Path(legacy), base_ref)
+    if legacy_text is None:
+        return None, None
+    return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
+
+
+_TASK10_ARCHIVE_MOVE_SOURCES = {
+    "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md":
+        "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
+    "docs/98.archive/migrations/0002-operations-catalog-convergence.md":
+        "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md":
+        "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+}
+
+
+def _task10_archive_moved_body_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: dict[str, object],
+    base_ref: str | None,
+) -> tuple[Record | None, str | None]:
+    """Read one exact prefix-removal source for the approved Stage 98 move."""
+
+    legacy = _TASK10_ARCHIVE_MOVE_SOURCES.get(target.as_posix())
     if legacy is None:
         return None, None
     legacy_text = _text_at_ref(root, pathlib.Path(legacy), base_ref)
@@ -6970,6 +6997,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     base_records: list[Record] = []
     task8_operations_move_sources: dict[str, str] = {}
     verified_task8_move_targets: set[str] = set()
+    verified_task10_move_targets: set[str] = set()
     task8_release_deletion_at_base = False
     promoted_transition_witnesses: dict[str, PromotedTransitionWitness] = {}
     if args.mode == "check-changed":
@@ -7009,6 +7037,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             if moved_record is not None:
                 base_records_by_path[path_text] = moved_record
                 verified_task8_move_targets.add(path_text)
+                continue
+            moved_record, _ = _task10_archive_moved_body_baseline(
+                root,
+                pathlib.Path(path_text),
+                profiles,
+                base.merge_base,
+            )
+            if moved_record is not None:
+                base_records_by_path[path_text] = moved_record
+                verified_task10_move_targets.add(path_text)
     try:
         records = collect_records(
             root,
@@ -7069,6 +7107,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                     profiles,
                     base.merge_base,
                     task8_operations_move_sources,
+                )
+                base_record = moved_record or base_record
+                base_text = moved_text or base_text
+            if base_record is None or base_text is None:
+                moved_record, moved_text = _task10_archive_moved_body_baseline(
+                    root,
+                    record.path,
+                    profiles,
+                    base.merge_base,
                 )
                 base_record = moved_record or base_record
                 base_text = moved_text or base_text
@@ -7152,6 +7199,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 path in link_only_changes,
                 task5_legacy_parent_ids,
                 path in verified_task8_move_targets
+                or path in verified_task10_move_targets
                 or (
                     task8_release_deletion_at_base
                     and path in _TASK8_OPERATIONS_README_TRANSITION_PATHS

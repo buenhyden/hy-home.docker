@@ -521,6 +521,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             active_source
             and target_text.startswith("docs/98.archive/")
             and target_text != "docs/98.archive/README.md"
+            and not target_text.startswith("docs/98.archive/migrations/")
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
         target_path, target_error = _regular_target(graph, link.target)
@@ -573,6 +574,7 @@ def archive_direct_link_total(graph: DocumentGraph) -> int:
         if link.source.as_posix().startswith(_ACTIVE_STAGE_PREFIXES)
         and link.target.as_posix().startswith("docs/98.archive/")
         and link.target.as_posix() != "docs/98.archive/README.md"
+        and not link.target.as_posix().startswith("docs/98.archive/migrations/")
     )
 
 

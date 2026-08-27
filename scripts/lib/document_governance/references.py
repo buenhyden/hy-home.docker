@@ -32,7 +32,7 @@ from scripts.lib.document_governance.operations_catalog import read_bounded_regu
 
 
 MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 )
 MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
 TASK9_ROW_IDS = tuple(f"mig-0003-r{number:04d}" for number in range(450, 566))

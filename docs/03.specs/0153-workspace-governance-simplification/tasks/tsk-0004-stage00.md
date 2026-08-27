@@ -21,7 +21,7 @@ Converge Stage 00 and provider surfaces on Claude and Codex while removing Gemin
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 3 canonical package, Stage 99 governance profiles, approved Migration owner_task 4 rows.
 
 ## Work Log

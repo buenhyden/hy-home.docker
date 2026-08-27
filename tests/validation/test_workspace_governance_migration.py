@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ADR = ROOT / "docs/02.architecture/decisions/0029-workspace-governance-authority.md"
 MIGRATION = (
     ROOT
-    / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+    / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 )
 CANONICAL_PACKAGE = (
     ROOT / "docs/03.specs/0153-workspace-governance-simplification"

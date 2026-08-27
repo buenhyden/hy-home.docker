@@ -4,28 +4,28 @@ status: active
 artifact_id: DATA-0078
 artifact_type: data
 parent_ids: []
-created: '2026-08-23'
-updated: '2026-08-23'
-observed_at: '2026-08-23'
+created: 2026-07-06
+updated: 2026-08-23
+observed_at: 2026-08-23
 generated_by: scripts/validation/generate-security-automation-readiness.sh
 ---
 
 # Reference: Security Automation Readiness
 
-## Overview
+## Purpose
 
 This generated reference summarizes repository-local security automation
 readiness for scoped vulnerability gating, broad dependency SCA, container/image
 scanning, SBOM generation, provenance/attestation, workflow security, secret
 scanning, dependency updates, and hardening.
 
-## Purpose
+### Audit Intent
 
 The purpose is to make the remaining security automation gaps explicit from
 tracked repository evidence. It does not run scanners, generate SBOMs, sign
 artifacts, attest builds, query registries, or change CI behavior.
 
-## Repository Role
+## Consumers
 
 This reference supports Stage 90 security maturity audits and future Stage
 03/04 security automation planning. It does not replace Stage 00 security
@@ -33,7 +33,7 @@ governance, `.github/workflows/**`, `.github/SECURITY.md`, runtime
 hardening scripts, branch protection, release workflows, or vulnerability
 management procedures.
 
-## Scope
+## Limitations
 
 ### In Scope
 
@@ -50,7 +50,7 @@ management procedures.
   branch protection, runtime Compose files, secrets, credentials, tokens,
   private keys, shell history, raw logs, or `.env` values.
 
-## Definitions / Facts
+## Schema
 
 - **Implemented**: tracked local evidence exists for the automation surface.
 - **Partially Implemented**: tracked evidence exists, but live enforcement,
@@ -61,7 +61,7 @@ management procedures.
   certification, score, vulnerability statement, SBOM, signature, or
   attestation.
 
-## Summary
+## Inventory
 
 | Status | Count |
 | --- | ---: |
@@ -69,7 +69,7 @@ management procedures.
 | Partially Implemented | 1 |
 | Gap | 1 |
 
-## Readiness Matrix
+### Readiness Matrix
 
 | Control ID | Control | Status | Evidence | Gap / Next Step |
 | --- | --- | --- | --- | --- |
@@ -87,7 +87,7 @@ management procedures.
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
 | SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 55 reachable typed gates. |
 
-## Findings
+## Provenance
 
 - Security disclosure, workflow security, secret scanning, Dependabot,
   hardening, and tracked image-version provenance all have repo-local
@@ -100,13 +100,13 @@ management procedures.
   advisory-rehearsal contract, not a live runtime or release claim.
 - broad dependency SCA remains a gap in tracked workflow/script surfaces.
 
-## Gap / Follow-up
+### Gap / Follow-up
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | Spec 126 archived provenance: `docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md` |
+| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | Stage 98 migration lookup: `docs/98.archive/migrations/0003-workspace-governance-simplification.md` |
 
-## Source Rules
+### Source Rules
 
 - Use tracked repository files for readiness claims.
 - Admit typed commands and Actions only after complete canonical workflow
@@ -117,7 +117,7 @@ management procedures.
 - Do not include secret values, private keys, tokens, shell history, raw
   secret logs, or `.env` values.
 
-## Sources
+### Sources
 
 - [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) - CI quality and workflow-security evidence.
 - [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) - local pre-commit and secret-scanning hook evidence.
@@ -128,7 +128,7 @@ management procedures.
 - [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.
 
-## Maintenance
+## Refresh
 
 - **Owner**: Security Reviewer / QA Engineer.
 - **Review Cadence**: Regenerate after security workflow, Dependabot,
@@ -138,34 +138,10 @@ management procedures.
 - **Update Trigger**: Update when tracked workflow/script security automation
   changes or when Stage 90 security maturity audits are refreshed.
 
-## Related Documents
+## Traceability
 
 - [security data index](./README.md)
 - [reference data index](../README.md)
 - [security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md)
 - [automation candidates](../../audits/ref-0021-automation-candidates.md)
 - [security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)
-
-## Schema
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Provenance
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Inventory
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Refresh
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Consumers
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Traceability
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.

@@ -24,7 +24,7 @@ and template registration without executing a corpus transition.
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
 - [Stage 99 Registry](../../../99.templates/registry.json)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Frozen Task 1 baseline commit `71f89ba1`
 
 ## Work Log

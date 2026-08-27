@@ -77,11 +77,11 @@ OPERATIONS_AUTHORITY_PATHS = frozenset(
     }
 )
 OPERATIONS_CURRENT_AUTHORITIES = [
-    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
     "docs/99.templates/registry.json",
 ]
 OPERATIONS_SEMANTIC_WITNESSES = [
-    "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+    "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
 ]
 
 

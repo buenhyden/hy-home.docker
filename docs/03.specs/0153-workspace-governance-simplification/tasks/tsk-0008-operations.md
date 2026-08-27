@@ -20,7 +20,7 @@ Converge Stage 05 catalog/domain/subject documents, remove ops- path prefixes an
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 7 Spec lifecycle, Operations membership manifest, approved Migration owner_task 8 rows.
 
 ## Work Log
@@ -67,7 +67,7 @@ Converge Stage 05 catalog/domain/subject documents, remove ops- path prefixes an
 | Shared document-link tests | `python3 -m unittest tests.validation.test_document_links` | NOT A PASS — 28 tests ran; all 15 `DocumentGraphTests`, including the cross-line comment-state regression, passed. Three pre-existing consumer methods still fail on 16 stale deleted-validator mentions, an oversized/nonregular Task 0137 traceability input, and known alignment findings. |
 | Round-6 full repository snapshot | Single `timeout 280s bash scripts/validation/check-repo-contracts.sh` run on the final tree | NOT A PASS — completed with `failures=13`; all Task 8-owned sections passed. The remaining failures and nine script references are inherited or owned by Tasks 9–12. |
 | Exact row inventory | Bounded Migration 0003 source/target scan | PASS — 193 rows, 192 rename targets present, all 192 sources absent, registered deletion absent. |
-| Frozen authority | `sha256sum docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md` | PASS — `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
+| Frozen authority | `sha256sum docs/98.archive/migrations/0003-workspace-governance-simplification.md` | PASS — `271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9`. |
 
 ## Review Evidence
 

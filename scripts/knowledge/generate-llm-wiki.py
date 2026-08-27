@@ -57,7 +57,20 @@ SAFE_SUFFIXES = frozenset({".conf", ".env", ".graphql", ".json", ".md", ".proto"
 # regeneration without it injects 20 clickable retiring-pack links into the
 # index and gate 4's hard clickable_links=0 fails.
 RETIRING_PACK_PREFIX = "docs/90.references/research/0001-agentic-research-pack-refresh/"
-EXCLUDED_PREFIXES = (".git/", "graphify-out/", "node_modules/", "projects/storybook/nextjs/.next/", "projects/storybook/nextjs/node_modules/", "volumes/", RETIRING_PACK_PREFIX)
+ARCHIVE_NONCURRENT_PREFIXES = (
+    "docs/98.archive/changes/",
+    "docs/98.archive/tombstones/",
+)
+EXCLUDED_PREFIXES = (
+    ".git/",
+    "graphify-out/",
+    "node_modules/",
+    "projects/storybook/nextjs/.next/",
+    "projects/storybook/nextjs/node_modules/",
+    "volumes/",
+    RETIRING_PACK_PREFIX,
+    *ARCHIVE_NONCURRENT_PREFIXES,
+)
 EXCLUDED_PARTS = frozenset({".cache", ".next", "coverage", "dist", "node_modules", "vendor"})
 GENERATED_OR_LOCK_FILES = (".min.css", ".min.js", "package-lock.json", "pnpm-lock.yaml", "yarn.lock")
 CATEGORY_ORDER = (

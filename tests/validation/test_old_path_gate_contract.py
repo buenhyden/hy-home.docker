@@ -763,7 +763,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         "docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md",
         "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md",
         "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
-        "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
+        "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md",
         "scripts/validation/check-document-corpus-lifecycle.py",
         "tests/validation/test_document_corpus_lifecycle.py",
         "tests/validation/test_document_taxonomy.py",
@@ -826,7 +826,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         have marked its siblings' literals reviewed.
         """
         rows = contract.read_allowlist(ROOT)
-        ledger = rows["docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"]
+        ledger = rows["docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"]
         self.assertEqual(3, len(ledger))
         self.assertEqual(
             {

@@ -369,8 +369,7 @@ Compose files, and registry references.
 - **Governance data index**: [README.md](./README.md)
 - **Reference data index**: [../README.md](../README.md)
 - **Audit reference index**: [../../audits/ref-0019-readme.md](../../audits/ref-0019-readme.md)
-- **Archived spec provenance**: `docs/98.archive/tombstones/03.specs/spec-0118-audit-implementation-matrix-snapshot.md`
-- **Archived change evidence**: `docs/98.archive/changes/chg-0081-audit-implementation-matrix-snapshot/`
+- [Archive migration lookup](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 
 ## Schema
 

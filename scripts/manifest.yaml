@@ -209,10 +209,10 @@ files:
   kind: library
   authority: docs/99.templates/registry.json
   current_authorities:
-  - docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  - docs/98.archive/migrations/0003-workspace-governance-simplification.md
   - docs/99.templates/registry.json
   semantic_witnesses:
-  - docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  - docs/98.archive/migrations/0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -562,10 +562,10 @@ files:
   kind: validator
   authority: docs/99.templates/registry.json
   current_authorities:
-  - docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  - docs/98.archive/migrations/0003-workspace-governance-simplification.md
   - docs/99.templates/registry.json
   semantic_witnesses:
-  - docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  - docs/98.archive/migrations/0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -639,7 +639,7 @@ files:
   - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/validation/check-task4-migration.py
   kind: validator
-  authority: docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  authority: docs/98.archive/migrations/0003-workspace-governance-simplification.md
   lifecycle: active
   mutation: none
   consumers:

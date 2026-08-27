@@ -20,7 +20,7 @@ Replace overlapping gates with the six public validation suites and remove dupli
 
 - [Specification](../spec.md)
 - [Implementation Plan](../plan.md)
-- [Migration 0003](../../../98.archive/migrations/mig-0003-workspace-governance-simplification.md)
+- [Migration 0003](../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - Task 11 script/test structure, gate routing contracts, approved Migration owner_task 12 rows.
 
 ## Work Log

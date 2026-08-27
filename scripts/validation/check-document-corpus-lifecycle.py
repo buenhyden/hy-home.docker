@@ -60,6 +60,8 @@ if _VALIDATION_DIRECTORY not in sys.path:
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     resolve_git_provenance,
 )
+from scripts.lib.document_governance import archive as archive_authority  # noqa: E402
+from scripts.lib.document_governance import provenance_policy  # noqa: E402
 from scripts.lib.document_governance import metadata_contract  # noqa: E402
 from scripts.lib.document_governance.spec_packages import (  # noqa: E402
     SpecPackageError,
@@ -98,6 +100,7 @@ MODES = (
     "report-full",
     "check-full",
     "check-archive",
+    "check-recovery",
     "check-directory-budget",
     "generate-archive-ledger",
     "check-archive-ledger",
@@ -448,7 +451,7 @@ def _finding(
 
 
 TASK5_MIGRATION_LEDGER = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+    "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 )
 TASK5_LEDGER_ACTION_COUNTS = {
     "archive": 28,
@@ -5804,7 +5807,7 @@ def _spec_package_lifecycle_findings(
     stage03 = root / "docs/03.specs"
     spec_package_authority = (
         root
-        / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+        / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
     )
     if not spec_package_authority.is_file() or not (
         stage03.exists() or stage03.is_symlink()
@@ -5917,6 +5920,7 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
         "report-full": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "check-full": (set(), {"wave", "base_ref", "manifest", "output"}),
         "check-archive": (set(), {"base_ref", "exceptions", "output"}),
+        "check-recovery": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "check-directory-budget": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "generate-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
         "check-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
@@ -5964,8 +5968,27 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     _validate_cli_shape(parser, args)
     try:
-        _ensure_metadata_loaded()
         root = args.root.resolve()
+        if args.mode == "check-recovery":
+            inventory = archive_authority.load_archive(root / "docs/98.archive")
+            decisions = archive_authority.load_task10_preservation_decisions(root)
+            recovery_rows = archive_authority.load_task10_recovery_references(root)
+            recovery_findings = archive_authority.validate_recovery_rows(
+                recovery_rows, root
+            )
+            policy_findings = provenance_policy.validate_repository_provenance(root)
+            for finding in (*recovery_findings, *policy_findings):
+                print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
+            violations = len(recovery_findings) + len(policy_findings)
+            print(
+                "archive recovery: "
+                f"migrations={len(inventory.migrations)} "
+                f"tombstones={len(inventory.tombstones)} "
+                f"decisions={len(decisions)} "
+                f"recovery_rows={len(recovery_rows)} violations={violations}"
+            )
+            return 1 if violations else 0
+        _ensure_metadata_loaded()
         contract_path = _rooted(root, args.contract).resolve()
         profiles_path = _rooted(root, args.profiles).resolve()
         contract = load_migration_contract(contract_path)

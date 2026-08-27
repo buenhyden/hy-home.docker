@@ -29,7 +29,7 @@ class ReferencePackageTests(unittest.TestCase):
         for source in (
             "docs/90.references",
             "docs/99.templates/registry.json",
-            "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+            "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
         ):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)

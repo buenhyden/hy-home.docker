@@ -3,7 +3,7 @@
   "audit_index": "docs/90.references/audits/README.md",
   "canonical_pack": "docs/90.references/audits",
   "overview": "docs/90.references/audits/0026-implementation-overview/README.md",
-  "task_evidence": "docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/task.md",
+  "task_evidence": "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md",
   "required_index_headings": [
     "## Canonical Current Audit",
     "## Dated Historical Snapshots",

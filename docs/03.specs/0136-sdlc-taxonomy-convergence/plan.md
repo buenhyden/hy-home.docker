@@ -130,13 +130,13 @@ source, typed contracts, stage documents, and validators are authoritative.
 | Metadata CLI | scripts/validation/check-document-metadata.py |
 | Lifecycle CLI | scripts/validation/check-document-corpus-lifecycle.py |
 | Link CLI | scripts/validation/check-document-links.py |
-| Operations catalog authority | docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md |
+| Operations catalog authority | docs/98.archive/migrations/0002-operations-catalog-convergence.md |
 | Operations catalog CLI | scripts/validation/check-operations-catalog.py |
 | Operations catalog tests | tests/validation/test_operations_catalog.py |
 | Script inventory | scripts/manifest.yaml |
 | Gate graph | .github/workflow-contract.yml |
 | CI entrypoint | scripts/validation/run-ci-gate.py |
-| Human history | docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md |
+| Human history | docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md |
 
 ### Script Disposition Baseline
 
@@ -431,7 +431,7 @@ git commit -m "governance: establish canonical SDLC document contracts"
 
 **Files:**
 
-- Create: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Create: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md
 - Create: scripts/manifest.yaml
 - Modify: scripts/README.md
 - Create: tests/validation/test_script_manifest.py
@@ -493,7 +493,7 @@ later, undecided, legacy, deprecated, or dormant.
 PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 python3 - <<'PY'
 from pathlib import Path
-text = Path("docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md").read_text()
+text = Path("docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md").read_text()
 for key in ("legacy_path", "stable_path", "artifact_id", "action",
             "replacement", "source_commit", "reason"):
     assert key in text, key
@@ -522,7 +522,7 @@ git commit -m "docs: freeze SDLC and script migration dispositions"
 - Modify: all inbound paths enumerated for these rows in mig-0001
 - Modify: docs/01.requirements/README.md
 - Modify: docs/02.architecture/README.md
-- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Modify: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md
 
 **Interfaces:**
 
@@ -1373,7 +1373,7 @@ git commit -m "docs: normalize four-digit identities and incident routing"
 
 **Files:**
 
-- Create: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Create: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Create: `scripts/lib/document_governance/operations_catalog.py`
 - Create: `scripts/validation/check-operations-catalog.py`
 - Create: `tests/validation/test_operations_catalog.py`
@@ -1532,7 +1532,7 @@ approved manifest.
 - [ ] **Step 6: Independent review and commit**
 
 ~~~bash
-git add docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md \
+git add docs/98.archive/migrations/0002-operations-catalog-convergence.md \
   docs/99.templates/support docs/00.agent-governance/policies/stage-authoring-matrix.md \
   scripts/lib/document_governance/operations_catalog.py \
   scripts/validation/check-operations-catalog.py scripts/manifest.yaml \
@@ -1551,7 +1551,7 @@ git commit -m "docs: register operations catalog migration"
 - Modify: `docs/05.operations/README.md`
 - Modify: every active path consumer and generator owner selected by the
   approved `mig-0002` structural map
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 - Modify: path-aware tests that consume current Operations paths
 
@@ -1641,7 +1641,7 @@ git commit -m "docs: move operations domains under catalog"
 - Modify/move/delete only approved records below
   `docs/05.operations/catalog/{00-workspace,01-gateway,02-auth,03-security}/`
 - Modify: active consumers named by those manifest records
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 
 **Interfaces:**
@@ -1702,7 +1702,7 @@ git commit -m "docs: converge operations catalog domains 00 through 03"
 - Modify/move/delete only approved records below
   `docs/05.operations/catalog/{04-data,05-messaging,06-observability}/`
 - Modify: active consumers named by those manifest records
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 
 **Interfaces:**
@@ -1769,7 +1769,7 @@ git commit -m "docs: converge operations catalog domains 04 through 06"
 - Modify/move/delete only approved records below
   `docs/05.operations/catalog/{07-workflow,08-ai,09-tooling}/`
 - Modify: active consumers named by those manifest records
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 
 **Interfaces:**
@@ -1834,7 +1834,7 @@ git commit -m "docs: converge operations catalog domains 07 through 09"
 - Modify/move/delete only approved records below
   `docs/05.operations/catalog/{10-communication,11-laboratory,12-infra-net}/`
 - Modify: active consumers named by those manifest records
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 
 **Interfaces:**
@@ -1906,7 +1906,7 @@ git commit -m "docs: converge operations catalog domains 10 through 12"
 - Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
 - Modify: `docs/99.templates/support/template-selection.md`
 - Modify: Stage 00 Operations function and authoring contracts
-- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Modify: `tests/validation/test_operations_catalog.py`
 - Modify: `tests/validation/test_document_metadata.py`
 
@@ -2168,8 +2168,8 @@ git commit -m "ci: align local and remote document governance gates"
 - Modify: scripts/README.md
 - Modify: .github/INDEX.md and CODEOWNERS when paths changed
 - Regenerate: every output registered in scripts/manifest.yaml
-- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
-- Modify: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+- Modify: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md
+- Modify: docs/98.archive/migrations/0002-operations-catalog-convergence.md
 - Modify: tests that assert old canonical paths
 
 **Interfaces:**
@@ -2225,8 +2225,8 @@ git commit -m "docs: repair navigation memory and generated evidence"
 
 - Modify: docs/99.templates/support/document-corpus-migration-contract.yaml
 - Modify: docs/99.templates/support/corpus-migration-contract.md
-- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
-- Modify: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+- Modify: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md
+- Modify: docs/98.archive/migrations/0002-operations-catalog-convergence.md
 - Modify: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
 - Modify: docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md
 - Modify: docs/00.agent-governance/providers/registry.yaml only if the

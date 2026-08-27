@@ -7694,10 +7694,10 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
         ) + "\n> Rules:\n"
         with directory:
             init_git(root)
-            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(
-                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             write_doc(legacy, metadata_values, body)
@@ -7775,7 +7775,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
                 ROOT
-                / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             write_doc(legacy, metadata_values, POLICY_TARGET_BODY)
@@ -7810,10 +7810,10 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
         )
         with directory:
             init_git(root)
-            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
-                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             commit_all(root, "migration without registered source")
@@ -7846,10 +7846,10 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
         }
         with directory:
             init_git(root)
-            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
-                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             write_doc(source, metadata_values, POLICY_TARGET_BODY + "\n> Rules:\n")
@@ -7871,10 +7871,10 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
         readme_relative = "docs/05.operations/catalog/00-workspace/README.md"
         with directory:
             init_git(root)
-            migration = root / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
-                ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
             source = root / source_relative
@@ -8962,7 +8962,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
                 "tombstone",
                 "spec-0136",
             ),
-            "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md": (
+            "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md": (
                 "migration",
                 "mig-0001",
             ),

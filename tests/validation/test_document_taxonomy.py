@@ -14,7 +14,7 @@ from scripts.lib.document_governance.taxonomy import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 
 # These surfaces preserve migration provenance or time-bounded evidence; they do
 # not publish active document-routing contracts. Active Stage 00, Stage 01–03,

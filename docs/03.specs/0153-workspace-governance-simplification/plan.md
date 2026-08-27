@@ -131,7 +131,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 | Approved behavior | `docs/03.specs/0153-workspace-governance-simplification/spec.md` |
 | Program sequence | `docs/03.specs/0153-workspace-governance-simplification/plan.md` |
 | Cross-stage decision | `docs/02.architecture/decisions/0029-workspace-governance-authority.md`, later prefixless |
-| Migration ledger | `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`, later prefixless |
+| Migration ledger | `docs/98.archive/migrations/0003-workspace-governance-simplification.md`, later prefixless |
 | Document registry | `docs/99.templates/registry.json` |
 | Registry schemas | `docs/99.templates/contracts/frontmatter.schema.json`, `document-profile.schema.json` |
 | Registry loader | `scripts/lib/document_governance/registry.py` |
@@ -194,7 +194,7 @@ a blocking concurrent-change signal, not permission to update expected counts.
 **Files:**
 
 - Create: `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
-- Create: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Create: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - Create: `docs/03.specs/0153-workspace-governance-simplification/task.md`
 - Create: `tests/validation/test_workspace_governance_migration.py`
 - Modify: `docs/03.specs/0153-workspace-governance-simplification/spec.md`
@@ -216,7 +216,7 @@ from pathlib import Path
 import unittest
 
 ADR = Path("docs/02.architecture/decisions/0029-workspace-governance-authority.md")
-MIGRATION = Path("docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md")
+MIGRATION = Path("docs/98.archive/migrations/0003-workspace-governance-simplification.md")
 
 class WorkspaceGovernanceMigrationTests(unittest.TestCase):
     def test_governance_migration_control_plane_exists(self) -> None:
@@ -361,7 +361,7 @@ Only after that command passes may the control plane be staged:
 
 ```bash
 git add docs/02.architecture/decisions/0029-workspace-governance-authority.md \
-  docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md \
+  docs/98.archive/migrations/0003-workspace-governance-simplification.md \
   docs/03.specs/0153-workspace-governance-simplification \
   tests/validation/test_workspace_governance_migration.py
 git commit -m "docs: register workspace governance migration"
@@ -580,7 +580,7 @@ git commit -m "refactor(docs): establish stage 99 registry authority"
 - Modify: moved `spec.md` and `plan.md`
 - Delete after evidence migration: moved legacy `task.md`
 - Modify: `docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - Modify: all active consumers returned by `rg -l 'SPEC-0153-workspace-governance-simplification|SPEC-0153|plan-0153' docs scripts tests .github .agents .claude .codex AGENTS.md CLAUDE.md`
 - Test: `tests/validation/test_document_registry.py`
 - Test: `tests/validation/test_document_metadata.py`
@@ -727,7 +727,7 @@ git commit -m "docs(spec): activate canonical governance package"
 - Modify: every additional active Gemini/Antigravity consumer returned by the
   Task 4 exact scan and registered in Migration `mig-0003`
 - Modify: generated projections under `.agents/`, `.claude/`, and `.codex/`
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 The Migration rows are the exact move/delete selection. No recursive source
 root is acted on until its tracked members equal the registered row set.
@@ -847,7 +847,7 @@ git commit -m "refactor(governance): converge claude and codex authority"
 - Modify: `tests/validation/test_four_digit_document_identity.py`
 - Modify: every Migration-declared active consumer of the 25 source paths and
   their PRD/SRS/IFR/internal IDs
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 **Interfaces:**
 
@@ -944,7 +944,7 @@ git commit -m "refactor(requirements): unify requirement packages"
 - Modify: `scripts/lib/document_governance/metadata_validator.py`
 - Modify: `scripts/lib/document_governance/taxonomy.py`
 - Modify: all Migration-declared active AD/ADR path and ID consumers
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 **Interfaces:**
 
@@ -1032,7 +1032,7 @@ git commit -m "refactor(architecture): use prefixless document paths"
 - Modify: `scripts/validation/check-document-corpus-lifecycle.py`
 - Modify: `tests/validation/test_document_corpus_lifecycle.py`
 - Modify: every Migration-declared active Stage 03/04 consumer
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 **Interfaces:**
 
@@ -1127,7 +1127,7 @@ git commit -m "refactor(specs): unify specification execution lifecycle"
 - Modify: `tests/validation/test_operations_catalog.py`
 - Modify: `tests/validation/test_operations_taxonomy.py`
 - Modify: every Migration-declared active Operations path consumer
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 **Interfaces:**
 
@@ -1232,7 +1232,7 @@ git commit -m "refactor(operations): normalize catalog subjects"
 - Modify: `tests/validation/test_llm_wiki_retiring_pack_exclusion.py`
 - Modify: `scripts/lib/document_governance/metadata_validator.py`
 - Modify: every Migration-declared active Stage 90 consumer
-- Modify: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
 **Interfaces:**
 
@@ -1312,11 +1312,11 @@ git commit -m "refactor(references): simplify evidence packages"
 **Files:**
 
 - Modify: `docs/98.archive/README.md`
-- Move: `docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md` to
+- Move: `docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md` to
   `docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md`
-- Move: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Move: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
   to `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
-- Move: `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- Move: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
   to `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - Replace: the 146 tracked `docs/98.archive/changes/` packets with exact minimal
   Migration or Tombstone rows selected by the preservation audit
@@ -1894,7 +1894,7 @@ history rewrite. Reverts are logical-commit scoped or exact Git-object restores.
 
 - `docs/03.specs/0153-workspace-governance-simplification/spec.md`
 - `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
-- `docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md`
+- `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/rules/documentation-protocol.md`
 - `docs/00.agent-governance/rules/stage-authoring-matrix.md`

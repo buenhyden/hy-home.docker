@@ -22,6 +22,7 @@ from unittest import mock
 import yaml
 
 from scripts.lib.document_governance.spec_packages import load_spec_packages
+from scripts.lib.document_governance import archive as archive_authority
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -32,7 +33,7 @@ PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contract.md"
 ARCHIVE_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/archive-retention-contract.md"
-TASK7_LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+TASK7_LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 TARGET_WAVE = "target-surface-convergence"
 TARGET_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
 SUCCESSOR_MANIFEST = (
@@ -431,24 +432,30 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         self.assertEqual([], failures)
 
     def test_every_tombstone_has_exact_git_provenance(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        failures: list[str] = []
-        for target in sorted((ROOT / "docs/98.archive/tombstones").glob("**/*.md")):
-            relative = target.relative_to(ROOT)
-            record = metadata._record_from_text(
-                relative,
-                target.read_text(encoding="utf-8"),
-                profiles=profiles,
-            )
-            for key in ("archived_commit", "archived_blob"):
-                if key not in record.metadata:
-                    failures.append(f"{relative}:{key}-missing")
-            failures.extend(
-                f"{relative}:{finding.code}"
-                for finding in lifecycle.validate_archive_provenance(ROOT, record)
-            )
-        self.assertEqual(38, len(list((ROOT / "docs/98.archive/tombstones").glob("**/*.md"))))
-        self.assertEqual([], failures)
+        inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
+        rows = tuple(item.recovery for item in inventory.tombstones)
+        self.assertEqual(38, len(rows))
+        self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
+        self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
+
+    def test_check_recovery_mode_uses_minimal_archive_authority(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "scripts/validation/check-document-corpus-lifecycle.py",
+                "--mode",
+                "check-recovery",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("migrations=3", result.stdout)
+        self.assertIn("tombstones=38", result.stdout)
+        self.assertIn("decisions=184", result.stdout)
+        self.assertIn("recovery_rows=272 violations=0", result.stdout)
 
     def test_current_links_resolve_without_active_archive_consumers(self) -> None:
         result = subprocess.run(

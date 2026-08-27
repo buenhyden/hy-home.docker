@@ -69,7 +69,7 @@ _EXPECTED_PROFILES = {
     ),
 }
 _MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md"
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 )
 _SINGULAR_TASK_FINALS = {
     "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md": (
