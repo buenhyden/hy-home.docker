@@ -16,7 +16,7 @@ updated: 2026-08-11
 This ledger records actual implementation, verification, commit, disposition,
 review, and closure evidence for Spec 135. The implementation design and
 expected commands remain in the
-[Plan](plan.md).
+[Plan](../plan.md).
 
 Evidence in this ledger is bounded and value-free. It must not contain secret
 values, credentials, tokens, auth files, shell history, raw workflow logs,
@@ -24,8 +24,8 @@ unbounded command output, or inferred remote failure causes.
 
 ## Inputs
 
-- [Spec 135](spec.md)
-- [Implementation Plan](plan.md)
+- [Spec 135](../spec.md)
+- [Implementation Plan](../plan.md)
 - Feature base
   `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Spec 133 comparison commit
@@ -797,11 +797,12 @@ have no unresolved Critical or Important findings.
   34 non-ledger changed Markdown files, the exact Task ledger via stdin, and
   `git diff --check`. Canonical summary regeneration was byte-stable at
   SHA-256 `3d8434429ce0f52370d70c8b72ab2829e4742a1240a5f103adab52958f9ab20e`.
-- The Plan-stated `scripts/governance/validate-cross-links.sh` path does not
-  exist in this checkout and returned 127. It remains unverified rather than
-  being reported as pass; the tracked
-  `scripts/validation/check-doc-traceability.sh` independently passed 46
-  catalog pairs with zero failures. The Plan was not changed.
+> Historical evidence (not current authority; source: Git history):
+> - The Plan-stated `scripts/governance/validate-cross-links.sh` path does not
+>   exist in this checkout and returned 127. It remains unverified rather than
+>   being reported as pass; the tracked
+>   `scripts/validation/check-doc-traceability.sh` independently passed 46
+>   catalog pairs with zero failures. The Plan was not changed.
 - The final scope contains 44 expected files: six under `docs`, one under
   `examples`, 29 under `infra`, three under `scripts`, one under `secrets`,
   and four under `tests`. The approved-scope comparison found zero unexpected
@@ -2823,15 +2824,15 @@ historical evidence and grant no authority.
 
 ## Related Documents
 
-- [Spec 135](spec.md)
-- [Implementation Plan](plan.md)
+- [Spec 135](../spec.md)
+- [Implementation Plan](../plan.md)
 - [Spec 133](../../0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../../0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
-- [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
-- [README profile contract](../../../99.templates/support/readme-profile-contract.md)
-- [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../../../99.templates/registry.json)
+- [README profile contract](../../../99.templates/README.md)
+- [Archive and retention contract](../../../99.templates/README.md)
 - [Existing target-surface manifest](../../../90.references/data/0069-target-surface-convergence/data.yaml)
 - [Controlled Agent pre-commit wrapper](../../../../scripts/validation/run-agent-precommit-all-files.sh)
 

@@ -743,8 +743,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/data/README.md
-  target_path: docs/90.references/data/README.md
+- source_path: docs/90.references/data/governance/README.md
+  target_path: docs/90.references/data/governance/README.md
   artifact_id: null
   artifact_type: readme
   status_before: active
@@ -760,18 +760,18 @@ entries:
   preservation_class: null
   evidence:
     commands:
-    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/README.md
-    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/README.md
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/governance/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/governance/README.md
     sources:
     - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
     - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
-    - docs/90.references/data/README.md
+    - docs/90.references/data/governance/README.md
     repository_paths:
     - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
     - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
-    - docs/90.references/data/README.md
+    - docs/90.references/data/governance/README.md
     consumer_scan:
-    - git grep -lz --fixed-strings -- docs/90.references/data/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/90.references/data/README.md'
+    - git grep -lz --fixed-strings -- docs/90.references/data/governance/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/90.references/data/governance/README.md'
     - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
     rollback:
     - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae

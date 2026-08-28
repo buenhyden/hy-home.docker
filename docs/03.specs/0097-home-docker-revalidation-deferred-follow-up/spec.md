@@ -35,12 +35,12 @@ This specification revalidates the 2026-05-25 `hy-home.docker` workspace audit r
 
 - **Config Contract**: `.env.example`, `.env`, secret registries, Compose files, and validation scripts are evidence sources only; this follow-up must not edit runtime config or value-bearing files.
 - **Data / Interface Contract**: No service API, data schema, Docker network, Docker volume, port, or deployment interface changes are allowed.
-- **Governance Contract**: Revalidation evidence must live in canonical Stage 03/04 artifacts and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`; Graphify is advisory when health is advisory.
+- **Governance Contract**: Revalidation evidence belongs in the owning co-located Task; Graphify remains advisory when health is advisory.
 
 ## Core Design
 
 - **Component Boundary**: Create a dedicated spec, execution plan, and execution task for revalidation/deferred tracking; apply low-risk runbook clarification when reviewer evidence shows a local release-gate mismatch.
-- **Key Dependencies**: `AGENTS.md`, `docs/00.agent-governance/rules/*`, stage templates, prior 2026-05-25 audit artifacts, repo validation scripts, and Graphify health output.
+- **Key Dependencies**: `AGENTS.md`, Stage 00 policies, current stage templates, prior 2026-05-25 audit evidence, repository validation scripts, and Graphify health output.
 - **Tech Stack**: Markdown, Bash validators, metadata-only shell comparisons, optional Storybook Node 24 coverage command if QA evidence is touched.
 
 ## Data Modeling & Storage Strategy
@@ -87,7 +87,7 @@ Not applicable. This follow-up does not expose or change an external API.
 ## Memory & Context Strategy (If Applicable)
 
 - Use the workspace-audit revalidation memory pattern for no-touch and evidence-driven closure.
-- Record final progress in `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
+- Record final progress and verification in the owning co-located Task.
 - Do not create a new durable memory note unless a reusable out-of-scope issue is found beyond the existing deferred register.
 
 ## Guardrails (If Applicable)
@@ -127,7 +127,7 @@ git status --short --branch
 git diff --check HEAD
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-quickwin-baseline.sh
 bash scripts/hardening/check-all-hardening.sh
@@ -152,7 +152,7 @@ bash scripts/knowledge/report-graphify-health.sh
 - **Baseline Plan**: 2026-05-25 home docker workspace audit improvement plan
 - **Baseline Task**: 2026-05-25 home docker workspace audit improvement task
 - **Release Runbook**: [release-management.md](../../05.operations/catalog/00-workspace/0009-release-management/runbook.md)
-- **Governance Memory Progress**: [progress.md](../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
+- **Completion Evidence Policy**: [Task checklists](../../00.agent-governance/policies/task-checklists.md)
 - **Graphify Report**: [GRAPH_REPORT.md](../../../graphify-out/GRAPH_REPORT.md)
 
 ## Boundaries and Inputs

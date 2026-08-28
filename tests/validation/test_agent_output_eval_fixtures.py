@@ -65,7 +65,31 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         contract.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(CATALOG, catalog)
         shutil.copy2(CONTRACT, contract)
+        contexts = {path for fixture in load_eval_module().FIXTURES.values() for path in fixture.required_context}
+        for path in contexts:
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / path, target)
         return directory, root
+
+    def test_required_context_is_real_bounded_and_nonempty(self) -> None:
+        evaluator = load_eval_module()
+        for mutation in ("missing", "empty", "oversized", "symlink"):
+            with self.subTest(mutation=mutation):
+                holder, root = self.catalog_fixture()
+                with holder, contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as output:
+                    target = root / evaluator.FIXTURES["AOE-DOC-001"].required_context[0]
+                    if mutation == "missing":
+                        target.unlink()
+                    elif mutation == "empty":
+                        target.write_text("", encoding="utf-8")
+                    elif mutation == "oversized":
+                        target.write_bytes(b"x" * (4 * 1024 * 1024 + 1))
+                    else:
+                        target.unlink()
+                        target.symlink_to(CATALOG)
+                    self.assertEqual(1, evaluator.check_fixtures(root))
+                    self.assertIn("AOE-CONTEXT-UNAVAILABLE", output.getvalue())
 
     def test_fixture_catalog_has_exact_ten_ids_and_calibration(self) -> None:
         evaluator = load_eval_module()
@@ -231,7 +255,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "### AOE-DOC-001: Provider Surface Parity",
             ),
             "moved-context": lambda text: text.replace(
-                "`docs/99.templates/templates/common/reference.template.md`, ", ""
+                "`docs/99.templates/templates/references/research.template.md`, ", ""
             ),
             "calibration": lambda text: text.replace(
                 "`CAL-AOE-DOC-001`; pass threshold `0.50`",
@@ -279,9 +303,10 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 holder, root = self.catalog_fixture()
                 with holder:
                     path = root / CATALOG.relative_to(ROOT)
-                    path.write_text(
-                        mutate(path.read_text(encoding="utf-8")), encoding="utf-8"
-                    )
+                    original = path.read_text(encoding="utf-8")
+                    mutated = mutate(original)
+                    self.assertNotEqual(original, mutated, label)
+                    path.write_text(mutated, encoding="utf-8")
                     self.assertEqual(1, evaluator.check_fixtures(root))
 
     def test_catalog_thresholds_are_bound_to_typed_contract(self) -> None:

@@ -14,6 +14,8 @@ import unittest
 import yaml
 
 from scripts.lib.document_governance.frontmatter import read_frontmatter_values
+from scripts.lib.document_governance.archive import APPROVED_MIGRATION_COMMIT, _migration_document
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
 from scripts.lib.document_governance.links import parse_local_markdown_links
 
 
@@ -62,7 +64,7 @@ EXPECTED_CONSUMER_POLICY = {
         "graphify-out/",
         "docs/90.references/research/",
         "docs/90.references/audits/",
-        "docs/90.references/data/0082-llm-wiki-index/",
+        "docs/90.references/llm-wiki/",
         "docs/90.references/data/knowledge/",
         "docs/90.references/data/security/",
         "docs/90.references/data/governance/document-corpus-lifecycle/",
@@ -263,7 +265,7 @@ def _inactive_consumer(
         (
             "docs/90.references/research/",
             "docs/90.references/audits/",
-            "docs/90.references/data/0082-llm-wiki-index/",
+            "docs/90.references/llm-wiki/",
             "docs/90.references/data/knowledge/",
             "docs/90.references/data/security/",
             "docs/90.references/data/governance/document-corpus-lifecycle/",
@@ -427,7 +429,28 @@ def _validate_final_compaction(compacted: dict[str, object]) -> None:
 class WorkspaceGovernanceMigrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.ledger = _load_ledger()
+        cls.current_migration = _migration_document(ROOT)
+        # Native compact validation proves today's mapping. Frozen selection
+        # assertions retain their original Git evidence, never synthesized fields.
+        cls.ledger = (_load_ledger() if cls.current_migration["schema_version"] == 2
+                      else _load_ledger_text(HistoricalDocument(
+                          ROOT, APPROVED_MIGRATION_COMMIT,
+                          MIGRATION.relative_to(ROOT).as_posix(),
+                      ).read_text()))
+        cls.documents = {}
+        for name in ("README.md", "spec.md", "plan.md", *(f"tasks/{name}" for name in EXPECTED_TASK_FILES)):
+            path = CANONICAL_PACKAGE / name
+            if path.is_file():
+                cls.documents[name] = path
+                continue
+            rows = [row for row in cls.current_migration["rows"]
+                    if row["source_path"] == path.relative_to(ROOT).as_posix()
+                    and row["action"] == "delete"]
+            if cls.current_migration["schema_version"] != 3 or len(rows) != 1:
+                raise AssertionError(f"missing current or typed retired package member: {name}")
+            document = HistoricalDocument(ROOT, rows[0]["recovery_commit"], rows[0]["source_path"])
+            document.read_bytes()
+            cls.documents[name] = document
         commit = cls.ledger.get("baseline_commit")
         if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
             raise AssertionError("baseline_commit must be a full Git object ID")
@@ -450,21 +473,21 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
 
     def test_spec_0153_uses_canonical_package(self) -> None:
         self.assertFalse(LEGACY_PACKAGE.exists())
-        self.assertTrue(CANONICAL_PACKAGE.joinpath("README.md").is_file())
-        self.assertTrue(CANONICAL_PACKAGE.joinpath("spec.md").is_file())
-        self.assertTrue(CANONICAL_PACKAGE.joinpath("plan.md").is_file())
+        for name in ("README.md", "spec.md", "plan.md"):
+            self.assertTrue(self.documents[name].read_text())
         self.assertFalse(CANONICAL_PACKAGE.joinpath("task.md").exists())
+        if CANONICAL_PACKAGE.is_dir():
+            task_names = tuple(path.name for path in sorted(CANONICAL_PACKAGE.joinpath("tasks").glob("tsk-*.md")))
+        else:
+            prefix = (CANONICAL_PACKAGE / "tasks").relative_to(ROOT).as_posix() + "/"
+            task_names = tuple(sorted(row["source_path"].removeprefix(prefix) for row in self.current_migration["rows"] if row["action"] == "delete" and row["source_path"].startswith(prefix)))
         self.assertEqual(
             EXPECTED_TASK_FILES,
-            tuple(
-                path.name
-                for path in sorted(CANONICAL_PACKAGE.joinpath("tasks").glob("tsk-*.md"))
-            ),
+            task_names,
         )
 
     def test_spec_0153_supersedes_spec_0136_reciprocally(self) -> None:
-        self.assertTrue(CANONICAL_PACKAGE.joinpath("spec.md").is_file())
-        current = read_frontmatter_values(CANONICAL_PACKAGE / "spec.md")
+        current = read_frontmatter_values(self.documents["spec.md"])
         predecessor = read_frontmatter_values(
             ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
         )
@@ -474,14 +497,11 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
         self.assertEqual("SPEC-0153", predecessor["superseded_by"])
 
     def test_spec_0153_task_evidence_is_complete_and_nonprospective(self) -> None:
-        tasks = CANONICAL_PACKAGE / "tasks"
-        self.assertTrue(tasks.joinpath("tsk-0001-control-plane.md").is_file())
-        self.assertTrue(tasks.joinpath("tsk-0002-stage99.md").is_file())
-        control_plane = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+        control_plane = self.documents["tasks/tsk-0001-control-plane.md"].read_text(
             encoding="utf-8"
         )
-        stage99 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
-        bootstrap = tasks.joinpath("tsk-0003-bootstrap.md").read_text(
+        stage99 = self.documents["tasks/tsk-0002-stage99.md"].read_text(encoding="utf-8")
+        bootstrap = self.documents["tasks/tsk-0003-bootstrap.md"].read_text(
             encoding="utf-8"
         )
         self.assertIn(EXPECTED_SELECTION_SHA256, control_plane)
@@ -515,22 +535,17 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
             ),
             0,
         )
-        self.assertEqual(
-            (),
-            _markdown_table_data_rows(
-                _level_two_section(bootstrap, "Commit Ledger")
-            ),
-        )
+        self.assertTrue(_markdown_table_data_rows(_level_two_section(bootstrap, "Commit Ledger")))
 
         for index, filename in enumerate(EXPECTED_TASK_FILES, start=1):
-            values = read_frontmatter_values(tasks / filename)
+            values = read_frontmatter_values(self.documents[f"tasks/{filename}"])
             self.assertEqual("task", values["profile_id"])
             self.assertEqual(f"task-0153-{index:04d}", values["artifact_id"])
             self.assertEqual(["SPEC-0153", "plan-0153"], values["parent_ids"])
-            if index <= 3:
+            if index <= 12:
                 self.assertEqual("completed", values["status"])
             else:
-                self.assertEqual("draft", values["status"])
+                self.assertIn(values["status"], {"active", "completed"})
 
     def test_spec_0153_completed_task_evidence_partitions_source_blob(self) -> None:
         source_bytes = _run_git("cat-file", "blob", BOOTSTRAP_EVIDENCE_BLOB)
@@ -539,11 +554,10 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
             hashlib.sha256(source_bytes).hexdigest(),
         )
         source = source_bytes.decode("utf-8")
-        tasks = CANONICAL_PACKAGE / "tasks"
-        task1 = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+        task1 = self.documents["tasks/tsk-0001-control-plane.md"].read_text(
             encoding="utf-8"
         )
-        task2 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
+        task2 = self.documents["tasks/tsk-0002-stage99.md"].read_text(encoding="utf-8")
 
         source_work_rows = _markdown_table_data_rows(
             _level_two_section(source, "Work Log")
@@ -601,11 +615,10 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
         source = _run_git("cat-file", "blob", BOOTSTRAP_EVIDENCE_BLOB).decode(
             "utf-8"
         )
-        tasks = CANONICAL_PACKAGE / "tasks"
-        task1 = tasks.joinpath("tsk-0001-control-plane.md").read_text(
+        task1 = self.documents["tasks/tsk-0001-control-plane.md"].read_text(
             encoding="utf-8"
         )
-        task2 = tasks.joinpath("tsk-0002-stage99.md").read_text(encoding="utf-8")
+        task2 = self.documents["tasks/tsk-0002-stage99.md"].read_text(encoding="utf-8")
         source_sections = _level_three_sections(
             _level_two_section(source, "Verification Evidence")
         )
@@ -635,23 +648,24 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
             task2_sections["Task 2 Registry RED and GREEN"],
         )
 
-    def test_spec_0153_draft_tasks_have_no_evidence_rows(self) -> None:
-        tasks = CANONICAL_PACKAGE / "tasks"
-        evidence_sections = (
-            "Work Log",
-            "Verification Evidence",
-            "Review Evidence",
-            "Commit Ledger",
-        )
+    def test_spec_0153_execution_evidence_matches_actual_task_state(self) -> None:
+        for filename in EXPECTED_TASK_FILES:
+            path = self.documents[f"tasks/{filename}"]
+            text = path.read_text(encoding="utf-8")
+            values = read_frontmatter_values(path)
+            with self.subTest(task=filename):
+                for heading in ("Work Log", "Verification Evidence", "Review Evidence"):
+                    self.assertTrue(_level_two_section(text, heading).strip(), heading)
+                ledger = _level_two_section(text, "Commit Ledger")
+                if values["status"] == "completed":
+                    commits = re.findall(r"`([0-9a-f]{7,40})`", ledger)
+                    self.assertTrue(commits)
+                    for commit in commits:
+                        self.assertEqual(b"commit", _run_git("cat-file", "-t", commit).strip())
+                else:
+                    self.assertEqual("active", values["status"])
+                    self.assertIn("Pending", ledger)
 
-        for filename in EXPECTED_TASK_FILES[3:]:
-            text = tasks.joinpath(filename).read_text(encoding="utf-8")
-            for heading in evidence_sections:
-                with self.subTest(task=filename, section=heading):
-                    self.assertEqual(
-                        (),
-                        _markdown_table_data_rows(_level_two_section(text, heading)),
-                    )
 
     def test_approved_selection_is_exact_and_reviewable(self) -> None:
         _validate_execution_ledger_state(self.ledger)
@@ -815,6 +829,38 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
         execution_schema = {**compacted, "schema_version": 2}
         with self.assertRaisesRegex(AssertionError, "schema"):
             _validate_final_compaction(execution_schema)
+
+        for field in set(self.ledger) - set(compacted):
+            with self.subTest(top_level_field=field):
+                with self.assertRaisesRegex(AssertionError, "top-level"):
+                    _validate_final_compaction({**compacted, field: self.ledger[field]})
+        for field in REQUIRED_ROW_KEYS - set(compacted["rows"][0]):
+            with self.subTest(row_field=field):
+                candidate = {
+                    **compacted,
+                    "rows": [{**compacted["rows"][0], field: self.rows[0][field]}],
+                }
+                with self.assertRaisesRegex(AssertionError, "row fields"):
+                    _validate_final_compaction(candidate)
+
+        from scripts.lib.document_governance import archive
+
+        archive.validate_compacted_migration(compacted)
+        with self.assertRaisesRegex(ValueError, "schema"):
+            archive.validate_compacted_migration(execution_schema)
+        with self.assertRaisesRegex(ValueError, "recovery"):
+            archive.validate_compacted_migration(null_recovery)
+        for field in set(self.ledger) - set(compacted):
+            with self.subTest(production_top_level=field):
+                with self.assertRaisesRegex(ValueError, "fields"):
+                    archive.validate_compacted_migration({**compacted, field: self.ledger[field]})
+        for field in REQUIRED_ROW_KEYS - set(compacted["rows"][0]):
+            with self.subTest(production_row_field=field):
+                with self.assertRaisesRegex(ValueError, "fields"):
+                    archive.validate_compacted_migration({
+                        **compacted,
+                        "rows": [{**compacted["rows"][0], field: self.rows[0][field]}],
+                    })
 
     def test_namespace_mutations_fail_closed(self) -> None:
         colliding_creation = [dict(item) for item in self.creations]

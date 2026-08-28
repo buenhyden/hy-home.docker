@@ -34,13 +34,17 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Draft/WIP PRs are allowed for collaboration, but they must not be treated as merge-ready and must list remaining work in the PR template.
 - Agents must not self-approve or bypass required reviewers.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
-- Merge method discipline: prefer squash or rebase to keep `main` history linear unless the project explicitly allows merge commits.
+- When Migration or recovery evidence references Git commit IDs, preserve those
+  exact objects in delivered history using a merge commit or fast-forward.
+  Squash or rebase must not discard or rewrite referenced recovery commits.
 
 ## 3. Merge and Branch Discipline
 
-- Feature branches must be deleted after merge.
+- Delete a feature branch only after referenced recovery commits are reachable
+  from the delivered protected branch; verify recovery blobs after integration.
 - Long-lived branches other than `main` require explicit user authorization.
-- Rebase onto `main` before requesting merge if the branch diverges by more than a trivial number of commits.
+- Integrate a diverged branch without rewriting referenced recovery commits.
+  Any unreferenced-history cleanup still requires explicit authorization.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
 ## 4. GitHub Actions Security Contract

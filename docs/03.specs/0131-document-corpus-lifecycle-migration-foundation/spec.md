@@ -78,7 +78,7 @@ counts.
 - Secret, credential, token, key, shell-history, or raw-log capture.
 - Remote GitHub ruleset, branch-protection, environment, check, release, or
   deployment mutation.
-- User-global Claude, Codex, Gemini, MCP, or provider configuration changes.
+- User-global provider or MCP configuration changes.
 - Creating Incident, Postmortem, or Release records without a qualifying event.
 - Rewriting historical commands, dates, counts, decisions, verdicts, hashes,
   approvals, or execution results for style or present-day consistency.
@@ -102,10 +102,10 @@ change, not directory-name symmetry.
 - [Agent Governance Architecture Description](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [Stage 00 adapter ADR](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
-- [Stage 99 metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
+- [Stage 99 metadata registry](../../99.templates/registry.json)
+- [SDLC document contract](../../99.templates/README.md)
+- [Common document contract](../../99.templates/README.md)
+- [Template governance](../../99.templates/README.md)
 - [`_workspace` contract](../../../_workspace/README.md)
 
 ### External Source Basis
@@ -508,10 +508,10 @@ until the branch is explicitly finished and the user authorizes local merge.
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [Spec template](../../99.templates/templates/sdlc/spec.template.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Lifecycle status contract](../../99.templates/README.md)
+- [Template governance](../../99.templates/README.md)
+- [Spec template](../../99.templates/templates/specs/spec.template.md)
 
 ## Behavior Contract
 

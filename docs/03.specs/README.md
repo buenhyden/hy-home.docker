@@ -117,10 +117,10 @@ Plan과 Task의 상태가 완료되면 먼저 구현된 동작을 Spec과 필요
 ## How to Work in This Area
 
 1. 관련 Requirement, Architecture Description, ADR을 확인합니다.
-2. [Spec template](../99.templates/templates/sdlc/spec.template.md)으로
+2. [Spec template](../99.templates/templates/specs/spec.template.md)으로
    `spec.md`를 작성하고 stable artifact ID를 사용합니다.
-3. 승인된 변경에만 [Plan template](../99.templates/templates/sdlc/plan.template.md)과
-   [Task template](../99.templates/templates/sdlc/task.template.md)을 사용해
+3. 승인된 변경에만 [Plan template](../99.templates/templates/specs/plan.template.md)과
+   [Task template](../99.templates/templates/specs/task.template.md)을 사용해
    `plan.md`와 numbered Task records를 co-locate합니다.
 4. Plan은 package당 하나로 제한하고 Task number와 artifact identity를
    package owner에 맞춥니다.
@@ -138,5 +138,5 @@ Plan과 Task의 상태가 완료되면 먼저 구현된 동작을 Spec과 필요
 - [Operations](../05.operations/README.md)
 - [Archive](../98.archive/README.md)
 - [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
-- [Document metadata profiles](../99.templates/support/document-metadata-profiles.yaml)
-- [Archive retention contract](../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../99.templates/registry.json)
+- [Archive retention contract](../99.templates/README.md)

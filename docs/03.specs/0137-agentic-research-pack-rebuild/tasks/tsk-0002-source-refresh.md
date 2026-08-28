@@ -432,7 +432,7 @@ Task 10b, Task 11, and Task 12 ownership.
 - [Execution task index](../../README.md)
 - [Canonical research pack](../../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Research category router](../../../90.references/research/README.md)
-- [Canonical Task template](../../../99.templates/templates/sdlc/task.template.md)
+- [Canonical Task template](../../../99.templates/templates/specs/task.template.md)
 
 ## Objective
 

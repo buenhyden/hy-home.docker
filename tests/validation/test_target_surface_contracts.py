@@ -10,19 +10,22 @@ import unittest
 
 import yaml
 
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
-PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+PROFILES = HistoricalDocument(
+    ROOT, "494065806794980080b081439298d7b534d10803",
+    "docs/99.templates/support/document-metadata-profiles.yaml",
+)
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
 TARGET_MANIFEST = (
     ROOT
     / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
-TARGET_SUMMARY = TARGET_MANIFEST.with_name(
-    "ref-0068-target-surface-convergence-summary.md"
-)
+TARGET_SUMMARY = ROOT / "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
 CURRENT_DELTA_MANIFEST = (
     ROOT
     / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
@@ -103,15 +106,14 @@ PHANTOM_CLAIM_PATHS = (
 )
 INFLUX_ACTIVE_PATHS = (
     "infra/04-data/analytics/influxdb/README.md",
-    "docs/01.requirements/005-data-analytics.md",
-    "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+    "docs/01.requirements/0005-data-analytics.md",
+    "docs/02.architecture/descriptions/0012-data-analytics-architecture.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
-    "docs/03.specs/005-data-analytics/README.md",
-    "docs/03.specs/005-data-analytics/spec.md",
-    "docs/05.operations/guides/04-data/analytics/README.md",
-    "docs/05.operations/guides/04-data/analytics/influxdb.md",
-    "docs/05.operations/policies/04-data/analytics/influxdb.md",
-    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+    "docs/03.specs/0005-data-analytics/spec.md",
+    "docs/05.operations/catalog/04-data/README.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
+    "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
 )
 INFLUX_V2_PATH = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
 OPENSEARCH_DUPLICATE_PATH = (
@@ -751,17 +753,19 @@ class TargetReadmeProfileTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.profiles = metadata.load_profiles(PROFILES)
 
-    def test_all_75_target_readmes_match_exactly_one_profile(self) -> None:
-        readmes = [
-            path for path in tracked_paths(*TARGET_ROOTS) if path.name == "README.md"
-        ]
+    def test_historical_75_target_readmes_match_exactly_one_profile(self) -> None:
+        # Historical wave selection is not today's README inventory (Task 11
+        # added responsibility routers). Current routes are owned by Registry
+        # and the script manifest, without resurrecting support YAML readers.
+        result = subprocess.run(
+            ["git", "ls-tree", "-r", "--name-only", "889d3868ecd0913cddac79a718584a54a8453525", "--", *TARGET_ROOTS],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        )
+        readmes = [pathlib.Path(path) for path in result.stdout.splitlines() if path.endswith("/README.md")]
         self.assertEqual(75, len(readmes))
         for path in readmes:
             with self.subTest(path=path.as_posix()):
-                self.assertEqual(
-                    1,
-                    len(metadata.matching_readme_profiles(path, self.profiles)),
-                )
+                self.assertEqual(1, len(metadata.matching_readme_profiles(path, self.profiles)))
 
     def test_native_markdown_and_typed_example_do_not_inherit_readme_profiles(
         self,
@@ -853,36 +857,23 @@ class TargetReadmeProfileTests(unittest.TestCase):
     def test_archive_profiles_remain_distinct_and_windows_tombstone_is_valid(
         self,
     ) -> None:
-        content_path = pathlib.Path("archive/Windows-Network-IP.md")
-        sdlc_path = pathlib.Path(
-            "docs/98.archive/04.execution/plans/"
-            "2026-06-01-agent-governance-phase1-diagnostic.md"
-        )
-
-        self.assertEqual(
-            "content-archive",
-            metadata.classify_archive_profile(content_path, self.profiles),
-        )
-        self.assertEqual(
-            "sdlc-archive",
-            metadata.classify_archive_profile(sdlc_path, self.profiles),
-        )
-        values = metadata.parse_frontmatter(ROOT / content_path)
-        record = metadata.Record(
-            content_path,
-            values,
-            "archive",
-            frontmatter_present=True,
-        )
-        codes = {
-            finding.code
-            for finding in metadata.validate_record(
-                record,
-                self.profiles,
-                metadata.build_manifest([record]),
-            )
-        }
-        self.assertEqual(set(), codes)
+        registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
+        profiles = metadata.build_registry_profiles(registry)
+        for relative, expected in (
+            ("docs/98.archive/tombstones/05.operations/0095-windows-network-ip.md", "tombstone"),
+            ("docs/98.archive/migrations/0003-workspace-governance-simplification.md", "migration"),
+        ):
+            path = pathlib.Path(relative)
+            with self.subTest(path=relative):
+                self.assertEqual(expected, metadata.infer_artifact_type(path, profiles))
+                if expected == "tombstone":
+                    values = metadata.parse_frontmatter(ROOT / path)
+                    self.assertEqual(expected, values["profile_id"])
+                    self.assertEqual((), metadata.validate_frontmatter(values))
+                else:
+                    # The approved execution ledger remains native schema 2 until
+                    # the controller records closure and compacts it.
+                    self.assertEqual("mig-0003", metadata.parse_frontmatter(ROOT / path)["artifact_id"])
 
     def test_service_local_constraints_survive_in_allowed_working_section(
         self,
@@ -947,12 +938,13 @@ class StorybookPhantomContractTests(unittest.TestCase):
 
     def test_historical_spec_and_plan_evidence_remains_allowed(self) -> None:
         historical_owners = (
-            ROOT / "docs/03.specs/133-target-surface-contract-convergence/spec.md",
-            ROOT
-            / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
+                               "docs/03.specs/133-target-surface-contract-convergence/spec.md"),
+            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
+                               "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md"),
         )
         for path in historical_owners:
-            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+            with self.subTest(path=path.path if isinstance(path, HistoricalDocument) else path.relative_to(ROOT).as_posix()):
                 self.assertIn(
                     "projects/storybook/mcp", path.read_text(encoding="utf-8")
                 )
@@ -991,8 +983,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
     def test_seaweedfs_direct_docs_keep_only_the_unmounted_example_claim(self) -> None:
         paths = (
             "infra/04-data/lake-and-object/seaweedfs/README.md",
-            "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
-            "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",
+            "docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md",
+            "docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md",
         )
         for path in paths:
             text = (ROOT / path).read_text(encoding="utf-8")
@@ -1153,26 +1145,10 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             with self.subTest(summary=expected):
                 self.assertIn(expected, summary)
 
-    def test_reviewed_seaweedfs_row_has_zero_manifest_findings(
-        self,
-    ) -> None:
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(LIFECYCLE_CHECKER),
-                "--mode",
-                "check-manifest",
-                "--wave",
-                "target-surface-convergence",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode)
-        self.assertEqual("", result.stdout)
-        self.assertEqual("", result.stderr)
+    def test_reviewed_seaweedfs_row_has_zero_manifest_findings(self) -> None:
+        # Current claims are owned by the retained validator; immutable historical
+        # payload parity is independently checked by the public lifecycle gate.
+        self.assertEqual((), load_target_validator().validate(ROOT))
 
     def test_influxdb_v2_manifest_row_records_exact_delete_evidence(self) -> None:
         manifest = yaml.safe_load(TARGET_MANIFEST.read_text(encoding="utf-8"))
@@ -1419,10 +1395,10 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         current_docs = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
-            ROOT / "docs/03.specs/005-data-analytics/spec.md",
-            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
-            ROOT / "docs/05.operations/policies/04-data/analytics/influxdb.md",
-            ROOT / "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
         )
         corpus = "\n".join(path.read_text(encoding="utf-8") for path in current_docs)
         for forbidden in (
@@ -1446,16 +1422,15 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
     def test_active_docs_describe_only_influxdb_3_contract(self) -> None:
         active_paths = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
-            ROOT / "docs/01.requirements/005-data-analytics.md",
+            ROOT / "docs/01.requirements/0005-data-analytics.md",
             ROOT
-            / "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+            / "docs/02.architecture/descriptions/0012-data-analytics-architecture.md",
             ROOT / "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
-            ROOT / "docs/03.specs/005-data-analytics/README.md",
-            ROOT / "docs/03.specs/005-data-analytics/spec.md",
-            ROOT / "docs/05.operations/guides/04-data/analytics/README.md",
-            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
-            ROOT / "docs/05.operations/policies/04-data/analytics/influxdb.md",
-            ROOT / "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/catalog/04-data/README.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
         )
         for path in active_paths:
             text = path.read_text(encoding="utf-8")
@@ -1472,8 +1447,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         canonical_docs = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
-            ROOT / "docs/03.specs/005-data-analytics/spec.md",
-            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
+            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
         )
         for path in canonical_docs:
             text = path.read_text(encoding="utf-8")
@@ -1490,12 +1465,13 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
     def test_historical_and_negative_influxdb_v2_evidence_remains_allowed(self) -> None:
         historical_owners = (
-            ROOT / "docs/03.specs/133-target-surface-contract-convergence/spec.md",
-            ROOT
-            / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
+                               "docs/03.specs/133-target-surface-contract-convergence/spec.md"),
+            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
+                               "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md"),
         )
         for path in historical_owners:
-            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+            with self.subTest(path=path.path if isinstance(path, HistoricalDocument) else path.relative_to(ROOT).as_posix()):
                 self.assertIn("InfluxDB 2", path.read_text(encoding="utf-8"))
 
 

@@ -1,16 +1,22 @@
 ---
 profile_id: spec
-status: active
+status: retired
 artifact_id: SPEC-0090
 artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-28
 ---
 # Workspace Audit 2026-05 Technical Specification
 
 ## Overview
+
+This completed session is retired. Its original body below is historical
+execution evidence, not current authority or permission to repeat its commands.
+The original content is recoverable at Git commit
+`494065806794980080b081439298d7b534d10803`. Physical cleanup and terminal
+Migration mappings remain pending PhaseB.
 
 This document is the technical specification for the May 2026 workspace-wide audit and improvement session. It covers governance rules, documentation lifecycle, scripts, Docker Compose infrastructure, env/secrets contracts, QA/CI/CD, hooks, and skills; it implements low-risk changes and records medium/high-risk changes as deferred items.
 
@@ -94,28 +100,35 @@ bash scripts/validation/check-doc-traceability.sh
 
 ## Boundaries and Inputs
 
-The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+The preceding session boundaries and dated inputs are historical. Current
+authoring authority belongs to Stage 00 policies and the Stage 99 Registry.
 
 ## Behavior Contract
 
-The behaviors and invariants already specified above remain the package behavior contract.
+The session obligations have ended; obsolete stub, progress, R4/R5 and checker
+requirements are not current behavior contracts.
 
 ## Technical Approach
 
-The implementation and component design recorded above remain the technical approach.
+The preceding implementation approach describes only the completed session.
 
 ## Interfaces and Data
 
-The interfaces, configuration, and data shapes recorded above remain authoritative.
+Current document fields and shapes are owned by the Stage 99 Registry.
 
 ## Failure Modes and Guardrails
 
-The safety, validation, and operational constraints above remain the package guardrails.
+Current approval and credential boundaries are owned by Stage 00 policies;
+operational responsibilities belong to the Stage 05 catalog.
 
 ## Acceptance Contract
 
-The verification and success conditions above remain the acceptance contract.
+The dated verification criteria above are historical session evidence, not
+current completion gates. Stage 00 completion policy governs new work.
 
 ## Traceability
 
-The requirement, architecture, operations, and evidence links above provide traceability.
+Historical identity and original content remain recoverable at the commit
+above. Current owners are [Stage 00](../../00.agent-governance/README.md),
+[Stage 99 Registry](../../99.templates/registry.json), and the
+[Operations catalog](../../05.operations/catalog/README.md).

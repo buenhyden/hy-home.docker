@@ -110,8 +110,8 @@ document-contract counts and implementation status route to the
 - [Workspace document contract audit pack spec](../../03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md)
 - Workspace document contract audit pack plan
 - Workspace document contract audit pack task
-- [Template contract](../../99.templates/support/template-contract.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
+- [Template contract](../../99.templates/README.md)
+- [Frontmatter contract](../../99.templates/README.md)
 
 ## Objective
 

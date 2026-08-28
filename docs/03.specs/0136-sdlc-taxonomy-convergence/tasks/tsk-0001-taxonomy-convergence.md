@@ -18,8 +18,8 @@ Convergence implementation plan.
 
 ## Inputs
 
-- [Specification](spec.md)
-- [Approved implementation plan](plan.md)
+- [Specification](../spec.md)
+- [Approved implementation plan](../plan.md)
 
 ## Goals and Non-goals
 
@@ -106,8 +106,9 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 
 ## Verification Evidence
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Command | Expected evidence | Actual evidence | Result |
-| :-- | :-- | :-- | :-- |
+| :--- | :--- | :--- | :--- |
 | `PYTHONPATH=. .venv/bin/python tests/validation/test_document_links.py` (Task 10) | Shared metadata, provenance, links, retired-selector, active-consumer, and CLI behavior pass. | Review remediation GREEN `18/18`, expanded provenance GREEN `19/19`; active current publications contain no deleted-validator instructions. | PASS |
 | `python3 scripts/validation/check-document-links.py --mode traceability` and `--mode alignment` (Task 10) | Stable gate modes preserve lifecycle summary keys and return no findings. | Each mode reports `documents=334`, `links=2342`, `catalog_pairs_total=46`, `archive_direct_links_total=0`, `removed_template_mentions_total=0`, and `failures=0`. | PASS |
 | Focused lifecycle/static-import/YAML evidence plus Ruff, compilation, workflow tracking, and diff hygiene (Task 10) | Lifecycle does not import the metadata CLI; cyclic YAML fails explicitly; Python, workflow registration, and diffs are clean. | Lifecycle regressions `2/2`, frontmatter/static import aggregate `3/3`, YAML evidence `2/2`; Ruff, `py_compile`, and both diff checks pass. The new link CLI is tracked at mode `100755`, and the exact workflow entrypoint-mode regression passes. Provider projection drift remains outside Task 10. | PASS |
@@ -299,9 +300,9 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 
 ## Related Documents
 
-- [Specification](spec.md)
-- [Approved implementation plan](plan.md)
-- [Task template](../../../99.templates/templates/sdlc/task.template.md)
+- [Specification](../spec.md)
+- [Approved implementation plan](../plan.md)
+- [Task template](../../../99.templates/templates/specs/task.template.md)
 
 ## Objective
 

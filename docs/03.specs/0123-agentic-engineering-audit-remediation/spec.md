@@ -6,7 +6,7 @@ artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-08-08
-updated: 2026-08-11
+updated: 2026-08-28
 ---
 # Agentic Engineering Audit and Remediation Technical Specification
 
@@ -17,24 +17,26 @@ engineering research and implementation audits, measuring how deeply each
 researched practice is implemented in `hy-home.docker`, and applying approved
 governance and development-harness improvements.
 
-The program keeps the existing 2026-07-05 research and implementation-audit
-packs as the canonical Stage 90 sources. It merges verified unique content from
+The program uses [RES-0002](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
+as its current research source and retains the existing 2026-07-05 implementation-audit
+pack as its canonical audit source. It merges verified unique content from
 the overlapping 2026-07-07 audit pack, converts that pack to a superseded
 mapping record, and preserves the 2026-07-03 and 2026-07-04 audit packs as
 dated historical evidence rather than current implementation truth.
 
 The assessment covers workspace purpose and roles; harness and loop
-engineering; Claude, Codex, and Gemini provider surfaces; model selection;
+engineering; current Claude and Codex provider surfaces; model selection;
 agent instructions and catalogs; vibe-coding controls; spec-driven SDLC;
 document roles, numbering, metadata, and status transitions; CI/CD; QA;
 formatting, linting, and syntax checks; controlled pre-commit execution;
 automation, pipelines, and workflows; Docker Compose and infrastructure;
 security and supply chain; incidents, postmortems, releases, and operations.
 
-The official Claude, OpenAI/Codex, and Gemini model catalog remains bound to
-the previously approved 2026-07-10 10:00 KST cutoff. Current retrieval may
-verify page availability and workspace implementation, but later announcements
-must not be backdated into that catalog.
+> Historical evidence (not current authority; source: Git history):
+> The historical Claude, OpenAI/Codex, and Gemini research catalog was bound to
+> the previously approved 2026-07-10 10:00 KST cutoff. Current retrieval may
+> verify page availability and workspace implementation, but later announcements
+> must not be backdated into that catalog.
 
 ## Strategic Boundaries & Non-goals
 
@@ -69,7 +71,7 @@ must not be backdated into that catalog.
 - **Previous Specification**:
   ../122-agentic-research-pack-consolidation/spec.md
 - **Canonical Research Pack**:
-  `README` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
+  [RES-0002](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - **Canonical Audit Pack**:
   [../../90.references/audits/0019-readme/README.md](../../90.references/audits/0019-readme/README.md)
 - **Overlapping Audit Pack**:
@@ -83,7 +85,7 @@ must not be backdated into that catalog.
 
 | Contract | Required Behavior |
 | --- | --- |
-| Canonical research | Extended `2026-07-05-agentic-research-pack-refresh` in place. Focused criteria were added only where existing responsibility documents would otherwise have become overloaded. |
+| Canonical research | Use [RES-0002](../../90.references/research/0002-agentic-engineering-research-pack/README.md) as the current research source; its superseded RES-0001 predecessor is historical evidence, not current authority. |
 | Canonical audit | Extend `2026-07-05-agentic-engineering-implementation-audit-pack` in place and keep it as the only current agentic implementation audit. |
 | Audit supersession | Merge verified unique 2026-07-07 audit content, remove unsupported claims, and convert the 2026-07-07 pack to mapping-only `superseded` records. |
 | Historical evidence | Preserve the 2026-07-03 and 2026-07-04 packs as dated evidence; indexes must warn that their corpus counts are not current facts. |
@@ -92,7 +94,7 @@ must not be backdated into that catalog.
 | Assessment | Every criterion records implementation state, enforcement depth, disposition, owner, automation impact, evidence, and verification. |
 | Metadata rollout | Introduce typed metadata as advisory first, migrate the approved active chain, then enforce it for changed/new documents before any broader blocking migration. |
 | Pre-commit execution | AI agents run `pre-commit run --all-files` only through an approved wrapper in an isolated worktree and record a concise result in Stage 04 task evidence. Direct manual execution remains prohibited. |
-| Provider integrity | Stage 00 stays canonical; Claude, Codex, and Gemini surfaces are adapters. Native capability gaps remain explicit and are not normalized into false parity. |
+| Provider integrity | Stage 00 stays canonical; Claude and Codex surfaces are adapters. Native capability gaps remain explicit and are not normalized into false parity. |
 | Runtime boundary | Compose, infrastructure, security runtime, deployment, secret, and remote findings produce later specs/plans only. |
 | Commit boundary | Design, research, audit, metadata schema, migration, QA wrapper, provider/workflow synchronization, runtime follow-up artifacts, and review fixes use logical commits. |
 
@@ -133,7 +135,7 @@ The canonical audit pack provides responsibility-focused reports for:
 1. cross-category implementation overview and gap/disposition register;
 2. harness engineering;
 3. loop and eval engineering;
-4. Claude, Codex, Gemini, provider parity, and model policy;
+4. Claude and Codex provider parity and model policy;
 5. workspace governance, environment, and common rules;
 6. SDLC, document roles, numbering, status transitions, traceability, and the
    disposition of release records versus changelogs and release runbooks;
@@ -260,12 +262,11 @@ upload or protected-branch verification.
 
 - Stage 00 defines shared role, model-policy, approval, lifecycle, and evidence
   semantics.
-- Claude, Codex, and Gemini adapters express only capabilities available on
+- Claude and Codex adapters express only capabilities available on
   their provider surface.
 - Provider name-set and semantic parity validators remain coupled to generated
   adapters.
-- Gemini pointer/reminder behavior is not represented as native hook or
-  subagent execution parity.
+- Unsupported provider behavior is not represented as native hook or subagent parity.
 - A model-policy change must update policy, generation logic, adapters,
   validators, and Stage 04 evidence in one approved task.
 
@@ -319,8 +320,8 @@ escalated rather than overwritten.
 - Stage 04 task evidence records source checks, inventory counts, commands,
   wrapper results, protected surfaces, commits, review outcomes, and
   deviations.
-- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` records material milestones and
-  durable pointers, not raw transcripts.
+- The Task owning the work records material milestones and durable pointers,
+  not raw transcripts.
 - Generated inventories are reproducible snapshots with freshness checks.
 - Graphify output is navigation-only when stale or advisory; tracked source
   and canonical stage documents control conclusions.
@@ -391,8 +392,8 @@ git diff --check
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 bash scripts/operations/sync-provider-surfaces.sh --check
-bash scripts/validation/check-doc-traceability.sh
-bash scripts/validation/check-doc-implementation-alignment.sh
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
 bash scripts/validation/check-repo-contracts.sh
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh
@@ -494,8 +495,8 @@ Specs 124-127 and their plans stay `draft` pending separate approval.
 - [Audit category](../../90.references/audits/README.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Lifecycle status contract](../../99.templates/README.md)
 - [Subagent protocol](../../00.agent-governance/policies/agentic.md)
 
 ## Behavior Contract

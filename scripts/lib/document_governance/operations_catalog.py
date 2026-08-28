@@ -793,9 +793,11 @@ def _parse_row(value: object) -> MigrationRow:
         or source_owner_task < 1
     ):
         raise OperationsAuthorityError("migration-row-invalid", f"source_kind owner invalid: {row_id}")
-    if recovery_commit is not None:
+    if (status_value == "planned" and recovery_commit is not None) or (
+        status_value == "completed" and not isinstance(recovery_commit, str)
+    ):
         raise OperationsAuthorityError("migration-row-invalid", f"recovery_commit invalid: {row_id}")
-    if status_value != "planned":
+    if status_value not in {"planned", "completed"}:
         raise OperationsAuthorityError("migration-row-invalid", f"status invalid: {row_id}")
     return MigrationRow(
         row_id=row_id,
@@ -820,14 +822,14 @@ def load_task8_migration(
         raise OperationsAuthorityError(
             "structural-authority-invalid", "current structure must use Migration 0003"
         )
-    migration_bytes = read_bounded_regular(root, relative)
+    from scripts.lib.document_governance.archive import _migration_document
+
     try:
-        migration_text = migration_bytes.decode("utf-8")
-    except UnicodeDecodeError as error:
-        raise OperationsAuthorityError("utf8-invalid", f"invalid UTF-8: {relative}") from error
-    ledger = _fenced_yaml(migration_text, "## Archive Ledger")
-    if ledger.get("schema_version") != 2 or ledger.get("migration_id") != "mig-0003":
-        raise OperationsAuthorityError("structural-authority-invalid", "unexpected migration authority")
+        ledger = _migration_document(root)
+    except ValueError as error:
+        raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
+    if ledger["schema_version"] != 2:
+        raise OperationsAuthorityError("structural-authority-invalid", "consumer inventory requires execution evidence")
     raw_rows = ledger.get("rows")
     if not isinstance(raw_rows, list) or len(raw_rows) != 903:
         raise OperationsAuthorityError("migration-bounds", "row bound exceeded")
@@ -860,8 +862,7 @@ def load_task8_migration(
             row.owner_task != 8
             or row.source_kind != "tracked"
             or row.source_owner_task is not None
-            or row.recovery_commit is not None
-            or row.status != "planned"
+            or row.status not in {"planned", "completed"}
         ):
             raise OperationsAuthorityError("task8-row-invalid", f"owner_task/source/status: {row.row_id}")
         if row.action == "rename":
@@ -876,9 +877,29 @@ def load_task8_migration(
             or row.target_path is not None
         ):
             raise OperationsAuthorityError("task8-row-invalid", row.row_id)
-    if hashlib.sha256(migration_bytes).hexdigest() != MIGRATION_SHA256:
-        raise OperationsAuthorityError("migration-digest-invalid", "frozen digest mismatch")
     return Task8Migration(rows=rows, all_rows=all_rows)
+
+
+@dataclasses.dataclass(frozen=True)
+class CurrentOperationMapping:
+    source_path: pathlib.PurePosixPath
+    target_path: pathlib.PurePosixPath | None
+    artifact_id: str | None
+    action: str
+
+
+def load_current_operation_mappings(root: pathlib.Path) -> tuple[CurrentOperationMapping, ...]:
+    from scripts.lib.document_governance.archive import migration_rows_for_task
+
+    try:
+        rows = migration_rows_for_task(root, 8)
+    except ValueError as error:
+        raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
+    return tuple(CurrentOperationMapping(
+        pathlib.PurePosixPath(row["source_path"]),
+        pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
+        row["artifact_id"], row["action"],
+    ) for row in rows)
 
 
 def _tracked_paths(root: pathlib.Path, max_files: int) -> tuple[pathlib.PurePosixPath, ...]:
@@ -1293,12 +1314,12 @@ def validate_current_operations(
 ) -> tuple[CatalogFinding, ...]:
     """Validate exact final topology against Registry + Migration 0003."""
     try:
-        migration = load_task8_migration(root)
+        mappings = load_current_operation_mappings(root)
         registry = _load_registry(root)
     except OperationsAuthorityError as error:
         return (_finding(error.code, "authority", str(error)),)
     findings = _validate_registry(registry)
-    expected_files = {row.target_path: row for row in migration.rows if row.action == "rename"}
+    expected_files = {row.target_path: row for row in mappings if row.action == "rename"}
     expected_subjects = {path.parent for path in expected_files if path is not None}
     expected_by_domain: dict[str, set[str]] = defaultdict(set)
     expected_roles: dict[pathlib.PurePosixPath, set[str]] = defaultdict(set)

@@ -8,14 +8,12 @@ normative lifecycle policy.
 from __future__ import annotations
 
 import dataclasses
-import hashlib
 import os
 import pathlib
 import re
 import stat
 from collections.abc import Sequence
 
-import yaml
 
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
@@ -45,7 +43,7 @@ _ROW = re.compile(r"^- \{row_id: (mig-0003-r[0-9]{4}), .+\}$")
 _RETIRED_ROOTS = ("learning", "llm-wiki")
 _NORMATIVE_STAGES = ("stage 00", "stage 01", "stage 02", "stage 03", "stage 05")
 _ACTIVE_CONSUMER_PATHS = (
-    pathlib.PurePosixPath("docs/99.templates/support/document-metadata-profiles.yaml"),
+    pathlib.PurePosixPath("docs/99.templates/registry.json"),
     pathlib.PurePosixPath("scripts/lib/document_governance/operations_catalog.py"),
     pathlib.PurePosixPath("scripts/validation/agent_output_eval.py"),
     pathlib.PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"),
@@ -84,11 +82,21 @@ class Task9Row:
 
 
 @dataclasses.dataclass(frozen=True)
+class ReferenceMapping:
+    source_path: pathlib.PurePosixPath
+    target_path: pathlib.PurePosixPath | None
+    artifact_id: str | None
+    action: str
+
+
+@dataclasses.dataclass(frozen=True)
 class Task9Migration:
-    rows: tuple[Task9Row, ...]
+    rows: tuple[Task9Row | ReferenceMapping, ...]
 
     @property
     def row_ids(self) -> tuple[str, ...]:
+        if not all(isinstance(row, Task9Row) for row in self.rows):
+            raise ValueError("row identity is execution evidence only")
         return tuple(row.row_id for row in self.rows)
 
 
@@ -127,52 +135,22 @@ class Finding:
     detail: str
 
 
-def _parse_task9_row(line: str) -> Task9Row | None:
-    match = _ROW.fullmatch(line)
-    if match is None or match.group(1) not in TASK9_ROW_IDS:
-        return None
-    parsed = yaml.safe_load(line[2:])
-    if not isinstance(parsed, dict):
-        raise ValueError("Task 9 migration row must be a mapping")
-    required = {
-        "row_id", "source_path", "target_path", "artifact_id", "action",
-        "owner_task", "source_kind", "source_owner_task", "active_consumers",
-        "recovery_commit", "status",
-    }
-    if set(parsed) != required or parsed["owner_task"] != 9:
-        raise ValueError("Task 9 migration row has an invalid field contract")
-    action = parsed["action"]
-    if action not in {"rename", "delete"}:
-        raise ValueError("Task 9 migration action must be rename or delete")
-    target = parsed["target_path"]
-    if action == "rename" and not isinstance(target, str):
-        raise ValueError("Task 9 rename row must have a target")
-    if action == "delete" and target is not None:
-        raise ValueError("Task 9 delete row cannot have a target")
-    return Task9Row(
-        row_id=parsed["row_id"],
-        source_path=pathlib.PurePosixPath(parsed["source_path"]),
-        target_path=pathlib.PurePosixPath(target) if target is not None else None,
-        artifact_id=parsed["artifact_id"],
-        action=action,
-    )
-
-
 def load_task9_migration(root: pathlib.Path) -> Task9Migration:
-    raw = read_bounded_regular(root, MIGRATION_PATH)
-    if hashlib.sha256(raw).hexdigest() != MIGRATION_SHA256:
-        raise ValueError("frozen Migration 0003 hash changed")
+    from scripts.lib.document_governance.archive import migration_rows_for_task
+
+    selected = migration_rows_for_task(root, 9)
     rows = tuple(
-        row
-        for line in raw.decode("utf-8").splitlines()
-        if (row := _parse_task9_row(line)) is not None
+        Task9Row(row["row_id"], pathlib.PurePosixPath(row["source_path"]),
+                 pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
+                 row["artifact_id"], row["action"])
+        if "row_id" in row else ReferenceMapping(
+            pathlib.PurePosixPath(row["source_path"]),
+            pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
+            row["artifact_id"], row["action"],
+        ) for row in selected
     )
-    if tuple(row.row_id for row in rows) != TASK9_ROW_IDS:
-        raise ValueError("Task 9 migration row range is incomplete or reordered")
-    if sum(row.action == "rename" for row in rows) != 105:
-        raise ValueError("Task 9 migration must contain exactly 105 renames")
-    if sum(row.action == "delete" for row in rows) != 11:
-        raise ValueError("Task 9 migration must contain exactly 11 deletions")
+    if len(rows) != 116 or sum(row.action == "rename" for row in rows) != 105:
+        raise ValueError("Task 9 migration must contain exactly 105 renames and 11 deletions")
     return Task9Migration(rows)
 
 
@@ -681,8 +659,9 @@ _REPOSITORY_MAP_PATH = pathlib.PurePosixPath(
 def _missing_repository_map_links(
     root: pathlib.Path,
     document: ReferenceDocument,
+    generated_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
 ) -> Sequence[str]:
-    if document.path != _REPOSITORY_MAP_PATH:
+    if document.path != _REPOSITORY_MAP_PATH and document.path not in generated_paths:
         return ()
     missing: list[str] = []
     for link in _document_links(document):
@@ -717,10 +696,52 @@ def validate_active_reference_consumers(
     return tuple(findings)
 
 
+def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
+    """Resolve bounded exact Data outputs from active declared producers."""
+    from scripts.lib.document_governance.suite_registry import load_manifest_document
+
+    manifest = load_manifest_document(root / "scripts/manifest.yaml")
+    if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), list):
+        raise ValueError("generated manifest files must be a list")
+    owners: dict[str, str] = {}
+    for entry in manifest["files"]:
+        if not isinstance(entry, dict):
+            raise ValueError("generated manifest entry must be a mapping")
+        if (entry.get("kind") not in {"generator", "validator"}
+                or entry.get("mutation") != "check-write"
+                or entry.get("lifecycle") != "active" or entry.get("disposition") != "retain"):
+            continue
+        outputs = entry.get("outputs", [])
+        if not isinstance(outputs, list):
+            raise ValueError("generated outputs must be a list")
+        owner = entry.get("path")
+        for output in outputs:
+            if not isinstance(output, str):
+                raise ValueError("generated output must be a path")
+            if not output.startswith("docs/90.references/data/") or not output.endswith(".md"):
+                continue
+            for path, prefix in ((owner, "scripts/"), (output, "docs/90.references/data/")):
+                if (not isinstance(path, str) or not path.startswith(prefix)
+                        or pathlib.PurePosixPath(path).as_posix() != path
+                        or any(part in {".", ".."} for part in path.split("/"))
+                        or "\\" in path or ":" in path or any(ord(char) < 32 or ord(char) == 127 for char in path)):
+                    raise ValueError("generated ownership path is unsafe")
+            if output in owners or len(owners) >= 128:
+                raise ValueError("generated ownership is duplicate or exceeds bound")
+            owners[output] = owner
+    return owners
+
+
 def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     findings: list[Finding] = []
     references_root = root / "docs/90.references"
     migration = load_task9_migration(root)
+
+    try:
+        generated_paths = frozenset(map(pathlib.PurePosixPath, generated_reference_owners(root)))
+    except ValueError:
+        findings.append(_finding("generated-manifest-invalid", "scripts/manifest.yaml", "generated ownership cannot be established"))
+        generated_paths = frozenset()
 
     try:
         corpus = load_reference_packages(references_root)
@@ -781,6 +802,13 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
         if item.artifact_id != expected_id or item.profile_id != PROFILE_BY_CATEGORY[item.category]:
             findings.append(_finding("package-identity-invalid", path, f"expected {expected_id}"))
     for document in corpus.documents:
+        try:
+            parse_frontmatter_text(document.text)
+        except FrontmatterError as exc:
+            findings.append(_finding("reference-member-frontmatter-invalid", document.path, str(exc)))
+        headings = [line for _, line in _unfenced_lines(document.text) if line.startswith("# ")]
+        if len(headings) != 1:
+            findings.append(_finding("reference-member-heading-invalid", document.path, "Markdown member requires one H1"))
         if _asserts_normative_authority(document.text):
             findings.append(
                 _finding(
@@ -795,7 +823,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
             )
         for target in _retired_links(document):
             findings.append(_finding("retired-link-present", document.path, target))
-        for target in _missing_repository_map_links(root, document):
+        for target in _missing_repository_map_links(root, document, generated_paths):
             findings.append(
                 _finding("generated-data-link-missing", document.path, target)
             )
@@ -803,14 +831,27 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     for row in migration.rows:
         source = root / row.source_path
         if source.exists() or source.is_symlink():
-            findings.append(_finding("migration-source-present", row.source_path, row.row_id))
+            findings.append(_finding("migration-source-present", row.source_path, row.source_path.as_posix()))
         if row.target_path is not None:
             relative_target = row.target_path.relative_to(
                 pathlib.PurePosixPath("docs/90.references")
             )
             if relative_target not in corpus.files:
-                findings.append(_finding("migration-target-missing", row.target_path, row.row_id))
+                findings.append(_finding("migration-target-missing", row.target_path, row.source_path.as_posix()))
 
     findings.extend(validate_active_reference_consumers(root))
 
     return tuple(findings)
+
+
+def delegated_member_paths(root: pathlib.Path) -> frozenset[str]:
+    """Exact mapped payloads and category indexes; package READMEs stay typed."""
+
+    migration = load_task9_migration(root)
+    prefix = pathlib.PurePosixPath("docs/90.references")
+    return frozenset({
+        *((prefix / category / "README.md").as_posix() for category in CATEGORIES),
+        *(row.target_path.as_posix() for row in migration.rows
+          if row.target_path is not None and row.target_path.is_relative_to(prefix)
+          and row.target_path.suffix == ".md" and row.target_path.name != "README.md"),
+    })

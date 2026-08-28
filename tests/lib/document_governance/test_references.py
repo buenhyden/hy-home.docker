@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import pathlib
 import os
+import contextlib
+import io
+import json
 import shutil
 import tempfile
 import unittest
 from unittest import mock
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def reference_api():
@@ -20,6 +23,76 @@ def reference_api():
 
 
 class ReferencePackageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.fixture_migration = reference_api().load_task9_migration(ROOT)
+
+    def test_generated_ownership_is_exact_unique_bounded_and_safe(self) -> None:
+        entry = {"path": "scripts/example.sh", "kind": "generator", "mutation": "check-write", "lifecycle": "active", "disposition": "retain", "outputs": ["docs/90.references/data/0065-example/README.md"]}
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            manifest = root / "scripts/manifest.yaml"
+            manifest.parent.mkdir()
+            for mutation in ("valid", "validator", "duplicate", "traversal", "malformed", "oversize"):
+                with self.subTest(mutation=mutation):
+                    row = {**entry, "outputs": list(entry["outputs"])}
+                    rows = [row]
+                    if mutation == "validator":
+                        row["kind"] = "validator"
+                    elif mutation == "duplicate":
+                        rows.append(row.copy())
+                    elif mutation == "traversal":
+                        row["outputs"] = ["docs/90.references/data/../escape.md"]
+                    elif mutation == "malformed":
+                        rows = [None]
+                    elif mutation == "oversize":
+                        row["outputs"] = [f"docs/90.references/data/{number:04d}-example/README.md" for number in range(129)]
+                    manifest.write_text(json.dumps({"files": rows}), encoding="utf-8")
+                    if mutation in {"valid", "validator"}:
+                        self.assertEqual({entry["outputs"][0]: entry["path"]}, self.references.generated_reference_owners(root))
+                    else:
+                        with self.assertRaises(ValueError):
+                            self.references.generated_reference_owners(root)
+
+    def test_public_metadata_checks_current_generated_links_not_historical_snapshots(self) -> None:
+        from scripts.lib.document_governance import metadata_validator
+        from scripts.lib.document_governance import archive
+
+        migration = self.references.load_task9_migration(ROOT)
+        native_migration = archive._migration_document(ROOT)
+        context, root = self._fixture()
+        with context, mock.patch.object(self.references, "load_task9_migration", return_value=migration), mock.patch.object(archive, "_migration_document", return_value=native_migration):
+            generated = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
+            historical = root / "docs/90.references/audits/0031-security-framework-maturity/README.md"
+            generated.write_text(generated.read_text() + "\n[Broken current](../../../../__missing_generated_link__.md)\n")
+            historical.write_text(historical.read_text() + "\n[Old source](../../../../__historical_snapshot_link__.md)\n")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+                code = metadata_validator.main(["--root", str(root), "--mode", "check-active"])
+            self.assertNotEqual(0, code)
+            self.assertIn("__missing_generated_link__.md", output.getvalue())
+            self.assertNotIn("__historical_snapshot_link__.md", output.getvalue())
+
+    def test_delegation_validates_exact_members_and_their_content(self) -> None:
+        migration = reference_api().load_task9_migration(ROOT)
+        member = "docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md"
+        for mutation, expected in (
+            ("missing", "migration-target-missing"),
+            ("extra", "unregistered-reference-file"),
+            ("invalid", "reference-member-frontmatter-invalid"),
+        ):
+            with self.subTest(mutation=mutation):
+                context, root = self._fixture()
+                with context, mock.patch.object(self.references, "load_task9_migration", return_value=migration):
+                    path = root / member
+                    if mutation == "missing":
+                        path.unlink()
+                    elif mutation == "extra":
+                        path.with_name("unexpected.md").write_text("# Unexpected\n", encoding="utf-8")
+                    else:
+                        path.write_text("---\nstatus: active\nstatus: retired\n---\n# Invalid\n", encoding="utf-8")
+                    self.assertIn(expected, self.finding_codes(root))
+
     def setUp(self) -> None:
         self.references = reference_api()
 
@@ -27,6 +100,7 @@ class ReferencePackageTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
         for source in (
+            "scripts/manifest.yaml",
             "docs/90.references",
             "docs/99.templates/registry.json",
             "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
@@ -37,7 +111,11 @@ class ReferencePackageTests(unittest.TestCase):
                 shutil.copytree(ROOT / source, target)
             else:
                 shutil.copy2(ROOT / source, target)
-        return directory, root
+        context = contextlib.ExitStack()
+        context.enter_context(directory)
+        context.enter_context(mock.patch.object(self.references, "load_task9_migration", return_value=self.fixture_migration))
+        self.addCleanup(context.close)
+        return context, root
 
     def finding_codes(self, root: pathlib.Path = ROOT) -> set[str]:
         return {
@@ -46,8 +124,15 @@ class ReferencePackageTests(unittest.TestCase):
         }
 
     def test_current_reference_topology_matches_the_frozen_migration(self) -> None:
+        from scripts.lib.document_governance.archive import _approved_migration_document
+
         migration = self.references.load_task9_migration(ROOT)
-        self.assertEqual(tuple(f"mig-0003-r{n:04d}" for n in range(450, 566)), migration.row_ids)
+        approved = [row for row in _approved_migration_document(ROOT)["rows"] if row["owner_task"] == 9]
+        self.assertEqual(tuple(f"mig-0003-r{n:04d}" for n in range(450, 566)), tuple(row["row_id"] for row in approved))
+        self.assertEqual(
+            [(row["source_path"], row["target_path"], row["artifact_id"], row["action"]) for row in approved],
+            [(str(row.source_path), str(row.target_path) if row.target_path else None, row.artifact_id, row.action) for row in migration.rows],
+        )
         self.assertEqual(105, sum(row.action == "rename" for row in migration.rows))
         self.assertEqual(11, sum(row.action == "delete" for row in migration.rows))
         self.assertEqual(set(), self.finding_codes())

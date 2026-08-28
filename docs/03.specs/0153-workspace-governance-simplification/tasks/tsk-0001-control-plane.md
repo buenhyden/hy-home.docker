@@ -122,7 +122,7 @@ FAILED (failures=1)
 ```
 
 The failure was specifically the missing
-`docs/02.architecture/decisions/0029-workspace-governance-authority.md`.
+`docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md`.
 
 ### Focused GREEN
 

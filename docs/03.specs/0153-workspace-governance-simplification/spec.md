@@ -47,7 +47,7 @@ provider-neutral Stage 00 skills used by the supported runtimes.
 - `docs/98.archive/`
 - `docs/99.templates/`
 - `scripts/`, `tests/`, workflow, hook, and pre-commit consumers
-- `.agents/`, `.claude/`, `.codex/`, `.gemini/`, and root provider shims
+- `.agents/`, `.claude/`, `.codex/`, and root provider shims; `.gemini/` is removal-only
 - root `DESIGN.md` as the UI and design-system authority
 
 ### Protected inputs
@@ -68,6 +68,7 @@ conclusions below were corroborated against tracked files, Stage 00, Stage 99,
 and live stage documents. The implementation plan records commit identity only
 where a recovery or provenance boundary requires it.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface | Tracked files | Current state relevant to this design |
 | :--- | ---: | :--- |
 | Stage 00 | 111 | `rules/`, `scopes/`, `agents/`, `contracts/`, `providers/`, and project memory overlap |

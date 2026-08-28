@@ -1025,8 +1025,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Sources
 
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - metadata ownership and exception rules
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - lifecycle vocabulary and transitions
+- [Frontmatter contract](../../99.templates/README.md) - metadata ownership and exception rules
+- [Lifecycle status](../../99.templates/README.md) - lifecycle vocabulary and transitions
 - [Spec 123](../../03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md) - typed metadata and rollout contract
 - [Semantic audit](ref-0024-frontmatter-template-readme-implementation.md) - pre-remediation criteria and baseline
 

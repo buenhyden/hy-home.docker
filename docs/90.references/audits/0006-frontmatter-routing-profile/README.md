@@ -124,9 +124,9 @@ frontmatter population.
   185-file missing-frontmatter baseline.
 - [Gap register](ref-0007-gap-register.md) - Supplies the `WDC-GAP-006` remediation
   requirement and `WDC-GAP-024` provider README no-action classification.
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) -
+- [Frontmatter contract](../../99.templates/README.md) -
   Defines required and disallowed frontmatter roles.
-- [Template selection](../../99.templates/support/template-selection.md) -
+- [Template selection](../../99.templates/README.md) -
   Defines README and target-stage template routing.
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) -
   Defines target-stage frontmatter and README profile boundaries.
@@ -148,8 +148,8 @@ frontmatter population.
 - [Document contract audit references](ref-0001-readme.md)
 - [Frontmatter inventory](ref-0005-frontmatter-inventory.md)
 - [Gap register](ref-0007-gap-register.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Template selection](../../99.templates/support/template-selection.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Template selection](../../99.templates/README.md)
 
 ## Objective
 

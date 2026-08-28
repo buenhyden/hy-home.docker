@@ -106,8 +106,8 @@ a broad Markdown corpus rewrite.
 
 ## Sources
 
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - Defines key ownership and lifecycle frontmatter boundaries.
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - Defines lifecycle status values.
+- [Frontmatter contract](../../99.templates/README.md) - Defines key ownership and lifecycle frontmatter boundaries.
+- [Lifecycle status](../../99.templates/README.md) - Defines lifecycle status values.
 - [Frontmatter routing profile](ref-0006-frontmatter-routing-profile.md) - Supplies current missing-frontmatter routing decisions.
 - Document restructure task evidence - Supplies the pre-audit baseline.
 

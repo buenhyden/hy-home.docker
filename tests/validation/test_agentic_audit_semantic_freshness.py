@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -121,13 +122,13 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             pathlib.Path(contract["audit_index"]),
             pathlib.Path(contract["overview"]),
             pathlib.Path(contract["task_evidence"]),
-            pathlib.Path(contract["canonical_pack"]) / "ref-0019-readme.md",
-            pathlib.Path(contract["canonical_pack"]) / "ref-0033-readme.md",
+            pathlib.Path(contract["canonical_pack"]) / "0019-readme/README.md",
+            pathlib.Path(contract["canonical_pack"]) / "0033-readme/README.md",
             CONTRACT,
         }
         required_paths.update(
             path.relative_to(ROOT)
-            for path in (ROOT / contract["canonical_pack"]).glob("*.md")
+            for path in (ROOT / contract["canonical_pack"]).glob("*/README.md")
         )
         for assertion in contract["assertions"]:
             required_paths.add(pathlib.Path(assertion["report"]))
@@ -231,6 +232,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             "  public_suites:\n"
             "  - repository-integrity\n"
         )
+        missing_workflow_root = json.loads(workflow_contract)
+        missing_workflow_root["public_gate"]["suite_roots"]["repository-integrity"].remove(
+            "local.workflow-harness"
+        )
         mutations = {
             "duplicate changed workflow route": (
                 workflow
@@ -251,9 +256,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             ),
             "missing public workflow root": (
                 workflow,
-                workflow_contract.replace(
-                    '        "local.workflow-harness",\n', "", 1
-                ),
+                json.dumps(missing_workflow_root),
                 manifest,
                 generator,
                 matrix,
@@ -351,6 +354,31 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         task_path.write_text(text.replace("T-AER-009", "T-AER-X09"), encoding="utf-8")
         self.assert_failure("QAF-12", "completed task T-AER-009")
 
+    def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(self) -> None:
+        from scripts.lib.document_governance import archive
+
+        task_path = self.repo / self.contract["task_evidence"]
+        expected = task_path.read_text(encoding="utf-8")
+        subprocess.run(["git", "add", "--", self.contract["task_evidence"]], cwd=self.repo, check=True)
+        subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "task evidence"], cwd=self.repo, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.repo, text=True).strip()
+        task_path.unlink()
+        row = {"source_path": self.contract["task_evidence"], "target_path": None,
+               "artifact_id": None, "action": "delete", "recovery_commit": commit}
+        compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [row]}
+        with mock.patch.object(archive, "_migration_document", return_value=compact):
+            errors = []
+            self.assertEqual(expected, module._read_task_evidence(self.repo, self.contract, errors))
+            self.assertEqual([], errors)
+            for key, value in (("action", "rename"), ("recovery_commit", None),
+                               ("recovery_commit", "0" * 40), ("source_path", "../outside")):
+                original = row[key]; row[key] = value
+                with self.subTest(field=key):
+                    errors = []
+                    self.assertIsNone(module._read_task_evidence(self.repo, self.contract, errors))
+                    self.assertTrue(errors)
+                row[key] = original
+
     def test_wrong_lifecycle_heading_fails(self) -> None:
         path = self.repo / self.contract["audit_index"]
         text = path.read_text(encoding="utf-8")
@@ -361,7 +389,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("audit index", "required heading")
 
     def test_non_active_canonical_readme_fails(self) -> None:
-        path = self.repo / self.contract["canonical_pack"] / "ref-0019-readme.md"
+        path = self.repo / self.contract["canonical_pack"] / "0019-readme/README.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: active", "status: superseded", 1), encoding="utf-8"
@@ -369,7 +397,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("canonical README", "status: active")
 
     def test_non_superseded_2026_07_07_readme_fails(self) -> None:
-        path = self.repo / self.contract["canonical_pack"] / "ref-0033-readme.md"
+        path = self.repo / self.contract["canonical_pack"] / "0033-readme/README.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: superseded", "status: active", 1), encoding="utf-8"

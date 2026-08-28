@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-mode="write"
+ROOT=""
+mode="check"
 mode_seen=0
 root_seen=0
-usage='Usage: bash scripts/validation/report-provider-hook-parity.sh [--check|--dry-run|--validate-only] [--root PATH]'
+usage='Usage: bash scripts/validation/report-provider-hook-parity.sh [--write|--check|--dry-run|--validate-only] [--root PATH]'
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
-  --check | --dry-run | --validate-only)
+  --write | --check | --dry-run | --validate-only)
     if [[ "$mode_seen" -eq 1 ]]; then
       printf '%s\n' "$usage" >&2
       exit 2
@@ -36,6 +36,10 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift
 done
+
+if [[ "$root_seen" -eq 0 ]]; then
+  ROOT="$(git rev-parse --show-toplevel)"
+fi
 
 python3 - "$ROOT" "$mode" <<'PY'
 from __future__ import annotations
@@ -432,8 +436,8 @@ lines.extend(
         "",
         "## Related Documents",
         "",
-        "- [Provider capability matrix](../../../../00.agent-governance/policies/provider-capability-matrix.md)",
-        "- [Provider registry](../../../../00.agent-governance/providers/registry.yaml)",
+        "- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)",
+        "- [Provider registry](../../../00.agent-governance/providers/registry.yaml)",
         "",
         "## Schema",
         "",

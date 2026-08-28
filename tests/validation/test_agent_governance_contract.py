@@ -221,7 +221,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 self.assertIn("AGC-UNSUPPORTED-TOKEN", {item.code for item in findings})
 
     def test_stage03_token_evidence_is_exact_and_new_active_specs_are_scanned(self) -> None:
-        historical = "docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md"
+        historical = "docs/03.specs/0094-harness-agent-first-engineering/spec.md"
         cases = ("exact-evidence", "changed-evidence", "new-active-spec")
         for case in cases:
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
@@ -255,6 +255,53 @@ class AgentGovernanceContractTests(unittest.TestCase):
                     self.assertNotIn(historical, unsupported)
                 else:
                     self.assertIn(target.relative_to(root).as_posix(), unsupported)
+
+    def test_explicit_history_quote_does_not_hide_adjacent_current_authority(self) -> None:
+        path = "docs/03.specs/9999-example/spec.md"
+        quote = contract.HISTORICAL_QUOTE_MARKER + "\n> July baseline used Gemini.\n"
+        self.assertFalse(contract._has_unsupported_active_token(path, quote))
+        for token in ("Gemini is active authority.", "Load memory/current.md."):
+            for text in (token + "\n" + quote, quote + "\n" + token,
+                         "## Historical evidence\n" + token,
+                         quote.replace("not current authority", "current authority") + token,
+                         quote + token):
+                with self.subTest(text=text):
+                    self.assertTrue(contract._has_unsupported_active_token(path, text))
+        self.assertTrue(contract._has_unsupported_active_token("scripts/current.py", quote))
+
+    def test_active_reader_retains_finite_four_mebibyte_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            target = root / "evidence.md"
+            target.write_bytes(b"x" * (2241242))
+            self.assertEqual(2241242, len(contract.read_repository_text(root, "evidence.md")))
+            target.write_bytes(b"x" * (contract.MAX_TEXT_BYTES + 1))
+            with self.assertRaisesRegex(contract.ContractLoadError, "TOO-LARGE"):
+                contract.read_repository_text(root, "evidence.md")
+
+    def test_removal_statements_do_not_authorize_mixed_positive_adoption(self) -> None:
+        path = "docs/03.specs/9999-example/spec.md"
+        for text in ("Gemini and Antigravity are removed.", "Delete: `.gemini/`.",
+                     "No bootstrap loads memory/current.md.", "self.assertFalse(Path(\".gemini\").exists())"):
+            with self.subTest(text=text):
+                self.assertFalse(contract._has_unsupported_active_token(path, text))
+        for text in ("Remove Gemini. Use Gemini for new work.",
+                     "Remove old memory and use Gemini.", "Do not remove Gemini.",
+                     "Gemini must remain active despite removal of old memory.",
+                     "Gemini is the default provider when Codex fails.",
+                     "No secrets are stored; Gemini is supported.",
+                     "Remove Gemini, but Antigravity is active.",
+                     "Add mutation cases for Gemini. Use memory/current.md.",
+                     "## Historical\nUse memory/current.md."):
+            with self.subTest(text=text):
+                self.assertTrue(contract._has_unsupported_active_token(path, text))
+
+    def test_historical_table_requires_exact_marker_header_and_separator(self) -> None:
+        path = "docs/03.specs/9999-example/tasks/tsk-0001-evidence.md"
+        table = contract.HISTORICAL_TABLE_MARKER + "\n| Command | Result |\n| --- | --- |\n| Gemini probe | July measurement |\n"
+        self.assertFalse(contract._has_unsupported_active_token(path, table))
+        for candidate in (table + "\nUse Gemini now.", table + "\n| Current | State |\n| --- | --- |\n| Load memory/current.md | required |\n", table.replace("| --- | --- |", "bad separator"), table.replace("| --- | --- |", "| - | - |"), table.replace("| Command | Result |", "| Command |"), table.replace("| Command | Result |", "| | Result |"), table.replace("not current authority", "current authority")):
+            self.assertTrue(contract._has_unsupported_active_token(path, candidate))
 
     def test_mutable_task_token_evidence_is_statement_bounded(self) -> None:
         task = (

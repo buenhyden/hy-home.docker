@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path, PurePosixPath
+import stat
 from types import MappingProxyType
 from typing import Mapping
 
 import yaml
+
+from scripts.lib.document_governance.frontmatter import safe_load_unique
 
 
 PUBLIC_SUITE_NAMES = (
@@ -48,7 +52,6 @@ IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
         PurePosixPath("scripts/validation/check-supply-chain-policy.py"): "repository-integrity",
         PurePosixPath("scripts/validation/check-target-surface-contract.py"): "document-contract",
         PurePosixPath("scripts/validation/check-target-surface-delta-contract.py"): "document-contract",
-        PurePosixPath("scripts/validation/check-task4-migration.py"): "agent-governance",
         PurePosixPath("scripts/validation/check-template-security-baseline.sh"): "repository-integrity",
         PurePosixPath("scripts/validation/ci_gate_adapters.py"): "repository-integrity",
         PurePosixPath("scripts/validation/ci_gate_contract.py"): "repository-integrity",
@@ -80,6 +83,27 @@ NON_STANDALONE_VALIDATOR_PATHS = frozenset(
     )
 )
 _MIRRORED_TEST_ROOT = PurePosixPath("tests/lib/document_governance")
+MAX_MANIFEST_BYTES = 1_048_576
+MAX_MANIFEST_DEPTH = 64
+
+
+def validate_execution_argv(path: PurePosixPath, argv: tuple[str, ...]) -> None:
+    """Admit complete validation capabilities, never arbitrary CLI arguments."""
+
+    required = {
+        "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
+        "check-agent-governance-contract.py": ("--mode", "repository", "--section", "all"),
+        "check-document-corpus-lifecycle.py": ("--mode", "check-public"),
+        "check-document-links.py": ("--mode", "all"),
+        "check-document-metadata.py": ("--mode", "check-changed"),
+        "check-operations-catalog.py": ("--mode", "complete"),
+        "check-supply-chain-policy.py": ("--check",),
+        "check-target-surface-delta-contract.py": ("--mode", "advisory"),
+        "report-audit-pack-coverage.sh": ("--check",),
+        "report-provider-hook-parity.sh": ("--check",),
+    }
+    if path not in IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP or argv != required.get(path.name, ()):
+        raise SuiteRegistryError(f"{path}: execution arguments must preserve the complete validation capability")
 
 
 class SuiteRegistryError(ValueError):
@@ -122,13 +146,77 @@ class SuiteRegistry:
         return MappingProxyType({suite.name: suite for suite in self.suites})
 
 
+def load_manifest_document(path: Path) -> object:
+    """Read the execution authority through one bounded, no-follow YAML boundary."""
+
+    def snapshot(value: os.stat_result) -> tuple[int, ...]:
+        return (value.st_dev, value.st_ino, value.st_mode, value.st_size,
+                value.st_mtime_ns, value.st_ctime_ns)
+
+    descriptors: list[int] = []
+    try:
+        absolute = path.absolute()
+        if ".." in absolute.parts:
+            raise ValueError("parent traversal is forbidden")
+        directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        parent = os.open(os.path.sep, directory_flags)
+        descriptors.append(parent)
+        ancestors: list[tuple[int, str, int, os.stat_result]] = []
+        for name in absolute.parts[1:-1]:
+            child = os.open(name, directory_flags, dir_fd=parent)
+            descriptors.append(child)
+            ancestors.append((parent, name, child, os.fstat(child)))
+            parent = child
+        before = os.stat(absolute.name, dir_fd=parent, follow_symlinks=False)
+        if not stat.S_ISREG(before.st_mode) or before.st_size > MAX_MANIFEST_BYTES:
+            raise ValueError("expected a bounded regular file")
+        descriptor = os.open(
+            absolute.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+            dir_fd=parent,
+        )
+        descriptors.append(descriptor)
+        if snapshot(os.fstat(descriptor)) != snapshot(before):
+            raise ValueError("file changed before read")
+        raw = bytearray()
+        while len(raw) <= MAX_MANIFEST_BYTES:
+            chunk = os.read(descriptor, min(65_536, MAX_MANIFEST_BYTES + 1 - len(raw)))
+            if not chunk:
+                break
+            raw.extend(chunk)
+        if len(raw) != before.st_size or len(raw) > MAX_MANIFEST_BYTES:
+            raise ValueError("file changed or exceeded its byte limit")
+        if snapshot(os.fstat(descriptor)) != snapshot(before) or snapshot(
+            os.stat(absolute.name, dir_fd=parent, follow_symlinks=False)
+        ) != snapshot(before):
+            raise ValueError("file changed during read")
+        for ancestor, name, child, expected in ancestors:
+            if snapshot(os.fstat(child)) != snapshot(expected) or snapshot(
+                os.stat(name, dir_fd=ancestor, follow_symlinks=False)
+            ) != snapshot(expected):
+                raise ValueError("ancestor changed during read")
+        source = raw.decode("utf-8")
+        depth = 0
+        for event in yaml.parse(source):
+            if isinstance(event, yaml.events.AliasEvent) or getattr(event, "anchor", None):
+                raise ValueError("YAML aliases and anchors are forbidden")
+            if isinstance(event, (yaml.events.MappingStartEvent, yaml.events.SequenceStartEvent)):
+                depth += 1
+                if depth > MAX_MANIFEST_DEPTH:
+                    raise ValueError("YAML depth limit exceeded")
+            elif isinstance(event, (yaml.events.MappingEndEvent, yaml.events.SequenceEndEvent)):
+                depth -= 1
+        return safe_load_unique(source)
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError, RecursionError) as error:
+        raise SuiteRegistryError(f"manifest input is invalid: {error}") from error
+    finally:
+        for descriptor in reversed(descriptors):
+            os.close(descriptor)
+
+
 def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
     """Load a closed, immutable suite mapping from the script manifest."""
 
-    try:
-        document = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
-        raise SuiteRegistryError("manifest is unreadable") from error
+    document = load_manifest_document(path)
     if not isinstance(document, dict) or not isinstance(document.get("files"), list):
         raise SuiteRegistryError("manifest files must be a list")
 
@@ -147,6 +235,7 @@ def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
             execution_argv = _optional_strings(
                 row.get("execution_argv", []), row_path, "execution_argv"
             )
+            validate_execution_argv(row_path, execution_argv)
             execution_contexts = _execution_contexts(
                 row.get("execution_contexts"), row_path
             )

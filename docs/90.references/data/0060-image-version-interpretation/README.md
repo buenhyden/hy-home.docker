@@ -73,7 +73,7 @@ This reference provides stable context for interpreting Docker image drift, floa
 - [Docker references](README.md)
 - [90.references](../../README.md)
 - [docs index](../../README.md)
-- [reference template](../../../99.templates/templates/common/reference.template.md)
+- [reference template](../../../99.templates/templates/references/research.template.md)
 
 ## Schema
 

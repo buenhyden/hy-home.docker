@@ -1324,8 +1324,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
-  target_path: docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
+- source_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  target_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
   artifact_id: null
   artifact_type_before: reference
   artifact_type_after: generated
@@ -1347,8 +1347,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/data/0082-llm-wiki-index/README.md
-  target_path: docs/90.references/data/0082-llm-wiki-index/README.md
+- source_path: docs/90.references/llm-wiki/llm-wiki-index.md
+  target_path: docs/90.references/llm-wiki/llm-wiki-index.md
   artifact_id: null
   artifact_type_before: reference
   artifact_type_after: generated
@@ -1370,8 +1370,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/README.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/README.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
   artifact_id: null
   artifact_type_before: readme
   artifact_type_after: readme
@@ -1393,8 +1393,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/automation-pipeline-workflow.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/automation-pipeline-workflow.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
   artifact_id: reference:agentic-research:automation-pipeline-workflow
   artifact_type_before: reference
   artifact_type_after: reference
@@ -1417,8 +1417,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/docker-compose-infrastructure.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/docker-compose-infrastructure.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
   artifact_id: null
   artifact_type_before: null
   artifact_type_after: null
@@ -1440,8 +1440,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/document-metadata-lifecycle.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/document-metadata-lifecycle.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
   artifact_id: reference:agentic-research:document-metadata-lifecycle
   artifact_type_before: reference
   artifact_type_after: reference
@@ -1464,8 +1464,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/quality-ci-formatting.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/quality-ci-formatting.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
   artifact_id: reference:agentic-research:quality-ci-formatting
   artifact_type_before: reference
   artifact_type_after: reference
@@ -1488,8 +1488,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/security-governance.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/security-governance.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
   artifact_id: reference:agentic-research:security-governance
   artifact_type_before: reference
   artifact_type_after: reference
@@ -1512,8 +1512,8 @@ entries:
   review_verdict:
     specification: pass
     quality: pass
-- source_path: docs/90.references/research/0001-agentic-research-pack-refresh/workspace-baseline.md
-  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/workspace-baseline.md
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
+  target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
   artifact_id: reference:agentic-research:workspace-baseline
   artifact_type_before: reference
   artifact_type_after: reference

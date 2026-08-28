@@ -16,20 +16,20 @@ updated: 2026-08-11
 > Every executable step uses checkbox (`- [ ]`) syntax.
 
 **Goal:** Converge the repository's active agent-governance control plane on
-current provider models, one bounded project-memory route, a typed harness and
+current supported-provider models, current owning-Task state, a typed harness and
 loop, and locally enforceable CI/QA contracts without changing remote GitHub or
 provider runtime state.
 
 **Architecture:** Stage 00 remains the sole active authority for agents,
-functions, provider models, permissions, events, memory, harness layers, and
+functions, provider models, permissions, events, harness layers, and
 loop states. Existing validators load duplicate-safe typed contracts; the
 provider renderer projects them deterministically into `.agents`, `.claude`,
-`.codex`, and `.gemini`. Stage 90 owns historical retirement and remote
-observation evidence. Stage 04 owns execution and review evidence.
+and `.codex`. Stage 90 owns historical retirement and remote
+observation evidence. The active Stage 03 Task owns execution and review evidence.
 
 **Tech Stack:** YAML contracts, Python 3.12, PyYAML, markdown-it-py, html5lib,
 unittest, Markdown/CommonMark, JSON, TOML, Bash, Claude Code project agents,
-Codex project agents, Gemini CLI project agents, GitHub Actions, zizmor 1.28.0,
+Codex project agents, GitHub Actions, zizmor 1.28.0,
 pre-commit, and Git.
 
 ## Global Constraints
@@ -40,8 +40,8 @@ pre-commit, and Git.
   `main`.
 - Stage 00 is the only active policy/catalog owner. Root files are thin entry
   adapters, provider directories are native or compatibility projections,
-  Stage 90 is evidence, and Stage 04 is execution state.
-- Keep 14 roles. Add exactly two functions, for a final active count of 24.
+  Stage 90 is evidence, and the active owning Stage 03 Task holds execution state.
+- Use the current registered roles and skills; do not restore retired functions.
 - Active contracts may not contain lifecycle values `deprecated` or `retired`,
   historical fallback approvals, or retired role-transfer records.
 - Historical retirement evidence must identify the former exact ID,
@@ -86,7 +86,7 @@ through six serial logical tasks:
 
 1. normalize active contracts and move retirement history to Stage 90;
 2. update current provider facts, work profiles, and generated projections;
-3. establish one bounded project-memory route;
+3. resolve the current owning Task through the canonical bootstrap;
 4. add two functions and type harness, loop, and deterministic evaluations;
 5. reconcile local GitHub Actions/QA controls and remote observation;
 6. refresh canonical research/audits, close cross-links, run final QA, and
@@ -117,31 +117,32 @@ does not duplicate this implementation design.
 The implementation must retain source and retrieval time beside every
 fast-moving claim:
 
-- Anthropic model overview, model ID/versioning, effort, and Claude Code
-  subagent documentation:
-  <https://platform.claude.com/docs/en/about-claude/models/overview>,
-  <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>,
-  <https://platform.claude.com/docs/en/build-with-claude/effort>,
-  <https://code.claude.com/docs/en/sub-agents>
-- OpenAI model catalog and latest-model guidance:
-  <https://developers.openai.com/api/docs/models>,
-  <https://developers.openai.com/api/docs/guides/latest-model>,
-  <https://openai.com/index/introducing-gpt-5-3-codex-spark/>
-- Gemini latest model, Gemini 3.6 Flash, subagent, generation setting, and
-  memory documentation:
-  <https://ai.google.dev/gemini-api/docs/latest-model>,
-  <https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash>,
-  <https://geminicli.com/docs/core/subagents/>,
-  <https://geminicli.com/docs/cli/generation-settings/>,
-  <https://geminicli.com/docs/cli/tutorials/memory-management/>
-- GitHub Actions secure-use and monitoring documentation:
-  <https://docs.github.com/en/actions/reference/security/secure-use>,
-  <https://docs.github.com/en/actions/how-tos/monitor-workflows>
-- zizmor immutable v1.28.0 security release:
-  <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
-- `agency-agents` capability catalog and pre-commit behavior:
-  <https://github.com/msitarzewski/agency-agents/blob/main/README.md>,
-  <https://pre-commit.com/>
+> Historical evidence (not current authority; source: Git history):
+> - Anthropic model overview, model ID/versioning, effort, and Claude Code
+>   subagent documentation:
+>   <https://platform.claude.com/docs/en/about-claude/models/overview>,
+>   <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>,
+>   <https://platform.claude.com/docs/en/build-with-claude/effort>,
+>   <https://code.claude.com/docs/en/sub-agents>
+> - OpenAI model catalog and latest-model guidance:
+>   <https://developers.openai.com/api/docs/models>,
+>   <https://developers.openai.com/api/docs/guides/latest-model>,
+>   <https://openai.com/index/introducing-gpt-5-3-codex-spark/>
+> - Gemini latest model, Gemini 3.6 Flash, subagent, generation setting, and
+>   memory documentation:
+>   <https://ai.google.dev/gemini-api/docs/latest-model>,
+>   <https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash>,
+>   <https://geminicli.com/docs/core/subagents/>,
+>   <https://geminicli.com/docs/cli/generation-settings/>,
+>   <https://geminicli.com/docs/cli/tutorials/memory-management/>
+> - GitHub Actions secure-use and monitoring documentation:
+>   <https://docs.github.com/en/actions/reference/security/secure-use>,
+>   <https://docs.github.com/en/actions/how-tos/monitor-workflows>
+> - zizmor immutable v1.28.0 security release:
+>   <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
+> - `agency-agents` capability catalog and pre-commit behavior:
+>   <https://github.com/msitarzewski/agency-agents/blob/main/README.md>,
+>   <https://pre-commit.com/>
 
 ### Baseline and Provenance
 
@@ -159,9 +160,9 @@ fast-moving claim:
   duplicate `scope` remains a required negative regression fixture.
 - At feature-base activation, active counts were 14 roles and 22 functions,
   and the semantic evaluator had 8 fixtures and 10 deterministic regressions.
-  The current post-T-AGCC-004 contract is separately 14 roles / 24 functions
-  and 11 fixtures / 16 regressions; Task 6 closure evidence must use the
-  current values without rewriting the activation baseline.
+  The historical post-T-AGCC-004 result was 14 roles / 24 functions and
+  11 fixtures / 16 regressions. Current closure evidence uses the registered
+  retained catalog without rewriting those activation and completion facts.
 - Local `ci-quality.yml` owns 16 jobs. The public remote observation exposed 15
   jobs in the last failed run and three GitHub-managed workflows; authenticated
   control-plane state remains unverified.
@@ -179,8 +180,8 @@ fast-moving claim:
   projection claims current and machine-checkable.
 - Remove legacy/deprecated active state without erasing historical evidence.
 - Select exact provider model and reasoning values by one role work profile.
-- Give every provider entry point the same bounded repository memory.
-- Close model-evaluation and memory-stewardship gaps as functions, not roles.
+- Give supported provider entry points the same active Spec/owning-Task route.
+- Close model-evaluation gaps through registered skills, not new roles.
 - Keep provider projections deterministic and native-schema compliant.
 - Enforce local CI/QA consistency and record remote state honestly.
 - Refresh canonical research/audit evidence and complete independent reviews.
@@ -216,7 +217,7 @@ fast-moving claim:
 | T-AGCC-001 | Spec 134, baseline contracts/blobs | T-AGCC-002, T-AGCC-004, T-AGCC-006 |
 | T-AGCC-002 | normalized active contract, current official provider sources | T-AGCC-003, T-AGCC-004, T-AGCC-006 |
 | T-AGCC-003 | artifact contract and renderer-stable root/provider routes | T-AGCC-004, T-AGCC-006 |
-| T-AGCC-004 | model profiles, shared memory, existing eval runner | T-AGCC-005, T-AGCC-006 |
+| T-AGCC-004 | model profiles, owning Task, existing eval runner | T-AGCC-005, T-AGCC-006 |
 | T-AGCC-005 | current harness/loop and local workflow contract | T-AGCC-006 |
 | T-AGCC-006 | exact commits/reviews from Tasks 1-5 | final branch review and handoff |
 
@@ -347,9 +348,8 @@ git diff --check
   `tests/validation/test_provider_surface_renderer.py`.
 - Modify
   `tests/validation/test_provider_native_surfaces.py`.
-- Regenerate the 14 role files in each of
-  `.agents/agents/`, `.claude/agents/`, `.codex/agents/`, and
-  `.gemini/agents/`.
+- Regenerate the registered role files in `.agents/agents/`, `.claude/agents/`,
+  and `.codex/agents/` for the two supported providers.
 - Regenerate `.claude/settings.json`, `.codex/hooks.json`, and
   `docs/00.agent-governance/providers/registry.yaml` only through the renderer.
 - Update the Stage 90 retirement ledger for legacy models displaced by the
@@ -373,8 +373,11 @@ written as the repository's configured work-profile default.
 entitlement evidence exist. Rendering configuration does not manufacture those
 observations. This wave creates no automatic model fallback graph.
 
-**Exact work-profile defaults:**
+**Historical Task 2 work-profile selection (not current configuration):**
 
+Current configured defaults come only from the Stage 00 provider registry.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Profile | Claude | Codex | Gemini |
 | --- | --- | --- | --- |
 | `long-horizon-supervision` | `claude-opus-5`, `xhigh` | `gpt-5.6-sol`, `xhigh` | `gemini-3.6-flash`, `high` |
@@ -401,8 +404,6 @@ observations. This wave creates no automatic model fallback graph.
 - Codex/OpenAI: GPT-5.6 Sol stable default, GPT-5.6 Terra stable default,
   GPT-5.6 Luna stable catalog-only until runtime acceptance, GPT-5.3 Codex
   Spark preview/catalog-only.
-- Gemini: Gemini 3.6 Flash stable default and Gemini 3.5 Flash-Lite stable
-  default.
 
 **Interfaces:**
 
@@ -420,10 +421,8 @@ def _provider_selections(
 
 T-AGCC-002 replaces renderer use of tuple-valued `_provider_defaults()` with
 the typed selection interface. The key is `(work_profile, provider_id)`.
-Claude emits `effort`; Codex emits `model_reasoning_effort`; Gemini maps
-`minimal|medium|high` to
-`modelConfigs.overrides[].modelConfig.generateContentConfig.thinkingConfig.thinkingLevel`
-as `MINIMAL|MEDIUM|HIGH`, matched by `overrideScope`.
+Claude emits supported `effort`; Codex emits supported
+`model_reasoning_effort`. The provider registry owns their exact values.
 
 - [ ] Add RED
   `ProviderModelConvergenceTests.test_model_catalog_matches_2026_07_26_official_set`
@@ -433,11 +432,8 @@ as `MINIMAL|MEDIUM|HIGH`, matched by `overrideScope`.
   with the five profile IDs and fourteen-role table above.
 - [ ] Add RED
   `ProviderModelConvergenceTests.test_no_automatic_fallback_or_legacy_model_is_active`.
-- [ ] Add RED
-  `ProviderNativeSurfaceTests.test_gemini_reasoning_uses_scoped_model_configs_without_sampling_parameters`
-  and reject `temperature`, `top_p`, `top_k`, `topP`, or `topK`.
 - [ ] Add RED renderer assertions for Claude `effort`, Codex
-  `model_reasoning_effort`, Gemini scoped `modelConfigs.overrides`, and exact
+  `model_reasoning_effort`, and exact
   current model IDs.
 - [ ] Run the focused provider tests and record the expected old-model/profile
   failures.
@@ -451,8 +447,7 @@ as `MINIMAL|MEDIUM|HIGH`, matched by `overrideScope`.
   current catalog-only model as deprecated merely because it is not selected.
 - [ ] Replace the three old profiles with the five exact profiles and assign
   every role exactly once.
-- [ ] Teach the renderer to emit only provider-native fields and deterministic
-  Gemini scoped reasoning overrides.
+- [ ] Teach the renderer to emit only supported provider-native fields.
 - [ ] Run `python3 scripts/operations/provider_surface_renderer.py --write`.
 - [ ] Inspect every renderer-managed changed/deleted path. Stop if a stale-file
   deletion is not confined to a known generated owner.
@@ -477,106 +472,16 @@ git diff --check
 - [ ] Dispatch fresh specification and quality reviewers for the exact Task 2
   range; remediate and re-review C/I findings.
 
-### Task 3: Establish Shared Bounded Project Memory
+### Task 3: Resolve Current Owning Task
 
 **Task ID:** `T-AGCC-003`
 
-**Files:**
-
-- Create
-  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
-- Modify
-  `docs/00.agent-governance/README.md`.
-- Modify
-  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` only for historical-navigation
-  semantics or a compacted pointer; do not rewrite historical rows.
-- Modify
-  `docs/99.templates/registry.json`.
-- Modify root `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`.
-- Modify provider overlays under
-  `docs/00.agent-governance/providers/` only where their bootstrap route names
-  the old active memory file.
-- Modify
-  `scripts/validation/agent_governance_contract.py`.
-- Modify
-  `tests/validation/test_agent_governance_contract.py`.
-- Modify the sibling Task ledger.
-
-**Memory validator constants:**
-
-```python
-CURRENT_MEMORY_PATH = "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"
-CURRENT_MEMORY_MAX_BYTES = 32 * 1024
-CURRENT_MEMORY_MAX_LINES = 400
-CURRENT_MEMORY_SECTIONS = (
-    "Current objective",
-    "Approved decisions",
-    "Active boundary",
-    "Verified state",
-    "Blockers and unverified facts",
-    "Evidence links",
-    "Next handoff",
-)
-```
-
-**Interfaces:**
-
-```python
-def _validate_current_memory(
-    root: pathlib.Path, bundle: ContractBundle
-) -> list[Finding]: ...
-```
-
-`current.md` also carries exact value-free labels for `Current task`,
-`Verified commit`, and `Verified at`. Stale state means the referenced Task is
-missing or not `draft|active`, or the verified commit does not resolve to an
-ancestor of `HEAD`; no wall-clock age heuristic is used. T-AGCC-004 consumes
-the bounded memory contract for its stewardship function and memory eval.
-
-- [ ] Add RED
-  `Task3SharedProjectMemoryTests.test_root_shims_import_current_memory_with_exact_parity`.
-- [ ] Add RED
-  `Task3SharedProjectMemoryTests.test_current_memory_profile_is_registered_and_required`.
-- [ ] Add RED
-  `Task3SharedProjectMemoryTests.test_current_memory_enforces_fixed_section_envelope`.
-- [ ] Add RED
-  `Task3SharedProjectMemoryTests.test_current_memory_rejects_size_line_secret_and_stale_state`.
-- [ ] Run the focused class and record missing-file/import/profile failures.
-- [ ] Register one `governance-current-memory` artifact profile with fixed
-  sections, ordering, bounds, and Stage 00 authority classification.
-- [ ] Author `current.md` for this branch using only current objective, approved
-  decisions, active boundary, verified state, blockers/unverified facts,
-  durable evidence links, and next handoff.
-- [ ] Make `progress.md` historical navigation. Keep durable rows; do not use it
-  as the bootstrap current-state payload.
-- [ ] Make all three root shims import the same memory README and exact
-  `current.md` path. Provider overlays may explain native loading but may not
-  fork memory content.
-- [ ] Add fail-closed validation codes
-  `AGC-MEMORY-BOUNDS`, `AGC-MEMORY-FORBIDDEN-MATERIAL`, and
-  `AGC-MEMORY-STALE-STATE`, with value-free diagnostics.
-- [ ] Validate that memory contains no policy body, raw command log, credential,
-  token, secret, auth file, shell history, or provider-global state.
-- [ ] Run:
-
-```bash
-python3 -m unittest \
-  tests.validation.test_agent_governance_contract.Task3SharedProjectMemoryTests \
-  -v
-python3 -m unittest tests.validation.test_agent_governance_contract -v
-python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section harness
-bash scripts/validation/check-doc-traceability.sh
-bash scripts/validation/check-doc-implementation-alignment.sh
-git diff --check
-```
-
-- [ ] Expect exact root import parity, all seven sections, no bounds/secret/stale
-  finding, and zero documentation failures.
-- [ ] Update Task evidence and commit
-  `feat(governance): establish shared project memory`.
-- [ ] Dispatch fresh specification and quality reviewers for the exact Task 3
-  range; remediate and re-review C/I findings.
+The earlier shared-state implementation is historical and is not rerun. Current
+execution loads the active Spec and its owning Task through Stage 00 bootstrap;
+no fixed Task number, state file, memory profile, or import path is introduced.
+Record approval, blockers, checks, and handoff in that Task and validate with the
+registered metadata, lifecycle, and governance gates. Historical implementation
+and review evidence remains in the sibling Task ledger and Git history.
 
 ### Task 4: Converge Capability Functions, Harness, Loop, and Evals
 
@@ -615,9 +520,7 @@ git diff --check
   `tests/validation/test_agent_output_eval_fixtures.py`.
 - Regenerate
   `.agents/skills/provider-model-evaluation/SKILL.md`,
-  `.agents/skills/project-memory-stewardship/SKILL.md`,
-  `.claude/skills/provider-model-evaluation/SKILL.md`, and
-  `.claude/skills/project-memory-stewardship/SKILL.md`.
+  and `.claude/skills/provider-model-evaluation/SKILL.md`.
 - Modify the sibling Task ledger.
 
 **Function ownership:**
@@ -627,10 +530,6 @@ git diff --check
   owner_agent: eval-engineer
   reviewer_agents: [code-reviewer, rules-engineer]
   outputs: [sourced-model-disposition, native-acceptance-verdict, regression-comparison]
-- function_id: project-memory-stewardship
-  owner_agent: doc-writer
-  reviewer_agents: [rules-engineer, eval-engineer]
-  outputs: [bounded-current-state-update, durable-evidence-links, policy-duplication-check]
 ```
 
 **Typed control separation:**
@@ -661,35 +560,34 @@ def _validate_workflow_states(
 
 Both functions return the same deterministic, value-free `Finding` type as the
 existing contract validator. The provider renderer consumes only catalog
-function projections; the eval runner consumes the two new function IDs and
+function projections; the eval runner consumes retained registered skill IDs and
 eight workflow-state IDs through exact fixture context.
 
 **Evaluation cardinality:**
 
-- Add `AOE-MODEL-001`, `AOE-MEMORY-001`, and `AOE-LOOP-001`.
-- Add `AOE-REG-011` through `AOE-REG-016`, one pass and one fail case per new
-  fixture.
-- Final exact counts: 11 fixtures and 16 regressions.
+- Retain the registered model and loop fixtures; do not restore the retired
+  shared-memory fixture or skill.
+- Final current counts: 10 fixtures and 14 regressions, including the
+  registered positive and negative cases for every retained capability.
 
-- [ ] Add RED function cardinality/ownership/projection tests for 14 roles and
-  24 functions.
-- [ ] Add RED capability-intake tests that map provider model QA and knowledge
-  stewardship to the two new functions without adding roles.
+- [ ] Add RED skill cardinality/ownership/projection tests against the current
+  registered roles and skills.
+- [ ] Add RED capability-intake tests that map provider model QA to its
+  retained registered skill without adding roles.
 - [ ] Add RED
   `Task4HarnessLoopTests.test_harness_declares_eight_typed_layers_and_discover_to_handoff_states`.
-- [ ] Add RED fixture/catalog/cardinality tests for exact 11/16 counts.
-- [ ] Run focused RED commands and record the expected 22-to-24, missing
-  function, missing layer/state, and 8/10-to-11/16 failures.
-- [ ] Add both canonical function documents with the registered function
+- [ ] Add RED fixture/catalog/cardinality tests for exact current 10/14 counts.
+- [ ] Run focused RED commands and record actual missing skill, layer/state,
+  and retained fixture failures.
+- [ ] Maintain retained canonical skill documents with their registered
   frontmatter order and topic-specific content.
-- [ ] Assign `provider-model-evaluation` to `eval-engineer` and
-  `project-memory-stewardship` to `doc-writer`; update reviewers, capability
+- [ ] Assign `provider-model-evaluation` to `eval-engineer`; update reviewers, capability
   intake, outputs, gates, and projection targets.
 - [ ] Keep the active role set at 14; record every `agency-agents` comparison
   decision as merge, defer, or reject with local owner and source.
 - [ ] Add eight typed harness layers and eight workflow states with bounded
   retries, failure return, evidence, and handoff semantics.
-- [ ] Add the three fixtures and six regressions with exact thresholds,
+- [ ] Maintain retained fixtures and regressions with exact thresholds,
   value-free block codes, bounded catalog limits, and no live-model claim.
 - [ ] Run the provider renderer write path and inspect only the four expected
   new skill projections plus any deterministic owner updates.
@@ -711,8 +609,8 @@ python3 scripts/validation/check-agent-governance-contract.py \
 git diff --check
 ```
 
-- [ ] Expect 14 roles, 24 functions, 8 layers, 8 states, 11/11 fixtures,
-  16/16 regressions, and zero provider drift/findings.
+- [ ] Expect the registered roles/skills, 8 layers, 8 states, 10/10 fixtures,
+  14/14 regressions, and zero supported-provider drift/findings.
 - [ ] Update Task evidence and commit
   `feat(harness): converge agent functions and loops`.
 - [ ] Dispatch fresh specification and quality reviewers for the exact Task 4
@@ -912,8 +810,8 @@ git diff --check
   `tests/validation/test_agent_governance_contract.py`.
 - Modify Stage 03/04 README indexes when Spec/Plan/Task lifecycle transitions
   require them.
-- Modify `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` and historical progress
-  navigation with compact closure evidence.
+- Record compact closure evidence in the current owning Task; preserve historical
+  execution in Git rather than routing new work into another package's Task.
 - Modify the sibling Task ledger and this Plan for final lifecycle state.
 
 **Interfaces:**
@@ -1011,7 +909,6 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
   --allow-prefix .agents \
   --allow-prefix .claude \
   --allow-prefix .codex \
-  --allow-prefix .gemini \
   --allow-prefix .github \
   --allow-prefix docs/00.agent-governance \
   --allow-prefix docs/03.specs/134-agent-governance-canonical-convergence \
@@ -1038,9 +935,8 @@ review only. It does not authorize another all-files wrapper execution.
 - Modify
   `tests/validation/test_run_agent_precommit_all_files.sh`.
 - Modify `scripts/README.md` only to describe the new value-free result.
-- Modify this Plan, the sibling Task ledger, and
-  `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` for bounded approval and
-  evidence synchronization.
+- Modify this Plan and the current owning Task for bounded approval and evidence
+  synchronization; do not route unrelated execution to a fixed Task number.
 
 **Interfaces and safety bounds:**
 
@@ -1100,7 +996,7 @@ be ignored.
 **Facts and bounds:**
 
 - The only tracked delta from the passing checkpoint to the unauthorized
-  execution checkpoint is the Task ledger and bounded current-memory evidence.
+  execution checkpoint is the current owning Task ledger and its evidence.
 - `.pre-commit-config.yaml` and the wrapper are unchanged across that delta.
   Default-stage candidates are basic file hooks, YAML/Markdown/Shell/Actions
   linters, Dependabot validation, Hadolint, Gitleaks, and the applicable
@@ -1123,7 +1019,7 @@ be ignored.
   while preserving its exact sanitized result and commit provenance.
 - [x] Record the disqualified correctness review, the whole-branch security
   C0/I1 result, the `b493aa32` remediation, and its independent C0/I0 re-review.
-- [ ] Validate the Plan/Task/current-memory update with an explicit-base
+- [ ] Validate the Plan/owning-Task update with an explicit-base
   metadata check, traceability, implementation alignment, and diff hygiene.
 - [x] Obtain a fresh independent read-only review of this discrepancy plan.
 - [ ] Do not run the wrapper or `pre-commit` while preparing or reviewing this
@@ -1141,7 +1037,7 @@ be ignored.
   whole-branch security reviewer for
   `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`.
 - [x] Remediate and re-review every Critical or Important finding.
-- [ ] Transition Spec, Plan, Task, memory current state, and Stage 03/04 indexes
+- [ ] Transition Spec, Plan, Task, and Stage 03 indexes
   only after both whole-branch reviewers authorize closure.
 - [ ] Run post-lifecycle metadata, traceability, alignment, generated-owner,
   repository-contract, and diff-hygiene checks.
@@ -1167,13 +1063,13 @@ Every task must produce:
 
 | Contract | Expected |
 | --- | --- |
-| Active roles/functions/providers | 14 / 24 / 3 |
+| Active roles/skills/providers | Current registered roles/skills; Claude and Codex |
 | Work profiles | 5 exact profiles; one per role |
 | Active historical lifecycle records | 0 |
-| Shared current memory | one file, at most 32 KiB and 400 lines |
+| Current execution state | Active owning Task; no shared state file |
 | Harness/workflow | 8 typed layers and 8 ordered states |
-| Semantic eval | 11 fixtures and 16 regressions |
-| Provider drift | 0 across four provider surfaces |
+| Semantic eval | Current registered 10 fixtures and 14 regressions |
+| Provider drift | 0 across the three supported projection surfaces |
 | Local CI jobs | 16 exact jobs |
 | Dynamic zizmor package | exact 1.28.0; yanked 1.27.0 rejected |
 | Canonical audit | 11 criterion reports, 161 exact rows |
@@ -1186,7 +1082,7 @@ Every task must produce:
 | --- | --- | --- |
 | Model ID accepted by API but not CLI/account | separate lifecycle, acceptance, entitlement, and eligibility; no live claim | revert Task 2 commit and restore prior projections |
 | Generated provider drift or unsupported field | native-schema RED tests and renderer-only writes | revert Task 2/4 commit; rerun renderer check |
-| Current memory becomes policy/log store | fixed sections, byte/line bounds, secret/stale scanners | revert Task 3; root shims fall back to prior bootstrap commit |
+| Task evidence becomes policy authority | Stage 99 Task envelope and Stage 00 authority boundaries | correct the current owning Task and supported bootstrap routing |
 | Function or loop authority duplicates existing role policy | 14-role invariant and typed owner/reference checks | revert Task 4 and regenerated projections |
 | Workflow hardening changes required job identity | exact 16-job validator/ruleset/tests | revert Task 5; no remote state was changed |
 | Historical evidence erased | Stage 90 ledger plus exact commit/blob provenance | restore the exact ledger path from its `source_commit`; the planned authored deletion uses `git restore --source=e65bb18f -- docs/00.agent-governance/memory/github-ci-contract-audit.md` |
@@ -1209,14 +1105,14 @@ Every task must produce:
 ## Completion Criteria
 
 - [ ] All AGCC-001 through AGCC-016 requirements have Task evidence.
-- [ ] Active contracts contain 14 roles, 24 functions, 3 providers, 5 profiles,
-  and no retired/deprecated lifecycle state.
+- [ ] Active contracts match the registered roles, skills, work profiles, and
+  two supported providers, with no retired/deprecated lifecycle state.
 - [ ] Model sources and retrieval times are current as of 2026-07-26 KST.
 - [ ] All provider projections are deterministic and native-schema valid.
-- [ ] All root shims load one bounded current project memory.
+- [ ] Supported root shims resolve the active Spec and its current owning Task.
 - [ ] Eight harness layers, eight workflow states, and bounded retry/approval
   semantics validate.
-- [ ] Exact 11/16 semantic fixture/regression gates pass.
+- [ ] Exact current 10/14 semantic fixture/regression gates pass.
 - [ ] Local 16-job CI/QA contract and zizmor 1.28.0 pin validate.
 - [ ] Remote observations are dated, source-linked, non-authoritative, and
   explicitly unverified where authentication was unavailable.
@@ -1238,7 +1134,7 @@ Every task must produce:
 - [Quality scope](../../00.agent-governance/roles/qa.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical audit](../../90.references/audits/0019-readme/README.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+- [Document metadata profiles](../../99.templates/registry.json)
 
 ## Objective
 

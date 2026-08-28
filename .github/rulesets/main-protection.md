@@ -24,8 +24,11 @@ itself.
 - Block force pushes.
 - Block branch deletion.
 - Require the latest branch head to pass required checks before merge.
-- Prefer squash or rebase merge for a linear `main` history.
-- Enable delete branch on merge after repository owner approval.
+- Preserve referenced recovery commits in delivered history using merge commits
+  or fast-forward. Do not enforce squash/rebase-only or linear-history settings
+  that would discard referenced objects.
+- Delete merged branches only after referenced recovery commits and regular
+  source blobs are verified reachable from `main`, with owner approval.
 
 ## Required Status Checks
 

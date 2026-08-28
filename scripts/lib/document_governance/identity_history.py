@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import os
 import pathlib
 import re
@@ -14,11 +15,12 @@ from collections.abc import Mapping
 from types import MappingProxyType
 
 from scripts.lib.document_governance.registry import DocumentRegistry, RegistryFinding
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
 MAX_GIT_OUTPUT_BYTES = 16 * 1024 * 1024
 MAX_GIT_SCAN_SECONDS = 45
-MAX_IDENTITY_SOURCE_BYTES = 1024 * 1024
+MAX_IDENTITY_SOURCE_BYTES = 4 * 1024 * 1024
 IDENTITY_SOURCE_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml"})
 IDENTITY_SOURCE_PREFIXES = (
     "docs/01.requirements/",
@@ -316,7 +318,7 @@ def _read_identity_source(path: pathlib.Path) -> str:
         )
     if metadata.st_size > MAX_IDENTITY_SOURCE_BYTES:
         raise IdentityHistoryError("tracked identity source exceeds its byte bound")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
     try:
         descriptor = os.open(path, flags)
         try:
@@ -341,6 +343,8 @@ def _read_identity_source(path: pathlib.Path) -> str:
 def collect_issued_identities(
     repo: pathlib.Path,
     refs: tuple[str, ...] = ("--all",),
+    *,
+    include_current: bool = True,
 ) -> IssuedIdentities:
     """Return immutable issued-number sets from current files plus bounded Git patches."""
 
@@ -357,7 +361,7 @@ def collect_issued_identities(
         timeout_seconds=_remaining_scan_seconds(deadline),
     ).text.split("\0")
     collected: dict[str, set[int]] = {}
-    for relative in current_files:
+    for relative in current_files if include_current else ():
         _remaining_scan_seconds(deadline)
         if (
             not relative.startswith(IDENTITY_SOURCE_PREFIXES)
@@ -394,6 +398,117 @@ def collect_issued_identities(
             {name: frozenset(values) for name, values in sorted(collected.items())}
         )
     )
+
+
+def validate_allocation_transition(
+    root: pathlib.Path,
+    registry: DocumentRegistry,
+    current: Mapping[str, str],
+    base_commit: str,
+) -> tuple[RegistryFinding, ...]:
+    """Compare stable package issuance with one pinned, regular Git predecessor."""
+
+    if re.fullmatch(r"[0-9a-f]{40}", base_commit) is None:
+        raise IdentityHistoryError("allocation predecessor must be a full commit")
+    deadline = time.monotonic() + MAX_GIT_SCAN_SECONDS
+    remaining_bytes = MAX_GIT_OUTPUT_BYTES
+
+    def git(*args: str, maximum: int = MAX_GIT_OUTPUT_BYTES) -> str:
+        nonlocal remaining_bytes
+        output = _run_git(root, args, max_output_bytes=min(maximum, remaining_bytes),
+                          timeout_seconds=_remaining_scan_seconds(deadline))
+        remaining_bytes -= output.bytes_read
+        return output.text
+
+    git("merge-base", "--is-ancestor", base_commit, "HEAD")
+    listing = git("ls-tree", "-r", "-z", base_commit, "--",
+                  "docs/99.templates/registry.json", *IDENTITY_SOURCE_PREFIXES)
+    entries: dict[str, str] = {}
+    for row in filter(None, listing.split("\0")):
+        match = re.fullmatch(r"(100644|100755) blob ([0-9a-f]{40,64})\t([^\0]+)", row)
+        if match is None:
+            raise IdentityHistoryError("allocation predecessor contains a nonregular blob")
+        entries[match[3]] = match[2]
+    previous: dict[str, set[int]] = {}
+    for path, oid in entries.items():
+        if not path.endswith(".md"):
+            continue
+        text = git("cat-file", "blob", oid, maximum=MAX_IDENTITY_SOURCE_BYTES)
+        try:
+            identity = parse_frontmatter_text(text).get("artifact_id")
+        except ValueError as error:
+            raise IdentityHistoryError("allocation predecessor frontmatter is invalid") from error
+        if isinstance(identity, str) and _path_accepts_identity(path, identity):
+            _record(identity, previous)
+    registry_oid = entries.get("docs/99.templates/registry.json")
+    # Exact reviewed renames preserve identity even when the predecessor's
+    # migrated envelope had not yet acquired its canonical artifact_id.
+    migration_path = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+    if migration_path.exists():
+        from scripts.lib.document_governance.archive import _approved_migration_document
+
+        try:
+            approved_selection = _approved_migration_document(root)
+            git("merge-base", "--is-ancestor", approved_selection["baseline_commit"], "HEAD")
+            for row in approved_selection["rows"]:
+                target = row.get("target_path")
+                identity = row.get("artifact_id")
+                if (row.get("action") == "rename" and isinstance(identity, str)
+                        and (row["source_path"] in entries or target in entries)
+                        and current.get(target) == identity):
+                    _record(identity, previous)
+        except (KeyError, ValueError) as error:
+            raise IdentityHistoryError("identity-preserving mapping cannot be verified") from error
+    if registry_oid is None:
+        # Only the reviewed pre-introduction lineage can bootstrap a Registry.
+        from scripts.lib.document_governance.archive import _approved_migration_document
+
+        try:
+            approved = _approved_migration_document(root)
+            approved_base = approved["baseline_commit"]
+            git("merge-base", "--is-ancestor", base_commit, approved_base)
+            git("merge-base", "--is-ancestor", approved_base, "HEAD")
+            prior_registry = git("log", "--format=%H", "-1", base_commit, "--",
+                                 "docs/99.templates/registry.json").strip()
+            if prior_registry:
+                raise IdentityHistoryError("a removed Registry cannot bootstrap again")
+            historical = collect_issued_identities(root, refs=(base_commit,), include_current=False)
+            high_water = {name: historical.high_water(name) for name in registry.identity_spaces}
+        except (KeyError, ValueError) as error:
+            raise IdentityHistoryError("allocation bootstrap lacks approved lineage") from error
+    else:
+        try:
+            from scripts.lib.document_governance.registry import _unique_object
+
+            raw = json.loads(git("cat-file", "blob", registry_oid), object_pairs_hook=_unique_object)
+            spaces = raw["identity_spaces"]
+            high_water = {}
+            for name in registry.identity_spaces:
+                space = spaces[name]
+                mark = space["high_water"]
+                if type(mark) is not int or mark < 0 or space["next_number"] != mark + 1:
+                    raise ValueError("invalid allocation")
+                high_water[name] = mark
+        except (KeyError, TypeError, ValueError) as error:
+            raise IdentityHistoryError("allocation predecessor Registry is invalid") from error
+    observed: dict[str, set[int]] = {}
+    for path, identity in current.items():
+        if _path_accepts_identity(path, identity):
+            _record(identity, observed)
+    findings: list[RegistryFinding] = []
+    for name, space in registry.identity_spaces.items():
+        mark = high_water[name]
+        if space.high_water < mark:
+            findings.append(RegistryFinding("identity-allocation-regression", f"identity_spaces.{name}",
+                                            "allocation cannot move below its trusted predecessor"))
+        added = observed.get(name, set()) - previous.get(name, set())
+        if any(number <= mark for number in added):
+            findings.append(RegistryFinding("identity-reuse-forbidden", f"identity_spaces.{name}",
+                                            "new package identity is already reserved by its predecessor"))
+        if added and (space.high_water < max(added) or space.next_number != space.high_water + 1):
+            findings.append(RegistryFinding("identity-allocation-not-advanced", f"identity_spaces.{name}",
+                                            "new identity requires atomic allocation advancement"))
+    return tuple(sorted(findings))
 
 
 def validate_identity_history(

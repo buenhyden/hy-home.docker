@@ -16,6 +16,13 @@ from typing import Any, Iterable, Mapping, Sequence
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.lib.document_governance.suite_registry import (  # noqa: E402
+    SuiteRegistryError,
+    load_manifest_document,
+    validate_execution_argv,
+)
+
 
 REQUIRED_FIELDS = frozenset(
     {
@@ -226,6 +233,11 @@ def validate_manifest_document(
                     )
                 )
             execution_contexts = row.get("execution_contexts")
+            if isinstance(execution_argv, list) and all(isinstance(item, str) for item in execution_argv):
+                try:
+                    validate_execution_argv(PurePosixPath(path), tuple(execution_argv))
+                except SuiteRegistryError as error:
+                    findings.append(_finding("validator-execution-argv-invalid", path, str(error)))
             if (
                 not isinstance(execution_contexts, list)
                 or execution_contexts
@@ -447,8 +459,8 @@ def _git_paths(repo_root: Path) -> set[str]:
 
 def _load_manifest(manifest_path: Path) -> object:
     try:
-        return yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        return load_manifest_document(manifest_path)
+    except SuiteRegistryError as exc:
         return {"_load_error": str(exc)}
 
 

@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from scripts.lib.document_governance import suite_registry
 
 
+CI_DEPENDENCY_BOOTSTRAP = "python3 -m pip install -r scripts/requirements.txt"
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
 _MAX_JSON_DEPTH = 256

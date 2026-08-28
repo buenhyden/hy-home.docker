@@ -1,16 +1,22 @@
 ---
 profile_id: spec
-status: active
+status: retired
 artifact_id: SPEC-0091
 artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-28
 ---
 # Workspace Documentation Consistency 2026-05 Technical Specification
 
 ## Overview
+
+This completed session is retired. Its original body below is historical
+execution evidence, not current authority or permission to repeat its commands.
+The original content is recoverable at Git commit
+`494065806794980080b081439298d7b534d10803`. Physical cleanup and terminal
+Migration mappings remain pending PhaseB.
 
 This document is the technical specification for the May 2026 workspace documentation consistency and standardization improvement work. It systematically fixes structural inconsistencies across docs/01~05, scripts/, and .github/workflows/ identified by the `workspace-audit-2026-05` audit, and updates governance files. As a result of this specification, all documents referenced by AI Agents during work align with the template baseline.
 
@@ -18,17 +24,18 @@ This document is the technical specification for the May 2026 workspace document
 
 **Scope:**
 
-- docs/02.architecture: standardize ADR/ARD title format
-- docs/01.requirements: add missing sections (Overview, AI Agent Requirements)
-- docs/03.specs: add Agent Role & IO Contract sections to 15 spec files, marked N/A where applicable
-- docs/04.execution: standardize task file title prefixes and add suffixes to active plan titles
-- docs/05.operations/catalog/*/*/policy.md: standardize `## Applies To` -> `## Policy Scope` headings across about 50 files
-- docs/05.operations/catalog/*/*/guide.md, runbooks: add frontmatter `status:` fields
-- docs/05.operations/incidents: add README template links
-- docs/99.templates: confirm baseline, with no changes
-- scripts/: fix executable permissions and shebangs for 2 files
-- .github/workflows/: refresh GitHub Actions SHAs for 5 files
-- docs/00.agent-governance/rules/: specify Policy Scope baseline and ADR/ARD title format rules
+> Historical evidence (not current authority; source: Git history):
+> - docs/02.architecture: standardize ADR/ARD title format
+> - docs/01.requirements: add missing sections (Overview, AI Agent Requirements)
+> - docs/03.specs: add Agent Role & IO Contract sections to 15 spec files, marked N/A where applicable
+> - docs/04.execution: standardize task file title prefixes and add suffixes to active plan titles
+> - docs/05.operations/catalog/*/*/policy.md: standardize `## Applies To` -> `## Policy Scope` headings across about 50 files
+> - docs/05.operations/catalog/*/*/guide.md, runbooks: add frontmatter `status:` fields
+> - docs/05.operations/incidents: add README template links
+> - docs/99.templates: confirm baseline, with no changes
+> - scripts/: fix executable permissions and shebangs for 2 files
+> - .github/workflows/: refresh GitHub Actions SHAs for 5 files
+> - docs/00.agent-governance/rules/: specify Policy Scope baseline and ADR/ARD title format rules
 
 **Non-goals:**
 
@@ -59,10 +66,11 @@ This document is the technical specification for the May 2026 workspace document
 
 ## Core Design
 
-- **Component Boundary**: docs/01~05, scripts/, .github/workflows/, docs/00.agent-governance/rules/
-- **Key Dependencies**: docs/99.templates (baseline documents), scripts/validation/ (validation scripts)
-- **Tech Stack**: bash, sed, git (Conventional Commits)
-- **Execution Strategy**: Foundation-first: confirm template baseline -> fix titles/structure -> perform bulk repeated fixes -> apply technical fixes -> synchronize governance.
+> Historical evidence (not current authority; source: Git history):
+> - **Component Boundary**: docs/01~05, scripts/, .github/workflows/, docs/00.agent-governance/rules/
+> - **Key Dependencies**: docs/99.templates (baseline documents), scripts/validation/ (validation scripts)
+> - **Tech Stack**: bash, sed, git (Conventional Commits)
+> - **Execution Strategy**: Foundation-first: confirm template baseline -> fix titles/structure -> perform bulk repeated fixes -> apply technical fixes -> synchronize governance.
 
 ## Data Modeling & Storage Strategy
 
@@ -95,9 +103,10 @@ This document is the technical specification for the May 2026 workspace document
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: bash, grep, sed, find, chmod, git
-- **Permission Boundary**: only files under docs/01~05, scripts/, .github/workflows/, and docs/00.agent-governance/rules/ may be modified. Substantive docs/99.templates changes are forbidden.
-- **Failure Handling**: when a sed pattern does not match, make no file change; inspect manually and retry.
+> Historical evidence (not current authority; source: Git history):
+> - **Tool List**: bash, grep, sed, find, chmod, git
+> - **Permission Boundary**: only files under docs/01~05, scripts/, .github/workflows/, and docs/00.agent-governance/rules/ may be modified. Substantive docs/99.templates changes are forbidden.
+> - **Failure Handling**: when a sed pattern does not match, make no file change; inspect manually and retry.
 
 ## Prompt / Policy Contract (If Applicable)
 
@@ -184,32 +193,39 @@ bash scripts/validation/check-doc-traceability.sh
 - **Plan**: 2026-05-28 workspace doc consistency plan
 - **Tasks**: 2026-05-28 workspace doc consistency tasks
 - **Templates**: [docs/99.templates/](../../99.templates)
-- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules)
+- **Governance Rules**: [Agent governance](../../00.agent-governance/README.md)
 
 ## Boundaries and Inputs
 
-The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+The preceding session boundaries and dated inputs are historical. Current
+authoring authority belongs to Stage 00 policies and the Stage 99 Registry.
 
 ## Behavior Contract
 
-The behaviors and invariants already specified above remain the package behavior contract.
+The session obligations have ended; obsolete stub, progress, R4/R5 and checker
+requirements are not current behavior contracts.
 
 ## Technical Approach
 
-The implementation and component design recorded above remain the technical approach.
+The preceding implementation approach describes only the completed session.
 
 ## Interfaces and Data
 
-The interfaces, configuration, and data shapes recorded above remain authoritative.
+Current document fields and shapes are owned by the Stage 99 Registry.
 
 ## Failure Modes and Guardrails
 
-The safety, validation, and operational constraints above remain the package guardrails.
+Current approval and credential boundaries are owned by Stage 00 policies;
+operational responsibilities belong to the Stage 05 catalog.
 
 ## Acceptance Contract
 
-The verification and success conditions above remain the acceptance contract.
+The dated verification criteria above are historical session evidence, not
+current completion gates. Stage 00 completion policy governs new work.
 
 ## Traceability
 
-The requirement, architecture, operations, and evidence links above provide traceability.
+Historical identity and original content remain recoverable at the commit
+above. Current owners are [Stage 00](../../00.agent-governance/README.md),
+[Stage 99 Registry](../../99.templates/registry.json), and the
+[Operations catalog](../../05.operations/catalog/README.md).

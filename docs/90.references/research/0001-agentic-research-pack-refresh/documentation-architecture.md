@@ -243,7 +243,7 @@ proposal. Each is an investigation prompt with a named owner.
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Template index](../../../99.templates/templates/README.md)
-- [External source rationale](../../../99.templates/support/external-source-rationale.md)
+- [External source rationale](../../../99.templates/README.md)
 
 ## Source Retrieval Boundary
 

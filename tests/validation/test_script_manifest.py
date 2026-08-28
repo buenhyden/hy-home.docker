@@ -4,8 +4,11 @@ import ast
 from collections import defaultdict
 from copy import deepcopy
 import importlib.util
+import json
+import os
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -429,6 +432,85 @@ class ScriptManifestTests(unittest.TestCase):
         declared = [row["path"] for row in self.rows]
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(self.tracked, set(declared))
+
+    def test_stage90_generators_declare_exact_destinations_and_explicit_write_mode(self) -> None:
+        for script, output in (
+            ("scripts/operations/generate-compose-profile-service-coverage.sh", "docs/90.references/data/0059-compose-profile-service-coverage/README.md"),
+            ("scripts/operations/generate-tech-stack-version-provenance.sh", "docs/90.references/data/0061-tech-stack-version-provenance/README.md"),
+            ("scripts/validation/generate-audit-implementation-matrix.sh", "docs/90.references/data/0065-audit-implementation-matrix/README.md"),
+            ("scripts/validation/generate-security-automation-readiness.sh", "docs/90.references/data/0078-security-automation-readiness/README.md"),
+            ("scripts/security/generate-supply-chain-sample-service-summary.sh", "docs/90.references/data/0079-supply-chain-sample-service/README.md"),
+        ):
+            with self.subTest(script=script):
+                row = self.rows_by_path[script]
+                self.assertEqual([output], row["outputs"])
+                self.assertEqual(["bash", script, "--check"], row["check_command"])
+                result = subprocess.run(["bash", script, "--help"], cwd=ROOT, text=True, capture_output=True, check=False)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn("--write", result.stdout)
+
+    def test_stage90_generators_require_write_and_touch_only_declared_output(self) -> None:
+        scripts = (
+            "scripts/operations/generate-compose-profile-service-coverage.sh",
+            "scripts/operations/generate-tech-stack-version-provenance.sh",
+            "scripts/validation/generate-audit-implementation-matrix.sh",
+            "scripts/validation/generate-security-automation-readiness.sh",
+            "scripts/security/generate-supply-chain-sample-service-summary.sh",
+            "scripts/validation/report-provider-hook-parity.sh",
+        )
+        for script in scripts:
+            with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                inputs = {script}
+                if "tech-stack" in script:
+                    (root / "infra").mkdir()
+                    (root / "infra/tech-stack.versions.json").write_text(json.dumps({"entries": [{"component": "fixture", "images": ["fixture:1"], "compose_files": ["infra/docker-compose.fixture.yml"]}]}))
+                    (root / "infra/image-tag-policy.exceptions.json").write_text("{}")
+                    (root / "infra/docker-compose.fixture.yml").write_text("services:\n  fixture:\n    image: fixture:1\n")
+                elif "audit-implementation" in script:
+                    inputs.update({"scripts/validation/audit_criterion_contract.py", "scripts/validation/check-agentic-audit-semantic-freshness.py", "scripts/validation/agentic-audit-semantic-contract.json"})
+                    semantic = json.loads((ROOT / "scripts/validation/agentic-audit-semantic-contract.json").read_text())
+                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "docs/90.references/audits").rglob("*.md"))
+                    inputs.add(semantic["task_evidence"])
+                    inputs.update(path for assertion in semantic["assertions"] for path in assertion["required_evidence_paths"])
+                elif "supply-chain" in script:
+                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/validation/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
+                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "infra").glob("supply-chain*.json"))
+                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "tests/fixtures/supply-chain").rglob("*") if path.is_file())
+                elif "hook-parity" in script:
+                    from tests.validation.test_provider_hook_parity import copy_fixture
+                    copy_fixture(root)
+                self.assertLess(len(inputs), 180, "fixture must remain a bounded producer input set")
+                for relative in sorted(inputs):
+                    source, target = ROOT / relative, root / relative
+                    self.assertTrue(source.is_file(), relative)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(source, target)
+                output = self.rows_by_path[script]["outputs"][0]
+                target = root / output
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("stale output\n", encoding="utf-8")
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True, capture_output=True)
+                subprocess.run(["git", "add", "."], cwd=root, check=True, capture_output=True)
+                environment = {**os.environ, "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"}
+                environment.pop("HYHOME_CI_GATE_ROOT", None)
+                command = ["bash", str(root / script)]
+                extra = ["--root", str(root)] if "hook-parity" in script else []
+                def snapshot():
+                    return {path.relative_to(root).as_posix(): path.read_bytes() for path in root.rglob("*") if path.is_file() and ".git" not in path.relative_to(root).parts}
+                before = snapshot()
+                for mode in ([], ["--check"]):
+                    result = subprocess.run([*command, *mode, *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+                    self.assertNotEqual(0, result.returncode, script)
+                    self.assertEqual(before, snapshot(), script)
+                result = subprocess.run([*command, "--write", *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                after = snapshot()
+                self.assertEqual({output}, {path for path in before.keys() | after.keys() if before.get(path) != after.get(path)})
+                for mode in ([], ["--check"]):
+                    result = subprocess.run([*command, *mode, *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+                    self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                    self.assertEqual(after, snapshot())
 
     def test_task12_retires_only_the_proven_successor_scripts(self) -> None:
         self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.tracked))
@@ -1257,30 +1339,31 @@ class ScriptManifestValidationTests(unittest.TestCase):
             ),
         )
 
-    def _generator_repo(self, root: Path, script: str) -> Path:
+    def _generator_repo(self, root: Path, script: str, script_path: str = "scripts/example.py") -> Path:
         for relative in ("scripts", "docs", "tests"):
             (root / relative).mkdir(parents=True, exist_ok=True)
-        (root / "scripts/example.py").write_text(script, encoding="utf-8")
+        (root / script_path).parent.mkdir(parents=True, exist_ok=True)
+        (root / script_path).write_text(script, encoding="utf-8")
         (root / ".github").mkdir(parents=True, exist_ok=True)
         (root / ".github/workflow-contract.yml").write_text(
-            'entrypoint: "scripts/example.py"\n', encoding="utf-8"
+            f'entrypoint: "{script_path}"\n', encoding="utf-8"
         )
         (root / "docs/authority.md").write_text("authority\n", encoding="utf-8")
         (root / "docs/consumer.md").write_text(
-            "`scripts/example.py`\n`scripts/manifest.yaml`\n", encoding="utf-8"
+            f"`{script_path}`\n`scripts/manifest.yaml`\n", encoding="utf-8"
         )
         (root / "docs/output.md").write_text("before\n", encoding="utf-8")
         (root / "tests/validation").mkdir(parents=True, exist_ok=True)
         (root / "tests/validation/test_example.py").write_text(
-            "import subprocess\nsubprocess.run(['python3', 'scripts/example.py', '--check'], check=False)\n",
+            f"import subprocess\nsubprocess.run(['python3', '{script_path}', '--check'], check=False)\n",
             encoding="utf-8",
         )
         generator = self.row(
-            path="scripts/example.py",
+            path=script_path,
             kind="generator",
             mutation="check-write",
             authority=".github/workflow-contract.yml",
-            check_command=["python3", "scripts/example.py", "--check"],
+            check_command=["python3", script_path, "--check"],
             outputs=["docs/output.md"],
         )
         generator.pop("public_suites")
@@ -1302,6 +1385,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 },
             ],
         }
+        manifest["files"].sort(key=lambda row: row["path"])
         manifest_path = root / "scripts/manifest.yaml"
         manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
@@ -1317,18 +1401,20 @@ class ScriptManifestValidationTests(unittest.TestCase):
         valid_script = "import argparse\nargparse.ArgumentParser().add_argument('--check', action='store_true')\n"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            manifest_path = self._generator_repo(root, valid_script)
+            script_path = "scripts/validation/check-supply-chain-policy.py"
+            manifest_path = self._generator_repo(root, valid_script, script_path)
             self.assertEqual([], self.checker.check_generated(root, manifest_path))
 
-            (root / "scripts/example.py").write_text("raise SystemExit(9)\n", encoding="utf-8")
+            (root / script_path).write_text("raise SystemExit(9)\n", encoding="utf-8")
             self.assertIn(
                 "generated-check-failed",
                 {finding.code for finding in self.checker.check_generated(root, manifest_path)},
             )
             producer = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
-            producer["files"][0].update(
+            next(row for row in producer["files"] if row["path"] == script_path).update(
                 kind="validator",
                 public_suites=["repository-integrity"],
+                execution_argv=["--check"],
                 execution_contexts=[
                     "local", "pull_request", "push", "workflow_dispatch"
                 ],
@@ -1341,7 +1427,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 {finding.code for finding in self.checker.check_generated(root, manifest_path)},
             )
 
-            (root / "scripts/example.py").write_text(
+            (root / script_path).write_text(
                 "from pathlib import Path\nPath('docs/output.md').write_text('mutated\\n')\n",
                 encoding="utf-8",
             )
@@ -1355,7 +1441,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
                     marker = f"{surface}/.ignored-mutation"
                     (root / surface).mkdir(parents=True, exist_ok=True)
-                    (root / "scripts/example.py").write_text(
+                    (root / script_path).write_text(
                         f"from pathlib import Path\nPath('{marker}').write_text('mutated\\n')\n",
                         encoding="utf-8",
                     )
@@ -1369,9 +1455,9 @@ class ScriptManifestValidationTests(unittest.TestCase):
             subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
             document = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
             missing = deepcopy(document)
-            missing["files"][0]["check_command"] = [
+            next(row for row in missing["files"] if row["path"] == script_path)["check_command"] = [
                 "missing-task9-generator-command",
-                "scripts/example.py",
+                script_path,
                 "--check",
             ]
             manifest_path.write_text(yaml.safe_dump(missing, sort_keys=False), encoding="utf-8")

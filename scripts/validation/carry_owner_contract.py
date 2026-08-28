@@ -21,12 +21,13 @@ mechanisable. Deciding which surface a claim's remediation lands on is a semanti
 judgement and stays with the author. What a machine CAN verify is that the
 judgement, once written, is internally consistent:
 
-    stated_owner == owner_declared_at(cited_scope_file, cited_line)
+    historical_owner == owner_declared_at(cited_scope_file, cited_line, as_of)
+    current_owner == active_canonical_role.agent_id
 
 A record therefore has to cite the File Ownership SSOT row it relies on, and this
-module reads that row and compares. It catches a wrong owner written against a
-real citation, a citation that points at no ownership row at all, and drift when
-a scope table is edited under a record that cites it.
+module reads the regular historical Git blob and compares. Current destination
+claims additionally cite the existing canonical role, without line-number
+authority. Role identity is accountability evidence, never a grant of permission.
 
 Declared non-coverage, so these are limits rather than silent gaps. This module
 does NOT decide whether the cited surface is the right surface for the claim —
@@ -44,9 +45,21 @@ import re
 import sys
 from dataclasses import dataclass
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
+
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
+from scripts.validation.agent_governance_contract import (
+    HISTORICAL_QUOTE_MARKER,
+    read_repository_text,
+)
+
 LEDGER_HEADING = "### Old-claim migration ledger"
 DESTINATION_HEADING = "### Gate 3 carried claims"
-SCOPES_DIR = "docs/00.agent-governance/roles"
+# Explicit ownership-as-of evidence, not the retiring claims' source commit.
+OWNERSHIP_AS_OF = "889d3868ecd0913cddac79a718584a54a8453525"
+GOVERNANCE = pathlib.PurePosixPath("docs/00.agent-governance")
 CODEOWNERS = ".github/CODEOWNERS"
 LEDGER_COLUMNS = 11
 DISPOSITION_COLUMN = 5
@@ -54,7 +67,8 @@ REASON_COLUMN = 9
 ANCHOR_COLUMN = 3
 
 OWNERSHIP_HEADING = re.compile(r"^## \d+\. File Ownership")
-SCOPE_CITATION = re.compile(r"`scopes/([a-z-]+)\.md:(\d+)`")
+SCOPE_CITATION = re.compile(r"`(?P<path>scopes/(?P<scope>[a-z-]+)\.md):(?P<line>\d+)`")
+ROLE_CITATION = re.compile(r"`(docs/00\.agent-governance/roles/([a-z][a-z0-9-]*)\.md)`")
 CODEOWNERS_CITATION = re.compile(r"`\.github/CODEOWNERS(?::(\d+))?`")
 # An owner is a backticked role slug or a backticked @handle introduced by an
 # owner phrase. The corpus writes several spellings and interposes wording such
@@ -108,6 +122,7 @@ class Record:
     text: str
     keys: tuple[str, ...] = ()
     survival: str = ""
+    historical: bool = False
 
     def owners(self) -> frozenset[str]:
         return frozenset(OWNER_STATEMENT.findall(self.text))
@@ -130,10 +145,7 @@ class Record:
 
 
 def _read(root: pathlib.Path, relative: str) -> list[str]:
-    path = root / relative
-    if not path.is_file():
-        raise FileNotFoundError(f"required file is missing: {relative}")
-    return path.read_text(encoding="utf-8", errors="strict").split("\n")
+    return read_repository_text(root, relative).split("\n")
 
 
 def _section(lines: list[str], heading: str, stop_prefix: str) -> tuple[int, int]:
@@ -149,13 +161,19 @@ def _section(lines: list[str], heading: str, stop_prefix: str) -> tuple[int, int
     return start, len(lines)
 
 
-def load_ownership_table(root: pathlib.Path) -> dict[tuple[str, int], str]:
-    """Map (scope file stem, 1-based line) -> owner declared on that row."""
+def load_ownership_table(root: pathlib.Path, citations: set[str]) -> dict[tuple[str, int], str]:
+    """Resolve legacy coordinates only at the documented ownership-as-of commit."""
 
     table: dict[tuple[str, int], str] = {}
-    scopes = sorted((root / SCOPES_DIR).glob("*.md"))
-    for scope in scopes:
-        lines = scope.read_text(encoding="utf-8", errors="strict").split("\n")
+    sources: dict[str, str] = {}
+    for citation in citations:
+        match = SCOPE_CITATION.fullmatch(citation)
+        if match is None:
+            raise ValueError("historical scope citation is invalid")
+        sources[match.group("path")] = match.group("scope")
+    for source, scope in sorted(sources.items()):
+        path = (GOVERNANCE / source).as_posix()
+        lines = HistoricalDocument(root, OWNERSHIP_AS_OF, path).read_text().split("\n")
         inside = False
         for index, line in enumerate(lines):
             if OWNERSHIP_HEADING.match(line):
@@ -172,7 +190,7 @@ def load_ownership_table(root: pathlib.Path) -> dict[tuple[str, int], str]:
                 continue
             owner = cells[1].strip("`").strip()
             if owner:
-                table[(scope.stem, index + 1)] = owner
+                table[(scope, index + 1)] = owner
     return table
 
 
@@ -247,14 +265,26 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
     start, end = _section(lines, DESTINATION_HEADING, "### ")
     records: list[Record] = []
     index = start
+    quoted_history = False
     while index < end:
         line = lines[index]
+        if line == HISTORICAL_QUOTE_MARKER:
+            quoted_history = True
+            index += 1
+            continue
+        historical = quoted_history and (line == ">" or line.startswith("> "))
+        if historical:
+            line = line[2:]
+        else:
+            quoted_history = False
         if line.startswith("**") and line.count("**") >= 2:
             title = line.split("**")[1]
             cursor = index + 1
             while cursor < end and lines[cursor].strip() != "":
+                if historical and (not lines[cursor].startswith("> ") or not lines[cursor][2:].strip()):
+                    break
                 cursor += 1
-            body = " ".join(lines[index:cursor])
+            body = " ".join(item[2:] if historical else item for item in lines[index:cursor])
             if OWNER_STATEMENT.search(body):
                 declared = tuple(
                     match.strip()
@@ -267,6 +297,7 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
                         label=title[:60],
                         text=body,
                         keys=declared,
+                        historical=historical,
                         survival=(
                             match.group(1)
                             if (match := DESTINATION_SURVIVAL.search(body))
@@ -278,6 +309,28 @@ def collect_destination_records(root: pathlib.Path, task: str) -> list[Record]:
             continue
         index += 1
     return records
+
+
+def check_current_role(record: Record, root: pathlib.Path) -> list[Finding]:
+    """Verify current accountability identity, not permission to perform writes."""
+    owner = record.operative_owner()
+    if record.surface != "destination" or record.historical or not owner or owner.startswith("@"):
+        return []
+    citations = ROLE_CITATION.findall(record.text)
+    code = "CARRY-OWNER-CURRENT-UNCITED"
+    if len(citations) == 1:
+        path, slug = citations[0]
+        try:
+            metadata = parse_frontmatter_text(read_repository_text(root, path))
+        except ValueError:
+            code = "CARRY-OWNER-CURRENT-UNRESOLVED"
+        else:
+            if (metadata.get("profile_id") == "governance-role"
+                    and metadata.get("status") == "active"
+                    and metadata.get("agent_id") == slug == owner):
+                return []
+            code = "CARRY-OWNER-CURRENT-MISMATCH"
+    return [Finding(code, record.where, f"{record.label}: current owner must cite its active canonical role identity")]
 
 
 def check_record(
@@ -295,7 +348,10 @@ def check_record(
         )
         return findings
 
-    scope_citations = SCOPE_CITATION.findall(record.text)
+    scope_citations = [
+        (match.group("scope"), match.group("line"))
+        for match in SCOPE_CITATION.finditer(record.text)
+    ]
     codeowners_citations = CODEOWNERS_CITATION.findall(record.text)
     role_owners = [owner for owner in owners if not owner.startswith("@")]
     handle_owners = [owner for owner in owners if owner.startswith("@")]
@@ -500,13 +556,14 @@ def main() -> int:
     root = pathlib.Path(arguments.root).resolve()
 
     try:
-        ownership = load_ownership_table(root)
         codeowners_lines = load_codeowners_lines(root)
         records: list[Record] = []
         if arguments.surface in ("ledger", "both"):
             records += collect_ledger_records(root, arguments.task)
         if arguments.surface in ("destination", "both"):
             records += collect_destination_records(root, arguments.task)
+        citations = {match.group(0) for record in records for match in SCOPE_CITATION.finditer(record.text)}
+        ownership = load_ownership_table(root, citations)
     except (FileNotFoundError, ValueError) as error:
         print(f"carry-owner: ERROR {error}", file=sys.stderr)
         return 2
@@ -514,6 +571,7 @@ def main() -> int:
     findings: list[Finding] = []
     for record in records:
         findings += check_record(record, ownership, codeowners_lines)
+        findings += check_current_role(record, root)
     if arguments.surface == "both":
         findings += check_pairing(records)
 

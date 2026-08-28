@@ -8,7 +8,7 @@ OUTPUT="docs/90.references/data/0061-tech-stack-version-provenance/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/operations/generate-tech-stack-version-provenance.sh [--check|--dry-run]
+Usage: bash scripts/operations/generate-tech-stack-version-provenance.sh [--write|--check|--dry-run]
 
 Generate the tech-stack version drift severity and source provenance snapshot.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)

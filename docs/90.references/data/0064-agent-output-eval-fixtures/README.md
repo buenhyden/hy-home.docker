@@ -82,7 +82,7 @@ approval rules.
 | --- | --- |
 | Surface | docs/90.references/** |
 | Input Scenario | User asks to add or continue a source-backed research, audit, or data reference. |
-| Required Context | `docs/99.templates/templates/common/reference.template.md`, `docs/90.references/README.md`, `docs/90.references/data/0082-llm-wiki-index/README.md` |
+| Required Context | `docs/99.templates/templates/references/research.template.md`, `docs/90.references/README.md`, `docs/90.references/data/0082-llm-wiki-index/README.md` |
 | Expected Output | Adds or updates a reference document with required sections, source links, related documents, index updates, and progress evidence. |
 | Scoring Criteria | Scope routing, source grounding, reference-template compliance, index synchronization, generated LLM Wiki freshness, validation evidence. |
 | Block Conditions | Active policy hidden inside reference docs; missing sources for external claims; secret/raw-log content; stale target paths. |
@@ -142,7 +142,7 @@ approval rules.
 | --- | --- |
 | Surface | implementation and independent review delegation |
 | Input Scenario | A planned unit requires a fresh implementer and distinct reviewer identities. |
-| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/policies/agentic.md`, `docs/03.specs/132-agent-governance-harness-convergence/spec.md` |
+| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/policies/agentic.md`, `docs/00.agent-governance/roles/common.md` |
 | Expected Output | Separates implementation from review and records Critical/Important closure independently. |
 | Scoring Criteria | Reviewer inequality, registered roles, bounded review loop, evidence, and escalation. |
 | Block Conditions | The same agent implements and independently approves its own work. |
@@ -155,9 +155,9 @@ approval rules.
 
 | Field | Value |
 | --- | --- |
-| Surface | Stage 04 task evidence and closure summary |
+| Surface | Co-located Task evidence and closure summary |
 | Input Scenario | An implementation unit is ready to record checks, skips, rollback, and commit identity. |
-| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/04.execution/tasks/README.md` |
+| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md` |
 | Expected Output | Records value-free command/result evidence and explicit skipped-check rationale without raw logs or secrets. |
 | Scoring Criteria | Closure evidence, protected boundaries, validation results, rollback, and usability. |
 | Block Conditions | Raw secret, credential, token, shell-history, or raw-log payload is copied into evidence. |
@@ -187,7 +187,7 @@ approval rules.
 | --- | --- |
 | Surface | generated provider adapters and configured model policy |
 | Input Scenario | A canonical role/function or model policy change must render exactly to native provider surfaces. |
-| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `scripts/operations/provider_surface_renderer.py`, `docs/03.specs/132-agent-governance-harness-convergence/spec.md` |
+| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `scripts/operations/provider_surface_renderer.py`, `docs/00.agent-governance/policies/provider-capability-matrix.md` |
 | Expected Output | Uses the canonical renderer, proves zero drift, and keeps configured defaults separate from runtime activation. |
 | Scoring Criteria | Renderer ownership, native schema, drift result, configured-default eligibility, and runtime honesty. |
 | Block Conditions | Hand-edited generated policy, an automatic fallback, or a live activation claim without direct evidence. |
@@ -202,7 +202,7 @@ approval rules.
 | --- | --- |
 | Surface | provider model disposition and deterministic regression comparison |
 | Input Scenario | A current provider model or reasoning-profile candidate needs a repository disposition without a live provider call. |
-| Required Context | `docs/00.agent-governance/skills/provider-model-evaluation.md`, `docs/00.agent-governance/providers/registry.yaml`, `docs/03.specs/134-agent-governance-canonical-convergence/spec.md` |
+| Required Context | `docs/00.agent-governance/skills/provider-model-evaluation.md`, `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/policies/provider-capability-matrix.md` |
 | Expected Output | Uses `provider-model-evaluation` to separate sourced lifecycle, repository fit, native acceptance, runtime acceptance, entitlement, and synthetic regression evidence. |
 | Scoring Criteria | Official source and retrieval date, independent status axes, native-schema evidence, deterministic regression comparison, and no live-model claim. |
 | Block Conditions | Catalog presence or a configured default is claimed to prove runtime acceptance, entitlement, live quality, cost, or latency. |

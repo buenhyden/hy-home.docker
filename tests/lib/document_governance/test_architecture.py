@@ -13,7 +13,7 @@ from unittest import mock
 from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def _architecture_module():

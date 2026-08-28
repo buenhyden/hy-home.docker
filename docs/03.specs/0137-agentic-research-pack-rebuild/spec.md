@@ -94,7 +94,7 @@ settings, or deployment state.
 
 - Changing runtime service definitions, images, networks, ports, volumes,
   secrets, or credentials.
-- Modifying Claude, Codex, Gemini, or other provider runtime configuration.
+- Modifying provider runtime configuration.
 - Adopting research recommendations as Stage 00 or Stage 05 policy.
 - Mutating remote GitHub settings, dispatching workflows, pushing, merging, or
   opening a pull request without a later explicit user choice.
@@ -946,7 +946,7 @@ The deterministic evidence set is:
 - the complete retiring-path literal scan over the tracked text universe;
 - `bash scripts/validation/check-repo-contracts.sh` for Markdown and
   pseudo-link contracts;
-- `bash scripts/validation/check-doc-implementation-alignment.sh` for active
+- `python3 scripts/validation/check-document-links.py --mode alignment` for active
   implementation-link alignment; and
 - the canonical LLM Wiki freshness checks named above.
 
@@ -1167,7 +1167,7 @@ artifact ID `task:2026-08-08-agentic-research-pack-rebuild` and direct parent
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Stage 03 index](../README.md)
-- [Spec template](../../99.templates/templates/sdlc/spec.template.md)
+- [Spec template](../../99.templates/templates/specs/spec.template.md)
 - [Stage 90 research index](../../90.references/research/README.md)
 - [Current research pack](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Stage 98 archive index](../../98.archive/README.md) — canonical route for

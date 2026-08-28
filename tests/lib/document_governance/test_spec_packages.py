@@ -15,8 +15,10 @@ from unittest import mock
 
 import yaml
 
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def _spec_packages_module():
@@ -669,7 +671,7 @@ class SpecPackageTests(unittest.TestCase):
                     f"scripts/lib/document_governance/metadata_validator.py:{stale}"
                 )
         contract = yaml.safe_load(
-            (ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml").read_text(
+            HistoricalDocument(ROOT, "494065806794980080b081439298d7b534d10803", "docs/99.templates/support/document-corpus-migration-contract.yaml").read_text(
                 encoding="utf-8"
             )
         )

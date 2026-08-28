@@ -40,6 +40,16 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 Governance and internal technical authority is written in English. User-facing
 guidance may follow the audience language when its template permits it.
 
+Historical quotations retained in current Markdown must be a contiguous explicit
+blockquote beginning `> Historical evidence (not current authority; source: Git history):`.
+Keep source context with the quotation. It records an earlier observation or
+decision, never a current instruction. Current obligations remain outside the
+quote and must use current owners; a historical heading alone grants no exception.
+For machine-consumed historical tables, place
+`<!-- Historical evidence table (not current authority; source: Git history). -->`
+immediately before the table header and separator. Only that contiguous table is
+evidence; surrounding instructions remain current and validated normally.
+
 ### 5.1 Gap-to-Stage Routing
 
 | Gap Type | Owner | Rule |

@@ -149,7 +149,7 @@ def _read_regular_file(path: pathlib.Path, maximum: int) -> bytes:
         raise RegistryError("registry input must be a regular non-symlink file")
     if metadata.st_size > maximum:
         raise RegistryError("registry input exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
     try:
         descriptor = os.open(path, flags)
         try:
@@ -322,6 +322,24 @@ def validate_registry(
                     )
                 )
     known_profiles = set(profile_ids)
+    additional_owners: dict[str, str] = {}
+    for index, profile in profile_entries:
+        additional = profile.get("additional_paths", ())
+        if not isinstance(additional, (list, tuple)):
+            continue
+        for path in additional:
+            if (not isinstance(path, str) or not path.startswith("docs/")
+                    or not _safe_path_pattern(path) or "{" in path or "}" in path
+                    or profile.get("identity_relation") != "none"):
+                findings.append(RegistryFinding("additional-path-invalid", f"profiles.{index}", "additional paths must be exact safe identity-free routes"))
+                continue
+            owners = [other.get("profile_id") for _, other in profile_entries
+                      if other is not profile and other.get("profile_id") != "unsupported"
+                      and isinstance(other.get("path_pattern"), str)
+                      and _path_regex(other["path_pattern"]).fullmatch(path)]
+            if owners or path in additional_owners:
+                findings.append(RegistryFinding("profile-path-overlap", f"profiles.{index}", path))
+            additional_owners[path] = str(profile.get("profile_id"))
     roles = raw.get("template_roles")
     known_roles = set(roles) if isinstance(roles, Mapping) else set()
     role_sources: list[str] = []
@@ -1412,7 +1430,8 @@ def classify_path(
     matches = [
         profile_id
         for profile_id, profile in active.profiles.items()
-        if isinstance(profile.get("path_pattern"), str)
+        if normalized in profile.get("additional_paths", ())
+        or isinstance(profile.get("path_pattern"), str)
         and _path_regex(str(profile["path_pattern"])).fullmatch(normalized)
     ]
     specific = [item for item in matches if item not in FALLBACK_PROFILE_IDS]

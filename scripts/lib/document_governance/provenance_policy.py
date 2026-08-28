@@ -207,7 +207,7 @@ def _directory_entries(descriptor: int) -> tuple[_EntrySnapshot, ...]:
 def _read_regular_at(directory: int, expected: _EntrySnapshot) -> bytes:
     descriptor = os.open(
         expected.name,
-        os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+        os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK,
         dir_fd=directory,
     )
     try:

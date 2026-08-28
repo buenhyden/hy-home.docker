@@ -74,11 +74,11 @@ task explicitly retires this restructure model with replacement evidence.
 - **Prior audit pack**:
   - [Workspace document contract audit pack](../0102-workspace-document-contract-audit-pack/spec.md)
 - **Template support**:
-  - [Template contract](../../99.templates/support/template-contract.md)
-  - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-  - [Template governance](../../99.templates/support/template-governance.md)
-  - [Template selection](../../99.templates/support/template-selection.md)
-  - [Lifecycle status](../../99.templates/support/lifecycle-status.md)
+  - [Template contract](../../99.templates/README.md)
+  - [Frontmatter contract](../../99.templates/README.md)
+  - [Template governance](../../99.templates/README.md)
+  - [Template selection](../../99.templates/README.md)
+  - [Lifecycle status](../../99.templates/README.md)
 
 ## Contracts
 
@@ -344,11 +344,11 @@ relevant Compose and hardening checks defined by the affected task evidence.
 
 - **README**: [README.md](spec.md)
 - **Previous document contract audit pack**: [../102-workspace-document-contract-audit-pack/spec.md](../0102-workspace-document-contract-audit-pack/spec.md)
-- **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
-- **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
-- **Template governance**: [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
-- **Template selection**: [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
-- **Lifecycle status**: [../../99.templates/support/lifecycle-status.md](../../99.templates/support/lifecycle-status.md)
+- **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/README.md)
+- **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/README.md)
+- **Template governance**: [../../99.templates/support/template-governance.md](../../99.templates/README.md)
+- **Template selection**: [../../99.templates/support/template-selection.md](../../99.templates/README.md)
+- **Lifecycle status**: [../../99.templates/support/lifecycle-status.md](../../99.templates/README.md)
 - **Stage authoring matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
 
 ## Boundaries and Inputs

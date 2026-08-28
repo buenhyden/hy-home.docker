@@ -70,6 +70,7 @@
           "enum": ["required", "absent", "unmanaged"]
         },
         "path_pattern": {"type": "string", "minLength": 1},
+        "additional_paths": {"$ref": "#/$defs/stringList"},
         "artifact_id_pattern": {"type": ["string", "null"]},
         "identity_relation": {
           "enum": ["direct", "package-member", "subject-member", "none"]

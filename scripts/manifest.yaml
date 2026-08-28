@@ -90,7 +90,7 @@ files:
   - tests/validation/test_target_surface_contracts.py
 - path: scripts/lib/document_governance/__init__.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: transition
   mutation: none
   consumers: []
@@ -122,7 +122,7 @@ files:
   - tests/lib/document_governance/test_provenance_policy.py
 - path: scripts/lib/document_governance/frontmatter.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -134,7 +134,7 @@ files:
   - tests/lib/document_governance/test_links.py
 - path: scripts/lib/document_governance/git_provenance.py
   kind: library
-  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
@@ -321,23 +321,38 @@ files:
   tests: []
 - path: scripts/operations/generate-compose-profile-service-coverage.sh
   kind: generator
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
-  lifecycle: transition
+  authority: .github/workflow-contract.yml
+  lifecycle: active
   mutation: check-write
-  consumers: []
-  disposition: rewrite
-  successor: scripts/operations/generate-compose-profile-service-coverage.sh
-  tests: []
+  consumers:
+  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+  check_command:
+  - bash
+  - scripts/operations/generate-compose-profile-service-coverage.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
 - path: scripts/operations/generate-tech-stack-version-provenance.sh
   kind: generator
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
-  lifecycle: transition
+  authority: .github/workflow-contract.yml
+  lifecycle: active
   mutation: check-write
   consumers:
   - scripts/validation/generate-audit-implementation-matrix.sh
-  disposition: rewrite
-  successor: scripts/operations/generate-tech-stack-version-provenance.sh
-  tests: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+  check_command:
+  - bash
+  - scripts/operations/generate-tech-stack-version-provenance.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0061-tech-stack-version-provenance/README.md
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
   authority: docs/99.templates/registry.json
@@ -421,14 +436,20 @@ files:
 - path: scripts/security/generate-supply-chain-sample-service-summary.sh
   kind: generator
   authority: .github/workflow-contract.yml
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  disposition: rewrite
-  successor: scripts/security/generate-supply-chain-sample-service-summary.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_tech_stack_version_contract.py
+  check_command:
+  - bash
+  - scripts/security/generate-supply-chain-sample-service-summary.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0079-supply-chain-sample-service/README.md
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -745,6 +766,7 @@ files:
   kind: validator
   public_suites:
   - repository-integrity
+  execution_argv: [--check]
   execution_contexts: [local, pull_request, push, workflow_dispatch]
   authority: .github/workflow-contract.yml
   lifecycle: active
@@ -789,20 +811,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_target_surface_delta_contracts.py
-- path: scripts/validation/check-task4-migration.py
-  kind: validator
-  public_suites:
-  - agent-governance
-  execution_contexts: [local, pull_request, push, workflow_dispatch]
-  authority: docs/98.archive/migrations/0003-workspace-governance-simplification.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_task4_migration_verifier.py
 - path: scripts/validation/check-template-security-baseline.sh
   kind: validator
   public_suites:
@@ -873,26 +881,38 @@ files:
 - path: scripts/validation/generate-audit-implementation-matrix.sh
   kind: generator
   authority: .github/workflow-contract.yml
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  disposition: rewrite
-  successor: scripts/validation/generate-audit-implementation-matrix.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_audit_criterion_contract.py
+  check_command:
+  - bash
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0065-audit-implementation-matrix/README.md
 - path: scripts/validation/generate-security-automation-readiness.sh
   kind: generator
   authority: .github/workflow-contract.yml
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  disposition: rewrite
-  successor: scripts/validation/generate-security-automation-readiness.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_security_automation_readiness.py
+  check_command:
+  - bash
+  - scripts/validation/generate-security-automation-readiness.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0078-security-automation-readiness/README.md
 - path: scripts/validation/github_workflow_contract.py
   kind: validator
   public_suites:

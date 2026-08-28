@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import contextlib
 import pathlib
 import shutil
 import subprocess
@@ -30,7 +31,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def finding_codes(root: pathlib.Path = ROOT) -> set[str]:
@@ -38,8 +39,10 @@ def finding_codes(root: pathlib.Path = ROOT) -> set[str]:
 
 
 class OperationsCatalogTopologyTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.migration = load_task8_migration(ROOT)
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.migration = load_task8_migration(ROOT)
+        cls.mappings = operations_catalog.load_current_operation_mappings(ROOT)
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
         directory = tempfile.TemporaryDirectory()
@@ -57,7 +60,11 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / source, target)
-        return directory, root
+        context = contextlib.ExitStack()
+        context.enter_context(directory)
+        context.enter_context(mock.patch.object(operations_catalog, "load_current_operation_mappings", return_value=self.mappings))
+        self.addCleanup(context.close)
+        return context, root
 
     def test_current_operations_has_exact_final_topology(self) -> None:
         self.assertEqual(set(), finding_codes())
@@ -395,21 +402,34 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
 
 
 class Migration0003ContractTests(unittest.TestCase):
-    def _mutated_migration(self, old: str, new: str) -> tempfile.TemporaryDirectory[str]:
-        directory = tempfile.TemporaryDirectory()
-        root = pathlib.Path(directory.name)
-        target = root / MIGRATION_PATH
-        target.parent.mkdir(parents=True)
-        text = (ROOT / MIGRATION_PATH).read_text(encoding="utf-8")
-        self.assertIn(old, text)
-        target.write_text(text.replace(old, new, 1), encoding="utf-8")
-        return directory
+    @classmethod
+    def setUpClass(cls) -> None:
+        from scripts.lib.document_governance.archive import APPROVED_MIGRATION_COMMIT, _approved_migration_document
+        from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+        cls.approved = _approved_migration_document(ROOT)
+        cls.execution_source = HistoricalDocument(ROOT, APPROVED_MIGRATION_COMMIT, str(MIGRATION_PATH)).read_text()
+
+    @contextlib.contextmanager
+    def _mutated_migration(self, old: str, new: str):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            target = root / MIGRATION_PATH
+            target.parent.mkdir(parents=True)
+            text = self.execution_source
+            self.assertIn(old, text)
+            target.write_text(text.replace(old, new, 1), encoding="utf-8")
+            # Only the immutable approved-input boundary is supplied. The
+            # mutated current document still traverses the shared native parser
+            # and exact execution-selection checks.
+            with mock.patch("scripts.lib.document_governance.archive._approved_migration_document", return_value=self.approved):
+                yield directory
 
     def test_duplicate_yaml_key_is_rejected(self) -> None:
         old = "row_id: mig-0003-r0257, source_path:"
         replacement = "row_id: mig-0003-r0257, row_id: mig-0003-r0257, source_path:"
         with self._mutated_migration(old, replacement) as directory:
-            with self.assertRaisesRegex(OperationsAuthorityError, "duplicate YAML key"):
+            with self.assertRaisesRegex(OperationsAuthorityError, "duplicate keys"):
                 load_task8_migration(pathlib.Path(directory))
 
     def test_task8_owner_source_status_and_recovery_contract_is_exact(self) -> None:
@@ -423,7 +443,8 @@ class Migration0003ContractTests(unittest.TestCase):
         )
         for old, new, message in mutations:
             with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                with self.assertRaisesRegex(OperationsAuthorityError, message):
+                expected = "completed row requires recovery" if message in {"recovery", "status"} else "execution selection differs from approved frozen digest"
+                with self.assertRaisesRegex(OperationsAuthorityError, expected):
                     load_task8_migration(pathlib.Path(directory))
 
     def test_full_row_order_uniqueness_and_frozen_digest_are_enforced(self) -> None:
@@ -439,7 +460,7 @@ class Migration0003ContractTests(unittest.TestCase):
         )
         for old, new, message in mutations:
             with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                with self.assertRaisesRegex(OperationsAuthorityError, message):
+                with self.assertRaisesRegex(OperationsAuthorityError, "execution selection differs from approved frozen digest"):
                     load_task8_migration(pathlib.Path(directory))
 
 

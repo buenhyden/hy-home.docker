@@ -114,9 +114,9 @@ Current document-contract counts and implementation status route to the
 - [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md)
 - Document restructure implementation plan
 - Document restructure task evidence
-- [Template contract](../../99.templates/support/template-contract.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
+- [Template contract](../../99.templates/README.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Template governance](../../99.templates/README.md)
 
 ## Objective
 

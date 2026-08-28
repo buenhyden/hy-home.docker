@@ -5,8 +5,9 @@ artifact_id: DATA-0059
 artifact_type: data
 parent_ids: []
 created: '2026-08-23'
-updated: '2026-08-23'
-observed_at: '2026-08-23'
+updated: '2026-08-28'
+observed_at: '2026-08-28'
+generated_by: scripts/operations/generate-compose-profile-service-coverage.sh
 ---
 
 # Reference: Docker Compose Profile Service Coverage
@@ -45,7 +46,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 - Runtime service health, container state, secrets, or environment values.
 - Deployment guidance or rollback procedures.
 
-## Definitions / Facts
+## Schema
 
 - **default**: service has no Compose `profiles` key and is active whenever its
   Compose file is included.
@@ -54,7 +55,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 - **snapshot**: deterministic parse of tracked Compose files, not live runtime
   evidence.
 
-## Snapshot Summary
+## Inventory
 
 | Metric | Value |
 | --- | ---: |
@@ -172,46 +173,26 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 - Do not include secret values, `.env` values, container logs, or runtime
   inspection output.
 
-## Sources
+## Provenance
 
 - [root Compose entrypoint](../../../../docker-compose.yml) - root Compose
   include boundary when tracked.
 - [infra directory](../../../../infra/) - tracked service-local Compose files.
 - [coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh) - deterministic snapshot generator.
 
-## Maintenance
+## Refresh
 
 - **Owner**: Infra/DevOps Engineer / Documentation Specialist.
 - **Review Cadence**: Review after Compose service/profile changes.
 - **Update Trigger**: Run the generator after tracked Compose files change.
 
-## Related Documents
-
-- **Docker data index**: [README.md](./README.md)
-- **Docker image/version interpretation**: [ref-0060-image-version-interpretation.md](./ref-0060-image-version-interpretation.md)
-- **Automation candidates**: [ref-0021-automation-candidates.md](../../audits/ref-0021-automation-candidates.md)
-- **Compose validation script**: [../../../../scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh)
-
-## Schema
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Provenance
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Inventory
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
-## Refresh
-
-This package preserves its existing data evidence under the Stage 99 `data` contract.
-
 ## Consumers
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+Maintainers and static documentation validators consume this inventory.
 
 ## Traceability
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+- **Docker data index**: [README.md](./README.md)
+- **Docker image/version interpretation**: [Image/version interpretation](../0060-image-version-interpretation/README.md)
+- **Automation candidates**: [Automation candidates](../../audits/0021-automation-candidates/README.md)
+- **Compose validation script**: [../../../../scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh)

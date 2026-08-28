@@ -34,7 +34,9 @@ Use Conventional Commits with explicit scopes where possible.
 3. For governance work, ensure linked stage docs remain accurate.
 4. Apply the Completion Gate from `policies/github-governance.md` before declaring the PR done.
 5. Mark incomplete work as Draft/WIP and list remaining work in the PR template; do not request final review until the PR is ready.
-6. Keep commits atomic and reviewable. If cleanup is needed, use the PR description to explain the intended squash/rebase strategy instead of hiding mixed concerns.
+6. Keep commits atomic and reviewable. Document any cleanup proposal in the PR.
+   Referenced recovery commits must remain reachable in delivered history;
+   use a merge commit or fast-forward instead of rewriting those objects.
 7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 

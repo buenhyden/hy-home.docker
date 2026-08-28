@@ -89,6 +89,7 @@ docs/90.references/audits/
 
 ### Report Roles
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Report | Role |
 | --- | --- |
 | `implementation-overview.md` | Cross-category summary matrix and high-level maturity snapshot. |
@@ -143,7 +144,7 @@ Each non-README audit report must include:
 - Use web verification for provider or external sources that may have changed.
 - Use `apply_patch` for file edits.
 - Use `git diff --check` for whitespace and patch hygiene.
-- Use `bash scripts/validation/check-doc-traceability.sh` for execution and
+- Use `python3 scripts/validation/check-document-links.py --mode traceability` for execution and
   operations traceability.
 - Use `bash scripts/validation/check-repo-contracts.sh` for template,
   language, reference-stage, governance-memory, and repository contract checks.
@@ -155,7 +156,7 @@ Each non-README audit report must include:
 - Do not fix gaps discovered outside the approved Stage 90 documentation scope.
 - Do not change provider runtime surfaces, scripts, CI workflows, model policy,
   secrets, Compose files, or remote GitHub state.
-- Do not claim Gemini first-class subagent parity unless current official
+- Do not claim unsupported-provider first-class subagent parity unless current official
   sources support it.
 - Do not use audit scores as deployment approval gates.
 
@@ -166,7 +167,7 @@ than runtime tests.
 
 ```bash
 git diff --check
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/validation/check-repo-contracts.sh
 ```
@@ -178,7 +179,7 @@ contract checks rather than runtime tests.
 
 ```bash
 git diff --check
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/check-repo-contracts.sh
 ```
 
@@ -227,7 +228,7 @@ out of scope instead of modifying infra files.
 - task evidence
 - `research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [90.references](../../90.references/README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
+- [reference template](../../99.templates/templates/references/research.template.md)
 - [README template](../../99.templates/templates/common/readme.template.md)
 - [stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 

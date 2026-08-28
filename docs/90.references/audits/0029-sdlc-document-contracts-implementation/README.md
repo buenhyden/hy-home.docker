@@ -182,7 +182,7 @@ active until promotion and final closure reviews pass.
 - `Document metadata and lifecycle` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - numbering, parent, transition, README, and release criteria
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md) - active stage ownership and done criteria
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - naming, template, status, and routing contracts
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - current status meanings and supersession rule
+- [Lifecycle status](../../99.templates/README.md) - current status meanings and supersession rule
 - [Release management runbook](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) - release readiness procedure
 - [2026-07-03 frontmatter inventory](ref-0005-frontmatter-inventory.md) - dated 930-file evidence
 - [2026-07-04 frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md) - dated 948-file evidence

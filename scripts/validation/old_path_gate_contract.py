@@ -2,8 +2,10 @@
 """Validate Spec 137 pre-deletion gate 4.
 
 Gate 4 requires zero clickable references to the retiring research pack across
-all tracked text outside the retiring directory, and requires every permitted
-non-link literal to appear in the reviewed allowlist the Stage 04 Task owns.
+all tracked text outside the retiring directory. Verified native Migration
+source fields and unchanged, multiplicity-bound occurrences in its exact renamed
+source files retain their source-evidence role; other permitted non-link literals
+require the owning Task's reviewed allowlist. Clickable links are never exempted.
 
 Scope limit, stated so this module is not read as more than it is. The Spec's
 deterministic evidence set for gate 4 has four items; this module implements the
@@ -32,6 +34,7 @@ easy form of that failure, a row that never claimed a verdict at all.
 from __future__ import annotations
 
 import argparse
+import collections
 import pathlib
 import re
 import html
@@ -39,6 +42,12 @@ import subprocess
 import sys
 import urllib.parse
 from dataclasses import dataclass, field
+
+import yaml
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
+from scripts.lib.document_governance import archive  # noqa: E402
+from scripts.lib.document_governance.git_provenance import HistoricalDocument  # noqa: E402
 
 SLUG = "2026-07-05-agentic-research-pack-refresh"
 RETIRING_DIR = f"docs/90.references/research/{SLUG}"
@@ -585,11 +594,76 @@ def _headings_by_line(text: str, markdown: bool) -> dict[int, tuple[str, ...]]:
     return mapping
 
 
+def _migration_literal_evidence(
+    root: pathlib.Path,
+) -> tuple[dict[str, collections.Counter[str]], str, str]:
+    """Classify proved source occurrences, never a directory or current owner."""
+    path = archive._migration_path(root)
+    if not path.exists():
+        return {}, "", ""
+    try:
+        document = archive._migration_document(root)
+        approved = archive._approved_migration_document(root)
+        sources = {
+            row["source_path"] for row in approved["rows"]
+            if row["owner_task"] == 9 and row["action"] == "rename"
+            and row["source_path"].startswith(f"{RETIRING_DIR}/")
+        }
+        bodies = {}
+        for row in document["rows"]:
+            if row["source_path"] in sources:
+                text = HistoricalDocument(
+                    root, approved["baseline_commit"], row["source_path"]
+                ).read_text()
+                bodies[row["target_path"]] = collections.Counter(
+                    line for line in text.splitlines() if SLUG in _normalize(line)
+                )
+        raw = archive._read_regular(path)
+        if archive._parse_migration_document(raw) != document:
+            raise ValueError("Migration changed after native proof")
+        text = raw.decode("utf-8")
+        block = re.search(r"^```yaml\n(.*?)^```[ \t]*$", text, re.MULTILINE | re.DOTALL)
+        node = yaml.compose(block.group(1), Loader=yaml.SafeLoader)
+        rows_node = next(value for key, value in node.value if key.value == "rows")
+        classified = list(text)
+        for row_node, row in zip(rows_node.value, document["rows"], strict=True):
+            for key, value in row_node.value:
+                if key.value != "source_path" or row["source_path"] not in sources:
+                    continue
+                if (
+                    not isinstance(value, yaml.ScalarNode)
+                    or value.value != row["source_path"]
+                    or value.start_mark.index <= key.end_mark.index
+                ):
+                    raise ValueError("Migration source scalar differs from native proof")
+                start = block.start(1) + value.start_mark.index
+                end = block.start(1) + value.end_mark.index
+                classified[start:end] = ["\n" if character == "\n" else " " for character in text[start:end]]
+        return bodies, text, "".join(classified)
+    except (OSError, UnicodeError, ValueError, yaml.YAMLError) as error:
+        raise AllowlistUnavailable(f"Migration source evidence is unavailable: {error}") from error
+
+
+def _unproved_source_text(text: str, proved: collections.Counter[str]) -> str:
+    """Keep changed/new/excess lines; consume each historical occurrence once."""
+    remaining = proved.copy()
+    lines = []
+    for line in text.split("\n"):
+        if remaining[line] > 0:
+            remaining[line] -= 1
+            lines.append("")
+        else:
+            lines.append(line)
+    return "\n".join(lines)
+
+
 def scan(root: pathlib.Path) -> ScanResult:
     """Run the gate-4 literal scan."""
     rows = read_allowlist(root)
     result = ScanResult(rows=rows)
     needle = _normalize(SLUG)
+    source_bodies, migration_text, classified_migration = _migration_literal_evidence(root)
+    migration_path = archive._migration_path(root)
 
     for relative in tracked_files(root):
         if relative.startswith(f"{RETIRING_DIR}/"):
@@ -602,8 +676,14 @@ def scan(root: pathlib.Path) -> ScanResult:
             if not absolute.is_file():
                 result.unreadable_files += 1
                 continue
-            text = absolute.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
+            text = (
+                archive._read_regular(absolute).decode("utf-8")
+                if relative in source_bodies or absolute == migration_path
+                else absolute.read_text(encoding="utf-8")
+            )
+        except (UnicodeDecodeError, OSError, ValueError) as error:
+            if relative in source_bodies or absolute == migration_path:
+                raise AllowlistUnavailable(f"proved source target is unreadable: {relative}: {error}") from error
             # Counted, never silent. Most of these are genuinely binary, but a
             # UTF-16 or Latin-1 Markdown file containing a live link lands here
             # too, and a hole in the output that IS the gate's evidence cannot
@@ -615,6 +695,12 @@ def scan(root: pathlib.Path) -> ScanResult:
 
         clickable = _clickable_lines(text)
         headings = _headings_by_line(text, relative.endswith(".md"))
+        if absolute == migration_path and migration_text:
+            if text != migration_text:
+                raise AllowlistUnavailable("Migration changed after native source-span proof")
+            text = classified_migration
+        elif relative in source_bodies:
+            text = _unproved_source_text(text, source_bodies[relative])
         # Every row declared for this path applies to it, and the amendment
         # states that settling one row settles nothing for its siblings. The
         # declared anchors are prose descriptors, so an occurrence cannot be

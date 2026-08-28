@@ -13,8 +13,11 @@ silently.
 from __future__ import annotations
 
 import pathlib
+import subprocess
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "validation"))
 
@@ -26,6 +29,113 @@ OWNERSHIP = {
     ("security", 69): "security-auditor",
 }
 CODEOWNERS_LINES = {4, 16}
+
+
+class EvidenceTimeBoundaryTests(unittest.TestCase):
+    def test_complete_scope_citation_resolves_exact_historical_git_path(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with mock.patch.object(contract, "HistoricalDocument", wraps=contract.HistoricalDocument) as historical:
+            ownership = contract.load_ownership_table(root, {"`scopes/docs.md:59`", "`scopes/docs.md:62`"})
+        historical.assert_called_once_with(
+            root, contract.OWNERSHIP_AS_OF, "docs/00.agent-governance/scopes/docs.md"
+        )
+        self.assertEqual("doc-writer", ownership[("docs", 59)])
+        for citation in (
+            "docs", "`scopes/../docs.md:59`", "`/scopes/docs.md:59`",
+            "`scopes/docs.md:59/extra`", "`scopes/docs.md:not-a-line`",
+            "`scopes/docs.md:59` trailing", "`roles/docs.md:59`",
+        ):
+            with self.subTest(citation=citation), mock.patch.object(contract, "HistoricalDocument") as historical:
+                with self.assertRaises(ValueError):
+                    contract.load_ownership_table(root, {citation})
+                historical.assert_not_called()
+
+    def test_historical_scope_uses_the_regular_ownership_baseline(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        ownership = contract.load_ownership_table(root, {"`scopes/docs.md:59`"})
+        self.assertEqual("doc-writer", ownership[("docs", 59)])
+        with mock.patch.object(contract, "OWNERSHIP_AS_OF", "9917fcdadf700e7f68541e73188620e133485470"):
+            wrong = contract.load_ownership_table(root, {"`scopes/docs.md:59`"})
+        codes = [item.code for item in contract.check_record(_record(OWNED_BY_DOCS), wrong, CODEOWNERS_LINES)]
+        self.assertIn("CARRY-OWNER-CITATION-UNRESOLVED", codes)
+
+    def test_historical_scope_rejects_missing_and_nonregular_git_proof(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with mock.patch.object(contract, "OWNERSHIP_AS_OF", "0" * 40):
+            with self.assertRaises(ValueError):
+                contract.load_ownership_table(root, {"`scopes/docs.md:59`"})
+        with self.assertRaises(ValueError):
+            contract.load_ownership_table(root, {"`scopes/missing.md:1`"})
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            scope = fixture / "docs/00.agent-governance/scopes/docs.md"
+            scope.parent.mkdir(parents=True)
+            scope.symlink_to("missing.md")
+            for command in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "scope")):
+                subprocess.run(["git", *command], cwd=fixture, check=True, capture_output=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=fixture, text=True).strip()
+            with mock.patch.object(contract, "OWNERSHIP_AS_OF", commit):
+                with self.assertRaises(ValueError):
+                    contract.load_ownership_table(fixture, {"`scopes/docs.md:59`"})
+
+    def test_current_role_requires_its_active_canonical_identity(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        cite = "`docs/00.agent-governance/roles/doc-writer.md`"
+        record = _destination(OWNED_BY_DOCS + " Current role accountability: " + cite)
+        self.assertEqual([], contract.check_current_role(record, root))
+        for text in (
+            OWNED_BY_DOCS,
+            OWNED_BY_DOCS + " `docs/00.agent-governance/roles/missing.md`",
+            OWNED_BY_DOCS + " `docs/00.agent-governance/roles/code-reviewer.md`",
+            OWNED_BY_DOCS + " `docs/00.agent-governance/roles/doc-writer.md:4`",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(contract.check_current_role(_destination(text), root))
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            role = fixture / "docs/00.agent-governance/roles/doc-writer.md"
+            role.parent.mkdir(parents=True)
+            for metadata in (
+                "profile_id: governance-role\nagent_id: doc-writer\nstatus: retired",
+                "profile_id: governance-role\nagent_id: other\nstatus: active",
+                "profile_id: governance-policy\nagent_id: doc-writer\nstatus: active",
+                "profile_id: governance-role\nagent_id: doc-writer\nagent_id: other\nstatus: active",
+            ):
+                with self.subTest(metadata=metadata):
+                    role.write_text("---\n" + metadata + "\n---\n", encoding="utf-8")
+                    self.assertTrue(contract.check_current_role(record, fixture))
+
+    def test_readonly_identity_proof_does_not_grant_implementation_permission(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        task = "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
+        for owner in ("code-reviewer", "security-auditor"):
+            relative = f"docs/00.agent-governance/roles/{owner}.md"
+            before = (root / relative).read_bytes()
+            record = _destination(f"Remediation owner: `{owner}`. Current role accountability: `{relative}`.")
+            self.assertEqual([], contract.check_current_role(record, root))
+            self.assertEqual(before, (root / relative).read_bytes())
+            self.assertIn(b"permission_profile: read-only", before)
+        for record in contract.collect_destination_records(root, task):
+            if not record.historical and record.operative_owner() in {"code-reviewer", "security-auditor"}:
+                self.assertIn("not a write grant", record.text)
+                self.assertIn("separately approved implementation assignee", record.text)
+
+    def test_only_exact_marked_historical_quotes_preserve_pairing(self) -> None:
+        marker = "> Historical evidence (not current authority; source: Git history):"
+        body = "**Claim.** " + OWNED_BY_DOCS + " {ledger-anchor: `A`} {survival: UNIQUE}"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            task = root / "task.md"
+            task.write_text(contract.DESTINATION_HEADING + "\n\n" + marker + "\n> " + body + "\n\n**Current.** " + OWNED_BY_DOCS + "\n", encoding="utf-8")
+            records = contract.collect_destination_records(root, "task.md")
+            self.assertEqual([True, False], [record.historical for record in records])
+            self.assertEqual([], _pair_codes(_ledger("`A`", OWNED_BY_DOCS), records[0]))
+            self.assertTrue(contract.check_current_role(records[1], root))
+            for prefix in ("", marker + ".\n", marker + "\n\n", marker.replace("not current authority", "historical") + "\n"):
+                with self.subTest(prefix=prefix):
+                    task.write_text(contract.DESTINATION_HEADING + "\n\n" + prefix + "> " + body + "\n", encoding="utf-8")
+                    self.assertEqual([], contract.collect_destination_records(root, "task.md"))
+                    self.assertEqual(["CARRY-PAIR-MISSING"], _pair_codes(_ledger("`A`", OWNED_BY_DOCS)))
 
 
 def _record(text: str) -> contract.Record:

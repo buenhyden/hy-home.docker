@@ -43,7 +43,7 @@ recommendation as policy.
 This Stage 90 reference is advisory analysis. The
 [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md),
 [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md),
-[metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml),
+[metadata profiles](../../../99.templates/registry.json),
 and mapped templates remain authoritative. Reader mode can refine content
 inside an approved artifact; it cannot select a stage, authorize a mutation,
 change an artifact's evidence role, or prove that the reader need was met.
@@ -179,7 +179,7 @@ carries a locally maintained index (the README) and every leaf document
 carries an explicit upstream pointer (`Related Documents`) — a bidirectional
 navigation mesh that exists whether or not any individual document also has a
 clean reader-mode identity. Re-reading
-[`readme-profile-contract.md`](../../../99.templates/support/readme-profile-contract.md)
+[`readme-profile-contract.md`](../../../99.templates/README.md)
 directly confirms this navigation layer is itself typed rather than freeform:
 "The registry declares 17 README profiles covering repository and stage
 entrypoints, governance and provider catalogs, infrastructure and project
@@ -276,7 +276,7 @@ and, where it matters more, what it does not.
 | [Diataxis upstream source](https://github.com/evildmp/diataxis-documentation-framework/tree/957c09ca40b4a1edc23874f713e01937d50d54d5/source) | 2026-08-08                | External fixed at pinned revision | Verified through GitHub API/raw source; `index.rst`, `map.rst`, four mode files, and `how-to-use-diataxis.rst` read directly.                    |
 | [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
 | [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
-| [README profile contract](../../../99.templates/support/readme-profile-contract.md)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
+| [README profile contract](../../../99.templates/README.md)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
 | [SDLC document roles](./sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
 | [Metadata lifecycle](./document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |
 | [Scope application matrix](./scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |

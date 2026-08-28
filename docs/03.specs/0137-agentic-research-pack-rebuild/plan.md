@@ -377,7 +377,7 @@ scoped re-review before Task 2.
 - [ ] **Step 1: Re-measure the workspace**
 
 Use `git ls-files`, `rg`, the typed contracts under
-`docs/00.agent-governance/contracts/`, provider adapters, workflows, scripts,
+`docs/00.agent-governance/providers/registry.yaml`, provider adapters, workflows, scripts,
 templates, stages, and `infra/`. Record derivation commands and distinguish
 tracked, ignored-local, runtime, and remote state. Re-derive all counts; do not
 copy values from the old pack.
@@ -386,7 +386,7 @@ Run and preserve the exact derivations in the Task:
 
 ```bash
 git ls-files > /tmp/agentic-research-tracked-paths.txt
-find docs/00.agent-governance/scopes -maxdepth 1 -type f -name '*.md' \
+find docs/00.agent-governance/roles -maxdepth 1 -type f -name '*.md' \
   -printf '%f\n' | sort
 sed -n '1,220p' docs/00.agent-governance/policies/persona.md
 sed -n '1,220p' docs/00.agent-governance/providers/registry.yaml
@@ -400,7 +400,7 @@ than copied from the predecessor pack.
 
 - [ ] **Step 2: Analyze all fourteen scopes**
 
-Read every file under `docs/00.agent-governance/scopes/` plus
+Read every file under `docs/00.agent-governance/roles/` plus
 `rules/persona.md` and `contracts/agent-catalog.yaml`. For each normative scope,
 record paths, applicable leaves, current state, rules, exceptions, evidence
 owner, validation owner, and catalog reachability. Explicitly disposition the
@@ -495,15 +495,15 @@ Correct known drift such as Codex `SessionEnd`, semantic-binding depth, Claude
 effort overlays, and prose-loop counts from current evidence.
 
 The minimum tracked surfaces are
-`docs/00.agent-governance/contracts/{agent-catalog,provider-models}.yaml`,
+`docs/00.agent-governance/providers/registry.yaml` and canonical role sources,
 `docs/00.agent-governance/providers/`, `.claude/`, `.codex/`, `.agents/`,
-`.gemini/`, and the matching scripts/tests found with:
+and the matching scripts/tests found with:
 
 ```bash
-git ls-files docs/00.agent-governance .claude .codex .agents .gemini \
+git ls-files docs/00.agent-governance .claude .codex .agents \
   scripts tests | sort
 rg -n 'SessionEnd|semantic_binding|effort|loop|harness' \
-  docs/00.agent-governance .claude .codex .agents .gemini scripts tests
+  docs/00.agent-governance .claude .codex .agents scripts tests
 ```
 
 - [ ] **Step 3: Build the common construction matrix**
@@ -587,7 +587,7 @@ Read the local owners explicitly:
 sed -n '1,260p' docs/00.agent-governance/providers/registry.yaml
 sed -n '1,260p' docs/00.agent-governance/providers/registry.yaml
 sed -n '1,260p' docs/00.agent-governance/policies/agentic.md
-git ls-files .claude .codex .agents .gemini docs/00.agent-governance/memory | sort
+git ls-files .claude .codex .agents docs/03.specs/0137-agentic-research-pack-rebuild/tasks | sort
 ```
 
 - [ ] **Step 3: Analyze the memory lifecycle**
@@ -5206,8 +5206,8 @@ pack are forbidden.
 - [Execution Tasks index](./tasks/tsk-0001-rebuild.md)
 - [Research references](../../90.references/research/README.md)
 - [New canonical pack](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
-- [Reference template](../../99.templates/templates/common/reference.template.md)
-- [Task template](../../99.templates/templates/sdlc/task.template.md)
+- [Reference template](../../99.templates/templates/references/research.template.md)
+- [Task template](../../99.templates/templates/specs/task.template.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Subagent protocol](../../00.agent-governance/policies/agentic.md)

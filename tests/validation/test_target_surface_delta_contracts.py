@@ -300,6 +300,36 @@ class LivePublicGateMutationTests(unittest.TestCase):
                 {item.code for item in contract._workflow_findings(ROOT)},
             )
 
+    def test_workflow_requires_exact_bootstrap_then_one_public_command(self) -> None:
+        path = ".github/workflows/ci-quality.yml"
+        original = yaml.safe_load(contract._read_surface(ROOT, path))
+        bootstrap = "python3 -m pip install -r scripts/requirements.txt"
+        self.assertEqual([], contract._workflow_findings(ROOT))
+        for job_id, command in (("validation-changed", contract.CHANGED_COMMAND),
+                                ("validation-full", contract.FULL_COMMAND)):
+            cases = (
+                [command], [bootstrap], [bootstrap, bootstrap, command],
+                [command, bootstrap], [bootstrap, command, command],
+                ["python3 -m pip install pyyaml", command],
+                [bootstrap + " --upgrade", command],
+                [bootstrap + "\necho extra", command],
+                [bootstrap, command, "python3 scripts/validation/check-document-links.py --mode all"],
+                [bootstrap, "echo extra", command],
+            )
+            for runs in cases:
+                with self.subTest(job=job_id, runs=runs):
+                    document = copy.deepcopy(original)
+                    steps = document["jobs"][job_id]["steps"]
+                    document["jobs"][job_id]["steps"] = [
+                        step for step in steps if "run" not in step
+                    ] + [{"run": run} for run in runs]
+                    with mock.patch.object(contract, "_read_surface", return_value=yaml.safe_dump(document, sort_keys=False)):
+                        findings = contract._workflow_findings(ROOT)
+                    self.assertEqual(
+                        [("public-workflow-route", f"{path}#{job_id}")],
+                        [(item.code, item.path) for item in findings],
+                    )
+
     def test_advisory_mode_cannot_downgrade_findings(self) -> None:
         finding = contract.DeltaFinding("test", "surface", "failure")
         for mode in ("advisory", "blocking"):

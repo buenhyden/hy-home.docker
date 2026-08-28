@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 import pathlib
+import collections
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "validation"))
@@ -255,7 +258,7 @@ class OldPathGateFixtureTests(unittest.TestCase):
         live = "| `real/live.md` | `# h` | Factual history | r | Approved C0/I0/M0 |\n"
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            (root / "docs/04.execution/tasks").mkdir(parents=True)
+            (root / contract.TASK_PATH).parent.mkdir(parents=True)
             (root / contract.TASK_PATH).write_text(
                 ALLOWLIST_HEADER + live + tail, encoding="utf-8"
             )
@@ -747,6 +750,102 @@ class SettledVerdictTests(unittest.TestCase):
         self.assertFalse(contract._is_settled("gates pass in the next unit"))
 
 
+class NativeMigrationEvidenceTests(unittest.TestCase):
+    def test_compact_native_source_spans_keep_real_git_provenance(self) -> None:
+        import yaml
+        from scripts.lib.document_governance import archive
+
+        approved = archive._approved_migration_document(ROOT)
+        approved["rows"] = [row for row in approved["rows"] if row["source_path"].startswith(f"{contract.RETIRING_DIR}/")]
+        rows = [{**{key: row[key] for key in ("source_path", "target_path", "artifact_id", "action")},
+                 "recovery_commit": approved["baseline_commit"]} for row in approved["rows"]]
+        rows.extend({"source_path": path, "target_path": None, "artifact_id": None,
+                     "action": "delete", "recovery_commit": archive.APPROVED_MIGRATION_COMMIT}
+                    for path in archive.ONE_TIME_VERIFIER_PATHS)
+        rows.extend({"source_path": path, "target_path": None, "artifact_id": identity,
+                     "action": "delete", "recovery_commit": archive.APPROVED_MIGRATION_COMMIT}
+                    for path, identity in archive.HISTORICAL_SESSION_SPECS.items())
+        document = {"schema_version": 3, "migration_id": "mig-0003", "rows": rows}
+        raw = ("```yaml\n" + yaml.safe_dump(document) + "```\n").encode()
+        with mock.patch.object(archive, "_approved_migration_document", return_value=approved), mock.patch.object(archive, "_read_regular", return_value=raw):
+            bodies, original, classified = contract._migration_literal_evidence(ROOT)
+        self.assertEqual(20, len(bodies))
+        self.assertEqual(20, original.count(SLUG))
+        self.assertNotIn(SLUG, classified)
+
+    def test_exact_native_sources_are_proved_without_exempting_new_occurrences(self) -> None:
+        bodies, original, classified = contract._migration_literal_evidence(ROOT)
+        self.assertEqual(20, len(bodies))
+        self.assertEqual(20, original.count(SLUG))
+        self.assertNotIn(SLUG, classified)
+        occurrences = 0
+        for path, counts in bodies.items():
+            text = (ROOT / path).read_text(encoding="utf-8")
+            occurrences += text.count(SLUG)
+            self.assertNotIn(SLUG, contract._unproved_source_text(text, counts))
+        self.assertEqual(6, occurrences)  # Five finding lines; README:32 has two literals.
+        line = f"The canonical research owner is {SLUG}."
+        proved = collections.Counter({line: 1})
+        text = f"{line}\n{line}\nCurrent owner: {SLUG}\n"
+        remaining = contract._unproved_source_text(text, proved)
+        self.assertEqual(2, remaining.count(SLUG))
+        self.assertEqual(1, proved[line])
+
+    def test_moved_source_and_ledger_exempt_only_verified_literal_occurrences(self) -> None:
+        from scripts.lib.document_governance import archive
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(root)], check=True)
+            migration = archive._migration_path(root)
+            migration.parent.mkdir(parents=True)
+            shutil.copy2(archive._migration_path(ROOT), migration)
+            task = root / contract.TASK_PATH
+            task.parent.mkdir(parents=True)
+            task.write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            bodies, _, _ = contract._migration_literal_evidence(root)
+            target = next(path for path in bodies if path.endswith("/README.md"))
+            current = root / target
+            current.parent.mkdir(parents=True)
+            original = (ROOT / target).read_text(encoding="utf-8")
+            current.write_text(original, encoding="utf-8")
+            sibling = current.parent / "unproved.md"
+            sibling.write_text(f"Current canonical owner: {SLUG}\n", encoding="utf-8")
+            subtree = [target, sibling.relative_to(root).as_posix(), migration.relative_to(root).as_posix()]
+            with mock.patch.object(contract, "tracked_files", return_value=subtree):
+                findings = contract.scan(root).findings
+                self.assertEqual([sibling.relative_to(root).as_posix()], [item.path for item in findings])
+                current.write_text(original + f"\nCurrent canonical owner: {SLUG}\n[link]({SLUG}/README.md)\n", encoding="utf-8")
+                ledger = migration.read_text(encoding="utf-8")
+                source_row = next(line for line in ledger.splitlines() if "source_path:" in line and SLUG in line)
+                ledger = ledger.replace(source_row, source_row + f" # Current canonical owner: {SLUG}", 1)
+                migration.write_text(ledger + f"\nCurrent canonical owner: {SLUG}\n", encoding="utf-8")
+                findings = contract.scan(root).findings
+                self.assertEqual(5, len(findings))
+                self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(findings))
+                migration.unlink()
+                self.assertTrue(any(item.path == target for item in contract.scan(root).findings))
+
+    def test_native_proof_rejects_invalid_selection_missing_and_nonregular_git(self) -> None:
+        from scripts.lib.document_governance import archive
+        from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+        with mock.patch.object(archive, "APPROVED_MIGRATION_COMMIT", "0" * 40):
+            with self.assertRaises(contract.AllowlistUnavailable):
+                contract._migration_literal_evidence(ROOT)
+        with mock.patch.object(contract, "HistoricalDocument", side_effect=lambda root, commit, path: HistoricalDocument(root, commit, "docs")):
+            with self.assertRaises(contract.AllowlistUnavailable):
+                contract._migration_literal_evidence(ROOT)
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "migration.md"
+            original = archive._migration_path(ROOT).read_text(encoding="utf-8")
+            self.assertIn("artifact_id: RES-0001", original)
+            path.write_text(original.replace("artifact_id: RES-0001", "artifact_id: RES-0999", 1), encoding="utf-8")
+            with mock.patch.object(archive, "_migration_path", return_value=path):
+                with self.assertRaises(contract.AllowlistUnavailable):
+                    contract._migration_literal_evidence(ROOT)
+
+
 class OldPathGateRepositoryTests(unittest.TestCase):
     """Behaviour against the live repository."""
 
@@ -759,14 +858,12 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     # route 1 does not admit them, then seven rows settled on that same seat's
     # verdict. The count therefore falls and then rises, and both directions are
     # recorded rather than smoothed.
+    # Current owning Task retains three unreviewed rows and 39 reviewed rows;
+    # the later route-2 approvals and removed taxonomy-fixture row are preserved.
     EXPECTED_UNREVIEWED = {
         "docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md",
         "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md",
         "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
-        "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md",
-        "scripts/validation/check-document-corpus-lifecycle.py",
-        "tests/validation/test_document_corpus_lifecycle.py",
-        "tests/validation/test_document_taxonomy.py",
     }
 
     def test_allowlist_split_is_exact(self) -> None:
@@ -779,7 +876,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         }
         self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
         settled = sum(1 for group in rows.values() for row in group if row.settled)
-        self.assertEqual(35, settled)
+        self.assertEqual(39, settled)
 
     def test_no_live_row_declares_a_forbidden_class(self) -> None:
         rows = contract.read_allowlist(ROOT)
@@ -837,7 +934,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
             {row.literal_class for row in ledger},
         )
         total = sum(len(group) for group in rows.values())
-        self.assertEqual(43, total)
+        self.assertEqual(42, total)
         self.assertGreater(total, len(rows))
 
     def test_one_unsettled_sibling_leaves_the_whole_path_unreviewed(self) -> None:

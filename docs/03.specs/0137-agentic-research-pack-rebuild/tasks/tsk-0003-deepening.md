@@ -239,7 +239,7 @@ Each cluster agent must:
 ```bash
 python3 scripts/validation/check-document-metadata.py \
   --mode check-changed --base-ref <cluster-base>
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/check-repo-contracts.sh
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
@@ -256,6 +256,7 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 
 ### Actual evidence
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Date       | Unit                   | Command                                                                                                                       | Observed result                                                                                      |
 | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | 2026-08-14 | Ledger creation        | Changed-document metadata against BASE `2ca5f4b8`                                                                             | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0`                                 |

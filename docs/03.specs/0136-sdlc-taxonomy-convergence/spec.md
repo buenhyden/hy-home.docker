@@ -750,7 +750,7 @@ language but does not own another role's policy or design decision. Hook
 Developer owns deterministic provider/hook projection but not the source
 policy. Implementers never supply their own final independent approval.
 
-The provider surfaces `.claude/`, `.codex/`, `.gemini/`, and `.agents/` are
+The provider surfaces `.claude/`, `.codex/`, and `.agents/` are
 thin generated or validated adapters. Their agent/function sets and provider
 models derive from Stage 00 typed contracts. They may adapt provider syntax and
 runtime mechanics but may not redefine SDLC, workflow, completion, role,
@@ -762,9 +762,9 @@ select typed agents and reviewers through those contracts. Unused scopes and
 duplicated provider prose are removed rather than retained as compatibility
 policy.
 
-`memory/current.md` is a bounded verified handoff, not policy authority.
-Memory that conflicts with the current Spec, Task, typed contract, or live Git
-state is corrected or deleted. Dated external observations move to stable
+The active owning Task records verified handoff and execution evidence, not
+policy authority. Task state must agree with the current Spec, Registry, and
+live Git state. Dated external observations move to stable
 Stage 90 evidence, and notes already promoted to active rules are consolidated
 or removed.
 
@@ -939,9 +939,9 @@ The work is complete only when:
 
 - [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [SDLC document contract](../../99.templates/README.md)
+- [Archive retention contract](../../99.templates/README.md)
 - [Parent Spec 134](../0134-agent-governance-canonical-convergence/spec.md)
 
 ## Behavior Contract

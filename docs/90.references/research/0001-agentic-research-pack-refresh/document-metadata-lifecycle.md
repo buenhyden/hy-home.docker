@@ -298,12 +298,12 @@ and none authorizes a bulk corpus rewrite, which DML-14 reserves.
 - [Semantic Versioning 2.0.0](https://semver.org/) - public API version signal
 - [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved metadata keys, audit fields, transition state machine, numbering, and rollout
 - [Spec 129](../../../98.archive/03.specs/129-document-contract-canonicalization/spec.md) - canonical families, README profiles, parent serialization, Release, and staged foundation scope
-- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - current workspace metadata ownership and exceptions
-- [Lifecycle status](../../../99.templates/support/lifecycle-status.md) - current status meanings
+- [Frontmatter contract](../../../99.templates/README.md) - current workspace metadata ownership and exceptions
+- [Lifecycle status](../../../99.templates/README.md) - current status meanings
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - current numbering, templates, and routing
-- [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml) - sole machine-readable profile and serialization owner; freshness rows at lines 553, 562, 580-582, 590-591, 599, and 608, and the reference/audit heading contracts at 403-416
+- [Document metadata profiles](../../../99.templates/registry.json) - sole machine-readable profile and serialization owner; freshness rows at lines 553, 562, 580-582, 590-591, 599, and 608, and the reference/audit heading contracts at 403-416
 - [Changed-document metadata checker](../../../../scripts/validation/check-document-metadata.py) - `TARGET_TEMPLATE_LITERALS` at line 823 and its source-side and target-side scans at lines 2233, 2252, and 2313
-- [README profile contract](../../../99.templates/support/readme-profile-contract.md) - human README selection and consumer boundary
+- [README profile contract](../../../99.templates/README.md) - human README selection and consumer boundary
 
 ## Maintenance
 

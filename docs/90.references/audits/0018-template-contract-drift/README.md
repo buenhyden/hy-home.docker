@@ -99,12 +99,12 @@ move, remove, archive, or relink target documents.
 ## Sources
 
 - [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
-- [Template contract](../../99.templates/support/template-contract.md) - Defines template-source and target-document boundaries.
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - Defines lifecycle and archive frontmatter ownership.
-- [Template governance](../../99.templates/support/template-governance.md) - Owns template-system governance rules.
-- [Template selection](../../99.templates/support/template-selection.md) - Owns template routing.
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - Owns lifecycle status semantics.
-- [Archive template](../../99.templates/templates/common/archive.template.md) - Supplies the tombstone format.
+- [Template contract](../../99.templates/README.md) - Defines template-source and target-document boundaries.
+- [Frontmatter contract](../../99.templates/README.md) - Defines lifecycle and archive frontmatter ownership.
+- [Template governance](../../99.templates/README.md) - Owns template-system governance rules.
+- [Template selection](../../99.templates/README.md) - Owns template routing.
+- [Lifecycle status](../../99.templates/README.md) - Owns lifecycle status semantics.
+- [Archive template](../../99.templates/templates/archive/tombstone.template.md) - Supplies the tombstone format.
 - [Historical evidence preservation](ref-0008-historical-evidence-preservation.md) - Supplies the prior preserve-old-evidence decision.
 
 ## Maintenance
@@ -118,8 +118,8 @@ move, remove, archive, or relink target documents.
 
 - [Document restructure audit references](ref-0012-readme.md)
 - [Restructure gap register](ref-0016-restructure-gap-register.md)
-- [Template contract](../../99.templates/support/template-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
+- [Template contract](../../99.templates/README.md)
+- [Template governance](../../99.templates/README.md)
 
 ## Objective
 

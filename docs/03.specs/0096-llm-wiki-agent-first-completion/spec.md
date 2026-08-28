@@ -30,7 +30,7 @@ This specification strengthens the `hy-home.docker` LLM Wiki from a static refer
 
 - **Config Contract**: `scripts/knowledge/generate-llm-wiki-index.sh` supports default write mode and `--check` freshness mode.
 - **Data / Interface Contract**: `docs/90.references/data/0082-llm-wiki-index/README.md` is a generated tracked repo-local Markdown path index.
-- **Governance Contract**: `wiki-curator` is mirrored across `.claude/agents/` and `docs/00.agent-governance/agents/agents/`, and `check-repo-contracts.sh` enforces parity and freshness.
+- **Governance Contract**: Stage 00 owns roles and skills; the registered provider renderer checks projection parity and the LLM Wiki generator checks navigation freshness.
 
 ## Core Design
 
@@ -74,7 +74,7 @@ bash scripts/knowledge/generate-llm-wiki-index.sh --check
 ## Memory & Context Strategy
 
 - **Short-term Context**: use current changed paths and repository contract output.
-- **Long-term Memory**: record final progress in `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`.
+- **Execution Evidence**: record final checks and handoff in the Task that owns the current work, following Stage 00 completion policy.
 - **Retrieval Boundary**: memory supports context only and cannot override current repo rules.
 
 ## Guardrails
@@ -108,7 +108,7 @@ bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-index.sh
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 ## Success Criteria & Verification Plan

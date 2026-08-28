@@ -106,7 +106,7 @@ unverifiable. The allowed direct-impact set is limited to:
 - Stage 99 document metadata, README, archive, template, and lifecycle owners;
 - root QA configuration that directly routes a target path;
 - validators, generators, and focused tests that consume an approved target;
-- current project memory needed to hand off or close this wave.
+- verification and handoff evidence in the Task owning this wave.
 
 Every direct-impact path must be associated with an approved requirement and
 target consumer in the Task ledger. Directory adjacency is not authorization.
@@ -144,12 +144,12 @@ target consumer in the Task ledger. Directory adjacency is not authorization.
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Approval boundaries](../../00.agent-governance/policies/approval-boundaries.md)
 - [Task checklists](../../00.agent-governance/policies/task-checklists.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [README profile contract](../../99.templates/README.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
+- [Common document contract](../../99.templates/README.md)
+- [SDLC document contract](../../99.templates/README.md)
 
 ### External Source Basis
 
@@ -774,12 +774,12 @@ and the distinction between local, remote, skipped, and unverified evidence.
 - [Spec 134: Agent Governance Canonical Convergence](../0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+- [README profile contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
+- [Document metadata profiles](../../99.templates/registry.json)
 - [Workflow contract](../../../.github/workflow-contract.yml)
 - [Target surface checker](../../../scripts/validation/check-target-surface-contract.py)
-- [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
+- [Repository contract checker](../../../scripts/validation/run-ci-gate.py)
 - [Controlled Agent pre-commit wrapper](../../../scripts/validation/run-agent-precommit-all-files.sh)
 
 ## Behavior Contract

@@ -1,4 +1,5 @@
 ---
+profile_id: readme
 layer: agentic
 ---
 
@@ -20,14 +21,13 @@ This directory contains copyable sources registered by
 | Operations | `operations/` | Guide, Policy, Runbook, Incident, Postmortem |
 | References | `references/` | Research, Audit, Data |
 | Archive | `archive/` | Migration, Tombstone |
-| Governance | `governance/` | transition sources pending Stage 00 convergence |
-| Common | `common/` | transition sources pending consumer convergence |
+| Governance | `governance/` | Stage 00 authoring guidance |
+| Common | `common/` | navigation README |
 
 ## Structure
 
 The category directories mirror the final documentation responsibilities.
-Legacy `sdlc/` and `spec-contracts/` remain temporary migration inputs and are
-not registered template authorities.
+Registry-replaced sources are recoverable through Migration 0003 Git evidence.
 
 ## How to Work in This Area
 

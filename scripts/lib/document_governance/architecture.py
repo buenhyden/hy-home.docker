@@ -99,7 +99,7 @@ def _read_regular_utf8(path: pathlib.Path) -> str:
         )
     if metadata.st_size > MAX_ARCHITECTURE_BYTES:
         raise ArchitectureDocumentError("architecture document exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
     try:
         descriptor = os.open(path, flags)
         try:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
 import subprocess
@@ -35,7 +36,7 @@ from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def _fixture_git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -94,6 +95,73 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_changed_generated_body_requires_exact_manifest_owner_and_output(self) -> None:
+        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
+        from scripts.lib.document_governance.references import generated_reference_owners
+
+        profiles = build_registry_profiles(load_registry())
+        profiles["common"]["generated_outputs"] = generated_reference_owners(ROOT)
+        path = pathlib.Path("docs/90.references/data/0065-audit-implementation-matrix/README.md")
+        owner = "scripts/validation/generate-audit-implementation-matrix.sh"
+        for candidate, generated_by, allowed in ((path, owner, True), (path, "scripts/forged.py", False), (path.with_name("undeclared.md"), owner, False)):
+            with self.subTest(path=candidate, owner=generated_by):
+                record = Record(candidate, {"profile_id": "data", "generated_by": generated_by}, "data")
+                findings = validate_body_contract(record, "# Generated\n", profiles, changed_boundary=True)
+                self.assertEqual(allowed, not findings)
+
+    def test_exact_additional_readme_paths_preserve_profile_validation(self) -> None:
+        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
+
+        registry = load_registry()
+        for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"):
+            with self.subTest(path=path):
+                self.assertEqual("readme", classify_path(path, registry))
+                record = Record(pathlib.Path(path), {"status": "active"}, "readme")
+                self.assertIn("profile-id-mismatch", {item.code for item in validate_record(record, build_registry_profiles(registry), build_manifest([record]))})
+                self.assertIn("body-heading-missing", {item.code for item in validate_body_contract(record, "# Navigation\n", build_registry_profiles(registry), changed_boundary=True)})
+        self.assertIsNone(classify_path("docs/02.architecture/unknown/README.md", registry))
+        for path in ("../outside.md", "docs/03.specs/0104-collision/spec.md"):
+            raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+            next(item for item in raw["profiles"] if item["profile_id"] == "readme")["additional_paths"] = [path]
+            self.assertTrue(validate_registry(raw))
+
+    def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(self) -> None:
+        from scripts.lib.document_governance import (
+            architecture, archive, identity_history, provenance_policy, requirements, spec_packages,
+        )
+
+        def read_spec(path):
+            descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                return spec_packages._read_regular_utf8_at(
+                    descriptor, path.name, str(path), spec_packages._LoadBudget()
+                )
+            finally:
+                os.close(descriptor)
+
+        readers = (
+            lambda path: registry_module._read_regular_file(path, 1024),
+            architecture._read_regular_utf8, archive._read_regular,
+            identity_history._read_identity_source, provenance_policy._read_regular,
+            requirements._read_regular_utf8, read_spec,
+        )
+        real_open = os.open
+        for reader in readers:
+            with self.subTest(reader=reader.__name__), tempfile.TemporaryDirectory() as directory:
+                path = pathlib.Path(directory) / "input.md"
+                path.write_text("safe\n", encoding="utf-8")
+
+                def swap(name, flags, *args, **kwargs):
+                    if pathlib.Path(name).name == path.name:
+                        path.unlink()
+                        os.mkfifo(path)
+                        self.assertTrue(flags & os.O_NONBLOCK, "FIFO open must not block")
+                    return real_open(name, flags, *args, **kwargs)
+
+                with mock.patch.object(os, "open", side_effect=swap):
+                    with self.assertRaises((ValueError, identity_history.IdentityHistoryError)):
+                        reader(path)
+
     def test_default_authority_is_registry_json(self) -> None:
         registry = load_registry()
 
@@ -158,10 +226,24 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(profile_id, classify_path(path, registry))
 
-        self.assertTrue((ROOT / package / "spec.md").is_file())
-        self.assertTrue((ROOT / package / "plan.md").is_file())
-        spec_values = read_frontmatter_values(ROOT / package / "spec.md")
-        plan_values = read_frontmatter_values(ROOT / package / "plan.md")
+        from scripts.lib.document_governance.archive import _migration_document
+        from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+        documents = {}
+        for name in ("spec.md", "plan.md"):
+            path = ROOT / package / name
+            if path.is_file():
+                documents[name] = path
+            else:
+                migration = _migration_document(ROOT)
+                self.assertEqual(3, migration["schema_version"])
+                rows = [row for row in migration["rows"]
+                        if row["source_path"] == (package / name).as_posix()
+                        and row["action"] == "delete"]
+                self.assertEqual(1, len(rows))
+                documents[name] = HistoricalDocument(ROOT, rows[0]["recovery_commit"], rows[0]["source_path"])
+        spec_values = read_frontmatter_values(documents["spec.md"])
+        plan_values = read_frontmatter_values(documents["plan.md"])
         self.assertEqual("SPEC-0153", spec_values["artifact_id"])
         self.assertEqual("plan-0153", plan_values["artifact_id"])
 
@@ -815,7 +897,9 @@ class DocumentRegistryTests(unittest.TestCase):
             readme = root / "docs/99.templates/README.md"
             readme.parent.mkdir(parents=True)
             readme.write_text("# Incomplete Index\n", encoding="utf-8")
+            shutil.copy2(DEFAULT_REGISTRY, root / "docs/99.templates/registry.json")
             subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "registry baseline"], cwd=root, check=True, capture_output=True)
             result = subprocess.run(
                 [
                     sys.executable,

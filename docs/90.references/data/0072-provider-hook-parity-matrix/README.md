@@ -57,8 +57,8 @@ Regenerate after provider registry or native hook configuration changes.
 
 ## Related Documents
 
-- [Provider capability matrix](../../../../00.agent-governance/policies/provider-capability-matrix.md)
-- [Provider registry](../../../../00.agent-governance/providers/registry.yaml)
+- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)
+- [Provider registry](../../../00.agent-governance/providers/registry.yaml)
 
 ## Schema
 

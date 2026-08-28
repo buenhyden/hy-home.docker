@@ -1,4 +1,5 @@
 ---
+profile_id: readme
 layer: agentic
 ---
 
@@ -9,13 +10,12 @@ layer: agentic
 Stage 99 is the sole authority for document paths, profiles, identifiers,
 sections, lifecycle states and transitions, traceability shapes, and copyable
 templates. The machine authority is [`registry.json`](./registry.json); the two
-schemas under [`contracts/`](./contracts/) validate the registry and document
+schemas under `contracts/` validate the registry and document
 frontmatter. Human and AI-agent policy remains in Stage 00, and executable gate
 behavior remains in registered `scripts/` modules.
 
-The legacy [`support/`](./support/) tree remains only as bounded migration input
-while active consumers converge. It is not a second authority and is removed
-after the final consumer migrates.
+Predecessor contracts are retained only as explicit Git recovery evidence in
+Migration 0003; they are not current authoring or validation inputs.
 
 ## Scope
 
@@ -44,7 +44,6 @@ implementation evidence, operating policy, or reference findings.
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/frontmatter.schema.json`](./contracts/frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
-| [`support/`](./support/) | transition input | predecessor rules awaiting consumer removal |
 
 Consumers must load the Registry through
 `scripts.lib.document_governance.registry`. They must not reinterpret README

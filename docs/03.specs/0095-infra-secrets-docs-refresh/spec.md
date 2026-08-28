@@ -47,7 +47,7 @@ This specification owns documentation structure, README contracts, stage documen
 ## Core Design
 
 - **Component Boundary**: documentation strengthening is limited to `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/catalog/*/*/guide.md`, `docs/05.operations/catalog/*/*/policy.md`, `docs/05.operations/catalog/*/*/runbook.md`, and `docs/90.references`.
-- **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/policies/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
+- **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/policies/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-links.py`, `scripts/validation/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
 ## Data Modeling & Storage Strategy
@@ -137,7 +137,7 @@ Not applicable. This work does not provide external APIs.
 
 ```bash
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-quickwin-baseline.sh

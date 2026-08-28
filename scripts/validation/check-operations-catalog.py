@@ -39,8 +39,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.domains and args.mode != "executed":
         parser.error("--domains is accepted only by --mode executed")
     try:
-        migration = load_task8_migration(ROOT)
         if args.mode == "consumers":
+            migration = load_task8_migration(ROOT)
             print(consumer_inventory_json(extract_task8_consumers(ROOT, migration)))
             return 0
         findings = validate_current_operations(

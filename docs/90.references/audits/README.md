@@ -53,6 +53,23 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 | [AUD-0037](./0037-implementation-overview/README.md) | Reference: Superseded 2026-07-07 Implementation Overview Mapping | superseded |
 | [AUD-0038](./0038-sdlc-qa-security-audit/README.md) | Reference: Superseded SDLC, QA, and Security Audit Mapping | superseded |
 
+## Canonical Current Audit
+
+The [implementation audit index](0019-readme/README.md) routes the current
+criterion reports and their [implementation overview](0026-implementation-overview/README.md).
+These reports remain point-in-time evidence, not policy authority.
+
+## Dated Historical Snapshots
+
+The [superseded audit snapshot](0033-readme/README.md) retains its observation
+date in metadata; current package paths remain date-free.
+
+## Supersession Ledgers
+
+The snapshot and current audit index record reciprocal stable-ID supersession.
+[Migration 0003](../../98.archive/migrations/0003-workspace-governance-simplification.md)
+records historical path recovery.
+
 ## Authoring
 
 Create packages only under `audits/####-<slug>/` and use the matching Stage 99 template. Preserve observation dates, citations, provenance, and active-owner Traceability.

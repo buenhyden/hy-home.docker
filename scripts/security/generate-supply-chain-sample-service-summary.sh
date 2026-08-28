@@ -6,17 +6,21 @@ cd "$BASE_DIR"
 
 OUTPUT="docs/90.references/data/0079-supply-chain-sample-service/README.md"
 CHECKER="scripts/validation/check-supply-chain-policy.py"
-MODE="${1:-write}"
+MODE="${1:---check}"
+if (( $# > 1 )); then
+  printf 'Only one mode is accepted.\n' >&2
+  exit 2
+fi
 
 case "$MODE" in
-write | --check)
+--write | --check)
   ;;
 --help | -h)
-  printf '%s\n' "Usage: bash scripts/security/generate-supply-chain-sample-service-summary.sh [--check]"
+  printf '%s\n' "Usage: bash scripts/security/generate-supply-chain-sample-service-summary.sh [--write|--check]"
   exit 0
   ;;
 *)
-  printf '%s\n' "Usage: bash scripts/security/generate-supply-chain-sample-service-summary.sh [--check]" >&2
+  printf '%s\n' "Usage: bash scripts/security/generate-supply-chain-sample-service-summary.sh [--write|--check]" >&2
   exit 2
   ;;
 esac

@@ -122,7 +122,7 @@ source, typed contracts, stage documents, and validators are authoritative.
 
 | Unit | Files and responsibility |
 | :-- | :-- |
-| Authority | docs/00.agent-governance/contracts/*.yaml and rules/*.md |
+| Authority | docs/00.agent-governance/providers/registry.yaml and policies/*.md |
 | Document profiles | docs/99.templates/support/document-metadata-profiles.yaml |
 | Lifecycle and archive | lifecycle-status.md, archive-retention-contract.md, corpus migration contracts |
 | Templates | docs/99.templates/templates/sdlc and templates/operations |
@@ -967,7 +967,7 @@ git commit -m "docs: consolidate references and archive identities"
 - Modify: documentation-protocol.md, output-style.md, standards.md,
   agentic.md, workflows.md, task-checklists.md, postflight-checklist.md,
   persona.md, and stage-authoring-matrix.md
-- Modify or delete: docs/00.agent-governance/scopes/backend.md, entry.md,
+- Modify or delete: docs/00.agent-governance/roles/backend.md, entry.md,
   frontend.md, meta.md, mobile.md, and product.md
 - Modify: docs/00.agent-governance/providers/README.md
 - Modify: docs/00.agent-governance/providers/claude.md
@@ -1022,7 +1022,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ~~~bash
-git add docs/00.agent-governance .claude .codex .gemini tests/validation
+git add docs/00.agent-governance .claude .codex tests/validation
 git commit -m "governance: reconcile SDLC authority and provider projections"
 ~~~
 
@@ -1365,7 +1365,7 @@ git diff --check
 - [ ] **Step 6: Commit**
 
 ~~~bash
-git add docs scripts tests .agents .claude .gemini
+git add docs scripts tests .agents .claude .codex
 git commit -m "docs: normalize four-digit identities and incident routing"
 ~~~
 
@@ -2398,8 +2398,8 @@ history rewriting.
 - [Approved specification](spec.md)
 - [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [Archive retention contract](../../99.templates/README.md)
 - [Workflow contract](../../../.github/workflow-contract.yml)
 
 ## Objective

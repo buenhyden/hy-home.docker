@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import os
 import pathlib
 import subprocess
@@ -21,6 +22,70 @@ from scripts.lib.document_governance.registry import load_registry
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
+        from scripts.lib.document_governance.archive import _approved_migration_document
+
+        root = pathlib.Path(__file__).resolve().parents[3]
+        approved = _approved_migration_document(root)
+        base = approved["baseline_commit"]
+        self.assertEqual("", self._git(root, "ls-tree", base, "--", "docs/99.templates/registry.json"))
+        current = {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"}
+        self.assertEqual((), identity_history.validate_allocation_transition(root, load_registry(), current, base))
+        with self.assertRaises(IdentityHistoryError):
+            identity_history.validate_allocation_transition(root, load_registry(), current, "0" * 40)
+
+    def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            spec = root / "docs/03.specs/0104-original/spec.md"
+            spec.parent.mkdir(parents=True)
+            spec.write_text("---\nartifact_id: SPEC-0104\n---\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue identity")
+            previous = self._git(root, "rev-parse", "HEAD").strip()
+            registry = load_registry()
+            current = {"docs/03.specs/0104-moved/spec.md": "SPEC-0104"}
+            self.assertEqual((), identity_history.validate_allocation_transition(root, registry, current, previous))
+            spec.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "retire identity")
+            retired = self._git(root, "rev-parse", "HEAD").strip()
+            findings = identity_history.validate_allocation_transition(root, registry, current, retired)
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+            introduced = {"docs/03.specs/0154-new/spec.md": "SPEC-0154"}
+            findings = identity_history.validate_allocation_transition(root, registry, introduced, retired)
+            self.assertIn("identity-allocation-not-advanced", {item.code for item in findings})
+            spaces = dict(registry.identity_spaces)
+            spaces["spec"] = dataclasses.replace(spaces["spec"], high_water=154, next_number=155)
+            advanced = dataclasses.replace(registry, identity_spaces=MappingProxyType(spaces))
+            self.assertEqual((), identity_history.validate_allocation_transition(root, advanced, introduced, retired))
+
+    def test_missing_predecessor_registry_is_not_a_generic_bootstrap_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(json.dumps({}), encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "introduce registry")
+            source.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete registry")
+            previous = self._git(root, "rev-parse", "HEAD").strip()
+            with self.assertRaises(IdentityHistoryError):
+                identity_history.validate_allocation_transition(root, load_registry(), {}, previous)
+
     def _git(self, root: pathlib.Path, *arguments: str) -> str:
         return subprocess.run(
             ["git", *arguments],
@@ -74,8 +139,9 @@ class IdentityHistoryTests(unittest.TestCase):
         registry = load_registry()
         started = time.monotonic()
         issued = collect_issued_identities(
-            pathlib.Path(__file__).resolve().parents[2], refs=("--all",)
+            pathlib.Path(__file__).resolve().parents[3], refs=("--all",)
         )
+        self.assertGreater(issued.high_water("spec"), 0)
 
         self.assertEqual((), validate_identity_history(registry, issued))
         self.assertLessEqual(
@@ -84,7 +150,7 @@ class IdentityHistoryTests(unittest.TestCase):
         )
 
     def test_history_uses_only_bounded_exact_id_family_pickaxes(self) -> None:
-        root = pathlib.Path(__file__).resolve().parents[2]
+        root = pathlib.Path(__file__).resolve().parents[3]
         commands: list[tuple[str, ...]] = []
         real_run_git = identity_history._run_git
 

@@ -111,10 +111,10 @@ that requires it. An adjacent file is not in scope merely because it is nearby.
 - [Analytics engine ADR](../../02.architecture/decisions/0015-analytics-engine-selection.md)
 - [Data analytics Spec](../0005-data-analytics/spec.md)
 - [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [Corpus migration contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
+- [README profile contract](../../99.templates/README.md)
 
 ### External Source Basis
 
@@ -482,12 +482,12 @@ commit.
 - Spec 129: Document Contract Canonicalization
 - [Data analytics Spec](../0005-data-analytics/spec.md)
 - [Canonical audit pack](../../90.references/audits/0019-readme/README.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [README profile contract](../../99.templates/README.md)
+- [Common document contract](../../99.templates/README.md)
+- [SDLC document contract](../../99.templates/README.md)
+- [Corpus migration contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
 - [Task checklists](../../00.agent-governance/policies/task-checklists.md)
 - [Postflight checklist](../../00.agent-governance/policies/postflight-checklist.md)
 

@@ -22,16 +22,15 @@ agent-governance control plane. It retains the architecture completed by Spec
 132: Stage 00 is the only policy and catalog authority, root provider files are
 thin entry adapters, and provider-native agent surfaces are deterministic
 projections. The wave updates that architecture for current provider models,
-removes retired and deprecated entries from active contracts, gives all
-providers one bounded project-memory route, reconciles harness and loop
+removes retired and deprecated entries from active contracts, routes execution
+state to the active owning Task, reconciles harness and loop
 semantics, and improves local GitHub Actions and QA governance without mutating
 the remote GitHub control plane.
 
-The primary targets are `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/**`,
-`.claude/**`, `.codex/**`, `.gemini/**`, `.github/**`, and
-`docs/00.agent-governance/**`. The user explicitly added `.gemini/**` after the
-initial target list because Gemini model, reasoning, and memory parity cannot
-be implemented truthfully without its native projection.
+The current targets are `AGENTS.md`, `CLAUDE.md`, `.agents/**`, `.claude/**`,
+`.codex/**`, `.github/**`, and `docs/00.agent-governance/**`. Only Claude and
+Codex remain supported. Stage 99 owns document shapes and lifecycle; the current
+owning Task owns progress and handoff, with Git providing historical recovery.
 
 Read-only discovery at local baseline `e65bb18f` found a sound generated
 foundation: 14 role identities are present in Stage 00 and in every provider
@@ -61,7 +60,7 @@ not claim or change remote enforcement.
 ### Approved Scope
 
 - Keep Stage 00 as the only canonical agent-policy, role, function, model,
-  event, loop, permission, and shared-memory authority.
+  event, loop, and permission authority.
 - Normalize Stage 00 governance frontmatter, section envelopes, key order,
   value domains, and duplicate-key rejection without forcing provider-native
   files into the document metadata schema.
@@ -70,12 +69,12 @@ not claim or change remote enforcement.
   projections.
 - Preserve retirement date, replacement, rationale, and immutable historical
   references in Stage 90 evidence.
-- Revalidate current Claude, Codex, and Gemini model catalogs and assign model
+- Revalidate current Claude and Codex model catalogs and assign model
   and reasoning settings by work profile.
 - Keep API catalog availability distinct from provider CLI/runtime acceptance
   and account entitlement.
-- Give Claude, Codex, Gemini, and provider-neutral entry points one bounded,
-  repository-tracked project-memory route.
+- Route supported-provider entry points to the active Spec and current owning
+  Task without a separate shared state document.
 - Update the agent capability intake against `agency-agents` without importing
   its personas or creating duplicate role authorities.
 - Add only capabilities that pass the role/function admission contract.
@@ -139,11 +138,11 @@ Task ledger. Adjacency alone is not authorization.
 - [Agent catalog](../../00.agent-governance/providers/registry.yaml)
 - [Provider model contract](../../00.agent-governance/providers/registry.yaml)
 - [Agent-governance artifact contract](../../99.templates/registry.json)
-- [Shared-memory contract](../../00.agent-governance/README.md)
+- [Current bootstrap and Task routing](../../00.agent-governance/README.md)
 - [Subagent protocol](../../00.agent-governance/policies/agentic.md)
 - [Provider capability matrix](../../00.agent-governance/policies/provider-capability-matrix.md)
 - [Canonical agentic implementation audit](../../90.references/audits/0019-readme/README.md)
-- [Document metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
+- [Document metadata registry](../../99.templates/registry.json)
 
 ### External Source Basis
 
@@ -152,6 +151,7 @@ documentation owns provider model IDs, native agent fields, reasoning controls,
 and memory behavior. It does not own this repository's role names, lifecycle,
 approval policy, path layout, or evidence vocabulary.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Primary source | Local design consequence |
 | --- | --- |
 | [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview), [model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions), and [effort](https://platform.claude.com/docs/en/build-with-claude/effort) | Treat dateless 4.6+ identifiers as pinned releases; retain current Fable 5, Opus 5, Sonnet 5, and Haiku 4.5 plus explicitly limited-access Mythos records; and select supported effort by work profile rather than assuming an evergreen alias. |
@@ -179,16 +179,16 @@ approval policy, path layout, or evidence vocabulary.
 | ID | Requirement | Acceptance criterion |
 | --- | --- | --- |
 | AGCC-001 | Preserve one canonical authority. | Stage 00 owns policy and catalogs; every root/provider surface is classified as entry, native projection, runtime adapter, or compatibility projection, with no parallel policy body. |
-| AGCC-002 | Normalize metadata by consumer. | Stage 00 documents, README profiles, Claude/Gemini Markdown, Codex TOML, JSON, YAML, and shell files validate against distinct consumer contracts. |
+| AGCC-002 | Normalize metadata by consumer. | Stage 00 documents, README profiles, Claude Markdown, Codex TOML, JSON, YAML, and shell files validate against distinct consumer contracts. |
 | AGCC-003 | Reject duplicate and legacy keys. | Duplicate YAML keys fail closed; a nested `skill-creator.scope` duplicate is rejected by regression coverage; active target metadata contains no unregistered legacy aliases. |
 | AGCC-004 | Remove deprecated active state. | Active contracts and projections contain no `deprecated`, `retired`, or expired fallback record; historical retirement evidence remains immutable and linked. |
 | AGCC-005 | Use current model facts. | Every default model maps to an official current ID and every non-default catalog entry separately records provider lifecycle, repository disposition, source, retrieval time, runtime acceptance, and entitlement. |
 | AGCC-006 | Optimize by work profile. | Every agent resolves to exactly one work profile with provider model and supported reasoning/effort settings; unsupported native fields are not emitted. |
-| AGCC-007 | Share project memory. | All three root providers and provider-neutral agents load the same bounded current project state; private/global memory is excluded. |
+| AGCC-007 | Resolve current execution state. | Claude and Codex bootstrap resolves the active Spec and its current owning Task; no fixed shared Task or separate state file is introduced. |
 | AGCC-008 | Keep the role catalog minimal. | The catalog remains 14 roles unless the admission rule proves a distinct output, permission boundary, and non-mergeable responsibility. |
-| AGCC-009 | Close capability gaps as functions. | `provider-model-evaluation` and `project-memory-stewardship` are typed, owned, reviewed, projected, and evaluated; expected active function count becomes 24. |
+| AGCC-009 | Close capability gaps as functions. | `provider-model-evaluation` and the retained Stage 00 skills are typed, owned, reviewed, projected, and evaluated; the current catalog determines the exact set. |
 | AGCC-010 | Type the harness and loop. | Eight harness layers and the approved loop states have owners, inputs, mutation authority, gates, failure return, evidence, and handoff rules. |
-| AGCC-011 | Keep provider projections deterministic. | Renderer write followed by check produces zero drift across `.agents`, `.claude`, `.codex`, and `.gemini`; native schema checks pass. |
+| AGCC-011 | Keep provider projections deterministic. | Renderer write followed by check produces zero drift across `.agents`, `.claude`, and `.codex`; native schema checks pass. |
 | AGCC-012 | Govern CI and QA locally. | Local workflow checks enforce job-set consistency, pinned dependencies, permissions, timeouts, safe triggers and interpolation, and controlled QA evidence. |
 | AGCC-013 | Represent remote Actions honestly. | Remote-managed workflows and observed runs have dated inventory records; unverified settings remain unverified; no local result is promoted as remote enforcement. |
 | AGCC-014 | Remove one-time and obsolete files safely. | Every deletion has a consumer scan, canonical replacement or reason, provenance, rollback, and review evidence. |
@@ -199,18 +199,18 @@ approval policy, path layout, or evidence vocabulary.
 
 | Surface | Authority or role |
 | --- | --- |
-| `docs/00.agent-governance/contracts/**` | Machine-readable role, function, model, artifact, event, loop, permission, and projection authority |
-| `docs/00.agent-governance/rules/**` | Human-readable policy and workflow authority |
-| `docs/00.agent-governance/agents/**` | Canonical role and function definitions |
-| `docs/00.agent-governance/memory/**` | Advisory project-state contract and bounded current state; never policy authority |
-| Root `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Thin bootstrap and common-memory entry adapters |
+| `docs/00.agent-governance/providers/registry.yaml` and canonical roles/skills | Provider model, event, loop, permission, role, skill, and projection authority |
+| `docs/99.templates/registry.json` | Sole document profile, shape, identity, template, and lifecycle authority |
+| `docs/00.agent-governance/policies/**` | Human-readable policy and workflow authority |
+| `docs/00.agent-governance/roles/**` and `skills/**` | Canonical role and function definitions |
+| Current owning Stage 03 Task | Bounded execution state and evidence; never policy authority |
+| Root `AGENTS.md`, `CLAUDE.md` | Thin bootstrap and active Spec/Task entry adapters |
 | `.agents/**` | Provider-neutral compatibility agents and shared skills |
 | `.claude/**` | Claude-native generated agents, skills, hooks, and settings |
 | `.codex/**` | Codex-native generated TOML agents, hooks, roles, and project config |
-| `.gemini/**` | Gemini-native generated agents, hooks, settings, and scoped model overrides |
 | `.github/**` | Tracked desired workflow and repository-governance definitions, not proof of remote enforcement |
 | Stage 90 | Source-backed research, retirement history, remote observation, and generated audit evidence |
-| Stage 04 | Approved execution plan, task ledger, sanitized verification, deviations, and review evidence |
+| Owning Stage 03 Spec package | Approved execution plan, Tasks, sanitized verification, deviations, and review evidence |
 
 README files retain only profile-specific routing, local inventory, setup, and
 troubleshooting context. A README may link to a contract or policy but must not
@@ -235,7 +235,7 @@ to these artifacts.
 
 Provider-native metadata stays distinct:
 
-- Claude and Gemini use only fields supported by their native agent schema.
+- Claude uses only fields supported by its native agent schema.
 - Codex uses the supported TOML agent schema.
 - Root shims and README files follow their registered profiles.
 - JSON, YAML, TOML, and shell files do not receive Markdown frontmatter.
@@ -283,8 +283,13 @@ Dateless IDs are not assumed to be evergreen. Fallback graphs may reference
 only active non-expired nodes and must not silently cross provider or work
 profile boundaries.
 
-### Work Profile Contract
+### Historical Work Profile Selection
 
+This July 2026 table records the earlier selection, not current configuration.
+Current supported-provider models and reasoning controls are owned solely by
+`docs/00.agent-governance/providers/registry.yaml`.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Work profile | Claude | Codex | Gemini |
 | --- | --- | --- | --- |
 | `long-horizon-supervision` | `claude-opus-5`, `high` or `xhigh` | `gpt-5.6-sol`, `xhigh` | `gemini-3.6-flash`, `high` |
@@ -308,38 +313,31 @@ limited-access Claude Mythos entries remain explicit
 acceptance are separately observed. This prevents the default table from being
 misread as the complete Claude catalog.
 
-Claude effort is emitted only for a model and surface that support it. Gemini
-3.6 and 3.5 projections remove `temperature`, `top_p`, and `top_k`. Gemini
-reasoning is expressed through agent-scoped `modelConfigs.overrides` when the
-native agent frontmatter does not expose the field. Codex uses the supported
+Claude effort is emitted only for a model and surface that support it.
+Codex uses the supported
 `model_reasoning_effort` field.
 
 ## Core Design
 
-### Shared Project Memory
+### Current Task State
 
 The repository provides one provider-neutral current-state route:
 
-- `docs/00.agent-governance/README.md` defines purpose, precedence,
-  allowed content, compaction, ownership, and failure handling.
-- `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` contains only the active branch
-  or task, approved decisions, current blockers, last verified commit and
-  checks, direct evidence links, and next handoff.
-- the existing `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` is converted to
-  historical navigation or compacted only after durable Stage 04 evidence and
-  Git provenance are confirmed.
+- The Stage 00 bootstrap resolves the active Spec and its current owning Task.
+- That Task records approved decisions, current blockers, verified checks,
+  direct evidence links, and the next handoff; no fixed task number is shared
+  across unrelated work.
+- Completed execution evidence follows the Stage 99 lifecycle and is recovered
+  from Git after approved cleanup.
 
-`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` is bounded to 32 KiB and 400 lines.
-Entries must be dated, source-linked, value-free, and replace stale current
-state rather than append forever. Policy text, full command logs, raw output,
+Entries must be source-linked and value-free. Policy text, full command logs, raw output,
 secrets, credentials, tokens, shell history, and private provider memory are
 forbidden.
 
-`AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` import the same memory contract and
-current-state path. Provider-specific overlays may describe how their runtime
-loads it, but may not fork its content. A validator checks import parity,
-bounds, required fields, forbidden material patterns, stale active task state,
-and links to durable evidence.
+`AGENTS.md` and `CLAUDE.md` use the same bootstrap policy and resolve the owning
+Task for the current request. Provider adapters may translate syntax but may not
+fork state or define a second lifecycle. Registered metadata, lifecycle, and
+governance validators enforce their respective current contracts.
 
 ### Agent Catalog and Capability Intake
 
@@ -350,17 +348,15 @@ three conditions hold:
 2. it requires a distinct permission or approval boundary;
 3. adding a function to an existing role cannot preserve accountability.
 
-Two active functions are added:
+The retained evaluation capability is:
 
 | Function | Owner | Reviewers | Output |
 | --- | --- | --- | --- |
 | `provider-model-evaluation` | `eval-engineer` | `code-reviewer`, `rules-engineer` | sourced model disposition, native acceptance verdict, and regression comparison |
-| `project-memory-stewardship` | `doc-writer` | `rules-engineer`, `eval-engineer` | bounded current-state update with durable evidence links and policy-duplication check |
 
-The expected active catalog becomes 14 roles and 24 functions. Generated skill
-sets become 24 where the provider capability matrix projects shared skills.
-Codex and Gemini continue to use the shared `.agents/skills` route unless their
-native contract changes and is separately approved.
+The registered Stage 00 roles and skills determine the active catalog and
+generated set. Codex uses the shared `.agents/skills` projection; current Task
+maintenance does not create a separate state authority or a retired skill.
 
 The `agency-agents` comparison is maintained as a capability matrix:
 
@@ -522,20 +518,12 @@ Each model record contains:
 Retirement records use the Stage 90 evidence schema, not the active provider
 contract.
 
-### Memory State Changes
+### Current Task State Changes
 
-The current-state document contains a fixed section envelope:
-
-- Current objective
-- Approved decisions
-- Active boundary
-- Verified state
-- Blockers and unverified facts
-- Evidence links
-- Next handoff
-
-Template prose must not remain in an instantiated memory record. Stale active
-state is replaced or closed, not duplicated under another heading.
+The active owning Task uses its Stage 99 registered section envelope for
+objective, decisions, scope, verification, blockers, evidence, and handoff.
+Template prose must not remain in an instantiated Task. Stale execution state
+is closed through registered lifecycle, not duplicated in a shared state file.
 
 ### Remote Actions Observation
 
@@ -588,7 +576,7 @@ and read back.
 ### Contract and Projection Gates
 
 - zero duplicate keys in active YAML contracts;
-- exactly 14 active roles and 24 active functions;
+- exactly the registered active roles and skills;
 - exactly one work profile per role;
 - provider lifecycle, repository disposition, runtime acceptance, entitlement,
   configured-default eligibility, and runtime activation eligibility validate
@@ -596,10 +584,10 @@ and read back.
 - zero active deprecated or retired model/role records;
 - all fallback edges resolve to eligible active nodes;
 - provider-native metadata uses supported fields;
-- `.agents`, `.claude`, `.codex`, and `.gemini` projection drift is zero;
+- `.agents`, `.claude`, and `.codex` projection drift is zero;
 - shared skill counts and provider capability routes are exact;
-- root shim and current-memory import parity is exact;
-- current memory stays within 32 KiB and 400 lines;
+- root shims resolve the same active Spec and its current owning Task;
+- current Task content satisfies its Stage 99 profile without a shared state file;
 - hook semantic mapping and generated parity are fresh;
 - agent-output evaluation fixtures and regression controls pass.
 
@@ -636,6 +624,7 @@ Implementation uses an isolated worktree at
 `.worktrees/agent-governance-canonical-convergence` on
 `feat/agent-governance-canonical-convergence`.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Task | Boundary | Primary owners | Commit intent |
 | --- | --- | --- | --- |
 | T-AGCC-001 | Metadata, active contracts, duplicate keys, and retirement evidence | `rules-engineer`, reviewed by `code-reviewer` | Normalize canonical contracts and remove deprecated active state |
@@ -667,7 +656,7 @@ substituted another model.
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Task checklists](../../00.agent-governance/policies/task-checklists.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+- [Document metadata profiles](../../99.templates/registry.json)
 - [Canonical audit implementation overview](../../90.references/audits/0026-implementation-overview/README.md)
 - [Provider harness and loop audit](../../90.references/audits/0028-provider-harness-loop-implementation/README.md)
 - [SDLC quality and CI audit](../../90.references/audits/0030-sdlc-quality-formatting-implementation/README.md)

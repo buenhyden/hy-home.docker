@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import pathlib
 import re
 import subprocess
@@ -20,6 +21,22 @@ SECURITY_AUDIT = (
 
 class SecurityAutomationReadinessTests(unittest.TestCase):
     maxDiff = None
+
+    def test_safe_python_check_and_dry_run_are_read_only_without_ambient_path(self) -> None:
+        output = ROOT / "docs/90.references/data/0078-security-automation-readiness/README.md"
+        before = output.read_bytes()
+        environment = {**os.environ, "PYTHONSAFEPATH": "1"}
+        environment.pop("PYTHONPATH", None)
+        for mode in ("--check", "--dry-run"):
+            with self.subTest(mode=mode):
+                result = subprocess.run(
+                    ["bash", GENERATOR, mode], cwd=ROOT, env=environment,
+                    capture_output=True, text=True, check=False, timeout=30,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(before, output.read_bytes())
+                if mode == "--dry-run":
+                    self.assertEqual(before.decode("utf-8"), result.stdout)
 
     def render(self) -> str:
         result = subprocess.run(

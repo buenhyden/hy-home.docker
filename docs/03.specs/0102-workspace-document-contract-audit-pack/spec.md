@@ -43,7 +43,7 @@ normalize every document in the repository.
 
 In scope:
 
-- Root shims: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `README.md`.
+- Current root entrypoints: `AGENTS.md`, `CLAUDE.md`, `README.md`.
 - Optional root design surface: `DESIGN.md` if it exists in a future run.
 - Provider and runtime surfaces: `.agents/`, `.claude/`, `.codex/`.
 - CI/CD and repository automation: `.github/`, `scripts/`.
@@ -65,15 +65,15 @@ Out of scope for this spec:
 
 ## Related Inputs
 
-- **Template Contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
-- **Frontmatter Contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
-- **Template Governance**: [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
-- **Template Selection**: [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
-- **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/policies/stage-authoring-matrix.md)
-- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/policies/documentation-protocol.md)
-- **Task Checklists**: [../../00.agent-governance/rules/task-checklists.md](../../00.agent-governance/policies/task-checklists.md)
+- **Template Contract**: [../../99.templates/support/template-contract.md](../../99.templates/README.md)
+- **Frontmatter Contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/README.md)
+- **Template Governance**: [../../99.templates/support/template-governance.md](../../99.templates/README.md)
+- **Template Selection**: [../../99.templates/support/template-selection.md](../../99.templates/README.md)
+- **Stage Authoring Matrix**: [Stage authoring policy](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- **Documentation Protocol**: [Documentation policy](../../00.agent-governance/policies/documentation-protocol.md)
+- **Task Checklists**: [Task checklists](../../00.agent-governance/policies/task-checklists.md)
 - **CI Quality Workflow**: [../../../.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml)
-- **Repository Contracts**: [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)
+- **Repository Contracts**: [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/run-ci-gate.py)
 
 This design is a governance/specification follow-up and has no dedicated PRD or
 ARD. Its parent evidence is the approved user request in the active Codex
@@ -304,10 +304,10 @@ later includes that drift.
 ## Related Documents
 
 - [Spec index](../README.md)
-- [Template contract](../../99.templates/support/template-contract.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [Template selection](../../99.templates/support/template-selection.md)
+- [Template contract](../../99.templates/README.md)
+- [Frontmatter contract](../../99.templates/README.md)
+- [Template governance](../../99.templates/README.md)
+- [Template selection](../../99.templates/README.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Repository README](../../../README.md)

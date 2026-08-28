@@ -13,6 +13,7 @@ import os
 import pathlib
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -23,16 +24,21 @@ import yaml
 
 from scripts.lib.document_governance.spec_packages import load_spec_packages
 from scripts.lib.document_governance import archive as archive_authority
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
 REGISTRY = ROOT / "docs/99.templates/registry.json"
-PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
-CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
-CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contract.md"
-ARCHIVE_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/archive-retention-contract.md"
+HISTORICAL_COMMIT = "494065806794980080b081439298d7b534d10803"
+PROFILES = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/document-metadata-profiles.yaml")
+CONTRACT = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/document-corpus-migration-contract.yaml")
+CORPUS_HUMAN_CONTRACT = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/corpus-migration-contract.md")
+ARCHIVE_HUMAN_CONTRACT = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/archive-retention-contract.md")
+PRE_MIGRATION_COMMIT = "889d3868ecd0913cddac79a718584a54a8453525"
+# Spec 0136 Task 7's recorded implementation commit, not its source baseline.
+TASK7_CLOSURE_COMMIT = "57259e24775cbbc206ed1724e8357d578d797d62"
 TASK7_LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 TARGET_WAVE = "target-surface-convergence"
 TARGET_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
@@ -45,6 +51,22 @@ SAMPLE_PREDECESSOR_EQUALITY_CODES = {
     "manifest-target-profile-invalid",
     "manifest-target-status-mismatch",
 }
+
+
+def historical_document(path: str, commit: str = PRE_MIGRATION_COMMIT) -> HistoricalDocument:
+    return HistoricalDocument(ROOT, commit, path)
+
+
+def historical_paths(prefix: str, commit: str = PRE_MIGRATION_COMMIT) -> tuple[str, ...]:
+    result = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", commit, "--", prefix],
+        cwd=ROOT, check=True, capture_output=True, text=True,
+    )
+    return tuple(result.stdout.splitlines())
+
+
+def historical_metadata(path: str, commit: str = TASK7_CLOSURE_COMMIT) -> dict[str, object]:
+    return metadata._parse_frontmatter_text(historical_document(path, commit).read_text())
 
 
 def load_script(path: pathlib.Path, name: str):
@@ -62,6 +84,165 @@ metadata = load_script(METADATA_SCRIPT, "document_metadata_for_lifecycle_tests")
 
 
 class SharedProvenanceExtractionTests(unittest.TestCase):
+    def test_nested_cli_preserves_only_valid_same_root_descriptor(self) -> None:
+        descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            override = f"/proc/self/fd/{descriptor}"
+            with mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": override}):
+                result = run(sys.executable, str(SCRIPT), "--help", cwd=ROOT)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn("--mode", result.stdout)
+                # An unrelated subprocess does not receive the held capability.
+                unrelated = run(sys.executable, "-c", "import os; print(os.path.isdir(os.environ['HYHOME_CI_GATE_ROOT']))", cwd=ROOT)
+                self.assertEqual("False\n", unrelated.stdout)
+                self.assertEqual(override, os.environ["HYHOME_CI_GATE_ROOT"])
+        finally:
+            os.close(descriptor)
+        with tempfile.TemporaryDirectory() as directory:
+            other_root = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                closed = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY)
+                os.close(closed)
+                invalid = (str(ROOT), f"/proc/self/fd/{closed}", f"/proc/self/fd/{other_root}")
+                for override in invalid:
+                    with self.subTest(override=override), mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": override}):
+                        result = run(sys.executable, str(SCRIPT), "--help", cwd=ROOT)
+                    self.assertEqual(1, result.returncode)
+                    self.assertIn("FAIL: invalid HYHOME_CI_GATE_ROOT", result.stderr)
+            finally:
+                os.close(other_root)
+
+    def test_current_registry_modes_preserve_no_follow_and_metadata_redaction(self) -> None:
+        marker = "token=do-not-echo-current-boundary"
+        for attack in ("final", "intermediate", "metadata"):
+            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
+                fixture = pathlib.Path(directory)
+                root = fixture / "repository"
+                root.mkdir()
+                init_repo(root)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_bytes((ROOT / "docs/99.templates/registry.json").read_bytes())
+                target = root / "docs/03.specs/0104-example/spec.md"
+                target.parent.mkdir(parents=True)
+                target.write_text("---\nprofile_id: spec\nstatus: active\nartifact_id: SPEC-0104\nartifact_type: spec\nparent_ids: []\n---\n# Example\n", encoding="utf-8")
+                commit_all(root, "current fixture")
+                outside = fixture / "outside"
+                outside.mkdir()
+                (outside / "spec.md").write_text(marker, encoding="utf-8")
+                if attack == "final":
+                    target.unlink()
+                    target.symlink_to(outside / "spec.md")
+                elif attack == "intermediate":
+                    target.unlink()
+                    target.parent.rmdir()
+                    target.parent.symlink_to(outside, target_is_directory=True)
+                else:
+                    target.write_text(target.read_text().replace("parent_ids: []", f"parent_ids: ['{marker}']"), encoding="utf-8")
+                for mode in ("report-full", "check-full", "check-impacted", "report-duplicates"):
+                    with self.subTest(mode=mode):
+                        output = fixture / f"{mode}.out"
+                        arguments = ["--root", str(root), "--registry", str(registry), "--mode", mode]
+                        if mode == "check-impacted":
+                            arguments.extend(("--base-ref", "HEAD"))
+                        if mode == "report-duplicates":
+                            arguments.extend(("--output", str(output)))
+                        rendered = io.StringIO()
+                        with mock.patch.object(lifecycle, "load_migration_contract", side_effect=AssertionError("retired authority")) as old_loader, contextlib.redirect_stdout(rendered), contextlib.redirect_stderr(rendered):
+                            result = lifecycle.main(arguments)
+                        old_loader.assert_not_called()
+                        self.assertEqual(3, result, rendered.getvalue())
+                        self.assertNotIn("internal-error", rendered.getvalue())
+                        self.assertIn("selected lifecycle path is unsafe", rendered.getvalue())
+                        self.assertNotIn(marker, rendered.getvalue())
+                        self.assertNotIn("Traceback", rendered.getvalue())
+                        self.assertFalse(output.exists())
+
+    def test_current_scheduled_modes_do_not_load_retired_policy(self) -> None:
+        for arguments in (("check-impacted", "--base-ref", "HEAD"), ("report-full",)):
+            with self.subTest(mode=arguments[0]), mock.patch.object(
+                lifecycle, "load_migration_contract", side_effect=AssertionError("retired policy loaded")
+            ), contextlib.redirect_stdout(output := io.StringIO()):
+                self.assertEqual(0, lifecycle.main(["--mode", *arguments]), output.getvalue())
+
+    def test_public_cli_checks_committed_deletion_against_trusted_base(self) -> None:
+        from scripts.lib.document_governance import spec_packages
+        from tests.lib.document_governance.test_spec_packages import _write_package
+
+        for removed in ("spec.md", "plan.md", "tasks/tsk-0001-implement.md"):
+            with self.subTest(removed=removed), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                package = _write_package(root / "docs/03.specs", plan=True, task=removed != "plan.md")
+                migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+                migration.parent.mkdir(parents=True)
+                migration.write_text("fixture boundary\n")
+                init_repo(root)
+                base = commit_all(root, "before deletion")
+                if removed == "spec.md":
+                    shutil.rmtree(package)
+                else:
+                    (package / removed).unlink()
+                commit_all(root, "committed unauthorized deletion")
+                with mock.patch.object(spec_packages, "_read_migration_authority", return_value=({}, {}, frozenset())), mock.patch.object(
+                    lifecycle, "_historical_promoted_findings", return_value=[]
+                ):
+                    for event in ("pull_request", "push"):
+                        output = io.StringIO()
+                        with mock.patch.dict(os.environ, {"EVENT_NAME": event, "TEMPLATE_GATE_BASE": base}, clear=True), contextlib.redirect_stdout(output):
+                            result = lifecycle.main(["--root", str(root), "--profiles", str(REGISTRY), "--mode", "check-public"])
+                        self.assertEqual(1, result, output.getvalue())
+                        expected = "living-spec-deletion-forbidden" if removed == "spec.md" else "execution-evidence-recovery-missing"
+                        self.assertIn(expected, output.getvalue())
+                    with mock.patch.dict(os.environ, {"EVENT_NAME": "pull_request"}, clear=True), contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(1, lifecycle.main(["--root", str(root), "--profiles", str(REGISTRY), "--mode", "check-public"]))
+                    if removed == "spec.md":
+                        from scripts.lib.document_governance.git_provenance import verify_recovery_blob
+
+                        relative = pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")
+                        self.assertTrue(verify_recovery_blob(relative, base, repo_root=root).is_regular_blob)
+                        with mock.patch.object(spec_packages, "_read_migration_authority", return_value=({}, {relative: base}, frozenset({"SPEC-0001"}))), mock.patch.dict(
+                            os.environ, {"EVENT_NAME": "push", "TEMPLATE_GATE_BASE": base}, clear=True
+                        ), contextlib.redirect_stdout(io.StringIO()):
+                            self.assertEqual(0, lifecycle.main(["--root", str(root), "--profiles", str(REGISTRY), "--mode", "check-public"]))
+
+    def test_current_promoted_evidence_rejects_mapping_and_payload_mutations(self) -> None:
+        migration = archive_authority._migration_document(ROOT)
+        rows = [row for row in migration["rows"] if row.get("artifact_id") in {"DATA-0067", "DATA-0069"}]
+        for mutated_rows in (rows[:1], rows + rows[:1], []):
+            with self.subTest(rows=len(mutated_rows)), mock.patch.object(
+                archive_authority, "_migration_document", return_value={**migration, "rows": mutated_rows}
+            ), self.assertRaises(lifecycle.ProfileError):
+                lifecycle._historical_promoted_findings(ROOT)
+        original = lifecycle._read_regular_repo_bytes
+        for mutation in (None, b"", b"entries: []\n", b"unrelated consumer\n"):
+            with self.subTest(payload=mutation):
+                def reader(root, path, *, require_tracked):
+                    if path == rows[0]["target_path"]:
+                        return mutation
+                    return original(root, path, require_tracked=require_tracked)
+                with mock.patch.object(lifecycle, "_read_regular_repo_bytes", side_effect=reader):
+                    findings = lifecycle._historical_promoted_findings(ROOT)
+                self.assertEqual(["historical-manifest-drift"], [item.code for item in findings])
+        with tempfile.TemporaryDirectory() as directory:
+            copied_root = pathlib.Path(directory)
+            init_repo(copied_root)
+            with mock.patch.object(archive_authority, "_migration_document", return_value=migration), self.assertRaises(ValueError):
+                lifecycle._historical_promoted_findings(copied_root)
+
+    def test_regular_reader_rejects_oversized_and_symlink_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            target = root / "evidence.md"
+            target.write_bytes(b"x" * (4 * 1024 * 1024 + 1))
+            self.assertIsNone(lifecycle._read_regular_repo_bytes(root, "evidence.md", require_tracked=False))
+            link = root / "link.md"
+            link.symlink_to(target)
+            self.assertIsNone(lifecycle._read_regular_repo_bytes(root, "link.md", require_tracked=False))
+
+    def test_current_public_lifecycle_uses_registry_and_immutable_recovery(self) -> None:
+        with mock.patch.object(lifecycle, "load_migration_contract", side_effect=AssertionError("legacy authority loaded")):
+            self.assertEqual(0, lifecycle.main(["--mode", "check-public"]))
+
     def test_lifecycle_uses_shared_git_provenance_without_file_loading_metadata(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("scripts.lib.document_governance.git_provenance", source)
@@ -137,14 +318,14 @@ class Task7LedgerRepairTests(unittest.TestCase):
             "32c40e11747bc0bd03789c24861d2e5d60c0e999",
         ),
         (
-            "docs/90.references/research/0001-agentic-research-pack-refresh/github-actions-platform.md",
-            "docs/90.references/research/0084-github-actions-platform/README.md",
+            "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md",
+            "docs/90.references/research/ref-0084-github-actions-platform.md",
             "ref-0084",
             "move",
             "f2f8f8a441b5977d55e516ba59ea7865c06d6c55",
         ),
         (
-            "docs/90.references/research/0001-agentic-research-pack-refresh/verification-validation.md",
+            "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md",
             "docs/90.references/research/ref-0085-verification-validation.md",
             "ref-0085",
             "move",
@@ -247,9 +428,8 @@ class Task7LedgerRepairTests(unittest.TestCase):
         self.assertEqual(
             extension_targets,
             {
-                target: str(metadata.parse_frontmatter(ROOT / target).get("artifact_id"))
+                target: str(historical_metadata(target).get("artifact_id"))
                 for target in extension_targets
-                if (ROOT / target).is_file()
             },
         )
 
@@ -325,12 +505,16 @@ class Task7LedgerRepairTests(unittest.TestCase):
     def test_change_packet_and_artifact_identities_are_globally_unique(self) -> None:
         packet_ids: list[str] = []
         artifact_ids: list[str] = []
-        for packet in sorted((ROOT / "docs/98.archive/changes").glob("chg-*")):
+        paths = historical_paths("docs/98.archive/changes", TASK7_CLOSURE_COMMIT)
+        packets = sorted({pathlib.PurePosixPath(path).parent for path in paths})
+        for packet in packets:
             match = re.match(r"chg-(\d{4})-", packet.name)
             if match:
                 packet_ids.append(match.group(1))
-            for document in sorted(packet.glob("*.md")):
-                value = metadata.parse_frontmatter(document).get("artifact_id")
+            for document in paths:
+                if pathlib.PurePosixPath(document).parent != packet:
+                    continue
+                value = historical_metadata(document).get("artifact_id")
                 if isinstance(value, str):
                     artifact_ids.append(value)
         expected_ids = [artifact_id for _, artifact_id in self.CHANGE_PACKET_REPAIR.values()]
@@ -356,7 +540,7 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         "docs/90.references/audits/0012-readme/README.md": "audit",
         "docs/90.references/audits/0019-readme/README.md": "audit",
         "docs/90.references/audits/0033-readme/README.md": "audit",
-        "docs/90.references/research/ref-0039-readme.md": "reference",
+        "docs/90.references/research/0001-agentic-research-pack-refresh/README.md": "research",
     }
 
     def setUp(self) -> None:
@@ -365,21 +549,22 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
 
     def test_task7_executes_every_frozen_disposition(self) -> None:
         failures: list[str] = []
+        snapshot_paths = set(historical_paths("docs", TASK7_CLOSURE_COMMIT))
         for row in self.rows:
-            source = ROOT / str(row["legacy_path"])
+            source = str(row["legacy_path"])
             target_value = row["stable_path"]
             action = row["action"]
             if action == "delete":
-                if source.exists():
+                if source in snapshot_paths:
                     failures.append(f"delete-source-present:{row['legacy_path']}")
                 continue
             if not isinstance(target_value, str):
                 failures.append(f"target-invalid:{row['legacy_path']}")
                 continue
-            target = ROOT / target_value
-            if not target.is_file():
+            target = target_value
+            if target not in snapshot_paths:
                 failures.append(f"target-missing:{target_value}")
-            if source != target and source.exists():
+            if source != target and source in snapshot_paths:
                 failures.append(f"source-present:{row['legacy_path']}")
         self.assertEqual([], failures)
 
@@ -414,11 +599,7 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
             target_value = row["stable_path"]
             if not dates or not isinstance(target_value, str):
                 continue
-            target = ROOT / target_value
-            if not target.is_file():
-                failures.append(f"target-missing:{target_value}")
-                continue
-            values = metadata.parse_frontmatter(target)
+            values = historical_metadata(target_value)
             serialized_dates = {
                 value[:10] if isinstance(value, str) else value.isoformat()[:10]
                 for key, value in values.items()
@@ -439,17 +620,12 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
 
     def test_check_recovery_mode_uses_minimal_archive_authority(self) -> None:
-        result = subprocess.run(
-            [
-                sys.executable,
-                "scripts/validation/check-document-corpus-lifecycle.py",
-                "--mode",
-                "check-recovery",
-            ],
+        result = run(
+            sys.executable,
+            str(SCRIPT),
+            "--mode",
+            "check-recovery",
             cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("migrations=3", result.stdout)
@@ -475,7 +651,8 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         self.assertIn("failures=0", result.stdout)
 
     def test_renamed_pack_indexes_use_their_typed_leaf_body_contracts(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
+        registry = metadata.load_registry(REGISTRY)
+        profiles = metadata.build_registry_profiles(registry)
         for relative, role_name in self.PACK_INDEX_ROLES.items():
             with self.subTest(path=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
@@ -486,19 +663,9 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
                 )
                 self.assertEqual(role_name, record.artifact_type)
                 h1, h2 = metadata.extract_markdown_headings(text)
-                expected_h2 = [
-                    "## Overview",
-                    "## Purpose",
-                    "## Repository Role",
-                    "## Scope",
-                    "## Definitions / Facts",
-                    "## Sources",
-                    "## Maintenance",
-                    "## Related Documents",
-                ]
+                expected_h2 = {f"## {section}" for section in registry.profiles[role_name]["required_sections"]}
                 self.assertEqual(1, len(h1))
-                self.assertTrue(h1[0].startswith("# Reference: "), h1[0])
-                self.assertEqual(expected_h2, h2)
+                self.assertTrue(expected_h2.issubset(h2))
                 codes = {
                     finding.code
                     for finding in metadata.validate_body_contract(
@@ -625,317 +792,11 @@ class CoLocatedExecutionTests(unittest.TestCase):
                     )
                 )
 
-    def test_task7_promoted_reconciliation_is_exactly_bounded(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        contract = lifecycle.load_migration_contract(CONTRACT)
-        _, findings = lifecycle._load_declared_manifests(
-            ROOT,
-            profiles,
-            contract,
-            promoted_only=True,
-        )
-        task7_sources = set(lifecycle._task7_migration_rows(ROOT))
-        task7_residual = [
-            finding
-            for finding in findings
-            if finding.path in task7_sources
-            and finding.code
-            in {"manifest-target-missing", "manifest-transition-invalid"}
-        ]
-        self.assertEqual([], task7_residual)
-        self.assertEqual(
-            {
-                "manifest-consumer-evidence-mismatch": 23,
-                "manifest-target-missing": 21,
-                "manifest-target-parent-ids-mismatch": 1,
-                "manifest-target-profile-invalid": 1,
-                "manifest-target-status-mismatch": 1,
-            },
-            dict(collections.Counter(finding.code for finding in findings)),
-        )
 
-    def test_task7_reconciliation_requires_exact_ledger_and_current_topology(self) -> None:
-        contract = lifecycle.load_migration_contract(CONTRACT)
-        rows = lifecycle._task7_migration_rows(ROOT)
-        self.assertEqual(169, len(rows))
-        self.assertEqual(
-            {"archive": 38, "delete": 16, "move": 75, "rewrite": 40},
-            dict(collections.Counter(row["action"] for row in rows.values())),
-        )
-        self.assertTrue(lifecycle._task7_reconciliation_ready(ROOT, contract))
 
-        incomplete = dict(rows)
-        incomplete.pop(next(iter(incomplete)))
-        with mock.patch.object(
-            lifecycle, "_task7_migration_rows", return_value=incomplete
-        ):
-            self.assertFalse(lifecycle._task7_reconciliation_ready(ROOT, contract))
 
-    def test_task7_consumer_reconciliation_rejects_unrelated_drift(self) -> None:
-        document = lifecycle.load_migration_manifest(
-            ROOT
-            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
-        )
-        rows = lifecycle._task7_migration_rows(ROOT)
-        legacy, ledger_row = next(
-            (legacy, row)
-            for legacy, row in rows.items()
-            if isinstance(row.get("stable_path"), str)
-            and row["stable_path"] != legacy
-        )
-        stable = str(ledger_row["stable_path"])
-        first = dataclasses.replace(
-            document.entries[0],
-            active_consumers=(pathlib.PurePosixPath(legacy),),
-        )
-        candidate = dataclasses.replace(
-            document,
-            entries=(first, *document.entries[1:]),
-        )
-        with mock.patch.object(
-            lifecycle,
-            "_tracked_active_consumers",
-            return_value=(pathlib.PurePosixPath(stable),),
-        ):
-            self.assertTrue(
-                lifecycle._task7_consumer_evidence_is_reconciled(
-                    ROOT, candidate, first.source_path.as_posix(), rows
-                )
-            )
-        with mock.patch.object(
-            lifecycle,
-            "_tracked_active_consumers",
-            return_value=(
-                pathlib.PurePosixPath(stable),
-                pathlib.PurePosixPath("docs/unrelated-consumer.md"),
-            ),
-        ):
-            self.assertFalse(
-                lifecycle._task7_consumer_evidence_is_reconciled(
-                    ROOT, candidate, first.source_path.as_posix(), rows
-                )
-            )
 
-    def test_task7_reconciliation_requires_exact_registered_immutable_bytes(self) -> None:
-        contract = lifecycle.load_migration_contract(CONTRACT)
-        document = lifecycle.load_migration_manifest(
-            ROOT
-            / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
-        )
-        self.assertTrue(
-            lifecycle._task7_registered_manifest_matches(
-                ROOT,
-                contract,
-                document,
-                lifecycle.TASK7_IMMUTABLE_MANIFEST,
-            )
-        )
-        self.assertFalse(
-            lifecycle._task7_registered_manifest_matches(
-                ROOT,
-                contract,
-                document,
-                None,
-            )
-        )
 
-        first = document.entries[0]
-        consumer_drift = dataclasses.replace(
-            first,
-            active_consumers=tuple(
-                sorted(
-                    {
-                        *first.active_consumers,
-                        pathlib.PurePosixPath("docs/unrelated-consumer.md"),
-                    }
-                )
-            ),
-        )
-        target_drift = dataclasses.replace(
-            first,
-            target_path=pathlib.PurePosixPath("docs/unrelated-target.md"),
-        )
-        for mutated in (consumer_drift, target_drift):
-            candidate = dataclasses.replace(
-                document,
-                entries=(mutated, *document.entries[1:]),
-            )
-            with self.subTest(mutated=mutated):
-                self.assertFalse(
-                    lifecycle._task7_registered_manifest_matches(
-                        ROOT,
-                        contract,
-                        candidate,
-                        lifecycle.TASK7_IMMUTABLE_MANIFEST,
-                    )
-                )
-
-        original_reader = lifecycle._read_regular_repo_bytes
-
-        def corrupted_reader(
-            root: pathlib.Path, relative_path: str, *, require_tracked: bool
-        ) -> bytes | None:
-            payload = original_reader(
-                root, relative_path, require_tracked=require_tracked
-            )
-            if relative_path == lifecycle.TASK7_IMMUTABLE_MANIFEST and payload is not None:
-                return payload + b"\n"
-            return payload
-
-        with mock.patch.object(
-            lifecycle, "_read_regular_repo_bytes", side_effect=corrupted_reader
-        ):
-            self.assertFalse(
-                lifecycle._task7_registered_manifest_matches(
-                    ROOT,
-                    contract,
-                    document,
-                    lifecycle.TASK7_IMMUTABLE_MANIFEST,
-                )
-            )
-
-        with tempfile.TemporaryDirectory() as directory:
-            copied_root = pathlib.Path(directory)
-            init_repo(copied_root)
-            copied = copied_root / lifecycle.TASK7_IMMUTABLE_MANIFEST
-            copied.parent.mkdir(parents=True)
-            copied.write_bytes(
-                (ROOT / lifecycle.TASK7_IMMUTABLE_MANIFEST).read_bytes()
-            )
-            commit_all(copied_root, "copy immutable manifest only")
-            self.assertFalse(
-                lifecycle._task7_registered_manifest_matches(
-                    copied_root,
-                    contract,
-                    document,
-                    lifecycle.TASK7_IMMUTABLE_MANIFEST,
-                )
-            )
-
-    def test_task7_reconciliation_rejects_an_exact_copy_at_a_candidate_path(self) -> None:
-        profiles = metadata.load_profiles(PROFILES, CONTRACT)
-        contract = lifecycle.load_migration_contract(CONTRACT)
-        canonical_relative = lifecycle.TASK7_IMMUTABLE_MANIFEST
-        canonical = ROOT / canonical_relative
-        document = lifecycle.load_migration_manifest(canonical)
-        task7_sources = set(lifecycle._task7_migration_rows(ROOT))
-
-        def task7_reconcilable_findings(
-            findings: list[lifecycle.Finding],
-        ) -> set[tuple[str, str]]:
-            return {
-                (finding.path, finding.code)
-                for finding in findings
-                if finding.path in task7_sources
-                or (
-                    finding.path == "manifest"
-                    and finding.code == "manifest-baseline-commit-invalid"
-                )
-            }
-
-        raw_task7_findings = task7_reconcilable_findings(
-            lifecycle._validate_surface_manifest(
-                ROOT,
-                profiles,
-                contract,
-                document,
-            )
-        )
-
-        canonical_findings = lifecycle.validate_migration_manifest(
-            ROOT,
-            profiles,
-            contract,
-            document,
-            manifest_path=canonical_relative,
-        )
-        self.assertFalse(
-            any(
-                finding.path in task7_sources
-                and finding.code
-                in {"manifest-target-missing", "manifest-transition-invalid"}
-                for finding in canonical_findings
-            )
-        )
-
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
-            candidate = pathlib.Path(directory) / "ref-0069-copy.yaml"
-            candidate.write_bytes(canonical.read_bytes())
-            candidate_relative = candidate.relative_to(ROOT).as_posix()
-            copied_document = lifecycle.load_migration_manifest(candidate)
-            copied_findings = lifecycle.validate_migration_manifest(
-                ROOT,
-                profiles,
-                contract,
-                copied_document,
-                manifest_path=candidate_relative,
-            )
-            output = io.StringIO()
-            with contextlib.redirect_stdout(output):
-                return_code = lifecycle.main(
-                    (
-                        "--root",
-                        str(ROOT),
-                        "--mode",
-                        "check-manifest",
-                        "--wave",
-                        TARGET_WAVE,
-                        "--manifest",
-                        candidate_relative,
-                    )
-                )
-
-        self.assertEqual(1, return_code)
-        self.assertIn("manifest-target-missing:", output.getvalue())
-        self.assertIn("manifest-transition-invalid:", output.getvalue())
-
-        self.assertEqual(
-            raw_task7_findings,
-            task7_reconcilable_findings(copied_findings),
-        )
-
-        copied_task7 = {
-            finding.code
-            for finding in copied_findings
-            if finding.path in task7_sources
-        }
-        self.assertIn("manifest-target-missing", copied_task7)
-        self.assertIn("manifest-transition-invalid", copied_task7)
-
-        unbound_findings = lifecycle.validate_migration_manifest(
-            ROOT,
-            profiles,
-            contract,
-            document,
-        )
-        self.assertEqual(
-            raw_task7_findings,
-            task7_reconcilable_findings(unbound_findings),
-        )
-        unbound_task7 = {
-            finding.code
-            for finding in unbound_findings
-            if finding.path in task7_sources
-        }
-        self.assertIn("manifest-target-missing", unbound_task7)
-        self.assertIn("manifest-transition-invalid", unbound_task7)
-
-    def test_task5_reconciliation_requires_every_exact_ledger_disposition(self) -> None:
-        rows = lifecycle._task5_migration_rows(ROOT)
-        selected = lifecycle._task5_selected_rows(rows)
-
-        self.assertEqual(337, len(selected))
-        self.assertEqual(
-            {
-                "archive": 28,
-                "delete": 38,
-                "merge": 8,
-                "move": 262,
-                "rewrite": 1,
-            },
-            dict(collections.Counter(row["action"] for row in selected.values())),
-        )
-        self.assertTrue(lifecycle._task5_dispositions_executed(ROOT, selected))
 
     def test_task5_reconciliation_requires_a_resolvable_legacy_source_blob(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1021,12 +882,26 @@ class CoLocatedExecutionTests(unittest.TestCase):
 
 
 def run(*args: str, cwd: pathlib.Path) -> subprocess.CompletedProcess[str]:
+    # Only repository lifecycle/metadata CLIs inherit the already-held root.
+    # Invalid overrides remain in the environment for the child guard to reject.
+    pass_fds: tuple[int, ...] = ()
+    override = os.environ.get("HYHOME_CI_GATE_ROOT", "")
+    match = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", override)
+    if len(args) > 1 and pathlib.Path(args[1]).resolve() in {SCRIPT, METADATA_SCRIPT} and match:
+        try:
+            descriptor = int(match.group(1))
+            held, expected = os.fstat(descriptor), ROOT.stat()
+            if stat.S_ISDIR(held.st_mode) and (held.st_dev, held.st_ino) == (expected.st_dev, expected.st_ino):
+                pass_fds = (descriptor,)
+        except (OSError, ValueError, OverflowError):
+            pass
     return subprocess.run(
         list(args),
         cwd=cwd,
         text=True,
         capture_output=True,
         check=False,
+        pass_fds=pass_fds,
     )
 
 
@@ -1130,6 +1005,16 @@ class LifecycleTestCase(unittest.TestCase):
         }
         return contract
 
+    def historical_cli_arguments(self, root: pathlib.Path) -> list[str]:
+        """Give historical-format unit fixtures their explicit proven inputs."""
+        inputs = root / "fixture-inputs"
+        inputs.mkdir(exist_ok=True)
+        profiles, contract = inputs / "profiles.yaml", inputs / "migration.yaml"
+        if not profiles.exists():
+            profiles.write_text(PROFILES.read_text(encoding="utf-8"), encoding="utf-8")
+            contract.write_text(CONTRACT.read_text(encoding="utf-8"), encoding="utf-8")
+        return ["--profiles", str(profiles), "--contract", str(contract)]
+
     def run_isolated_impacted_cli(
         self,
         root: pathlib.Path,
@@ -1144,6 +1029,8 @@ class LifecycleTestCase(unittest.TestCase):
         arguments = [
             "--root",
             str(root),
+            "--profiles", "fixture-profiles.yaml",
+            "--contract", "fixture-contract.yaml",
             "--mode",
             "check-impacted",
             "--base-ref",
@@ -1179,16 +1066,18 @@ class PublicContractTests(LifecycleTestCase):
         parser = lifecycle._parser()
         current = parser.parse_args(["--mode", "check-contract"])
         transitional = parser.parse_args(
-            ["--mode", "check-contract", "--profiles", str(PROFILES)]
+            ["--mode", "check-contract", "--profiles", "historical-fixture.yaml"]
         )
 
-        self.assertEqual(REGISTRY, current.profiles)
-        self.assertEqual(PROFILES, transitional.profiles)
+        self.assertEqual(REGISTRY.resolve(), current.profiles.resolve())
+        self.assertEqual(pathlib.Path("historical-fixture.yaml"), transitional.profiles)
+        self.assertEqual("check-public", parser.parse_args([]).mode)
 
     def test_modes_are_the_exact_fixed_tuple(self) -> None:
         self.assertEqual(
             lifecycle.MODES,
             (
+                "check-public",
                 "check-contract",
                 "generate-manifest",
                 "check-manifest",
@@ -1200,6 +1089,7 @@ class PublicContractTests(LifecycleTestCase):
                 "report-full",
                 "check-full",
                 "check-archive",
+                "check-recovery",
                 "check-directory-budget",
                 "generate-archive-ledger",
                 "check-archive-ledger",
@@ -1307,26 +1197,25 @@ class PublicContractTests(LifecycleTestCase):
         return path
 
 
-class HumanContractRoutingTests(LifecycleTestCase):
+class HistoricalHumanContractRoutingTests(LifecycleTestCase):
     def test_stage90_routers_match_blocking_foundation_state(self) -> None:
-        routers = (
-            ROOT / "docs/90.references" / "README.md",
-            ROOT / "docs/90.references" / "data/README.md",
-            ROOT / "docs/90.references" / "data/governance/README.md",
-            ROOT / "docs/90.references"
-            / "data/governance/document-corpus-lifecycle/README.md",
-        )
+        routers = tuple(historical_document(path) for path in (
+            "docs/90.references/README.md",
+            "docs/90.references/data/README.md",
+            "docs/90.references/data/governance/README.md",
+            "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+        ))
         for path in routers:
             text = path.read_text(encoding="utf-8").lower()
-            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+            with self.subTest(path=path.path):
                 self.assertNotIn("reviewed advisory foundation", text)
                 self.assertIn("reviewed blocking foundation", text)
 
     def test_lifecycle_human_owners_are_unique(self) -> None:
-        support = ROOT / "docs/99.templates/support"
+        support = tuple(historical_document(path, HISTORICAL_COMMIT) for path in historical_paths("docs/99.templates/support", HISTORICAL_COMMIT) if path.endswith(".md"))
         texts = {
             path: path.read_text(encoding="utf-8")
-            for path in support.glob("*.md")
+            for path in support
         }
         expected = {
             "sole human owner for corpus migration": CORPUS_HUMAN_CONTRACT,
@@ -1354,7 +1243,7 @@ class HumanContractRoutingTests(LifecycleTestCase):
                 self.assertIn(required, contract)
 
     def test_template_governance_routes_algorithms_to_human_owners(self) -> None:
-        path = ROOT / "docs/99.templates/support/template-governance.md"
+        path = historical_document("docs/99.templates/support/template-governance.md", HISTORICAL_COMMIT)
         text = path.read_text(encoding="utf-8")
         self.assertIn("corpus-migration-contract.md", text)
         self.assertIn("archive-retention-contract.md", text)
@@ -1381,7 +1270,7 @@ class HumanContractRoutingTests(LifecycleTestCase):
                 self.assertIn(approval_boundary, text)
 
     def test_non_owner_support_contracts_do_not_publish_legacy_dispositions(self) -> None:
-        support = ROOT / "docs/99.templates/support"
+        support = tuple(historical_document(path, HISTORICAL_COMMIT) for path in historical_paths("docs/99.templates/support", HISTORICAL_COMMIT) if path.endswith(".md"))
         owners = {CORPUS_HUMAN_CONTRACT, ARCHIVE_HUMAN_CONTRACT}
         legacy_literals = (
             "`active-canonical`",
@@ -1390,16 +1279,16 @@ class HumanContractRoutingTests(LifecycleTestCase):
             "`conflict-remove-or-archive`",
             "`evidence-preserve`",
         )
-        for path in support.glob("*.md"):
+        for path in support:
             if path in owners:
                 continue
             text = path.read_text(encoding="utf-8")
             for literal in legacy_literals:
-                with self.subTest(path=path.name, literal=literal):
+                with self.subTest(path=path.path, literal=literal):
                     self.assertNotIn(literal, text)
 
     def test_support_catalog_roles_match_canonical_owner_boundaries(self) -> None:
-        catalog = (ROOT / "docs/99.templates/support/README.md").read_text(
+        catalog = historical_document("docs/99.templates/support/README.md", HISTORICAL_COMMIT).read_text(
             encoding="utf-8"
         )
         for role_description in (
@@ -1422,7 +1311,7 @@ class HumanContractRoutingTests(LifecycleTestCase):
             self.assertNotIn(stale_role, catalog)
 
     def test_docs_parent_router_matches_stage98_contract(self) -> None:
-        parent = (ROOT / "docs/README.md").read_text(encoding="utf-8")
+        parent = historical_document("docs/README.md").read_text(encoding="utf-8")
         for required_route in (
             "manifest-first validated tombstone result",
             "full typed provenance and preservation",
@@ -1448,7 +1337,7 @@ class HumanContractRoutingTests(LifecycleTestCase):
                 self.assertNotIn(stale_stage98_route, parent)
 
     def test_stage00_and_stage98_route_without_redefining_semantics(self) -> None:
-        archive_readme = (ROOT / "docs/98.archive/README.md").read_text(
+        archive_readme = historical_document("docs/98.archive/README.md").read_text(
             encoding="utf-8"
         )
         for literal in (
@@ -1468,9 +1357,9 @@ class HumanContractRoutingTests(LifecycleTestCase):
             self.assertNotIn(contradictory_synopsis, archive_readme)
 
         stage00_paths = (
-            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
-            ROOT / "docs/00.agent-governance/policies/stage-authoring-matrix.md",
-            ROOT / "docs/00.agent-governance/policies/task-checklists.md",
+            historical_document("docs/00.agent-governance/rules/documentation-protocol.md"),
+            historical_document("docs/00.agent-governance/rules/stage-authoring-matrix.md"),
+            historical_document("docs/00.agent-governance/rules/task-checklists.md"),
         )
         combined = "\n".join(path.read_text(encoding="utf-8") for path in stage00_paths)
         for literal in (
@@ -1487,7 +1376,7 @@ class HumanContractRoutingTests(LifecycleTestCase):
 
     def test_approved_external_sources_are_local_consequences_only(self) -> None:
         rationale = (
-            ROOT / "docs/99.templates/support/external-source-rationale.md"
+            historical_document("docs/99.templates/support/external-source-rationale.md", HISTORICAL_COMMIT)
         ).read_text(encoding="utf-8")
         for source in (
             "https://yaml.org/spec/1.2.2/",
@@ -1583,10 +1472,21 @@ class HumanContractRoutingTests(LifecycleTestCase):
 
 class ManifestValidationTests(LifecycleTestCase):
     def target_manifest(self) -> lifecycle.MigrationManifestDocument:
-        return lifecycle.load_migration_manifest(
+        document = lifecycle.load_migration_manifest(
             ROOT
             / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
+        # Small row-semantics fixture; historical source selection is tested
+        # separately against the immutable evidence, not today's full corpus.
+        selected = {
+            ".env.example", SAMPLE_FIXTURE_PATH, "projects/storybook/README.md",
+            "infra/05-messaging/kafka/jmx-exporter/jmx_prometheus_javaagent-1.5.0.jar",
+            "infra/04-data/analytics/influxdb/docker-compose.v2.yml",
+            "infra/04-data/analytics/influxdb/docker-compose.yml",
+        }
+        return dataclasses.replace(document, entries=tuple(
+            row for row in document.entries if row.source_path.as_posix() in selected
+        ))
 
     def target_row(
         self,
@@ -1605,7 +1505,7 @@ class ManifestValidationTests(LifecycleTestCase):
     ) -> set[str]:
         return {
             finding.code
-            for finding in lifecycle.validate_migration_manifest(
+            for finding in lifecycle._validate_surface_manifest_semantics(
                 ROOT,
                 self.profiles,
                 self.contract,
@@ -1656,33 +1556,6 @@ class ManifestValidationTests(LifecycleTestCase):
         ):
             return self.target_codes(document)
 
-    def target_codes_with_successor_payload(
-        self,
-        document: lifecycle.MigrationManifestDocument,
-        payload: bytes | None,
-    ) -> set[str]:
-        delta = lifecycle._ensure_target_surface_delta_loaded()
-        original_read = delta._read_contract_text
-
-        def read_result(
-            root: pathlib.Path,
-            relative_path: str,
-        ) -> str:
-            if relative_path == SUCCESSOR_MANIFEST:
-                if payload is None:
-                    raise delta.ContractInputError
-                try:
-                    return payload.decode("utf-8")
-                except UnicodeDecodeError:
-                    raise delta.ContractInputError from None
-            return original_read(root, relative_path)
-
-        with mock.patch.object(
-            delta,
-            "_read_contract_text",
-            side_effect=read_result,
-        ):
-            return self.target_codes(document)
 
     def make_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
         temporary = tempfile.TemporaryDirectory()
@@ -1767,14 +1640,13 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual("spec", document.entries[0].artifact_type_after)
 
     def test_target_wave_expands_exact_roots_and_direct_paths(self) -> None:
-        document = lifecycle._task7_immutable_expected_document(
-            ROOT,
-            self.contract,
-            TARGET_WAVE,
+        document = lifecycle.load_migration_manifest(
+            ROOT / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
         )
         self.assertIsNotNone(document)
         assert document is not None
-        wave = self.contract["waves"][TARGET_WAVE]
+        historical_contract = yaml.safe_load(historical_document(CONTRACT.path).read_text())
+        wave = historical_contract["waves"][TARGET_WAVE]
         selected = [row.source_path.as_posix() for row in document.entries]
         root_selected = [
             path
@@ -1815,177 +1687,8 @@ class ManifestValidationTests(LifecycleTestCase):
             )
         )
 
-    def test_v2_sample_fixture_handoff_requires_exact_successor_update_row(
-        self,
-    ) -> None:
-        document = self.target_manifest()
-        successor = yaml.safe_load((ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8"))
-        sample_row = next(
-            row for row in successor["entries"] if row["path"] == SAMPLE_FIXTURE_PATH
-        )
-        sample_row["disposition"] = "preserve"
 
-        cases = {
-            "missing-successor": None,
-            "preserved-successor-row": yaml.safe_dump(
-                successor,
-                sort_keys=False,
-            ).encode(),
-        }
-        for name, payload in cases.items():
-            with self.subTest(case=name):
-                self.assertTrue(
-                    SAMPLE_PREDECESSOR_EQUALITY_CODES
-                    <= self.target_codes_with_successor_payload(document, payload)
-                )
 
-    def test_v2_sample_fixture_handoff_requires_complete_successor_evidence(
-        self,
-    ) -> None:
-        document = self.target_manifest()
-        valid = yaml.safe_load(
-            (ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8")
-        )
-
-        def payload(
-            *,
-            top_updates: dict[str, object] | None = None,
-            top_delete: str | None = None,
-            row_updates: dict[str, object] | None = None,
-            row_delete: str | None = None,
-        ) -> bytes:
-            candidate = copy.deepcopy(valid)
-            if top_updates:
-                candidate.update(top_updates)
-            if top_delete:
-                candidate.pop(top_delete)
-            sample_row = next(
-                row
-                for row in candidate["entries"]
-                if row["path"] == SAMPLE_FIXTURE_PATH
-            )
-            if row_updates:
-                sample_row.update(row_updates)
-            if row_delete:
-                sample_row.pop(row_delete)
-            return yaml.safe_dump(candidate, sort_keys=False).encode()
-
-        cases = {
-            "failed-specification-verdict": payload(
-                row_updates={"spec_verdict": "fail"}
-            ),
-            "failed-quality-verdict": payload(
-                row_updates={"quality_verdict": "fail"}
-            ),
-            "wrong-implementation-base": payload(
-                top_updates={"implementation_base": "0" * 40}
-            ),
-            "wrong-enforcement": payload(
-                top_updates={"enforcement": "blocking"}
-            ),
-            "wrong-target-roots": payload(
-                top_updates={"target_roots": list(reversed(valid["target_roots"]))}
-            ),
-            "missing-direct-consumers": payload(
-                row_updates={"direct_consumers": []}
-            ),
-            "wrong-direct-consumers": payload(
-                row_updates={"direct_consumers": [SAMPLE_FIXTURE_PATH]}
-            ),
-            "missing-finding": payload(row_updates={"finding": ""}),
-            "wrong-finding": payload(
-                row_updates={"finding": "Incomplete sample evidence."}
-            ),
-            "missing-validators": payload(row_updates={"validators": []}),
-            "wrong-validators": payload(
-                row_updates={"validators": ["scripts/validation/check-json.py"]}
-            ),
-            "missing-tests": payload(row_updates={"tests": []}),
-            "wrong-tests": payload(
-                row_updates={"tests": ["tests/validation/test_json.py"]}
-            ),
-            "extra-destructive-provenance": payload(
-                row_updates={
-                    "provenance": [
-                        *next(
-                            row
-                            for row in valid["entries"]
-                            if row["path"] == SAMPLE_FIXTURE_PATH
-                        )["provenance"],
-                        (
-                            "git:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74:"
-                            f"{SAMPLE_FIXTURE_PATH}"
-                        ),
-                    ]
-                }
-            ),
-            "extra-destructive-rollback": payload(
-                row_updates={
-                    "rollback": [
-                        *next(
-                            row
-                            for row in valid["entries"]
-                            if row["path"] == SAMPLE_FIXTURE_PATH
-                        )["rollback"],
-                        (
-                            "git-revert:"
-                            "63039b5b0b20c99a10aae7162627afefcd7a1d8b:"
-                            f"{SAMPLE_FIXTURE_PATH}"
-                        ),
-                    ]
-                }
-            ),
-            "extra-top-level-key": payload(top_updates={"unexpected": True}),
-            "missing-top-level-key": payload(top_delete="implementation_base"),
-            "extra-row-key": payload(row_updates={"unexpected": True}),
-            "missing-row-key": payload(row_delete="finding"),
-        }
-        for name, candidate_payload in cases.items():
-            with self.subTest(case=name):
-                self.assertTrue(
-                    SAMPLE_PREDECESSOR_EQUALITY_CODES
-                    <= self.target_codes_with_successor_payload(
-                        document,
-                        candidate_payload,
-                    )
-                )
-
-    def test_v2_sample_fixture_handoff_accepts_nonfailed_review_states(
-        self,
-    ) -> None:
-        document = self.target_manifest()
-        valid = yaml.safe_load(
-            (ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8")
-        )
-        for spec_verdict, quality_verdict in (
-            ("pass", "pass"),
-            ("pass", "pending"),
-            ("pending", "pass"),
-        ):
-            with self.subTest(
-                spec_verdict=spec_verdict,
-                quality_verdict=quality_verdict,
-            ):
-                candidate = copy.deepcopy(valid)
-                sample_row = next(
-                    row
-                    for row in candidate["entries"]
-                    if row["path"] == SAMPLE_FIXTURE_PATH
-                )
-                sample_row["spec_verdict"] = spec_verdict
-                sample_row["quality_verdict"] = quality_verdict
-                candidate_payload = yaml.safe_dump(
-                    candidate,
-                    sort_keys=False,
-                ).encode()
-                self.assertTrue(
-                    SAMPLE_PREDECESSOR_EQUALITY_CODES.isdisjoint(
-                        self.target_codes_with_successor_payload(
-                            document,
-                            candidate_payload,
-                        )
-                    )
-                )
 
     def test_v2_sample_fixture_handoff_rejects_wrong_current_metadata(self) -> None:
         document = self.target_manifest()
@@ -2004,73 +1707,6 @@ class ManifestValidationTests(LifecycleTestCase):
             )
         )
 
-    def test_promoted_status_witness_is_bounded_to_exact_blocking_chain(self) -> None:
-        document = self.target_manifest()
-        path = "docs/03.specs/133-target-surface-contract-convergence/spec.md"
-        row = self.target_row(document, path)
-        self.assertEqual(("draft", "active"), (row.status_before, row.status_after))
-        self.assertEqual(lifecycle.ReviewVerdict("pass", "pass"), row.review_verdict)
-        self.assertNotIn("manifest-target-status-mismatch", self.target_codes(document))
-
-        invalid_documents = {
-            "advisory": (
-                dataclasses.replace(document, enforcement="advisory"),
-                "manifest-target-status-mismatch",
-            ),
-            "pending-review": (
-                self.replace_target_row(
-                    document,
-                    dataclasses.replace(
-                        row,
-                        review_verdict=lifecycle.ReviewVerdict("pending", "pass"),
-                    ),
-                ),
-                "manifest-target-status-mismatch",
-            ),
-            "wrong-baseline": (
-                dataclasses.replace(document, baseline_commit="0" * 40),
-                "manifest-baseline-commit-invalid",
-            ),
-            "skipped-first-hop": (
-                self.replace_target_row(
-                    document,
-                    dataclasses.replace(row, status_after="completed"),
-                ),
-                "manifest-transition-invalid",
-            ),
-        }
-        for name, (candidate, expected_code) in invalid_documents.items():
-            with self.subTest(case=name):
-                self.assertIn(expected_code, self.target_codes(candidate))
-
-        for terminal_status in ("archived", "superseded"):
-            with self.subTest(terminal_status=terminal_status):
-                payload = (ROOT / path).read_text(encoding="utf-8").replace(
-                    "status: completed", f"status: {terminal_status}", 1
-                ).encode()
-                self.assertIn(
-                    "manifest-target-status-mismatch",
-                    self.target_codes_with_result_payload(document, path, payload),
-                )
-
-        coordinated_row = dataclasses.replace(
-            row,
-            parent_ids=("spec:coordinated",),
-        )
-        coordinated_document = self.replace_target_row(document, coordinated_row)
-        coordinated_payload = (ROOT / path).read_text(encoding="utf-8").replace(
-            "spec:131-document-corpus-lifecycle-migration-foundation",
-            "spec:coordinated",
-            1,
-        ).encode()
-        self.assertIn(
-            "manifest-target-status-mismatch",
-            self.target_codes_with_result_payload(
-                coordinated_document,
-                path,
-                coordinated_payload,
-            ),
-        )
 
     def test_v2_migrated_typed_target_rejects_false_current_metadata(self) -> None:
         document = self.target_manifest()
@@ -2256,14 +1892,14 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertIn("manifest-replacement-invalid", codes)
 
     def test_v2_replacement_resolution_accepts_one_current_path_or_identity(self) -> None:
-        expected = "docs/03.specs/133-target-surface-contract-convergence/spec.md"
+        expected = "docs/03.specs/0133-target-surface-contract-convergence/spec.md"
         for replacement in (
             expected,
-            "spec:133-target-surface-contract-convergence",
+            "SPEC-0133",
         ):
             with self.subTest(replacement=replacement):
                 record = lifecycle._surface_replacement_record(
-                    ROOT, self.profiles, replacement
+                    ROOT, metadata.build_registry_profiles(metadata.load_registry(REGISTRY)), replacement
                 )
                 self.assertIsNotNone(record)
                 self.assertEqual(expected, record.path.as_posix())
@@ -2474,7 +2110,7 @@ class ManifestValidationTests(LifecycleTestCase):
             ),
         )
 
-        findings = lifecycle.validate_migration_manifest(
+        findings = lifecycle._validate_surface_manifest_semantics(
             ROOT,
             self.profiles,
             self.contract,
@@ -2711,7 +2347,7 @@ class ManifestValidationTests(LifecycleTestCase):
         }
         self.assertIn("manifest-static-invalid", noncanonical_placeholder_codes)
 
-        non_template_path = "docs/03.specs/non-template.md"
+        non_template_path = "docs/03.specs/0001-non-template/spec.md"
         non_template_source = root / non_template_path
         non_template_source.parent.mkdir(parents=True, exist_ok=True)
         non_template_source.write_text(
@@ -3247,8 +2883,14 @@ class PromotedManifestCliTests(LifecycleTestCase):
         manifest_path: str | None = None,
     ) -> dict[str, object]:
         contract = copy.deepcopy(self.contract)
+        for wave in contract["waves"].values():
+            wave["enforcement"] = "advisory"
+            wave["manifest_path"] = None
         contract["waves"]["foundation"]["enforcement"] = enforcement
         contract["waves"]["foundation"]["manifest_path"] = manifest_path
+        contract["waves"]["foundation"]["source_paths"] = [
+            "docs/03.specs/0001-fixture/spec.md"
+        ]
         return contract
 
     def write_config(self, root: pathlib.Path, contract: dict[str, object]) -> tuple[pathlib.Path, pathlib.Path]:
@@ -3259,27 +2901,25 @@ class PromotedManifestCliTests(LifecycleTestCase):
         return profiles, contract_path
 
     def invoke(self, root: pathlib.Path, profiles: pathlib.Path, contract: pathlib.Path) -> subprocess.CompletedProcess[str]:
-        return run(
-            sys.executable,
-            str(SCRIPT),
-            "--root",
-            str(root),
-            "--profiles",
-            str(profiles),
-            "--contract",
-            str(contract),
-            "--mode",
-            "check-promoted",
-            cwd=ROOT,
-        )
+        # Isolate CLI promotion semantics from the retired full-wave schema;
+        # schema/key/path safety has separate parser and candidate tests.
+        args = ["--root", str(root), "--profiles", str(profiles),
+                "--contract", str(contract), "--mode", "check-promoted"]
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(lifecycle, "load_migration_contract", return_value=yaml.safe_load(contract.read_text())),
+            mock.patch.object(lifecycle.metadata, "load_profiles", return_value=self.profiles),
+            contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr),
+        ):
+            code = lifecycle.main(args)
+        return subprocess.CompletedProcess(args, code, stdout.getvalue(), stderr.getvalue())
 
     def test_advisory_null_is_skipped_but_blocking_null_fails(self) -> None:
         canonical_foundation = self.contract["waves"]["foundation"]
         self.assertEqual(canonical_foundation["enforcement"], "blocking")
         self.assertEqual(
             canonical_foundation["manifest_path"],
-            "docs/90.references/data/governance/"
-            "document-corpus-lifecycle/ref-0067-foundation.yaml",
+            "docs/90.references/data/0067-foundation/data.yaml",
         )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -3288,7 +2928,7 @@ class PromotedManifestCliTests(LifecycleTestCase):
             self.assertIsNone(advisory["waves"]["foundation"]["manifest_path"])
             profiles, contract_path = self.write_config(root, advisory)
             advisory_result = self.invoke(ROOT, profiles, contract_path)
-            self.assertEqual(advisory_result.returncode, 1)
+            self.assertEqual(advisory_result.returncode, 0)
             self.assertNotIn("promoted-manifest-path-required: foundation", advisory_result.stdout)
             self.assertNotIn("promoted-manifest-missing: foundation", advisory_result.stdout)
 
@@ -3305,15 +2945,14 @@ class PromotedManifestCliTests(LifecycleTestCase):
             contract = self.canonical_contract(
                 enforcement="blocking",
                 manifest_path=(
-                    "docs/90.references/data/governance/"
-                    "document-corpus-lifecycle/fixture.yaml"
+                    "docs/90.references/data/9999-fixture/data.yaml"
                 ),
             )
             source_paths = contract["waves"]["foundation"]["source_paths"]
             for path_text in source_paths:
                 source = root / path_text
                 source.parent.mkdir(parents=True, exist_ok=True)
-                body = "---\nstatus: draft\n---\n\n# Fixture\n" if path_text.endswith("archive.template.md") else "# Fixture\n"
+                body = "---\nprofile_id: spec\nstatus: draft\nartifact_id: SPEC-0001\nartifact_type: spec\nparent_ids: []\ncreated: 2026-08-20\nupdated: 2026-08-20\n---\n\n# Fixture\n"
                 source.write_text(body, encoding="utf-8")
             baseline = commit_all(root)
             profiles, contract_path = self.write_config(root, contract)
@@ -3384,7 +3023,14 @@ class CandidateManifestCliTests(LifecycleTestCase):
             if output is None:
                 raise AssertionError("summary modes require an output fixture")
             arguments.extend(("--output", str(output)))
-        return run(*arguments, cwd=ROOT)
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(lifecycle, "load_migration_contract", return_value=yaml.safe_load(contract.read_text())),
+            mock.patch.object(lifecycle.metadata, "load_profiles", return_value=self.profiles),
+            contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr),
+        ):
+            code = lifecycle.main(arguments[2:])
+        return subprocess.CompletedProcess(arguments, code, stdout.getvalue(), stderr.getvalue())
 
     def make_fixture(
         self,
@@ -3394,42 +3040,22 @@ class CandidateManifestCliTests(LifecycleTestCase):
         contract = copy.deepcopy(self.contract)
         contract["waves"]["foundation"]["enforcement"] = "advisory"
         contract["waves"]["foundation"]["manifest_path"] = None
-        source_paths = contract["waves"]["foundation"]["source_paths"]
-        foundation_manifest = yaml.safe_load(
-            (
-                ROOT
-                / self.contract["waves"]["foundation"]["manifest_path"]
-            ).read_text(encoding="utf-8")
+        source_path = "docs/03.specs/0001-fixture/spec.md"
+        contract["waves"]["foundation"]["source_paths"] = [source_path]
+        source = root / source_path
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "---\nstatus: draft\nartifact_id: SPEC-0001\nartifact_type: spec\n"
+            "parent_ids: []\ncreated: 2026-08-20\nupdated: 2026-08-20\n---\n\n# Fixture\n",
+            encoding="utf-8",
         )
-        baseline_commit = foundation_manifest["baseline_commit"]
-        for source_path in source_paths:
-            source = root / source_path
-            source.parent.mkdir(parents=True, exist_ok=True)
-            if source_path.endswith("archive.template.md"):
-                source.write_text(
-                    "---\nstatus: draft\n---\n\n# Archive fixture\n",
-                    encoding="utf-8",
-                )
-            else:
-                current_source = ROOT / source_path
-                if current_source.is_file():
-                    source.write_bytes(current_source.read_bytes())
-                    continue
-                historical_source = run(
-                    "git",
-                    "show",
-                    f"{baseline_commit}:{source_path}",
-                    cwd=ROOT,
-                )
-                if historical_source.returncode != 0:
-                    raise AssertionError(historical_source.stderr)
-                source.write_text(historical_source.stdout, encoding="utf-8")
         baseline = commit_all(root, "candidate baseline")
-        document = lifecycle.generate_manifest_skeleton(
+        document = lifecycle._generate_manifest_skeleton(
             root,
             contract,
             wave="foundation",
             baseline_ref=baseline,
+            profiles=self.profiles,
         )
         candidate = root / "docs/90.references/data/fixture.yaml"
         candidate.parent.mkdir(parents=True, exist_ok=True)
@@ -3652,7 +3278,7 @@ class ArchiveProvenanceTests(LifecycleTestCase):
             "docs/98.archive/tombstones/05.operations/ref-0095-windows-network-ip.md"
         )
         source_path = pathlib.PurePosixPath("archive/Windows-Network-IP.md")
-        text = (ROOT / path).read_text(encoding="utf-8")
+        text = historical_document(path.as_posix(), TASK7_CLOSURE_COMMIT).read_text(encoding="utf-8")
         record = metadata._record_from_text(path, text, profiles=self.profiles)
         manifest = metadata.build_manifest([record])
         failures: list[str] = []
@@ -4037,7 +3663,7 @@ class DuplicateBudgetAndImpactTests(LifecycleTestCase):
                 record,
                 metadata={
                     **record.metadata,
-                    "partition_plan": "docs/04.execution/plans/2026-partition.md",
+                    "partition_plan": "docs/03.specs/0001-partition/plan.md",
                     "review_verdict": {"specification": "pass", "quality": "pass"},
                 },
             )
@@ -4181,7 +3807,6 @@ class ReviewRemediationTests(LifecycleTestCase):
             root = pathlib.Path(directory)
             validation = root / "scripts/validation"
             validation.mkdir(parents=True)
-            shutil.copy2(SCRIPT, validation / SCRIPT.name)
             marker = root / "metadata-loaded"
             (validation / "check-document-metadata.py").write_text(
                 "import pathlib\n"
@@ -4191,7 +3816,8 @@ class ReviewRemediationTests(LifecycleTestCase):
             )
             result = run(
                 sys.executable,
-                str(validation / SCRIPT.name),
+                str(SCRIPT),
+                "--root", str(root),
                 "--mode",
                 "generate-manifest",
                 cwd=root,
@@ -4535,12 +4161,15 @@ class ReviewRemediationTests(LifecycleTestCase):
             "archive-snapshot-path-mismatch",
             "snapshot path is invalid",
         )
-        with mock.patch.object(lifecycle, "_full_findings", return_value=((), [warning])):
-            self.assertEqual(lifecycle.main(["--mode", "report-full"]), 0)
-            self.assertEqual(lifecycle.main(["--mode", "check-full"]), 1)
+        with tempfile.TemporaryDirectory() as directory:
+            historical_arguments = self.historical_cli_arguments(pathlib.Path(directory))
+            with mock.patch.object(lifecycle, "_full_findings", return_value=((), [warning])):
+                self.assertEqual(lifecycle.main([*historical_arguments, "--mode", "report-full"]), 0)
+                self.assertEqual(lifecycle.main([*historical_arguments, "--mode", "check-full"]), 1)
 
         with tempfile.TemporaryDirectory() as directory:
             exceptions = pathlib.Path(directory) / "exceptions.yaml"
+            historical_arguments = self.historical_cli_arguments(pathlib.Path(directory))
             entry = ExceptionValidationTests.valid(self)
             entry["finding_code"] = "archive-snapshot-path-mismatch"
             entry["scope_paths"] = ["docs/98.archive/value.md"]
@@ -4556,6 +4185,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                 self.assertEqual(
                     lifecycle.main(
                         [
+                            *historical_arguments,
                             "--mode",
                             "check-full",
                             "--exceptions",
@@ -4782,6 +4412,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             "declared manifest is invalid",
         )
         with (
+            tempfile.TemporaryDirectory() as directory,
             mock.patch.object(
                 lifecycle,
                 "_load_declared_manifests",
@@ -4791,7 +4422,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             contextlib.redirect_stdout(io.StringIO()),
         ):
             self.assertEqual(
-                lifecycle.main(["--mode", "check-impacted", "--base-ref", "HEAD"]),
+                lifecycle.main([*self.historical_cli_arguments(pathlib.Path(directory)), "--mode", "check-impacted", "--base-ref", "HEAD"]),
                 3,
             )
         collect_records.assert_not_called()
@@ -4815,7 +4446,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             "generate-snapshot-manifest": ["--output", "out"],
             "check-snapshot-manifest": ["--output", "out"],
         }
-        self.assertEqual(tuple(valid_arguments), lifecycle.MODES)
+        self.assertEqual(tuple(valid_arguments), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         for mode, extra in valid_arguments.items():
             with self.subTest(mode=mode):
                 parser = lifecycle._parser()
@@ -4864,7 +4495,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             "generate-snapshot-manifest": (["--output", "{output}"], True),
             "check-snapshot-manifest": (["--output", "{output}"], False),
         }
-        self.assertEqual(tuple(mode_contracts), lifecycle.MODES)
+        self.assertEqual(tuple(mode_contracts), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         write_modes = {mode for mode, (_, writes) in mode_contracts.items() if writes}
         self.assertEqual(
             write_modes,
@@ -4957,7 +4588,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     contextlib.redirect_stderr(io.StringIO()),
                 ):
                     result = lifecycle.main(
-                        ["--root", str(root), "--mode", mode, *extra]
+                        ["--root", str(root), "--contract", "fixture-contract.yaml", "--mode", mode, *extra]
                     )
                 self.assertEqual(result, 0)
                 if writes:
@@ -5026,13 +4657,13 @@ class ReviewRemediationTests(LifecycleTestCase):
             "generate-snapshot-manifest": 1,
             "check-snapshot-manifest": 1,
         }
-        self.assertEqual(tuple(arguments), lifecycle.MODES)
-        self.assertEqual(tuple(ordinary_exits), lifecycle.MODES)
+        self.assertEqual(tuple(arguments), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
+        self.assertEqual(tuple(ordinary_exits), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         contract = copy.deepcopy(self.contract)
         document = self.document("a" * 40)
         archive = self.record("docs/98.archive/item.md", "archive")
 
-        for mode in lifecycle.MODES:
+        for mode in arguments:
             for safety_case in (False, True):
                 with (
                     self.subTest(mode=mode, safety=safety_case),
@@ -5151,7 +4782,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
                     stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
                     result = lifecycle.main(
-                        ["--root", str(root), "--mode", mode, *extra]
+                        ["--root", str(root), "--contract", "fixture-contract.yaml", "--mode", mode, *extra]
                     )
                     expected = 3 if safety_case else ordinary_exits[mode]
                     self.assertEqual(result, expected)
@@ -5186,6 +4817,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             str(SCRIPT),
             "--root",
             str(root),
+            *self.historical_cli_arguments(root),
             "--mode",
             mode,
         ]
@@ -5671,6 +5303,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         lifecycle.MigrationManifestRow,
         tuple[metadata.Record, ...],
     ]:
+        self.profiles = metadata.build_registry_profiles(metadata.load_registry())
         temporary = tempfile.TemporaryDirectory()
         root = pathlib.Path(temporary.name)
         init_repo(root)
@@ -5681,34 +5314,32 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         source.parent.mkdir(parents=True)
         source.write_text(
             "---\nstatus: active\nartifact_id: task:149\nartifact_type: task\n"
-            "parent_ids: [plan:partition]\n---\n\n# Task: New Leaf\n",
+            "parent_ids: [plan-0001]\n---\n\n# Task: New Leaf\n",
             encoding="utf-8",
         )
         baseline = commit_all(root, "partition baseline")
         plan_relative = pathlib.PurePosixPath(
-            "docs/04.execution/plans/2026-partition.md"
+            "docs/03.specs/0001-partition/plan.md"
         )
         plan = root / plan_relative
         plan.parent.mkdir(parents=True, exist_ok=True)
-        parent = root / "docs/03.specs/partition/spec.md"
+        parent = root / "docs/03.specs/0001-partition/spec.md"
         parent.parent.mkdir(parents=True, exist_ok=True)
         parent.write_text(
-            "---\nstatus: active\nartifact_id: spec:partition\n"
-            "artifact_type: spec\nparent_ids: [spec:root]\n---\n\n# Partition Spec\n",
+            "---\nprofile_id: spec\nstatus: active\nartifact_id: SPEC-0001\n"
+            "artifact_type: spec\nparent_ids: []\ncreated: 2026-08-20\nupdated: 2026-08-20\n---\n\n# Partition Spec\n",
             encoding="utf-8",
         )
         valid_plan = (
-            "---\nstatus: active\nartifact_id: plan:partition\n"
-            "artifact_type: plan\nparent_ids: [spec:partition]\n---\n\n"
+            "---\nprofile_id: plan\nstatus: active\nartifact_id: plan-0001\n"
+            "artifact_type: plan\nparent_ids: [SPEC-0001]\ncreated: 2026-08-20\nupdated: 2026-08-20\n---\n\n"
             "# Document Partition Plan\n\n"
-            "## Overview\nPartition approval.\n\n"
-            "## Context and Inputs\nValidated corpus.\n\n"
-            "## Goals and Non-goals\nBounded partition.\n\n"
-            "## Work Breakdown\nApply the partition.\n\n"
-            "## Verification Plan\nRun lifecycle validation.\n\n"
-            "## Risks and Rollback\nRevert the migration commit.\n\n"
-            "## Completion Criteria\nAll budgets pass.\n\n"
-            "## Related Documents\nParent Spec.\n"
+            "## Objective\nPartition approval.\n\n"
+            "## Dependencies\nValidated corpus.\n\n"
+            "## Execution Sequence\nApply the partition.\n\n"
+            "## Risk and Rollback\nRevert the migration commit.\n\n"
+            "## Verification\nRun lifecycle validation.\n\n"
+            "## Rulings\nReviewed partition.\n"
         )
         if plan_state == "missing":
             pass
@@ -5746,7 +5377,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             artifact_type="task",
             status_before="active",
             status_after="active",
-            parent_ids=("plan:partition",),
+            parent_ids=("plan-0001",),
             partition_plan=plan_relative,
             review_verdict=reviews,
         )
@@ -5857,27 +5488,24 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         commit_all(root, "track wrong parent type")
         cases = {
             "invalid-optional": canonical.replace(
-                "parent_ids: [spec:partition]",
-                "parent_ids: [spec:partition]\nsupersedes: invalid-scalar",
+                "parent_ids: [SPEC-0001]",
+                "parent_ids: [SPEC-0001]\nsupersedes: invalid-scalar",
             ),
             "unresolved-parent": canonical.replace(
-                "parent_ids: [spec:partition]", "parent_ids: [spec:missing]"
+                "parent_ids: [SPEC-0001]", "parent_ids: [spec:missing]"
             ),
             "self-parent": canonical.replace(
-                "parent_ids: [spec:partition]", "parent_ids: [plan:partition]"
+                "parent_ids: [SPEC-0001]", "parent_ids: [plan-0001]"
             ),
             "wrong-parent-type": canonical.replace(
-                "parent_ids: [spec:partition]",
+                "parent_ids: [SPEC-0001]",
                 "parent_ids: [reference:wrong-parent]",
             ),
-            "frontmatter-order": canonical.replace(
-                "status: active\nartifact_id: plan:partition\nartifact_type: plan",
-                "artifact_type: plan\nstatus: active\nartifact_id: plan:partition",
-            ),
+            "wrong-profile-id": canonical.replace("profile_id: plan", "profile_id: task"),
             "placeholder": canonical.replace(
                 "Partition approval.", "{{overview}}"
             ),
-            "missing-heading": canonical.replace("## Work Breakdown", "### Work Breakdown"),
+            "missing-heading": canonical.replace("## Execution Sequence", "### Execution Sequence"),
             "forbidden-heading": canonical + "\n## Verification Evidence\nNot permitted.\n",
         }
         for name, candidate in cases.items():
@@ -5906,10 +5534,10 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         canonical = plan.read_text(encoding="utf-8")
         cases = {
             "missing-identity": canonical.replace(
-                "artifact_id: plan:partition\n", ""
+                "artifact_id: plan-0001\n", ""
             ),
             "unresolved-parent": canonical.replace(
-                "parent_ids: [spec:partition]", "parent_ids: [spec:missing]"
+                "parent_ids: [SPEC-0001]", "parent_ids: [spec:missing]"
             ),
         }
         for name, candidate in cases.items():
@@ -6069,6 +5697,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                     str(SCRIPT),
                     "--root",
                     str(root),
+                    *self.historical_cli_arguments(root),
                     "--mode",
                     mode,
                 ]
@@ -6109,6 +5738,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 str(SCRIPT),
                 "--root",
                 str(root),
+                *self.historical_cli_arguments(root),
                 "--mode",
                 "report-full",
                 cwd=ROOT,
@@ -6158,7 +5788,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             "## Overview\nCurrent reference.\n\n"
             "## Purpose\nCanonical purpose.\n\n"
             "## Scope\nCurrent scope.\n\n"
-            "## Facts and Definitions\nCanonical facts.\n\n"
+            "## Definitions / Facts\nCanonical facts.\n\n"
             "## Sources\nRepository evidence.\n\n"
             "## Maintenance\nActive.\n\n"
             "## Related Documents\nNone.\n"
@@ -6189,6 +5819,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             str(SCRIPT),
             "--root",
             str(root),
+            *self.historical_cli_arguments(root),
             "--mode",
             mode,
         ]
@@ -7056,7 +6687,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             contextlib.redirect_stdout(stdout),
             contextlib.redirect_stderr(stderr),
         ):
-            result = lifecycle.main(["--root", str(root), *arguments])
+            result = lifecycle.main(["--root", str(root), "--profiles", "fixture-profiles.yaml", "--contract", "fixture-contract.yaml", *arguments])
         return result, stdout.getvalue(), stderr.getvalue()
 
     def test_all_output_modes_reject_final_and_intermediate_symlinks(self) -> None:

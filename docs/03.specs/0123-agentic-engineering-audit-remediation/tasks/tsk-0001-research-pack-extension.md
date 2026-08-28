@@ -43,7 +43,7 @@ boundary that paused
 - Task open time `2026-08-07T12:36:55+09:00`
 - Existing canonical pack: fifteen leaves and one folder-index README
 - [Research category README](../../../90.references/research/README.md)
-- [Reference template](../../../99.templates/templates/common/reference.template.md)
+- [Reference template](../../../99.templates/templates/references/research.template.md)
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 - [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
 
@@ -109,12 +109,12 @@ the predecessor drift. It narrowly extends the allowed set to
 
 ### Forbidden Paths
 
-- `docs/00.agent-governance/rules/**`, `scopes/**`, `providers/**`,
+- `docs/00.agent-governance/policies/**`, `roles/**`, `providers/**`,
   `contracts/**`
 - `docs/01.requirements/**`, `docs/02.architecture/**`, `docs/03.specs/**`
 - `docs/05.operations/**`
 - `infra/**`, `scripts/**`, `.github/**`, `.claude/**`, `.codex/**`,
-  `.gemini/**`, `.agents/**`, `secrets/**`
+  `.agents/**`, `secrets/**`
 
 The Stage 03 and Stage 05 entries above were the boundary for T-ARPE-001
 through T-ARPE-011. T-ARPE-012 narrowly reopens Spec 122 and the two 2026-07-10
@@ -263,7 +263,7 @@ was corrected. The two Stage 05 comparison guides now record measured counts.
 
 - `bash scripts/validation/check-repo-contracts.sh`
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base <safe-base>`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 - `git diff --check`
 
 ### Expected Evidence
@@ -304,7 +304,7 @@ Superseded Paths table of the research category index. Spec 122 stays
 violations=3`. All three are the same `body-heading-missing` finding on the
   three new leaves, caused by the recorded heading-contract conflict between
   the two validators. No other changed document has a finding.
-- `bash scripts/validation/check-doc-traceability.sh` passes with
+- `python3 scripts/validation/check-document-links.py --mode traceability` passes with
   `catalog_pairs_total=46 failures=0`.
 - `git diff --check` reports no whitespace or newline drift.
 
@@ -414,9 +414,9 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 - `Canonical research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Research category README](../../../90.references/research/README.md)
-- [Spec 123 audit remediation](spec.md)
+- [Spec 123 audit remediation](../spec.md)
 - [Predecessor convergence Task](../../0134-agent-governance-canonical-convergence/tasks/tsk-0001-canonical-convergence.md)
-- [Current project memory](../../0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
+- [Current Task routing](../../../00.agent-governance/policies/bootstrap.md)
 - [Task checklists](../../../00.agent-governance/policies/task-checklists.md)
 
 ## Objective

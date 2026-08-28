@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
 import subprocess
@@ -41,6 +42,34 @@ def copy_fixture(root: pathlib.Path) -> None:
 
 
 class ProviderHookParityTests(unittest.TestCase):
+    def test_explicit_fixture_root_works_from_non_git_cwd_with_closed_argv(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            command = ["bash", str(SCRIPT), "--validate-only", "--root", str(root)]
+            result = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
+            self.assertEqual(0, result.returncode, result.stderr)
+            for extra in (("--unknown",), ("--root", str(root)), ("--write",)):
+                with self.subTest(extra=extra):
+                    rejected = subprocess.run(command + list(extra), cwd=root, capture_output=True, text=True, check=False)
+                    self.assertEqual(2, rejected.returncode)
+
+    def test_held_script_uses_git_root_without_fixture_override(self) -> None:
+        output = ROOT / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
+        before = output.read_bytes()
+        env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+        env["PYTHONSAFEPATH"] = "1"
+        with SCRIPT.open("rb") as held:
+            for path in (str(SCRIPT), f"/proc/self/fd/{held.fileno()}"):
+                with self.subTest(path=path):
+                    result = subprocess.run(
+                        ["bash", path, "--check"], cwd=ROOT, env=env,
+                        pass_fds=(held.fileno(),), capture_output=True,
+                        text=True, check=False,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(before, output.read_bytes())
+
     def run_validation(self, root: pathlib.Path) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["bash", str(SCRIPT), "--validate-only", "--root", str(root)],

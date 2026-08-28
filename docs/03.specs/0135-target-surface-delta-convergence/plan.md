@@ -260,9 +260,9 @@ review verdicts. It does not duplicate planned implementation.
 - [Canonical implementation audit](../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Approval boundaries](../../00.agent-governance/policies/approval-boundaries.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [README profile contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
 - [Existing target-surface manifest](../../90.references/data/0069-target-surface-convergence/data.yaml)
 - [Existing target-surface checker](../../../scripts/validation/check-target-surface-contract.py)
 
@@ -18987,11 +18987,11 @@ is not applicable because neither surface is mutated.
 - [Spec 134](../0134-agent-governance-canonical-convergence/spec.md)
 - [Canonical audit](../../90.references/audits/0019-readme/README.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Document metadata profiles](../../99.templates/registry.json)
+- [README profile contract](../../99.templates/README.md)
+- [Archive and retention contract](../../99.templates/README.md)
 - [Workflow contract](../../../.github/workflow-contract.yml)
-- [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
+- [Repository contract checker](../../../scripts/validation/run-ci-gate.py)
 - [Controlled Agent pre-commit wrapper](../../../scripts/validation/run-agent-precommit-all-files.sh)
 
 ## Objective

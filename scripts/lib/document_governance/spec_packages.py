@@ -12,7 +12,6 @@ import subprocess
 import time
 from collections.abc import Mapping, Sequence
 
-import yaml
 
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
@@ -295,7 +294,7 @@ def _read_regular_utf8_at(
         raise SpecPackageError(f"{label} must be a regular non-symlink file")
     if metadata.st_size > MAX_SPEC_FILE_BYTES:
         raise SpecPackageError(f"{label} exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
     try:
         descriptor = os.open(name, flags, dir_fd=parent_descriptor)
         try:
@@ -962,44 +961,17 @@ def _read_migration_authority(
     dict[pathlib.PurePosixPath, str | None],
     frozenset[str],
 ]:
-    migration = root / _MIGRATION_PATH
-    parent_descriptor, descriptor, name, snapshot = _open_directory_path(
-        migration.parent,
-        "Task 7 Migration parent",
+    from scripts.lib.document_governance.archive import (
+        _approved_migration_document, _migration_document,
     )
+
     try:
-        text, _ = _read_regular_utf8_at(
-            descriptor,
-            migration.name,
-            "Task 7 Migration",
-            _LoadBudget(),
-        )
-        _verify_directory_entry(
-            parent_descriptor,
-            name,
-            descriptor,
-            snapshot,
-            "Task 7 Migration parent",
-        )
-    finally:
-        os.close(descriptor)
-        os.close(parent_descriptor)
-    try:
-        yaml_text = text.split("```yaml\n", 1)[1].split("\n```", 1)[0]
-        document = yaml.safe_load(yaml_text)
-    except (IndexError, yaml.YAMLError) as error:
-        raise SpecPackageError("Task 7 Migration authority is malformed") from error
-    if not isinstance(document, Mapping):
-        raise SpecPackageError("Task 7 Migration authority must be a mapping")
-    approval = document.get("approval")
-    rows = document.get("rows")
-    if (
-        not isinstance(approval, Mapping)
-        or approval.get("status") != "approved"
-        or not isinstance(rows, list)
-        or len(rows) > 2048
-    ):
-        raise SpecPackageError("Task 7 Migration authority is not approved and bounded")
+        document = _migration_document(root)
+        approved = _approved_migration_document(root)
+    except ValueError as error:
+        raise SpecPackageError(f"Task 7 Migration authority is invalid: {error}") from error
+    rows = document["rows"]
+    task7_sources = {row["source_path"] for row in approved["rows"] if row["owner_task"] == 7}
     source_to_final: dict[str, str] = {}
     recovery_commits: dict[pathlib.PurePosixPath, str | None] = {}
     one_time_package_ids: set[str] = set()
@@ -1011,7 +983,6 @@ def _read_migration_authority(
         target = row.get("target_path")
         action = row.get("action")
         recovery = row.get("recovery_commit")
-        owner_task = row.get("owner_task")
         if not isinstance(source, str) or not _safe_repository_path(source):
             raise SpecPackageError("Task 7 Migration source path is unsafe")
         if target is not None and (
@@ -1026,7 +997,7 @@ def _read_migration_authority(
         if final is not None:
             final = _SINGULAR_TASK_FINALS.get(final, final)
             recovery_commits[pathlib.PurePosixPath(final)] = recovery
-        if owner_task == 7:
+        if source in task7_sources:
             task7_rows += 1
             if action == "rename" and final is not None:
                 if source in source_to_final:
@@ -1205,11 +1176,12 @@ def validate_repository_spec_package_lifecycle(
     root: pathlib.Path,
     current: Sequence[SpecPackage],
     *,
-    base_ref: str = "HEAD",
+    base_ref: str | None = None,
 ) -> tuple[SpecPackageFinding, ...]:
     """Validate current removals against a bounded Git/Migration snapshot."""
 
     root = pathlib.Path(root)
+    base_ref = resolve_lifecycle_base(root, base_ref)
     source_to_final, recoveries, one_time_ids = _read_migration_authority(root)
     previous = _load_base_spec_packages(
         root,
@@ -1222,3 +1194,20 @@ def validate_repository_spec_package_lifecycle(
         recovery_commits=recoveries,
         one_time_package_ids=one_time_ids,
     )
+
+
+def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:
+    """Pin the explicit/CI base; local no-base compares HEAD to working bytes."""
+
+    selected = explicit if explicit is not None else os.environ.get("TEMPLATE_GATE_BASE")
+    if selected is None:
+        if os.environ.get("EVENT_NAME") in {"pull_request", "push"}:
+            raise SpecPackageError("CI lifecycle comparison requires a trusted base")
+        selected = "HEAD"
+    if not selected or selected.startswith("-") or any(ord(character) < 32 for character in selected):
+        raise SpecPackageError("lifecycle comparison base is invalid")
+    commit = _bounded_git(root, "rev-parse", "--verify", "--end-of-options",
+                          f"{selected}^{{commit}}", byte_limit=256).decode("ascii").strip()
+    if _RECOVERY_COMMIT.fullmatch(commit) is None:
+        raise SpecPackageError("lifecycle comparison base is not a commit")
+    return commit

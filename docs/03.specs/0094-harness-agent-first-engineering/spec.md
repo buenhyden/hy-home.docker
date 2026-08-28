@@ -39,7 +39,7 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 - `.claude/CLAUDE.md`
 - `.codex/README.md`
 - `scripts/validation/check-repo-contracts.sh`
-- `scripts/validation/check-doc-traceability.sh`
+- `scripts/validation/check-document-links.py`
 - `scripts/knowledge/report-graphify-health.sh`
 - `scripts/hooks/agent-event-hook.sh`
 - `scripts/validation/validate-docker-compose.sh`
@@ -50,17 +50,21 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 | --- | --- | --- |
 | Workspace purpose | `README.md`, `infra/README.md` | Operate Docker Compose-based home/development infrastructure through layered `infra/` content and stage documents. |
 | Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | Active documents live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. |
-| Thin root shims | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Root files handle entry/import only and delegate detailed policy to governance/runtime documents. |
+| Thin root shims | `AGENTS.md`, `CLAUDE.md` | Root files handle entry/import only and delegate detailed policy to Stage 00. |
 | Governance SSOT | `docs/00.agent-governance/` | Owns shared rules, scopes, providers, the agents catalog, memory, and the delegation protocol. |
-| Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | Runtime agent/function catalog entries, model front matter, scope imports, and protocol references must stay synchronized with the governance catalog. This validation proves catalog parity, not semantic content parity. |
+| Runtime mirror | `.agents/`, `.claude/`, `.codex/` | Registered provider projections stay synchronized with Stage 00 roles, skills and provider Registry. Configured parity is not runtime acceptance. |
 | Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex is a hook/context surface and does not create a parallel delegated-agent catalog. |
 | Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify is a navigation aid when the corpus is clean; when contamination exists, downgrade it to advisory and re-check against tracked source and canonical docs. |
 | Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | Completion is proven through repository contracts, docs traceability, default/core Compose profiles, supported hardening tiers, and hook payload simulation. |
 
 ## Core Design
 
-### File Analysis Summary
+### Historical File Analysis Summary
 
+This table is the original session observation, not current authority. Current
+provider and catalog ownership is defined by Stage 00.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Area | Files Analyzed | Finding |
 | --- | --- | --- |
 | Workspace purpose and environment | `README.md`, `docs/README.md`, `infra/README.md`, `scripts/README.md` | Purpose, docs taxonomy, Compose tiering, and validation scripts are consistent. |
@@ -73,13 +77,13 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 
 ### Harness Engineering Components
 
-- Entry shims: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
+- Entry shims: `AGENTS.md`, `CLAUDE.md`.
 - Governance hub: `docs/00.agent-governance/`.
-- Runtime mirror: `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `docs/00.agent-governance/agents/**`.
+- Runtime projections: `.agents/`, `.claude/`, and `.codex/`; canonical roles and skills live under Stage 00.
 - Delegation protocol: `docs/00.agent-governance/policies/agentic.md`.
 - Provider overlays: `docs/00.agent-governance/providers/*.md`.
 - Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
-- Validation gates: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`, security/hardening baseline scripts.
+- Validation gates: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-links.py`, `scripts/validation/validate-docker-compose.sh`, security/hardening baseline scripts.
 - Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/knowledge/report-graphify-health.sh`.
 
 ### Agent-first Engineering Components
@@ -120,7 +124,7 @@ Not applicable. This change does not add or modify service APIs.
 
 - Use `rg` for discovery where available.
 - Use `bash scripts/validation/check-repo-contracts.sh` for repository and runtime catalog drift.
-- Use `bash scripts/validation/check-doc-traceability.sh` for execution and operations traceability.
+- Use `python3 scripts/validation/check-document-links.py --mode traceability` for execution and operations traceability.
 - Use `bash scripts/knowledge/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
 - Use `bash scripts/validation/validate-docker-compose.sh` for default/core Compose structural validation.
 - Use security and hardening baseline scripts for supported tier operational confidence.
@@ -176,7 +180,7 @@ Evaluation is command-based:
 
 | Failure Mode | Fallback |
 | --- | --- |
-| Runtime catalog mismatch | Repair mirror parity between `.claude/` and `docs/00.agent-governance/agents/`. |
+| Runtime catalog mismatch | Repair registered projections from Stage 00 roles, skills and provider Registry. |
 | Missing scope import or model split | Restore exact scope import and `opus`/`sonnet` hierarchy. |
 | Stale source-label reference | Rewrite content to be self-contained, then rerun scans. |
 | Contaminated Graphify context | Downgrade Graphify to advisory context and corroborate against tracked source and canonical docs. |
@@ -198,12 +202,12 @@ CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
 bash scripts/knowledge/report-graphify-health.sh
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-quickwin-baseline.sh
 bash scripts/hardening/check-all-hardening.sh
-! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
+! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex docs/00.agent-governance
 ```
 
 ## Success Criteria & Verification Plan

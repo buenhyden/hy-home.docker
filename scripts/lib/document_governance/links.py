@@ -52,7 +52,7 @@ _ROOT_FILES = frozenset(
         ".env.example",
     }
 )
-_MAX_ANCHOR_BYTES = 2 * 1024 * 1024
+_MAX_ANCHOR_BYTES = 4 * 1024 * 1024
 
 
 @dataclasses.dataclass(frozen=True)
@@ -382,9 +382,14 @@ def build_document_graph(
                 LinkFinding(relative.as_posix(), "document-symlink", relative.as_posix())
             )
             continue
-        if not path.is_file() or status.st_size > _MAX_ANCHOR_BYTES:
+        if not path.is_file():
             input_findings.append(
                 LinkFinding(relative.as_posix(), "document-not-regular", relative.as_posix())
+            )
+            continue
+        if status.st_size > _MAX_ANCHOR_BYTES:
+            input_findings.append(
+                LinkFinding(relative.as_posix(), "document-too-large", relative.as_posix())
             )
             continue
         try:

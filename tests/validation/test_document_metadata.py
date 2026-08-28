@@ -20,19 +20,16 @@ from unittest import mock
 
 import yaml
 
+from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
 REGISTRY = ROOT / "docs/99.templates/registry.json"
-PROFILES = ROOT / "docs" / "99.templates" / "support" / "document-metadata-profiles.yaml"
+HISTORICAL_COMMIT = "494065806794980080b081439298d7b534d10803"
+PROFILES = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/document-metadata-profiles.yaml")
 SERVICE_EXAMPLE = ROOT / "examples" / "sample-web-service" / "service.md"
-MIGRATION_CONTRACT = (
-    ROOT
-    / "docs"
-    / "99.templates"
-    / "support"
-    / "document-corpus-migration-contract.yaml"
-)
+MIGRATION_CONTRACT = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/document-corpus-migration-contract.yaml")
 TARGET_SURFACE_MANIFEST = (
     ROOT
     / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
@@ -150,12 +147,12 @@ PINNED_TARGET_SURFACE_RESEARCH_PATHS = frozenset(
     }
 )
 CORPUS_MIGRATION_HUMAN_CONTRACT = (
-    ROOT / "docs/99.templates/support/corpus-migration-contract.md"
+    HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/corpus-migration-contract.md")
 )
 ARCHIVE_RETENTION_HUMAN_CONTRACT = (
-    ROOT / "docs/99.templates/support/archive-retention-contract.md"
+    HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/archive-retention-contract.md")
 )
-ARCHIVE_TEMPLATE = ROOT / "docs/99.templates/templates/common/archive.template.md"
+ARCHIVE_TEMPLATE = HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/templates/common/archive.template.md")
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -1126,7 +1123,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         [
             "git",
             "show",
-            f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{PROFILES.relative_to(ROOT).as_posix()}",
+            f"{LEGACY_CONTRACT_FIXTURE_COMMIT}:{PROFILES.path}",
         ],
         cwd=ROOT,
         capture_output=True,
@@ -1166,7 +1163,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             ]
     profile_blob = yaml.safe_dump(profile_values, sort_keys=False).encode("utf-8")
     authority_paths = {
-        PROFILES.relative_to(ROOT),
+        pathlib.Path(PROFILES.path),
         pathlib.Path("docs/00.agent-governance/policies/stage-authoring-matrix.md"),
     }
     paths.update(
@@ -1175,7 +1172,7 @@ def copy_legacy_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     )
     paths.update(authority_paths)
     for relative_path in sorted(paths):
-        if relative_path == PROFILES.relative_to(ROOT):
+        if relative_path == pathlib.Path(PROFILES.path):
             contents = profile_blob
         else:
             source_path = relative_path
@@ -1554,7 +1551,7 @@ class ProfileSchemaTests(unittest.TestCase):
         for role in profiles["template_roles"].values():
             source_values.update(
                 collect_placeholder_scalars(
-                    metadata.parse_frontmatter(ROOT / role["source"])
+                    metadata._parse_frontmatter_text(HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text())
                 )
             )
         self.assertLessEqual(
@@ -1711,7 +1708,7 @@ class ProfileSchemaTests(unittest.TestCase):
 
     def test_corpus_migration_human_owner_matches_machine_contract(self) -> None:
         self.assertTrue(
-            CORPUS_MIGRATION_HUMAN_CONTRACT.is_file(),
+            CORPUS_MIGRATION_HUMAN_CONTRACT.read_bytes(),
             "canonical corpus migration human owner is missing",
         )
         text = CORPUS_MIGRATION_HUMAN_CONTRACT.read_text(encoding="utf-8")
@@ -1757,7 +1754,7 @@ class ProfileSchemaTests(unittest.TestCase):
 
     def test_archive_retention_human_owner_matches_machine_contract(self) -> None:
         self.assertTrue(
-            ARCHIVE_RETENTION_HUMAN_CONTRACT.is_file(),
+            ARCHIVE_RETENTION_HUMAN_CONTRACT.read_bytes(),
             "canonical archive and retention human owner is missing",
         )
         text = ARCHIVE_RETENTION_HUMAN_CONTRACT.read_text(encoding="utf-8")
@@ -1865,7 +1862,7 @@ class ProfileSchemaTests(unittest.TestCase):
         self.assertNotIn("N/A", ARCHIVE_TEMPLATE.read_text(encoding="utf-8"))
 
     def test_migration_contract_has_exact_nonoverlapping_ownership(self) -> None:
-        self.assertTrue(MIGRATION_CONTRACT.is_file(), "migration contract is missing")
+        self.assertTrue(MIGRATION_CONTRACT.read_bytes(), "migration contract is missing")
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
         profiles = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
         self.assertEqual(
@@ -4087,7 +4084,7 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_task_2_common_confidentiality_boundary_covers_evidence_roles(self) -> None:
         contract = (
-            ROOT / "docs/99.templates/support/common-document-contract.md"
+            HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/common-document-contract.md")
         ).read_text(encoding="utf-8")
         discipline = contract.split("## Source and Evidence Discipline", 1)[1].split(
             "\n## ", 1
@@ -4109,7 +4106,7 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_audit_has_a_distinct_registered_form(self) -> None:
         role = self.profiles["template_roles"]["audit"]
         self.assertEqual("audit", role["artifact_profile"])
-        self.assertTrue((ROOT / role["source"]).is_file())
+        self.assertTrue(HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_bytes())
 
     def test_retired_governance_forms_have_no_active_registry_role(self) -> None:
         roles = self.registry.template_roles
@@ -4161,7 +4158,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/00.agent-governance/policies/stage-authoring-matrix.md",
             "docs/00.agent-governance/policies/task-checklists.md",
             "docs/99.templates/README.md",
-            "docs/99.templates/support/template-selection.md",
+            "docs/99.templates/registry.json",
             "docs/99.templates/templates/governance/README.md",
         )
         for relative_path in active_route_files:
@@ -4263,7 +4260,7 @@ class TemplateMetadataTests(unittest.TestCase):
             if target_profile in {"governance", "readme"}:
                 continue
             with self.subTest(path=path_text):
-                values = metadata.parse_frontmatter(ROOT / path_text)
+                values = metadata._parse_frontmatter_text(HistoricalDocument(ROOT, HISTORICAL_COMMIT, path_text).read_text())
                 self.assertEqual("draft", values.get("status"))
                 self.assertEqual(target_profile, values.get("artifact_type"))
                 self.assertEqual("<artifact-id>", values.get("artifact_id"))
@@ -4425,7 +4422,7 @@ class TemplateMetadataTests(unittest.TestCase):
             with self.subTest(source=source_path, target=targets[source_path]):
                 parent_type = parent_by_target.get(target_type)
                 parent_id = parents[parent_type].metadata["artifact_id"] if parent_type else None
-                rendered = (ROOT / source_path).read_text(encoding="utf-8")
+                rendered = HistoricalDocument(ROOT, HISTORICAL_COMMIT, source_path).read_text(encoding="utf-8")
                 rendered = rendered.replace(
                     "<artifact-id>",
                     stable_ids.get(target_type, f"fixture:{pathlib.Path(source_path).stem}"),
@@ -5684,7 +5681,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         ):
             with self.subTest(current_source=relative_path):
                 record = self.fixture_record(relative_path, "unsupported")
-                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, relative_path).read_text(encoding="utf-8")
                 codes = self.body_finding_codes(record, text, changed_boundary=False)
                 self.assertNotIn("machine-template-example-value", codes)
 
@@ -5892,14 +5889,14 @@ class TemplateBodyContractTests(unittest.TestCase):
         for role_name in self.TASK_3_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
-                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
                 self.assert_task_3_markdown_contract(role_name, text)
 
     def _legacy_task_4_plan_and_task_sources_match_exact_contracts(self) -> None:
         for role_name in self.TASK_4_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
-                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
                 self.assert_task_4_markdown_contract(role_name, text)
 
     def _legacy_task_5_operations_sources_match_exact_contracts(self) -> None:
@@ -5950,7 +5947,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         for role_name, source_path in self.ALL_ROLE_SOURCES.items():
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
-                text = (ROOT / source_path).read_text(encoding="utf-8")
+                text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, source_path).read_text(encoding="utf-8")
                 h1 = [line for line in text.splitlines() if line.startswith("# ")]
                 h2 = [line for line in text.splitlines() if line.startswith("## ")]
                 self.assertEqual(source_path, role["source"])
@@ -5968,7 +5965,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def _legacy_task_5_negative_mutations_are_rejected(self) -> None:
         role_name = "runbook"
-        text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+        text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
         mutations = {
             "extra-h1": text.replace("# {{title}}", "# {{title}}\n\n# Duplicate", 1),
             "extra-heading": text.replace(
@@ -6001,7 +5998,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def _legacy_task_5_mandatory_evidence_token_removal_is_rejected(self) -> None:
         for role_name, mandatory_tokens in self.TASK_5_MANDATORY_EVIDENCE_TOKENS.items():
-            text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+            text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
             for token in mandatory_tokens:
                 with self.subTest(role=role_name, token=token):
                     self.assertIn(f"{{{{{token}}}}}", text)
@@ -6044,7 +6041,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_plan_form_is_prospective_only(self) -> None:
         role = self.profiles["template_roles"]["plan"]
-        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         tokens = self.body_tokens(text)
         for forbidden_token in (
             "actual_evidence",
@@ -6068,7 +6065,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_task_4_negative_mutations_are_rejected(self) -> None:
         task_role = self.profiles["template_roles"]["task"]
-        task_text = (ROOT / task_role["source"]).read_text(encoding="utf-8")
+        task_text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, task_role["source"]).read_text(encoding="utf-8")
         mutations = {
             "extra-h1": task_text.replace(
                 "# Task: {{title}}",
@@ -6105,7 +6102,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_parent_spec_has_all_child_handoffs_without_child_details(self) -> None:
         role = self.profiles["template_roles"]["spec"]
-        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         tokens = self.body_tokens(text)
         self.assertTrue(self.SPEC_CHILD_HANDOFF_TOKENS <= tokens)
         self.assertFalse(self.SPEC_CHILD_DETAIL_TOKENS & tokens)
@@ -6113,12 +6110,12 @@ class TemplateBodyContractTests(unittest.TestCase):
     def test_machine_sources_match_exact_native_safe_contracts(self) -> None:
         for relative_path in self.MACHINE_TOKENS:
             with self.subTest(path=relative_path):
-                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, relative_path).read_text(encoding="utf-8")
                 self.assert_machine_source_contract(relative_path, text)
 
     def test_task_3_negative_mutations_are_rejected(self) -> None:
         spec_role = self.profiles["template_roles"]["spec"]
-        spec_text = (ROOT / spec_role["source"]).read_text(encoding="utf-8")
+        spec_text = HistoricalDocument(ROOT, HISTORICAL_COMMIT, spec_role["source"]).read_text(encoding="utf-8")
         markdown_mutations = {
             "extra-heading": spec_text.replace(
                 "## Related Documents", "## Unregistered\n\n{{overview}}\n\n## Related Documents"
@@ -6134,7 +6131,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         openapi_path = (
             "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
         )
-        openapi = (ROOT / openapi_path).read_text(encoding="utf-8")
+        openapi = HistoricalDocument(ROOT, HISTORICAL_COMMIT, openapi_path).read_text(encoding="utf-8")
         machine_mutations = {
             "concrete-host": (
                 openapi_path,
@@ -6164,7 +6161,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         graphql_path = (
             "docs/99.templates/templates/spec-contracts/schema.template.graphql"
         )
-        graphql = (ROOT / graphql_path).read_text(encoding="utf-8")
+        graphql = HistoricalDocument(ROOT, HISTORICAL_COMMIT, graphql_path).read_text(encoding="utf-8")
         machine_mutations["reserved-graphql-name"] = (
             graphql_path,
             graphql + "\ntype __ReservedObject {\n  _templateValue: String\n}\n",
@@ -6175,7 +6172,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
         role = self.profiles["template_roles"]["prd"]
-        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "prd",
             required_headings=[
@@ -6198,7 +6195,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
         role = self.profiles["template_roles"]["prd"]
-        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "prd",
             artifact_profile="reference",
@@ -6216,7 +6213,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_task_4_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
         role = self.profiles["template_roles"]["plan"]
-        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "plan",
             required_headings=[
@@ -6239,7 +6236,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_task_4_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
         role = self.profiles["template_roles"]["task"]
-        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, role["source"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "task",
             artifact_profile="plan",
@@ -6257,7 +6254,7 @@ class TemplateBodyContractTests(unittest.TestCase):
 
     def test_task_5_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
         role = self.profiles["template_roles"]["guide"]
-        source = (ROOT / self.ALL_ROLE_SOURCES["guide"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, self.ALL_ROLE_SOURCES["guide"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "guide",
             required_headings=[
@@ -6279,7 +6276,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             self.profiles = original_profiles
 
     def test_task_5_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
-        source = (ROOT / self.ALL_ROLE_SOURCES["postmortem"]).read_text(encoding="utf-8")
+        source = HistoricalDocument(ROOT, HISTORICAL_COMMIT, self.ALL_ROLE_SOURCES["postmortem"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "postmortem",
             artifact_profile="task",
@@ -8782,7 +8779,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
 
     def test_archive_selection_and_readme_publish_only_typed_stage98_routes(self) -> None:
         selection = (
-            ROOT / "docs/99.templates/support/template-selection.md"
+            HistoricalDocument(ROOT, HISTORICAL_COMMIT, "docs/99.templates/support/template-selection.md")
         ).read_text(encoding="utf-8")
         expected_rows = (
             "| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-####-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |",

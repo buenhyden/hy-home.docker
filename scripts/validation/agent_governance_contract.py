@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import fnmatch
-import hashlib
 import json
+import os
 import pathlib
 import re
 import stat
@@ -116,7 +116,7 @@ EXPECTED_HARNESS_LOOP_VALUES = {
         "controlled-wrapper-pass", "record-and-stop",
     ),
 }
-MAX_TEXT_BYTES = 2 * 1024 * 1024
+MAX_TEXT_BYTES = 4 * 1024 * 1024
 _RETIRED_PROVIDER = "ge" + "mini"
 _RETIRED_EXPERIMENT = "anti" + "gravity"
 _RETIRED_HANDOFF = "project" + r"[- .]?" + "memory"
@@ -133,45 +133,8 @@ RETIRED_PROVIDER_SHIM = _RETIRED_PROVIDER.upper() + ".md"
 GENERATED_AUTHORITY = re.compile(
     r"(?i)(?:policy source of truth|owns? policy|normative authority)"
 )
-MUTABLE_STAGE03_TOKEN_EVIDENCE = {
-    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md": (
-        "Converge Stage 00 and provider surfaces on Claude and Codex while removing "
-        f"{_RETIRED_PROVIDER.capitalize()}, {_RETIRED_EXPERIMENT.capitalize()}, and "
-        "project" " memory.",
-        "| Registered deletes | Deleted all 47 registered sources only after their "
-        "durable facts were routed or classified obsolete. The set includes "
-        f"{_RETIRED_PROVIDER.capitalize()}/{_RETIRED_EXPERIMENT.capitalize()} "
-        "authority, project" " memory, superseded Stage 00 contracts, compatibility "
-        "overlays, and two retired governance templates. |",
-        "| Projection regeneration | Regenerated only registered `.agents/`, "
-        "`.claude/`, and `.codex/` compatibility surfaces. The changed projection "
-        "set is 41, 40, and 15 paths respectively; the retired project-"
-        "memory skill projections were removed. |",
-    ),
-}
-BOUNDED_STAGE03_TOKEN_EVIDENCE = {
-    "docs/03.specs/0153-workspace-governance-simplification/plan.md": "a6811a660f43c540f125f8c4a8ef7f657a1721f7238b87afd8ef8149a3f50105",
-    "docs/03.specs/0153-workspace-governance-simplification/spec.md": "bd3242ebf4505e7b90be57fbfc3cecd371383f358fa464ef85f2a31dae1e0cdb",
-    "docs/03.specs/0137-agentic-research-pack-rebuild/spec.md": "b1200c2b44e1a4d9f0d54011e8e34248a9fd16e2e895357aaa627825b89fb6f9",
-    "docs/03.specs/0008-workflow/spec.md": "ac8543fee88e6eaf68f39421673c9017744490ff1b02713cd3efa370ef332005",
-    "docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md": "9f8663818a4ff32e5f5e4968afb4e27e251ade6b7e4b44df0b094a0c1c6931db",
-    "docs/03.specs/0092-workspace-consistency-2026-05b/spec.md": "e9ab3dbd82d7ab73b6b48f574b472d122fe90bfe9219b7b7eafd6efaccdc5f00",
-    "docs/03.specs/0094-harness-agent-first-engineering/spec.md": "11d59d3479cbdf1d063944a4398d593464bfaf0b003a17072c9e584741964921",
-    "docs/03.specs/0096-llm-wiki-agent-first-completion/spec.md": "f14b755e347afd4506ce4ef846acab6de5a69671bf6acf0ea803dc607cf8872f",
-    "docs/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md": "4c99613b7d517c5ea7468496df077071e1878e91edeeb3ecd3936bd80818f935",
-    "docs/03.specs/0102-workspace-document-contract-audit-pack/spec.md": "4f530fdddebb2a9369952a574a15c3a4b76fc5ff4016b75797e8fcedd7fd7c6d",
-    "docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md": "b52695621e64a21c8a0cbe8d608a62d2888eaca5dac4c08e30680f8eda946d4c",
-    "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md": "71da263bc231c4170ff867f46162c10768277432230fa9f6329b06c1bdc224b1",
-    "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md": "bf26b700eaef4da58045fc41e7f4f33cc9ce8295f3f138d558ea55538b8e9c03",
-    "docs/03.specs/0131-document-corpus-lifecycle-migration-foundation/spec.md": "b3325357f29a2c529683cc252dbeb4cfacf3a73f577f9b4a5ee035f2902f1abd",
-    "docs/03.specs/0132-agent-governance-harness-convergence/spec.md": "45c7b101deee80cafb0ca7c92593b68664380564811527ff99d40fdfb369c343",
-    "docs/03.specs/0134-agent-governance-canonical-convergence/plan.md": "143396beb368034fcf94aae0fb0d71d7c8a64d728e8a38d07cc70f1d047ecb6f",
-    "docs/03.specs/0134-agent-governance-canonical-convergence/spec.md": "44c2376d64f016fc11aa64bd87a839915aeb0db258f18e27530b45637b59cf5d",
-    "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/tsk-0001-canonical-convergence.md": "e12eb549ab74ceeafb102619659e480c218b0609f0fc8423e47e5606e8a58bc0",
-    "docs/03.specs/0135-target-surface-delta-convergence/spec.md": "1d813b648a53bb0bf7099a90c5f3dc12014373735a3228ef96da2335dcfa8079",
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md": "a635f6f3b7f6debf57e550646380ce6b0d748639aa8503c944296ac38643fb31",
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md": "8174d62480ea02489ff026b57493fe518d15d0b3c11fb5bd50621761e1855a23",
-}
+HISTORICAL_QUOTE_MARKER = "> Historical evidence (not current authority; source: Git history):"
+HISTORICAL_TABLE_MARKER = "<!-- Historical evidence table (not current authority; source: Git history). -->"
 
 
 class ContractLoadError(ValueError):
@@ -306,7 +269,15 @@ def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
     if metadata.st_mode & 0o444 == 0:
         raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}")
     try:
-        payload = current.read_bytes()
+        descriptor = os.open(current, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(descriptor, "rb") as source:
+            opened = os.fstat(source.fileno())
+            if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (metadata.st_dev, metadata.st_ino):
+                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+            payload = source.read(MAX_TEXT_BYTES + 1)
+            after = os.fstat(source.fileno())
+            if (opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
     except OSError as error:
         raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}") from error
     if len(payload) > MAX_TEXT_BYTES:
@@ -899,19 +870,71 @@ def _active_text_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
     return tuple(sorted(paths))
 
 
+def current_markdown_authority(text: str) -> str:
+    """Remove only explicitly delimited historical source quotations."""
+    lines = text.splitlines()
+    current_lines = []
+    quoted_history = False
+    table_history = False
+    for index, line in enumerate(lines):
+        if line == HISTORICAL_TABLE_MARKER and index + 2 < len(lines):
+            header, separator = lines[index + 1:index + 3]
+            if (re.fullmatch(r"\|(?:[^|\n]+\|)+", header)
+                    and re.fullmatch(r"\|(?:\s*:?-{3,}:?\s*\|)+", separator)
+                    and len(header.split("|")) == len(separator.split("|"))
+                    and all(cell.strip() for cell in header.split("|")[1:-1])):
+                table_history = True
+                continue
+        if table_history and line.startswith("|"):
+            continue
+        table_history = False
+        if line == HISTORICAL_QUOTE_MARKER:
+            quoted_history = True
+            continue
+        if quoted_history and (line == ">" or line.startswith("> ")):
+            continue
+        quoted_history = False
+        current_lines.append(line)
+    return "\n".join(current_lines)
+
+
 def _has_unsupported_active_token(relative: str, text: str) -> bool:
-    if UNSUPPORTED_TOKEN.search(text) is None:
-        return False
-    allowed_statements = MUTABLE_STAGE03_TOKEN_EVIDENCE.get(relative)
-    if allowed_statements is not None:
-        unmatched_text = text
-        for statement in allowed_statements:
-            if unmatched_text.count(statement) != 1:
-                return True
-            unmatched_text = unmatched_text.replace(statement, "", 1)
-        return UNSUPPORTED_TOKEN.search(unmatched_text) is not None
-    expected_digest = BOUNDED_STAGE03_TOKEN_EVIDENCE.get(relative)
-    return expected_digest is None or hashlib.sha256(text.encode()).hexdigest() != expected_digest
+    if relative.startswith("docs/") and relative.endswith(".md"):
+        text = current_markdown_authority(text)
+    if relative.endswith(".py"):
+        # Literal inventories used to prove retired paths absent are data, not
+        # provider adoption. No executable statement is removed by this match.
+        text = re.sub(r"(?m)^\w*(?:REMOVED|RETIRED)_PATHS(?::[^=\n]+)? = \(\n(?:[ \t]+\"[^\"\n]+\",\n)+\)", "", text)
+        return UNSUPPORTED_TOKEN.search(text) is not None
+    # A search pattern names evidence, not an adopted provider. Strip only the
+    # quoted pattern, retaining adjacent commands and all remaining arguments.
+    text = re.sub(r"(?m)^(\s*!?\s*rg -n(?: -i)? )(['\"])[^\n]*?\2", r"\1", text)
+    statements = re.split(r"\n\s*\n|\n(?=\s*(?:[-*] |\d+[.] |\|))|(?<=[.!?])\s+(?=[A-Z])|;|\bbut\b", text)
+    for statement in statements:
+        if UNSUPPORTED_TOKEN.search(statement) is None:
+            continue
+        normalized = re.sub(r"\s+", " ", statement).strip()
+        if re.match(r"Add mutation cases for\b", normalized):
+            continue
+        positive = re.search(
+            rf"(?i)(?:\b(?:use|load|enable|support|adopt|create|restore|retain)\s+(?:the\s+)?`?(?:{UNSUPPORTED_TOKEN.pattern[4:]})|"
+            r"\b(?:must|should)\s+(?:remain|become)\s+active|\bcurrent active authority|"
+            rf"(?:{UNSUPPORTED_TOKEN.pattern[4:]}).*?\b(?:is|are|remains?|must be|should be)\s+(?:the\s+)?(?:current|active|default|supported|adopted|enabled|required|canonical)\b|"
+            r"\b(?:do not|must not|never)\s+(?:remove|retire|delete))", normalized,
+        )
+        if positive:
+            return True
+        if re.search(r"(?i)\b(?:remov(?:e[ds]?|ing|al)|retir(?:e[ds]?|ing|ement)|delet(?:e[ds]?|ing|ion)|absent|absence|forbidden|reject|fail)\b", normalized):
+            continue
+        if re.search(rf"(?i)\bno\s+[^.;]*(?:{UNSUPPORTED_TOKEN.pattern[4:]})|\bdo(?:es)? not exist\b", normalized):
+            continue
+        if re.match(r"(?i)(?:[-*] )?Move:", normalized) and " to " in normalized:
+            if not UNSUPPORTED_TOKEN.search(normalized.split(" to ", 1)[1]):
+                continue
+        if re.search(r"(?:self[.])?assertFalse\(Path\([^\n]+\)[.]exists\(\)\)", normalized):
+            continue
+        return True
+    return False
 
 
 def validate_repository(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import contextlib
+import copy
 import importlib.util
 import json
 import os
@@ -66,6 +67,62 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.module = load_contract_module()
 
+    def test_storybook_shell_accepts_typed_full_route_direct_and_held(self) -> None:
+        script = ROOT / "scripts/validation/check-storybook-contract.sh"
+        env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+        env["PYTHONSAFEPATH"] = "1"
+        with script.open("rb") as held:
+            for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
+                with self.subTest(path=path):
+                    result = subprocess.run(
+                        ["bash", path], cwd=ROOT, env=env,
+                        pass_fds=(held.fileno(),), capture_output=True,
+                        text=True, check=False,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_storybook_shell_rejects_lost_routes_and_changed_quality_contracts(self) -> None:
+        for case in ("full-command", "public-route", "full-child", "npm-argv", "threshold"):
+            with self.subTest(case=case), self.workflow_fixture() as root:
+                subprocess.run(["git", "init", "-q", str(root)], check=True)
+                (root / "tests/validation").mkdir(parents=True)
+                shutil.copy2(ROOT / "tests/validation/test_run_ci_precommit.sh", root / "tests/validation/test_run_ci_precommit.sh")
+                subprocess.run(["git", "-C", str(root), "add", "scripts", ".github", "tests"], check=True)
+                project = root / "projects/storybook/nextjs"
+                project.mkdir(parents=True)
+                for name in ("package.json", "vitest.config.ts"):
+                    shutil.copy2(ROOT / "projects/storybook/nextjs" / name, project / name)
+                command = ["bash", str(root / "scripts/validation/check-storybook-contract.sh")]
+                baseline = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
+                self.assertEqual(0, baseline.returncode, baseline.stderr)
+                if case == "full-command":
+                    path = root / ".github/workflows/ci-quality.yml"
+                    text = path.read_text(encoding="utf-8")
+                    old = "python3 scripts/validation/run-ci-gate.py --profile full"
+                    self.assertEqual(1, text.count(old))
+                    path.write_text(text.replace(old, "true", 1), encoding="utf-8")
+                elif case == "threshold":
+                    path = project / "vitest.config.ts"
+                    text = path.read_text(encoding="utf-8")
+                    self.assertIn("statements: 90", text)
+                    path.write_text(text.replace("statements: 90", "statements: 80", 1), encoding="utf-8")
+                else:
+                    data = self.load_contract_document(root)
+                    if case == "public-route":
+                        data["public_gate"]["suite_roots"]["repository-integrity"].remove("ci.storybook-coverage")
+                    else:
+                        node = next(node for node in data["gate_nodes"] if node["gate_id"] == (
+                            "ci.validation-full" if case == "full-child" else "leaf.storybook-coverage"
+                        ))
+                        if case == "full-child":
+                            node["children"].remove("ci.storybook-coverage")
+                        else:
+                            node["argv"][2] = "test"
+                    self.write_contract_document(root, data)
+                result = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn("FAIL:", result.stderr)
+
     def test_public_gate_surfaces_do_not_copy_atomic_commands(self) -> None:
         workflow = self.module.load_workflows(ROOT)
         ci = next(
@@ -79,6 +136,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(
             {
+                self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile changed",
                 "python3 scripts/validation/run-ci-gate.py --profile full",
             },
@@ -282,12 +340,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
             changed_steps[1]["uses"],
         )
         self.assertEqual(
-            "python3 scripts/validation/run-ci-gate.py --profile changed",
-            changed_steps[3]["run"],
+            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile changed"),
+            (changed_steps[3]["run"], changed_steps[4]["run"]),
         )
         self.assertEqual(
-            "python3 scripts/validation/run-ci-gate.py --profile full",
-            full_steps[4]["run"],
+            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile full"),
+            (full_steps[4]["run"], full_steps[5]["run"]),
         )
         self.assertEqual(
             "pre-commit==4.6.1\n",
@@ -333,6 +391,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     @staticmethod
     def _static_gate_profile(program: str) -> str:
+        if program == "python3 -m pip install -r scripts/requirements.txt":
+            return "bootstrap"
         match = re.fullmatch(
             r"python3 scripts/validation/run-ci-gate\.py --profile (changed|full)",
             program,
@@ -353,12 +413,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
         programs = self.required_quality_run_programs()
         for program in programs:
+            if self._static_gate_profile(program) == "bootstrap":
+                continue
             self.assertRegex(
                 program,
                 r"\Apython3 scripts/validation/run-ci-gate\.py "
                 r"--profile (changed|full)\Z",
             )
-        self.assertCountEqual(("changed", "full"), map(self._static_gate_profile, programs))
+        self.assertCountEqual(("bootstrap", "changed", "bootstrap", "full"), map(self._static_gate_profile, programs))
 
     def test_required_jobs_select_their_public_profiles_once(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
@@ -374,7 +436,48 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
             )
             with self.subTest(job_id=job_id):
-                self.assertEqual((expected[job_id],), tuple(map(self._static_gate_profile, programs)))
+                self.assertEqual(("bootstrap", expected[job_id]), tuple(map(self._static_gate_profile, programs)))
+
+    def test_bootstrap_projection_is_exact_and_ordered(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        document = next(item for item in self.module.load_workflows(ROOT) if item.path == ".github/workflows/ci-quality.yml")
+        self.assertEqual((), self.module._workflow_projection_findings(document.path, document.data, document.data["jobs"], contract))
+        bootstrap = "python3 -m pip install -r scripts/requirements.txt"
+        for job_id, profile in (("validation-changed", "changed"), ("validation-full", "full")):
+            command = f"python3 scripts/validation/run-ci-gate.py --profile {profile}"
+            for runs in ([command], [bootstrap], [bootstrap, bootstrap, command],
+                         [command, bootstrap], [bootstrap, command, command],
+                         [bootstrap + " --upgrade", command],
+                         ["python3 -m pip install pyyaml", command],
+                         [bootstrap + "\ntrue", command], [bootstrap, "true", command]):
+                with self.subTest(job=job_id, runs=runs):
+                    data = copy.deepcopy(document.data)
+                    steps = data["jobs"][job_id]["steps"]
+                    data["jobs"][job_id]["steps"] = [step for step in steps if "run" not in step] + [{"run": run} for run in runs]
+                    codes = {finding.code for finding in self.module._workflow_projection_findings(document.path, data, data["jobs"], contract)}
+                    self.assertTrue(codes & {"workflow-gate-projection-invalid", "workflow-gate-projection-mismatch"}, codes)
+
+    def test_bootstrap_retains_step_context_and_checkout_guards(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        documents = self.module.load_workflows(ROOT)
+        document = next(item for item in documents if item.path == ".github/workflows/ci-quality.yml")
+        for job_id in ("validation-changed", "validation-full"):
+            for key, value in (("if", False), ("env", {"X": "Y"}), ("shell", "bash"),
+                               ("working-directory", "scripts"), ("continue-on-error", True), ("checkout-order", True)):
+                with self.subTest(job=job_id, key=key):
+                    data = copy.deepcopy(document.data)
+                    steps = data["jobs"][job_id]["steps"]
+                    step = next(step for step in steps if step.get("run") == "python3 -m pip install -r scripts/requirements.txt")
+                    if key == "checkout-order":
+                        steps.remove(step)
+                        steps.insert(0, step)
+                    else:
+                        step[key] = value
+                    changed = dataclasses.replace(document, data=data)
+                    with mock.patch.object(self.module, "load_workflows", return_value=tuple(changed if item.path == document.path else item for item in documents)):
+                        codes = {finding.code for finding in self.module.validate_workflows(ROOT, contract)}
+                    expected = "workflow-gate-checkout-required" if key == "checkout-order" else "workflow-continue-on-error-forbidden" if key == "continue-on-error" else "workflow-gate-execution-context-invalid"
+                    self.assertIn(expected, codes)
 
     def test_workflow_projection_rejects_dynamic_ids_and_free_form_shell(
         self,
@@ -645,7 +748,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if isinstance(step, dict) and isinstance(step.get("run"), str)
         )
         self.assertEqual(
-            ("python3 scripts/validation/run-ci-gate.py --profile full",),
+            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile full"),
             programs,
         )
         document = self.load_contract_document(ROOT)

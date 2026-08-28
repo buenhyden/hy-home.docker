@@ -9,6 +9,7 @@ import collections.abc
 import dataclasses
 import datetime
 import hashlib
+import json
 import os
 import pathlib
 import re
@@ -57,6 +58,7 @@ if _VALIDATION_DIRECTORY not in sys.path:
     sys.path.insert(0, _VALIDATION_DIRECTORY)
 
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    HistoricalDocument,
     resolve_git_provenance,
 )
 from scripts.lib.document_governance import archive as archive_authority  # noqa: E402
@@ -70,9 +72,16 @@ from scripts.lib.document_governance.spec_packages import (  # noqa: E402
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
 LEGACY_MIGRATION_PROFILES = (
-    ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+    HistoricalDocument(
+        ROOT, "494065806794980080b081439298d7b534d10803",
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+    )
 )
-DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+HISTORICAL_CONTRACT = HistoricalDocument(
+    ROOT, "494065806794980080b081439298d7b534d10803",
+    "docs/99.templates/support/document-corpus-migration-contract.yaml",
+)
+DEFAULT_CONTRACT = None
 SAMPLE_SERVICE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 SAMPLE_SERVICE_FIXTURE_METADATA = {
     "status": "draft",
@@ -1505,12 +1514,23 @@ def _read_regular_repo_bytes(
     if descriptor is None:
         return None
     try:
+        before = os.fstat(descriptor)
+        limit = 4 * 1024 * 1024
+        if before.st_size > limit:
+            return None
         chunks: list[bytes] = []
+        total = 0
         while True:
-            chunk = os.read(descriptor, 1024 * 1024)
+            chunk = os.read(descriptor, min(65_536, limit + 1 - total))
             if not chunk:
                 break
             chunks.append(chunk)
+            total += len(chunk)
+            if total > limit:
+                return None
+        after = os.fstat(descriptor)
+        if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            return None
         return b"".join(chunks)
     except OSError:
         return None
@@ -2013,7 +2033,7 @@ def _manifest_profiles(
     if profiles is not None and isinstance(profiles.get("profiles"), dict):
         return profiles
     registry = metadata.load_registry(DEFAULT_PROFILES)
-    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES, DEFAULT_CONTRACT)
+    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES, HISTORICAL_CONTRACT)
     if not isinstance(legacy, dict):
         raise ProfileError("legacy migration profiles require a mapping envelope")
     return metadata.build_registry_transition_profiles(registry, legacy)
@@ -2798,14 +2818,14 @@ def _surface_partition_plan_findings(
         return []
     source = row.source_path.as_posix()
     partition = row.partition_plan.as_posix()
-    if not _safe_path(partition) or not partition.startswith(
-        "docs/04.execution/plans/"
-    ):
+    if not _safe_path(partition) or metadata.infer_artifact_type(
+        pathlib.Path(partition), profiles
+    ) != "plan":
         return [
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     current_records, current_payloads = _canonical_current_snapshot(root, profiles)
@@ -2818,7 +2838,7 @@ def _surface_partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     try:
@@ -4309,14 +4329,14 @@ def _partition_plan_findings(
         return []
     source = row.source_path.as_posix()
     partition = row.partition_plan.as_posix()
-    if not _safe_path(partition) or not partition.startswith(
-        "docs/04.execution/plans/"
-    ):
+    if not _safe_path(partition) or metadata.infer_artifact_type(
+        pathlib.Path(partition), profiles
+    ) != "plan":
         return [
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     tracked_payload = _read_regular_repo_bytes(
@@ -4327,7 +4347,7 @@ def _partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     if records is None or payloads is None:
@@ -4343,7 +4363,7 @@ def _partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     try:
@@ -4353,7 +4373,7 @@ def _partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     by_path = {record.path.as_posix(): record for record in current_records}
@@ -4363,7 +4383,7 @@ def _partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-invalid",
-                "partition plan must be a safe tracked regular Stage 04 Plan",
+                "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
     values = plan_record.metadata
@@ -4719,7 +4739,10 @@ def _approved_partition(record: Record) -> bool:
     return (
         isinstance(partition, str)
         and _safe_path(partition)
-        and partition.startswith("docs/04.execution/plans/")
+        and metadata.infer_artifact_type(
+            pathlib.Path(partition),
+            metadata.build_registry_profiles(metadata.load_registry(DEFAULT_PROFILES)),
+        ) == "plan"
         and isinstance(reviews, dict)
         and reviews.get("specification") == "pass"
         and reviews.get("quality") == "pass"
@@ -5696,6 +5719,7 @@ def _load_declared_manifests(
 def _spec_package_lifecycle_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
+    base_ref: str | None = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
     stage03 = root / "docs/03.specs"
@@ -5703,18 +5727,17 @@ def _spec_package_lifecycle_findings(
         root
         / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
     )
-    if not spec_package_authority.is_file() or not (
-        stage03.exists() or stage03.is_symlink()
-    ):
+    if not spec_package_authority.is_file():
         return findings
     registry = profiles.get("_registry")
     if not isinstance(registry, metadata.DocumentRegistry):
         return findings
     try:
-        packages = load_spec_packages(stage03, registry=registry)
+        packages = load_spec_packages(stage03, registry=registry) if stage03.exists() or stage03.is_symlink() else ()
         lifecycle_findings = validate_repository_spec_package_lifecycle(
             root,
             packages,
+            base_ref=base_ref,
         )
     except SpecPackageError as error:
         findings.append(
@@ -5803,7 +5826,7 @@ def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
 
 def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     requirements: dict[str, tuple[set[str], set[str]]] = {
-        "check-public": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
+        "check-public": (set(), {"wave", "manifest", "exceptions", "output"}),
         "check-contract": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "generate-manifest": ({"wave", "base_ref", "output"}, {"manifest", "exceptions"}),
         "check-manifest": ({"wave"}, {"base_ref", "exceptions", "output"}),
@@ -5812,7 +5835,7 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
         "check-summary": (set(), {"base_ref", "exceptions"}),
         "check-impacted": ({"base_ref"}, {"wave", "manifest", "exceptions", "output"}),
         "report-duplicates": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
-        "report-full": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
+        "report-full": (set(), {"wave", "manifest", "exceptions", "output"}),
         "check-full": (set(), {"wave", "base_ref", "manifest", "output"}),
         "check-archive": (set(), {"base_ref", "exceptions", "output"}),
         "check-recovery": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
@@ -5837,6 +5860,32 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
         parser.error("--manifest requires --wave for --mode check-archive")
 
 
+def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
+    """Check immutable promoted evidence against exact approved recovery blobs.
+
+    Historical manifest target names describe their execution snapshot, not the
+    current corpus. Migration 0003 maps those evidence files to current Data
+    packages; Stage 99 and current lifecycle readers validate today's documents.
+    """
+
+    findings: list[Finding] = []
+    migration = archive_authority._migration_document(root)
+    selected = [row for row in migration["rows"] if row.get("artifact_id") in {"DATA-0067", "DATA-0069"}]
+    if len(selected) != 2 or {row["artifact_id"] for row in selected} != {"DATA-0067", "DATA-0069"}:
+        raise ProfileError("promoted historical evidence mappings are incomplete")
+    for row in selected:
+        target = row["target_path"]
+        recovery = row["recovery_commit"] if row["recovery_commit"] is not None else migration["baseline_commit"]
+        historical = HistoricalDocument(root, recovery, row["source_path"])
+        expected = historical.read_bytes()
+        # Parse exact historical shape, rejecting duplicate keys and unsafe paths.
+        _load_migration_manifest_text(expected.decode("utf-8"))
+        observed = _read_regular_repo_bytes(root, target, require_tracked=True)
+        if observed != expected:
+            findings.append(_finding(target, "historical-manifest-drift", "historical evidence differs from its verified recovery blob"))
+    return findings
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
@@ -5849,7 +5898,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Stage 99 registry (legacy --profiles remains a transition alias)",
     )
     parser.add_argument("--contract", type=pathlib.Path, default=DEFAULT_CONTRACT)
-    parser.add_argument("--mode", required=True, choices=MODES)
+    parser.add_argument("--mode", default="check-public", choices=MODES)
     parser.add_argument("--wave")
     parser.add_argument("--base-ref")
     parser.add_argument("--manifest", type=pathlib.Path)
@@ -5884,8 +5933,53 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             )
             return 1 if violations else 0
         _ensure_metadata_loaded()
-        contract_path = _rooted(root, args.contract).resolve()
         profiles_path = _rooted(root, args.profiles).resolve()
+        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-impacted", "report-full", "check-full", "report-duplicates"}:
+            # Keep the lifecycle reader's no-follow/redaction boundary when
+            # routing current contracts to the Registry-backed metadata owner.
+            profiles = metadata.build_registry_profiles(metadata.load_registry(profiles_path))
+            current_records = _collect_records(root, profiles, include_untracked=True, allow_worktree_deletions=True)
+            for record in current_records:
+                diagnostic = f"{record.path}\n{record.parse_error or ''}\n{json.dumps(record.metadata, default=str)}"
+                if _diagnostic_payload_is_sensitive(diagnostic):
+                    raise _CorpusSafetyError(record.path.as_posix(), "diagnostic-redaction-unsafe")
+        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-impacted", "report-full", "check-full"}:
+            from scripts.lib.document_governance import metadata_validator as native_metadata
+
+            arguments = ["--root", str(root), "--registry", str(profiles_path),
+                         "--mode", "check-changed" if args.mode == "check-impacted" else "check-contracts"]
+            if args.base_ref is not None:
+                arguments.extend(("--base-ref", args.base_ref))
+            return native_metadata.main(arguments)
+        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode == "report-duplicates":
+            from scripts.lib.document_governance import metadata_validator as native_metadata
+
+            profiles = metadata.build_registry_profiles(metadata.load_registry(profiles_path))
+            records = current_records
+            if any(record.parse_error for record in records):
+                raise ProfileError("duplicate inventory contains invalid metadata")
+            candidates = find_duplicate_candidates(root, records)
+            rendered = yaml.safe_dump({"schema_version": 1, "candidates": [
+                {"left_path": item.left_path.as_posix(), "right_path": item.right_path.as_posix(),
+                 "artifact_type": item.artifact_type, "signals": list(item.signals)}
+                for item in candidates
+            ]}, sort_keys=False, width=1000)
+            _write_output(_rooted(root, args.output), rendered)
+            print(f"duplicate candidates: count={len(candidates)}")
+            return 0
+        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-public", "check-contract", "check-promoted", "check-impacted", "report-full"}:
+            registry = metadata.load_registry(profiles_path)
+            profiles = metadata.build_registry_profiles(registry)
+            findings = _spec_package_lifecycle_findings(root, profiles, args.base_ref)
+            if args.mode != "check-contract":
+                findings.extend(_historical_promoted_findings(root))
+            _print_findings(findings)
+            print(f"public document lifecycle: violations={len(findings)}")
+            return 1 if findings else 0
+        contract_path = (
+            _rooted(root, args.contract).resolve()
+            if args.contract is not None else HISTORICAL_CONTRACT
+        )
         contract = load_migration_contract(contract_path)
         if profiles_path.suffix.lower() == ".json":
             try:

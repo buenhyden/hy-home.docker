@@ -439,6 +439,8 @@ def build_public_validation_plan(
     suite_model: public_suite_registry.SuiteRegistry,
     selected_suites: tuple[str, ...],
     context: ExecutionContext,
+    *,
+    profile: str = "changed",
 ) -> tuple[GateInvocation, ...]:
     """Join public suite ownership to one canonical invocation per validator."""
 
@@ -481,9 +483,15 @@ def build_public_validation_plan(
                 + item.path.as_posix().replace("/", ".")
             ),
             entrypoint=item.path,
-            argv=item.execution_argv,
+            argv=_context_validator_argv(item, context, profile),
             cwd=(template.cwd if template is not None else pathlib.PurePosixPath(".")),
-            allowed_env_keys=(template.allowed_env_keys if template is not None else ()),
+            allowed_env_keys=(
+                ("TEMPLATE_GATE_BASE",)
+                if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                and context in {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
+                else () if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                else template.allowed_env_keys if template is not None else ()
+            ),
             timeout_seconds=(template.timeout_seconds if template is not None else 300),
         )
 
@@ -516,21 +524,26 @@ def build_public_validation_plan(
         ExecutionContext.WORKFLOW_DISPATCH,
     }:
         result = tuple(
-            dataclasses.replace(
-                invocation,
-                argv=("--mode", "check-active"),
-                allowed_env_keys=(),
-            )
-            if invocation.entrypoint
-            == pathlib.PurePosixPath("scripts/validation/check-document-metadata.py")
-            else invocation
-            for invocation in result
+            invocation for invocation in result
             if invocation.gate_id != "leaf.repo-metadata-base"
         )
     validate_public_execution_parity(
-        suite_model, selected_suites, result, context
+        suite_model, selected_suites, result, context, profile=profile
     )
     return result
+
+
+def _context_validator_argv(
+    item: public_suite_registry.ValidatorOwnership, context: ExecutionContext, profile: str,
+) -> tuple[str, ...]:
+    if profile not in {"changed", "full"}:
+        raise GateContractError("ci-gate-profile-unknown", "profile", "unknown public profile")
+    if item.path.name == "check-document-metadata.py":
+        if profile == "full":
+            return ("--mode", "check-contracts", "--history-scope", "full")
+        if context in {ExecutionContext.LOCAL, ExecutionContext.PUSH_INITIAL, ExecutionContext.WORKFLOW_DISPATCH}:
+            return ("--mode", "check-active")
+    return item.execution_argv
 
 
 def validate_public_execution_parity(
@@ -538,11 +551,18 @@ def validate_public_execution_parity(
     selected_suites: tuple[str, ...],
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
+    *,
+    profile: str = "changed",
 ) -> None:
     """Fail unless selected validators occur exactly once and others not at all."""
 
     selected = set(selected_suites)
     ownership_paths = tuple(item.path for item in suite_model.validators)
+    try:
+        for item in suite_model.validators:
+            public_suite_registry.validate_execution_argv(item.path, item.execution_argv)
+    except public_suite_registry.SuiteRegistryError as error:
+        raise GateContractError("ci-gate-validator-arguments", "manifest", str(error)) from error
     if (
         len(selected) != len(selected_suites)
         or not selected.issubset(suite_model.public_names)
@@ -577,17 +597,7 @@ def validate_public_execution_parity(
                 invocation.gate_id,
                 "every invocation requires selected validator or exact internal admission",
             )
-        expected_argv = ownership_by_path[invocation.entrypoint].execution_argv
-        if (
-            invocation.entrypoint
-            == pathlib.PurePosixPath("scripts/validation/check-document-metadata.py")
-            and context in {
-                ExecutionContext.LOCAL,
-                ExecutionContext.PUSH_INITIAL,
-                ExecutionContext.WORKFLOW_DISPATCH,
-            }
-        ):
-            expected_argv = ("--mode", "check-active")
+        expected_argv = _context_validator_argv(ownership_by_path[invocation.entrypoint], context, profile)
         if invocation.argv != expected_argv:
             raise GateContractError(
                 "ci-gate-public-execution-parity",
@@ -608,11 +618,13 @@ def render_public_validation_plan(
     suite_model: public_suite_registry.SuiteRegistry,
     selected_suites: tuple[str, ...],
     context: ExecutionContext,
+    *,
+    profile: str = "changed",
 ) -> tuple[str, ...]:
     """Explain the validator rows proven by the executable plan itself."""
 
     validate_public_execution_parity(
-        suite_model, selected_suites, plan, context
+        suite_model, selected_suites, plan, context, profile=profile
     )
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
@@ -782,19 +794,22 @@ def main(argv: list[str] | None = None) -> int:
             suite_model,
             selected_suites,
             context,
+            profile=arguments.profile,
         )
         if arguments.explain:
             for line in render_public_validation_plan(
-                plan, suite_model, selected_suites, context
+                plan, suite_model, selected_suites, context, profile=arguments.profile
             ):
                 print(line)
             return 0
         return execute_execution_plan(root, plan, os.environ)
-    except (GateContractError, argparse.ArgumentError) as error:
+    except (GateContractError, argparse.ArgumentError, public_suite_registry.SuiteRegistryError) as error:
         if isinstance(error, GateContractError):
             code = error.code
             path = error.path
             message = error.message
+        elif isinstance(error, public_suite_registry.SuiteRegistryError):
+            code, path, message = "ci-gate-manifest-invalid", "scripts/manifest.yaml", str(error)
         else:
             code = "ci-gate-cli-arguments"
             path = "arguments"

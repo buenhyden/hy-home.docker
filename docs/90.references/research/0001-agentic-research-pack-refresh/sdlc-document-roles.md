@@ -333,14 +333,14 @@ Each item is an investigation prompt with a named owner. None is approved work.
 - [Supporting contract templates](../../../99.templates/templates/spec-contracts/README.md) - API, agent, data, service, and test roles
 - [Operations templates](../../../99.templates/templates/operations/README.md) - Guide through Postmortem roles
 - [Common templates](../../../99.templates/templates/common/README.md) - Reference, Audit, Archive, content-archive, and README templates
-- [Template selection](../../../99.templates/support/template-selection.md) - line 29 routes `docs/90.references/audits/**` to `common/audit.template.md`
-- [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml) - lines 403-416 register separate `reference` and `audit` profiles with opposing `## Findings` rules
+- [Template selection](../../../99.templates/README.md) - line 29 routes `docs/90.references/audits/**` to `common/audit.template.md`
+- [Document metadata profiles](../../../99.templates/registry.json) - lines 403-416 register separate `reference` and `audit` profiles with opposing `## Findings` rules
 - [TOGAF Standard, Architecture Deliverables](https://pubs.opengroup.org/togaf-standard/architecture-content/chap04.html) - Architecture Requirements Specification as the quantitative companion to the Architecture Definition Document. **UNVERIFIED at primary source on 2026-08-07:** `pubs.opengroup.org` returns HTTP 302 to an `identity.opengroup.org` OAuth authorize endpoint for both the current and the TOGAF 9 deliverable pages, so the deliverable text was not read. The characterization above is secondary and must be confirmed against the standard before any normative use
 - [arc42 section 9, Architecture Decisions](https://docs.arc42.org/section-9/) - recommends ADR and the Nygard structure; retrieved 2026-08-07
 - [arc42 section 10, Quality Requirements](https://docs.arc42.org/section-10/) - architecture-level quality requirements held in the same document as decisions; retrieved 2026-08-07
 - [MADR](https://adr.github.io/madr/) - `NNNN-title-with-dashes.md` naming, consecutive numbering, and `superseded by ADR-0123` status; retrieved 2026-08-07
-- [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md) - human family ownership and Release boundary
-- [Common document contract](../../../99.templates/support/common-document-contract.md) - Reference, Audit, Archive, and repository-surface ownership
+- [SDLC document contract](../../../99.templates/README.md) - human family ownership and Release boundary
+- [Common document contract](../../../99.templates/README.md) - Reference, Audit, Archive, and repository-surface ownership
 - [Audit references](../../audits/README.md) - audit-category role; lines 80 and 90 still route to the Reference template and contradict `template-selection.md:29`
 - [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - Spec → Plan → Tasks → Implement artifacts
 - [ISO/IEC/IEEE 12207:2017](https://www.iso.org/standard/63712.html) - withdrawn lifecycle-process metadata

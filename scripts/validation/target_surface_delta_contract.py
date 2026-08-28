@@ -292,12 +292,12 @@ def _workflow_findings(root: pathlib.Path) -> list[DeltaFinding]:
             for step in steps or ()
             if isinstance(step, dict) and "run" in step
         ]
-        if runs != [command]:
+        if runs != [ci_gate_contract.CI_DEPENDENCY_BOOTSTRAP, command]:
             findings.append(
                 _finding(
                     "public-workflow-route",
                     f"{relative}#{job_id}",
-                    "each required job must contain only its public profile command",
+                    "each required job must bootstrap declared dependencies then run only its public profile command",
                 )
             )
     return findings

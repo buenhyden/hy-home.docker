@@ -202,7 +202,7 @@ No direct-fix candidates were approved in the source reports.
 - Workspace document contract audit pack task - Records execution evidence for this audit pack.
 - Workspace document contract audit pack plan - Defines Task 5 and future batch requirements.
 - [Workspace document contract audit pack spec](../../03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md) - Defines the audit-only contract and approved dispositions.
-- [Reference template](../../99.templates/templates/common/reference.template.md) - Defines the Stage 90 reference report contract.
+- [Reference template](../../99.templates/templates/references/research.template.md) - Defines the Stage 90 reference report contract.
 
 ## Maintenance
 

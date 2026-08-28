@@ -3,7 +3,10 @@ from __future__ import annotations
 import ast
 import dataclasses
 import importlib.util
+import io
+import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,7 +14,7 @@ import unittest
 from unittest import mock
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/validation/check-document-links.py"
 METADATA_CLI = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CLI = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
@@ -41,6 +44,82 @@ def load_script_manifest_cli():
 
 
 class SharedDocumentGovernanceTests(unittest.TestCase):
+    def test_exited_git_process_requires_complete_successful_drains(self) -> None:
+        from scripts.lib.document_governance import git_provenance
+
+        class DeferredDrain:
+            def __init__(self, *, target, args=(), daemon=True):
+                self.target, self.args = target, args
+
+            def start(self):
+                pass
+
+            def join(self, timeout=None):
+                self.target(*self.args)
+
+            def is_alive(self):
+                return False
+
+        class BrokenStream(io.BytesIO):
+            def read(self, size=-1):
+                raise OSError("drain failed")
+
+        for channel in ("stdout", "stderr"):
+            for case in ("overflow", "error", "exact"):
+                with self.subTest(channel=channel, case=case):
+                    streams = {"stdout": io.BytesIO(), "stderr": io.BytesIO()}
+                    streams[channel] = (
+                        BrokenStream() if case == "error" else io.BytesIO(
+                            b"x" * (git_provenance._GIT_OUTPUT_BYTES + (case == "overflow"))
+                        )
+                    )
+                    process = mock.Mock(**streams, stdin=None, returncode=0)
+                    process.poll.return_value = 0
+                    with mock.patch.object(git_provenance.subprocess, "Popen", return_value=process), mock.patch.object(
+                        git_provenance.threading, "Thread", DeferredDrain
+                    ):
+                        result = git_provenance._run_git(ROOT, ["cat-file", "blob", "object"])
+                    if case == "exact":
+                        self.assertEqual(result.returncode, 0)
+                        self.assertEqual(len(getattr(result, channel)), git_provenance._GIT_OUTPUT_BYTES)
+                    else:
+                        self.assertNotEqual(result.returncode, 0)
+                        self.assertEqual(result.stdout, b"")
+
+    def test_historical_document_requires_exact_regular_blob_recovery(self) -> None:
+        from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+        commit = "494065806794980080b081439298d7b534d10803"
+        document = HistoricalDocument(ROOT, commit, "docs/99.templates/support/README.md")
+        self.assertIn("#", document.read_text())
+        for invalid_commit, invalid_path in (
+            ("HEAD", "README.md"),
+            (None, "README.md"),
+            (commit, "../README.md"),
+            (commit, "docs"),
+            (commit, "missing.md"),
+        ):
+            with self.subTest(commit=invalid_commit, path=invalid_path):
+                with self.assertRaises(ValueError):
+                    HistoricalDocument(ROOT, invalid_commit, invalid_path).read_text()
+
+    def test_graph_reads_large_task_evidence_and_keeps_a_finite_byte_limit(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            source = root / "source.md"
+            target = root / "task.md"
+            source.write_text("# Source\n[Evidence](task.md#evidence)\n", encoding="utf-8")
+            target.write_text("# Evidence\n" + ("bounded evidence\n" * 140_000), encoding="utf-8")
+            graph = links.build_document_graph((source, target), repo_root=root)
+            self.assertEqual((), graph.input_findings)
+            self.assertEqual(2, len(graph.nodes))
+            target.write_text("x" * (4 * 1024 * 1024 + 1), encoding="utf-8")
+            oversized = links.build_document_graph((target,), repo_root=root)
+            self.assertEqual((), oversized.nodes)
+            self.assertEqual("document-too-large", oversized.input_findings[0].code)
+
     def test_frontmatter_record_is_frozen_and_rejects_duplicate_keys(self) -> None:
         from scripts.lib.document_governance.frontmatter import (
             FrontmatterError,
@@ -617,13 +696,70 @@ class DocumentGraphTests(unittest.TestCase):
 
 
 class DocumentLinksCliTests(unittest.TestCase):
+    def test_transition_shells_delegate_exact_modes_direct_and_held(self) -> None:
+        env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+        env["PYTHONSAFEPATH"] = "1"
+        for name, mode in (
+            ("check-doc-traceability.sh", "traceability"),
+            ("check-doc-implementation-alignment.sh", "alignment"),
+        ):
+            script = ROOT / "scripts/validation" / name
+            with script.open("rb") as held:
+                for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
+                    with self.subTest(mode=mode, path=path):
+                        result = subprocess.run(
+                            ["bash", path], cwd=ROOT, env=env,
+                            pass_fds=(held.fileno(),), capture_output=True,
+                            text=True, check=False,
+                        )
+                        self.assertEqual(0, result.returncode, result.stderr)
+                        self.assertIn(f"mode={mode}", result.stdout)
+
+    def test_transition_shells_preserve_canonical_failures_and_reject_extra_argv(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / "scripts/validation").mkdir(parents=True)
+            shutil.copy2(CLI, root / "scripts/validation" / CLI.name)
+            shutil.copytree(ROOT / "scripts/lib", root / "scripts/lib")
+            source = root / "docs/03.specs/README.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("[missing](missing.md)\n", encoding="utf-8")
+            for name, expected in (
+                ("check-doc-traceability.sh", "traceability-file-missing"),
+                ("check-doc-implementation-alignment.sh", "missing-link-target"),
+            ):
+                script = ROOT / "scripts/validation" / name
+                with self.subTest(name=name):
+                    result = subprocess.run(
+                        ["bash", str(script)], cwd=root,
+                        capture_output=True, text=True, check=False,
+                    )
+                    self.assertEqual(1, result.returncode, result.stderr)
+                    self.assertIn(expected, result.stderr)
+                    rejected = subprocess.run(
+                        ["bash", str(script), "--mode", "all"], cwd=ROOT,
+                        capture_output=True, text=True, check=False,
+                    )
+                    self.assertEqual(2, rejected.returncode)
+
+    def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
+        from scripts.validation.agent_governance_contract import HISTORICAL_TABLE_MARKER, current_markdown_authority
+
+        command = "bash scripts/validation/check-doc-traceability.sh"
+        table = f"{HISTORICAL_TABLE_MARKER}\n| Command | Result |\n| --- | --- |\n| `{command}` | observed PASS |\n"
+        self.assertNotIn(command, current_markdown_authority(table))
+        self.assertIn(command, current_markdown_authority(table + f"\n{command}\n"))
+        self.assertIn(command, current_markdown_authority(table.replace("| --- | --- |", "invalid separator")))
+
     def test_active_publications_do_not_instruct_deleted_shell_validators(self) -> None:
         from scripts.lib.document_governance.frontmatter import read_frontmatter_values
+        from scripts.validation.agent_governance_contract import current_markdown_authority
 
         candidates = [ROOT / "README.md"]
         for root in (
-            ROOT / "docs/00.agent-governance/rules",
-            ROOT / "docs/00.agent-governance/scopes",
+            ROOT / "docs/00.agent-governance/policies",
+            ROOT / "docs/00.agent-governance/roles",
             ROOT / "docs/01.requirements",
             ROOT / "docs/02.architecture",
             ROOT / "docs/03.specs",
@@ -636,9 +772,9 @@ class DocumentLinksCliTests(unittest.TestCase):
             if path.name in {"plan.md", "task.md"}:
                 continue
             metadata = read_frontmatter_values(path)
-            if metadata.get("status") in {"completed", "archived", "deprecated"}:
+            if metadata.get("status") in {"completed", "archived", "deprecated", "retired"}:
                 continue
-            text = path.read_text(encoding="utf-8")
+            text = current_markdown_authority(path.read_text(encoding="utf-8"))
             if "check-doc-traceability.sh" in text or "check-doc-implementation-alignment.sh" in text:
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)

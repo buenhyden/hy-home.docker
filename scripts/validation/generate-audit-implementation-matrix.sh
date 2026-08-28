@@ -8,7 +8,7 @@ OUTPUT="docs/90.references/data/0065-audit-implementation-matrix/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/validation/generate-audit-implementation-matrix.sh [--check|--dry-run]
+Usage: bash scripts/validation/generate-audit-implementation-matrix.sh [--write|--check|--dry-run]
 
 Generate the Stage 90 audit implementation matrix snapshot from tracked audit-pack evidence.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)
@@ -77,9 +82,9 @@ validate_semantics = semantic_module.validate_semantics
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
 PACK = pathlib.Path(os.environ.get("AUDIT_PACK_DIR", "docs/90.references/audits"))
-OVERVIEW = PACK / "ref-0026-implementation-overview.md"
-AUTOMATION_CANDIDATES = PACK / "ref-0021-automation-candidates.md"
-SECURITY_MATURITY = PACK / "ref-0031-security-framework-maturity.md"
+OVERVIEW = PACK / "0026-implementation-overview/README.md"
+AUTOMATION_CANDIDATES = PACK / "0021-automation-candidates/README.md"
+SECURITY_MATURITY = PACK / "0031-security-framework-maturity/README.md"
 
 EXPECTED_OVERVIEW_CATEGORIES = [
     "Harness engineering",
@@ -274,7 +279,14 @@ def build_output() -> tuple[str, list[str]]:
 
     lines: list[str] = [
         "---",
+        "profile_id: data",
         "status: active",
+        "artifact_id: DATA-0065",
+        "artifact_type: data",
+        "parent_ids: []",
+        "created: '2026-08-23'",
+        "updated: '2026-08-28'",
+        "observed_at: '2026-08-28'",
         "generated_by: scripts/validation/generate-audit-implementation-matrix.sh",
         "---",
         "",
@@ -391,6 +403,8 @@ def build_output() -> tuple[str, list[str]]:
                 return match.group(0)
             path, separator, fragment = href.partition("#")
             target = posixpath.normpath((report.parent / path).as_posix())
+            if target == "docs/90.references/00.agent-governance/rules/stage-authoring-matrix.md":
+                target = "docs/00.agent-governance/policies/stage-authoring-matrix.md"
             relative = posixpath.relpath(target, OUTPUT.parent.as_posix())
             suffix = f"#{fragment}" if separator else ""
             return f"[{label}]({relative}{suffix})"
@@ -520,7 +534,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "- **Governance data index**: [README.md](./README.md)",
             "- **Reference data index**: [../README.md](../README.md)",
-            "- **Audit reference index**: [../../audits/ref-0019-readme.md](../../audits/ref-0019-readme.md)",
+            "- **Audit reference index**: [../../audits/0019-readme/README.md](../../audits/0019-readme/README.md)",
             "- [Archive migration lookup](../../../98.archive/migrations/0003-workspace-governance-simplification.md)",
             "",
         ]

@@ -171,10 +171,10 @@ unrelated historical findings remain advisory.
 
 - `Document metadata and lifecycle criteria` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - DML-01 through DML-14
 - `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - artifact-type boundaries
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - current key/profile and README/generated rules
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md) - current status vocabulary and replacement requirement
+- [Frontmatter contract](../../99.templates/README.md) - current key/profile and README/generated rules
+- [Lifecycle status](../../99.templates/README.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - target-stage status, template, and numbering rules
-- [Reference template](../../99.templates/templates/common/reference.template.md) - active report profile
+- [Reference template](../../99.templates/templates/references/research.template.md) - active report profile
 - [2026-07-03 frontmatter inventory](ref-0005-frontmatter-inventory.md) - dated syntax baseline
 - [2026-07-04 frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md) - dated profile baseline
 

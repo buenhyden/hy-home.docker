@@ -15,15 +15,15 @@ updated: 2026-08-11
 
 This ledger records implementation, verification, review, commit, deletion,
 and closure evidence for Spec 134. The implementation design remains in the
-[Plan](plan.md).
+[Plan](../plan.md).
 Evidence in this file must be value-free and bounded: no secret values,
 credentials, tokens, auth files, shell history, raw logs, or unbounded provider
 output.
 
 ## Inputs
 
-- [Spec 134](spec.md)
-- [Implementation Plan](plan.md)
+- [Spec 134](../spec.md)
+- [Implementation Plan](../plan.md)
 - Base commit `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee`
 - Isolated branch `feat/agent-governance-canonical-convergence`
 - Isolated worktree
@@ -38,12 +38,13 @@ remote merge are not authorized by this ledger.
 
 ## Scope and Change Boundaries
 
-Allowed primary paths are root provider shims, `.agents/**`, `.claude/**`,
-`.codex/**`, `.gemini/**`, `.github/**`, and
-`docs/00.agent-governance/**`. Direct-impact paths are limited to Spec 134,
-this Plan/Task, Stage 90 canonical evidence/generated owners, provider
-renderer/sync code, governance/eval/workflow validators, focused tests, and the
-controlled QA wrapper evidence route.
+> Historical evidence (not current authority; source: Git history):
+> Allowed primary paths are root provider shims, `.agents/**`, `.claude/**`,
+> `.codex/**`, `.gemini/**`, `.github/**`, and
+> `docs/00.agent-governance/**`. Direct-impact paths are limited to Spec 134,
+> this Plan/Task, Stage 90 canonical evidence/generated owners, provider
+> renderer/sync code, governance/eval/workflow validators, focused tests, and the
+> controlled QA wrapper evidence route.
 
 Docker Compose, infrastructure, deployment, release, user-global provider
 configuration, credentials, and remote GitHub state remain out of scope.
@@ -94,6 +95,7 @@ surfaces. No rollback command may discard unrelated user changes.
 
 ## Work Breakdown
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AGCC-001 | Normalize active contracts and create retirement evidence | contract/data | AGCC-001–004 | Task 1 | duplicate/retirement tests, 14/22/3 contract pass | fresh rules implementer | completed |
@@ -107,6 +109,7 @@ surfaces. No rollback command may discard unrelated user changes.
 
 ## Work Log
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Date | Task | Actor | Evidence summary |
 | --- | --- | --- | --- |
 | 2026-07-26 | Planning | Controller | Created isolated worktree, completed official-source and repository discovery, wrote and independently reviewed Spec 134, and drafted this Plan/Task. Dependency-locked validator/renderer baseline remains environment-blocked because `html5lib` is absent and restricted network resolution failed; hook parity passed. |
@@ -172,6 +175,7 @@ disposition.
 
 ## Verification Evidence
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Task | RED evidence | GREEN evidence | Aggregate evidence | State |
 | --- | --- | --- | --- | --- |
 | T-AGCC-001 | Initial focused 4 methods → expected `FAILED (failures=4, errors=1)` before implementation; duplicate-key assertion independently passed. Review remediation: offline `RetirementLedgerTests.test_retirement_ledger_rejects_exact_fact_mutations_without_values` → expected `FAILED (failures=12)` before exact-fact binding. | Initial focused 4 methods → `OK`. Offline remediation mutation test → 1 method/12 mutation cases `OK`; offline focused Task 1 set including the mutation test → 5/5 `OK`. | Current dependency-locked aggregates → 144/144 contract and 22/22 native `OK`. Current remediation checker → `PASS contracts=3 agents=14 functions=22 providers=3 failures=0`; `git diff --check` passed. Specification and quality/security reviews both C0/I0/M0 APPROVED. | completed |
@@ -192,27 +196,29 @@ bounded remediation and independent review for one exceptional second attempt,
 and after the independently reviewed discrepancy Plan for one named recovery
 attempt on 2026-07-28. Every approval was single-use and is consumed:
 
-```bash
-bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md \
-  --allow-prefix AGENTS.md \
-  --allow-prefix CLAUDE.md \
-  --allow-prefix AGENTS.md \
-  --allow-prefix .agents \
-  --allow-prefix .claude \
-  --allow-prefix .codex \
-  --allow-prefix .gemini \
-  --allow-prefix .github \
-  --allow-prefix docs/00.agent-governance \
-  --allow-prefix docs/03.specs/134-agent-governance-canonical-convergence \
-  --allow-prefix docs/04.execution \
-  --allow-prefix docs/90.references \
-  --allow-prefix scripts \
-  --allow-prefix tests
-```
+> Historical evidence (not current authority; source: Git history):
+> ```bash
+> bash scripts/validation/run-agent-precommit-all-files.sh \
+>   --task docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md \
+>   --allow-prefix AGENTS.md \
+>   --allow-prefix CLAUDE.md \
+>   --allow-prefix AGENTS.md \
+>   --allow-prefix .agents \
+>   --allow-prefix .claude \
+>   --allow-prefix .codex \
+>   --allow-prefix .gemini \
+>   --allow-prefix .github \
+>   --allow-prefix docs/00.agent-governance \
+>   --allow-prefix docs/03.specs/134-agent-governance-canonical-convergence \
+>   --allow-prefix docs/04.execution \
+>   --allow-prefix docs/90.references \
+>   --allow-prefix scripts \
+>   --allow-prefix tests
+> ```
 
 ### Initial attempt
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Field | Evidence |
 | --- | --- |
 | Approval | Exact user approval received and consumed for the single 2026-07-28 run |
@@ -226,6 +232,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 ### Exceptional second attempt
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Field | Evidence |
 | --- | --- |
 | Approval | New exact user approval received for one exceptional second attempt from clean checkpoint `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`; consumed by this run |
@@ -239,6 +246,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 ### Post-pass discrepancy execution
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Field | Evidence |
 | --- | --- |
 | Starting commit | `6c6a153058fb7d1511d57fd90b0f3f18555a1540` |
@@ -253,6 +261,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 ### Approved recovery attempt
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Field | Evidence |
 | --- | --- |
 | Starting commit | `041262274f8965beacbcf02b9e28a665558600b4` |
@@ -281,6 +290,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 ## Commit Ledger
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Task | Logical unit | Expected commit | Actual commit | Validation |
 | --- | --- | --- | --- | --- |
 | T-AGCC-001 | active contract/retirement normalization | `refactor(governance): normalize active agent contracts` | `164f2dc5` | 144/144 contract, 22/22 native, checker 14/22/3, scoped pre-commit pass |
@@ -309,6 +319,7 @@ when required.
 
 ## Deletion and Consolidation Ledger
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Path | Decision | Consumer scan | Canonical replacement | Provenance | Rollback | Review |
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/00.agent-governance/providers/registry.yaml#role_transfers` | removed from the active contract; historical role transitions retained only as evidence | active-contract scan found no `role_transfers:` or `status: retired`; focused catalog and ledger tests passed | `docs/90.references/data/0063-agent-governance-retirement-ledger/data.yaml` records `style-enforcer` → roles `qa-engineer`, `rules-engineer` plus function `style-validation`, and `wiki-curator` → role `doc-writer` plus function `knowledge-map-agent` | commit `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee`, path `docs/00.agent-governance/providers/registry.yaml`, blob `9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034` | `git restore --source=e65bb18fa2f6e3fb6235725750c7c57cbe0227ee -- docs/00.agent-governance/providers/registry.yaml` | specification and quality/security C0/I0/M0 |
@@ -333,8 +344,8 @@ when required.
 
 ## Related Documents
 
-- [Spec 134](spec.md)
-- [Implementation Plan](plan.md)
+- [Spec 134](../spec.md)
+- [Implementation Plan](../plan.md)
 - [Agent governance](../../../00.agent-governance/README.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical audit](../../../90.references/audits/0019-readme/README.md)

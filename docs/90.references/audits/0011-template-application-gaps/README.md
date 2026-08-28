@@ -121,11 +121,11 @@ non-template taxonomy drift in this task.
 
 - Workspace document contract audit pack task - Defines Task 3 scope and disposition rules.
 - [Contract governance map](ref-0004-contract-governance-map.md) - Summarizes ownership surfaces for the same scan set.
-- [Template contract](../../99.templates/support/template-contract.md) - Defines template source and target-document rules.
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - Defines duplicate-purpose metadata handling.
-- [Template governance](../../99.templates/support/template-governance.md) - Defines change boundaries.
-- [Template selection](../../99.templates/support/template-selection.md) - Defines canonical nested template paths.
-- [Reference template](../../99.templates/templates/common/reference.template.md) - Defines the required Stage 90 reference structure.
+- [Template contract](../../99.templates/README.md) - Defines template source and target-document rules.
+- [Frontmatter contract](../../99.templates/README.md) - Defines duplicate-purpose metadata handling.
+- [Template governance](../../99.templates/README.md) - Defines change boundaries.
+- [Template selection](../../99.templates/README.md) - Defines canonical nested template paths.
+- [Reference template](../../99.templates/templates/references/research.template.md) - Defines the required Stage 90 reference structure.
 - [Root README](../../../README.md) - Provides repository-wide broad template references and verification context.
 
 ## Maintenance

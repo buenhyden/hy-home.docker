@@ -7,8 +7,13 @@ import json
 import pathlib
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from typing import Any
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from audit_criterion_contract import (
     EXPECTED_PACK_FILES,
@@ -22,8 +27,8 @@ DEFAULT_CONTRACT = pathlib.Path(
 )
 EXPECTED_AUDIT_INDEX = "docs/90.references/audits/README.md"
 EXPECTED_CANONICAL_PACK = "docs/90.references/audits"
-EXPECTED_CANONICAL_README = f"{EXPECTED_CANONICAL_PACK}/ref-0019-readme.md"
-EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/ref-0026-implementation-overview.md"
+EXPECTED_CANONICAL_README = f"{EXPECTED_CANONICAL_PACK}/0019-readme/README.md"
+EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/0026-implementation-overview/README.md"
 EXPECTED_TASK_EVIDENCE = (
     "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md"
 )
@@ -337,6 +342,9 @@ def _validate_tracked_contract_paths(
         ("2026-07-07 README", SUPERSEDED_2026_07_07_README.as_posix()),
     ]
     for label, relative in declared:
+        if label == "task evidence" and not (repo_root / relative).exists() and not (repo_root / relative).is_symlink():
+            _read_task_evidence(repo_root, contract, errors)
+            continue
         errors.extend(
             _validate_repository_input(
                 repo_root,
@@ -395,6 +403,31 @@ def _task_is_done(task_text: str, task_id: str) -> bool:
     return bool(pattern.search(task_text))
 
 
+def _read_task_evidence(
+    repo_root: pathlib.Path, contract: dict[str, Any], errors: list[str],
+) -> str | None:
+    """Use live execution evidence, or its explicit compact recovery mapping."""
+
+    path = repo_root / contract["task_evidence"]
+    if path.exists() or path.is_symlink():
+        return _read_required(path, "task evidence", errors)
+    from scripts.lib.document_governance.archive import _migration_document
+    from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+    try:
+        migration = _migration_document(repo_root)
+        rows = [row for row in migration["rows"] if row["source_path"] == contract["task_evidence"]]
+        if migration["schema_version"] != 3 or len(rows) != 1:
+            raise ValueError("retired task requires one compact recovery mapping")
+        row = rows[0]
+        if row["action"] != "delete" or row["target_path"] is not None:
+            raise ValueError("retired task must be an approved deletion")
+        return HistoricalDocument(repo_root, row["recovery_commit"], row["source_path"]).read_text()
+    except (ValueError, OSError, UnicodeError):
+        errors.append("task evidence: explicit compact regular Git recovery is invalid")
+        return None
+
+
 def _validate_assertions(
     repo_root: pathlib.Path,
     contract: dict[str, Any],
@@ -402,9 +435,7 @@ def _validate_assertions(
     tracked: set[str],
 ) -> list[str]:
     errors: list[str] = []
-    task_text = _read_required(
-        repo_root / contract["task_evidence"], "task evidence", errors
-    )
+    task_text = _read_task_evidence(repo_root, contract, errors)
     report_cache: dict[str, str | None] = {}
 
     for assertion in contract["assertions"]:

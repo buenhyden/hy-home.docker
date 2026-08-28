@@ -724,8 +724,8 @@ git commit -m "docs(spec): activate canonical governance package"
 - Modify: `.github/PULL_REQUEST_TEMPLATE.md`
 - Modify: `.github/labeler.yml`
 - Modify: `scripts/README.md`
-- Modify: every additional active Gemini/Antigravity consumer returned by the
-  Task 4 exact scan and registered in Migration `mig-0003`
+- Modify for removal: every additional active Gemini/Antigravity consumer
+  returned by the Task 4 exact scan and registered in Migration `mig-0003`
 - Modify: generated projections under `.agents/`, `.claude/`, and `.codex/`
 - Modify: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 
@@ -1748,11 +1748,17 @@ minimal schema-version-3 mapping and rerun the same command. Expected GREEN:
 both pending/approved execution fixtures and final compacted fixtures pass their
 state-specific contracts, while all cross-state mutations fail closed.
 
-Set every executed row to `completed`; bind deleted/moved source recovery to an
-existing regular blob commit; update allocation high-water values; record exact
-suite evidence and review verdicts. Commit the still-present Spec package with
-the completed evidence. Stage each literal Task 13 closure path and verify the
-cached-name list, then:
+Preserve schema version 2 unchanged as the historical approved selection, not
+the current execution state. Record the actually executed 884 transitions and
+the 19 unexecuted transitions (16 pending package deletions and three superseded
+plans) in Task 13 evidence, with verified existing recovery commits. This
+reviewed sequence replaces the unnecessary mixed-state schema-2 publication:
+the current execution-selection fixture intentionally expects the original
+planned rows. Record actual suite evidence and review verdicts, then commit the
+still-present Spec package. After resolving that real closure commit, publish
+the minimal schema-3 actual mappings directly. No future deletion is marked done
+at closure. Stage each literal Task 13 closure path and verify the cached-name
+list, then:
 
 ```bash
 git commit -m "docs: complete workspace governance convergence"
@@ -1896,8 +1902,8 @@ history rewrite. Reverts are logical-commit scoped or exact Git-object restores.
 - `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
 - `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
 - `docs/00.agent-governance/README.md`
-- `docs/00.agent-governance/rules/documentation-protocol.md`
-- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/policies/documentation-protocol.md`
+- `docs/00.agent-governance/policies/stage-authoring-matrix.md`
 - `docs/99.templates/README.md`
 - `scripts/manifest.yaml`
 - `.github/workflow-contract.yml`

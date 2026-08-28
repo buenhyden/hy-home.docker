@@ -85,7 +85,7 @@ management procedures.
 | SEC-AUTO-011 | OpenSSF Scorecard automation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Scorecard automation is present in tracked workflow/script surfaces. |
 | SEC-AUTO-013 | Container/image vulnerability scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A container/image vulnerability scanning command is present in tracked workflow/script surfaces. |
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
-| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 64 reachable typed gates. |
+| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 31 scripts, `.pre-commit-config.yaml`, and 64 reachable typed gates. |
 
 ## Provenance
 
@@ -123,8 +123,8 @@ management procedures.
 - [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) - local pre-commit and secret-scanning hook evidence.
 - [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.
 - [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.
-- [Security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md) - framework coverage and gap baseline.
-- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.
+- [Security framework maturity audit](../../audits/0031-security-framework-maturity/README.md) - framework coverage and gap baseline.
+- [Security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.
 - [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.
 - [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.
 
@@ -142,6 +142,6 @@ management procedures.
 
 - [security data index](./README.md)
 - [reference data index](../README.md)
-- [security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md)
-- [automation candidates](../../audits/ref-0021-automation-candidates.md)
-- [security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)
+- [security framework maturity audit](../../audits/0031-security-framework-maturity/README.md)
+- [automation candidates](../../audits/0021-automation-candidates/README.md)
+- [security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md)

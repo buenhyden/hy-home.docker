@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import collections
+import copy
 import dataclasses
 import hashlib
 import os
@@ -16,6 +17,7 @@ import yaml
 
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 from scripts.lib.document_governance.git_provenance import (
+    HistoricalDocument,
     read_archived_metadata_batch,
     recovery_commit_is_valid,
     verify_recovery_blobs_batch,
@@ -23,6 +25,16 @@ from scripts.lib.document_governance.git_provenance import (
 
 
 FROZEN_MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
+APPROVED_MIGRATION_COMMIT = "494065806794980080b081439298d7b534d10803"
+ONE_TIME_VERIFIER_PATHS = (
+    "scripts/validation/check-task4-migration.py",
+    "tests/validation/test_task4_migration_verifier.py",
+)
+HISTORICAL_SESSION_SPECS = {
+    "docs/03.specs/0090-workspace-audit-2026-05/spec.md": "SPEC-0090",
+    "docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md": "SPEC-0091",
+    "docs/03.specs/0092-workspace-consistency-2026-05b/spec.md": "SPEC-0092",
+}
 TASK10_BASELINE_COMMIT = "f259c139fb7da166609029cdd3657de87e639f6b"
 TASK10_FIRST_ROW = "mig-0003-r0566"
 TASK10_LAST_ROW = "mig-0003-r0840"
@@ -256,7 +268,7 @@ def _read_regular_at(
     try:
         descriptor = os.open(
             name,
-            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK,
             dir_fd=parent,
         )
     except OSError as error:
@@ -351,43 +363,168 @@ def _migration_path(root: pathlib.Path) -> pathlib.Path:
     return root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 
 
-def _migration_document(root: pathlib.Path) -> dict[str, Any]:
-    path = _migration_path(root)
-    raw = _read_regular(path)
-    if hashlib.sha256(raw).hexdigest() != FROZEN_MIGRATION_SHA256:
-        raise ValueError("Migration 0003 does not match the approved frozen digest")
+def validate_compacted_migration(document: object) -> None:
+    """Validate the durable schema independently of pending execution evidence."""
+
+    if not isinstance(document, dict) or set(document) != {
+        "schema_version", "migration_id", "rows"
+    }:
+        raise ValueError("compacted Migration top-level fields are invalid")
+    if type(document["schema_version"]) is not int or document["schema_version"] != 3:
+        raise ValueError("compacted Migration schema must be version 3")
+    if document["migration_id"] != "mig-0003":
+        raise ValueError("compacted Migration identity is invalid")
+    rows = document["rows"]
+    if not isinstance(rows, list) or not rows or len(rows) > 2048:
+        raise ValueError("compacted Migration rows must be nonempty")
+    fields = {"source_path", "target_path", "artifact_id", "action", "recovery_commit"}
+    sources: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != fields:
+            raise ValueError("compacted Migration row fields are invalid")
+        source = _safe_path(row["source_path"])
+        target = row["target_path"]
+        if source is None or (target is not None and _safe_path(target) is None):
+            raise ValueError("compacted Migration path is invalid")
+        if source.as_posix() in sources:
+            raise ValueError("compacted Migration source is duplicated")
+        sources.add(source.as_posix())
+        artifact = row["artifact_id"]
+        if artifact is not None and (not isinstance(artifact, str) or not artifact):
+            raise ValueError("compacted Migration artifact identity is invalid")
+        action = row["action"]
+        if action not in {"rename", "merge", "delete"}:
+            raise ValueError("compacted Migration action is invalid")
+        if (action == "delete") != (target is None):
+            raise ValueError("compacted Migration action and target disagree")
+        if not recovery_commit_is_valid(row["recovery_commit"]):
+            raise ValueError("compacted Migration recovery commit is required")
+
+
+def _parse_migration_document(raw: bytes) -> dict[str, Any]:
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as error:
         raise ValueError("Migration 0003 is not UTF-8") from error
-    try:
-        payload = text.split("```yaml\n", 1)[1].split("\n```", 1)[0]
-    except IndexError as error:
-        raise ValueError("Migration 0003 has no fenced execution ledger") from error
+    blocks = re.findall(r"^```yaml\n(.*?)^```[ \t]*$", text, re.MULTILINE | re.DOTALL)
+    if len(blocks) != 1 or text.count("```yaml\n") != 1:
+        raise ValueError("Migration 0003 requires exactly one closed fenced ledger")
+    payload = blocks[0]
     try:
         document = _load_archive_yaml(payload)
     except (yaml.YAMLError, ValueError) as error:
         raise ValueError("Migration 0003 YAML is invalid or has duplicate keys") from error
     if not isinstance(document, dict) or document.get("migration_id") != "mig-0003":
         raise ValueError("Migration 0003 execution ledger is invalid")
-    if set(document) != _MIGRATION_FIELDS:
-        raise ValueError("Migration 0003 execution ledger fields are invalid")
     rows = document.get("rows")
-    if not isinstance(rows, list):
+    if not isinstance(rows, list) or not rows or len(rows) > 2048:
         raise ValueError("Migration 0003 rows are invalid")
     return document
 
 
+def _approved_migration_document(root: pathlib.Path) -> dict[str, Any]:
+    """Read the reviewed execution selection, never current policy, from Git."""
+
+    raw = HistoricalDocument(
+        root, APPROVED_MIGRATION_COMMIT,
+        "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
+    ).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != FROZEN_MIGRATION_SHA256:
+        raise ValueError("Migration 0003 approved frozen digest is invalid")
+    return _parse_migration_document(raw)
+
+
+def _mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [
+        {key: row[key] for key in ("source_path", "target_path", "artifact_id", "action")}
+        for row in document["rows"]
+    ]
+
+
+def _compact_mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Project reviewed routes, omitting three superseded unexecuted plans."""
+
+    from scripts.lib.document_governance.spec_packages import _SINGULAR_TASK_FINALS
+
+    selected = _mapping_selection(document)
+    row_ids = {f"mig-0003-r{number:04d}" for number in (233, 239, 242, 245, 248)}
+    for original, row in zip(document["rows"], selected, strict=True):
+        if original["row_id"] in row_ids:
+            row["target_path"] = _SINGULAR_TASK_FINALS[row["target_path"]]
+    omitted = {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
+    return [row for original, row in zip(document["rows"], selected, strict=True)
+            if original["row_id"] not in omitted]
+
+
+def _execution_selection(document: dict[str, Any]) -> dict[str, Any]:
+    selection = copy.deepcopy(document)
+    for row in selection["rows"]:
+        if not isinstance(row, dict) or set(row) != _TASK10_ROW_FIELDS:
+            raise ValueError("Migration 0003 execution row fields are invalid")
+        del row["status"]
+        del row["recovery_commit"]
+    return selection
+
+
+def _migration_document(root: pathlib.Path) -> dict[str, Any]:
+    """Read a native execution or compact state with the frozen selection proof."""
+
+    document = _parse_migration_document(_read_regular(_migration_path(root)))
+    approved = _approved_migration_document(root)
+    recoveries: list[tuple[str, str]] = []
+    if document.get("schema_version") == 3:
+        validate_compacted_migration(document)
+        additions = [
+            {"source_path": path, "target_path": None, "artifact_id": None, "action": "delete"}
+            for path in ONE_TIME_VERIFIER_PATHS
+        ]
+        additions.extend(
+            {"source_path": path, "target_path": None, "artifact_id": identity, "action": "delete"}
+            for path, identity in HISTORICAL_SESSION_SPECS.items()
+        )
+        if _mapping_selection(document) != [*_compact_mapping_selection(approved), *additions]:
+            raise ValueError("Migration 0003 compact selection differs from approved frozen digest")
+        if any(row["recovery_commit"] != APPROVED_MIGRATION_COMMIT for row in document["rows"][-len(additions):]):
+            raise ValueError("terminal addition recovery must use its approved existing commit")
+        recoveries = [(row["source_path"], row["recovery_commit"]) for row in document["rows"]]
+    else:
+        if (
+            type(document.get("schema_version")) is not int
+            or document["schema_version"] != 2
+            or set(document) != _MIGRATION_FIELDS
+            or _execution_selection(document) != _execution_selection(approved)
+        ):
+            raise ValueError("Migration 0003 execution selection differs from approved frozen digest")
+        for row in document["rows"]:
+            if row["status"] == "planned" and row["recovery_commit"] is None:
+                continue
+            if row["status"] != "completed" or not recovery_commit_is_valid(row["recovery_commit"]):
+                raise ValueError("Migration 0003 completed row requires recovery")
+            recoveries.append((row["source_path"], row["recovery_commit"]))
+    for offset in range(0, len(recoveries), 512):
+        proofs = verify_recovery_blobs_batch(recoveries[offset:offset + 512], repo_root=root)
+        if not all(proof.is_regular_blob for proof in proofs):
+            raise ValueError("Migration 0003 recovery must resolve to an existing regular Git blob")
+    return document
+
+
+def migration_rows_for_task(root: pathlib.Path, task: int) -> tuple[dict[str, Any], ...]:
+    """Select native rows using the reviewed historical ownership, not invented fields."""
+
+    document = _migration_document(root)
+    approved = _approved_migration_document(root)
+    sources = {row["source_path"] for row in approved["rows"] if row["owner_task"] == task}
+    return tuple(row for row in document["rows"] if row["source_path"] in sources)
+
+
 def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
-    selected: list[dict[str, Any]] = []
-    for row in _migration_document(root).get("rows", []):
-        if not isinstance(row, dict):
-            raise ValueError("Migration 0003 row must be a mapping")
-        if row.get("owner_task") == 10:
-            if set(row) != _TASK10_ROW_FIELDS:
-                raise ValueError("Task 10 Migration row fields are invalid")
-            selected.append(row)
-    rows = tuple(selected)
+    rows = migration_rows_for_task(root, 10)
+    if rows and "row_id" not in rows[0]:
+        # Native compact fields were checked against the approved mapping and
+        # every recovery blob by the shared loader; no execution fields invented.
+        if len(rows) != 275:
+            raise ValueError("Task 10 compact selection is incomplete")
+        return rows
     expected_row_ids = tuple(
         f"mig-0003-r{number:04d}"
         for number in range(566, 841)
@@ -426,8 +563,7 @@ def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
             or any(_safe_path(consumer) is None for consumer in consumers)
             or row.get("artifact_id") is not None
             and (not isinstance(row.get("artifact_id"), str) or not row.get("artifact_id"))
-            or row.get("recovery_commit") is not None
-            or row.get("status") != "planned"
+            or row.get("status") not in {"planned", "completed"}
         ):
             raise ValueError("Task 10 Migration row semantics are invalid")
     return rows

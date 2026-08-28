@@ -81,7 +81,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 - [AGENTS.md](../../../../AGENTS.md) - agent bootstrap, Graphify boundary, verification contract
 - [docs/README.md](../../../README.md) - docs taxonomy, template mapping, contract validation
 - [docs/90.references/README.md](../../README.md) - reference stage role and lifecycle
-- [scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) - repository contract validation
+- [scripts/validation/run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) - public repository contract validation across six suites
 - [scripts/knowledge/report-graphify-health.sh](../../../../scripts/knowledge/report-graphify-health.sh) - advisory Graphify health reporting
 
 ## Maintenance

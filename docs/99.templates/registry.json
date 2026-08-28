@@ -282,7 +282,7 @@
       "identity_relation": "direct",
       "template_id": "references/audit",
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "observed_at"],
-      "optional_frontmatter": ["reviewed_at", "supersedes", "superseded_by"],
+      "optional_frontmatter": ["generated_by", "reviewed_at", "supersedes", "superseded_by"],
       "required_sections": ["Objective", "Scope", "Criteria", "Evidence", "Findings", "Conformance", "Actions", "Traceability"],
       "optional_sections": ["Limitations"],
       "lifecycle_id": "point-in-time",
@@ -338,6 +338,7 @@
       "profile_id": "readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/{stage}/README.md",
+      "additional_paths": ["docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/05.operations/catalog/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"],
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
@@ -347,7 +348,7 @@
       "optional_sections": ["Audience"],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [{"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}]
     },
     {
       "profile_id": "github-navigation-index",
@@ -664,7 +665,7 @@
     "audit": {"prefix": "AUD-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
     "data": {"prefix": "DATA-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
     "migration": {"prefix": "mig-", "width": 4, "high_water": 3, "next_number": 4, "child_spaces": {}},
-    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}}
+    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 130, "next_number": 131, "child_spaces": {}}
   },
   "transitions": {
     "requirements-package": "living",

@@ -131,20 +131,9 @@ docs/
 
 ## Documentation Contract
 
-| Stage | Responsibility | Template |
-| --- | --- | --- |
-| `01.requirements/` | 문제, 사용자 가치, scope, acceptance criteria | `99.templates/templates/sdlc/prd.template.md` |
-| `02.architecture/descriptions/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/templates/sdlc/architecture-description.template.md` |
-| `02.architecture/decisions/` | 선택, 대안, consequence를 남기는 결정 기록 | `99.templates/templates/sdlc/adr.template.md` |
-| `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/templates/sdlc/spec.template.md` |
-| `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/templates/sdlc/plan.template.md` |
-| `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/templates/sdlc/task.template.md` |
-| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/templates/operations/guide.template.md`, `99.templates/templates/operations/policy.template.md`, `99.templates/templates/operations/runbook.template.md`, incident/postmortem templates |
-| `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/templates/common/reference.template.md` |
-| `98.archive/` | manifest-first validated tombstone result with full typed provenance and preservation; `current_replacement` is disposition-conditional | `99.templates/templates/common/archive.template.md` |
-| `99.templates/` | canonical template source and target-relative link rules | `99.templates/templates/common/readme.template.md` |
-
-문서 lifecycle은 requirement → architecture → specification → execution → operations 순서로 흐릅니다. Reference는 lifecycle을 보조하고, template은 lifecycle 문서의 구조와 링크 계산 기준을 제공합니다.
+[Stage 99](99.templates/README.md) owns all document profiles, paths, lifecycle,
+identifiers, and registered templates. [Stage 00](00.agent-governance/README.md)
+owns authoring behavior and approval boundaries. This index is navigation only.
 
 ## Cross-link Rules
 
@@ -152,36 +141,15 @@ docs/
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
-- Archive 또는 delete 후보는 [corpus migration contract](99.templates/support/corpus-migration-contract.md)의 approved manifest로 manifest-first 분류하고, [archive and retention contract](99.templates/support/archive-retention-contract.md)에 따라 safe provenance, confidentiality, preservation, rollback evidence, independent specification and quality review를 확인합니다.
-- 검증된 manifest-first validated tombstone result만 `98.archive/`에 기록합니다. Tombstone은 full typed provenance and preservation을 유지하고, `current_replacement` is disposition-conditional이며, exact relation/preservation 조건은 두 Stage 99 owner와 machine registry로 라우팅합니다. Active 문서에서는 archive로 역링크하지 않습니다.
+- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [Stage 00 승인 경계](00.agent-governance/policies/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
+- 검증된 manifest-first validated tombstone result만 `98.archive/`에 기록합니다. Tombstone은 full typed provenance and preservation을 유지하고, `current_replacement` is disposition-conditional이며, exact relation/preservation 조건은 Stage 99 Registry로 라우팅합니다. Active 문서에서는 archive로 역링크하지 않습니다.
 
 ## Template Usage
 
-| 문서 유형 | 위치 | 템플릿 |
-| --- | --- | --- |
-| Requirements | `01.requirements/` | `99.templates/templates/sdlc/prd.template.md` |
-| Architecture Description | `02.architecture/descriptions/` | `99.templates/templates/sdlc/architecture-description.template.md` |
-| Architecture Decision | `02.architecture/decisions/` | `99.templates/templates/sdlc/adr.template.md` |
-| Spec | `03.specs/` | `99.templates/templates/sdlc/spec.template.md` |
-| API Spec | feature directory `api-spec.md` | `99.templates/templates/spec-contracts/api-spec.template.md` |
-| Agent Design | feature directory `agent-design.md` | `99.templates/templates/spec-contracts/agent-design.template.md` |
-| Data Model | feature directory `data-model.md` | `99.templates/templates/spec-contracts/data-model.template.md` |
-| Test Contract | feature directory `tests.md` | `99.templates/templates/spec-contracts/tests.template.md` |
-| OpenAPI Contract | feature directory `contracts/openapi.yaml` | `99.templates/templates/spec-contracts/openapi.template.yaml` |
-| GraphQL Contract | feature directory `contracts/schema.graphql` | `99.templates/templates/spec-contracts/schema.template.graphql` |
-| Protobuf Contract | feature directory `contracts/service.proto` | `99.templates/templates/spec-contracts/service.template.proto` |
-| Plan | `04.execution/plans/` | `99.templates/templates/sdlc/plan.template.md` |
-| Task | `04.execution/tasks/` | `99.templates/templates/sdlc/task.template.md` |
-| Operations Guide | `05.operations/guides/` | `99.templates/templates/operations/guide.template.md` |
-| Operations Policy | `05.operations/policies/` | `99.templates/templates/operations/policy.template.md` |
-| Runbook | `05.operations/runbooks/` | `99.templates/templates/operations/runbook.template.md` |
-| Incident | `05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | `99.templates/templates/operations/incident.template.md` |
-| Postmortem | `05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` | `99.templates/templates/operations/postmortem.template.md` |
-| Reference | `90.references/` | `99.templates/templates/common/reference.template.md` |
-| Archive Tombstone | `98.archive/` | `99.templates/templates/common/archive.template.md` |
-| README | 각 폴더 | `99.templates/templates/common/readme.template.md` |
-
-템플릿 없이 새 형식을 임의로 추가하기 전에 기존 문서 체계를 먼저 검토합니다. 동일 목적의 문서가 이미 존재하면 새 문서를 만들기보다 기존 문서를 확장하는 방식을 우선합니다.
+Select the role in the [Registry](99.templates/registry.json) and copy its source
+from the [template catalog](99.templates/templates/README.md). Spec, Plan, Task,
+and machine contracts are co-located in Stage 03. Requirement child identities
+are owned by their package; Stage 98 contains only minimal recovery records.
 
 ## Document Contract Validation
 
@@ -189,7 +157,7 @@ docs/
 
 ```bash
 python3 scripts/validation/run-ci-gate.py --profile changed
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 `run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.

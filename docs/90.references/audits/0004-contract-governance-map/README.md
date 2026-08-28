@@ -118,10 +118,10 @@ infra image/version drift.
 - Workspace document contract audit pack task - Defines Task 3 scope and required verification.
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md) - Defines stage-level template ownership.
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - Defines template-first, language, frontmatter status, and DOCS 3 rules.
-- [Template contract](../../99.templates/support/template-contract.md) - Defines source-template and target-document boundaries.
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md) - Defines metadata key ownership.
-- [Template governance](../../99.templates/support/template-governance.md) - Defines change boundaries and validator ownership.
-- [Template selection](../../99.templates/support/template-selection.md) - Maps target paths to canonical templates.
+- [Template contract](../../99.templates/README.md) - Defines source-template and target-document boundaries.
+- [Frontmatter contract](../../99.templates/README.md) - Defines metadata key ownership.
+- [Template governance](../../99.templates/README.md) - Defines change boundaries and validator ownership.
+- [Template selection](../../99.templates/README.md) - Maps target paths to canonical templates.
 - [Provider-neutral notes](../../00.agent-governance/providers/agents-md.md) - Defines provider adapter parity.
 - [CI quality workflow](../../../.github/workflows/ci-quality.yml) - Defines local CI job execution.
 - [Repository contract validator](../../../scripts/validation/check-repo-contracts.sh) - Enforces repository contracts.

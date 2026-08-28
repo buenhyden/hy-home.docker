@@ -16,6 +16,7 @@ import yaml
 
 try:
     from scripts.validation.ci_gate_contract import (
+        CI_DEPENDENCY_BOOTSTRAP,
         GateContractError,
         GateRegistry,
         expand_gate_ids as _expand_gate_ids,
@@ -25,6 +26,7 @@ try:
     )
 except ModuleNotFoundError:  # Direct sibling-script execution.
     from ci_gate_contract import (  # type: ignore[no-redef]
+        CI_DEPENDENCY_BOOTSTRAP,
         GateContractError,
         GateRegistry,
         expand_gate_ids as _expand_gate_ids,
@@ -1124,7 +1126,7 @@ def _workflow_projection_findings(
                         f"job {raw_job_id} run step context is not admitted",
                     )
                 )
-            selected_profile = _static_gate_profile(program)
+            selected_profile = "bootstrap" if program == CI_DEPENDENCY_BOOTSTRAP else _static_gate_profile(program)
             if selected_profile is None:
                 findings.append(
                     _finding(
@@ -1135,12 +1137,12 @@ def _workflow_projection_findings(
                 )
             else:
                 projected.append(selected_profile)
-        if projected != [profile]:
+        if projected != ["bootstrap", profile]:
             findings.append(
                 _finding(
                     "workflow-gate-projection-mismatch",
                     path,
-                    f"job {raw_job_id} does not select its public profile exactly once",
+                    f"job {raw_job_id} must bootstrap dependencies then select its public profile exactly once",
                 )
             )
     return tuple(findings)

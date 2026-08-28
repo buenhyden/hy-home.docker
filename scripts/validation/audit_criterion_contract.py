@@ -31,23 +31,23 @@ REPORT_PREFIX_COUNTS: dict[str, dict[str, int]] = {
 # The logical names remain the report keys used in coverage output so historical
 # criterion provenance stays recognizable without making the current path dated.
 REPORT_FILES: dict[str, str] = {
-    "harness-engineering-implementation.md": "ref-0025-harness-engineering-implementation.md",
-    "loop-engineering-implementation.md": "ref-0027-loop-engineering-implementation.md",
-    "provider-harness-loop-implementation.md": "ref-0028-provider-harness-loop-implementation.md",
-    "workspace-rules-environment-implementation.md": "ref-0032-workspace-rules-environment-implementation.md",
-    "agent-instructions-catalog-vibe-models.md": "ref-0020-agent-instructions-catalog-vibe-models.md",
-    "automation-candidates.md": "ref-0021-automation-candidates.md",
-    "sdlc-document-contracts-implementation.md": "ref-0029-sdlc-document-contracts-implementation.md",
-    "frontmatter-template-readme-implementation.md": "ref-0024-frontmatter-template-readme-implementation.md",
-    "sdlc-quality-formatting-implementation.md": "ref-0030-sdlc-quality-formatting-implementation.md",
-    "compose-infrastructure-operations-readiness.md": "ref-0022-compose-infrastructure-operations-readiness.md",
-    "security-framework-maturity.md": "ref-0031-security-framework-maturity.md",
+    "harness-engineering-implementation.md": "0025-harness-engineering-implementation/README.md",
+    "loop-engineering-implementation.md": "0027-loop-engineering-implementation/README.md",
+    "provider-harness-loop-implementation.md": "0028-provider-harness-loop-implementation/README.md",
+    "workspace-rules-environment-implementation.md": "0032-workspace-rules-environment-implementation/README.md",
+    "agent-instructions-catalog-vibe-models.md": "0020-agent-instructions-catalog-vibe-models/README.md",
+    "automation-candidates.md": "0021-automation-candidates/README.md",
+    "sdlc-document-contracts-implementation.md": "0029-sdlc-document-contracts-implementation/README.md",
+    "frontmatter-template-readme-implementation.md": "0024-frontmatter-template-readme-implementation/README.md",
+    "sdlc-quality-formatting-implementation.md": "0030-sdlc-quality-formatting-implementation/README.md",
+    "compose-infrastructure-operations-readiness.md": "0022-compose-infrastructure-operations-readiness/README.md",
+    "security-framework-maturity.md": "0031-security-framework-maturity/README.md",
 }
 
 NON_CRITERION_FILES = {
-    "ref-0019-readme.md",
-    "ref-0026-implementation-overview.md",
-    "ref-0023-frontmatter-semantic-inventory.md",
+    "0019-readme/README.md",
+    "0026-implementation-overview/README.md",
+    "0023-frontmatter-semantic-inventory/README.md",
 }
 EXPECTED_PACK_FILES = NON_CRITERION_FILES | set(REPORT_FILES.values())
 EXPECTED_TOTAL = sum(
@@ -290,7 +290,7 @@ def validate_pack(pack: pathlib.Path | str = DEFAULT_PACK) -> AuditCriterionCont
     if not pack_path.is_dir():
         raise AuditCriterionContractError([f"missing audit pack directory: {pack_path}"])
 
-    actual_files = {path.name for path in pack_path.glob("*.md")}
+    actual_files = {path.relative_to(pack_path).as_posix() for path in pack_path.glob("*/README.md")}
     for missing in sorted(EXPECTED_PACK_FILES - actual_files):
         errors.append(f"{pack_path}: missing expected Markdown file: {missing}")
 

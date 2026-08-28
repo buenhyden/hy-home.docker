@@ -14,29 +14,31 @@ updated: 2026-08-11
 
 **Status:** Completed
 
-**Scope:** `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/`, `.claude/`,
-`.codex/`, new `.gemini/`, `.github/`, `docs/00.agent-governance/`, and the
-supporting generators, validators, tests, Stage 04 evidence, and canonical
+**Current scope:** `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`,
+`.codex/`, `.github/`, `docs/00.agent-governance/`, and the
+supporting generators, validators, tests, owning Task evidence, and canonical
 Stage 90 audit updates required to keep those surfaces enforceable.
 
 ## Overview
 
-The repository intends Stage 00 to be the provider-neutral source of truth for
-agent governance. The current implementation has strong structural coverage,
-but its effective authority flows in both directions:
+Stage 00 owns provider-neutral agent governance. Stage 99 owns document shapes;
+the active owning Task owns execution state. Only Claude and Codex are supported.
+The following discovery observations describe the July 2026 baseline, not the
+current authority or a request to restore retired surfaces:
 
-- the provider sync script derives skills from `.claude/skills/` even though
-  Stage 00 declares the canonical function catalog;
-- Codex TOML adapters omit current native required fields such as
-  `description` and `developer_instructions`;
-- `.agents/` is described partly as Gemini runtime support even though current
-  Gemini CLI uses `.gemini/agents/*.md` and `docs/00.agent-governance/providers/registry.yaml`;
-- provider-neutral agent entries and rich provider prompts do not preserve the
-  same role semantics;
-- several Stage 00 ownership rules overlap or conflict;
-- local pre-push routing omits root and provider governance surfaces;
-- harness structure exists, but the canonical audit still records every loop
-  criterion as Partial and no measured depth-4 closure.
+> Historical evidence (not current authority; source: Git history):
+> - the provider sync script derives skills from `.claude/skills/` even though
+>   Stage 00 declares the canonical function catalog;
+> - Codex TOML adapters omit current native required fields such as
+>   `description` and `developer_instructions`;
+> - `.agents/` is described partly as Gemini runtime support even though current
+>   Gemini CLI uses `.gemini/agents/*.md` and `docs/00.agent-governance/providers/registry.yaml`;
+> - provider-neutral agent entries and rich provider prompts do not preserve the
+>   same role semantics;
+> - several Stage 00 ownership rules overlap or conflict;
+> - local pre-push routing omits root and provider governance surfaces;
+> - harness structure exists, but the canonical audit still records every loop
+>   criterion as Partial and no measured depth-4 closure.
 
 The canonical July 5 audit pack remains the only current status source. The
 July 7 pack is a superseded mapping aid and must not supply current counts or
@@ -50,9 +52,9 @@ The user approved the following design choices:
 
 1. Use a staged canonical convergence rather than an all-at-once rewrite or a
    validator-only patch.
-2. Add `.gemini/**` as the official Gemini CLI runtime adapter surface.
-3. Treat `.agents/` as the Antigravity/common compatibility and shared-skill
-   surface, not as Gemini CLI native parity.
+2. Generate only the supported Claude and Codex runtime adapter surfaces.
+3. Treat `.agents/` as a generated shared-skill compatibility projection of
+   Stage 00, without independent provider or policy authority.
 4. Apply `agency-agents` through capability-gap analysis. Do not wholesale
    import upstream identities, personalities, or the full roster.
 5. Revalidate model policy against official sources as of 2026-07-15 KST.
@@ -73,7 +75,7 @@ The user approved the following design choices:
   harness/loop contracts.
 - Normalize frontmatter and sections by artifact type, remove legacy keys and
   duplicated policy, and keep README files profile-specific indexes.
-- Generate Claude, Codex, and Gemini runtime adapters from canonical Stage 00
+- Generate Claude and Codex runtime adapters from canonical Stage 00
   definitions using each provider's native schema.
 - Make provider capability, repository adoption, runtime acceptance, and
   validation depth distinct states.
@@ -86,7 +88,7 @@ The user approved the following design choices:
 
 ### Non-Goals
 
-- User-global `~/.claude`, `~/.codex`, or `~/.gemini` changes.
+- User-global provider configuration changes.
 - Credential, token, entitlement, or authentication changes.
 - Docker Compose, deployment runtime, promotion, or rollback implementation.
 - Remote GitHub ruleset, environment, secret, push, PR, or merge actions.
@@ -106,13 +108,13 @@ Stage 00 typed contracts, catalog, and model policy
                          |
                          v
               provider surface generator
-                 /          |          \
-                v           v           v
-             Claude       Codex       Gemini
-             native       native       native
-            adapters     adapters     adapters
-                 \          |          /
-                  v         v         v
+                      /         \
+                     v           v
+                   Claude      Codex
+                   native      native
+                  adapters    adapters
+                      \         /
+                       v       v
                    validator, CI, QA evidence
 ```
 
@@ -120,14 +122,14 @@ Stage 00 typed contracts, catalog, and model policy
 
 - `docs/00.agent-governance/` owns normative policy and canonical role/function
   definitions.
-- Machine-readable Stage 00 contracts separately own:
-  - artifact types, frontmatter, required sections, and README profiles;
+- The Stage 99 registry owns artifact types, frontmatter, required sections,
+  and README profiles. Stage 00 sources separately own:
   - agent/function responsibilities, scopes, permissions, model profiles, and
     provider projections;
   - provider capability/adoption and model status, checked time, evidence,
     eligibility, and fallback.
 - Root shims contain only the minimum bootstrap/import sequence.
-- `.claude/`, `.codex/`, and `.gemini/` are generated or validated runtime
+- `.claude/` and `.codex/` are generated or validated runtime
   adapters, never independent policy authorities.
 - `.agents/` is a compatibility/shared-function projection with explicit
   status and source references.
@@ -146,7 +148,7 @@ Stage 00 typed contracts, catalog, and model policy
 
 #### Root and governance documents
 
-- `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` are instruction shims, not lifecycle
+- `AGENTS.md` and `CLAUDE.md` are instruction shims, not lifecycle
   documents. General YAML frontmatter is removed unless a provider formally
   requires it.
 - Ordinary Stage 00 governance documents retain minimal `layer: agentic`.
@@ -191,8 +193,6 @@ does not satisfy the contract.
 - Codex TOML includes current native required fields such as `name`,
   `description`, and `developer_instructions`, plus supported model, reasoning,
   sandbox, MCP, and skill settings when justified.
-- Gemini agent Markdown uses native fields such as `name`, `description`,
-  `kind`, tools, model, turn, and timeout controls.
 - Unsupported local metadata such as catalog paths and role scope remains in
   the canonical contract and is not injected into strict provider schemas.
 
@@ -226,31 +226,36 @@ of operational, incident, or specification artifacts.
 
 ### Provider and Model Projection
 
-#### Approved default profiles
+#### Historical default profiles
 
+The following July selection and fallback table are historical evidence only.
+Current defaults and allowed fields come exclusively from the Stage 00 provider
+registry; these historical tables authorize neither model selection nor fallback.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Work profile | Claude | Codex | Gemini |
 | --- | --- | --- | --- |
 | Supervision, architecture, complex planning | `claude-opus-4-8` | `gpt-5.6`, `high`/`xhigh` | `gemini-3.5-flash` |
 | Complex implementation, security, precision review | `claude-sonnet-5`, with approved Opus escalation | `gpt-5.6`, `medium`/`high` | `gemini-3.5-flash` |
 | Exploration, large reads, repetitive organization | `claude-haiku-4-5-20251001` | `gpt-5.6-terra`, `low`/`medium` | `gemini-3.1-flash-lite` |
 
-`claude-fable-5` is a generally available exceptional-capability profile, not
-the routine supervisor default. `gpt-5.3-codex-spark`, invitation-only Claude
-models, and `gemini-3.1-pro-preview` remain non-default catalog entries.
+> Historical evidence (not current authority; source: Git history):
+> `claude-fable-5` is a generally available exceptional-capability profile, not
+> the routine supervisor default. `gpt-5.3-codex-spark`, invitation-only Claude
+> models, and `gemini-3.1-pro-preview` remain non-default catalog entries.
 
 Each registry entry records provider-reported status, source URL, checked time,
 entitlement state, repository default eligibility, supported reasoning or
 thinking controls, task fit, and a rollback/fallback value. Provider-reported
 availability and local entitlement are never conflated.
 
-### Approved Fallback Edges
+### Historical Fallback Edges
 
-An `approved-degraded` fallback is authorized only by a typed
-`fallback_approvals` record in the provider-model contract. Each record binds
-one provider, source model, target model, exact source work-profile set, and
-this resolvable section. A model row references the approval ID; prose-shaped
-or nonexistent fragments do not authorize an edge.
+The earlier implementation recorded the following fallback edges. They are not
+active approvals. The current provider registry does not authorize fallback
+graphs; no source in this table may override that boundary.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Provider | Source | Target | Authorized work profiles |
 | --- | --- | --- | --- |
 | Claude | `claude-fable-5` | `claude-opus-4-8` | `complex-implementation`, `supervision` |
@@ -290,14 +295,11 @@ capability documentation does not retroactively prove historical model state.
   counted as native parity.
 - Use supported per-agent model, reasoning, and sandbox controls.
 
-#### Gemini
+#### Supported-provider boundary
 
-- Add project-native `.gemini/agents/*.md` and `docs/00.agent-governance/providers/registry.yaml`.
-- Add thin project hook wrappers only where needed to dispatch to shared logic.
-- Apply role-specific tools, MCP boundaries, turns, timeouts, and recursion
-  protection.
-- Keep Antigravity/common compatibility in `.agents/` and Gemini CLI runtime
-  behavior in `.gemini/`.
+Only Claude and Codex adapters are generated. Shared skills remain Stage 00
+sources projected into the registered compatibility surfaces; retired provider
+adapters and model entries must not be restored.
 
 ### Agent and Function Catalog
 
@@ -375,7 +377,7 @@ recovery.
 
 As observed on 2026-07-16, Tasks 1 through 5 have implemented the three typed
 contracts, exact 14-role and 22-function catalogs, four role projections,
-Claude/Codex/Gemini native adapters, seven semantic events, four bounded loops,
+Claude/Codex native adapters, seven semantic events, four bounded loops,
 and the deterministic eight-fixture/ten-regression evaluator. The canonical
 audit generator now derives 161 unique criterion rows from 11 reports with the
 observed distribution 77 Implemented, 60 Partial, 13 Missing, 2 Not Applicable,
@@ -446,7 +448,7 @@ At final closure:
 - repository contracts and documentation traceability;
 - harness validation and semantic eval fixtures;
 - approved controlled all-files pre-commit wrapper;
-- sanitized Stage 04 evidence and progress memory;
+- sanitized evidence and progress in the active owning Stage 03 Task;
 - Graphify refresh, or an explicit CLI-unavailable record.
 
 ## Failure Modes and Guardrails
@@ -477,12 +479,12 @@ Work runs in `.worktrees/agent-governance-harness-convergence` on
    points; resolve stale Hookify and ownership text.
 3. Agent/function catalog: retire two roles, add `eval-engineer`, complete the
    functions, and reverse the skill SSoT dependency.
-4. Native providers: converge Claude and Codex and add Gemini native adapters,
+4. Native providers: converge the supported Claude and Codex adapters,
    hooks, model registry, and routing.
 5. Harness/loop and CI/QA: semantic event mapping, permissions, retry/evidence,
    fixtures, generator drift, and routing.
 6. Corpus closure: retire references, refresh the canonical audit, record Stage
-   04 evidence and memory, run full QA, and complete whole-branch review.
+   03 owning-Task evidence, run full QA, and complete whole-branch review.
 
 Every implementation task uses a fresh implementer and a separate reviewer.
 Critical and Important review findings must be fixed and re-reviewed. Shared
@@ -505,31 +507,32 @@ independently reviewable and revertible:
 5. Agent/function catalog convergence.
 6. Provider-native adapters and model policy.
 7. Harness, loop, CI, QA, and semantic evaluation.
-8. Audit, evidence, memory, and closure.
+8. Audit, owning-Task evidence, and closure.
 
 ### External Evidence Baseline
 
 Official sources checked on 2026-07-15 KST include:
 
-- OpenAI Codex subagents, hooks, models, configuration, and harness engineering:
-  - <https://learn.chatgpt.com/docs/agent-configuration/subagents>
-  - <https://learn.chatgpt.com/docs/hooks>
-  - <https://openai.com/index/harness-engineering/>
-  - <https://openai.com/index/unrolling-the-codex-agent-loop/>
-- Anthropic Claude subagents, hooks, models, versioning, and effective-agent
-  guidance:
-  - <https://code.claude.com/docs/en/sub-agents>
-  - <https://code.claude.com/docs/en/hooks>
-  - <https://platform.claude.com/docs/en/about-claude/models/overview>
-  - <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>
-  - <https://www.anthropic.com/engineering/building-effective-agents>
-- Gemini CLI native agents, hooks, configuration, model status, and deprecation:
-  - <https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md>
-  - <https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md>
-  - <https://ai.google.dev/gemini-api/docs/models>
-  - <https://ai.google.dev/gemini-api/docs/deprecations>
-- Capability catalog reference:
-  - <https://github.com/msitarzewski/agency-agents>
+> Historical evidence (not current authority; source: Git history):
+> - OpenAI Codex subagents, hooks, models, configuration, and harness engineering:
+>   - <https://learn.chatgpt.com/docs/agent-configuration/subagents>
+>   - <https://learn.chatgpt.com/docs/hooks>
+>   - <https://openai.com/index/harness-engineering/>
+>   - <https://openai.com/index/unrolling-the-codex-agent-loop/>
+> - Anthropic Claude subagents, hooks, models, versioning, and effective-agent
+>   guidance:
+>   - <https://code.claude.com/docs/en/sub-agents>
+>   - <https://code.claude.com/docs/en/hooks>
+>   - <https://platform.claude.com/docs/en/about-claude/models/overview>
+>   - <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>
+>   - <https://www.anthropic.com/engineering/building-effective-agents>
+> - Gemini CLI native agents, hooks, configuration, model status, and deprecation:
+>   - <https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md>
+>   - <https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md>
+>   - <https://ai.google.dev/gemini-api/docs/models>
+>   - <https://ai.google.dev/gemini-api/docs/deprecations>
+> - Capability catalog reference:
+>   - <https://github.com/msitarzewski/agency-agents>
 
 External facts are recorded with their observed date and must not be treated as
 permanent provider guarantees.

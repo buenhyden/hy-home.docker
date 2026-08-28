@@ -67,12 +67,14 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    HistoricalDocument,
     resolve_git_provenance,
 )
 from scripts.lib.document_governance.identity_history import (  # noqa: E402
     IdentityHistoryError,
     collect_issued_identities,
     validate_identity_history,
+    validate_allocation_transition,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DEFAULT_REGISTRY,
@@ -90,6 +92,7 @@ from scripts.lib.document_governance.requirements import (  # noqa: E402
 from scripts.lib.document_governance.spec_packages import (  # noqa: E402
     SpecPackageError,
     load_spec_packages,
+    resolve_lifecycle_base,
     validate_repository_spec_package_lifecycle,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
@@ -106,11 +109,17 @@ parse_frontmatter = read_frontmatter_values
 
 DEFAULT_PROFILES = DEFAULT_REGISTRY
 LEGACY_TRANSITION_PROFILES = (
-    ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+    HistoricalDocument(
+        ROOT, "494065806794980080b081439298d7b534d10803",
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+    )
 )
 DEFAULT_AGENT_GOVERNANCE_REGISTRY = ROOT / "docs/99.templates/registry.json"
 DEFAULT_MIGRATION_CONTRACT = (
-    ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+    HistoricalDocument(
+        ROOT, "494065806794980080b081439298d7b534d10803",
+        "docs/99.templates/support/document-corpus-migration-contract.yaml",
+    )
 )
 OPERATIONS_CATALOG_DOMAINS = frozenset(
     {
@@ -1116,6 +1125,8 @@ def infer_artifact_type(
         if registered is not None and registered != "unsupported":
             return registered
         legacy_map = profiles.get("_legacy_profiles")
+        if not isinstance(legacy_map, Mapping):
+            return "unsupported"
         if isinstance(legacy_map, Mapping):
             legacy_match = classify_taxonomy_path(
                 pathlib.PurePosixPath(normalized), legacy_map
@@ -1262,7 +1273,7 @@ def _legacy_requirement_reference_permitted(
     )
 
 
-def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
+def build_manifest(records: Sequence[Record], *, retired_records: Sequence[Record] = ()) -> dict[str, pathlib.Path]:
     """Build a deterministic artifact-ID manifest and retain duplicate context."""
 
     paths_by_id: dict[str, list[pathlib.Path]] = collections.defaultdict(list)
@@ -1306,6 +1317,10 @@ def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
                 sorted(candidate.path for candidate in unique.values())
             )
 
+    for record in retired_records:
+        artifact_id = record.metadata.get("artifact_id")
+        if isinstance(artifact_id, str) and artifact_id not in relation_records_by_id:
+            relation_records_by_id[artifact_id] = record
     return Manifest(
         values,
         duplicates,
@@ -1321,6 +1336,41 @@ def _profile_mapping(profiles: dict[str, object]) -> tuple[dict[str, object], di
     if not isinstance(common, dict) or not isinstance(profile_map, dict):
         raise ProfileError("common and profiles must be mappings")
     return common, profile_map
+
+
+def build_current_manifest(root: pathlib.Path, records: Sequence[Record]) -> dict[str, pathlib.Path]:
+    """Resolve retired Spec lineage only through exact verified compact evidence."""
+
+    current = build_manifest(records)
+    needed: set[str] = set()
+    for record in records:
+        for field in ("parent_ids", "supersedes", "superseded_by"):
+            value = record.metadata.get(field)
+            values = [value] if isinstance(value, str) else value if isinstance(value, list) else []
+            needed.update(item for item in values if isinstance(item, str)
+                          and item.startswith("SPEC-") and item not in current)
+    if not needed or not (root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md").exists():
+        return current
+    from scripts.lib.document_governance.archive import _migration_document
+    from scripts.lib.document_governance.git_provenance import HistoricalDocument
+
+    try:
+        migration = _migration_document(root)
+        retired = []
+        if migration["schema_version"] == 3:
+            for row in migration["rows"]:
+                source = row["source_path"]
+                if (row["action"] != "delete" or row["artifact_id"] not in needed
+                        or not source.endswith("/spec.md") or (root / source).exists()):
+                    continue
+                text = HistoricalDocument(root, row["recovery_commit"], source).read_text()
+                values = _parse_frontmatter_text(text)
+                if values.get("artifact_id") != row["artifact_id"] or values.get("artifact_type") != "spec":
+                    raise ValueError("retired Spec identity does not match recovery")
+                retired.append(Record(pathlib.Path(source), {**values, "status": "retired"}, "spec"))
+        return build_manifest(records, retired_records=retired)
+    except ValueError as error:
+        raise ProfileError("retired Spec lineage recovery is invalid") from error
 
 
 def _finding(record: Record, code: str, message: str, severity: str = "error") -> Finding:
@@ -2346,6 +2396,11 @@ def validate_body_contract(
 
     registry = profiles.get("_registry")
     if isinstance(registry, DocumentRegistry):
+        owner = registered_generated_owner(record.path, profiles)
+        if owner is not None and record.metadata.get("generated_by") == owner:
+            # Its declared producer checks the generated body; metadata and
+            # References still validate identity, membership, and current links.
+            return []
         registered_profile = classify_registered_path(record.path.as_posix(), registry)
         profile = registry.profiles.get(record.artifact_type)
         if (
@@ -2519,7 +2574,11 @@ def validate_body_contract(
             )
 
     unfenced_text = "\n".join(_markdown_unfenced_lines(text))
-    if source_roles:
+    if source_roles or (
+        isinstance(registry, DocumentRegistry)
+        and record.artifact_type == "plan"
+        and classify_registered_path(record.path.as_posix(), registry) == record.artifact_type
+    ):
         conditional = role.get("conditional_headings", [])
         allowed_headings = set(required_headings if isinstance(required_headings, list) else []) | set(
             conditional if isinstance(conditional, list) else []
@@ -2532,6 +2591,7 @@ def validate_body_contract(
                     f"role {role_name} source contains unregistered heading: {heading}",
                 )
                 )
+    if source_roles:
         for literal in TARGET_TEMPLATE_LITERALS:
             if literal in unfenced_text:
                 findings.append(
@@ -2682,6 +2742,9 @@ def validate_record(
     """Validate one record against its typed profile and the global manifest."""
 
     common, profile_map = _profile_mapping(profiles)
+    if record.path.as_posix() in profiles.get("_delegated_reference_paths", ()):
+        # The caller has already run the exact Reference content validator.
+        return []
     raw_profile = profile_map.get(record.artifact_type)
     registry = profiles.get("_registry")
     legacy_map = profiles.get("_legacy_profiles")
@@ -3125,7 +3188,7 @@ def validate_record(
 
     if status == "superseded" and "artifact_id" in required:
         replacement_ids: set[str] = set()
-        for candidate in typed_manifest.records_by_id.values():
+        for candidate in typed_manifest.relation_records_by_id.values():
             candidate_relation_ids = _relation_ids_for_record(candidate)
             for replaced_id in (
                 _string_list(candidate.metadata.get("supersedes")) or []
@@ -3149,6 +3212,9 @@ def validate_record(
             )
 
     reviewed_at = record.metadata.get("reviewed_at")
+    successor = record.metadata.get("superseded_by")
+    if successor is not None and (not isinstance(successor, str) or not _relation_reference_exists(typed_manifest, successor, record)):
+        findings.append(_finding(record, "unresolved-superseded-by", "superseded_by must resolve to current or verified retired lineage"))
     if status == "active" and "reviewed_at" in required and reviewed_at in (None, ""):
         findings.append(
             _finding(record, "stale-active", "active freshness-managed artifact lacks reviewed_at evidence")
@@ -4359,11 +4425,14 @@ def load_promoted_transition_witnesses(
 ) -> dict[str, PromotedTransitionWitness]:
     """Load the exact promoted target witness only for its immutable baseline."""
 
-    if comparison_base != TARGET_SURFACE_BASELINE:
+    if comparison_base != TARGET_SURFACE_BASELINE or "_registry" in profiles:
         return {}
-    contract_path = root / "docs/99.templates/support/document-corpus-migration-contract.yaml"
-    if not contract_path.is_file():
-        return {}
+    # This witness belongs to the predecessor lifecycle, never current policy.
+    recovery_commit = "494065806794980080b081439298d7b534d10803"
+    contract_path = HistoricalDocument(
+        root, recovery_commit,
+        "docs/99.templates/support/document-corpus-migration-contract.yaml",
+    )
     contract = load_migration_contract(contract_path)
     waves = contract.get("waves")
     wave = (
@@ -4376,9 +4445,10 @@ def load_promoted_transition_witnesses(
     manifest_path = wave.get("manifest_path")
     if not isinstance(manifest_path, str) or not _safe_contract_path(manifest_path):
         return {}
-    absolute_manifest = root / manifest_path
-    if not absolute_manifest.is_file():
-        return {}
+    absolute_manifest = HistoricalDocument(
+        root, "889d3868ecd0913cddac79a718584a54a8453525",
+        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml",
+    )
     try:
         document = _safe_load_unique(absolute_manifest.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, yaml.YAMLError) as error:
@@ -4906,6 +4976,25 @@ def load_profiles(
     return _load_legacy_profiles(path, migration_contract_path)
 
 
+def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
+    """Project only current Registry profiles into the metadata reader envelope."""
+
+    keys = list(dict.fromkeys(
+        key
+        for profile in registry.profiles.values()
+        for field in ("required_frontmatter", "optional_frontmatter")
+        for key in profile.get(field, ())
+    ))
+    profiles = build_registry_transition_profiles(registry, {
+        "common": {"typed_keys": keys, "frontmatter_order": []},
+        "profiles": {},
+        "template_roles": {},
+        "document_families": {"sdlc": []},
+    })
+    del profiles["_legacy_profiles"]
+    return profiles
+
+
 def build_registry_transition_profiles(
     registry: DocumentRegistry,
     legacy_profiles: Mapping[str, object],
@@ -4967,6 +5056,7 @@ def build_registry_transition_profiles(
             "allowed_parent_types": parents,
             "allow_empty_parents": (
                 profile_id in {"research", "audit", "data"}
+                or isinstance(traceability, Mapping) and traceability.get("membership_authority") == "operations-migration-manifest"
                 or not parents
             ),
             "allow_additional": False,
@@ -5348,7 +5438,42 @@ def validate_requirement_internal_id_contract(
     return sorted(set(findings))
 
 
-def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object]) -> list[Finding]:
+def _reference_delegation_findings(root: pathlib.Path, profiles: dict[str, object]) -> list[Finding]:
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry) or not (root / "docs/90.references").exists():
+        return []
+    from scripts.lib.document_governance.references import delegated_member_paths, generated_reference_owners, validate_current_references
+
+    rule = {"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}
+    if rule not in registry.profiles["readme"].get("exceptions", ()):
+        raise ProfileError("Reference member delegation is not registered")
+    try:
+        profiles["common"]["generated_outputs"] = generated_reference_owners(root)
+        findings = validate_current_references(root)
+        profiles["_delegated_reference_paths"] = delegated_member_paths(root)
+    except ValueError as error:
+        raise ProfileError(f"Reference delegation cannot be established: {error}") from error
+    return [Finding(item.path.as_posix(), item.code, item.detail) for item in findings]
+
+
+def _allocation_findings(root: pathlib.Path, profiles: dict[str, object], records: Sequence[Record], base_ref: str | None) -> list[Finding]:
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry):
+        return []
+    try:
+        base = resolve_lifecycle_base(root, base_ref)
+        findings = validate_allocation_transition(root, registry, {
+            record.path.as_posix(): record.metadata["artifact_id"]
+            for record in records
+            if isinstance(record.metadata.get("artifact_id"), str)
+            and record.path.as_posix() not in profiles.get("_delegated_reference_paths", ())
+        }, base)
+    except (IdentityHistoryError, SpecPackageError) as error:
+        raise ProfileError(str(error)) from error
+    return [Finding(item.path, item.code, item.message) for item in findings]
+
+
+def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object], *, base_ref: str | None = None) -> list[Finding]:
     """Validate tracked repository surfaces backed by the canonical registry."""
 
     _require_git_worktree(root)
@@ -5359,6 +5484,13 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     if registry_native:
         active_registry = profiles.get("_registry")
         assert isinstance(active_registry, DocumentRegistry)
+        findings.extend(_reference_delegation_findings(root, profiles))
+        records = collect_records(root, profiles, require_git=True)
+        manifest = build_current_manifest(root, records)
+        for record in records:
+            if record.metadata.get("status") == "active" or record.parse_error:
+                findings.extend(finding for finding in validate_record(record, profiles, manifest) if finding.severity == "error")
+        findings.extend(_allocation_findings(root, profiles, records, base_ref))
         requirement_root = root / "docs/01.requirements"
         if requirement_root.exists() or requirement_root.is_symlink():
             try:
@@ -5376,14 +5508,13 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             root
             / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         )
-        if spec_package_authority.is_file() and (
-            spec_root.exists() or spec_root.is_symlink()
-        ):
+        if spec_package_authority.is_file():
             try:
-                spec_packages = load_spec_packages(spec_root, registry=active_registry)
+                spec_packages = load_spec_packages(spec_root, registry=active_registry) if spec_root.exists() or spec_root.is_symlink() else ()
                 spec_lifecycle_findings = validate_repository_spec_package_lifecycle(
                     root,
                     spec_packages,
+                    base_ref=base_ref,
                 )
             except SpecPackageError as error:
                 findings.append(
@@ -5788,10 +5919,10 @@ def _record_from_text(
         parse_error_code = error.code
     inferred_type = infer_artifact_type(relative_path, profiles)
     registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
-    registered_data_package_readme = bool(
-        inferred_type == "data"
+    registered_package_readme = bool(
+        inferred_type in {"data", "audit", "research"}
         and isinstance(registry, DocumentRegistry)
-        and classify_registered_path(relative_path.as_posix(), registry) == "data"
+        and classify_registered_path(relative_path.as_posix(), registry) == inferred_type
     )
     # Only an exact Registry-classified Data package README retains Data
     # ownership; generated_by is provenance there. Every other generated
@@ -5799,7 +5930,7 @@ def _record_from_text(
     # classification used before the Stage 90 transition.
     artifact_type = (
         "generated"
-        if "generated_by" in values and not registered_data_package_readme
+        if "generated_by" in values and not registered_package_readme
         else inferred_type
     )
     return Record(
@@ -6175,18 +6306,18 @@ def _task8_operations_move_sources(root: pathlib.Path) -> dict[str, str]:
     from scripts.lib.document_governance.operations_catalog import (
         MIGRATION_PATH,
         OperationsAuthorityError,
-        load_task8_migration,
+        load_current_operation_mappings,
     )
 
     if not (root / MIGRATION_PATH).is_file():
         return {}
     try:
-        migration = load_task8_migration(root)
+        mappings = load_current_operation_mappings(root)
     except OperationsAuthorityError as error:
         raise ProfileError(f"cannot load Task 8 Operations move authority: {error}") from error
     return {
         row.target_path.as_posix(): row.source_path.as_posix()
-        for row in migration.rows
+        for row in mappings
         if row.target_path is not None
     }
 
@@ -6691,7 +6822,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("--history-scope full requires --mode check-contracts")
     root = args.root.resolve()
     base = BaseSelection("not-applicable", None, None)
-    contract_base = BaseSelection("not-applicable", None, None)
     registry = None
     try:
         if args.mode == "check-changed":
@@ -6699,7 +6829,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             base = resolve_base_selection(root, args.base_ref)
         elif args.mode == "check-contracts":
             _require_git_worktree(root)
-            contract_base = resolve_base_selection(root, args.base_ref)
+            resolve_base_selection(root, args.base_ref)
         if args.profiles.suffix.lower() == ".json":
             trusted_requirement_baseline = None
             canonical_registry_path = root / "docs/99.templates/registry.json"
@@ -6719,12 +6849,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 == canonical_registry_path.resolve(strict=False)
             )
             if allocation_transition_mode:
-                selected_base = base if args.mode == "check-changed" else contract_base
-                revision = (
-                    selected_base.merge_base
-                    if args.base_ref is not None
-                    else _verified_commit(root, "HEAD")
-                )
+                revision = resolve_lifecycle_base(root, args.base_ref)
                 if revision is None:
                     raise ProfileError(
                         "Requirement allocation transition requires a trusted base commit"
@@ -6739,10 +6864,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 trusted_requirement_baseline=trusted_requirement_baseline,
                 allow_requirement_allocation_transition=allocation_transition_mode,
             )
-            profiles = build_registry_transition_profiles(
-                registry,
-                load_profiles(LEGACY_TRANSITION_PROFILES),
-            )
+            profiles = build_registry_profiles(registry)
             requirement_root = root / "docs/01.requirements"
             if allocation_transition_mode and (
                 requirement_root.exists() or requirement_root.is_symlink()
@@ -6772,6 +6894,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ProfileError,
         RegistryError,
         RequirementPackageError,
+        SpecPackageError,
     ) as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
@@ -6938,7 +7061,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
                 )
         try:
-            contract_findings.extend(validate_repository_contracts(root, profiles))
+            contract_findings.extend(validate_repository_contracts(root, profiles, base_ref=args.base_ref))
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -7055,10 +7178,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             previous_records=base_records_by_path,
             require_git=args.mode == "check-changed",
         )
+        manifest = build_current_manifest(root, records) if registry is not None else build_manifest(records)
     except ProfileError as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
-    manifest = build_manifest(records)
+    native_findings: list[Finding] = []
+    if registry is not None:
+        try:
+            native_findings.extend(_reference_delegation_findings(root, profiles))
+            if args.mode == "check-changed":
+                native_findings.extend(_allocation_findings(root, profiles, records, args.base_ref))
+                stage = root / "docs/03.specs"
+                packages = load_spec_packages(stage, registry=registry) if stage.exists() or stage.is_symlink() else ()
+                native_findings.extend(Finding(item.path, item.code, item.message) for item in validate_repository_spec_package_lifecycle(root, packages, base_ref=args.base_ref))
+        except (ProfileError, SpecPackageError) as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
     base_manifest = build_manifest(base_records)
     base_findings_by_path = {
         path_text: validate_record(record, profiles, base_manifest)
@@ -7217,7 +7352,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
     selected_findings = sorted(
-        {
+        set(native_findings) | {
             finding
             for path in directly_selected_paths - legacy_exceptions
             for finding in findings_by_path.get(path, [])

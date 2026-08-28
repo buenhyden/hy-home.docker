@@ -112,7 +112,7 @@ def main() -> int:
         return 1
 
     overview_categories = extract_overview_categories(
-        pack / "ref-0026-implementation-overview.md"
+        pack / "0026-implementation-overview/README.md"
     )
     for category in EXPECTED_OVERVIEW_CATEGORIES:
         if category not in overview_categories:

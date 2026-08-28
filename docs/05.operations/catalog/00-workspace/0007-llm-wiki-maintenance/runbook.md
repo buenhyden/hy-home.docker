@@ -104,14 +104,14 @@ updated: 2026-08-14
 
 - **Model / Prompt Change Process**: `doc-writer` imports `docs/00.agent-governance/roles/docs.md`; model changes follow the Stage 00 provider adapter change protocol.
 - **Eval / Guardrail Threshold**: stale index, unsafe path inclusion, or forbidden wording is a blocking validation failure.
-- **Log / Trace Retention**: record final verification evidence in `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`; do not paste raw secret-adjacent logs.
+- **Log / Trace Retention**: record final verification in the Task owning the current maintenance work; do not paste raw secret-adjacent logs.
 - **Safety Incident Thresholds**: suspected secret exposure or public-scope drift requires immediate stop and user escalation.
 
 ## Verification Record
 
 | Verification environment | Command or procedure                                                            | Result                                                       | Evidence location                                                                    |
 | ------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Local governed worktree  | Run both LLM Wiki generators with `--check` and the repository contract checker | Every command exits zero and reports fresh generated outputs | Current Task verification evidence and `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` |
+| Local governed worktree  | Run the LLM Wiki generator with `--check` and the public validation runner | Every command exits zero and reports fresh generated outputs | Verification evidence in the Task owning the current maintenance work |
 
 ## Evidence
 

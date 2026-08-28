@@ -1,16 +1,22 @@
 ---
 profile_id: spec
-status: active
+status: retired
 artifact_id: SPEC-0092
 artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-28
 ---
 # Workspace Doc & Governance Consistency (2026-05b) Technical Specification
 
 ## Overview
+
+This completed session is retired. Its original body below is historical
+execution evidence, not current authority or permission to repeat its commands.
+The original content is recoverable at Git commit
+`494065806794980080b081439298d7b534d10803`. Physical cleanup and terminal
+Migration mappings remain pending PhaseB.
 
 This document is the technical specification for follow-up work after PR #89 (`workspace-doc-consistency-2026-05`). It completes workspace consistency through governance rule formalization (R4 Operations Profile Compliance, R5 Frontmatter Status), validation script expansion, templates, and small documentation fixes. As a result of this specification, `documentation-protocol.md` and the validation scripts fully align with the actual file baseline.
 
@@ -50,10 +56,11 @@ This document is the technical specification for follow-up work after PR #89 (`w
 
 ## Core Design
 
-- **Component Boundary**: `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, `docs/05.operations/catalog/*/*/policy.md`
-- **Key Dependencies**: `docs/99.templates` (baseline documents), `scripts/validation/` (validation scripts)
-- **Tech Stack**: bash, git (Conventional Commits)
-- **Execution Strategy**: Documentation-first: add rule documents -> strengthen scripts -> update templates/documents.
+> Historical evidence (not current authority; source: Git history):
+> - **Component Boundary**: `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, `docs/05.operations/catalog/*/*/policy.md`
+> - **Key Dependencies**: `docs/99.templates` (baseline documents), `scripts/validation/` (validation scripts)
+> - **Tech Stack**: bash, git (Conventional Commits)
+> - **Execution Strategy**: Documentation-first: add rule documents -> strengthen scripts -> update templates/documents.
 
 ## Data Modeling & Storage Strategy
 
@@ -79,16 +86,18 @@ This document is the technical specification for follow-up work after PR #89 (`w
 
 ## Agent Role & IO Contract (If Applicable)
 
-- **Agent Role**: AI Agent uses this specification to add governance rules, expand scripts, and update templates/documents.
-- **Inputs**: `docs/99.templates/*.template.md` (baseline), `docs/00.agent-governance/rules/` (edit target), `scripts/validation/` (edit target), `docs/05.operations/` (edit target)
-- **Outputs**: updated Markdown/shell files and git commit history
-- **Success Definition**: `check-repo-contracts.sh` and `check-doc-traceability.sh` pass with failures=0.
+> Historical evidence (not current authority; source: Git history):
+> - **Agent Role**: AI Agent uses this specification to add governance rules, expand scripts, and update templates/documents.
+> - **Inputs**: `docs/99.templates/*.template.md` (baseline), `docs/00.agent-governance/rules/` (edit target), `scripts/validation/` (edit target), `docs/05.operations/` (edit target)
+> - **Outputs**: updated Markdown/shell files and git commit history
+> - **Success Definition**: `check-repo-contracts.sh` and `check-doc-traceability.sh` pass with failures=0.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: bash, git
-- **Permission Boundary**: only files under `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, and `docs/05.operations/catalog/*/*/policy.md` may be modified.
-- **Failure Handling**: when scripts fail, review `git diff` and roll back.
+> Historical evidence (not current authority; source: Git history):
+> - **Tool List**: bash, git
+> - **Permission Boundary**: only files under `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, and `docs/05.operations/catalog/*/*/policy.md` may be modified.
+> - **Failure Handling**: when scripts fail, review `git diff` and roll back.
 
 ## Prompt / Policy Contract (If Applicable)
 
@@ -164,32 +173,39 @@ bash scripts/validation/check-doc-traceability.sh
 - **Plan**: 2026-05-29 workspace consistency 2026-05b plan
 - **Tasks**: 2026-05-29 workspace consistency 2026-05b tasks
 - **Templates**: [docs/99.templates/](../../99.templates)
-- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules)
+- **Governance Rules**: [Agent governance](../../00.agent-governance/README.md)
 
 ## Boundaries and Inputs
 
-The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+The preceding session boundaries and dated inputs are historical. Current
+authoring authority belongs to Stage 00 policies and the Stage 99 Registry.
 
 ## Behavior Contract
 
-The behaviors and invariants already specified above remain the package behavior contract.
+The session obligations have ended; obsolete stub, progress, R4/R5 and checker
+requirements are not current behavior contracts.
 
 ## Technical Approach
 
-The implementation and component design recorded above remain the technical approach.
+The preceding implementation approach describes only the completed session.
 
 ## Interfaces and Data
 
-The interfaces, configuration, and data shapes recorded above remain authoritative.
+Current document fields and shapes are owned by the Stage 99 Registry.
 
 ## Failure Modes and Guardrails
 
-The safety, validation, and operational constraints above remain the package guardrails.
+Current approval and credential boundaries are owned by Stage 00 policies;
+operational responsibilities belong to the Stage 05 catalog.
 
 ## Acceptance Contract
 
-The verification and success conditions above remain the acceptance contract.
+The dated verification criteria above are historical session evidence, not
+current completion gates. Stage 00 completion policy governs new work.
 
 ## Traceability
 
-The requirement, architecture, operations, and evidence links above provide traceability.
+Historical identity and original content remain recoverable at the commit
+above. Current owners are [Stage 00](../../00.agent-governance/README.md),
+[Stage 99 Registry](../../99.templates/registry.json), and the
+[Operations catalog](../../05.operations/catalog/README.md).

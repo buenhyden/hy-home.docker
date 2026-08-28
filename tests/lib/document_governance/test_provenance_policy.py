@@ -7,7 +7,7 @@ import unittest
 from unittest import mock
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def policy_api():
@@ -19,6 +19,18 @@ def policy_api():
 
 
 class ProvenancePolicyTests(unittest.TestCase):
+    def test_integration_guidance_preserves_exact_recovery_history(self) -> None:
+        for relative in ("docs/00.agent-governance/policies/github-governance.md", "docs/00.agent-governance/policies/git-workflow.md", ".github/rulesets/main-protection.md"):
+            with self.subTest(path=relative):
+                text = " ".join((ROOT / relative).read_text(encoding="utf-8").split()).lower()
+                self.assertIn("recovery commits", text)
+                self.assertIn("merge commit", text)
+                self.assertIn("fast-forward", text)
+                self.assertNotIn("prefer squash or rebase", text)
+        policy = (ROOT / "docs/00.agent-governance/policies/github-governance.md").read_text()
+        self.assertIn("only after referenced recovery commits are reachable", policy)
+        self.assertIn("verify recovery blobs after integration", policy)
+
     def setUp(self) -> None:
         self.policy = policy_api()
 

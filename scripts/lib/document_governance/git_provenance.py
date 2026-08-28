@@ -44,6 +44,35 @@ class ArchivedMetadata:
     archived_from: pathlib.PurePosixPath
 
 
+@dataclasses.dataclass(frozen=True)
+class HistoricalDocument:
+    """An explicit recovery blob, never a fallback to a current file or HEAD."""
+
+    repo_root: pathlib.Path
+    commit: str
+    path: str
+
+    @property
+    def suffix(self) -> str:
+        return pathlib.PurePosixPath(self.path).suffix
+
+    def read_bytes(self) -> bytes:
+        if not isinstance(self.path, str) or pathlib.PurePosixPath(self.path).as_posix() != self.path:
+            raise ValueError("historical document path is invalid")
+        provenance, = verify_recovery_blobs_batch(
+            ((self.path, self.commit),), repo_root=self.repo_root
+        )
+        if not provenance.is_regular_blob or provenance.object_id is None:
+            raise ValueError("historical document recovery must resolve to a regular blob")
+        result = _run_git(self.repo_root, ["cat-file", "blob", provenance.object_id])
+        if result.returncode:
+            raise ValueError("historical document exceeds the bounded Git reader or is unavailable")
+        return result.stdout
+
+    def read_text(self, encoding: str = "utf-8") -> str:
+        return self.read_bytes().decode(encoding)
+
+
 def _safe_relative_path(path: pathlib.PurePosixPath) -> bool:
     return bool(path.parts) and not path.is_absolute() and all(
         part not in {"", ".", ".."}
@@ -116,6 +145,7 @@ def _run_git(
     assert process.stdout is not None and process.stderr is not None
     output = {"stdout": bytearray(), "stderr": bytearray()}
     overflow = threading.Event()
+    reader_error = threading.Event()
     output_lock = threading.Lock()
 
     def drain(stream: object, label: str) -> None:
@@ -124,6 +154,7 @@ def _run_git(
             try:
                 chunk = reader.read(65_536)
             except OSError:
+                reader_error.set()
                 return
             if not chunk:
                 return
@@ -162,7 +193,7 @@ def _run_git(
     if writer is not None:
         writer.start()
     try:
-        while process.poll() is None and not overflow.is_set():
+        while process.poll() is None and not overflow.is_set() and not reader_error.is_set():
             remaining = _GIT_TIMEOUT_SECONDS - (time.monotonic() - started)
             if remaining <= 0:
                 _kill_and_reap(process)
@@ -186,6 +217,10 @@ def _run_git(
         if any(reader.is_alive() for reader in readers):
             _kill_and_reap(process)
             return subprocess.CompletedProcess(argv, 124, b"", b"drain deadline exceeded")
+        if overflow.is_set() or reader_error.is_set():
+            _kill_and_reap(process)
+            reason = b"output bound exceeded" if overflow.is_set() else b"output read failed"
+            return subprocess.CompletedProcess(argv, 125, b"", reason)
         if writer_error.is_set() and process.returncode == 0:
             return subprocess.CompletedProcess(argv, 125, b"", b"input write failed")
         return subprocess.CompletedProcess(

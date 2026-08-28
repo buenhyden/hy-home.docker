@@ -390,7 +390,7 @@ FIXTURES: dict[str, Fixture] = {
             evidence="`git diff --check`, LLM Wiki freshness, doc traceability when relevant, doc implementation alignment, repo contracts.",
         ),
         (
-            "docs/99.templates/templates/common/reference.template.md",
+            "docs/99.templates/templates/references/research.template.md",
             "docs/90.references/README.md",
             "docs/90.references/data/0082-llm-wiki-index/README.md",
         ),
@@ -487,7 +487,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/providers/registry.yaml",
             "docs/00.agent-governance/policies/agentic.md",
-            "docs/03.specs/132-agent-governance-harness-convergence/spec.md",
+            "docs/00.agent-governance/roles/common.md",
         ),
         (
             Criterion(
@@ -505,7 +505,7 @@ FIXTURES: dict[str, Fixture] = {
     "AOE-CLOSURE-001": _fixture(
         "AOE-CLOSURE-001",
         "Sanitized Completion Evidence",
-        "Stage 04 task evidence and closure summary",
+        "Co-located Task evidence and closure summary",
         FixtureNarrative(
             input_scenario="An implementation unit is ready to record checks, skips, rollback, and commit identity.",
             expected_output="Records value-free command/result evidence and explicit skipped-check rationale without raw logs or secrets.",
@@ -562,7 +562,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/providers/registry.yaml",
             "scripts/operations/provider_surface_renderer.py",
-            "docs/03.specs/132-agent-governance-harness-convergence/spec.md",
+            "docs/00.agent-governance/policies/provider-capability-matrix.md",
         ),
         (
             Criterion(
@@ -597,7 +597,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/skills/provider-model-evaluation.md",
             "docs/00.agent-governance/providers/registry.yaml",
-            "docs/03.specs/134-agent-governance-canonical-convergence/spec.md",
+            "docs/00.agent-governance/policies/provider-capability-matrix.md",
         ),
         (
             Criterion(
@@ -1748,6 +1748,19 @@ def check_fixtures(
     run_regression_check: bool = True,
 ) -> int:
     failures: list[str] = []
+    context_paths = sorted({path for fixture in FIXTURES.values() for path in fixture.required_context})
+    if len(context_paths) > 30:
+        failures.append("AOE-CONTEXT-LIMIT")
+    else:
+        total = 0
+        for path in context_paths:
+            try:
+                context = _read_confined_catalog(root, pathlib.PurePosixPath(path), max_bytes=4 * 1024 * 1024)
+                total += len(context.encode("utf-8"))
+                if len(context.strip()) < 32 or total > 8 * 1024 * 1024:
+                    raise ValueError("context is empty or exceeds its aggregate bound")
+            except ValueError:
+                failures.append("AOE-CONTEXT-UNAVAILABLE")
     try:
         text = _read_confined_catalog(
             root, FIXTURE_REFERENCE, max_bytes=MAX_FIXTURE_CATALOG_BYTES

@@ -23,6 +23,80 @@ from scripts.validation import ci_gate_runner as runner
 
 
 class PublicSuiteModelTests(unittest.TestCase):
+    def test_supply_chain_full_plan_and_explain_preserve_check_capability(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        suites = contract.load_public_suite_registry()
+        public = contract.parse_public_gate_contract(document, suites)
+        selected = ("repository-integrity",)
+        plan = runner.build_public_validation_plan(gates, contract.public_root_gate_ids(public, selected), suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+        path = pathlib.PurePosixPath("scripts/validation/check-supply-chain-policy.py")
+        actual = next(item for item in plan if item.entrypoint == path)
+        expected = next(item for item in gates.nodes if item.gate_id == "leaf.supply-chain-deterministic-policy")
+        self.assertEqual(("--check",), actual.argv)
+        self.assertEqual(expected.argv, actual.argv)
+        self.assertTrue(any(str(path) in line for line in runner.render_public_validation_plan(plan, suites, selected, runner.ExecutionContext.LOCAL, profile="full")))
+        for argv in ((), ("--help",), ("--write",), ("--oci-archive-config-digest", "archive")):
+            with self.subTest(argv=argv):
+                changed = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item for item in plan)
+                with self.assertRaises(contract.GateContractError):
+                    runner.render_public_validation_plan(changed, suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+
+    def test_ci_bootstraps_declared_dependencies_before_runner_import(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())["jobs"]
+        for name, job in jobs.items():
+            steps = job["steps"]
+            runner_index = next(i for i, step in enumerate(steps)
+                                if "scripts/validation/run-ci-gate.py" in step.get("run", ""))
+            bootstrap = [i for i, step in enumerate(steps)
+                         if step.get("run") == "python3 -m pip install -r scripts/requirements.txt"]
+            self.assertEqual(len(bootstrap), 1, name)
+            self.assertLess(bootstrap[0], runner_index)
+        # No package installation: explicitly expose the already-installed site
+        # dependencies to an otherwise clean interpreter, then import the runner.
+        result = subprocess.run(
+            ["python3", "-B", "-S", "-c",
+             "import site, sys; site.main(); sys.path.insert(0, sys.argv[1]); "
+             "import scripts.validation.ci_gate_runner", str(root)],
+            cwd=root, capture_output=True, text=True, timeout=10,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_validator_argument_rebinding_fails_loader_plan_and_explain(self) -> None:
+        suites = contract.load_public_suite_registry()
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        public = contract.parse_public_gate_contract(document, suites)
+        path = pathlib.PurePosixPath("scripts/validation/check-document-links.py")
+        original_plan = _real_public_plan(("document-graph",), {})
+        manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
+        for argv in (("--help",), ("--root", "/tmp"), ("--write",), ("--mode", "traceability"), ()):
+            with self.subTest(argv=argv), tempfile.TemporaryDirectory() as directory:
+                row = next(row for row in manifest["files"] if row["path"] == str(path))
+                row["execution_argv"] = list(argv)
+                source = pathlib.Path(directory) / "manifest.yaml"
+                source.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+                with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                    runner.public_suite_registry.load(source)
+                rebound = dataclasses.replace(suites, validators=tuple(
+                    dataclasses.replace(item, execution_argv=argv) if item.path == path else item
+                    for item in suites.validators
+                ))
+                with self.assertRaises(contract.GateContractError):
+                    runner.build_public_validation_plan(
+                        gates, contract.public_root_gate_ids(public, ("document-graph",)),
+                        rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                    )
+                plan = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item
+                             for item in original_plan)
+                with self.assertRaises(contract.GateContractError):
+                    runner.render_public_validation_plan(
+                        plan, rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                    )
+
     def test_runner_reads_the_closed_public_suite_model(self) -> None:
         self.assertEqual(
             (
@@ -59,7 +133,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        self.assertEqual(35, len(actual))
+        self.assertEqual(34, len(actual))
         self.assertEqual(
             dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
             actual,
@@ -353,11 +427,16 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 self.assertEqual(2, result)
                 self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
         stderr = io.StringIO()
-        with mock.patch("sys.stderr", stderr):
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with (
+            mock.patch("sys.stderr", stderr),
+            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
+        ):
             self.assertEqual(1, runner.main(["--profile", "local-harness"]))
         self.assertIn("ci-gate-profile-unknown", stderr.getvalue())
 
     def test_full_explain_is_deterministic_and_does_not_execute(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
         registry = contract.load_public_suite_registry()
         plan = _real_public_plan(registry.public_names, {})
         expected = runner.render_public_validation_plan(
@@ -369,6 +448,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         with (
             mock.patch.object(runner, "execute_execution_plan") as execute,
             mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
         ):
             self.assertEqual(0, runner.main(["--profile", "full", "--explain"]))
         execute.assert_not_called()
@@ -406,7 +486,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual(
             1,
             executed_validators.count(
-                "scripts/validation/check-task4-migration.py"
+                "scripts/validation/check-agent-governance-contract.py"
             ),
         )
 
@@ -794,6 +874,14 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         python_bootstrap=pathlib.Path(directory),
                     )
                 self.assertEqual(expected_base, child["TEMPLATE_GATE_BASE"])
+                for name in ("check-document-metadata.py", "check-document-corpus-lifecycle.py"):
+                    validator = next(item for item in plan if item.entrypoint.name == name)
+                    with tempfile.TemporaryDirectory(dir="/tmp") as directory:
+                        validator_child = runner._child_environment(
+                            root, pathlib.Path(directory), validator, "python", environ,
+                            python_bootstrap=pathlib.Path(directory),
+                        )
+                    self.assertEqual(expected_base, validator_child["TEMPLATE_GATE_BASE"])
                 with mock.patch.object(
                     adapters,
                     "_run_child",
