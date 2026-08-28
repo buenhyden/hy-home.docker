@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0070
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0011
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -51,7 +52,7 @@ N/A — 현재 승인된 예외 없음.
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 운영 승격 시 DNS(MX/SPF/DKIM/DMARC), TLS, host port 개방, Docker Secret evidence를 별도로 기록한다.
 
 ## Review Cadence

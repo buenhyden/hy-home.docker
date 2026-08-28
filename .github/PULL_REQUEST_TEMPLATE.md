@@ -64,12 +64,8 @@ List exact commands used and outcome.
 If any harness surface changed, list exact validation evidence:
 
 ```bash
-bash scripts/validation/validate-harness.sh
-bash scripts/validation/run-local-qa-gates.sh --script-backed
-python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
-# Compose-affecting changes only:
-bash scripts/validation/validate-docker-compose.sh --preflight
+python3 scripts/validation/run-ci-gate.py --profile changed
+python3 scripts/validation/run-ci-gate.py --profile full
 ```
 
 Secret handling:

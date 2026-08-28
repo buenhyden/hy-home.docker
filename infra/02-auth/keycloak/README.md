@@ -53,7 +53,7 @@ keycloak/
 | Secret refs | names: `keycloak_db_password`, `keycloak_admin_password`; mounts: `/run/secrets/keycloak_db_password`, `/run/secrets/keycloak_admin_password` |
 | Healthcheck | Compose healthcheck declared for `keycloak` |
 | Operations | [Guide](../../../docs/05.operations/catalog/02-auth/0014-keycloak/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/0014-keycloak/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

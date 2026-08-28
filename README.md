@@ -136,7 +136,7 @@ bash scripts/validation/validate-docker-compose.sh
 ### 5. Repository contract 검증
 
 ```bash
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile full
 ```
 
 이 검증은 docs taxonomy, required README, template inventory, GitHub Actions YAML, duplicate workflow step, script reference, runtime agent/function catalog, Docker image tag policy, tech-stack version drift를 함께 확인합니다.
@@ -200,13 +200,13 @@ docker compose --profile core up -d
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
-| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `bash scripts/validation/check-repo-contracts.sh` |
-| 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `bash scripts/validation/check-repo-contracts.sh` |
-| 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `bash scripts/validation/check-repo-contracts.sh` |
+| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
 | 실행 계획/작업 evidence 갱신 | [`docs/03.specs/README.md`](docs/03.specs/README.md) | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
-| 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `bash scripts/validation/check-repo-contracts.sh` |
-| 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `bash scripts/validation/check-repo-contracts.sh` |
-| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `bash scripts/validation/check-repo-contracts.sh` |
+| 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
@@ -222,8 +222,8 @@ docker compose --profile core up -d
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
-- `bash scripts/validation/run-local-qa-gates.sh` - 로컬에서 재현 가능한 script-backed QA/CI 게이트 묶음 실행
-- `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
+- `bash scripts/validation/run-local-qa-gates.sh --changed` - 변경 경로가 영향을 주는 public suite 실행
+- `python3 scripts/validation/run-ci-gate.py --profile full` - six public validation suites 전체 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
 - `python3 scripts/validation/check-document-links.py --mode alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사
@@ -234,32 +234,19 @@ docker compose --profile core up -d
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.
 
-GitHub Actions에서는 다음 품질 게이트를 사용합니다.
-
-- `docs-traceability` - 문서 추적성 검사
-- `docs-implementation-alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사(stable gate ID 유지)
-- `repo-contracts` - docs taxonomy, GitHub workflow, script reference, image/version drift, runtime catalog 검사
-- `git-flow-contract` - PR 제목 Conventional Commits와 source branch prefix 검사
-- `compose-validation` - Docker Compose 구조 검사
-- `compose-all-profiles-validation` - 전체 Compose profile 구조 검사
-- `infrastructure-hardening` - 계층별 하드닝 baseline 검사
-- `template-security-baseline` - 템플릿/보안 baseline 검사
-- `quickwin-baseline` - QuickWin baseline 검사
-- `pre-commit` - hook 기반 포맷/린트/품질 검사
-- `frontend-quality` - Storybook Next.js lint/typecheck/build/build-storybook 검사
-- `storybook-coverage` - Storybook Next.js coverage 검사
-- `zizmor` - GitHub Actions 보안 분석
+GitHub Actions 품질 게이트는 PR에서 `validation-changed`, push와 manual
+dispatch에서 `validation-full`을 사용합니다. 두 job은 각각 public
+`changed` 또는 `full` profile만 선택하며 validator 명령을 복사하지 않습니다.
 
 추가로 `v*.*.*` 태그 push에는 `Release Changelog Check`가 실행되어
 `CHANGELOG.md`에 해당 release tag 항목이 있는지 확인합니다. 이는 tag-only
 release visibility gate이며, remote required-check enforcement 증거로
 간주하지 않습니다.
 
-`pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
-GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
+`validation-full` job은 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
-로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --list`로 실행 가능한
-script-backed gate와 원격 전용 gate를 구분합니다.
+로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --explain`으로
+선택된 suite와 validator 매핑을 실행 없이 확인합니다.
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 

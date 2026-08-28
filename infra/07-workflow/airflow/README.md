@@ -53,7 +53,7 @@ airflow/
 | Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `airflow_www_password`, `mng_valkey_password`, `airflow_valkey_password`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/airflow_www_password`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, and `flower`; init/exporter services are validated through compose and hardening checks |
 | Operations | [Guide](../../../docs/05.operations/catalog/07-workflow/0050-airflow/guide.md), [Policy](../../../docs/05.operations/catalog/07-workflow/0050-airflow/policy.md), [Runbook](../../../docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
 ## How to Work in This Area

@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0027
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -43,7 +44,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [MongoDB guide](guide.md), [MongoDB runbook](runbook.md), and [infra README](../../../../../infra/04-data/nosql/mongodb/README.md) after compose changes.
 - Run `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config` before approving service-name, replica set, route, secret, keyfile, or exporter documentation updates.
-- Run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
 

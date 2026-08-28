@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0008
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - runbook-0009
 created: 2026-06-04
 updated: 2026-08-11
 ---
@@ -63,7 +64,7 @@ healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 
 - `docker compose config` — compose 정의가 오류 없이 파싱된다.
 - `docker compose ps` — start period 이후 `healthy` 상태가 보고된다.
-- `bash scripts/validation/check-repo-contracts.sh` — 서비스를 `infra/`에 편입할 때 contract가 동기화 상태를 유지한다.
+- `python3 scripts/validation/run-ci-gate.py --profile changed` — 서비스를 `infra/`에 편입할 때 contract가 동기화 상태를 유지한다.
 
 ## Runbook Handoff
 

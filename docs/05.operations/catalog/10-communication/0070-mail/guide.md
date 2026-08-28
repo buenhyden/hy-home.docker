@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0070
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0011
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -78,7 +79,7 @@ updated: 2026-08-11
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 기대 결과: `10-communication` 하드닝 기준과 문서 stale guard가 실패 없이 통과한다.
 
 ## Runbook Handoff

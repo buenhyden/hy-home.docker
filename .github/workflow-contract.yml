@@ -25,119 +25,21 @@
         "cancel-in-progress": true
       },
       "jobs": {
-        "docs-traceability": {
+        "validation-changed": {
           "permissions": {
             "contents": "read"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
+          "timeout_minutes": 30
         },
-        "docs-implementation-alignment": {
+        "validation-full": {
           "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        },
-        "repo-contracts": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "agent-output-eval-fixture-gate": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        },
-        "supply-chain-fixture-policy": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        },
-        "dependency-vulnerability-audit": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "git-flow-contract": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        },
-        "compose-validation": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "compose-all-profiles-validation": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "infrastructure-hardening": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "template-security-baseline": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "quickwin-baseline": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
-        },
-        "pre-commit": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 20
-        },
-        "frontend-quality": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 20
-        },
-        "storybook-coverage": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 20
-        },
-        "zizmor": {
-          "permissions": {
-            "security-events": "write",
             "actions": "read",
-            "contents": "read"
+            "contents": "read",
+            "security-events": "write"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
+          "timeout_minutes": 30
         }
       }
     },
@@ -319,6 +221,58 @@
     }
   },
   "gate_nodes": [
+    {
+      "gate_id": "ci.validation-changed",
+      "kind": "aggregate",
+      "profiles": [
+        "ci"
+      ],
+      "opaque": false,
+      "children": [
+        "ci.docs-traceability",
+        "ci.docs-implementation-alignment",
+        "ci.repo-contracts",
+        "ci.agent-output-eval-fixture-gate",
+        "ci.supply-chain-fixture-policy",
+        "ci.dependency-vulnerability-audit",
+        "ci.git-flow-contract",
+        "ci.compose-validation",
+        "ci.compose-all-profiles-validation",
+        "ci.infrastructure-hardening",
+        "ci.template-security-baseline",
+        "ci.quickwin-baseline",
+        "ci.pre-commit",
+        "ci.frontend-quality",
+        "ci.storybook-coverage",
+        "ci.zizmor"
+      ]
+    },
+    {
+      "gate_id": "ci.validation-full",
+      "kind": "aggregate",
+      "profiles": [
+        "ci"
+      ],
+      "opaque": false,
+      "children": [
+        "ci.docs-traceability",
+        "ci.docs-implementation-alignment",
+        "ci.repo-contracts",
+        "ci.agent-output-eval-fixture-gate",
+        "ci.supply-chain-fixture-policy",
+        "ci.dependency-vulnerability-audit",
+        "ci.git-flow-contract",
+        "ci.compose-validation",
+        "ci.compose-all-profiles-validation",
+        "ci.infrastructure-hardening",
+        "ci.template-security-baseline",
+        "ci.quickwin-baseline",
+        "ci.pre-commit",
+        "ci.frontend-quality",
+        "ci.storybook-coverage",
+        "ci.zizmor"
+      ]
+    },
     {
       "gate_id": "ci.agent-output-eval-fixture-gate",
       "kind": "aggregate",
@@ -1231,7 +1185,7 @@
     {
       "gate_id": "leaf.repo-contracts",
       "kind": "leaf",
-      "entrypoint": "scripts/validation/check-repo-contracts.sh",
+      "entrypoint": "scripts/validation/check-script-manifest.py",
       "argv": [],
       "cwd": ".",
       "allowed_env_keys": [],
@@ -1699,98 +1653,14 @@
   "job_roots": [
     {
       "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "docs-traceability",
-      "root_gate_id": "ci.docs-traceability",
+      "job_id": "validation-changed",
+      "root_gate_id": "ci.validation-changed",
       "classification": "required-quality"
     },
     {
       "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "docs-implementation-alignment",
-      "root_gate_id": "ci.docs-implementation-alignment",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "repo-contracts",
-      "root_gate_id": "ci.repo-contracts",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "agent-output-eval-fixture-gate",
-      "root_gate_id": "ci.agent-output-eval-fixture-gate",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "supply-chain-fixture-policy",
-      "root_gate_id": "ci.supply-chain-fixture-policy",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "dependency-vulnerability-audit",
-      "root_gate_id": "ci.dependency-vulnerability-audit",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "git-flow-contract",
-      "root_gate_id": "ci.git-flow-contract",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "compose-validation",
-      "root_gate_id": "ci.compose-validation",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "compose-all-profiles-validation",
-      "root_gate_id": "ci.compose-all-profiles-validation",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "infrastructure-hardening",
-      "root_gate_id": "ci.infrastructure-hardening",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "template-security-baseline",
-      "root_gate_id": "ci.template-security-baseline",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "quickwin-baseline",
-      "root_gate_id": "ci.quickwin-baseline",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "pre-commit",
-      "root_gate_id": "ci.pre-commit",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "frontend-quality",
-      "root_gate_id": "ci.frontend-quality",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "storybook-coverage",
-      "root_gate_id": "ci.storybook-coverage",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "zizmor",
-      "root_gate_id": "ci.zizmor",
+      "job_id": "validation-full",
+      "root_gate_id": "ci.validation-full",
       "classification": "required-quality"
     }
   ],
@@ -1867,6 +1737,124 @@
       "classification": "local"
     }
   ],
+  "public_gate": {
+    "profiles": [
+      "changed",
+      "full"
+    ],
+    "suite_roots": {
+      "agent-governance": [
+        "leaf.local-provider-surface-drift",
+        "ci.agent-output-eval-fixture-gate",
+        "leaf.local-agent-governance-contract"
+      ],
+      "document-contract": [
+        "leaf.repo-metadata-base",
+        "leaf.repo-document-metadata",
+        "local.target-surface"
+      ],
+      "document-graph": [
+        "ci.docs-traceability",
+        "leaf.docs-implementation-alignment"
+      ],
+      "document-lifecycle": [
+        "local.document-corpus-lifecycle",
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-audit-matrix-freshness",
+        "leaf.local-security-readiness-freshness"
+      ],
+      "operations": [
+        "leaf.operations-catalog-manifest",
+        "local.supply-chain",
+        "local.compose-validation",
+        "local.compose-all-profiles-validation",
+        "local.infrastructure-hardening",
+        "local.template-security-baseline",
+        "local.quickwin-baseline"
+      ],
+      "repository-integrity": [
+        "leaf.local-diff-hygiene",
+        "leaf.local-shell-syntax",
+        "leaf.local-script-manifest",
+        "leaf.local-tech-stack-version-drift",
+        "local.workflow-harness",
+        "ci.dependency-vulnerability-audit",
+        "ci.git-flow-contract",
+        "ci.frontend-quality",
+        "ci.storybook-coverage",
+        "ci.zizmor"
+      ]
+    },
+    "changed_path_rules": [
+      {
+        "prefixes": [
+          ".agents/",
+          ".claude/",
+          ".codex/",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "docs/00.agent-governance/"
+        ],
+        "suites": [
+          "agent-governance",
+          "document-contract",
+          "document-graph",
+          "document-lifecycle"
+        ]
+      },
+      {
+        "prefixes": [
+          "README.md",
+          "docs/01.requirements/",
+          "docs/02.architecture/",
+          "docs/03.specs/",
+          "docs/90.references/",
+          "docs/98.archive/",
+          "docs/99.templates/"
+        ],
+        "suites": [
+          "document-contract",
+          "document-graph",
+          "document-lifecycle"
+        ]
+      },
+      {
+        "prefixes": [
+          "docs/05.operations/",
+          "docker-compose.yml",
+          "examples/",
+          "infra/",
+          "secrets/"
+        ],
+        "suites": [
+          "document-contract",
+          "document-graph",
+          "document-lifecycle",
+          "operations"
+        ]
+      },
+      {
+        "prefixes": [
+          ".github/",
+          ".pre-commit-config.yaml",
+          "projects/",
+          "scripts/",
+          "tests/"
+        ],
+        "suites": [
+          "agent-governance",
+          "document-contract",
+          "document-graph",
+          "document-lifecycle",
+          "operations",
+          "repository-integrity"
+        ]
+      }
+    ],
+    "changed_fallback_suites": [
+      "repository-integrity"
+    ]
+  },
   "actions": {
     "actions/checkout": {
       "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",

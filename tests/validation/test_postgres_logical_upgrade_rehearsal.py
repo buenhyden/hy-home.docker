@@ -14,6 +14,8 @@ import textwrap
 import time
 import unittest
 
+from scripts.validation.ci_gate_contract import load_public_suite_registry
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
@@ -23,7 +25,7 @@ SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
 ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
 PARTIAL_SQL = FIXTURE / "sql/020_negative_partial_state.sql"
 ALIGNMENT_CHECK = ROOT / "scripts/validation/check-document-links.py"
-REPO_CONTRACTS = ROOT / "scripts/validation/check-repo-contracts.sh"
+MANIFEST = ROOT / "scripts/manifest.yaml"
 IMAGE_IDENTITY_CHECKER = (
     ROOT / "scripts/validation/check-supply-chain-policy.py"
 )
@@ -1070,11 +1072,13 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertNotIn("postgresql-logical-upgrade-restore-rehearsal", result.stderr)
 
     def test_wrapper_is_in_the_exact_script_inventory(self) -> None:
-        text = REPO_CONTRACTS.read_text(encoding="utf-8")
+        registry = load_public_suite_registry(MANIFEST)
+        operations = next(
+            suite for suite in registry.suites if suite.name == "operations"
+        )
         self.assertEqual(
-            text.count(
-                'pathlib.Path("scripts/validation/'
-                'rehearse-postgres-logical-upgrade.sh")'
+            operations.validators.count(
+                Path("scripts/validation/rehearse-postgres-logical-upgrade.sh")
             ),
             1,
         )

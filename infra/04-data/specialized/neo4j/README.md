@@ -55,7 +55,7 @@ neo4j/
 | Secret refs | names: `neo4j_password`; mounts: `/run/secrets/neo4j_password` |
 | Healthcheck | Compose healthcheck declared for `neo4j` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0033-neo4j/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0033-neo4j/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0033-neo4j/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

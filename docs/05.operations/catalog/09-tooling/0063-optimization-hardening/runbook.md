@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0063
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -58,7 +59,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 2. 문서 계약과 stale literal guard를 실행한다.
 
    ```bash
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
@@ -75,7 +76,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
    bash scripts/hardening/check-all-hardening.sh 09-tooling
    bash scripts/validation/check-template-security-baseline.sh
    python3 scripts/validation/check-document-links.py --mode traceability
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    ```
 
 ### Verification Steps
@@ -102,7 +103,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: tooling 자동 변경 파이프라인 일시 중지에는 승인 필요.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`, `check-document-links.py --mode alignment`
+- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`, `check-document-links.py --mode alignment`
 
 ## Evidence
 

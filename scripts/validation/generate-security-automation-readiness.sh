@@ -51,7 +51,10 @@ from dataclasses import dataclass
 
 from scripts.validation.ci_gate_contract import (
     GateContractError,
-    expand_gate_ids,
+    load_contract_document,
+    load_public_suite_registry,
+    parse_public_gate_contract,
+    public_root_gate_ids,
 )
 from scripts.validation.github_workflow_contract import (
     WorkflowContractError,
@@ -143,15 +146,7 @@ def has_strict_typed_workflow_shape_and_failure_contexts(
                 if has_uses and "if" in step:
                     return False
                 if has_run and "if" in step:
-                    # Preserve the public validator's sole admitted run condition.
-                    admitted_condition = (
-                        workflow_path == ".github/workflows/ci-quality.yml"
-                        and job_id == "docs-implementation-alignment"
-                        and step.get("name") == "Publish QA gate recommendations"
-                        and step["if"] == "always()"
-                    )
-                    if not admitted_condition:
-                        return False
+                    return False
     return True
 
 
@@ -172,16 +167,19 @@ def resolve_typed_workflow_evidence(
         return empty
 
     registry = contract.gate_registry
-
-    root_identities = tuple(
-        (root.workflow, root.job_id, root.root_gate_id)
-        for root in registry.job_roots
-    )
-    root_jobs = tuple((root.workflow, root.job_id) for root in registry.job_roots)
-    if (
-        len(set(root_identities)) != len(root_identities)
-        or len(set(root_jobs)) != len(root_jobs)
-    ):
+    try:
+        contract_document = load_contract_document(repository_root)
+        suite_registry = load_public_suite_registry(
+            repository_root / "scripts/manifest.yaml"
+        )
+        public_gate = parse_public_gate_contract(
+            contract_document,
+            suite_registry,
+        )
+        root_gate_ids = list(
+            public_root_gate_ids(public_gate, suite_registry.public_names)
+        )
+    except (GateContractError, OSError):
         return empty
 
     workflow_registry = {spec.path: spec for spec in contract.workflows}
@@ -192,32 +190,14 @@ def resolve_typed_workflow_evidence(
         if document.path in workflow_paths
     }
     node_by_id = {node.gate_id: node for node in registry.nodes}
-    rooted_workflows: set[str] = set()
-    root_gate_ids: list[str] = []
-    try:
-        for root in registry.job_roots:
-            workflow_spec = workflow_registry.get(root.workflow)
-            document = documents_by_path.get(root.workflow)
-            actual_jobs = document.data.get("jobs") if document is not None else None
-            actual_job = (
-                actual_jobs.get(root.job_id)
-                if isinstance(actual_jobs, dict)
-                else None
-            )
-            if (
-                root.workflow not in workflow_paths
-                or workflow_spec is None
-                or root.classification != workflow_spec.classification
-                or root.job_id not in workflow_spec.jobs
-                or not isinstance(actual_jobs, dict)
-                or not isinstance(actual_job, dict)
-            ):
-                return empty
-            expand_gate_ids(registry, "ci", root.root_gate_id, False)
-            rooted_workflows.add(root.workflow)
-            root_gate_ids.append(root.root_gate_id)
-    except GateContractError:
+    required_workflows = {
+        spec.path
+        for spec in workflow_registry.values()
+        if spec.classification == "required-quality"
+    }
+    if required_workflows != {".github/workflows/ci-quality.yml"}:
         return empty
+    rooted_workflows = required_workflows
 
     if not has_strict_typed_workflow_shape_and_failure_contexts(
         documents_by_path,
@@ -347,9 +327,10 @@ has_template_security = (
     exists("scripts/validation/check-template-security-baseline.sh")
     and "scripts/validation/check-template-security-baseline.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
 )
-has_repo_contracts = (
-    exists("scripts/validation/check-repo-contracts.sh")
-    and "scripts/validation/check-repo-contracts.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+has_public_gate = (
+    exists("scripts/validation/run-ci-gate.py")
+    and "python3 scripts/validation/run-ci-gate.py --profile changed" in ci_text
+    and "python3 scripts/validation/run-ci-gate.py --profile full" in ci_text
 )
 has_tech_stack_provenance = all(
     exists(path)
@@ -422,9 +403,9 @@ controls: list[Control] = [
     Control(
         "SEC-AUTO-002",
         "Workflow permissions and dangerous-workflow scanning",
-        "Implemented" if has_workflow_security and has_repo_contracts else "Partially Implemented",
-        (".github/workflows/ci-quality.yml", "scripts/validation/check-repo-contracts.sh"),
-        "Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload." if has_workflow_security and has_repo_contracts else "Wire workflow-security checks into CI and repo contracts.",
+        "Implemented" if has_workflow_security and has_public_gate else "Partially Implemented",
+        (".github/workflows/ci-quality.yml", "scripts/validation/run-ci-gate.py"),
+        "Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload." if has_workflow_security and has_public_gate else "Wire workflow-security checks through the public validation profiles.",
     ),
     Control(
         "SEC-AUTO-003",
@@ -746,7 +727,7 @@ lines.extend(
         "- [Security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md) - framework coverage and gap baseline.",
         "- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.",
         "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
-        "- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.",
+        "- [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.",
         "",
         "## Refresh",
         "",

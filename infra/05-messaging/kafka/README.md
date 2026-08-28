@@ -57,7 +57,7 @@ kafka/
 | Secret refs | names: `kafbat_client_secret`; mounts: `/run/secrets/kafbat_client_secret` |
 | Healthcheck | Compose healthcheck declared for Kafka broker(s), `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, and `kafka-exporter`; `kafka-init` is a job and has no healthcheck |
 | Operations | [Guide](../../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md), [Policy](../../../docs/05.operations/catalog/05-messaging/0036-kafka/policy.md), [Runbook](../../../docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

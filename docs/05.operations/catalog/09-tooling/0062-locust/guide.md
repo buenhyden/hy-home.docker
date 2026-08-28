@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0062
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -54,7 +55,7 @@ updated: 2026-08-11
 
 2. 실행 전 정적 기준선을 확인한다.
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-   - `bash scripts/validation/check-repo-contracts.sh`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed`
 3. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`이 해석되는지 확인한다.
 4. 승인된 테스트 윈도우에서 `locust-master`와 `locust-worker`를 기동한다. worker 확장이 필요하면 `locust-worker`만 scale 대상이다.
 5. UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
@@ -69,7 +70,7 @@ updated: 2026-08-11
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 실행 승인 시 rendered service list에 `locust-master`, `locust-worker`가 포함되는지 확인한다.
 
 ## Runbook Handoff

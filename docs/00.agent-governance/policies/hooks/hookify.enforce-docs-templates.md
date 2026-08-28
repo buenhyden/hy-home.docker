@@ -27,5 +27,5 @@ When creating or editing documents under `docs/01` through `docs/05` or
 3. Remove all temporary placeholders before saving.
 4. Include a `## Related Documents` section in every Markdown document.
 
-After completion, run `bash scripts/validation/check-repo-contracts.sh` to
+After completion, run `python3 scripts/validation/run-ci-gate.py --profile changed` to
 verify that template contracts still hold.

@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0009
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0097
 created: 2026-06-04
 updated: 2026-08-14
 ---
@@ -60,7 +61,7 @@ updated: 2026-08-14
 3. Confirm local repository documentation and validation gates relevant to the release candidate.
 
    ```bash
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
    python3 scripts/knowledge/generate-llm-wiki.py --check
    ```

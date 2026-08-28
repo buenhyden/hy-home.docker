@@ -49,7 +49,7 @@ ollama/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ollama`, `ollama-exporter` |
 | Operations | [Guide](../../../docs/05.operations/catalog/08-ai/0056-ollama/guide.md), [Policy](../../../docs/05.operations/catalog/08-ai/0056-ollama/policy.md), [Runbook](../../../docs/05.operations/catalog/08-ai/0056-ollama/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -62,7 +62,7 @@ ollama/
 
 - Run `bash scripts/hardening/check-all-hardening.sh 08-ai` after README or Compose reference changes that affect Ollama.
 - Run `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` for the current root-active profile surface.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 

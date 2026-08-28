@@ -14,7 +14,7 @@
 #   --dry-run    Print planned component/image changes only; no write.
 #
 # The image-extraction rules mirror the "Tech-stack version drift" gate in
-# scripts/validation/check-repo-contracts.sh so a synced registry passes that gate.
+# the public validation suites so a synced registry passes the changed/full gate.
 set -euo pipefail
 
 MODE="write"

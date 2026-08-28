@@ -63,10 +63,10 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/validate-harness.sh`, `scripts/validation/compose-core-readiness.lib.sh`, `scripts/validation/run-compose-core-readiness.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-task4-migration.py`, `scripts/validation/check-target-surface-contract.py`, `scripts/validation/target_surface_contract.py`, `scripts/validation/check-target-surface-delta-contract.py`, `scripts/validation/target_surface_delta_contract.py`, `scripts/validation/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`, `scripts/validation/run-ci-gate.py`, `scripts/validation/check-github-workflow-contract.py`, `scripts/validation/github_workflow_contract.py`, `scripts/validation/run-ci-precommit.sh`, `tests/validation/test_github_workflow_contract.py`, `tests/validation/test_run_ci_precommit.sh`, `tests/validation/test_target_surface_delta_contracts.py`, `scripts/validation/check-document-metadata.py`, `scripts/validation/check-agentic-audit-semantic-freshness.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/validation/run-agent-precommit-all-files.sh`, `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/check-supply-chain-policy.py` |
+| Validation | `scripts/validation/run-ci-gate.py`, `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`, and the focused validators registered in `scripts/manifest.yaml` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
-| Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
-| Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
+| Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
+| Knowledge  | `scripts/knowledge/generate-llm-wiki.py`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
 | Operations | `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/operations/provider_surface_renderer.py`, `scripts/operations/use-qa-ci-tools.sh`, `scripts/operations/sync-provider-surfaces.sh`, `scripts/operations/sync-tech-stack-versions.sh`                                                                                  |
 | Security   | `scripts/security/seed-grype-db-cache.sh`, `scripts/security/verify-sample-service-supply-chain.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh`                                                                                                                                                                                                                                                                                     |
 | Libraries  | `scripts/lib/hardening-lib.sh`, `scripts/requirements.txt`, `scripts/requirements-pre-commit.txt`                                                                                                                                                                                                                                                                                                                   |
@@ -77,7 +77,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 2. Place new scripts under the existing purpose folder that owns the behavior.
 3. Do not add root-level `scripts/*.sh` duplicates for purpose-folder scripts.
 4. Reference canonical purpose-folder paths from docs, CI, hooks, and pre-commit entries.
-5. Use `scripts/validation/check-repo-contracts.sh` to verify script inventory, references, and library usage.
+5. Use `python3 scripts/validation/run-ci-gate.py --profile full` to verify the six public suites.
 6. Keep secret-related examples procedural only; do not print or document generated secret values.
 7. Keep Python module dependencies for repository validation scripts in `scripts/requirements.txt`.
 
@@ -107,16 +107,15 @@ script.
 | Compose Core Readiness Library         | [compose-core-readiness.lib.sh](./validation/compose-core-readiness.lib.sh)                 | Shared fail-closed identity, path, render, readiness, recovery, evidence, redaction, and cleanup functions; source only through the harness or focused tests                                                     |
 | PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./validation/rehearse-postgres-logical-upgrade.sh)   | `scripts/validation/rehearse-postgres-logical-upgrade.sh` checks or runs the pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
 | Harness Validation                     | [validate-harness.sh](./validation/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
-| Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce the canonical document registry, typed template and README ownership, `_workspace` independence, docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts               |
 | Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed Stage 00 artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
 | Task 4 Migration Verifier              | [check-task4-migration.py](./validation/check-task4-migration.py)                           | Verify the exact approved mig-0003 Task 4 row identities, source/target/actions, counts, and frozen selection/edge digests                                                                                       |
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
 | Target Surface Contract Gate           | [check-target-surface-contract.py](./validation/check-target-surface-contract.py)          | Run the thin CLI over the immutable `target_surface_contract.py` finding API for manifest coverage, removed active targets/claims, phantom gitlinks, the sample Service, and reviewed duplicate disposition without rendering bodies or values |
-| Target Surface Delta Contract Gate     | [check-target-surface-delta-contract.py](./validation/check-target-surface-delta-contract.py) | Validate the advisory Spec 135 successor manifest, predecessor-to-HEAD plus working-tree coverage, destructive evidence, whole-target inventory, README profiles, secret path classification, and generated summary freshness without rendering payloads |
+| Target Surface Delta Contract Gate     | [check-target-surface-delta-contract.py](./validation/check-target-surface-delta-contract.py) | Validate the live six-suite ownership, changed-path impact, profile routing, tracked entrypoints, retired paths, and copied-command absence without branch/SHA snapshots |
 | Typed Gate Contract Library            | [ci_gate_contract.py](./validation/ci_gate_contract.py)                                    | Parse and validate the dependency-free strict-JSON schema-v2 gate DAG, suite ownership, required roots, and local profile roots |
-| Typed Gate Runner                      | [run-ci-gate.py](./validation/run-ci-gate.py)                                              | List, dry-run, or execute deterministic typed-gate plans through tracked descriptor-bound entrypoints with minimal environments and bounded timeouts |
+| Typed Gate Runner                      | [run-ci-gate.py](./validation/run-ci-gate.py)                                              | Explain or execute the closed `changed` and `full` public profiles through tracked descriptor-bound entrypoints with minimal environments and bounded timeouts |
 | Typed Gate Adapters                    | [ci_gate_adapters.py](./validation/ci_gate_adapters.py)                                    | Implement the closed argument grammar used by typed gate leaves without shell interpolation or ambient secret forwarding |
 | GitHub Workflow Contract Gate          | [check-github-workflow-contract.py](./validation/check-github-workflow-contract.py)          | Validate exact tracked workflow triggers, permissions, concurrency, job identities, the canonical typed gate registry, and locally evidenced full-SHA Action dependencies |
 | CI-only Pre-commit Entry Point         | [run-ci-precommit.sh](./validation/run-ci-precommit.sh)                                      | Run the pinned all-files hook command only inside GitHub Actions with the dedicated frontend-lint skip; this script is not an Agent authorization path |
@@ -126,25 +125,20 @@ script.
 | Audit Implementation Matrix Snapshot   | [generate-audit-implementation-matrix.sh](./validation/generate-audit-implementation-matrix.sh) | Generate and check the Stage 90 audit implementation matrix snapshot for audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals |
 | Audit Criterion Completeness Contract  | [audit_criterion_contract.py](./validation/audit_criterion_contract.py)                           | Enforce the shared exact 11-report / 161-row manifest, 10-field schema, non-empty fields, IDs/prefixes, vocabularies, cardinalities, and uniqueness used by both audit scripts                         |
 | Security Automation Readiness Snapshot | [generate-security-automation-readiness.sh](./validation/generate-security-automation-readiness.sh) | Generate and check the Stage 90 security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage |
-| Gap Routing Recommendation Report      | [recommend-gap-routing.sh](./validation/recommend-gap-routing.sh)                           | Print advisory canonical-stage routing suggestions for gap descriptions or related paths without mutating repository/runtime state                                                                               |
-| QA Gate Recommendation Report          | [recommend-qa-gates.sh](./validation/recommend-qa-gates.sh)                                 | Print changed-path-based local QA gate recommendations without executing gates or mutating repository/runtime state                                                                                             |
 | Audit Pack Coverage Report             | [report-audit-pack-coverage.sh](./validation/report-audit-pack-coverage.sh)                 | Report and check implementation-status coverage for the agentic engineering audit pack without mutating audit reports                                                                                            |
-| Provider Hook Parity Report            | [report-provider-hook-parity.sh](./validation/report-provider-hook-parity.sh)               | Generate and check the Stage 90 provider hook parity matrix and two-provider adoption summary from tracked provider/governance surfaces                                                                  |
 | Agent Output Eval Fixture Runner       | [run-agent-output-eval-fixtures.sh](./validation/run-agent-output-eval-fixtures.sh)         | List, check, and locally score advisory agent-output eval fixtures without model calls, CI gates, or runtime mutation                                                                                           |
 | Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence, explicit allowed path prefixes, and a value-free first-failure diagnostic       |
 | Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths                            |
 | Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
-| Local QA Gate Runner                   | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Run locally reproducible script-backed QA/CI gates and list remote-only CI responsibilities                                                                                                                     |
+| Local QA Gate Runner                   | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Delegate changed, full, or explain requests to the public runner without owning validator composition                                                                                                                     |
 | Supply-chain Fixture Policy             | [check-supply-chain-policy.py](./validation/check-supply-chain-policy.py)                    | Deterministically validate local pins, subject, exception, SBOM, provenance, signature, and advisory Scorecard fixtures without network access                                                                    |
 | Grype DB Cache Seed Harness              | [seed-grype-db-cache.sh](./security/seed-grype-db-cache.sh)                                  | Task7-owned approved-network seed-only entrypoint; publishes a validated private cache generation while the supply-chain advisory remains offline                                                                 |
 | Supply-chain Local Rehearsal            | [verify-sample-service-supply-chain.sh](./security/verify-sample-service-supply-chain.sh)    | Preflight, fixture-only, and optional local advisory baseline/candidate verification with an ephemeral `/tmp` signing key                                                                                        |
 | Supply-chain Summary Generator          | [generate-supply-chain-sample-service-summary.sh](./security/generate-supply-chain-sample-service-summary.sh) | Generate or check the concise tracked local supply-chain reference summary                                                                                                                        |
-| LLM Wiki Index Generator               | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh)                        | Generate and check the repo-local LLM Wiki path index                                                                                                                                                           |
-| LLM Wiki Coverage Generator            | [generate-llm-wiki-coverage.sh](./knowledge/generate-llm-wiki-coverage.sh)                  | Generate and check the Stage 90 LLM Wiki source-bucket/category coverage snapshot                                                                                                                               |
+| LLM Wiki Generator                     | [generate-llm-wiki.py](./knowledge/generate-llm-wiki.py)                                    | Generate and check both the repo-local path index and Stage 90 source-bucket/category coverage snapshot                                                                                                                               |
 | Graphify Health Report                 | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                          | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, current-task routing, post-edit style validation/formatting, logical commit completion reminders, and Stop gating        |
 | Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits                                                                                                            |
-| Graphify Post-commit Patcher           | [patch-graphify-post-commit.sh](./hooks/patch-graphify-post-commit.sh)                      | Re-apply the graphify-out filter to `.git/hooks/post-commit` after hook resets                                                                                                                                  |
 | Unified Hardening Check                | [check-all-hardening.sh](./hardening/check-all-hardening.sh)                                | Run all tier hardening checks, or one selected tier                                                                                                                                                             |
 | QA/CI Tooling Environment              | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh)                                       | Expose user-global QA/CI tools to restricted agent shells                                                                                                                                                       |
 | Docker Preflight Mode                  | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight`         | Real local prerequisite validation without dummy file creation                                                                                                                                                  |
@@ -181,20 +175,32 @@ tier. Without arguments, all supported tiers are checked.
 `scripts/manifest.yaml` is the executable ownership registry. Atomic validator
 rows declare exactly one public suite: `agent-governance`,
 `document-contract`, `document-graph`, `document-lifecycle`, `operations`, or
-`repository-integrity`. `suite_registry.py` reads that mapping only; it contains
-no validation logic. Focused document-governance tests mirror their modules
+`repository-integrity`. The 35 retained Task 11 validator identities and suite
+owners remain immutable. `execution_contexts` separately declares whether a
+canonical standalone invocation is admitted locally, for a pull request, for a
+push, or for manual workflow dispatch. An empty list preserves ownership for
+library-only, argument-dependent, recursive-wrapper, or approved-runtime
+consumers without auto-launching them; registered internal adapter subcommands
+remain part of the context-filtered graph. Final-plan admission checks every
+inherited and canonical invocation: local plans omit CI-only hardening, and
+manual/runtime/recursive validator rebinding fails before execution. Internal
+calls require their exact path, argv, and execution context; neither an adapter
+path nor an unclassified path is an exemption. Explain validates this same
+complete plan before rendering its canonical validator rows. The registry
+rejects ownership and execution-policy drift. Focused document-governance tests
+mirror their modules
 under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
 `tests/validation/`.
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI / quality gate           | `scripts/validation/validate-harness.sh`, `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-github-workflow-contract.py`, `scripts/validation/run-ci-precommit.sh`, `scripts/validation/check-supply-chain-policy.py --check`, `scripts/validation/check-agent-governance-contract.py --mode contract`, `scripts/validation/check-agentic-audit-semantic-freshness.py`, `scripts/validation/check-document-corpus-lifecycle.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check`, `scripts/knowledge/generate-llm-wiki-coverage.sh --check` |
-| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                   |
+| CI / quality gate           | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
+| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup`                                                                 |
 | Agent QA/CI environment     | `source scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh`                                                                                                                                                                                                                                  |
+| Generated index maintenance | `scripts/knowledge/generate-llm-wiki.py --write`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh` |
 | Internal library            | `scripts/lib/hardening-lib.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 `scripts/operations/gen-secrets.sh` is a manual operation entrypoint. Its
@@ -202,8 +208,8 @@ no-argument mode may read or write local secret registry and secret files; use
 `--check` for readiness checks and `--dry-run` for ID/path-only action previews
 before running the default mode.
 
-`scripts/security/seed-grype-db-cache.sh` is owned by the
-[Task7 runtime closure](../docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md).
+`scripts/security/seed-grype-db-cache.sh` is governed by the
+[supply-chain policy checker](validation/check-supply-chain-policy.py).
 Only its explicit `--seed` mode may use the approved pinned-Grype database
 network boundary; `--preflight` is network-free. The consumer
 `verify-sample-service-supply-chain.sh --advisory` never updates or downloads a
@@ -217,20 +223,16 @@ validation; check-only mode disables whitespace writes and `shfmt -w` while
 preserving diff, syntax, and repo checks.
 
 `scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
-loads `.github/workflow-contract.yml`, expands one gate or one registered
-profile deterministically, and keeps `--list` and `--dry-run` execution-free.
+loads `.github/workflow-contract.yml` plus `scripts/manifest.yaml`, selects the
+closed `changed` or `full` public profile, and keeps `--explain` execution-free.
+Explain and execution use the same context-filtered, exact-once canonical plan.
+PR and non-initial push bases are validated and forwarded as
+`TEMPLATE_GATE_BASE`; local, initial push, and workflow dispatch use the explicit
+active-corpus metadata mode without inventing a comparison base.
 
 `scripts/validation/run-local-qa-gates.sh` is a thin local-profile wrapper.
-Default, `--harness`, and `--all-profiles` each delegate exactly once to
-`local-script-backed`, `local-harness`, or `local-all-profiles`; the wrapper
-does not retain its own child-command list or mutate `.env`. Use `--list` to
-show the default profile's registered order without execution.
-
-`scripts/validation/recommend-qa-gates.sh` is an advisory changed-path report.
-It prints recommended local gates and remote/manual responsibilities without
-executing checks or mutating repository, runtime, remote, or secret state. The
-CI quality workflow publishes the same advisory report to `GITHUB_STEP_SUMMARY`
-without changing the required job set.
+`--changed`, `--full`, and `--explain` each delegate exactly once to the public
+runner; the wrapper does not retain a child-command list or mutate `.env`.
 
 `scripts/validation/audit_criterion_contract.py` is the shared parser and exact
 manifest for both audit scripts. It rejects missing/unexpected reports, malformed
@@ -260,7 +262,7 @@ mapping, sole machine
 ownership of full registry arrays, and `_workspace` exclusion from docs
 inventory inference. `check-changed` is the pre-push blocking mode for a safely
 selected diff;
-`check-active` remains non-gating. Base resolution prefers explicit, CI, and
+`check-active` is the base-free active-corpus check. Base resolution prefers explicit, CI, and
 safe local refs, then reports a working-tree-only fallback without selecting
 the full corpus. A narrow base-existing legacy exception cannot apply to new
 documents or partial typed migrations. Reverse transitions require a separate
@@ -295,12 +297,11 @@ archive, Compose, and workflow semantics remain delegated to their existing
 owners. Run its focused suite with
 `python3 -m unittest tests.validation.test_target_surface_contracts -v`.
 
-`scripts/validation/check-target-surface-delta-contract.py` is the thin
-advisory gate for the Spec 135 successor delta. It recomputes committed,
-staged, unstaged, and untracked target changes from the immutable predecessor,
-requires exactly one typed row per changed path, validates destructive
-evidence and current tracked-path safety, and checks the registered value-free
-summary. Bootstrap is create-only; refresh the summary with `--write-summary`.
+`scripts/validation/check-target-surface-delta-contract.py` is the live routing
+gate. It validates six exact suites, exact-once manifest and executable route
+ownership, changed-path impact, current tracked entrypoints, profile-surface
+agreement, and retirement absence. Historical predecessor snapshots remain
+Git/Migration evidence and are not regenerated as current gate state.
 Run its focused suite with
 `python3 -m unittest tests.validation.test_target_surface_delta_contracts -v`.
 
@@ -355,10 +356,9 @@ not run vulnerability scanners, generate SBOMs, sign artifacts, attest builds,
 query registries, query remote GitHub, or read secrets. Its `--check` mode is
 used by repo contracts to keep the generated snapshot fresh.
 
-Repo-local Hookify metadata validation currently supports only `bash`, `file`,
-and `stop` events, as enforced by
-`scripts/validation/check-repo-contracts.sh`. External Hookify event names are
-not automatically accepted by this repository.
+Repo-local Hookify validation is selected through
+`python3 scripts/validation/run-ci-gate.py --profile changed`; provider hooks do
+not copy atomic validator commands.
 
 ---
 
@@ -376,8 +376,8 @@ not automatically accepted by this repository.
 # Run real local preflight checks without creating dummy files
 ./scripts/validation/validate-docker-compose.sh --preflight
 
-# Enforce repository contracts
-./scripts/validation/check-repo-contracts.sh
+# Enforce all six public suites
+python3 scripts/validation/run-ci-gate.py --profile full
 
 # Enforce focused target-surface convergence contracts
 python3 scripts/validation/check-target-surface-contract.py
@@ -401,23 +401,14 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.
 # Enforce documentation traceability sync
 ./scripts/validation/check-doc-traceability.sh
 
-# Run locally reproducible QA/CI gates
-./scripts/validation/run-local-qa-gates.sh
+# Run changed-path public suites
+./scripts/validation/run-local-qa-gates.sh --changed
 
-# Show local vs remote-only QA/CI responsibilities
-./scripts/validation/run-local-qa-gates.sh --list
+# Explain changed-path suite-to-validator ownership without execution
+./scripts/validation/run-local-qa-gates.sh --explain
 
 # Run the harness-change-scoped fast gate
 ./scripts/validation/validate-harness.sh
-
-# Run the same harness subset through the local QA gate runner
-./scripts/validation/run-local-qa-gates.sh --harness
-
-# Recommend QA gates for staged and unstaged changes without running them
-./scripts/validation/recommend-qa-gates.sh
-
-# Recommend QA gates for an explicit path list
-./scripts/validation/recommend-qa-gates.sh --files docs/00.agent-governance/policies/documentation-protocol.md scripts/README.md
 
 # Report implementation-status coverage for the agentic engineering audit pack
 ./scripts/validation/report-audit-pack-coverage.sh
@@ -425,10 +416,6 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.
 # Generate and check the audit implementation matrix snapshot
 bash scripts/validation/generate-audit-implementation-matrix.sh
 bash scripts/validation/generate-audit-implementation-matrix.sh --check
-
-# Generate and verify provider hook parity matrix
-bash scripts/validation/report-provider-hook-parity.sh
-bash scripts/validation/report-provider-hook-parity.sh --check
 
 # List and check local advisory agent-output eval fixtures
 bash scripts/validation/run-agent-output-eval-fixtures.sh --list
@@ -440,21 +427,11 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
   --allow-prefix docs/ \
   --allow-prefix scripts/
 
-# Recommend canonical-stage routing for a gap description
-./scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence"
+# Generate both repo-local LLM Wiki artifacts
+python3 scripts/knowledge/generate-llm-wiki.py --write
 
-# Recommend canonical-stage routing for related paths
-./scripts/validation/recommend-gap-routing.sh --files docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md
-
-# Generate the repo-local LLM Wiki path index
-bash scripts/knowledge/generate-llm-wiki-index.sh
-
-# Verify the repo-local LLM Wiki path index is fresh
-bash scripts/knowledge/generate-llm-wiki-index.sh --check
-
-# Generate and verify the LLM Wiki stage/category coverage snapshot
-bash scripts/knowledge/generate-llm-wiki-coverage.sh
-bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+# Verify both LLM Wiki artifacts are fresh
+python3 scripts/knowledge/generate-llm-wiki.py --check
 
 # Report advisory Graphify corpus health
 ./scripts/knowledge/report-graphify-health.sh
@@ -560,7 +537,7 @@ generators; it never invokes runtime-changing rows.
 - [📘 Runbooks](../docs/05.operations/README.md)
 - [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
 - [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
-- [Scripts CI/CD & QA Cleanup Plan](../docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md)
-- [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
+- [Public Suite Routing Task](../docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md)
+- [Script Lifecycle Taxonomy Specification](../docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

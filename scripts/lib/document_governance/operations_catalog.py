@@ -62,6 +62,15 @@ MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f0347
 _EXPECTED_DELETED_TRACKED_PATHS = frozenset({
     pathlib.PurePosixPath("docs/05.operations/releases/README.md"),
     pathlib.PurePosixPath("docs/99.templates/templates/operations/release.template.md"),
+    # Task 12 deletion candidates remain in the index until the controller commits.
+    pathlib.PurePosixPath("scripts/hooks/patch-graphify-post-commit.sh"),
+    pathlib.PurePosixPath("scripts/knowledge/generate-llm-wiki-coverage.sh"),
+    pathlib.PurePosixPath("scripts/knowledge/generate-llm-wiki-index.sh"),
+    pathlib.PurePosixPath("scripts/validation/check-repo-contracts.sh"),
+    pathlib.PurePosixPath("scripts/validation/recommend-gap-routing.sh"),
+    pathlib.PurePosixPath("scripts/validation/recommend-qa-gates.sh"),
+    pathlib.PurePosixPath("scripts/validation/report-provider-hook-parity.sh"),
+    pathlib.PurePosixPath("tests/validation/test_provider_hook_parity.py"),
 })
 _ACTIVE_REFERENCE_HISTORY_EXCLUSIONS = frozenset({
     # This support ledger pins the pre-convergence Task 1 source set.

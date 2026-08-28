@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0023
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -51,7 +52,7 @@ Exceptions require explicit owner or user approval and must record scope, affect
 ## Verification
 
 - Run `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config` after changing compose-facing documentation.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy, guide, runbook, README, or link updates.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for active/optional cluster confusion, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
 

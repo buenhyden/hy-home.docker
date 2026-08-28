@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0021
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-06-04
 updated: 2026-08-11
 ---
@@ -41,7 +42,7 @@ Backup exceptions require explicit owner approval and evidence showing why the d
 - Confirm backup evidence records the service, retention window, command or job class, and verification outcome without exposing secret values.
 - Run repository documentation checks after policy or link changes:
   - `python3 scripts/validation/check-document-links.py --mode alignment`
-  - `bash scripts/validation/check-repo-contracts.sh`
+  - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

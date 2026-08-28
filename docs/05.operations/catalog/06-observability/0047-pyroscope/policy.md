@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0047
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -79,7 +80,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - Pyroscope config:
   `rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 - Repository contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

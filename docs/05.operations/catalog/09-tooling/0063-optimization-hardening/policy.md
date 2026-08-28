@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0063
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -51,7 +52,7 @@ updated: 2026-08-11
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
 
 ## Review Cadence

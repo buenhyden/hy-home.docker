@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0004
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0094
 created: 2026-06-04
 updated: 2026-08-21
 ---
@@ -47,7 +48,7 @@ How-to / audit guide.
 4. Read governance policy: `docs/00.agent-governance/README.md`, `policies/agentic.md`, `policies/documentation-protocol.md`, and `policies/stage-authoring-matrix.md`.
 5. Inspect provider-native runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`; `.codex/README.md`, `.codex/agents/*.toml`, `.codex/hooks.json`; and `docs/00.agent-governance/providers/README.md`, `docs/00.agent-governance/providers/registry.yaml`, `scripts/hooks/agent-event-hook.sh`. Inspect `.agents/agents/*.md` and `.agents/skills/*/SKILL.md` separately as the provider-neutral compatibility and shared-skill projection.
 6. Compare runtime projections against `docs/00.agent-governance/roles/**`, `docs/00.agent-governance/skills/**`, and `providers/registry.yaml`.
-7. Review validators: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-links.py --mode traceability`, `scripts/validation/validate-docker-compose.sh`.
+7. Review validators: `scripts/validation/run-ci-gate.py`, `scripts/validation/check-document-links.py --mode traceability`, `scripts/validation/validate-docker-compose.sh`.
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
 9. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
 10. Run the validation commands listed in the runbook before declaring completion.

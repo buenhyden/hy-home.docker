@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0028
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -51,7 +52,7 @@ Exceptions require explicit user or owner approval and must record the reason, s
 ## Verification
 
 - Run `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config` after changing compose-facing documentation.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy, guide, runbook, README, or link updates.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for legacy network names, old Compose CLI spelling, or secret values before committing.
 

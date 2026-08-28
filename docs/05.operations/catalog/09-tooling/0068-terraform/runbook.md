@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0068
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -34,7 +35,7 @@ guide에, 운영 통제 기준은 policy에 남기고, 이 문서는 반복 가�
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile changed
 ```
 
 ### 2. Verify Remote Backend Access

@@ -49,8 +49,6 @@ _ACTIVE_CONSUMER_PATHS = (
     pathlib.PurePosixPath("scripts/lib/document_governance/operations_catalog.py"),
     pathlib.PurePosixPath("scripts/validation/agent_output_eval.py"),
     pathlib.PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"),
-    pathlib.PurePosixPath("scripts/validation/check-repo-contracts.sh"),
-    pathlib.PurePosixPath("scripts/validation/recommend-qa-gates.sh"),
     pathlib.PurePosixPath("scripts/validation/target_surface_contract.py"),
 )
 _RETIRED_ACTIVE_PATHS = (

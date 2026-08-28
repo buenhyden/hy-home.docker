@@ -99,7 +99,7 @@ tempo/
 | Secret refs | `minio_app_user_password` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
 | Operations | [Guide](../../../docs/05.operations/catalog/06-observability/0049-tempo/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/0049-tempo/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/0049-tempo/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

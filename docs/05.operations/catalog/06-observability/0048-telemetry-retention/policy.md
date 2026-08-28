@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0048
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-03-25
 updated: 2026-08-11
 ---
@@ -72,7 +73,7 @@ backup 책임 경계를 다룬다.
 - Pyroscope no-fixed-retention boundary:
   `rg -n 'fixed retention period is not declared|고정 7일 retention 설정이 없다' infra/06-observability/pyroscope/README.md docs/05.operations/catalog/06-observability/0047-pyroscope/guide.md`
 - Documentation contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

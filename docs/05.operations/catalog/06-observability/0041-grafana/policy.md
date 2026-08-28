@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0041
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -79,7 +80,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 - Dashboard count:
   `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
 - Repository contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

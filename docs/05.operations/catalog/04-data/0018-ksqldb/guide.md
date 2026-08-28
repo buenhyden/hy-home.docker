@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0018
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0005
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -71,7 +72,7 @@ updated: 2026-08-11
 
 - `test -f infra/04-data/analytics/ksql/docker-compose.yml`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff
 

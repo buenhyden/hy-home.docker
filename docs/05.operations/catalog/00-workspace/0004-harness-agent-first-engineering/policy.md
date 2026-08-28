@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0004
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0094
 created: 2026-06-04
 updated: 2026-08-21
 ---
@@ -71,7 +72,7 @@ printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.y
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
 bash scripts/knowledge/report-graphify-health.sh
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile changed
 python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh

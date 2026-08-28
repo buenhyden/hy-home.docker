@@ -1005,7 +1005,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/README.md](../../../../scripts/README.md) | folder index |
 | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh) | script |
 | [scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) | script |
-| [scripts/hooks/patch-graphify-post-commit.sh](../../../../scripts/hooks/patch-graphify-post-commit.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../../scripts/hooks/post-tool-validate.sh) | script |
 | [scripts/knowledge/generate-llm-wiki.py](../../../../scripts/knowledge/generate-llm-wiki.py) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../../scripts/knowledge/report-graphify-health.sh) | script |
@@ -1027,14 +1026,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-doc-implementation-alignment.sh](../../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../../scripts/validation/check-quickwin-baseline.sh) | script |
-| [scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../../scripts/validation/check-template-security-baseline.sh) | script |
 | [scripts/validation/compose-core-readiness.lib.sh](../../../../scripts/validation/compose-core-readiness.lib.sh) | script |
 | [scripts/validation/generate-audit-implementation-matrix.sh](../../../../scripts/validation/generate-audit-implementation-matrix.sh) | script |
 | [scripts/validation/generate-security-automation-readiness.sh](../../../../scripts/validation/generate-security-automation-readiness.sh) | script |
-| [scripts/validation/recommend-gap-routing.sh](../../../../scripts/validation/recommend-gap-routing.sh) | script |
-| [scripts/validation/recommend-qa-gates.sh](../../../../scripts/validation/recommend-qa-gates.sh) | script |
 | [scripts/validation/rehearse-postgres-logical-upgrade.sh](../../../../scripts/validation/rehearse-postgres-logical-upgrade.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../../scripts/validation/report-provider-hook-parity.sh) | script |

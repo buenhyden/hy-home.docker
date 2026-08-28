@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0017
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0005
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -39,7 +40,7 @@ Long retention or manual data cleanup requires owner approval and evidence showi
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
 - Confirm `INFLUXDB_DB_NAME`, port `8181`, and `/api/v3/write_lp` agree across source and active docs without claiming token provisioning.
 - `python3 scripts/validation/check-document-links.py --mode alignment`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

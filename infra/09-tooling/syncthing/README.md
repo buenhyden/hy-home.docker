@@ -76,7 +76,7 @@ syncthing/
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Syncthing.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking Syncthing documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking Syncthing documentation ready.
 
 ## Troubleshooting
 
@@ -106,7 +106,7 @@ syncthing/
 | Secret refs | names: `syncthing_password`; mounts: `/run/secrets/syncthing_password` |
 | Healthcheck | Compose healthcheck declared for `syncthing` |
 | Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area

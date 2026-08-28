@@ -68,7 +68,7 @@ Infra layer:
 Key rules:
 - Use `AGENTS.md` and `docs/00.agent-governance/` as governance entry points.
 - Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
-- Run `bash scripts/validation/validate-docker-compose.sh` before deployment-related completion.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before completion.
 """
 
 print(json.dumps({"systemMessage": message.strip()}))
@@ -170,9 +170,7 @@ if not tool_name or tool_name in edit_tools:
             system_messages.append(
                 "Docker Compose file edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "After editing, verify with `bash scripts/validation/validate-docker-compose.sh` "
-                "and check port conflicts, volume paths, missing environment variables, "
-                "and existing network names."
+                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break
     for path in paths:
@@ -188,7 +186,7 @@ if not tool_name or tool_name in edit_tools:
                 "Keep `.agents/` aligned with `docs/00.agent-governance/` and the "
                 "canonical `.claude/` runtime catalog. It must not introduce a "
                 "parallel policy source, unknown skills, or stale runtime paths. "
-                "After editing, run `bash scripts/validation/check-repo-contracts.sh`."
+                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break
     for path in paths:
@@ -204,7 +202,7 @@ if not tool_name or tool_name in edit_tools:
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
                 "target-relative links, and `## Related Documents` section. The PostToolUse and "
-                "Stop hooks run `bash scripts/validation/check-repo-contracts.sh` to enforce the "
+                "Stop hooks run `python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
                 "changed-doc template gate."
             )
             break
@@ -358,7 +356,7 @@ template_stop_gate() {
   fi
 
   local output
-  if output="$(bash scripts/validation/check-repo-contracts.sh 2>&1)"; then
+  if output="$(python3 scripts/validation/run-ci-gate.py --profile changed 2>&1)"; then
     return 0
   fi
 
@@ -370,7 +368,7 @@ output = os.environ.get("GATE_OUTPUT", "").strip()
 reason = (
     "Changed target-stage documentation does not satisfy the docs/99.templates "
     "contract. Continue the task, fix the document from the mapped template, "
-    "and rerun `bash scripts/validation/check-repo-contracts.sh`."
+    "and rerun `python3 scripts/validation/run-ci-gate.py --profile changed`."
 )
 if output:
     reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
@@ -623,8 +621,8 @@ FUNCTIONS = [
         "path": "docs/00.agent-governance/skills/policy-gate-agent.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
-            "policy gate", "validation suite", "check-quickwin",
-            "check-template-security", "check-repo-contracts",
+            "policy gate", "validation suite", "public gate",
+            "changed profile", "full profile",
             "policy validation",
         ],
     },

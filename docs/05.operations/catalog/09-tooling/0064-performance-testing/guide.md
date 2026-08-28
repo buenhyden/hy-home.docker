@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0064
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -58,7 +59,7 @@ updated: 2026-08-11
 
 3. 실행 전 공통 검증을 수행한다.
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-   - `bash scripts/validation/check-repo-contracts.sh`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed`
 4. 실행이 승인된 환경에서 root compose와 선택 leaf compose를 함께 렌더링한다.
 5. UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 접근한다.
 6. Users, spawn rate, target host를 기록하고, 테스트 결과와 target SLI 변화를 evidence로 남긴다.
@@ -72,7 +73,7 @@ updated: 2026-08-11
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 실행 승인 시 root+leaf overlay가 선택 leaf service와 `infra_net`을 함께 렌더링하는지 확인한다.
 
 ## Runbook Handoff

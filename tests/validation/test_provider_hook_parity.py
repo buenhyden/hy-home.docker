@@ -53,6 +53,16 @@ class ProviderHookParityTests(unittest.TestCase):
     def test_current_dispatchers_wrappers_timeouts_events_and_loops_are_exact(self) -> None:
         self.assertEqual(0, self.run_validation(ROOT).returncode)
 
+    def test_generated_data_is_fresh(self) -> None:
+        result = subprocess.run(
+            ["bash", str(SCRIPT), "--check", "--root", str(ROOT)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
     def test_command_timeout_and_event_mutations_fail_closed(self) -> None:
         for case in ("command", "timeout", "event"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:

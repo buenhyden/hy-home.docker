@@ -34,22 +34,8 @@ Use the CI Quality Gates workflow job names as required checks:
 the focused workflow checker proves that every required job projects its
 registered root DAG exactly once through static typed-gate invocations.
 
-- `docs-traceability`
-- `docs-implementation-alignment`
-- `repo-contracts`
-- `agent-output-eval-fixture-gate`
-- `supply-chain-fixture-policy`
-- `dependency-vulnerability-audit`
-- `git-flow-contract`
-- `compose-validation`
-- `compose-all-profiles-validation`
-- `infrastructure-hardening`
-- `template-security-baseline`
-- `quickwin-baseline`
-- `pre-commit`
-- `frontend-quality`
-- `storybook-coverage`
-- `zizmor`
+- `validation-changed`
+- `validation-full`
 
 ## Application Boundary
 
@@ -59,5 +45,5 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
 
-Until that separately approved readback succeeds, all 16 checks above remain
+Until that separately approved readback succeeds, both checks above remain
 tracked desired state rather than evidence of remote enforcement.

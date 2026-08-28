@@ -31,8 +31,31 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             registry.public_names,
         )
 
+    def test_public_profiles_and_changed_path_impacts_are_closed(self) -> None:
+        registry = contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document, registry)
+        self.assertEqual(("changed", "full"), public.profile_names)
+        self.assertEqual(registry.public_names, public.suite_names)
+        self.assertEqual(
+            registry.public_names,
+            contract.select_public_suites(public, "full", ()),
+        )
+        selected = contract.select_public_suites(
+            public,
+            "changed",
+            ("docs/05.operations/catalog/README.md",),
+        )
+        self.assertIn("document-contract", selected)
+        self.assertIn("document-graph", selected)
+        self.assertIn("document-lifecycle", selected)
+        self.assertIn("operations", selected)
+        with self.assertRaises(contract.GateContractError) as raised:
+            contract.select_public_suites(public, "unknown", ())
+        self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
 
-REQUIRED_JOB_ROOTS = {
+
+INTERNAL_CI_ROOTS = {
     "docs-traceability": "ci.docs-traceability",
     "docs-implementation-alignment": "ci.docs-implementation-alignment",
     "repo-contracts": "ci.repo-contracts",
@@ -50,7 +73,7 @@ REQUIRED_JOB_ROOTS = {
     "storybook-coverage": "ci.storybook-coverage",
     "zizmor": "ci.zizmor",
 }
-REQUIRED_JOB_SUITES = {
+INTERNAL_ROOT_SUITES = {
     "docs-traceability": ("docs-traceability",),
     "docs-implementation-alignment": (
         "docs-implementation-alignment",
@@ -95,7 +118,7 @@ REQUIRED_JOB_SUITES = {
     "storybook-coverage": ("storybook-coverage",),
     "zizmor": ("zizmor",),
 }
-REQUIRED_ROOT_CHILDREN = {
+INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.docs-implementation-alignment": (
         "leaf.docs-implementation-alignment",
@@ -165,6 +188,22 @@ REQUIRED_ROOT_CHILDREN = {
         "leaf.storybook-coverage",
     ),
     "ci.zizmor": ("leaf.zizmor",),
+}
+REQUIRED_JOB_ROOTS = {
+    "validation-changed": "ci.validation-changed",
+    "validation-full": "ci.validation-full",
+}
+REQUIRED_ROOT_CHILDREN = {
+    root_gate_id: tuple(INTERNAL_CI_ROOTS.values())
+    for root_gate_id in REQUIRED_JOB_ROOTS.values()
+}
+ALL_CI_SUITES = tuple(
+    suite
+    for internal_job in INTERNAL_CI_ROOTS
+    for suite in INTERNAL_ROOT_SUITES[internal_job]
+)
+REQUIRED_JOB_SUITES = {
+    job_id: ALL_CI_SUITES for job_id in REQUIRED_JOB_ROOTS
 }
 LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
@@ -309,10 +348,15 @@ def setup(gate_id: str) -> contract.GateNode:
 def complete_registry() -> contract.GateRegistry:
     nodes: dict[str, contract.GateNode] = {}
     job_roots: list[contract.JobRoot] = []
-    for job_id, root_gate_id in REQUIRED_JOB_ROOTS.items():
-        for suite_key in REQUIRED_JOB_SUITES[job_id]:
+    for internal_job, root_gate_id in INTERNAL_CI_ROOTS.items():
+        for suite_key in INTERNAL_ROOT_SUITES[internal_job]:
             gate_id = f"leaf.{suite_key}"
             nodes.setdefault(gate_id, leaf(gate_id, suite_key))
+        nodes[root_gate_id] = aggregate(
+            root_gate_id,
+            INTERNAL_ROOT_CHILDREN[root_gate_id],
+        )
+    for job_id, root_gate_id in REQUIRED_JOB_ROOTS.items():
         nodes[root_gate_id] = aggregate(
             root_gate_id,
             REQUIRED_ROOT_CHILDREN[root_gate_id],
@@ -329,6 +373,7 @@ def complete_registry() -> contract.GateRegistry:
     structural_children = {
         gate_id
         for children in (
+            *INTERNAL_ROOT_CHILDREN.values(),
             *REQUIRED_ROOT_CHILDREN.values(),
             *LOCAL_AGGREGATE_CHILDREN.values(),
         )
@@ -759,9 +804,9 @@ class CiGateContractTests(unittest.TestCase):
                 job_roots=candidate.job_roots,
             ),
         )
-        self.assert_codes(findings, "ci-gate-suite-reachable-duplicate")
+        self.assert_codes(findings, "ci-gate-internal-root-children")
 
-    def test_required_job_roots_are_the_exact_sixteen(self) -> None:
+    def test_required_job_roots_are_the_exact_two_workflow_jobs(self) -> None:
         candidate = complete_registry()
         findings = contract.validate_gate_registry(ROOT, candidate)
         self.assertEqual((), findings)
@@ -784,6 +829,38 @@ class CiGateContractTests(unittest.TestCase):
             contract.validate_gate_registry(ROOT, duplicate),
             "ci-gate-required-job-roots",
         )
+        for label, extra in (
+            (
+                "third-required-job",
+                contract.JobRoot(
+                    ".github/workflows/ci-quality.yml",
+                    "validation-third",
+                    "ci.validation-full",
+                    "required-quality",
+                ),
+            ),
+            (
+                "missing-workflow-job-id",
+                dataclasses.replace(
+                    candidate.job_roots[0], job_id="not-in-workflow"
+                ),
+            ),
+        ):
+            with self.subTest(label=label):
+                mutated_jobs = (
+                    (*candidate.job_roots, extra)
+                    if label == "third-required-job"
+                    else (extra, candidate.job_roots[1])
+                )
+                self.assert_codes(
+                    contract.validate_gate_registry(
+                        ROOT,
+                        dataclasses.replace(
+                            candidate, job_roots=mutated_jobs
+                        ),
+                    ),
+                    "ci-gate-required-job-roots",
+                )
 
         wrong_children = tuple(
             dataclasses.replace(
@@ -800,7 +877,7 @@ class CiGateContractTests(unittest.TestCase):
                     ROOT,
                     dataclasses.replace(candidate, nodes=wrong_children),
                 ),
-                "ci-gate-required-root-children",
+                "ci-gate-internal-root-children",
             )
 
         with self.subTest(boundary="hostile-git-environment"):

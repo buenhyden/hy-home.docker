@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0064
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -60,7 +61,7 @@ updated: 2026-08-11
 
    ```bash
    bash scripts/hardening/check-all-hardening.sh 09-tooling
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    ```
 
 5. target SLI, error rate, latency, affected time window를 evidence에 기록한다.
@@ -88,7 +89,7 @@ updated: 2026-08-11
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`
+- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`
 
 ## Evidence
 

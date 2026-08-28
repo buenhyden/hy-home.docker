@@ -62,7 +62,7 @@ couchdb/
 | Secret refs | names: `couchdb_password`, `couchdb_cookie`; mounts: `/run/secrets/couchdb_password`, `/run/secrets/couchdb_cookie` |
 | Healthcheck | Compose healthcheck declared for `couchdb-1`, `couchdb-2`, `couchdb-3`; not declared for `couchdb-cluster-init` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0026-couchdb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0026-couchdb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0026-couchdb/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

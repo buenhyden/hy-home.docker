@@ -42,11 +42,8 @@ INDEX: Final = pathlib.PurePosixPath(
 COVERAGE: Final = pathlib.PurePosixPath(
     "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"
 )
-INDEX_GENERATOR: Final = pathlib.PurePosixPath(
-    "scripts/knowledge/generate-llm-wiki-index.sh"
-)
-COVERAGE_GENERATOR: Final = pathlib.PurePosixPath(
-    "scripts/knowledge/generate-llm-wiki-coverage.sh"
+LLM_WIKI_GENERATOR: Final = pathlib.PurePosixPath(
+    "scripts/knowledge/generate-llm-wiki.py"
 )
 REF_PREFIX: Final = "refs/codex/review-evidence/agentic-research/gate9/v1"
 EVIDENCE_REF_PATTERN: Final = re.compile(
@@ -1246,11 +1243,12 @@ def _run_generator_from_manifest(
     expected_live: bytes,
     expected_package: bytes | None,
     label: pathlib.PurePosixPath,
+    artifact: str,
 ) -> bytes:
     descriptor = _sealed_manifest_fd(manifest)
     try:
-        trusted_bash = trusted_system_tool("bash")
-        trusted_python = pathlib.Path(trusted_system_tool("python3"))
+        trusted_python_text = trusted_system_tool("python3")
+        trusted_python = pathlib.Path(trusted_python_text)
         environment = {
             "GATE9_LLM_MANIFEST_FD": str(descriptor),
             "GATE9_LLM_MANIFEST_SHA256": sha256_bytes(manifest),
@@ -1263,7 +1261,7 @@ def _run_generator_from_manifest(
             "PYTHONSAFEPATH": "1",
         }
         result = funnel_spawn(
-            [trusted_bash, "-s", "--", "--stdout"],
+            [trusted_python_text, "-", "--stdout", "--artifact", artifact],
             cwd=root,
             env=environment,
             input_bytes=generator_bytes,
@@ -1307,15 +1305,12 @@ def fresh_authority_replay(
 ) -> tuple[bytes, bytes]:
     manifest = _generator_manifest_bytes(root, proof.live_head, projected)
     outputs: list[bytes] = []
-    for offset, (generator_path, output_path, expected_package) in enumerate(
-        (
-            (INDEX_GENERATOR, INDEX, expected_index),
-            (COVERAGE_GENERATOR, COVERAGE, expected_coverage),
-        ),
-        start=1,
+    for generator_path, output_path, expected_package in (
+        (LLM_WIKI_GENERATOR, INDEX, expected_index),
+        (LLM_WIKI_GENERATOR, COVERAGE, expected_coverage),
     ):
         generator_bytes = run_git(
-            root, ["cat-file", "blob", proof.code_blob_oids[offset]]
+            root, ["cat-file", "blob", proof.code_blob_oids[1]]
         ).stdout
         expected_live = run_git(
             root,
@@ -1329,6 +1324,7 @@ def fresh_authority_replay(
                 expected_live,
                 expected_package,
                 generator_path,
+                "index" if output_path == INDEX else "coverage",
             )
         )
     return outputs[0], outputs[1]
@@ -1428,8 +1424,7 @@ def tracked_blob_oid(
             pathlib.PurePosixPath(
                 "scripts/validation/agentic-research-gate9-evidence.py"
             ),
-            INDEX_GENERATOR,
-            COVERAGE_GENERATOR,
+            LLM_WIKI_GENERATOR,
         }
         else b"100644"
     )
@@ -1473,8 +1468,7 @@ def authority_preflight(
         pathlib.PurePosixPath(
             "scripts/validation/agentic-research-gate9-evidence.py"
         ),
-        INDEX_GENERATOR,
-        COVERAGE_GENERATOR,
+        LLM_WIKI_GENERATOR,
     )
     live_blobs: list[str] = []
     for path in code_paths:

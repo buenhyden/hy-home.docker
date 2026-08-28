@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0020
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0005
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -39,7 +40,7 @@ Manual FE metadata changes, backend add/drop operations, or destructive data cle
 - `test -f infra/04-data/analytics/warehouses/docker-compose.yml`
 - `mysql -u root -h starrocks-fe -P 9030 -e "SHOW FRONTENDS;"`
 - `mysql -u root -h starrocks-fe -P 9030 -e "SHOW BACKENDS;"`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

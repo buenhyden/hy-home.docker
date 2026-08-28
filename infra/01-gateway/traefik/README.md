@@ -60,7 +60,7 @@ traefik/
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password` |
 | Healthcheck | Compose healthcheck declared for `traefik` |
 | Operations | [Guide](../../../docs/05.operations/catalog/01-gateway/0013-traefik/guide.md), [Policy](../../../docs/05.operations/catalog/01-gateway/0013-traefik/policy.md), [Runbook](../../../docs/05.operations/catalog/01-gateway/0013-traefik/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with root profile validation and gateway hardening checks, then inspect service logs only when the Traefik runtime is already approved and running. |
 
 ## How to Work in This Area

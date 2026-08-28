@@ -170,7 +170,7 @@ regenerate it with `bash scripts/operations/generate-tech-stack-version-provenan
 - [tech-stack registry](../../../../infra/tech-stack.versions.json) - curated image registry and listed Compose sources.
 - [floating image exceptions](../../../../infra/image-tag-policy.exceptions.json) - approved floating-tag review obligations.
 - [sync script](../../../../scripts/operations/sync-tech-stack-versions.sh) - registry-to-Compose drift synchronization rules.
-- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - freshness and drift validation boundary.
+- [public validation runner](../../../../scripts/validation/run-ci-gate.py) - changed/full freshness and drift validation boundary.
 
 ## Maintenance
 
@@ -180,31 +180,37 @@ regenerate it with `bash scripts/operations/generate-tech-stack-version-provenan
 
 ## Related Documents
 
-- **Docker data index**: [README.md](./README.md)
-- **Docker image/version interpretation**: [ref-0060-image-version-interpretation.md](./ref-0060-image-version-interpretation.md)
-- **Compose profile coverage**: [ref-0059-compose-profile-service-coverage.md](./ref-0059-compose-profile-service-coverage.md)
-- **Automation candidates**: [ref-0021-automation-candidates.md](../../audits/ref-0021-automation-candidates.md)
+- **Docker data index**: [README.md](../README.md)
+- **Docker image/version interpretation**: [README.md](../0060-image-version-interpretation/README.md)
+- **Compose profile coverage**: [README.md](../0059-compose-profile-service-coverage/README.md)
+- **Automation candidates**: [README.md](../../audits/0021-automation-candidates/README.md)
 
 ## Schema
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+Each image row records component, image, declaration status, severity,
+tracked source provenance, and any approved floating-tag exception.
 
 ## Provenance
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+The inventory is derived only from `infra/tech-stack.versions.json`,
+`infra/image-tag-policy.exceptions.json`, and the listed tracked Compose files.
 
 ## Inventory
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+The summary, coverage, component, image, and exception tables above are the
+generated inventory for the current tracked inputs.
 
 ## Refresh
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+Run `bash scripts/operations/generate-tech-stack-version-provenance.sh` to
+write the snapshot, or pass `--check` to verify freshness without writing.
 
 ## Consumers
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+The public validation runner, audit matrix, security-readiness snapshot, and
+Stage 90 reviewers consume this advisory evidence.
 
 ## Traceability
 
-This package preserves its existing data evidence under the Stage 99 `data` contract.
+Current authority remains the tracked registry, exception registry, Compose
+declarations, generator, and public validation runner linked above.

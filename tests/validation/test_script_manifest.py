@@ -84,9 +84,6 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/90.references/data/0082-llm-wiki-index/",
 )
 MUTATION_OVERRIDES = {
-    "scripts/knowledge/generate-llm-wiki-coverage.sh": "check-write",
-    "scripts/knowledge/generate-llm-wiki-index.sh": "check-write",
-    "scripts/hooks/patch-graphify-post-commit.sh": "check-write",
     "scripts/hooks/post-tool-validate.sh": "check-write",
     "scripts/knowledge/generate-llm-wiki.py": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
@@ -102,25 +99,29 @@ MUTATION_OVERRIDES = {
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
     "scripts/validation/check-document-corpus-lifecycle.py": "check-write",
     "scripts/validation/check-document-metadata.py": "check-write",
-    "scripts/validation/check-target-surface-delta-contract.py": "check-write",
     "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
     "scripts/validation/generate-security-automation-readiness.sh": "check-write",
-    "scripts/validation/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/report-provider-hook-parity.sh": "check-write",
+    "scripts/validation/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/validation/run-compose-core-readiness.sh": "runtime",
     "scripts/validation/compose-core-readiness.lib.sh": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
 MANDATORY_DISPOSITIONS = {
-    "scripts/hooks/patch-graphify-post-commit.sh": "merge",
     "scripts/hooks/post-tool-validate.sh": "rewrite",
     "scripts/knowledge/generate-llm-wiki.py": "retain",
-    "scripts/validation/check-repo-contracts.sh": "merge",
-    "scripts/validation/recommend-gap-routing.sh": "delete",
-    "scripts/validation/recommend-qa-gates.sh": "merge",
-    "scripts/validation/report-provider-hook-parity.sh": "merge",
 }
+TASK12_RETIRED_SCRIPTS = frozenset(
+    {
+        "scripts/hooks/patch-graphify-post-commit.sh",
+        "scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "scripts/knowledge/generate-llm-wiki-index.sh",
+        "scripts/validation/check-repo-contracts.sh",
+        "scripts/validation/recommend-gap-routing.sh",
+        "scripts/validation/recommend-qa-gates.sh",
+    }
+)
 KNOWN_TOMBSTONE_REPLACEMENTS = {
     "docs/98.archive/05.operations/guides/03-security/01.setup.md": (
         "docs/05.operations/03-security/ops-0016-vault/guide.md",
@@ -269,6 +270,8 @@ def _python_imports_target(reference: str, target: str) -> bool:
     if not reference.endswith(".py") or not target.endswith(".py"):
         return False
     module = target.removesuffix(".py").replace("/", ".")
+    sibling_module = PurePosixPath(target).stem
+    same_directory = PurePosixPath(reference).parent == PurePosixPath(target).parent
     try:
         tree = ast.parse((ROOT / reference).read_text(encoding="utf-8"))
     except SyntaxError:
@@ -278,7 +281,7 @@ def _python_imports_target(reference: str, target: str) -> bool:
             if any(alias.name == module for alias in node.names):
                 return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module == module:
+            if node.module == module or (same_directory and node.module == sibling_module):
                 return True
             package, _, member = module.rpartition(".")
             if node.module == package and any(
@@ -427,15 +430,24 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(self.tracked, set(declared))
 
+    def test_task12_retires_only_the_proven_successor_scripts(self) -> None:
+        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.tracked))
+        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.rows_by_path))
+        self.assertIn(
+            "scripts/operations/rehearse-sample-service-delivery.sh",
+            self.tracked,
+        )
+
     def test_records_are_sorted_and_use_the_complete_schema(self) -> None:
         paths = [row["path"] for row in self.rows]
         self.assertEqual(paths, sorted(paths))
         for row in self.rows:
             expected_fields = REQUIRED_FIELDS
             if (
-                row["kind"] == "generator"
+                row["kind"] in {"generator", "validator"}
                 and row["mutation"] == "check-write"
                 and row["disposition"] == "retain"
+                and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
             if row["path"] in OPERATIONS_MANIFEST_PATHS:
@@ -444,7 +456,12 @@ class ScriptManifestTests(unittest.TestCase):
                     "semantic_witnesses",
                 }
             if row["kind"] == "validator":
-                expected_fields = expected_fields | {"public_suites"}
+                expected_fields = expected_fields | {
+                    "public_suites",
+                    "execution_contexts",
+                }
+                if row.get("execution_argv"):
+                    expected_fields = expected_fields | {"execution_argv"}
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
@@ -486,7 +503,7 @@ class ScriptManifestTests(unittest.TestCase):
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
-                if row["kind"] == "generator" and row["mutation"] == "check-write" and row["disposition"] == "retain":
+                if row["kind"] in {"generator", "validator"} and row["mutation"] == "check-write" and row["disposition"] == "retain" and "check_command" in row:
                     self.assertIn("--check", row["check_command"])
                     self.assertNotIn("--write", row["check_command"])
                     self.assertTrue(row["outputs"])
@@ -538,7 +555,7 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(path=row["path"]):
                 expected = MUTATION_OVERRIDES.get(row["path"], "none")
                 self.assertEqual(expected, row["mutation"])
-                if row["kind"] == "generator" and row["mutation"] == "check-write" and row["disposition"] == "retain":
+                if row["kind"] in {"generator", "validator"} and row["mutation"] == "check-write" and row["disposition"] == "retain" and "check_command" in row:
                     self.assertEqual(row["path"], row["check_command"][1])
 
     def test_plan_mandatory_dispositions_and_high_risk_operations(self) -> None:
@@ -1047,6 +1064,12 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "path": "scripts/example.py",
             "kind": "validator",
             "public_suites": ["repository-integrity"],
+            "execution_contexts": [
+                "local",
+                "pull_request",
+                "push",
+                "workflow_dispatch",
+            ],
             "authority": "docs/authority.md",
             "lifecycle": "active",
             "mutation": "none",
@@ -1138,6 +1161,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
             tests=[],
         )
         library.pop("public_suites")
+        library.pop("execution_contexts")
         tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
         self.assertIn("tests-missing", self.codes(library, tracked))
 
@@ -1260,6 +1284,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
             outputs=["docs/output.md"],
         )
         generator.pop("public_suites")
+        generator.pop("execution_contexts")
         manifest = {
             "schema_version": 1,
             "files": [
@@ -1296,6 +1321,21 @@ class ScriptManifestValidationTests(unittest.TestCase):
             self.assertEqual([], self.checker.check_generated(root, manifest_path))
 
             (root / "scripts/example.py").write_text("raise SystemExit(9)\n", encoding="utf-8")
+            self.assertIn(
+                "generated-check-failed",
+                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+            )
+            producer = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+            producer["files"][0].update(
+                kind="validator",
+                public_suites=["repository-integrity"],
+                execution_contexts=[
+                    "local", "pull_request", "push", "workflow_dispatch"
+                ],
+            )
+            manifest_path.write_text(
+                yaml.safe_dump(producer, sort_keys=False), encoding="utf-8"
+            )
             self.assertIn(
                 "generated-check-failed",
                 {finding.code for finding in self.checker.check_generated(root, manifest_path)},
@@ -1436,6 +1476,52 @@ class ScriptManifestValidationTests(unittest.TestCase):
         for source in negatives:
             with self.subTest(source=source):
                 self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
+
+    def test_python_semantic_evidence_rejects_ambiguous_path_reassignment(self) -> None:
+        source = (
+            "import subprocess\n"
+            "TARGET = 'scripts/example.py'\n"
+            "TARGET = 'scripts/other.py'\n"
+            "subprocess.run(['python3', TARGET])\n"
+        )
+        self.assertFalse(
+            self.checker._python_proves_use(source, "scripts/example.py")
+        )
+
+    def test_python_semantic_evidence_rejects_sibling_function_scope_join(self) -> None:
+        source = (
+            "from pathlib import Path\n"
+            "def one():\n"
+            "    BASE = Path('scripts')\n"
+            "def two():\n"
+            "    from example import helper\n"
+        )
+        self.assertFalse(
+            self.checker._python_proves_use(source, "scripts/example.py")
+        )
+
+    def test_python_semantic_evidence_rejects_sibling_class_scope_join(self) -> None:
+        source = (
+            "from pathlib import Path\n"
+            "class One:\n"
+            "    BASE = Path('scripts')\n"
+            "class Two:\n"
+            "    from example import helper\n"
+        )
+        self.assertFalse(
+            self.checker._python_proves_use(source, "scripts/example.py")
+        )
+
+    def test_python_semantic_evidence_allows_explicit_module_path_visibility(self) -> None:
+        source = (
+            "from pathlib import Path\n"
+            "BASE = Path('scripts')\n"
+            "def use():\n"
+            "    from example import helper\n"
+        )
+        self.assertTrue(
+            self.checker._python_proves_use(source, "scripts/example.py")
+        )
 
     def test_declared_paths_reject_symlinks_before_execution(self) -> None:
         valid_script = "raise SystemExit('must not execute')\n"

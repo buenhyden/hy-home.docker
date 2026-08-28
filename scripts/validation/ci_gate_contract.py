@@ -27,6 +27,7 @@ _TOP_LEVEL_FIELDS = frozenset(
         "gate_nodes",
         "job_roots",
         "profile_roots",
+        "public_gate",
         "actions",
     }
 )
@@ -36,7 +37,7 @@ _NODE_PROFILES = (
     "local-harness",
     "local-all-profiles",
 )
-_REQUIRED_JOB_ROOTS = {
+_INTERNAL_CI_ROOTS = {
     "docs-traceability": "ci.docs-traceability",
     "docs-implementation-alignment": "ci.docs-implementation-alignment",
     "repo-contracts": "ci.repo-contracts",
@@ -62,7 +63,7 @@ def load_public_suite_registry(
     """Expose the immutable validator-suite registry to gate contracts."""
 
     return suite_registry.load(manifest_path)
-_REQUIRED_JOB_SUITES = {
+_INTERNAL_ROOT_SUITES = {
     "docs-traceability": ("docs-traceability",),
     "docs-implementation-alignment": (
         "docs-implementation-alignment",
@@ -107,7 +108,7 @@ _REQUIRED_JOB_SUITES = {
     "storybook-coverage": ("storybook-coverage",),
     "zizmor": ("zizmor",),
 }
-_REQUIRED_ROOT_CHILDREN = {
+_INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.docs-implementation-alignment": (
         "leaf.docs-implementation-alignment",
@@ -177,6 +178,22 @@ _REQUIRED_ROOT_CHILDREN = {
         "leaf.storybook-coverage",
     ),
     "ci.zizmor": ("leaf.zizmor",),
+}
+_REQUIRED_JOB_ROOTS = {
+    "validation-changed": "ci.validation-changed",
+    "validation-full": "ci.validation-full",
+}
+_REQUIRED_ROOT_CHILDREN = {
+    root_gate_id: tuple(_INTERNAL_CI_ROOTS.values())
+    for root_gate_id in _REQUIRED_JOB_ROOTS.values()
+}
+_ALL_CI_SUITES = tuple(
+    suite
+    for job_id in _INTERNAL_CI_ROOTS
+    for suite in _INTERNAL_ROOT_SUITES[job_id]
+)
+_REQUIRED_JOB_SUITES = {
+    job_id: _ALL_CI_SUITES for job_id in _REQUIRED_JOB_ROOTS
 }
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
@@ -354,6 +371,30 @@ class GateRegistry:
     nodes: tuple[GateNode, ...]
     job_roots: tuple[JobRoot, ...]
     profile_roots: tuple[ProfileRoot, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class PublicSuiteRoute:
+    name: str
+    root_gate_ids: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class ChangedSuiteRule:
+    prefixes: tuple[str, ...]
+    suites: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class PublicGateContract:
+    profile_names: tuple[str, ...]
+    suites: tuple[PublicSuiteRoute, ...]
+    changed_rules: tuple[ChangedSuiteRule, ...]
+    changed_fallback_suites: tuple[str, ...]
+
+    @property
+    def suite_names(self) -> tuple[str, ...]:
+        return tuple(route.name for route in self.suites)
 
 
 def load_contract_document(root: pathlib.Path) -> dict[str, object]:
@@ -580,6 +621,218 @@ def parse_gate_registry(
     return GateRegistry(nodes, job_roots, profile_roots)
 
 
+def parse_public_gate_contract(
+    document: Mapping[str, object],
+    registry: suite_registry.SuiteRegistry,
+) -> PublicGateContract:
+    """Parse the closed public profile and changed-path selection contract."""
+
+    raw = document.get("public_gate")
+    if not isinstance(raw, Mapping):
+        raise GateContractError(
+            "ci-gate-public-contract",
+            "public_gate",
+            "the public gate contract must be an object",
+        )
+    _require_fields(
+        raw,
+        frozenset(
+            {
+                "profiles",
+                "suite_roots",
+                "changed_path_rules",
+                "changed_fallback_suites",
+            }
+        ),
+        frozenset(
+            {
+                "profiles",
+                "suite_roots",
+                "changed_path_rules",
+                "changed_fallback_suites",
+            }
+        ),
+        "ci-gate-public-contract",
+        "public_gate",
+    )
+    profiles = _strings(
+        raw["profiles"],
+        "ci-gate-public-profiles",
+        "public_gate/profiles",
+    )
+    if profiles != ("changed", "full"):
+        raise GateContractError(
+            "ci-gate-public-profiles",
+            "public_gate/profiles",
+            "public profiles must be exactly changed and full",
+        )
+
+    raw_roots = raw["suite_roots"]
+    if not isinstance(raw_roots, Mapping) or tuple(raw_roots) != registry.public_names:
+        raise GateContractError(
+            "ci-gate-public-suites",
+            "public_gate/suite_roots",
+            "public suite roots must match the exact manifest suite order",
+        )
+    node_ids = {
+        record.get("gate_id")
+        for record in document.get("gate_nodes", ())
+        if isinstance(record, Mapping)
+    }
+    routes: list[PublicSuiteRoute] = []
+    assigned_roots: set[str] = set()
+    for name in registry.public_names:
+        roots = _strings(
+            raw_roots[name],
+            "ci-gate-public-suite-roots",
+            f"public_gate/suite_roots/{name}",
+        )
+        if not roots or len(roots) != len(set(roots)) or any(
+            root not in node_ids or root in assigned_roots for root in roots
+        ):
+            raise GateContractError(
+                "ci-gate-public-suite-roots",
+                f"public_gate/suite_roots/{name}",
+                "public suite roots must be nonempty, unique, and registered",
+            )
+        assigned_roots.update(roots)
+        routes.append(PublicSuiteRoute(name, roots))
+
+    raw_rules = _require_records(
+        raw["changed_path_rules"],
+        "ci-gate-changed-rules",
+        "public_gate/changed_path_rules",
+    )
+    rules: list[ChangedSuiteRule] = []
+    seen_prefixes: set[str] = set()
+    for index, record in enumerate(raw_rules):
+        rule_path = f"public_gate/changed_path_rules[{index}]"
+        _require_fields(
+            record,
+            frozenset({"prefixes", "suites"}),
+            frozenset({"prefixes", "suites"}),
+            "ci-gate-changed-rules",
+            rule_path,
+        )
+        prefixes = _strings(
+            record["prefixes"],
+            "ci-gate-changed-rules",
+            f"{rule_path}/prefixes",
+        )
+        suites = _strings(
+            record["suites"],
+            "ci-gate-changed-rules",
+            f"{rule_path}/suites",
+        )
+        expected_suite_order = tuple(
+            name for name in registry.public_names if name in suites
+        )
+        if (
+            not prefixes
+            or not suites
+            or len(prefixes) != len(set(prefixes))
+            or seen_prefixes.intersection(prefixes)
+            or suites != expected_suite_order
+            or any(not _valid_changed_prefix(prefix) for prefix in prefixes)
+        ):
+            raise GateContractError(
+                "ci-gate-changed-rules",
+                rule_path,
+                "changed-path rules must use unique canonical prefixes and suites",
+            )
+        seen_prefixes.update(prefixes)
+        rules.append(ChangedSuiteRule(prefixes, suites))
+
+    fallback = _strings(
+        raw["changed_fallback_suites"],
+        "ci-gate-changed-fallback",
+        "public_gate/changed_fallback_suites",
+    )
+    expected_fallback_order = tuple(
+        name for name in registry.public_names if name in fallback
+    )
+    if not fallback or fallback != expected_fallback_order:
+        raise GateContractError(
+            "ci-gate-changed-fallback",
+            "public_gate/changed_fallback_suites",
+            "changed fallback suites must be a nonempty canonical subset",
+        )
+    return PublicGateContract(profiles, tuple(routes), tuple(rules), fallback)
+
+
+def select_public_suites(
+    contract: PublicGateContract,
+    profile: str,
+    changed_paths: tuple[str, ...],
+) -> tuple[str, ...]:
+    """Select public suites without allowing an unknown profile or unsafe path."""
+
+    if profile not in contract.profile_names:
+        raise GateContractError(
+            "ci-gate-profile-unknown",
+            "profile",
+            "the selected profile is not registered",
+        )
+    if profile == "full":
+        return contract.suite_names
+    if any(not _valid_changed_path(path) for path in changed_paths):
+        raise GateContractError(
+            "ci-gate-changed-path",
+            "changed_paths",
+            "changed paths must be canonical repository-relative paths",
+        )
+    selected = set(contract.changed_fallback_suites)
+    for rule in contract.changed_rules:
+        if any(
+            _matches_changed_prefix(path, prefix)
+            for path in changed_paths
+            for prefix in rule.prefixes
+        ):
+            selected.update(rule.suites)
+    return tuple(name for name in contract.suite_names if name in selected)
+
+
+def public_root_gate_ids(
+    contract: PublicGateContract,
+    selected_suites: tuple[str, ...],
+) -> tuple[str, ...]:
+    if len(selected_suites) != len(set(selected_suites)) or any(
+        name not in contract.suite_names for name in selected_suites
+    ):
+        raise GateContractError(
+            "ci-gate-public-suites",
+            "suites",
+            "selected public suites must be unique and registered",
+        )
+    selected = set(selected_suites)
+    return tuple(
+        gate_id
+        for route in contract.suites
+        if route.name in selected
+        for gate_id in route.root_gate_ids
+    )
+
+
+def _valid_changed_prefix(value: str) -> bool:
+    if not value or "\\" in value or any(ord(character) < 32 for character in value):
+        return False
+    candidate = pathlib.PurePosixPath(value.removesuffix("/"))
+    return (
+        not candidate.is_absolute()
+        and candidate.as_posix() == value.removesuffix("/")
+        and all(part not in {"", ".", ".."} for part in candidate.parts)
+    )
+
+
+def _valid_changed_path(value: str) -> bool:
+    return _valid_changed_prefix(value) and not value.endswith("/")
+
+
+def _matches_changed_prefix(path: str, prefix: str) -> bool:
+    literal = prefix.removesuffix("/")
+    return path == literal or path.startswith(f"{literal}/")
+
+
 def validate_gate_registry(
     root: pathlib.Path,
     registry: GateRegistry,
@@ -618,7 +871,7 @@ def validate_gate_registry(
         finding(
             "ci-gate-required-job-roots",
             "job_roots",
-            "the required quality jobs must map to the exact sixteen roots",
+            "required quality must map to the exact two workflow jobs",
         )
         return tuple(findings)
 
@@ -688,6 +941,14 @@ def validate_gate_registry(
         return tuple(findings)
 
     topological_ids = _topological_ids(node_by_id)
+    for root_gate_id, expected_children in _INTERNAL_ROOT_CHILDREN.items():
+        if node_by_id[root_gate_id].children != expected_children:
+            finding(
+                "ci-gate-internal-root-children",
+                f"gate_nodes/{root_gate_id}",
+                "internal CI roots must retain their exact ordered children",
+            )
+            return tuple(findings)
     for job in registry.job_roots:
         path_counts = _bounded_path_counts(
             node_by_id,

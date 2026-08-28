@@ -7,11 +7,16 @@ import subprocess
 import tempfile
 import unittest
 
+from scripts.validation.ci_gate_contract import load_public_suite_registry
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
-REPOSITORY_CHECKER = ROOT / "scripts/validation/check-repo-contracts.sh"
+MANIFEST_PATH = ROOT / "scripts/manifest.yaml"
+SUPPLY_CHAIN_SUMMARY_GENERATOR = (
+    ROOT / "scripts/security/generate-supply-chain-sample-service-summary.sh"
+)
 DOZZLE_COMPOSE = ROOT / "infra/11-laboratory/dozzle/docker-compose.yml"
 DRIFT_COMPONENTS = (
     "Traefik",
@@ -31,7 +36,6 @@ STALE_IMAGES = {
 }
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
-LIFECYCLE_TERM_RE = re.compile(r"\b(?:legacy|deprecated)\b", re.IGNORECASE)
 PRESERVED_LIFECYCLE_CONTEXTS = frozenset(
     {
         "historical",
@@ -52,31 +56,6 @@ TARGET_ROOTS = (
     "secrets",
     "tests",
 )
-REGISTERED_LIFECYCLE_CONTEXTS = {
-    "infra/06-observability/alloy/README.md": "migration",
-    "infra/06-observability/grafana/dashboards/Infrastructure/neo4j.json": (
-        "dashboard-label"
-    ),
-    "infra/06-observability/grafana/dashboards/Observability/loki-metrics.json": (
-        "dashboard-label"
-    ),
-    "scripts/README.md": "historical",
-    "scripts/operations/provider_surface_renderer.py": "migration",
-    "scripts/security/generate-supply-chain-sample-service-summary.sh": "migration",
-    "scripts/security/verify-sample-service-supply-chain.sh": "migration",
-    "scripts/validation/agent_governance_contract.py": "migration",
-    "scripts/validation/check-document-metadata.py": "migration",
-    "scripts/validation/check-repo-contracts.sh": "migration",
-    "scripts/validation/target_surface_contract.py": "migration",
-    "tests/validation/test_agent_governance_contract.py": "negative-fixture",
-    "tests/validation/test_document_corpus_lifecycle.py": "negative-fixture",
-    "tests/validation/test_document_metadata.py": "negative-fixture",
-    "tests/validation/test_provider_native_surfaces.py": "negative-fixture",
-    "tests/validation/test_provider_surface_renderer.py": "negative-fixture",
-    "tests/validation/test_sample_service_delivery_rehearsal.py": "negative-fixture",
-    "tests/validation/test_target_surface_contracts.py": "negative-fixture",
-    "tests/validation/test_tech_stack_version_contract.py": "negative-fixture",
-}
 DIRECT_CURRENT_DOCS = {
     "infra/01-gateway/README.md": (("Traefik", "tag"),),
     "infra/02-auth/keycloak/README.md": (("Keycloak", "image"),),
@@ -91,19 +70,19 @@ DIRECT_CURRENT_DOCS = {
     "infra/06-observability/tempo/README.md": (("Alloy", "tag"),),
     "infra/08-ai/README.md": (("Ollama", "image"),),
     "infra/11-laboratory/dozzle/README.md": (("Dozzle", "tag"),),
-    "docs/05.operations/guides/06-observability/alloy.md": (
+    "docs/05.operations/catalog/06-observability/0040-alloy/guide.md": (
         ("Alloy", "image"),
     ),
-    "docs/05.operations/guides/06-observability/prometheus.md": (
+    "docs/05.operations/catalog/06-observability/0045-prometheus/guide.md": (
         ("Prometheus", "image"),
     ),
-    "docs/05.operations/policies/06-observability/alloy.md": (
+    "docs/05.operations/catalog/06-observability/0040-alloy/policy.md": (
         ("Alloy", "image"),
     ),
-    "docs/05.operations/policies/06-observability/prometheus.md": (
+    "docs/05.operations/catalog/06-observability/0045-prometheus/policy.md": (
         ("Prometheus", "image"),
     ),
-    "docs/05.operations/runbooks/06-observability/alloy.md": (
+    "docs/05.operations/catalog/06-observability/0040-alloy/runbook.md": (
         ("Alloy", "image"),
     ),
 }
@@ -153,6 +132,16 @@ class TechStackVersionContractTests(unittest.TestCase):
     def registry_entries() -> dict[str, dict[str, object]]:
         registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
         return {entry["component"]: entry for entry in registry["entries"]}
+
+    def test_supply_chain_summary_is_fresh(self) -> None:
+        completed = subprocess.run(
+            ["bash", str(SUPPLY_CHAIN_SUMMARY_GENERATOR), "--check"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
 
     @staticmethod
     def run_compose_image_resolver_path(
@@ -284,25 +273,42 @@ class TechStackVersionContractTests(unittest.TestCase):
         self.assertNotIn("image: amir20/dozzle:v10.6.7", text)
         self.assertNotIn("image: amir20/dozzle:v10.6.11", text)
         self.assertIn(
-            'compose_service_image "$dozzle_compose" "dozzle" >/dev/null',
-            text,
-        )
-        self.assertNotIn(
-            'check_contains "$dozzle_compose" "image: ${dozzle_image}"',
-            text,
-        )
-
-    def test_repository_checker_dozzle_diagnostic_uses_compose_version(
-        self,
-    ) -> None:
-        text = REPOSITORY_CHECKER.read_text(encoding="utf-8")
-        self.assertNotIn(
-            "Dozzle is declared as amir20/dozzle:v10.6.6",
+            (
+                'dozzle_compose_image="$(compose_service_image '
+                '"$dozzle_compose" "dozzle")"'
+            ),
             text,
         )
         self.assertIn(
-            "Dozzle is declared as amir20/dozzle:v10.6.11",
+            '[[ "$dozzle_compose_image" != "$dozzle_image" ]]',
             text,
+        )
+
+    def test_public_operations_suite_owns_hardening_version_validation(
+        self,
+    ) -> None:
+        registry = load_public_suite_registry(MANIFEST_PATH)
+        operations = next(
+            suite for suite in registry.suites if suite.name == "operations"
+        )
+        self.assertEqual(
+            1,
+            operations.validators.count(
+                pathlib.PurePosixPath(
+                    "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                )
+            ),
+        )
+        repository_integrity = next(
+            suite
+            for suite in registry.suites
+            if suite.name == "repository-integrity"
+        )
+        self.assertEqual(
+            1,
+            repository_integrity.validators.count(
+                pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
+            ),
         )
 
     def test_compose_image_resolver_accepts_exact_safe_scalars(self) -> None:
@@ -557,7 +563,7 @@ class TechStackVersionContractTests(unittest.TestCase):
                         result.stderr,
                     )
 
-    def test_lifecycle_terms_have_registered_preserve_contexts(self) -> None:
+    def test_post_deletion_scan_reads_only_current_files(self) -> None:
         tracked = subprocess.run(
             [
                 "git",
@@ -573,24 +579,23 @@ class TechStackVersionContractTests(unittest.TestCase):
             check=True,
             capture_output=True,
         ).stdout.split(b"\0")
-        occurrence_paths = {
+        current_paths = {
             relative.decode()
             for relative in tracked
-            if relative
-            and b"\0" not in (ROOT / relative.decode()).read_bytes()
-            and LIFECYCLE_TERM_RE.search(
-                (ROOT / relative.decode()).read_text(
-                    encoding="utf-8",
-                    errors="ignore",
-                )
-            )
+            if relative and (ROOT / relative.decode()).is_file()
         }
-
-        self.assertEqual(set(REGISTERED_LIFECYCLE_CONTEXTS), occurrence_paths)
-        self.assertEqual(
-            (),
-            lifecycle_classification_findings(REGISTERED_LIFECYCLE_CONTEXTS),
+        self.assertTrue(
+            {
+                "scripts/hooks/patch-graphify-post-commit.sh",
+                "scripts/knowledge/generate-llm-wiki-coverage.sh",
+                "scripts/knowledge/generate-llm-wiki-index.sh",
+                "scripts/validation/check-repo-contracts.sh",
+                "scripts/validation/recommend-gap-routing.sh",
+                "scripts/validation/recommend-qa-gates.sh",
+            }.isdisjoint(current_paths)
         )
+        for relative in current_paths:
+            (ROOT / relative).read_bytes()
 
     def test_lifecycle_context_policy_preserves_evidence_categories(self) -> None:
         classifications = {

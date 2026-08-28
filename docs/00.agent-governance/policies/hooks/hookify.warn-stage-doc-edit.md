@@ -29,8 +29,7 @@ action: warn
 **After editing, verify:**
 
 ```bash
-python3 scripts/validation/check-document-links.py --mode traceability
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile changed
 ```
 
 ## Related Documents

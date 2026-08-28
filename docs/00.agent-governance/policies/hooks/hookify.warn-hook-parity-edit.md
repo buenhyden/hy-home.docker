@@ -39,7 +39,7 @@ action: warn
 **After completion, verify:**
 
 ```bash
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile changed
 python3 -m json.tool .claude/settings.json >/dev/null && echo "Claude JSON valid"
 python3 -m json.tool .codex/hooks.json >/dev/null && echo "Codex JSON valid"
 ```

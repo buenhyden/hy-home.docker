@@ -58,7 +58,7 @@ seaweedfs/
 | Healthcheck | Compose healthcheck declared for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`; not declared for `seaweedfs-mount` |
 | Privilege boundary | `seaweedfs-mount` runs `privileged: true` with `SYS_ADMIN` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

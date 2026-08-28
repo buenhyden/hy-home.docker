@@ -55,7 +55,7 @@ valkey-cluster/
 | Secret refs | names: `service_valkey_password`; mounts: `/run/secrets/service_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, plus 2 more; not declared for `valkey-cluster-init` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

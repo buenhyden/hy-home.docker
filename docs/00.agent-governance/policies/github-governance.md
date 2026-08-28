@@ -60,9 +60,8 @@ Repo-local stricter rules always override this document; never weaken them on th
 
 - **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
 - **Local Responsibility**: Fail-fast static analysis (formatting, simple
-  linting, pre-push contract scripts, and
-  `scripts/validation/run-local-qa-gates.sh` for locally reproducible
-  script-backed QA/CI gates). Agents must not invoke `pre-commit run` directly.
+  linting, the public `changed` profile for pre-commit, and the public `full`
+  profile for pre-push). Agents must not invoke `pre-commit run` directly.
   An approved final QA all-files run uses only
   `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
   linked worktree with co-located Task evidence and minimal allowed prefixes.
@@ -144,57 +143,23 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ## 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` defines required quality gates and separate GitHub-native
-automation. `.github/workflow-contract.yml` is the typed registry for required
-job IDs, job roots, gate DAGs, profiles, admitted environment keys, and direct
-external Actions. Every required-quality `run:` step is one static
-`run-ci-gate.py --profile ci --gate <id>` projection. The focused workflow
-checker requires the ordered expansion of those projections to equal the
-registered job root exactly once while retaining trigger, permission, timeout,
-Action, and workflow-shape checks. Required job IDs must stay in sync with
-`.github/rulesets/main-protection.md`.
-Archive/tombstone validation is part of the `repo-contracts` gate: active
-target-stage truth checks stay separate from `docs/98.archive` tombstone
-template/status checks. The same gate also blocks stage-document runtime version
-drift for implementation-pinned images and components, using current compose
-declarations and `infra/tech-stack.versions.json` as the implementation signal.
-
-The existing `repo-contracts` job also runs
-`python3 scripts/validation/check-document-metadata.py --mode check-changed`
-immediately after installing `scripts/requirements.txt`. The job binds
-`TEMPLATE_GATE_BASE` to the pull-request base SHA for pull requests and the
-push-before SHA for pushes. `fetch-depth: 0` keeps history available, and an
-event-only preflight requires that SHA to resolve to a commit with a merge base
-before the checker runs. An all-zero, missing, or unrelated event base therefore
-fails closed. Manual dispatches have no event delta and use the checker's normal
-safe-base resolution chain.
-
-The same repository-contract path always runs the document corpus lifecycle
-`check-contract` and `check-promoted` modes. It runs `check-impacted` only with
-a verified `TEMPLATE_GATE_BASE` commit, or with a resolvable local `HEAD~1` when
-the explicit environment value is absent. This extends the existing required
-job; it does not create or require another CI job.
+`ci-quality.yml` defines exactly two required quality jobs:
+`validation-changed` for pull requests and `validation-full` for push/manual
+events. `.github/workflow-contract.yml` owns the six-suite composition,
+changed-path impact rules, gate DAG, admitted environment keys, and direct
+external Actions. Each required job contains one static public profile command;
+the focused checker retains trigger, permission, timeout, Action, and
+workflow-shape checks.
+Archive/tombstone, metadata, lifecycle, runtime-version, and repository-contract
+checks remain atomic leaves behind the two public profiles. Their composition is
+owned by `.github/workflow-contract.yml`; none is a separate required GitHub job.
 
 ### Required Quality Gates
 
-| Job ID                            | Registered root                              |
-| --------------------------------- | -------------------------------------------- |
-| `docs-traceability`               | `ci.docs-traceability`                       |
-| `docs-implementation-alignment`   | `ci.docs-implementation-alignment`           |
-| `repo-contracts`                  | `ci.repo-contracts`                          |
-| `agent-output-eval-fixture-gate`  | `ci.agent-output-eval-fixture-gate`          |
-| `supply-chain-fixture-policy`     | `ci.supply-chain-fixture-policy`             |
-| `dependency-vulnerability-audit`  | `ci.dependency-vulnerability-audit`          |
-| `git-flow-contract`               | `ci.git-flow-contract`                       |
-| `compose-validation`              | `ci.compose-validation`                      |
-| `compose-all-profiles-validation` | `ci.compose-all-profiles-validation`         |
-| `infrastructure-hardening`        | `ci.infrastructure-hardening`                |
-| `template-security-baseline`      | `ci.template-security-baseline`              |
-| `quickwin-baseline`               | `ci.quickwin-baseline`                       |
-| `pre-commit`                      | `ci.pre-commit`                              |
-| `frontend-quality`                | `ci.frontend-quality`                        |
-| `storybook-coverage`              | `ci.storybook-coverage`                      |
-| `zizmor`                          | `ci.zizmor`                                  |
+| Job ID | Public profile | Event |
+| :--- | :--- | :--- |
+| `validation-changed` | `changed` | pull request |
+| `validation-full` | `full` | push or manual dispatch |
 
 `zizmor` is intentionally GitHub-only because its gate uploads SARIF with
 GitHub security permissions. Do not duplicate it inside the local pre-commit
@@ -211,12 +176,8 @@ runner.
 | `document-corpus-lifecycle.yml` | report read-only scheduled/manual lifecycle debt and duplicate candidates |
 | `tech-stack-version-sync.yml` | check curated version-registry drift for governed Compose/version changes |
 
-The `pre-commit` job installs the exact version from
-`scripts/requirements-pre-commit.txt` and reaches
-`scripts/validation/run-ci-precommit.sh` through its typed root with
-`SKIP=eslint-nextjs`. That CI-only leaf requires GitHub Actions and CI markers
-and grants no Agent authorization. Agent all-files execution remains limited
-to the separately approved controlled wrapper.
+Agent all-files execution remains limited to the separately approved controlled
+wrapper; neither required profile grants Agent authorization.
 
 **Coupling constraint:** when adding, removing, or renaming a required job,
 update all three tracked surfaces together:

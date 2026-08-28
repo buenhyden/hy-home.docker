@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0060
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-03-25
 updated: 2026-08-11
 ---
@@ -36,7 +37,7 @@ updated: 2026-08-11
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - Terraform/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ## Review Cadence

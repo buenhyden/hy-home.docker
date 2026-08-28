@@ -34,7 +34,6 @@ evidence.
 
 - [Typed gate CLI](../scripts/validation/run-ci-gate.py)
 - [Local QA profile wrapper](../scripts/validation/run-local-qa-gates.sh)
-- [Repository contract checker](../scripts/validation/check-repo-contracts.sh)
 - [Focused workflow checker](../scripts/validation/check-github-workflow-contract.py)
 
 ## Related Documents

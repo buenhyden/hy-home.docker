@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0063
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -45,7 +46,7 @@ updated: 2026-08-11
 
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-   - `bash scripts/validation/check-repo-contracts.sh`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed`
 2. Gateway/SSO 경계 정렬
    - SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 네트워크 경계 표준화

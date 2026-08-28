@@ -5,7 +5,7 @@ artifact_id: DATA-0072
 artifact_type: data
 parent_ids: []
 created: '2026-08-21'
-updated: '2026-08-23'
+updated: '2026-08-28'
 observed_at: '2026-08-21'
 generated_by: scripts/validation/report-provider-hook-parity.sh
 ---

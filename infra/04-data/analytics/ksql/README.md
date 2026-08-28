@@ -53,7 +53,7 @@ ksql/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ksqldb-server`; not declared for `ksqldb-cli`, `ksql-datagen` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0018-ksqldb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0018-ksqldb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network context or a local validation overlay. |
 
 ## How to Work in This Area
@@ -72,7 +72,7 @@ ksql/
 ## Validation
 
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect ksqlDB.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 

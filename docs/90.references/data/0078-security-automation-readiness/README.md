@@ -74,7 +74,7 @@ management procedures.
 | Control ID | Control | Status | Evidence | Gap / Next Step |
 | --- | --- | --- | --- | --- |
 | SEC-AUTO-001 | Security disclosure and vulnerability reporting boundary | Implemented | [.github/SECURITY.md](../../../../.github/SECURITY.md) | Keep reporting and response expectations current. |
-| SEC-AUTO-002 | Workflow permissions and dangerous-workflow scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) | Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload. |
+| SEC-AUTO-002 | Workflow permissions and dangerous-workflow scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/validation/run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) | Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload. |
 | SEC-AUTO-003 | Secret scanning and secret-boundary enforcement | Implemented | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[.gitleaks.toml](../../../../.gitleaks.toml)<br>[scripts/validation/check-template-security-baseline.sh](../../../../scripts/validation/check-template-security-baseline.sh) | Pre-commit secret scanning and template/security baseline exist; keep secret values out of generated reports. |
 | SEC-AUTO-004 | Dependency update automation | Implemented | [.github/dependabot.yml](../../../../.github/dependabot.yml) | Dependabot coverage exists; vulnerability severity gating remains separate. |
 | SEC-AUTO-005 | Infrastructure hardening baseline | Implemented | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | Hardening script is wired into CI quality checks. |
@@ -85,7 +85,7 @@ management procedures.
 | SEC-AUTO-011 | OpenSSF Scorecard automation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Scorecard automation is present in tracked workflow/script surfaces. |
 | SEC-AUTO-013 | Container/image vulnerability scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A container/image vulnerability scanning command is present in tracked workflow/script surfaces. |
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
-| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 55 reachable typed gates. |
+| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 64 reachable typed gates. |
 
 ## Provenance
 
@@ -126,7 +126,7 @@ management procedures.
 - [Security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md) - framework coverage and gap baseline.
 - [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.
 - [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.
-- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.
+- [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.
 
 ## Refresh
 

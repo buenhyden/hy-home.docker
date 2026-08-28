@@ -67,7 +67,7 @@ postgresql-cluster/
 | Secret refs | names: `pg_haproxy_stats_password`, `patroni_superuser_password`, `patroni_exporter_password`, `service_postgres_password`, `patroni_replication_password`; mounts: `/run/secrets/pg_haproxy_stats_password`, `/run/secrets/patroni_superuser_password`, `/run/secrets/patroni_exporter_password`, `/run/secrets/service_postgres_password`, `/run/secrets/patroni_replication_password` |
 | Healthcheck | Compose healthcheck declared for `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-0`, plus 5 more; not declared for `pg-cluster-init` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0031-postgresql-cluster/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

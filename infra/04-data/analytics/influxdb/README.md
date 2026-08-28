@@ -53,7 +53,7 @@ influxdb/
 | Write API | `POST http://influxdb:8181/api/v3/write_lp?db=${INFLUXDB_DB_NAME}` requires an authorized operator/named token; token creation/provisioning and authenticated write acceptance require separate runtime approval and remain unverified |
 | Healthcheck | Probes `http://127.0.0.1:8181/` and accepts `200`, `204`, or `401` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0017-influxdb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0017-influxdb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0017-influxdb/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
 
 ## How to Work in This Area
@@ -72,7 +72,7 @@ influxdb/
 ## Validation
 
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect InfluxDB.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 

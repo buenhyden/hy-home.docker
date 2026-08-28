@@ -58,7 +58,7 @@ oauth2-proxy/
 | Secret refs | names: `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`, `oauth2_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/oauth2_proxy_client_secret`, `/run/secrets/oauth2_proxy_cookie_secret`, `/run/secrets/oauth2_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `oauth2-proxy`, `oauth2-proxy`, `oauth2-proxy-valkey`; not declared for `oauth2-proxy-valkey-exporter` |
 | Operations | [Guide](../../../docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

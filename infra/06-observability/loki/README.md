@@ -61,7 +61,7 @@ loki/
 | Labels | `traefik.http.routers.loki.*`, `traefik.http.services.loki.loadbalancer.server.port` |
 | Healthcheck | `http://127.0.0.1:${LOKI_PORT:-3100}/ready` |
 | Operations | [Guide](../../../docs/05.operations/catalog/06-observability/0043-loki/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/0043-loki/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/0043-loki/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the linked runbook, compose config rendering, service logs, and redacted storage/ingestion evidence |
 
 ## Available Scripts

@@ -236,14 +236,7 @@ class Gate9Fixture:
         self.write(PLAN, "# Plan\n\nApproved Step 0e fixture.\n")
         self.write(INDEX, "fixed index\n")
         self.write(COVERAGE, "fixed coverage\n")
-        self._write_generator(
-            "scripts/knowledge/generate-llm-wiki-index.sh", "fixed index\n", INDEX
-        )
-        self._write_generator(
-            "scripts/knowledge/generate-llm-wiki-coverage.sh",
-            "fixed coverage\n",
-            COVERAGE,
-        )
+        self._write_generator("scripts/knowledge/generate-llm-wiki.py")
         self.pending_payload: dict[str, object] = {
             "attempt": 1,
             "schema": SCHEMA,
@@ -278,31 +271,27 @@ class Gate9Fixture:
             encoding="utf-8",
         )
 
-    def _write_generator(self, relative: str, output: str, tracked_output: str) -> None:
-        script = f"""#!/usr/bin/env bash
-set -euo pipefail
-mode=${{1:-}}
-if [[ -n ${{GATE9_LLM_MANIFEST_FD:-}} || -n ${{GATE9_LLM_MANIFEST_SIZE:-}} || -n ${{GATE9_LLM_MANIFEST_SHA256:-}} ]]; then
-  [[ $# -eq 1 && $mode == --stdout ]]
-  [[ -n ${{GATE9_LLM_MANIFEST_FD:-}} && -n ${{GATE9_LLM_MANIFEST_SIZE:-}} && -n ${{GATE9_LLM_MANIFEST_SHA256:-}} ]]
-  python3 - "$GATE9_LLM_MANIFEST_FD" "$GATE9_LLM_MANIFEST_SIZE" "$GATE9_LLM_MANIFEST_SHA256" <<'PY'
-import hashlib, os, sys
-fd, size, expected = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3]
+    def _write_generator(self, relative: str) -> None:
+        script = f"""#!/usr/bin/env python3
+import argparse
+import hashlib
+import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--stdout", action="store_true")
+parser.add_argument("--artifact", choices=("index", "coverage"), required=True)
+args = parser.parse_args()
+fd = int(os.environ["GATE9_LLM_MANIFEST_FD"])
+size = int(os.environ["GATE9_LLM_MANIFEST_SIZE"])
+expected = os.environ["GATE9_LLM_MANIFEST_SHA256"]
 value = os.read(fd, size)
+assert args.stdout
 assert len(value) == size and hashlib.sha256(value).hexdigest() == expected
 assert os.read(fd, 1) == b""
-PY
-  printf '%b' {json.dumps(output)}
-  printf x >> {json.dumps(os.fspath(self.generator_log))}
-elif [[ $# -eq 1 && $mode == --stdout ]]; then
-  printf '%b' {json.dumps(output)}
-elif [[ $# -eq 1 && $mode == --check ]]; then
-  cmp -s <(printf '%b' {json.dumps(output)}) {tracked_output}
-elif [[ $# -eq 0 ]]; then
-  printf '%b' {json.dumps(output)} > {tracked_output}
-else
-  exit 2
-fi
+output = {{"index": "fixed index\\n", "coverage": "fixed coverage\\n"}}[args.artifact]
+print(output, end="")
+with open({json.dumps(os.fspath(self.generator_log))}, "ab") as log:
+    log.write(b"x")
 """
         self.write(relative, script, executable=True)
 

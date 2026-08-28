@@ -56,7 +56,7 @@ nginx/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `nginx` |
 | Operations | [Guide](../../../docs/05.operations/catalog/01-gateway/0011-nginx/guide.md), [Policy](../../../docs/05.operations/catalog/01-gateway/0011-nginx/policy.md), [Runbook](../../../docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with static hardening checks; inspect service logs only when an approved Nginx runtime context is already running. |
 
 ## How to Work in This Area
@@ -97,7 +97,7 @@ healthcheck:
 | `docker compose exec nginx nginx -s reload` | Runtime reload only after `nginx -t` passes in the approved running context |
 
 - Run `bash scripts/hardening/check-all-hardening.sh 01-gateway` after README, compose, or config changes that affect this service.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking the service documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking the service documentation ready.
 - Treat service-local standalone compose rendering as insufficient evidence because `nginx` depends on the root `infra_net` and backend services.
 
 ## Troubleshooting

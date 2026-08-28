@@ -45,8 +45,8 @@ MAX_SEMANTIC_HELPER_BYTES: Final = 256 * 1_024
 MAX_SEMANTIC_HELPER_TOTAL_BYTES: Final = 4 * 1_048_576
 MAX_SEMANTIC_HELPER_FILES: Final = 64
 MAX_SEMANTIC_HELPER_DEPTH: Final = 8
-REPOSITORY_AGGREGATE: Final = pathlib.PurePosixPath(
-    "scripts/validation/check-repo-contracts.sh"
+PUBLIC_GATE_RUNNER: Final = pathlib.PurePosixPath(
+    "scripts/validation/run-ci-gate.py"
 )
 
 
@@ -120,37 +120,20 @@ class _WorkflowPermissionBaseline:
 
 
 _CONTENTS_READ: Final[PermissionItems] = (("contents", "read"),)
-_ZIZMOR_PERMISSIONS: Final[PermissionItems] = (
+_FULL_GATE_PERMISSIONS: Final[PermissionItems] = (
     ("actions", "read"),
     ("contents", "read"),
     ("security-events", "write"),
-)
-_CI_READ_ONLY_JOBS: Final = (
-    "docs-traceability",
-    "docs-implementation-alignment",
-    "repo-contracts",
-    "agent-output-eval-fixture-gate",
-    "supply-chain-fixture-policy",
-    "dependency-vulnerability-audit",
-    "git-flow-contract",
-    "compose-validation",
-    "compose-all-profiles-validation",
-    "infrastructure-hardening",
-    "template-security-baseline",
-    "quickwin-baseline",
-    "pre-commit",
-    "frontend-quality",
-    "storybook-coverage",
 )
 _WORKFLOW_PERMISSION_BASELINES: Final = (
     (
         ".github/workflows/ci-quality.yml",
         _WorkflowPermissionBaseline(
             top_level=_CONTENTS_READ,
-            jobs=tuple(
-                (job_id, _CONTENTS_READ) for job_id in _CI_READ_ONLY_JOBS
-            )
-            + (("zizmor", _ZIZMOR_PERMISSIONS),),
+            jobs=(
+                ("validation-changed", _CONTENTS_READ),
+                ("validation-full", _FULL_GATE_PERMISSIONS),
+            ),
         ),
     ),
     (
@@ -943,11 +926,11 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         for workflow in workflows
         if workflow.classification == "required-quality"
     ]
-    if len(required_workflows) != 1 or len(required_workflows[0].jobs) != 16:
+    if len(required_workflows) != 1 or len(required_workflows[0].jobs) != 2:
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "exactly one required-quality workflow with 16 jobs is required",
+            "exactly one required-quality workflow with two public-profile jobs is required",
         )
     return WorkflowContract(
         schema_version=2,
@@ -989,12 +972,11 @@ def _job_programs(job: dict[object, object]) -> tuple[str, ...]:
 
 
 _STATIC_GATE_PROGRAM_RE: Final = re.compile(
-    r"python3 scripts/validation/run-ci-gate\.py "
-    r"--profile ci --gate ([a-z0-9.-]+)\Z"
+    r"python3 scripts/validation/run-ci-gate\.py --profile (changed|full)\Z"
 )
 
 
-def _static_gate_id(program: str) -> str | None:
+def _static_gate_profile(program: str) -> str | None:
     match = _STATIC_GATE_PROGRAM_RE.fullmatch(program)
     return match.group(1) if match is not None else None
 
@@ -1025,25 +1007,51 @@ def _workflow_projection_findings(
                 "required workflow defaults.run is forbidden",
             )
         )
-    root_by_job = {
-        record.job_id: record.root_gate_id
-        for record in contract.gate_registry.job_roots
-        if record.workflow == path
+    expected_jobs: dict[str, tuple[str, str, dict[str, str]]] = {
+        "validation-changed": (
+            "changed",
+            "github.event_name == 'pull_request'",
+            {
+                "EVENT_NAME": "${{ github.event_name }}",
+                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+                "PR_TITLE": "${{ github.event.pull_request.title }}",
+                "HEAD_REF": "${{ github.head_ref }}",
+            },
+        ),
+        "validation-full": (
+            "full",
+            "github.event_name != 'pull_request'",
+            {
+                "EVENT_NAME": "${{ github.event_name }}",
+                "PUSH_BEFORE_SHA": "${{ github.event.before }}",
+                "HYHOME_COMPOSE_PROFILES": (
+                    "core data obs workflow ai tooling messaging security "
+                    "communication service storage admin iac registry sast "
+                    "sync testing graph mng ksql nginx"
+                ),
+            },
+        ),
     }
-    node_by_id = {
-        node.gate_id: node for node in contract.gate_registry.nodes
-    }
+    checkout = next(
+        (action for action in contract.actions if action.action == "actions/checkout"),
+        None,
+    )
+    expected_checkout = (
+        {
+            "name": "Checkout repository",
+            "uses": f"actions/checkout@{checkout.sha}",
+            "with": {"persist-credentials": False, "fetch-depth": 0},
+        }
+        if checkout is not None
+        else None
+    )
     for raw_job_id, raw_job in raw_jobs.items():
         if not isinstance(raw_job_id, str) or not isinstance(raw_job, dict):
             continue
-        root_gate_id = root_by_job.get(raw_job_id)
-        if root_gate_id is None:
+        expected_job = expected_jobs.get(raw_job_id)
+        if expected_job is None:
             continue
-        admitted_job_condition = (
-            "github.event_name == 'pull_request'"
-            if raw_job_id == "git-flow-contract"
-            else None
-        )
+        profile, admitted_job_condition, admitted_job_environment = expected_job
         if raw_job.get("if") != admitted_job_condition:
             findings.append(
                 _finding(
@@ -1061,6 +1069,14 @@ def _workflow_projection_findings(
                     f"job {raw_job_id} defaults.run is forbidden",
                 )
             )
+        if raw_job.get("env") != admitted_job_environment:
+            findings.append(
+                _finding(
+                    "workflow-gate-environment-invalid",
+                    path,
+                    f"job {raw_job_id} environment is not admitted",
+                )
+            )
         steps = raw_job.get("steps")
         if not isinstance(steps, list):
             findings.append(
@@ -1071,8 +1087,15 @@ def _workflow_projection_findings(
                 )
             )
             continue
+        if not steps or steps[0] != expected_checkout:
+            findings.append(
+                _finding(
+                    "workflow-gate-checkout-required",
+                    path,
+                    f"job {raw_job_id} requires the registered checkout first",
+                )
+            )
         projected: list[str] = []
-        admitted_job_environment: set[str] = set()
         for step in steps:
             if not isinstance(step, dict):
                 continue
@@ -1088,20 +1111,11 @@ def _workflow_projection_findings(
                     )
                 )
                 continue
-            admitted_step_condition = (
-                "always()"
-                if (
-                    raw_job_id == "docs-implementation-alignment"
-                    and step.get("name") == "Publish QA gate recommendations"
-                    and _static_gate_id(program)
-                    == "leaf.docs-qa-gate-recommendations"
-                )
-                else None
-            )
             if (
-                step.get("if") != admitted_step_condition
+                step.get("if") is not None
                 or "shell" in step
                 or "working-directory" in step
+                or "env" in step
             ):
                 findings.append(
                     _finding(
@@ -1110,8 +1124,8 @@ def _workflow_projection_findings(
                         f"job {raw_job_id} run step context is not admitted",
                     )
                 )
-            gate_id = _static_gate_id(program)
-            if gate_id is None:
+            selected_profile = _static_gate_profile(program)
+            if selected_profile is None:
                 findings.append(
                     _finding(
                         "workflow-gate-projection-invalid",
@@ -1119,112 +1133,16 @@ def _workflow_projection_findings(
                         f"job {raw_job_id} contains a non-static gate program",
                     )
                 )
-                continue
-            try:
-                expanded = expand_gate_ids(
-                    contract.gate_registry,
-                    "ci",
-                    gate_id,
-                    False,
-                )
-                root_expanded = expand_gate_ids(
-                    contract.gate_registry,
-                    "ci",
-                    root_gate_id,
-                    False,
-                )
-            except GateContractError:
-                findings.append(
-                    _finding(
-                        "workflow-gate-projection-invalid",
-                        path,
-                        f"job {raw_job_id} selects an invalid gate",
-                    )
-                )
-                continue
-            if not set(expanded).issubset(root_expanded):
-                findings.append(
-                    _finding(
-                        "workflow-gate-projection-invalid",
-                        path,
-                        f"job {raw_job_id} selects a gate outside its root",
-                    )
-                )
-                continue
-            step_admitted = {
-                key
-                for selected_id in expanded
-                for key in node_by_id[selected_id].allowed_env_keys
-            }
-            step_environment = _environment_keys(step.get("env"))
-            if (
-                step_environment is None
-                or not step_environment.issubset(step_admitted)
-            ):
-                findings.append(
-                    _finding(
-                        "workflow-gate-environment-invalid",
-                        path,
-                        f"job {raw_job_id} step environment is not admitted",
-                    )
-                )
-            admitted_job_environment.update(step_admitted)
-            projected.extend(expanded)
-        expected = expand_gate_ids(
-            contract.gate_registry,
-            "ci",
-            root_gate_id,
-            False,
-        )
-        if tuple(projected) != expected or len(projected) != len(set(projected)):
+            else:
+                projected.append(selected_profile)
+        if projected != [profile]:
             findings.append(
                 _finding(
                     "workflow-gate-projection-mismatch",
                     path,
-                    f"job {raw_job_id} does not project its root exactly once",
+                    f"job {raw_job_id} does not select its public profile exactly once",
                 )
             )
-        job_environment = _environment_keys(raw_job.get("env"))
-        if (
-            job_environment is None
-            or not job_environment.issubset(admitted_job_environment)
-        ):
-            findings.append(
-                _finding(
-                    "workflow-gate-environment-invalid",
-                    path,
-                    f"job {raw_job_id} environment is not admitted",
-                )
-            )
-        if raw_job_id == "git-flow-contract":
-            checkout = next(
-                (
-                    action
-                    for action in contract.actions
-                    if action.action == "actions/checkout"
-                ),
-                None,
-            )
-            expected_checkout = (
-                {
-                    "name": "Checkout repository",
-                    "uses": f"actions/checkout@{checkout.sha}",
-                    "with": {
-                        "persist-credentials": False,
-                        "fetch-depth": 0,
-                    },
-                }
-                if checkout is not None
-                else None
-            )
-            if not steps or steps[0] != expected_checkout:
-                findings.append(
-                    _finding(
-                        "workflow-gate-checkout-required",
-                        path,
-                        "git-flow-contract requires the registered checkout",
-                    )
-                )
     return tuple(findings)
 
 
@@ -1496,10 +1414,10 @@ def _read_repo_script_bytes(
                 pass
 
 
-def _read_repository_aggregate(root: pathlib.Path) -> str | None:
+def _read_public_gate_runner(root: pathlib.Path) -> str | None:
     payload = _read_repo_script_bytes(
         root,
-        REPOSITORY_AGGREGATE,
+        PUBLIC_GATE_RUNNER,
         maximum=MAX_AGGREGATE_BYTES,
     )
     if payload is None:
@@ -2285,7 +2203,7 @@ def _resolve_job_semantics(
             resolution.script_paths.discard(invocation.path)
         maximum = (
             MAX_AGGREGATE_BYTES
-            if relative == REPOSITORY_AGGREGATE
+            if relative == PUBLIC_GATE_RUNNER
             else MAX_SEMANTIC_HELPER_BYTES
         )
         payload = _read_repo_script_bytes(
@@ -2307,7 +2225,7 @@ def _resolve_job_semantics(
             resolution.script_paths.add(invocation.path)
         if (
             invocation.path in governed
-            and relative != REPOSITORY_AGGREGATE
+            and relative != PUBLIC_GATE_RUNNER
         ):
             return
         if depth > MAX_SEMANTIC_HELPER_DEPTH:
@@ -2386,7 +2304,7 @@ def _resolve_job_semantics(
         if analysis.invalid:
             resolution.invalid = True
         for invocation in analysis.script_invocations:
-            aggregate = invocation.path == REPOSITORY_AGGREGATE.as_posix()
+            aggregate = invocation.path == PUBLIC_GATE_RUNNER.as_posix()
             if invocation.direct:
                 if aggregate or invocation.path in governed:
                     walk_script(

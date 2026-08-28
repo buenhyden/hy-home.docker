@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0061
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -71,7 +72,7 @@ updated: 2026-08-11
 
    ```bash
    bash scripts/hardening/check-all-hardening.sh 09-tooling
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    ```
 
 5. `locustfile.py` 변경이 원인으로 의심되면 현재 diff와 마지막 정상 시나리오 commit을 evidence로 기록하고 재실행 전 review를 요청한다.
@@ -99,7 +100,7 @@ updated: 2026-08-11
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`
+- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`
 
 ## Evidence
 

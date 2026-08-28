@@ -33,9 +33,11 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertIn("provider_surface_renderer.py", serialized)
 
     def test_repository_contract_does_not_require_removed_handoff(self) -> None:
-        text = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text()
-        self.assertNotIn("Governance memory contract", text)
-        self.assertNotIn("memory" + "/current.md", text)
+        self.assertFalse(
+            (ROOT / "scripts/validation/check-repo-contracts.sh").exists()
+        )
+        manifest = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
+        self.assertNotIn("check-repo-" + "contracts.sh", manifest)
 
     def test_post_tool_yaml_registry_uses_governance_parser_not_json_tool(self) -> None:
         text = (ROOT / "scripts/hooks/post-tool-validate.sh").read_text()
@@ -43,14 +45,16 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             "python3 -m json.tool docs/00.agent-governance/providers/registry.yaml",
             text,
         )
-        self.assertIn("check-agent-governance-contract.py", text)
+        self.assertIn("run-ci-gate.py --profile changed", text)
+        self.assertNotIn("check-agent-governance-contract.py", text)
 
     def test_active_workflows_route_provider_validation(self) -> None:
-        workflow_text = "\n".join(
-            path.read_text(encoding="utf-8")
-            for path in (ROOT / ".github/workflows").glob("*.yml")
-        )
-        self.assertIn("run-ci-gate.py --profile ci --gate ci.repo-contracts", workflow_text)
+        workflow_text = (
+            ROOT / ".github/workflows/ci-quality.yml"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile changed"))
+        self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile full"))
+        self.assertNotIn("--gate", workflow_text)
 
     def test_post_tool_rejects_unsafe_paths_before_any_write(self) -> None:
         cases = (

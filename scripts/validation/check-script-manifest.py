@@ -37,6 +37,8 @@ OPTIONAL_FIELDS = frozenset(
         "current_authorities",
         "semantic_witnesses",
         "public_suites",
+        "execution_argv",
+        "execution_contexts",
     }
 )
 KINDS = frozenset(
@@ -83,7 +85,13 @@ PUBLIC_SUITE_NAMES = frozenset(
 RUNBOOK_AUTHORITY = __import__("re").compile(
     r"docs/05\.operations/catalog/[0-9]{2}-[^/]+/[0-9]{4}-[^/]+/runbook\.md"
 )
-MACHINE_AUTHORITIES = frozenset({".github/workflow-contract.yml", "scripts/manifest.yaml"})
+MACHINE_AUTHORITIES = frozenset(
+    {
+        ".github/workflow-contract.yml",
+        "docs/00.agent-governance/providers/registry.yaml",
+        "scripts/manifest.yaml",
+    }
+)
 MAX_OBSERVED_PATHS = 50_000
 MAX_OBSERVED_BYTES = 512 * 1_048_576
 OPERATIONS_AUTHORITY_PATHS = frozenset(
@@ -129,11 +137,13 @@ def _generator_command_error(row: Mapping[str, Any]) -> str | None:
         return "retained check-write generator requires a non-empty argv check_command"
     assert isinstance(command, list)
     path = str(row.get("path", ""))
-    allowed = (["python3", path, "--check"], [path, "--check"])
+    allowed = [["python3", path, "--check"], [path, "--check"]]
+    if path.endswith(".sh"):
+        allowed.append(["bash", path, "--check"])
     if command not in allowed:
         return (
             "generator check_command must be exact non-shell argv: "
-            "['python3', <registered-path>, '--check'] or [<registered-path>, '--check']"
+            "an admitted interpreter, the registered path, and --check"
         )
     outputs = row.get("outputs")
     if not _string_list(outputs):
@@ -204,6 +214,40 @@ def validate_manifest_document(
                         "every validator requires exactly one canonical public_suites value",
                     )
                 )
+            execution_argv = row.get("execution_argv", [])
+            if not isinstance(execution_argv, list) or not all(
+                isinstance(item, str) and item for item in execution_argv
+            ):
+                findings.append(
+                    _finding(
+                        "validator-execution-argv-invalid",
+                        path,
+                        "validator execution_argv must be a string list",
+                    )
+                )
+            execution_contexts = row.get("execution_contexts")
+            if (
+                not isinstance(execution_contexts, list)
+                or execution_contexts
+                != [
+                    context
+                    for context in (
+                        "local",
+                        "pull_request",
+                        "push",
+                        "workflow_dispatch",
+                    )
+                    if context in execution_contexts
+                ]
+                or len(execution_contexts) != len(set(execution_contexts))
+            ):
+                findings.append(
+                    _finding(
+                        "validator-execution-contexts-invalid",
+                        path,
+                        "validator execution_contexts must be a canonical context list",
+                    )
+                )
         elif public_suites is not None:
             findings.append(
                 _finding(
@@ -212,6 +256,15 @@ def validate_manifest_document(
                     "only validator rows may declare public_suites",
                 )
             )
+        else:
+            if "execution_argv" in row or "execution_contexts" in row:
+                findings.append(
+                    _finding(
+                        "validator-execution-kind-invalid",
+                        path,
+                        "only validator rows may declare execution fields",
+                    )
+                )
         authority = row.get("authority")
         if not _safe_repo_path(authority):
             findings.append(_finding("authority-invalid", path, "authority must be a non-empty repository path"))
@@ -324,7 +377,13 @@ def validate_manifest_document(
             findings.append(_finding("successor-untracked", path, f"successor is not tracked: {successor}"))
 
         maintained_generator = (
-            row.get("kind") == "generator"
+            (
+                row.get("kind") == "generator"
+                or (
+                    row.get("kind") == "validator"
+                    and ("check_command" in row or "outputs" in row)
+                )
+            )
             and row.get("mutation") == "check-write"
             and disposition == "retain"
         )
@@ -352,7 +411,7 @@ def validate_manifest_document(
                             )
                         )
         elif "check_command" in row or "outputs" in row:
-            findings.append(_finding("generated-fields-invalid", path, "generator fields are allowed only on retained check-write generators"))
+            findings.append(_finding("generated-fields-invalid", path, "generator fields are allowed only on retained check-write producers"))
 
     duplicates = sorted(path for path, count in __import__("collections").Counter(declared).items() if count > 1)
     for path in duplicates:
@@ -398,26 +457,36 @@ def _python_proves_use(text: str, target: str) -> bool:
         tree = ast.parse(text)
     except SyntaxError:
         return False
+    scope_nodes = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)
+    node_scopes: dict[int, ast.AST] = {}
+
+    def bind_scopes(node: ast.AST, scope: ast.AST) -> None:
+        node_scopes[id(node)] = scope
+        for child in ast.iter_child_nodes(node):
+            bind_scopes(child, child if isinstance(child, scope_nodes) else scope)
+
+    bind_scopes(tree, tree)
     module = target.removesuffix(".py").replace("/", ".")
     parent_module, _, module_leaf = module.rpartition(".")
-    subprocess_modules: set[str] = set()
-    subprocess_calls: set[str] = set()
-    runpy_modules: set[str] = set()
-    importlib_modules: set[str] = set()
-    spec_calls: set[str] = set()
-    local_imports: list[ast.ImportFrom] = []
+    subprocess_modules: set[tuple[ast.AST, str]] = set()
+    subprocess_calls: set[tuple[ast.AST, str]] = set()
+    runpy_modules: set[tuple[ast.AST, str]] = set()
+    importlib_modules: set[tuple[ast.AST, str]] = set()
+    spec_calls: set[tuple[ast.AST, str]] = set()
+    local_imports: list[tuple[ast.AST, ast.ImportFrom]] = []
     for node in ast.walk(tree):
+        scope = node_scopes[id(node)]
         if isinstance(node, ast.Import):
             for alias in node.names:
                 local_name = alias.asname or alias.name.split(".", 1)[0]
                 if alias.name == module:
                     return True
                 if alias.name == "subprocess":
-                    subprocess_modules.add(local_name)
+                    subprocess_modules.add((scope, local_name))
                 elif alias.name == "runpy":
-                    runpy_modules.add(local_name)
+                    runpy_modules.add((scope, local_name))
                 elif alias.name in {"importlib", "importlib.util"}:
-                    importlib_modules.add(local_name)
+                    importlib_modules.add((scope, local_name))
         elif isinstance(node, ast.ImportFrom):
             if node.module == module:
                 return True
@@ -427,50 +496,59 @@ def _python_proves_use(text: str, target: str) -> bool:
                 return True
             if node.module == "subprocess":
                 subprocess_calls.update(
-                    alias.asname or alias.name
+                    (scope, alias.asname or alias.name)
                     for alias in node.names
                     if alias.name in {"Popen", "check_call", "check_output", "run"}
                 )
             elif node.module == "runpy":
                 subprocess_calls.update(
-                    alias.asname or alias.name
+                    (scope, alias.asname or alias.name)
                     for alias in node.names
                     if alias.name == "run_path"
                 )
             elif node.module == "importlib.util":
                 spec_calls.update(
-                    alias.asname or alias.name
+                    (scope, alias.asname or alias.name)
                     for alias in node.names
                     if alias.name == "spec_from_file_location"
                 )
             else:
-                local_imports.append(node)
+                local_imports.append((scope, node))
 
-    assignments: list[tuple[list[ast.AST], ast.AST]] = []
+    assignments: list[tuple[ast.AST, list[ast.AST], ast.AST]] = []
     for node in ast.walk(tree):
+        scope = node_scopes[id(node)]
         if isinstance(node, ast.Assign):
-            assignments.append((list(node.targets), node.value))
+            assignments.append((scope, list(node.targets), node.value))
         elif isinstance(node, ast.AnnAssign) and node.value is not None:
-            assignments.append(([node.target], node.value))
+            assignments.append((scope, [node.target], node.value))
         elif isinstance(node, (ast.For, ast.AsyncFor)):
-            assignments.append(([node.target], node.iter))
+            assignments.append((scope, [node.target], node.iter))
 
-    static_paths: dict[str, str] = {
-        name.id: ""
+    ambiguous_path = object()
+    static_paths: dict[tuple[ast.AST, str], str | object] = {
+        (node_scopes[id(name)], name.id): ""
         for name in ast.walk(tree)
         if isinstance(name, ast.Name) and name.id in {"ROOT", "REPO_ROOT"}
     }
 
-    def static_path(node: ast.AST) -> str | None:
+    def static_path(node: ast.AST) -> str | object | None:
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             return PurePosixPath(node.value).as_posix()
         if isinstance(node, ast.Name):
-            return static_paths.get(node.id)
+            scope = node_scopes[id(node)]
+            local = static_paths.get((scope, node.id))
+            if local is not None:
+                return local
+            return static_paths.get((tree, node.id))
         if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
             left = static_path(node.left)
             right = static_path(node.right)
             if left is None or right is None:
                 return None
+            if left is ambiguous_path or right is ambiguous_path:
+                return ambiguous_path
+            assert isinstance(left, str) and isinstance(right, str)
             return (PurePosixPath(left) / right).as_posix()
         if (
             isinstance(node, ast.Call)
@@ -487,42 +565,67 @@ def _python_proves_use(text: str, target: str) -> bool:
     changed = True
     while changed:
         changed = False
-        for assignment_targets, value in assignments:
+        for scope, assignment_targets, value in assignments:
             resolved = static_path(value)
             if resolved is None:
                 continue
             for assignment_target in assignment_targets:
-                if isinstance(assignment_target, ast.Name) and static_paths.get(
-                    assignment_target.id
-                ) != resolved:
-                    static_paths[assignment_target.id] = resolved
+                if not isinstance(assignment_target, ast.Name):
+                    continue
+                key = (scope, assignment_target.id)
+                current = static_paths.get(key)
+                if current is None:
+                    joined = resolved
+                elif current is ambiguous_path or resolved is ambiguous_path:
+                    joined = ambiguous_path
+                elif current == resolved:
+                    joined = current
+                else:
+                    joined = ambiguous_path
+                if current is not joined:
+                    static_paths[key] = joined
                     changed = True
 
     target_parent = PurePosixPath(target).parent.as_posix()
-    if target_parent in static_paths.values():
-        for node in local_imports:
-            if node.module == module_leaf:
-                return True
+    for import_scope, node in local_imports:
+        if node.module != module_leaf:
+            continue
+        if any(
+            value == target_parent
+            and (path_scope is import_scope or path_scope is tree)
+            for (path_scope, _), value in static_paths.items()
+        ):
+            return True
 
-    def contains_exact_target(node: ast.AST, names: set[str]) -> bool:
+    def contains_exact_target(
+        node: ast.AST, names: set[tuple[ast.AST, str]]
+    ) -> bool:
         return any(
             static_path(child) == target
-            or isinstance(child, ast.Name) and child.id in names
+            or isinstance(child, ast.Name)
+            and (
+                (node_scopes[id(child)], child.id) in names
+                or (tree, child.id) in names
+            )
             for child in ast.walk(node)
         )
 
-    target_names: set[str] = set()
+    def contains_exact_module(node: ast.AST) -> bool:
+        return any(static_path(child) == module for child in ast.walk(node))
+
+    target_names: set[tuple[ast.AST, str]] = set()
     changed = True
     while changed:
         changed = False
-        for assignment_targets, value in assignments:
+        for scope, assignment_targets, value in assignments:
             if not contains_exact_target(value, target_names):
                 continue
             assigned = {
-                child.id
+                (scope, child.id)
                 for assignment_target in assignment_targets
                 for child in ast.walk(assignment_target)
                 if isinstance(child, ast.Name)
+                and static_paths.get((scope, child.id)) is not ambiguous_path
             }
             if not assigned.issubset(target_names):
                 target_names.update(assigned)
@@ -536,9 +639,13 @@ def _python_proves_use(text: str, target: str) -> bool:
             current = current.value
         return current.id if isinstance(current, ast.Name) else ""
 
+    def visible(names: set[tuple[ast.AST, str]], scope: ast.AST, name: str) -> bool:
+        return (scope, name) in names or (tree, name) in names
+
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
+        scope = node_scopes[id(node)]
         call_name = (
             node.func.id
             if isinstance(node.func, ast.Name)
@@ -551,18 +658,30 @@ def _python_proves_use(text: str, target: str) -> bool:
             for argument in (*node.args, *(keyword.value for keyword in node.keywords))
         )
         root_name = attribute_root(node.func)
+        if (
+            isinstance(node.func, ast.Attribute)
+            and call_name == "import_module"
+            and visible(importlib_modules, scope, root_name)
+            and any(contains_exact_module(argument) for argument in node.args)
+        ):
+            return True
         if target_argument and (
-            isinstance(node.func, ast.Name) and node.func.id in subprocess_calls
+            isinstance(node.func, ast.Name)
+            and visible(subprocess_calls, scope, node.func.id)
             or isinstance(node.func, ast.Attribute)
             and call_name in invocation_names
-            and root_name in subprocess_modules | runpy_modules
+            and (
+                visible(subprocess_modules, scope, root_name)
+                or visible(runpy_modules, scope, root_name)
+            )
         ):
             return True
         if len(node.args) >= 2 and contains_exact_target(node.args[1], target_names) and (
-            isinstance(node.func, ast.Name) and node.func.id in spec_calls
+            isinstance(node.func, ast.Name)
+            and visible(spec_calls, scope, node.func.id)
             or isinstance(node.func, ast.Attribute)
             and call_name == "spec_from_file_location"
-            and root_name in importlib_modules
+            and visible(importlib_modules, scope, root_name)
         ):
             return True
         if (
@@ -934,9 +1053,11 @@ def check_generated(repo_root: Path, manifest_path: Path) -> list[Finding]:
     assert isinstance(document, dict)
     for row in document["files"]:
         if not (
-            row["kind"] == "generator"
+            row["kind"] in {"generator", "validator"}
             and row["mutation"] == "check-write"
             and row["disposition"] == "retain"
+            and "check_command" in row
+            and "outputs" in row
         ):
             continue
         command = row["check_command"]

@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import os
 import pathlib
-import re
 import shutil
-import signal
 import stat
 import subprocess
-import sys
 import tempfile
-import time
 import unittest
 from unittest import mock
 
@@ -27,68 +22,21 @@ from scripts.lib.document_governance.operations_catalog import (
     load_task8_migration,
     validate_active_operations_references,
 )
+from scripts.validation.ci_gate_contract import (
+    load_contract_document,
+    load_public_suite_registry,
+    parse_public_gate_contract,
+    select_public_suites,
+)
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
-def _repo_contract_python_section(name: str) -> str:
-    source = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
-        encoding="utf-8"
-    )
-    section = source.split(f'section "{name}"', 1)[1]
-    return section.split("if ! python3 - <<'PY'; then\n", 1)[1].split(
-        "\nPY\n", 1
-    )[0]
-
-
-def _run_repo_contract_python_section(
-    name: str,
-    root: pathlib.Path,
-    *,
-    source: str | None = None,
-    environment: dict[str, str] | None = None,
-    timeout: float = 10.0,
-) -> subprocess.CompletedProcess[str]:
-    process_environment = os.environ.copy()
-    python_path = process_environment.get("PYTHONPATH")
-    process_environment["PYTHONPATH"] = (
-        str(ROOT) if not python_path else f"{ROOT}{os.pathsep}{python_path}"
-    )
-    if environment is not None:
-        process_environment.update(environment)
-    return subprocess.run(
-        [sys.executable, "-c", source or _repo_contract_python_section(name)],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=False,
-        env=process_environment,
-        timeout=timeout,
-    )
-
-
-def _initialize_fixture_repository(root: pathlib.Path, *paths: str) -> None:
-    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-    if paths:
-        subprocess.run(["git", "add", *paths], cwd=root, check=True)
-
-
-def _write_service_fixture(root: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path]:
-    service = root / "infra/01-gateway/traefik"
-    service.mkdir(parents=True)
-    (service / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
-    guide = root / "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
-    guide.parent.mkdir(parents=True)
-    guide.write_text("# Guide\n", encoding="utf-8")
-    readme = service / "README.md"
-    readme.write_text(
-        "[Guide](../../../docs/05.operations/catalog/01-gateway/"
-        "0013-traefik/guide.md)\n",
-        encoding="utf-8",
-    )
-    _initialize_fixture_repository(root, "infra", "docs")
-    return service, readme
+def _public_suites_for(*changed_paths: str) -> tuple[str, ...]:
+    registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+    contract = parse_public_gate_contract(load_contract_document(ROOT), registry)
+    return select_public_suites(contract, "changed", changed_paths)
 
 
 class OperationsAuthorityTests(unittest.TestCase):
@@ -184,221 +132,65 @@ class OperationsAuthorityTests(unittest.TestCase):
                 {finding.path.split(":", 1)[0] for finding in findings},
             )
 
-    def test_repo_contract_drift_guides_use_existing_current_catalog_paths(self) -> None:
-        checker = ROOT / "scripts/validation/check-repo-contracts.sh"
-        text = checker.read_text(encoding="utf-8")
+    def test_current_drift_guides_exist_at_canonical_catalog_paths(self) -> None:
         expected = (
             "docs/05.operations/catalog/00-workspace/"
             "0003-env-key-comparison/guide.md",
             "docs/05.operations/catalog/00-workspace/"
             "0010-sensitive-env-vars-comparison/guide.md",
         )
-        self.assertIn(f'env_comparison_doc="{expected[0]}"', text)
-        self.assertIn(f'sensitive_comparison_doc="{expected[1]}"', text)
-        self.assertIn('-f "$env_comparison_doc"', text)
-        self.assertIn('-f "$sensitive_comparison_doc"', text)
         for relative in expected:
             with self.subTest(path=relative):
                 self.assertTrue((ROOT / relative).is_file())
 
-    def test_execution_evidence_status_section_has_its_regex_dependency(self) -> None:
-        result = _run_repo_contract_python_section(
-            "Execution evidence status wording", ROOT
+    def test_public_operations_suite_owns_focused_validators_exactly_once(self) -> None:
+        registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        operations = next(
+            suite for suite in registry.suites if suite.name == "operations"
         )
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
-    def test_service_documentation_gate_resolves_current_catalog_guide_links(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            service, readme = _write_service_fixture(root)
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root
-            )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
-            legacy = root / "docs/05.operations/guides/01-gateway/traefik.md"
-            legacy.parent.mkdir(parents=True)
-            legacy.write_text("# Retired guide\n", encoding="utf-8")
-            readme.write_text(
-                "[Guide](../../../docs/05.operations/guides/01-gateway/traefik.md)\n",
-                encoding="utf-8",
-            )
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root
-            )
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-            readme.write_text(
-                "[Guide](../../../docs/05.operations/catalog/01-gateway/"
-                "0999-missing/guide.md)\n",
-                encoding="utf-8",
-            )
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root
-            )
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_service_documentation_gate_ignores_nonrendered_markdown_links(self) -> None:
-        false_links = (
-            "```markdown\n[Guide](../../../docs/05.operations/catalog/01-gateway/"
-            "0013-traefik/guide.md)\n```\n",
-            "<!-- [Guide](../../../docs/05.operations/catalog/01-gateway/"
-            "0013-traefik/guide.md) -->\n",
-            "`[Guide](../../../docs/05.operations/catalog/01-gateway/"
-            "0013-traefik/guide.md)`\n",
-            "![Guide](../../../docs/05.operations/catalog/01-gateway/"
-            "0013-traefik/guide.md)\n",
+        self.assertEqual(
+            (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-operations-catalog.py"
+                ),
+                pathlib.PurePosixPath(
+                    "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                ),
+            ),
+            operations.validators,
         )
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            _service, readme = _write_service_fixture(root)
-            for text in false_links:
-                with self.subTest(text=text.splitlines()[0]):
-                    readme.write_text(text, encoding="utf-8")
-                    result = _run_repo_contract_python_section(
-                        "Service documentation coverage", root
-                    )
-                    self.assertEqual(
-                        1, result.returncode, result.stdout + result.stderr
-                    )
-
-    def test_service_documentation_gate_rejects_compose_symlink(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            service, _readme = _write_service_fixture(root)
-            compose = service / "docker-compose.yml"
-            compose.unlink()
-            compose.symlink_to("docker-compose.real.yml")
-            (service / "docker-compose.real.yml").write_text(
-                "services: {}\n", encoding="utf-8"
-            )
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root
-            )
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_service_documentation_gate_accepts_git_byte_sorted_component_prefixes(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            service, _readme = _write_service_fixture(root)
-            (service / "config").mkdir()
-            (service / "config/value.txt").write_text("value\n", encoding="utf-8")
-            sibling = service.parent / "traefik-extra"
-            sibling.mkdir()
-            (sibling / "value.txt").write_text("value\n", encoding="utf-8")
-            subprocess.run(["git", "add", "infra"], cwd=root, check=True)
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root
-            )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
-    def test_service_documentation_gate_rejects_readme_fifo_without_hanging(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            _service, readme = _write_service_fixture(root)
-            readme.unlink()
-            os.mkfifo(readme)
-            result = _run_repo_contract_python_section(
-                "Service documentation coverage", root, timeout=2.0
-            )
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_service_documentation_gate_enforces_count_file_and_aggregate_bounds(self) -> None:
-        mutations = (
-            (r"MAX_SERVICE_TRACKED_PATHS: Final = [^\n]+", "MAX_SERVICE_TRACKED_PATHS: Final = 1"),
-            (r"MAX_SERVICE_FILE_BYTES: Final = [^\n]+", "MAX_SERVICE_FILE_BYTES: Final = 32"),
-            (r"MAX_SERVICE_TOTAL_BYTES: Final = [^\n]+", "MAX_SERVICE_TOTAL_BYTES: Final = 64"),
+        manifest = yaml.safe_load(
+            (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         )
-        for pattern, replacement in mutations:
-            with self.subTest(bound=replacement), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                _service, readme = _write_service_fixture(root)
-                readme.write_text(
-                    "[Guide](../../../docs/05.operations/catalog/01-gateway/"
-                    "0013-traefik/guide.md)\n" + "bounded payload\n" * 8,
-                    encoding="utf-8",
-                )
-                section = re.sub(
-                    pattern,
-                    replacement,
-                    _repo_contract_python_section("Service documentation coverage"),
-                )
-                result = _run_repo_contract_python_section(
-                    "Service documentation coverage", root, source=section
-                )
-                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_spec_role_gate_resolves_existing_confined_regular_targets(self) -> None:
-        cases = (
-            ("regular", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 0),
-            ("angle-regular", "<../../05.operations/catalog/01-gateway/0013-traefik/guide.md>", 0),
-            ("wrong-depth", "../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
-            ("nonexistent", "../../05.operations/catalog/01-gateway/0999-missing/guide.md", 1),
-            ("angle-nonexistent", "<../../05.operations/catalog/01-gateway/0999-missing/guide.md>", 1),
-            ("symlink", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
-            ("nonregular", "../../05.operations/catalog/01-gateway/0013-traefik/guide.md", 1),
+        rehearsal = next(
+            row
+            for row in manifest["files"]
+            if row["path"]
+            == "scripts/validation/rehearse-postgres-logical-upgrade.sh"
         )
-        for mutation, href, expected in cases:
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                spec = root / "docs/03.specs/0001-example/spec.md"
-                spec.parent.mkdir(parents=True)
-                spec.write_text(
-                    f"- **Guide**: [Guide]({href})\n", encoding="utf-8"
-                )
-                guide = root / "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
-                guide.parent.mkdir(parents=True)
-                if mutation == "symlink":
-                    real = root / "real-guide.md"
-                    real.write_text("# Guide\n", encoding="utf-8")
-                    guide.symlink_to(real)
-                elif mutation == "nonregular":
-                    guide.mkdir()
-                else:
-                    guide.write_text("# Guide\n", encoding="utf-8")
-                result = _run_repo_contract_python_section(
-                    "Spec document traceability contract", root
-                )
-                self.assertEqual(expected, result.returncode, result.stdout + result.stderr)
+        self.assertEqual("validator", rehearsal["kind"])
+        self.assertEqual("runtime", rehearsal["mutation"])
+        self.assertEqual(["operations"], rehearsal["public_suites"])
+        self.assertEqual([], rehearsal["execution_contexts"])
 
-    def test_spec_role_gate_does_not_treat_operations_index_label_as_policy(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            spec = root / "docs/03.specs/README.md"
-            spec.parent.mkdir(parents=True)
-            spec.write_text(
-                "[Operations](../05.operations/README.md)\n", encoding="utf-8"
-            )
-            operations = root / "docs/05.operations/README.md"
-            operations.parent.mkdir(parents=True)
-            operations.write_text("# Operations\n", encoding="utf-8")
-            result = _run_repo_contract_python_section(
-                "Spec document traceability contract", root
-            )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
-    def test_incident_contract_uses_only_exact_packet_role_paths(self) -> None:
-        surfaces = (
-            ROOT / "docs/05.operations/incidents/README.md",
-            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
+    def test_public_changed_profile_routes_operations_paths_fail_closed(self) -> None:
+        expected = (
+            "document-contract",
+            "document-graph",
+            "document-lifecycle",
+            "operations",
+            "repository-integrity",
         )
-        exact_paths = (
-            "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
-            "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
+        self.assertEqual(
+            expected,
+            _public_suites_for(
+                "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
+            ),
         )
-        for surface in surfaces:
-            text = surface.read_text(encoding="utf-8")
-            with self.subTest(surface=surface):
-                self.assertNotIn("incident-title", text)
-                for exact_path in exact_paths:
-                    self.assertIn(exact_path, text)
-
-        gate = _repo_contract_python_section("Operations postmortem routing contract")
-        self.assertNotIn('"YYYY/inc-####-incident-title/"', gate)
-        for exact_path in exact_paths:
-            self.assertGreaterEqual(gate.count(exact_path), 2)
+        self.assertEqual(
+            expected,
+            _public_suites_for("infra/01-gateway/traefik/docker-compose.yml"),
+        )
 
     def test_selected_spec_role_links_use_exact_current_role_leaves(self) -> None:
         expected = {
@@ -426,195 +218,12 @@ class OperationsAuthorityTests(unittest.TestCase):
                 with self.subTest(path=relative, role=role):
                     self.assertIn(f"- **{role}**: [{href}]({href})", text)
 
-    def test_script_reference_gate_accepts_exact_tracked_worktree_deletions(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-            docs = root / "docs"
-            scripts = root / "scripts"
-            docs.mkdir()
-            scripts.mkdir()
-            (docs / "keep.md").write_text("No script references.\n", encoding="utf-8")
-            registered = docs / "05.operations/releases/README.md"
-            registered.parent.mkdir(parents=True)
-            registered.write_text("No script references.\n", encoding="utf-8")
-            (scripts / "exists.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
-            subprocess.run(["git", "add", "docs", "scripts"], cwd=root, check=True)
-            registered.unlink()
-            result = _run_repo_contract_python_section("Script reference integrity", root)
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
-            unexpected = docs / "unexpected.md"
-            unexpected.write_text("No script references.\n", encoding="utf-8")
-            subprocess.run(["git", "add", "docs/unexpected.md"], cwd=root, check=True)
-            unexpected.unlink()
-            result = _run_repo_contract_python_section("Script reference integrity", root)
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_script_reference_gate_rejects_symlink_nonregular_and_race(self) -> None:
-        for mutation in ("broken-symlink", "nonregular", "race"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-                docs = root / "docs"
-                scripts = root / "scripts"
-                docs.mkdir()
-                scripts.mkdir()
-                victim = docs / "victim.md"
-                victim.write_text("No script references.\n", encoding="utf-8")
-                (scripts / "exists.sh").write_text(
-                    "#!/usr/bin/env bash\n", encoding="utf-8"
-                )
-                subprocess.run(["git", "add", "docs", "scripts"], cwd=root, check=True)
-
-                section = _repo_contract_python_section("Script reference integrity")
-                if mutation == "broken-symlink":
-                    victim.unlink()
-                    victim.symlink_to("missing.md")
-                elif mutation == "nonregular":
-                    victim.unlink()
-                    os.mkfifo(victim)
-                else:
-                    section = section.replace(
-                        "    initial = os.lstat(path)\n",
-                        "    initial = os.lstat(path)\n"
-                        "    if path == pathlib.Path('docs/victim.md'):\n"
-                        "        os.replace(path, path.with_suffix('.saved'))\n"
-                        "        path.write_text('replacement\\n', encoding='utf-8')\n",
-                        1,
-                    )
-
-                result = subprocess.run(
-                    [sys.executable, "-c", section],
-                    cwd=root,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-
-    def test_script_reference_git_enumeration_deadlines_and_reaps_partial_hang(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            _initialize_fixture_repository(root)
-            fake_bin = root / "fake-bin"
-            fake_bin.mkdir()
-            fake_git = fake_bin / "git"
-            fake_git.write_text(
-                "#!/usr/bin/env python3\n"
-                "import os\n"
-                "import time\n"
-                "child = os.fork()\n"
-                "if child == 0:\n"
-                "    open('git-child.pid', 'w', encoding='ascii').write(str(os.getpid()))\n"
-                "    while True:\n"
-                "        time.sleep(1)\n"
-                "open('git-parent.pid', 'w', encoding='ascii').write(str(os.getpid()))\n"
-                "os.write(1, b'docs/keep.md\\0')\n"
-                "while True:\n"
-                "    time.sleep(1)\n",
-                encoding="utf-8",
-            )
-            fake_git.chmod(0o755)
-            section = re.sub(
-                r"MAX_REFERENCE_GIT_SECONDS: Final = [^\n]+",
-                "MAX_REFERENCE_GIT_SECONDS: Final = 0.2",
-                _repo_contract_python_section("Script reference integrity"),
-            )
-            environment = os.environ.copy()
-            environment["PATH"] = f"{fake_bin}{os.pathsep}{environment['PATH']}"
-            python_path = environment.get("PYTHONPATH")
-            environment["PYTHONPATH"] = (
-                str(ROOT) if not python_path else f"{ROOT}{os.pathsep}{python_path}"
-            )
-            process = subprocess.Popen(
-                [sys.executable, "-c", section],
-                cwd=root,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                env=environment,
-                start_new_session=True,
-            )
-            started = time.monotonic()
-            try:
-                stdout, stderr = process.communicate(timeout=1.5)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.communicate()
-                self.fail("script-reference Git read exceeded its deadline after partial output")
-            self.assertLess(time.monotonic() - started, 1.0)
-            self.assertEqual(1, process.returncode, stdout + stderr)
-            child_pid = int((root / "git-child.pid").read_text(encoding="ascii"))
-            child_state = pathlib.Path(f"/proc/{child_pid}/stat")
-            deadline = time.monotonic() + 1.0
-            while child_state.exists() and time.monotonic() < deadline:
-                state = child_state.read_text(encoding="ascii").split()[2]
-                if state == "Z":
-                    break
-                time.sleep(0.02)
-            self.assertTrue(
-                not child_state.exists()
-                or child_state.read_text(encoding="ascii").split()[2] == "Z"
-            )
-
-    def test_script_reference_ignored_discovery_is_batched(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            (root / "docs/ignored").mkdir(parents=True)
-            (root / "scripts").mkdir()
-            (root / "docs/keep.md").write_text(
-                "No script references.\n", encoding="utf-8"
-            )
-            (root / "scripts/exists.sh").write_text(
-                "#!/usr/bin/env bash\n", encoding="utf-8"
-            )
-            (root / ".gitignore").write_text("docs/ignored/\n", encoding="utf-8")
-            os.mkfifo(root / "docs/ignored/pipe")
-            _initialize_fixture_repository(root, ".gitignore", "docs/keep.md", "scripts")
-            log = root / "git-calls.log"
-            real_git = shutil.which("git")
-            self.assertIsNotNone(real_git)
-            fake_bin = root / "fake-bin"
-            fake_bin.mkdir()
-            wrapper = fake_bin / "git"
-            wrapper.write_text(
-                "#!/bin/sh\n"
-                f"printf '%s\\n' \"$*\" >> {log.as_posix()}\n"
-                f"exec {real_git} \"$@\"\n",
-                encoding="utf-8",
-            )
-            wrapper.chmod(0o755)
-            result = _run_repo_contract_python_section(
-                "Script reference integrity",
-                root,
-                environment={"PATH": f"{fake_bin}{os.pathsep}{os.environ['PATH']}"},
-            )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            calls = log.read_text(encoding="utf-8").splitlines()
-            self.assertEqual([], [call for call in calls if "check-ignore" in call])
-            self.assertEqual(
-                1,
-                sum("--ignored" in call and "--directory" in call for call in calls),
-            )
-
-    def test_script_reference_git_output_overflow_fails_closed(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            document = root / "docs/a-deliberately-long-tracked-path.md"
-            document.parent.mkdir(parents=True)
-            document.write_text("No script references.\n", encoding="utf-8")
-            _initialize_fixture_repository(root, "docs")
-            section = re.sub(
-                r"MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = [^\n]+",
-                "MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 16",
-                _repo_contract_python_section("Script reference integrity"),
-            )
-            result = _run_repo_contract_python_section(
-                "Script reference integrity", root, source=section
-            )
-            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-            self.assertIn("unsafe script-reference surface", result.stderr)
+    def test_public_script_changes_select_every_registered_suite(self) -> None:
+        registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        self.assertEqual(
+            registry.public_names,
+            _public_suites_for("scripts/validation/ci_gate_contract.py"),
+        )
 
     def test_migration0003_slice_is_exact_and_preconditions_are_resolved(self) -> None:
         migration = load_task8_migration(ROOT)

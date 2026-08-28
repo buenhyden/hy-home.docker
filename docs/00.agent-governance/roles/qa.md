@@ -21,8 +21,7 @@ layer: qa
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Execution Boundary (Local vs Remote)**:
   - **Local**: Fail-fast validation (e.g.,
-    `scripts/validation/run-local-qa-gates.sh` for registry-defined local
-    profiles,
+    `scripts/validation/run-ci-gate.py --profile changed`,
     automatic commit hooks for formatting/linting, and pre-push structural
     contract scripts). Agents must not invoke `pre-commit run` directly.
     Approved final QA all-files execution uses only
@@ -56,7 +55,7 @@ not applicable, record the skipped-check rationale in the task evidence.
 
 | Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Documentation-only stage docs                | `git diff --check`, `check-document-links.py --mode alignment`, `check-repo-contracts.sh`, `check-document-links.py --mode traceability`, and LLM Wiki regeneration via `scripts/knowledge/generate-llm-wiki.py --write` when docs are added, removed, or renamed | Remote docs implementation-alignment, traceability, and repo contracts | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
+| Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` and LLM Wiki regeneration via `scripts/knowledge/generate-llm-wiki.py --write` when docs are added, removed, or renamed | Public document suites selected by the changed-path contract | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
 | Archive/tombstone migration                  | Documentation checks plus `check-document-links.py --mode alignment`, stale active-reference scans for archived subjects, and `docs/98.archive` status/template checks                                                                           | Remote docs implementation-alignment, traceability, and repo contracts | Archive ledger update, tombstone metadata, task evidence, progress log | Domain tests, coverage, Docker runtime checks                        |
 | Governance or provider policy docs           | Documentation checks plus `sync-provider-surfaces.sh --check` when provider surfaces are affected                                                                                                       | Remote repo contracts and required checks                        | Provider sync check output and policy-gate evidence                    | Runtime tests unless behavior/config changed                         |
 | Provider adapter, hook, or validation script | Targeted script self-check, `run-local-qa-gates.sh` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Wrapper command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped wrapper rationale is explicit |
@@ -90,13 +89,10 @@ optional cleanup.
 
 ## 3.3 Local QA/CI Orchestration
 
-Use `bash scripts/validation/run-local-qa-gates.sh --list` to distinguish
-the deterministic `local-script-backed` expansion from remote-only
-responsibilities. The wrapper contains no child-command inventory: default,
-`--harness`, and `--all-profiles` each delegate once to their registered
-profile root. `--list` is execution-free. Local roots exclude
-`setup.compose-env`; Compose leaves retain their own create-only cleanup
-contract and preserve an existing `.env` byte-for-byte. These routes do not
+Use `bash scripts/validation/run-local-qa-gates.sh --explain` to render the
+selected public suite-to-validator mapping without execution. The wrapper
+contains no child-command inventory: `--changed`, `--full`, and `--explain`
+delegate once to the public runner. These routes do not
 upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
 stage-document runtime version drift for implementation-pinned images and

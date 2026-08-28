@@ -29,9 +29,8 @@ Spec Package and current Task when repository state changes.
 
 ## Verification
 
-Run `bash scripts/operations/sync-provider-surfaces.sh --check` and the focused
-agent-governance contract. Hook behavior remains subject to the shared policy
-and registered script gates.
+Run `python3 scripts/validation/run-ci-gate.py --profile full`. Hook behavior
+remains subject to the shared policy and manifest-owned public suites.
 
 ## Related Documents
 

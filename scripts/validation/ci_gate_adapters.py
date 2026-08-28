@@ -16,7 +16,6 @@ from collections.abc import Mapping
 
 SUBCOMMANDS = (
     "verify-metadata-base",
-    "publish-qa-recommendations",
     "check-diff-hygiene",
     "check-shell-syntax",
     "install-python-requirements",
@@ -139,9 +138,6 @@ def _dispatch_adapter(
     if command == "verify-metadata-base":
         _no_arguments(arguments)
         return _verify_metadata_base(canonical_root, environ)
-    if command == "publish-qa-recommendations":
-        _no_arguments(arguments)
-        return _publish_qa_recommendations(canonical_root, environ)
     if command == "check-diff-hygiene":
         _no_arguments(arguments)
         return _returncode(
@@ -541,113 +537,6 @@ def _verify_metadata_base(
             environ=git_environment,
         )
     )
-
-
-def _publish_qa_recommendations(
-    root: pathlib.Path,
-    environ: Mapping[str, str],
-) -> int:
-    summary_value = environ.get("GITHUB_STEP_SUMMARY", "")
-    if not summary_value:
-        return 0
-    summary_path = pathlib.Path(summary_value)
-    try:
-        descriptor = os.open(
-            summary_path,
-            os.O_WRONLY | os.O_APPEND | os.O_CLOEXEC | os.O_NOFOLLOW,
-        )
-        metadata = os.fstat(descriptor)
-        if not stat.S_ISREG(metadata.st_mode):
-            raise OSError(errno.EINVAL, "not regular")
-    except OSError:
-        raise AdapterError(
-            "ci-gate-adapter-summary",
-            "the summary output is unavailable",
-        ) from None
-    try:
-        base = ""
-        event = environ.get("EVENT_NAME", "")
-        if event == "pull_request":
-            candidate = environ.get("PR_BASE_SHA", "")
-            if _FULL_SHA.fullmatch(candidate):
-                base = candidate
-        elif event == "push":
-            candidate = environ.get("PUSH_BEFORE_SHA", "")
-            if (
-                _FULL_SHA.fullmatch(candidate)
-                and candidate != "0" * 40
-            ):
-                base = candidate
-        if not base:
-            fallback = _run_child(
-                ("git", "rev-parse", "--verify", "--quiet", "HEAD~1"),
-                root=root,
-                environ=_git_environment(environ),
-                capture_output=True,
-            )
-            if fallback.returncode == 0:
-                base = "HEAD~1"
-        valid_base = False
-        if base:
-            valid_base = (
-                _run_child(
-                    (
-                        "git",
-                        "rev-parse",
-                        "--verify",
-                        "--quiet",
-                        f"{base}^{{commit}}",
-                    ),
-                    root=root,
-                    environ=_git_environment(environ),
-                    capture_output=True,
-                ).returncode
-                == 0
-            )
-        command = (
-            (
-                "bash",
-                "scripts/validation/recommend-qa-gates.sh",
-                "--base",
-                base,
-            )
-            if valid_base
-            else (
-                "bash",
-                "scripts/validation/recommend-qa-gates.sh",
-                "--files",
-                ".github/workflows/ci-quality.yml",
-            )
-        )
-        result = _run_child(
-            command,
-            root=root,
-            environ=environ,
-            capture_output=True,
-        )
-        if result.returncode != 0:
-            return int(result.returncode)
-        output = result.stdout or b""
-        if len(output) > _MAX_CAPTURE_BYTES or b"\0" in output:
-            raise AdapterError(
-                "ci-gate-adapter-output",
-                "the adapter output is invalid",
-            )
-        body = (
-            b"## QA gate recommendations\n\n```text\n"
-            + output.rstrip(b"\n")
-            + b"\n```\n"
-        )
-        try:
-            _write_all(descriptor, body)
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-summary",
-                "the summary output is unavailable",
-            ) from None
-        return 0
-    finally:
-        os.close(descriptor)
 
 
 def _check_shell_syntax(

@@ -40,7 +40,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `redisinsight` |
 | Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/0076-redisinsight/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/0076-redisinsight/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -84,7 +84,7 @@ labels:
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect RedisInsight.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 

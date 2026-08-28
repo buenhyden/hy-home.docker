@@ -18,7 +18,6 @@ from scripts.validation import ci_gate_adapters as adapters
 REAL_SUBPROCESS_RUN = subprocess.run
 EXPECTED_SUBCOMMANDS = (
     "verify-metadata-base",
-    "publish-qa-recommendations",
     "check-diff-hygiene",
     "check-shell-syntax",
     "install-python-requirements",
@@ -82,6 +81,9 @@ class CiGateAdapterTests(unittest.TestCase):
 
     def test_closed_subcommand_catalog_is_exact(self) -> None:
         self.assertEqual(EXPECTED_SUBCOMMANDS, adapters.SUBCOMMANDS)
+        self.assertFalse(
+            pathlib.Path("scripts/validation/recommend-qa-gates.sh").exists()
+        )
 
     def test_verify_metadata_base_uses_two_literal_git_vectors(self) -> None:
         result, recorder = self.run_with_recorder(
@@ -108,39 +110,6 @@ class CiGateAdapterTests(unittest.TestCase):
                 ),
             ],
             [call[0] for call in recorder.calls],
-        )
-
-    def test_publish_qa_recommendations_writes_one_bounded_summary(self) -> None:
-        summary = self.root / "summary.md"
-        summary.touch()
-        result, recorder = self.run_with_recorder(
-            ("publish-qa-recommendations",),
-            environ={
-                "PATH": "/usr/bin",
-                "EVENT_NAME": "workflow_dispatch",
-                "GITHUB_STEP_SUMMARY": str(summary),
-            },
-            results=[
-                subprocess.CompletedProcess(("git",), 1, b"", b""),
-                subprocess.CompletedProcess(
-                    ("bash",),
-                    0,
-                    b"recommended=repo-contracts\n",
-                    b"",
-                ),
-            ],
-        )
-        self.assertEqual(0, result)
-        self.assertIn("## QA gate recommendations", summary.read_text())
-        self.assertIn("recommended=repo-contracts", summary.read_text())
-        self.assertEqual(
-            (
-                "bash",
-                "scripts/validation/recommend-qa-gates.sh",
-                "--files",
-                ".github/workflows/ci-quality.yml",
-            ),
-            recorder.calls[-1][0],
         )
 
     def test_check_diff_hygiene_uses_literal_git_diff(self) -> None:

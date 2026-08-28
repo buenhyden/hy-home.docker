@@ -31,9 +31,9 @@ Spec Package and current Task when repository state changes.
 
 ## Verification
 
-Run `bash scripts/operations/sync-provider-surfaces.sh --check` and the focused
-agent-governance contract. Respect the active sandbox and approval boundary;
-do not mutate user-global configuration without explicit authorization.
+Run `python3 scripts/validation/run-ci-gate.py --profile full`. Respect the
+active sandbox and approval boundary; do not mutate user-global configuration
+without explicit authorization.
 
 ## Related Documents
 

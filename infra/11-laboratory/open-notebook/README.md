@@ -51,7 +51,7 @@ open-notebook/
 | Secret refs | names: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; mounts: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
 | Healthcheck | Compose healthcheck declared for `surrealdb` and `open_notebook` |
 | Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

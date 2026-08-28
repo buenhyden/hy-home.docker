@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0045
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -92,7 +93,7 @@ config, and alert-rule surfaces.
 - Prometheus config:
   `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/vault_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

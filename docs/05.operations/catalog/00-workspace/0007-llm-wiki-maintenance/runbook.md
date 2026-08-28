@@ -60,7 +60,7 @@ updated: 2026-08-14
 4. Run repository contracts after LLM Wiki changes.
 
    ```bash
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
@@ -116,7 +116,7 @@ updated: 2026-08-14
 ## Evidence
 
 - `python3 scripts/knowledge/generate-llm-wiki.py --check` passes.
-- `bash scripts/validation/check-repo-contracts.sh` passes.
+- `python3 scripts/validation/run-ci-gate.py --profile changed` passes.
 - `python3 scripts/validation/check-document-links.py --mode traceability` passes.
 - LLM Wiki files contain no absolute filesystem links, filesystem URI links, public-site scope drift, or Graphify-as-authority wording.
 

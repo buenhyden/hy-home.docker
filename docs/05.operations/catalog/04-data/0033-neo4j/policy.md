@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0033
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -43,7 +44,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [Neo4j guide](guide.md), [Neo4j runbook](runbook.md), and [infra README](../../../../../infra/04-data/specialized/neo4j/README.md) after compose changes.
 - Run `docker compose --profile data --profile graph config neo4j` before approving service-name, image, memory, route, secret, or volume documentation updates.
-- Run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
 

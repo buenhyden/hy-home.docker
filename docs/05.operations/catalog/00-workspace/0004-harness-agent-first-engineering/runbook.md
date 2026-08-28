@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0004
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0094
 created: 2026-06-04
 updated: 2026-08-21
 ---
@@ -55,7 +56,7 @@ updated: 2026-08-21
    python3 -m json.tool .codex/hooks.json >/dev/null
    python3 -m json.tool .claude/settings.json >/dev/null
    bash -n .claude/hooks/*.sh scripts/**/*.sh
-   bash scripts/validation/check-repo-contracts.sh
+   python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
@@ -99,7 +100,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - Command output from validation scripts.
 - `git diff --stat`.
 - `scripts/knowledge/report-graphify-health.sh` status and contamination counts.
-- `scripts/validation/check-repo-contracts.sh` runtime agent/function catalog section.
+- `scripts/validation/run-ci-gate.py` runtime agent/function catalog section.
 - Hook payload simulation output.
 - The current co-located Task when a new implementation change is active.
 

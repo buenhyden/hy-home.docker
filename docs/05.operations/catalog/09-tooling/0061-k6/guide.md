@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0061
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -59,7 +60,7 @@ updated: 2026-08-11
 
 3. 런타임 실행 전 정적 기준선을 확인한다.
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-   - `bash scripts/validation/check-repo-contracts.sh`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed`
 4. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`이 해석되는지 확인한다.
 5. 서비스 기동 후 UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
 6. 테스트 중 Locust 요청 통계, target SLI 저하, `k6-master` healthcheck 상태를 evidence로 기록한다.
@@ -73,7 +74,7 @@ updated: 2026-08-11
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 실행 승인 시 root+leaf compose overlay의 rendered service list에 `k6-master`가 포함되는지 확인한다.
 
 ## Runbook Handoff

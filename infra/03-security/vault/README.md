@@ -114,7 +114,7 @@ docker compose --profile security exec vault-agent ls -la /vault/out
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `vault`, `vault-agent` |
 | Operations | [Guide](../../../docs/05.operations/catalog/03-security/0016-vault/guide.md), [Policy](../../../docs/05.operations/catalog/03-security/0016-vault/policy.md), [Runbook](../../../docs/05.operations/catalog/03-security/0016-vault/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with root profile validation, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

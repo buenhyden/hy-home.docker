@@ -3,10 +3,10 @@ from __future__ import annotations
 import pathlib
 import re
 import subprocess
-import sys
 import tempfile
 import unittest
 
+from scripts.lib.document_governance import metadata_contract
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
     validate_repository_contracts,
@@ -19,9 +19,15 @@ from scripts.lib.document_governance.taxonomy import (
     requirement_package_identity,
     validate_stable_identity,
 )
+from scripts.validation.ci_gate_contract import (
+    load_contract_document,
+    load_public_suite_registry,
+    parse_public_gate_contract,
+    select_public_suites,
+)
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
 INCIDENT_ROUTE = "docs/05.operations/incidents/<year>/inc-####-<slug>/"
 THREE_DIGIT_COMPONENT = re.compile(
@@ -32,6 +38,12 @@ THREE_DIGIT_ARTIFACT_ID = re.compile(
     re.MULTILINE,
 )
 class FourDigitDocumentIdentityTests(unittest.TestCase):
+    def test_metadata_contract_uses_the_canonical_registry(self) -> None:
+        self.assertEqual(
+            PROFILES,
+            metadata_contract.DEFAULT_REGISTRY,
+        )
+
     @classmethod
     def setUpClass(cls) -> None:
         from scripts.lib.document_governance.registry import load_registry
@@ -450,38 +462,39 @@ This paragraph explains how verification evidence will be interpreted.
             self.assertFalse(_write_or_check_output(output, "stale\n", True))
             self.assertEqual("current\n", output.read_text(encoding="utf-8"))
 
-    def test_repo_contract_rejects_empty_incident_packet(self) -> None:
-        checker = (
-            ROOT / "scripts/validation/check-repo-contracts.sh"
-        ).read_text(encoding="utf-8")
-        section = checker.split(
-            'section "Operations postmortem routing contract"', 1
-        )[1]
-        body = section.split("from __future__ import annotations", 1)[1]
-        topology = (
-            "from __future__ import annotations\n"
-            + body.split("literal_requirements =", 1)[0]
-            + "\n"
-            + "for failure in failures:\n"
-            + "    print(failure, file=sys.stderr)\n"
-            + "raise SystemExit(1 if failures else 0)\n"
+    def test_public_gate_routes_incident_packets_through_operations(self) -> None:
+        suite_registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        operations = next(
+            suite for suite in suite_registry.suites if suite.name == "operations"
         )
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            packet = (
-                root
-                / "docs/05.operations/incidents/2026/inc-0001-empty-packet"
-            )
-            packet.mkdir(parents=True)
-            result = subprocess.run(
-                [sys.executable, "-c", topology],
-                cwd=root,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-        self.assertIn("incident packet is missing incident.md", result.stderr)
+        self.assertEqual(
+            1,
+            operations.validators.count(
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-operations-catalog.py"
+                )
+            ),
+        )
+        contract = parse_public_gate_contract(
+            load_contract_document(ROOT), suite_registry
+        )
+        self.assertEqual(
+            (
+                "document-contract",
+                "document-graph",
+                "document-lifecycle",
+                "operations",
+                "repository-integrity",
+            ),
+            select_public_suites(
+                contract,
+                "changed",
+                (
+                    "docs/05.operations/incidents/2026/"
+                    "inc-0001-empty-packet/incident.md",
+                ),
+            ),
+        )
 
     def test_active_contracts_publish_no_ambiguous_typed_id_routes(self) -> None:
         tracked = subprocess.run(
@@ -520,7 +533,6 @@ This paragraph explains how verification evidence will be interpreted.
             "docs/00.agent-governance/skills/ops-runbook-agent.md",
             "docs/00.agent-governance/skills/incident-response.md",
             "docs/00.agent-governance/policies/documentation-protocol.md",
-            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
             "docs/05.operations/incidents/README.md",
             "docs/99.templates/support/template-selection.md",
         )

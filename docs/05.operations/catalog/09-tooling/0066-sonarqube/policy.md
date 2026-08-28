@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0066
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -67,7 +68,7 @@ N/A — 현재 승인된 예외 없음.
 ## Verification
 
 - Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
 - Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
 
 ## Review Cadence

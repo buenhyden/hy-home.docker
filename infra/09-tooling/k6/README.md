@@ -43,7 +43,7 @@ k6/
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | Static hardening contract check |
-| `bash scripts/validation/check-repo-contracts.sh` | Documentation and stale-literal guard |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | Documentation and stale-literal guard |
 | `docker compose ... logs -f k6-master` | Approved runtime context에서 마스터 노드 로그 확인 |
 
 ## Configuration
@@ -57,7 +57,7 @@ k6/
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 - Root `docker-compose.yml` does not currently include this leaf; runtime rendering must provide root `infra_net` context.
 
 ## Troubleshooting
@@ -86,7 +86,7 @@ k6/
 | Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `k6-master` |
 | Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0061-k6/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0061-k6/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0061-k6/runbook.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area

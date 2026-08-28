@@ -13,12 +13,8 @@
       "Bash(docker compose logs:*)",
       "Bash(docker inspect:*)",
       "Bash(docker image ls:*)",
-      "Bash(bash scripts/validation/validate-docker-compose.sh:*)",
-      "Bash(bash scripts/hardening/check-all-hardening.sh:*)",
-      "Bash(python3 scripts/validation/check-document-links.py:*)",
-      "Bash(bash scripts/validation/check-repo-contracts.sh:*)",
-      "Bash(bash scripts/validation/check-quickwin-baseline.sh:*)",
-      "Bash(bash scripts/validation/check-template-security-baseline.sh:*)",
+      "Bash(python3 scripts/validation/run-ci-gate.py --profile changed:*)",
+      "Bash(python3 scripts/validation/run-ci-gate.py --profile full:*)",
       "Bash(bash scripts/knowledge/report-graphify-health.sh:*)"
     ],
     "deny": [

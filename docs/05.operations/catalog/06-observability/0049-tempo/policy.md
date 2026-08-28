@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0049
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -76,7 +77,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - Custom image secret guard:
   `rg -n 'FROM grafana/tempo:3.0.2|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - Repository contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

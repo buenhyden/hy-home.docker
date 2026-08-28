@@ -3,7 +3,8 @@ profile_id: guide
 status: active
 artifact_id: guide-0068
 artifact_type: guide
-parent_ids: []
+parent_ids:
+  - SPEC-0010
 created: 2026-05-10
 updated: 2026-08-11
 ---
@@ -134,7 +135,7 @@ The container uses `infra_net`. If local services are unreachable, verify that r
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff
 

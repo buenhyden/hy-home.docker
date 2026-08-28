@@ -62,7 +62,7 @@ cassandra/
 | Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
 | Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
 | Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0025-cassandra/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0025-cassandra/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0025-cassandra/runbook.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

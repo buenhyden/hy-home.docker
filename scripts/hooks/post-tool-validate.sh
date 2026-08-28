@@ -156,9 +156,7 @@ if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
   source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
 fi
 
-EXISTING_CHANGED_FILES=()
 SHELL_STYLE_FILES=()
-YAML_STYLE_FILES=()
 
 format_text_file_basics() {
   local file="$1"
@@ -192,13 +190,6 @@ if new_data != data:
 PY
 }
 
-run_compose=0
-run_governance=0
-run_json=0
-run_provider_registry=0
-run_bash=0
-run_style=0
-
 for path in "${CHANGED_PATHS[@]}"; do
   if [[ "$path" = /* && "$path" != "$PROJECT_DIR"/* ]]; then
     continue
@@ -208,8 +199,6 @@ for path in "${CHANGED_PATHS[@]}"; do
   rel="${rel#./}"
 
   if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
-    EXISTING_CHANGED_FILES+=("$rel")
-    run_style=1
     if [[ "$check_only" -eq 0 ]]; then
       case "$rel" in
       *.md | *.sh | *.yml | *.yaml | *.json)
@@ -219,38 +208,10 @@ for path in "${CHANGED_PATHS[@]}"; do
     fi
   fi
 
-  case "$rel" in
-  *docker-compose*.yml | *docker-compose*.yaml | infra/* | .env.example)
-    run_compose=1
-    ;;
-  esac
-
-  case "$rel" in
-  AGENTS.md | CLAUDE.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
-    run_governance=1
-    ;;
-  esac
-
-  case "$rel" in
-  .claude/settings.json | .codex/hooks.json | infra/tech-stack.versions.json)
-    run_json=1
-    ;;
-  esac
-
-  case "$rel" in
-  docs/00.agent-governance/providers/registry.yaml)
-    run_provider_registry=1
-    ;;
-  esac
-
   if [[ "$rel" =~ ^(\.claude/hooks|scripts)/.*\.sh$ ]]; then
-    run_bash=1
     if [[ -f "$rel" ]]; then
       SHELL_STYLE_FILES+=("$rel")
     fi
-  fi
-  if [[ "$rel" =~ \.ya?ml$ && -f "$rel" ]]; then
-    YAML_STYLE_FILES+=("$rel")
   fi
 done
 
@@ -258,43 +219,4 @@ if [[ "$check_only" -eq 0 && "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v s
   shfmt -w "${SHELL_STYLE_FILES[@]}"
 fi
 
-if [[ "$run_style" -eq 1 ]]; then
-  if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
-    shfmt -d "${SHELL_STYLE_FILES[@]}"
-  fi
-  if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shellcheck >/dev/null 2>&1; then
-    shellcheck "${SHELL_STYLE_FILES[@]}"
-  fi
-  if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]] && command -v yamllint >/dev/null 2>&1; then
-    yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
-  fi
-  git diff --check -- "${EXISTING_CHANGED_FILES[@]}"
-fi
-
-if [[ "$run_json" -eq 1 ]]; then
-  python3 -m json.tool .claude/settings.json >/dev/null
-  python3 -m json.tool .codex/hooks.json >/dev/null
-  python3 -m json.tool infra/tech-stack.versions.json >/dev/null
-fi
-
-if [[ "$run_provider_registry" -eq 1 ]]; then
-  python3 scripts/validation/check-agent-governance-contract.py --section providers
-fi
-
-if [[ "$run_bash" -eq 1 ]]; then
-  shopt -s nullglob globstar
-  bash_files=(.claude/hooks/*.sh scripts/*.sh scripts/**/*.sh)
-  shopt -u nullglob globstar
-  if [[ "${#bash_files[@]}" -gt 0 ]]; then
-    bash -n "${bash_files[@]}"
-  fi
-fi
-
-if [[ "$run_compose" -eq 1 ]]; then
-  bash scripts/validation/validate-docker-compose.sh
-fi
-
-if [[ "$run_governance" -eq 1 ]]; then
-  bash scripts/validation/check-repo-contracts.sh
-  python3 scripts/validation/check-document-links.py --mode traceability
-fi
+python3 scripts/validation/run-ci-gate.py --profile changed

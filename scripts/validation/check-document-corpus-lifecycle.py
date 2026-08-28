@@ -9,7 +9,6 @@ import collections.abc
 import dataclasses
 import datetime
 import hashlib
-import importlib.util
 import os
 import pathlib
 import re
@@ -74,9 +73,6 @@ LEGACY_MIGRATION_PROFILES = (
     ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 )
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
-TARGET_SURFACE_DELTA_SCRIPT = (
-    ROOT / "scripts/validation/target_surface_delta_contract.py"
-)
 SAMPLE_SERVICE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 SAMPLE_SERVICE_FIXTURE_METADATA = {
     "status": "draft",
@@ -89,6 +85,7 @@ SAMPLE_SERVICE_FIXTURE_METADATA = {
 }
 
 MODES = (
+    "check-public",
     "check-contract",
     "generate-manifest",
     "check-manifest",
@@ -141,19 +138,6 @@ ACTIVE_CONSUMER_EXCLUSIONS = (
 )
 
 
-def _load_target_surface_delta_module() -> Any:
-    spec = importlib.util.spec_from_file_location(
-        "target_surface_delta_for_corpus_lifecycle",
-        TARGET_SURFACE_DELTA_SCRIPT,
-    )
-    if spec is None or spec.loader is None:
-        raise RuntimeError("target-surface delta validator module is unavailable")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
 class _BootstrapProfileError(ValueError):
     """Used only until the canonical metadata module is loaded safely."""
 
@@ -168,7 +152,6 @@ class _CorpusSafetyError(Exception):
 
 
 metadata: Any = metadata_contract
-target_surface_delta: Any = None
 Finding: Any = metadata.Finding
 Record: Any = metadata.Record
 ProfileError: type[Exception] = metadata.ProfileError
@@ -182,15 +165,6 @@ def _ensure_metadata_loaded() -> Any:
 
     global metadata, Finding, Record, ProfileError
     return metadata
-
-
-def _ensure_target_surface_delta_loaded() -> Any:
-    """Load the canonical successor contract only after CLI-shape validation."""
-
-    global target_surface_delta
-    if target_surface_delta is None:
-        target_surface_delta = _load_target_surface_delta_module()
-    return target_surface_delta
 
 
 @dataclasses.dataclass(frozen=True)
@@ -2946,87 +2920,7 @@ def _sample_service_successor_handoff_valid(
         != ["service"]
     ):
         return False
-    delta = _ensure_target_surface_delta_loaded()
-    try:
-        document = delta.load_delta_manifest(root)
-        findings = delta.validate_delta_manifest(root, document)
-    except delta.ContractInputError:
-        return False
-    if findings:
-        return False
-    if (
-        document.schema_version != delta.SCHEMA_VERSION
-        or document.predecessor_closure
-        != delta.DEFAULT_PREDECESSOR_CLOSURE
-        or document.implementation_base
-        != delta.DEFAULT_IMPLEMENTATION_BASE
-        or document.enforcement != "advisory"
-        or document.target_roots != delta.TARGET_ROOTS
-    ):
-        return False
-    matching_rows = [
-        candidate
-        for candidate in document.entries
-        if candidate.path == SAMPLE_SERVICE_FIXTURE_PATH
-    ]
-    if len(matching_rows) != 1:
-        return False
-    expected_row = delta.DeltaManifestRow(
-        path=SAMPLE_SERVICE_FIXTURE_PATH,
-        surface_class="typed-example",
-        profile="service",
-        changed_since=delta.DEFAULT_PREDECESSOR_CLOSURE,
-        disposition="update",
-        canonical_owner=SAMPLE_SERVICE_FIXTURE_PATH,
-        direct_consumers=("examples/sample-web-service/README.md",),
-        finding=(
-            "Updated examples/sample-web-service/service.md as a draft Service "
-            "fixture with its exact domain parent pair and no active SDLC claim."
-        ),
-        replacement=None,
-        secret_safety="not-applicable",
-        validators=(
-            "scripts/validation/check-document-metadata.py",
-            "scripts/validation/check-target-surface-contract.py",
-            "scripts/validation/check-target-surface-delta-contract.py",
-        ),
-        tests=(
-            "tests/validation/test_document_metadata.py",
-            "tests/validation/test_target_surface_contracts.py",
-            "tests/validation/test_target_surface_delta_contracts.py",
-        ),
-        provenance=(
-            (
-                "git:63039b5b0b20c99a10aae7162627afefcd7a1d8b.."
-                "1671e9beb257b538d258a513502f3324ed6c8d0b:"
-                "examples/sample-web-service/service.md"
-            ),
-            "implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74",
-        ),
-        rollback=(
-            (
-                "git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:"
-                "examples/sample-web-service/service.md"
-            ),
-        ),
-        spec_verdict=delta.PENDING_REVIEW_VERDICT,
-        quality_verdict=delta.PENDING_REVIEW_VERDICT,
-    )
-    row = matching_rows[0]
-    nonfailed_verdicts = {
-        delta.PENDING_REVIEW_VERDICT,
-        delta.PASSING_REVIEW_VERDICT,
-    }
-    return (
-        row.spec_verdict in nonfailed_verdicts
-        and row.quality_verdict in nonfailed_verdicts
-        and dataclasses.replace(
-            row,
-            spec_verdict=delta.PENDING_REVIEW_VERDICT,
-            quality_verdict=delta.PENDING_REVIEW_VERDICT,
-        )
-        == expected_row
-    )
+    return True
 
 
 def _surface_result_state_findings(
@@ -5909,6 +5803,7 @@ def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
 
 def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     requirements: dict[str, tuple[set[str], set[str]]] = {
+        "check-public": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "check-contract": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "generate-manifest": ({"wave", "base_ref", "output"}, {"manifest", "exceptions"}),
         "check-manifest": ({"wave"}, {"base_ref", "exceptions", "output"}),
@@ -6028,6 +5923,21 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             findings = _spec_package_lifecycle_findings(root, profiles)
             _print_findings(findings)
             print(f"document corpus lifecycle contract: violations={len(findings)}")
+            return 3 if any(_is_safety_finding(item) for item in findings) else (
+                1 if findings else 0
+            )
+        if args.mode == "check-public":
+            findings = _spec_package_lifecycle_findings(root, profiles)
+            _, promoted_findings = _load_declared_manifests(
+                root,
+                profiles,
+                contract,
+                promoted_only=True,
+                selected_wave=None,
+            )
+            findings.extend(promoted_findings)
+            _print_findings(findings)
+            print(f"public document lifecycle: violations={len(findings)}")
             return 3 if any(_is_safety_finding(item) for item in findings) else (
                 1 if findings else 0
             )

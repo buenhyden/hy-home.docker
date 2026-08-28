@@ -3,7 +3,8 @@ profile_id: policy
 status: active
 artifact_id: policy-0043
 artifact_type: policy
-parent_ids: []
+parent_ids:
+  - SPEC-0007
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -68,7 +69,7 @@ Loki 운영 기준을 다룬다.
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: hy/loki:3.7.3-custom|minio_app_user_password|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Repository contracts:
-  `bash scripts/validation/check-repo-contracts.sh`
+  `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 

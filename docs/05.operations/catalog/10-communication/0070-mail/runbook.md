@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0070
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0011
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -47,7 +48,7 @@ updated: 2026-08-11
 ### Steps
 
 1. static baseline을 확인한다: `bash scripts/hardening/check-all-hardening.sh 10-communication`.
-2. repo stale guard를 확인한다: `bash scripts/validation/check-repo-contracts.sh`.
+2. repo stale guard를 확인한다: `python3 scripts/validation/run-ci-gate.py --profile changed`.
 3. 컨테이너가 실행 중이면 상태를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`.
 4. 실행 중인 컨테이너 로그를 확인한다: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`.
 5. 운영 승격 상태에서만 host port를 확인한다: `nc -zv localhost 25 465 587 993 4190`.
@@ -57,7 +58,7 @@ updated: 2026-08-11
 ### Verification Steps
 
 - `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `bash scripts/validation/check-repo-contracts.sh`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 운영 승격 시 UI route, TLS, DNS, host port evidence가 incident/task 기록에 남아 있어야 한다.
 
 ### Observability and Evidence Sources

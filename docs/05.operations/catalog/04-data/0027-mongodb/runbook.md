@@ -3,7 +3,8 @@ profile_id: runbook
 status: active
 artifact_id: runbook-0027
 artifact_type: runbook
-parent_ids: []
+parent_ids:
+  - SPEC-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -107,7 +108,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
+- **Eval Re-run**: Re-run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
 
 ## Evidence
 

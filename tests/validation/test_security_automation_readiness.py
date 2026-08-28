@@ -62,18 +62,18 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         self.assertIn("| Partially Implemented | 1 |", output)
         self.assertIn("| Gap | 1 |", output)
 
-    def test_broad_supply_chain_gaps_route_to_draft_spec_126(self) -> None:
+    def test_broad_supply_chain_gap_routes_to_canonical_migration(self) -> None:
         output = self.render()
-        spec_126 = (
-            "[Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+        migration = (
+            "Stage 98 migration lookup: "
+            "`docs/98.archive/migrations/0003-workspace-governance-simplification.md`"
         )
         for control_id in (
             "SEC-AUTO-012",
         ):
             self.assertRegex(
                 output,
-                rf"(?m)^\| `{control_id}` \|.*\| {re.escape(spec_126)} \|$",
+                rf"(?m)^\| `{control_id}` \|.*\| {re.escape(migration)} \|$",
             )
 
     def test_canonical_security_leaf_preserves_the_three_signal_boundary(self) -> None:
