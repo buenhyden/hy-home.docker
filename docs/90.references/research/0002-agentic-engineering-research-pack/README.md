@@ -22,8 +22,8 @@ entitlement, runtime execution, Task 9 acceptance, or final integration?
 
 This is the draft `RES-0002` pack authorized by SPEC-0137's pre-acceptance
 exception. It currently contains this README, two foundation leaves, four D2
-analysis leaves, and four D3 model/catalog/memory leaves; the remaining ten
-inventory entries are future draft work. The
+analysis leaves, four D3 model/catalog/memory leaves, and five D4 SDLC/docs
+leaves; the remaining five inventory entries are future draft work. The
 `observed_at` date measures local draft measurement, not external access.
 
 | Area | Inventory |
@@ -36,8 +36,7 @@ inventory entries are future draft work. The
 
 The final subject/category × scope matrix is D7 work and is not yet covered by
 this partial draft. Identity reconciliation and any main-merge cleanup are
-deferred. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`; no claim row is owned
-here for them until D4 creates their owning leaf and evidence-limited links.
+deferred. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`.
 
 ## Method
 
@@ -110,6 +109,58 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `MH-002` | [memory hierarchy](./memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
 | `MH-003` | [memory hierarchy](./memory-hierarchy.md) | UNVERIFIED |
 | `MH-004` | [memory hierarchy](./memory-hierarchy.md) | ADVISORY |
+| `SSD-001` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `SSD-002` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `SSD-003` | [spec-driven SDLC](./spec-driven-sdlc.md) | VERIFIED (tracked configuration) |
+| `DML-001` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-004` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `LWS-001` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `LWS-003` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `SSD-004` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `DML-002` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-003` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-005` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `LWS-002` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `LWS-004` | [LLM Wiki system](./llm-wiki-system.md) | HISTORICAL VERIFIED |
+| `SDR-001` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-002` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-003` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked + historical retained source) |
+| `SDR-004` | [SDLC document roles](./sdlc-document-roles.md) | HISTORICAL VERIFIED |
+| `SDR-005` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-006` | [SDLC document roles](./sdlc-document-roles.md) | HISTORICAL VERIFIED |
+| `DOCARCH-DIATAXIS-BASE-001` | [documentation architecture](./documentation-architecture.md) | HISTORICAL VERIFIED |
+| `SCOPE-COMP-001` | [scope application matrix](./scope-application-matrix.md) | ADVISORY |
+| `DOCARCH-C4-001` | [documentation architecture](./documentation-architecture.md) | VERIFIED |
+| `DOCARCH-ARC42-001` | [documentation architecture](./documentation-architecture.md) | VERIFIED |
+| `DOCARCH-COMP-001` | [documentation architecture](./documentation-architecture.md) | ADVISORY |
+| `SDLCDOC-ADR-001` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED |
+| `SDLCDOC-ADR-002` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
+| `SDLCDOC-ADR-003` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
+
+## Architecture Practice Delta Claim Index
+
+| Claim ID | Owner leaf | Evidence mode | Source family |
+| --- | --- | --- | --- |
+| `DOCARCH-C4-001` | `documentation-architecture.md` | source-backed | `https://c4model.com/` |
+| `DOCARCH-ARC42-001` | `documentation-architecture.md` | source-backed | `https://arc42.org/` |
+| `DOCARCH-COMP-001` | `documentation-architecture.md` | synthesis-only | `—` |
+| `SDLCDOC-ADR-001` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+| `SDLCDOC-ADR-002` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+| `SDLCDOC-ADR-003` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+| `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
+
+## Architecture Practice Direct-Page Index
+
+| Page key | Source ID | Claim ID | Family root | Direct URL | Accessed at | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| `C4-INTRODUCTION` | `DA-SRC-001` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/introduction` | 2026-08-28 | VERIFIED |
+| `C4-ABSTRACTIONS` | `DA-SRC-002` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/abstractions` | 2026-08-28 | VERIFIED |
+| `C4-DIAGRAMS` | `DA-SRC-003` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams` | 2026-08-28 | VERIFIED |
+| `C4-NOTATION` | `DA-SRC-004` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams/notation` | 2026-08-28 | VERIFIED |
+| `ARC42-OVERVIEW` | `DA-SRC-005` | `DOCARCH-ARC42-001` | `https://arc42.org/` | `https://arc42.org/overview/` | 2026-08-28 | VERIFIED |
+| `ADR-ROLE` | `SDR-SRC-001` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html` | 2026-08-28 | VERIFIED |
+| `ADR-LIFECYCLE` | `SDR-SRC-002` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0008-add-status-field.html` | 2026-08-28 | UNVERIFIED |
+| `ADR-RELATIONSHIPS` | `SDR-SRC-003` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/` | 2026-08-28 | UNVERIFIED |
 
 ## Sources
 
@@ -162,6 +213,29 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `MH-SRC-001` | [memory hierarchy](./memory-hierarchy.md) |
 | `MH-SRC-002` | [memory hierarchy](./memory-hierarchy.md) |
 | `MH-SRC-003` | [memory hierarchy](./memory-hierarchy.md) |
+| `SSD-SRC-001` | [spec-driven SDLC](./spec-driven-sdlc.md) |
+| `SSD-SRC-002` | [spec-driven SDLC](./spec-driven-sdlc.md) |
+| `SSD-SRC-003` | [spec-driven SDLC](./spec-driven-sdlc.md) |
+| `SSD-SRC-004` | [spec-driven SDLC](./spec-driven-sdlc.md) |
+| `DML-SRC-001` | [document metadata lifecycle](./document-metadata-lifecycle.md) |
+| `DML-SRC-002` | [document metadata lifecycle](./document-metadata-lifecycle.md) |
+| `LWS-SRC-001` | [LLM Wiki system](./llm-wiki-system.md) |
+| `LWS-SRC-002` | [LLM Wiki system](./llm-wiki-system.md) |
+| `LWS-SRC-003` | [LLM Wiki system](./llm-wiki-system.md) |
+| `DA-SRC-001` | [documentation architecture](./documentation-architecture.md) |
+| `DA-SRC-002` | [documentation architecture](./documentation-architecture.md) |
+| `DA-SRC-003` | [documentation architecture](./documentation-architecture.md) |
+| `DA-SRC-004` | [documentation architecture](./documentation-architecture.md) |
+| `DA-SRC-005` | [documentation architecture](./documentation-architecture.md) |
+| `DA-SRC-006` | [documentation architecture](./documentation-architecture.md) |
+| `SDR-SRC-001` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-002` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-003` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-004` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-005` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-006` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-007` | [SDLC document roles](./sdlc-document-roles.md) |
+| `SDR-SRC-008` | [SDLC document roles](./sdlc-document-roles.md) |
 
 ## Implications
 
@@ -170,8 +244,9 @@ their authoring unit. D2 distinguishes retained historical provider capability
 from current tracked configuration and labels its cross-surface recommendation
 as advisory. D3 adds native model-control boundaries, static (not dynamic)
 selection, a pinned catalog intake path, and advisory provider-memory controls.
-`SCOPE-COMP-001` and the three composition-link sections belong
-exclusively to D4, after all three participating files exist.
+D4 adds retained SDLC/document evidence and an evidence-limited C4/arc42/ADR
+composition. `DOCARCH-COMP-001` and `SCOPE-COMP-001` are advisory synthesis;
+the two ADR gaps remain `UNVERIFIED`.
 
 ## Traceability
 
@@ -185,3 +260,8 @@ exclusively to D4, after all three participating files exist.
 - D3 selection: [agent model selection](./agent-model-selection.md).
 - D3 catalog intake: [AI agent catalogs](./ai-agent-catalogs.md).
 - D3 memory boundary: [memory hierarchy](./memory-hierarchy.md).
+- D4 SDLC flow: [spec-driven SDLC](./spec-driven-sdlc.md).
+- D4 document roles: [SDLC document roles](./sdlc-document-roles.md).
+- D4 metadata: [document metadata lifecycle](./document-metadata-lifecycle.md).
+- D4 architecture composition: [documentation architecture](./documentation-architecture.md).
+- D4 LLM Wiki boundary: [LLM Wiki system](./llm-wiki-system.md).
