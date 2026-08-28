@@ -37,8 +37,9 @@ and independent rules/specification and documentation-quality review.
 The user approved creating only README and the Spec's twenty leaves on
 `codex/0137-agentic-research-refresh` in
 `/home/hy/projects/hy-home.docker/.worktrees/agentic-research-canonical-refresh`
-before Task 9 acceptance. Entry commit is
-`2e1dc25935728c7d26388db72bc8b20e42cf2fe7`. This section is the sole current
+before Task 9 acceptance. The original draft entry commit is
+`2e1dc25935728c7d26388db72bc8b20e42cf2fe7`; the current additional-correction
+entry is `29d947b4bec58bec35d8555c27f2b3550634fe43`. This section is the sole current
 execution sequence; SPEC-0137's Approved Pre-Acceptance Draft Exception owns
 its scope. The sections from Global Constraints through Rulings below retain
 the pre-exception plan for provenance and deferred final integration. Their
@@ -54,8 +55,12 @@ They remain `Not Run` and require a reviewed resumption accounting for draft
 files and identity reconciliation before any integration. No merge is
 authorized now, including a synchronization merge. Task 0004 stays active.
 
-Only D0 owns Spec/Plan changes. Later units own only their listed pack files
-and Task 0004. No Task 9, `main`, other worktree, parent router/index,
+Only D0 owns Spec/Plan changes, except for the one user-approved Plan-only
+correction below. That correction authorizes only its separately committed Plan
+update, the Task continuation that follows it, and exactly one extra narrow D4
+correction; it does not reset D4's exhausted initial and sole correction or
+expand D5--D7. Later units own only their listed pack files and Task 0004. No
+Task 9, `main`, other worktree, parent router/index,
 generator, dated pack, Stage 00/05/99, script, test, memory, runtime, remote,
 provider, secret, or credential changes are allowed. Do not create scratch,
 ignored files, new validators, generated test code, or another RES identity.
@@ -112,22 +117,32 @@ the approved `workflow-supervisor` / `execution-plan-agent` correction. Every
 unit receives fresh independent rules/specification and documentation-quality
 review, both C0/I0/M0, plus controller final review before commit. Maximum two
 attempts means initial work plus one narrower correction; a repeated failure,
-scope ambiguity, or missing authority stops for user direction.
+scope ambiguity, or missing authority stops for user direction. The following
+approved exception is not another general attempt: D4's initial work and sole
+correction are exhausted, and the historical terminal reviews (rules
+C0/I2/M2, quality C0/I3/M2) were nonauthorizing. It permits exactly the
+separately reviewed Plan-only correction and one additional narrow D4
+correction; any nonzero terminal review finding stops with no automatic retry.
 
 | Unit | Exact owned files | Required result and commit boundary |
 | --- | --- | --- |
-| D0 — authority correction | `spec.md`, `plan.md`, Task | Publish this exception only; proposed commit `docs(plan): permit isolated research draft authoring`. No pack file is created in D0. |
+| D0 — authority correction | `spec.md`, `plan.md`, Task | Previous published unit only; no current D0 execution. |
+| Plan-only — additional D4 correction authority | `plan.md` | Publish only this approved exception; proposed commit `docs(plan): authorize one additional D4 correction`. Task evidence is intentionally external until the following D4 correction unit. |
 | D1 — foundation | `README.md`, `workspace-baseline.md`, `scope-application-matrix.md`, Task | Draft metadata, retained-evidence limits, local baseline, and closed scope model; 3 pack files. |
 | D2 — harness | `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md`, `agent-instructions-vibe-coding.md`, `README.md`, Task | Four bounded analyses and aggregate updates; 7 pack files. |
 | D3 — models and memory | `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md`, `README.md`, Task | Four evidence-limited analyses and aggregate updates; 11 pack files. |
-| D4 — SDLC and documents | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md`, `scope-application-matrix.md`, `README.md`, Task | Five analyses, two literal ADR gaps, evidence-limited composition, and exactly six composition links; 16 pack files. |
+| D4 — SDLC and documents | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md`, `scope-application-matrix.md`, `README.md`, Task | Original D4 paths are frozen dirty drafts. The one additional correction edits only `README.md`, `scope-application-matrix.md`, `document-metadata-lifecycle.md`, `sdlc-document-roles.md`, and Task: (1) rename README direct-page source IDs `DOCARCH-SRC-001`--`005` to `DA-SRC-001`--`005` to match the owning leaf, without changing claim IDs; (2) remove `SAM-SRC-003` as an independent `SCOPE-COMP-001` source row and README aggregate while retaining synthesis with allowed canonical claim inputs and tracked evidence; (3) restore the direct SPEC-0137 Approved Pre-Acceptance Draft Exception citation to `DML-SRC-002` for `DML-003`; (4) reconcile stale D3 Task review/commit state with published `29d947b4bec58bec35d8555c27f2b3550634fe43` and all C0/I0/M0 external reviews, move the D4 check out of the D0 table, preserve historical evidence explicitly, and record exhausted reviews, current approval, and current checks; (5) align existing SDR role-table content into its correct four columns, with no new research. The three preexisting new leaves `spec-driven-sdlc.md`, `documentation-architecture.md`, and `llm-wiki-system.md` remain byte-identical. Eventual D4 publication retains its original eight paths; no create/delete/move/rename is authorized. Proposed commit `docs(research): analyze SDLC and documentation practices`. |
 | D5 — delivery | `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md`, `README.md`, Task | Three delivery/quality analyses and aggregate updates; 19 pack files. |
 | D6 — infrastructure | `docker-compose-infrastructure.md`, `security-governance.md`, `README.md`, Task | Two declarative, non-runtime analyses and aggregate updates; 21 pack files. |
 | D7 — draft reconciliation | Exactly the Spec's README plus twenty leaves and Task | Reconcile the full draft and publish branch-only evidence; no final-acceptance, readiness, merge, or cleanup claim. |
 
 Each D1–D7 unit has its own reviewed `docs(research): ...` commit. A fresh
-unit-entry literal commit and exact owned-path list bind validation. No unit
-may repair an unowned baseline finding or modify another worker's changes.
+unit-entry literal commit and exact owned-path list bind validation. For this
+exception, Plan-only checks use current literal base
+`29d947b4bec58bec35d8555c27f2b3550634fe43`; capture its literal Plan commit
+for the following D4 eight-path check, while preserving D4's original
+provenance base `29d947b4bec58bec35d8555c27f2b3550634fe43`. No unit may repair
+an unowned baseline finding or modify another worker's changes.
 
 ### Focused draft checks and publication
 
@@ -158,17 +173,18 @@ for this phase. Checks are requirements, not pre-recorded outcomes:
    check-changed --base-ref <literal-unit-entry-commit>` with an explicit
    `--changed-path <repository-relative-path>` for every unit file, including
    new untracked files and Task. Never rely on Git selection alone. Require
-   exit 0 and the expected selected count. For D0 the literal base is
-   `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` and the three explicit paths are
-   `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md`,
-   `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`, and
-   `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`.
+   exit 0 and the expected selected count. For the Plan-only correction, base
+   is `29d947b4bec58bec35d8555c27f2b3550634fe43` with only
+   `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md` (expected 1).
+   For the following D4 correction, use the captured Plan commit and the
+   existing D4 eight paths (expected 8); confirm the three frozen new-leaf
+   hashes are unchanged.
 5. Run `python3 scripts/validation/check-document-links.py --mode traceability`
    and `python3 scripts/validation/check-document-links.py --mode alignment`.
    Compare exact findings with the recorded unit-entry baseline, retaining raw
-   exits and summaries. At D0 entry, traceability is FAIL/exit 1 with the one
-   inherited Task 0001 `document-not-regular`; alignment is FAIL/exit 1 with
-   42 inherited findings, `documents=359 links=2472`. Require zero introduced
+   exits and summaries. At this exception's entry, traceability is FAIL/exit 1
+   with the one inherited Task 0001 `document-not-regular`; alignment is
+   FAIL/exit 1 with 42 inherited findings, `documents=359 links=2472`. Require zero introduced
    or worsened findings, not merely an equal count. Inherited FAIL remains
    FAIL/non-PASS; it does not satisfy final acceptance.
 6. Record only actual checks in Task, then rerun affected checks and
