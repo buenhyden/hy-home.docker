@@ -14,13 +14,77 @@ updated: 2026-08-28
 
 ## Objective
 
-Author and verify the canonical `RES-0002` research pack after SPEC-0153 Task 9
-has independently established and merged its Stage 90 structure into `main`.
+Author and check the approved pre-acceptance `RES-0002` draft on the research
+branch only. Final acceptance and integration remain deferred until SPEC-0153
+Task 9 has independently established and merged its Stage 90 structure into
+`main` and the unchanged final gates pass.
 This Task owns research content and its evidence only; it never owns Task 9,
 Stage 90 migration mechanics, protected runtime or remote observation, or the
 cleanup of another worktree.
 
+## Current Draft State
+
+On 2026-08-28 the user approved the Spec/Plan/Task exception to create README
+and the twenty listed leaves before Task 9 acceptance, without accepting,
+editing, or merging Task 9, and with `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003`
+remaining `UNVERIFIED`. SPEC-0137's Approved Pre-Acceptance Draft Exception
+and the Plan's Current Draft Execution section are the current authority.
+The earlier blocked-content instructions and retry sequence retained below
+describe their pre-exception publication points, not the current draft gate.
+The source observations remain evidence; their dates and failure states are
+not rewritten by this exception.
+
+Task 1C is published at `2e1dc25935728c7d26388db72bc8b20e42cf2fe7`, the draft
+entry commit. Its six VERIFIED and two UNVERIFIED page records are retained;
+no more network requests or retries are authorized. The 2026-08-23 roster is
+not proof of per-claim observation. Historical source-backed synthesis retains
+its actual dates, including Task 0001's 2026-08-08 source ledger and
+2026-08-09 V&V evidence. Diataxis retains its 2026-08-08 access and pin
+`957c09ca40b4a1edc23874f713e01937d50d54d5`. Roster-only assertions remain
+`UNVERIFIED`; local facts require read-only tracked-source corroboration.
+Older ADR material and synthesis must not repair the two unresolved claims.
+
+The only content target is the Spec's exact 21-file set under
+`docs/90.references/research/0002-agentic-engineering-research-pack/` in
+`codex/0137-agentic-research-refresh`. README keeps `RES-0002` as a draft
+research document. Each new generic-reference leaf uses the exact
+`reference:agentic-engineering-research-draft:<filename-stem>` artifact ID to
+avoid the twenty existing protected dated-pack IDs. This is not Task 9
+identity acceptance or a new RES allocation; final identity reconciliation
+is deferred. Metadata dates measure actual local draft work, never refetch.
+No parent routing, generator, dated pack, other worktree, script, test, memory,
+runtime, remote, or protected authority is changed.
+
+| Current unit | State at this publication point |
+| --- | --- |
+| D0 — Spec/Plan/Task exception | In progress; this three-file correction contains no research content. Initial focused checks are recorded below; final-tree rerun and terminal review: Not Run. |
+| D1 — foundation: README, workspace baseline, scope matrix | Not Run. |
+| D2 — four harness/provider/instruction leaves | Not Run. |
+| D3 — four model/catalog/memory leaves | Not Run. |
+| D4 — five SDLC/docs/wiki leaves and composition reconciliation | Not Run; both unresolved ADR claims must remain `UNVERIFIED`. |
+| D5 — three delivery/quality leaves | Not Run. |
+| D6 — two infrastructure/security leaves | Not Run. |
+| D7 — complete draft reconciliation | Not Run; passing means draft checks only, not readiness or final acceptance. |
+
+Use a fresh doc-writer for every content unit, independent rules/specification
+and quality review at C0/I0/M0, and controller final review before each logical
+commit. The maximum is two attempts: initial work and one narrower correction,
+then stop. Publish only actual unit evidence; terminal verdicts remain
+`Not Run` in-tree and are bound externally to the reviewed tree. No file
+mutation follows terminal review before commit. The Plan's exact scoped
+metadata, local-link, census, aggregate, eight-scope, citation, ADR-gap, and
+six-edge checks replace no final acceptance gate.
+
+The retained all-pages-VERIFIED `DELTA_AUDIT` is `Not Run` for this approved
+draft, not relabeled PASS. Task 9 acceptance/synchronization, the full
+manifest-backed six-suite freeze and ladder, readiness, final integration,
+finishing, and cleanup are deferred and `Not Run`. This Task remains active;
+the old final-acceptance prerequisites are unchanged.
+
 ## Inputs
+
+The following inputs describe the Task 1C publication baseline. Current draft
+permission is the explicit exception above, not a change to those observations.
 
 | Input | Observed state on 2026-08-28 Asia/Seoul |
 | --- | --- |
@@ -62,6 +126,8 @@ cleanup of another worktree.
 | 2026-08-28 | Task 1C approved reobservation | The approved retry Plan at `c501ee371547540b3e7368b0d9f76e6811b08b16` authorized exactly five corrected URLs. Controller completed each once, in roster order, after the required 2026-08-28 preflight and closed-environment identity checks. No retry, redirect follow, linked-page request, or alternative source occurred. |
 | 2026-08-28 | Task 1C dependency recheck | `main` resolved to `d6cac43d77653e833732ec589f333db333222e07`; the canonical destination census was empty on that commit and on the retry Plan commit. Task 9 implementation `49522aa1d782838706bd558b8e139b107918ffee` is not an ancestor of main (exit 1), which is expected non-ancestry rather than a PASS. |
 | 2026-08-28 | Task 1C focused validation | Exact stable draft check: metadata PASS (`selected=1 violations=0`); traceability FAIL (1 inherited finding) and alignment FAIL (42 inherited findings), attributable 0. Scoped whitespace, exact-path, clean-exclusion, and memory-only record-consistency checks passed. Terminal review remains external. |
+| 2026-08-28 | Task 1C publication completed | Published as `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` — `docs(task): record architecture delta reobservations`. The earlier in-tree Not Run terminal-review row preserves that publication point; no new verdict is inferred from the commit identity. |
+| 2026-08-28 | Approved branch-only draft exception | The user approved Spec/Plan/Task correction and subsequent creation of only README plus twenty research leaves before Task 9 acceptance, retaining both unresolved ADR claims as `UNVERIFIED`. No Task 9 acceptance, change, synchronization, merge, or new external request is authorized. This D0 unit changes only the three authority/evidence files. Initial checks are recorded below; final-tree rerun and terminal review remain Not Run. |
 
 ## Architecture Practice Delta Observations
 
@@ -491,6 +557,23 @@ authorized by this publication.
 
 ## Verification Evidence
 
+The controller executed these initial D0 checks before this evidence edit.
+They do not claim a pass for the final publication tree. Its required rerun and
+terminal review remain Not Run in-tree and must be bound externally after the
+evidence is finalized. No external request, scratch file, or other write was
+made by these checks.
+
+| D0 initial check | Observed result |
+| --- | --- |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 2e1dc25935728c7d26388db72bc8b20e42cf2fe7 --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/spec.md --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/plan.md --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md` | PASS, exit 0; `selected=3 violations=0 legacy_exceptions=0 transition_overrides=0`. |
+| `python3 scripts/validation/check-document-links.py --mode traceability` | FAIL/non-PASS, exit 1; `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=1`. The Task 0001 `document-not-regular` finding is identical to clean entry; inherited 1, attributable 0. |
+| `python3 scripts/validation/check-document-links.py --mode alignment` | FAIL/non-PASS, exit 1; the same corpus counters with `failures=42`. The controller compared all 42 exact finding lines with clean entry: no added, changed, or removed finding; inherited 42, attributable 0. |
+| Scope, index, and whitespace | `git diff --check` exit 0. Changed-name/status and worktree status contain only the three authorized modified files; the index is empty. The `git diff --quiet HEAD` exclusion check for all paths except those three exits 0. |
+| D0 pack census | 0 files; no research content was created, as required for D0. |
+
+The historical rows below retain their observed publication-point results.
+Inherited failures remain raw FAIL/non-PASS, not final acceptance.
+
 | Check | Observed result |
 | --- | --- |
 | Focused corrected-Spec metadata | PASS; zero violations. |
@@ -535,6 +618,10 @@ versus inherited findings. A tracked workflow or configuration proves only
 repository adoption; it does not prove remote enforcement or a successful run.
 
 ## Review Evidence
+
+Current D0 independent rules/specification, documentation-quality, and
+controller terminal reviews are Not Run in-tree; exact-tree final verdicts
+must be bound externally before commit without another file mutation.
 
 | Review | Verdict |
 | --- | --- |
@@ -594,7 +681,9 @@ change.
 | Correct architecture delta retry Plan | `c501ee371547540b3e7368b0d9f76e6811b08b16` — `docs(plan): correct architecture delta source retry` | Committed after initial independent dual C0/I1/M0 identified mandatory capture-limit metadata validation, one scoped correction, and final independent dual C0/I0/M0. |
 | Align canonical research Task ledger | `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072` — `docs(task): align canonical research delta ledger` | Previous Task-only unit committed after final full/scoped independent dual C0/I0/M0; no edit after terminal review before commit. |
 | Observe closed architecture delta | `2643d9b9008f21d472e998039cd37b8ceb421109` — `docs(task): record architecture delta observations` | Historical Task 1B publication: eight requests observed, three pages VERIFIED and five UNVERIFIED. Its tracked Not Run terminal-review row is a historical publication point; Git identity/published state does not establish a terminal verdict. |
-| Reobserve corrected architecture delta | No self-commit identity | This separate Task 1C publication; five corrected URLs were observed once, yielding six active VERIFIED pages and two UNVERIFIED pages. Terminal review and resulting identity remain external. |
+| Reobserve corrected architecture delta | `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` — `docs(task): record architecture delta reobservations` | Published previous Task 1C unit; five corrected URLs were observed once, yielding six active VERIFIED pages and two UNVERIFIED pages. Its original terminal-review record remains external. |
+| D0 — permit isolated research draft authoring | No commit yet | Current Spec/Plan/Task correction; proposed title `docs(plan): permit isolated research draft authoring`. Initial checks are recorded above; final-tree rerun and terminal review are Not Run. |
+| D1–D7 — isolated draft units | No commits | Not Run; execute only under Current Draft Execution, with bounded reviews and logical commits. Final acceptance/integration are deferred. |
 | Bind accepted post-Task9 main baseline | No commit | Blocked pending canonical Task 9 acceptance on `main` and the exact destination census; owner-branch completion alone is insufficient. |
 | Research content and integration units | No commits | Blocked pending the baseline gate. |
 | Record research-branch readiness | No commit | Not Run; Task remains active; expected title `docs(task): record canonical research readiness`. The resulting self-identity and terminal verdict are recorded externally, not by mutating this Task after review. |
@@ -604,6 +693,10 @@ change.
 | Research branch/worktree cleanup | No commit | Explicitly deferred until the terminal completion-HEAD gate is green. |
 
 ## Rulings
+
+The following pre-exception rulings remain history or deferred final gates.
+Current Draft State overrides only their pre-authoring block; it grants no
+Task 9 acceptance, synchronization, retry, final acceptance, or cleanup.
 
 - This Task is active as the sole prospective SPEC-0137 execution ledger, while
   its content phase is `BLOCKED`; active status does not imply executable
@@ -692,6 +785,10 @@ change.
   authority and user direction; no content unit re-accesses sources.
 
 ## Deferred Items
+
+This retained pre-exception list is not a block on the expressly approved
+draft units. Structural/final gates and unresolved ADR evidence remain deferred;
+only the README-plus-twenty-leaf draft authoring restriction is superseded.
 
 - SPEC-0153 Task 9 is completed only in the frozen owner-branch evidence;
   independent acceptance on `main`, structural integration, parent routing,

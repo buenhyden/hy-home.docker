@@ -11,30 +11,184 @@ updated: 2026-08-28
 
 # Canonical Agentic Engineering Research Refresh Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use
-> `superpowers:subagent-driven-development` (recommended) or
-> `superpowers:executing-plans` to implement this plan task-by-task. Steps use
-> checkbox (`- [ ]`) syntax for tracking.
+> Current execution is limited to the approved branch-only draft units below.
+> Retained pre-exception commands are not current execution instructions.
 
 **Goal:** Produce the source-backed canonical `RES-0002` pack without taking
 over SPEC-0153 Task 9 or promoting advisory research into workspace authority.
 
-**Architecture:** Approved SPEC-0137 commit
-`68354fc8e92658a53043a9a8242397d48c4f6caf` preserves the 2026-08-23 research
-baseline and authorizes one conditional 2026-08-28 Asia/Seoul architecture-
-practice delta. Original Tasks 1, 1A, and 1B are consumed history. This
-Plan-only retry correction precedes Task 1C's five-page reobservation; the
-three verified C4 observations are retained without refetch. Content authoring
-remains blocked until the canonical SPEC-0153 Task 9 disposition is independently
-accepted on `main` and the exact canonical `RES-0002` set exists. Seven bounded
-content units then author the README and twenty leaves, reconcile one aggregate ownership model, and pass
-focused and repository verification before any separately scheduled finish.
+**Architecture:** The 2026-08-28 approved Spec/Plan/Task exception permits
+pre-acceptance DRAFT authoring after Task 1C publication
+`2e1dc25935728c7d26388db72bc8b20e42cf2fe7`. Retained evidence is consumed
+without new requests; unsupported facts and the two unresolved ADR claims stay
+`UNVERIFIED`. Task 9 acceptance, structural ownership, synchronization, final
+verification, integration, and cleanup remain separate and deferred.
 
 **Tech Stack:** Markdown, Git, Stage 00 and Stage 99 document contracts, official
 primary web sources and standards, Python 3 validators, Bash validation adapters,
 and independent rules/specification and documentation-quality review.
 
 **Spec:** [SPEC-0137](./spec.md)
+
+## Current Draft Execution
+
+### Authority, scope, and retained-plan precedence
+
+The user approved creating only README and the Spec's twenty leaves on
+`codex/0137-agentic-research-refresh` in
+`/home/hy/projects/hy-home.docker/.worktrees/agentic-research-canonical-refresh`
+before Task 9 acceptance. Entry commit is
+`2e1dc25935728c7d26388db72bc8b20e42cf2fe7`. This section is the sole current
+execution sequence; SPEC-0137's Approved Pre-Acceptance Draft Exception owns
+its scope. The sections from Global Constraints through Rulings below retain
+the pre-exception plan for provenance and deferred final integration. Their
+content-block, synchronization-first, Task 1C retry, all-pages-VERIFIED audit,
+and finishing commands are not executable in this draft phase.
+
+The retained exact twenty-leaf inventory, ordinary claim/source prefixes,
+seven delta claim owners, source-family/URL mappings, and six-edge composition
+contract still constrain the draft. Final Acceptance Contract requirements,
+accepted-Task9 synchronization, the manifest-backed six-responsibility freeze,
+green readiness/merged/completion gates, and finishing workflow are not waived.
+They remain `Not Run` and require a reviewed resumption accounting for draft
+files and identity reconciliation before any integration. No merge is
+authorized now, including a synchronization merge. Task 0004 stays active.
+
+Only D0 owns Spec/Plan changes. Later units own only their listed pack files
+and Task 0004. No Task 9, `main`, other worktree, parent router/index,
+generator, dated pack, Stage 00/05/99, script, test, memory, runtime, remote,
+provider, secret, or credential changes are allowed. Do not create scratch,
+ignored files, new validators, generated test code, or another RES identity.
+
+### Evidence and document shape
+
+- Consume the committed Task 1C summaries, direct-page records, dates, and
+  limitations. Six pages are VERIFIED; ADR-LIFECYCLE and ADR-RELATIONSHIPS are
+  UNVERIFIED. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain literally
+  `UNVERIFIED` in Task, their owning leaf, and README. No synthesis may turn
+  their missing facts into supported claims. Evidence-limited cross-practice
+  comparison is allowed only when that limit is explicit.
+- The 2026-08-23 source roster alone is not a durable per-claim observation.
+  Use retained historical source-backed synthesis only with its original
+  dates, provenance, and caveats; mark roster-only or otherwise unsupported
+  propositions `UNVERIFIED`. Task 0001's retained source ledger includes
+  2026-08-08 observations and 2026-08-09 V&V evidence; Diataxis retains pin
+  `957c09ca40b4a1edc23874f713e01937d50d54d5`, not a new 2026-08-23 access.
+  Historical ADR material cannot rescue the two unresolved delta claims.
+  Do not copy obsolete Stage 04 or local-policy
+  assertions. Remeasure local facts using read-only tracked files and record
+  their literal revision; configuration never proves execution. No external
+  request, refetch, alternate source, or further retry is authorized.
+- README selects `profile_id: research`, `artifact_type: research`,
+  `artifact_id: RES-0002`, `parent_ids: [SPEC-0137]`, and `status: draft`.
+  Required dates `created`, `updated`, and `observed_at` use actual local draft
+  work dates; explain that `observed_at` is local draft measurement, not an
+  external access date. Required H2 sections are `Question`, `Scope`, `Method`,
+  `Findings`, `Sources`, `Implications`, and `Traceability`.
+- Each leaf uses the existing generic-reference contract: no `profile_id`,
+  `artifact_type: reference`, `parent_ids: []`, `status: draft`, actual
+  `reviewed_at`, and `review_cycle: on-source-change`. Its exact artifact ID is
+  `reference:agentic-engineering-research-draft:<filename-stem>`. Protected
+  dated-pack IDs are not copied. These draft IDs do not transfer Task 9's
+  identities; final reconciliation is deferred. Required H2 sections are
+  `Overview`, `Purpose`, `Scope`, `Definitions / Facts`, `Sources`,
+  `Maintenance`, and `Related Documents`; `Findings` is not a reference H2.
+  Place claim, source, and scope detail under the appropriate sections, keeping
+  the exact named composition-link H2 section in its three owner leaves.
+- README owns aggregate navigation and claim/source/requirement/scope indexes;
+  leaves own detailed rows. Reuse each leaf claim/source ID in the aggregate,
+  never allocate a second owner. Link only to files that already exist; list
+  not-yet-authored leaves as plain code until their unit creates them. Interim
+  aggregates cover authored rows and identify the remaining inventory without
+  claiming full coverage. D7 must reconcile all twenty leaves.
+
+### Bounded logical units
+
+All pack basenames below resolve under
+`docs/90.references/research/0002-agentic-engineering-research-pack/`;
+Task means `tasks/tsk-0004-canonical-research-refresh.md` in this Spec Package.
+Execute one unit at a time. Each D1–D7 unit uses a fresh `doc-writer`; D0 is
+the approved `workflow-supervisor` / `execution-plan-agent` correction. Every
+unit receives fresh independent rules/specification and documentation-quality
+review, both C0/I0/M0, plus controller final review before commit. Maximum two
+attempts means initial work plus one narrower correction; a repeated failure,
+scope ambiguity, or missing authority stops for user direction.
+
+| Unit | Exact owned files | Required result and commit boundary |
+| --- | --- | --- |
+| D0 — authority correction | `spec.md`, `plan.md`, Task | Publish this exception only; proposed commit `docs(plan): permit isolated research draft authoring`. No pack file is created in D0. |
+| D1 — foundation | `README.md`, `workspace-baseline.md`, `scope-application-matrix.md`, Task | Draft metadata, retained-evidence limits, local baseline, and closed scope model; 3 pack files. |
+| D2 — harness | `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md`, `agent-instructions-vibe-coding.md`, `README.md`, Task | Four bounded analyses and aggregate updates; 7 pack files. |
+| D3 — models and memory | `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md`, `README.md`, Task | Four evidence-limited analyses and aggregate updates; 11 pack files. |
+| D4 — SDLC and documents | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md`, `scope-application-matrix.md`, `README.md`, Task | Five analyses, two literal ADR gaps, evidence-limited composition, and exactly six composition links; 16 pack files. |
+| D5 — delivery | `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md`, `README.md`, Task | Three delivery/quality analyses and aggregate updates; 19 pack files. |
+| D6 — infrastructure | `docker-compose-infrastructure.md`, `security-governance.md`, `README.md`, Task | Two declarative, non-runtime analyses and aggregate updates; 21 pack files. |
+| D7 — draft reconciliation | Exactly the Spec's README plus twenty leaves and Task | Reconcile the full draft and publish branch-only evidence; no final-acceptance, readiness, merge, or cleanup claim. |
+
+Each D1–D7 unit has its own reviewed `docs(research): ...` commit. A fresh
+unit-entry literal commit and exact owned-path list bind validation. No unit
+may repair an unowned baseline finding or modify another worker's changes.
+
+### Focused draft checks and publication
+
+Use existing read-only validators and direct content inspection; do not run the
+retained inline `DELTA_AUDIT`, broad/protected suites, or the all-files wrapper
+for this phase. Checks are requirements, not pre-recorded outcomes:
+
+1. Inspect `git status --short`, `git diff --name-status`, and the exact unit
+   diff. Only the table's paths may change. Count actual regular, non-symlink
+   pack files, including explicit new untracked paths: D1–D6 cumulatively
+   require 3/7/11/16/19/21; D7 requires exactly the closed 21-file set, no extras.
+2. Check English text, the selected profiles, unique artifact/claim/source
+   identities, retained citation dates and caveats, and source-to-claim support.
+   Verify README aggregates against owned leaf rows. Each authored leaf has
+   one `## Scope Application` table with exactly one disposition row per
+   closed scope: `agentic`, `architecture`,
+   `common`, `docs`, `infra`, `ops`, `qa`, `security`; allowed dispositions are
+   `applies`, `not-applicable (<reason>)`, or `historical-only (<reason>)`.
+   The separate eight-row `## Architecture Practice Scope Application` table
+   in `scope-application-matrix.md` may coexist and is checked independently.
+   README reconciles every subject/category-by-scope cell at D7.
+3. From D4 onward, inspect the three exact composition-link sections: each
+   contains only one relative Markdown link to each sibling, exactly six
+   unique directed pairs in total. Check literal `UNVERIFIED` for both ADR
+   claims across Task, their leaf, and README; no prose or synthesis contradicts
+   those states. Verify every local Markdown destination exists.
+4. Run `python3 scripts/validation/check-document-metadata.py --mode
+   check-changed --base-ref <literal-unit-entry-commit>` with an explicit
+   `--changed-path <repository-relative-path>` for every unit file, including
+   new untracked files and Task. Never rely on Git selection alone. Require
+   exit 0 and the expected selected count. For D0 the literal base is
+   `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` and the three explicit paths are
+   `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md`,
+   `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`, and
+   `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`.
+5. Run `python3 scripts/validation/check-document-links.py --mode traceability`
+   and `python3 scripts/validation/check-document-links.py --mode alignment`.
+   Compare exact findings with the recorded unit-entry baseline, retaining raw
+   exits and summaries. At D0 entry, traceability is FAIL/exit 1 with the one
+   inherited Task 0001 `document-not-regular`; alignment is FAIL/exit 1 with
+   42 inherited findings, `documents=359 links=2472`. Require zero introduced
+   or worsened findings, not merely an equal count. Inherited FAIL remains
+   FAIL/non-PASS; it does not satisfy final acceptance.
+6. Record only actual checks in Task, then rerun affected checks and
+   `git diff --check` after the evidence text is final. The current unit's
+   terminal verdict stays `Not Run` in-tree; independent reviewers and the
+   controller bind their final verdicts externally to that exact tree. Commit
+   only after both independent seats and controller approve. No file mutation
+   follows final review before commit; any correction invalidates review and
+   consumes the one narrower retry. No self-recording evidence commit follows.
+
+Successful D7 checks mean only that this isolated draft meets its bounded
+contract. The old every-page-VERIFIED `DELTA_AUDIT`, Task 9 acceptance and
+synchronization, full six-suite freeze/execution, final acceptance, integration,
+finishing, and cleanup all remain `Not Run` / deferred, not PASS or completed.
+
+## Retained Pre-Exception Plan
+
+The following material is retained unchanged as the pre-exception design and
+history. Only the reusable content constraints named above apply to current
+draft units; its execution sequence and final gates are deferred, not waived.
 
 ## Global Constraints
 

@@ -23,19 +23,20 @@ provider truth. The content target is one README and twenty leaves at
 ## Boundaries and Inputs
 
 External evidence follows a two-snapshot provenance contract. The preserved
-baseline snapshot has a 2026-08-23 cutoff/access date and workspace baseline
-`0c841b086cd1e6adc2c1ca53ce14eec309fe8f47`. One preserved, non-delta synthesis
-input is available:
+baseline record has a 2026-08-23 cutoff and workspace baseline
+`0c841b086cd1e6adc2c1ca53ce14eec309fe8f47`; that record date does not establish
+new source access. Retained evidence keeps its original observation dates.
+One preserved, non-delta synthesis input is available:
 
 | Input identity | Owning leaf | Retained evidence binding | Boundary |
 | --- | --- | --- | --- |
-| `DOCARCH-DIATAXIS-BASE-001` | `documentation-architecture.md` | SPEC-0137 Task 0001 `REQ-22`, `EXT-DIATAXIS`, and `EXT-DIATAXIS-SOURCE`, plus the preserved 2026-08-23 snapshot. | Diataxis's four reader modes, incremental/no-empty-structure adoption guidance, and documented access limitations. |
+| `DOCARCH-DIATAXIS-BASE-001` | `documentation-architecture.md` | SPEC-0137 Task 0001 `REQ-22`, `EXT-DIATAXIS`, and `EXT-DIATAXIS-SOURCE`, retained in the 2026-08-23 record; original access 2026-08-08, pin `957c09ca40b4a1edc23874f713e01937d50d54d5`. | Diataxis's four reader modes, incremental/no-empty-structure adoption guidance, and documented access limitations. |
 
 `DOCARCH-DIATAXIS-BASE-001` authorizes no refetch and is excluded from the seven
-delta claim IDs. The correction delta is exhaustively limited to this
-Spec-owned claim and source-family allowlist. The currently authorized access
-date is 2026-08-28 Asia/Seoul, but only for requests that actually occur on that
-date; it is not a pre-recorded observation.
+delta claim IDs. The correction delta was exhaustively limited to this
+Spec-owned claim and source-family allowlist. Its 2026-08-28 Asia/Seoul access
+authority was consumed by Task 1C, published at
+`2e1dc25935728c7d26388db72bc8b20e42cf2fe7`; no further request is authorized.
 
 | Claim ID | Owning leaf | Permitted source family root or inputs | Claim boundary |
 | --- | --- | --- | --- |
@@ -88,18 +89,58 @@ and cross-corpus route switch, and dated-pack deletion/cleanup. Both dated
 packs, all Stage 90 routers/generators, Stage 00/05 authority, runtime/remote
 state, and secrets are protected.
 
-The existing `plan.md` and Task 0001–0003 bodies and commits are retained
-historical evidence only; they have no prospective or future-execution authority
-under this corrected Spec. Their active metadata is stale and must be truthfully
-corrected in a later Plan/Task-only unit before Task 0004 activation; they are
-not thereby called completed. Plan and Task are co-located in Stage 03; Stage 04
-has no authority. The prospective record is
-`tasks/tsk-0004-canonical-research-refresh.md`.
+Tasks 0001–0003 retain cancelled overall Task status and no prospective
+execution authority; their actually completed subunits and reviews remain
+historical evidence. The corrected Plan's current draft section
+and `tasks/tsk-0004-canonical-research-refresh.md` govern the exception below.
+Plan and Task are co-located in Stage 03; Stage 04 has no authority.
+
+### Approved Pre-Acceptance Draft Exception
+
+On 2026-08-28 the user approved correcting Spec/Plan/Task to create the README
+and twenty listed research leaves on the research branch before Task 9
+acceptance, while retaining the two unresolved ADR claims as `UNVERIFIED`.
+This exception permits only pre-acceptance `DRAFT` content in
+`docs/90.references/research/0002-agentic-engineering-research-pack/` on
+`codex/0137-agentic-research-refresh`. It does not accept, edit, merge, or assume
+SPEC-0153 Task 9; its structural ownership and final acceptance remain intact.
+No parent route/index/generator, dated pack, other worktree, runtime, script,
+test, memory, or protected authority changes are permitted.
+
+For this draft only, the exception supersedes the missing-target and
+pre-authoring structural prerequisites in this Spec and the retained
+pre-exception Plan/Task instructions. It does not waive the final Acceptance
+Contract, authorize synchronization or integration, or make draft completion
+Task completion. The Plan defines the bounded draft units and checks; its old
+all-pages-VERIFIED `DELTA_AUDIT` is `Not Run` for this draft, never PASS.
+
+Use retained evidence only. A source URL or the 2026-08-23 roster/date alone
+does not establish an observed proposition. Retained historical synthesis
+keeps its actual original provenance and dates; unavailable support is
+`UNVERIFIED`. Current local facts require read-only corroboration in tracked
+files. The committed 2026-08-28 Task 1C records retain six VERIFIED pages and
+two UNVERIFIED pages. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain literally
+`UNVERIFIED` in Task 0004, their owning leaf, and README aggregates. Composition
+may be explicitly evidence-limited; it must not assert missing lifecycle,
+supersession, or Architecture Description/Spec relationship facts, including
+through a synthesis claim. No refetch or other external request is authorized.
+
+README uses the research profile, `artifact_id: RES-0002`,
+`parent_ids: [SPEC-0137]`, and `status: draft`. Its `created`, `updated`, and
+`observed_at` values record actual local draft work, not new external access.
+Each leaf uses the existing generic-reference contract without `profile_id`,
+`artifact_type: reference`, `parent_ids: []`, `status: draft`, actual
+`reviewed_at`, and `review_cycle: on-source-change`. Its exact artifact ID is
+`reference:agentic-engineering-research-draft:<filename-stem>`. These
+collision-free draft IDs preserve the protected dated pack's existing IDs;
+they neither allocate another RES number nor transfer Task 9 identities.
+Any final identity reconciliation remains deferred to reviewed integration.
 
 ## Behavior Contract
 
-After its canonical route is independently established, `RES-0002` contains a
-README and these twenty English leaves:
+The approved draft exception permits creating the following exact README and
+twenty English leaves before canonical routing. Final route acceptance remains
+independent:
 
 | Area | Leaves |
 | --- | --- |
@@ -138,10 +179,12 @@ real release-event evidence may be analyzed without creating a document role.
 
 ## Technical Approach
 
-Spec/Plan/Task corrections may proceed now. Content authoring begins only in a
-branch/worktree based on an independently completed and accepted Task 9 result
-that establishes `RES-0002`, or after a separate user-approved migration-row
-disposition. This branch must never create the absent target or accept Task 9.
+Spec/Plan/Task corrections and the approved pre-acceptance draft may proceed
+now. Outside that exact exception, content authoring requires an independently
+completed and accepted Task 9 result establishing `RES-0002`, or a separate
+user-approved migration-row disposition. This branch may create only the
+listed draft files in the absent target; it must never accept Task 9 or
+establish its parent route.
 
 The README uses the current Stage 99 research profile, including required
 frontmatter and `Question`, `Scope`, `Method`, `Findings`, `Sources`,
@@ -157,8 +200,9 @@ follow-up. Mutable facts retain access dates; unapproved runtime/remote claims
 remain `UNVERIFIED`. Git and existing Task records retain history; obsolete
 Gate2 detail is not copied into this living Spec.
 
-The correction integrates these subjects into the existing leaves and their
-cross-links. It creates no new leaf or parent route, performs no structural
+The correction integrates these subjects into the listed leaves and their
+cross-links. Only the approved draft exception permits creating those leaves;
+no additional leaf or parent route is created. It performs no structural
 migration, does not mutate SPEC-0153 Task 9, and neither replaces nor creates an
 authority. Stage 90 remains advisory. Diataxis, C4 Model, arc42, and ADR are
 composed where useful; their inclusion must not imply mutual exclusion or
@@ -184,8 +228,9 @@ credentials, conversation bodies, raw secret values, or private provider state.
 
 ## Failure Modes and Guardrails
 
-- Missing `RES-0002`: stop before creating or authoring content; await accepted
-  Task 9 or separately approved migration disposition.
+- Missing `RES-0002`: only the approved draft exception permits creating the
+  listed files; all other content execution awaits accepted Task 9 or a
+  separately approved migration disposition.
 - Stale, secondary, or incomplete evidence: preserve class/caveat or mark
   `UNVERIFIED`; never promote it to current fact.
 - Provider differences: preserve native differences rather than asserting false
@@ -208,7 +253,8 @@ credentials, conversation bodies, raw secret values, or private provider state.
 
 ## Acceptance Contract
 
-The future bounded Task may close only when:
+This final-acceptance contract is unchanged by draft authoring. The future
+bounded Task may close only when:
 
 1. An accepted Task 9 result or separately approved migration disposition has
    established the canonical route, without this capability creating it.
@@ -274,7 +320,7 @@ The future bounded Task may close only when:
 | [ADR-0029](../../02.architecture/decisions/0029-workspace-governance-authority.md) | Stage ownership, Stage 90 advisory boundary, and six public suites. |
 | [SPEC-0136](../0136-sdlc-taxonomy-convergence/spec.md) | Current co-located Spec/Plan/Task taxonomy. |
 | [SPEC-0153 Task 9](../0153-workspace-governance-simplification/tasks/tsk-0009-references.md) | Exclusive structural owner; not accepted, editable, or executable here. |
-| `RES-0002` | Future content destination after independent structural disposition. |
+| `RES-0002` | Approved branch-only draft destination; final structural disposition remains independent. |
 
 ## Operational Impact
 
@@ -284,5 +330,6 @@ credentials, or external systems.
 
 ## Open Questions
 
-- `RES-0002` is absent. Content authoring remains blocked pending the stated
-  independent structural disposition.
+- Final structural acceptance, identity reconciliation, full-suite validation,
+  integration, and cleanup remain deferred. A checked draft is not final
+  acceptance; the two unresolved ADR claims remain `UNVERIFIED`.
