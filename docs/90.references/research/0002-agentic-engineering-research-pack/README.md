@@ -35,9 +35,74 @@ leaves. The
 | Delivery and quality | [automation pipeline workflow](./automation-pipeline-workflow.md), [quality CI and formatting](./quality-ci-formatting.md), [verification and validation](./verification-validation.md) |
 | Infrastructure and security | [Docker Compose infrastructure](./docker-compose-infrastructure.md), [security governance](./security-governance.md) |
 
-The final subject/category × scope matrix is D7 work and is not yet covered by
-this partial draft. Identity reconciliation and any main-merge cleanup are
-deferred. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`.
+Identity reconciliation and any main-merge cleanup are deferred.
+`SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`.
+
+## Requirement-by-Scope Matrix
+
+This aggregate is a closed relevance index, not an adoption, entitlement,
+runtime, or claim-verification assertion. Each `applies` cell means the named
+owner's Scope Application table supplies the detailed
+condition, verification, and limit for that scope. No additional source or
+claim is created by this aggregation.
+
+| Subject / category | Owner leaf | agentic | architecture | common | docs | infra | ops | qa | security |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Workspace measurement | [workspace baseline](./workspace-baseline.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Scope application | [scope application matrix](./scope-application-matrix.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Harness elements | [harness engineering](./harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Workspace harness and loop systems, environment, and rules | [harness engineering](./harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Loop feedback, stopping, and escalation | [loop engineering](./loop-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Claude implementation | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Codex implementation | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Common Claude/Codex environment, rules, and system | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Instruction context | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Model landscape | [provider model landscape](./provider-model-landscape.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Work-aware model and configuration selection | [agent model selection](./agent-model-selection.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| AI agent catalogs / agency-agents | [AI agent catalogs](./ai-agent-catalogs.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Short-term memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Long-term memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Domain memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Memory management | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Spec-driven development | [spec-driven SDLC](./spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| SDLC | [spec-driven SDLC](./spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| PRD | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Architecture Description | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Local historical ARD | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR role and decision scope | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR lifecycle, status, and supersession | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR relationships | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| SPEC | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| PLAN | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| TASK | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Guide | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Incident | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Postmortem | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Policy | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Release evidence practice | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Runbook | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Document metadata and lifecycle | [document metadata lifecycle](./document-metadata-lifecycle.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Diataxis | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| C4 Model | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| arc42 | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Architecture-practice composition | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| LLM Wiki | [LLM Wiki system](./llm-wiki-system.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| CI/CD | [automation pipeline workflow](./automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| GitHub Actions | [automation pipeline workflow](./automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA formatting | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA linting | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA testing | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA syntax errors | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Verification | [verification and validation](./verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Validation | [verification and validation](./verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Docker Compose | [Docker Compose infrastructure](./docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Infrastructure | [Docker Compose infrastructure](./docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Security | [security governance](./security-governance.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+
+The matrix has 50 subject/category rows, eight closed dispositions per row,
+and exactly one owner leaf per row. It does not change any leaf's claim state:
+the two ADR gaps remain literally `UNVERIFIED`, and DCI feature/OCI/source/
+entitlement gaps are not promoted.
 
 ## Method
 
