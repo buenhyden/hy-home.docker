@@ -7,7 +7,7 @@ parent_ids:
   - SPEC-0137
   - plan-0137
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-28
 ---
 
 # Task: Canonical Agentic Engineering Research Refresh
@@ -22,15 +22,16 @@ cleanup of another worktree.
 
 ## Inputs
 
-| Input | Observed state on 2026-08-23 |
+| Input | Observed state on 2026-08-28 Asia/Seoul |
 | --- | --- |
-| Corrected specification | `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md` at `11fda02484c78df957156bfd27228851e764116d`; independently reviewed C0/I0/M0 by both rules/specification and documentation-quality reviewers. |
-| Active execution plan | `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`; this Plan and Task are the same authority-correction unit, so their commit identity is intentionally not self-claimed and is recorded by a later Task update. |
-| Structural dependency | `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md`; independently owned in another worktree and not accepted or editable here. |
-| Content destination | `docs/90.references/research/0002-agentic-engineering-research-pack/`; absent from this branch, so content authoring is blocked. |
-| Branch baseline | Task-8-derived commit `0c841b086cd1e6adc2c1ca53ce14eec309fe8f47`, plus the corrected Spec commit above. |
+| Approved specification | `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md` at `68354fc8e92658a53043a9a8242397d48c4f6caf`; explicit user approval and independent rules/specification and documentation-quality final C0/I0/M0. Original Spec evidence remains below. |
+| Active execution plan | `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md` at `5cb154a00173088011dad15eb5f50bb87bde57c9`; Plan-only commit `docs(plan): align architecture research delta`. Task 1A governs this separate Task-only alignment. |
+| Structural dependency | `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md`; owner-branch implementation `49522aa1d782838706bd558b8e139b107918ffee` is bound by completed Task evidence at frozen snapshot `2b5fa6f7b4299e23972717204cc6b678eb688be4` (last Task-path touch `9ef889b516dd03fc32ff850f7bec33fb59d760bc`). Neither owner-branch completion nor its C0/I0/M0 implementation reviews prove acceptance on `main`; no dirty owner worktree was inspected or absorbed. |
+| Content destination | `docs/90.references/research/0002-agentic-engineering-research-pack/`; absent at the literal main snapshot, approved Spec base, and current Plan HEAD below. Content and synchronization remain `BLOCKED`. |
+| Branch and main snapshots | Research branch `codex/0137-agentic-research-refresh` was clean at Task 1A entry, HEAD `5cb154a00173088011dad15eb5f50bb87bde57c9`. Newly observed `task1a_main_snapshot_commit` is `d6cac43d77653e833732ec589f333db333222e07`; it happens to equal the Plan's historical comparison. Preserved Task-8-derived baseline remains `0c841b086cd1e6adc2c1ca53ce14eec309fe8f47`. |
 | Graph evidence | `graphify-out/GRAPH_REPORT.md` was built from `f8a72211`; it is stale and advisory and requires corroboration against tracked sources and current governance. |
-| External-source cutoff | 2026-08-23. External research was read-only and did not observe secrets, provider entitlement, live runtime state, or remote enforcement. Authoring uses only these preserved observations and fixed pins; any later access requires a separately corrected/reviewed Spec and Plan carrying its actual access date. |
+| Preserved external-source baseline | 2026-08-23 observations and fixed pins remain unchanged. External research was read-only and did not observe secrets, provider entitlement, live runtime state, or remote enforcement. `DOCARCH-DIATAXIS-BASE-001` is preserved, outside the seven delta claims, and grants no refetch. |
+| Conditional architecture-practice delta | The approved Spec and committed Plan authorize only the closed delta defined below. `2026-08-28` Asia/Seoul is a conditional request date, not access evidence. All delta access/evidence is `Not Run`; no content has been authored. Plan's closed direct-page roster is the sole exact URL authority and is not duplicated here. |
 
 ## Work Log
 
@@ -47,7 +48,12 @@ cleanup of another worktree.
 | 2026-08-23 | Plan/Task review R3 — next | Rules C0/I1/M0; quality C0/I0/M0. Failed because the pair was nonzero, did not authorize commit, and its findings were corrected before R4. |
 | 2026-08-23 | Plan/Task review R4 — acceptance | Rules C0/I0/M0; quality C0/I1/M0. The round label did not make the nonzero pair approved; it failed, did not authorize commit, and its findings were corrected before R5. |
 | 2026-08-23 | Plan/Task review R5 — absolute-final preliminary | Rules C0/I0/M0; quality C0/I3/M0. Failed, did not authorize commit, and its findings were corrected before R6. |
-| 2026-08-23 | Plan/Task review R6 — terminal attempt | Rules C0/I1/M0; quality C0/I0/M0. Failed, did not authorize commit, and its findings are corrected by this evidence-only update. The next fresh terminal review remains `Not Run` in-tree and external. |
+| 2026-08-23 | Plan/Task review R6 — terminal attempt | Rules C0/I1/M0; quality C0/I0/M0. Failed and did not authorize commit. Its then-current correction and next-review wording is superseded historical context, not the verdict for this Task 1A unit. |
+| 2026-08-28 | Historical authority identity | Original Plan/Task authority-correction commit resolved to `796f92f58d1c491a804d600fd90a65f858267d06`. Git identity alone does not establish its terminal verdict; R1–R6 remain failed historical reviews. |
+| 2026-08-28 | Approved architecture Spec | `68354fc8e92658a53043a9a8242397d48c4f6caf` — `docs(spec): extend architecture research scope`; explicit user approval and final independent dual C0/I0/M0. |
+| 2026-08-28 | Plan correction | `5cb154a00173088011dad15eb5f50bb87bde57c9` committed exactly `plan.md` after the review sequence below closed all findings. Preserved baseline and conditional delta remain separate. |
+| 2026-08-28 | Task 1A dependency observation | Literal main snapshot `d6cac43d77653e833732ec589f333db333222e07`, Spec base, and Plan HEAD have no canonical pack. Task 9 completion is owner-branch-only; main acceptance, synchronization, content, integration, and cleanup remain blocked. |
+| 2026-08-28 | Task-only ledger alignment | This unit records already observed evidence and binds future execution to the committed Plan. No Spec/Plan, historical Task, Task 9, source content, runtime, or external system was changed; no delta request occurred. Executed Task 1A validation and reruns passed metadata and diff checks; traceability/alignment remained inherited FAIL/non-PASS with zero attributable findings, as recorded below. The external exact-tree execution report binds these recorded outcomes after the mandatory final-text rerun without another self-recording edit; terminal review remains external. |
 
 ## Verification Evidence
 
@@ -60,7 +66,22 @@ cleanup of another worktree.
 | Authority-correction focused metadata | PASS, exit 0: base `11fda02484c78df957156bfd27228851e764116d`, `selected=5 violations=0 legacy_exceptions=0 transition_overrides=0`. |
 | Authority-correction traceability | FAIL, exit 1: exactly `document-not-regular` for `tasks/tsk-0001-rebuild.md`; summary `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=1`. Classified inherited because the base blob was 2,242,358 bytes and already exceeded the 2 MiB checker ceiling; the current file is 2,242,656 bytes after only metadata/Overview disposition edits. This is not PASS. |
 | Authority-correction whitespace check | `git diff --check` exit 0. |
-| Post-Task9 synchronization and public suites | Not Run; Task 9 is not yet accepted or merged to `main`. |
+| Plan-only metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 68354fc8e92658a53043a9a8242397d48c4f6caf --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`: PASS, exit 0, `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`. |
+| Plan-only traceability | `python3 scripts/validation/check-document-links.py --mode traceability`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=1`; unchanged Task 0001 `document-not-regular`, attributable 0. |
+| Plan-only alignment | `python3 scripts/validation/check-document-links.py --mode alignment`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=42`; every finding path outside changed Plan, attributable 0. |
+| Plan-only scope and whitespace | `git diff --quiet HEAD -- . ':(exclude)docs/03.specs/0137-agentic-research-pack-rebuild/plan.md'` exit 0 proved all other files unchanged, supporting inherited classification above; `git diff --check` exit 0. Only Plan was changed, staged, and committed. Inline audit AST parse and relative/absolute URL-guard positive/negative checks passed. |
+| Task 1A main census | `git ls-tree -r --name-only d6cac43d77653e833732ec589f333db333222e07 -- docs/90.references/research/0002-agentic-engineering-research-pack`: exit 0, empty output; canonical pack absent. |
+| Task 1A Spec-base census | `git ls-tree -r --name-only 68354fc8e92658a53043a9a8242397d48c4f6caf -- docs/90.references/research/0002-agentic-engineering-research-pack`: exit 0, empty output; canonical pack absent. |
+| Task 1A Plan-HEAD census | `git ls-tree -r --name-only 5cb154a00173088011dad15eb5f50bb87bde57c9 -- docs/90.references/research/0002-agentic-engineering-research-pack`: exit 0, empty output; canonical pack absent. |
+| Task 1A Task 9-to-main ancestry | `git merge-base --is-ancestor 49522aa1d782838706bd558b8e139b107918ffee d6cac43d77653e833732ec589f333db333222e07`: exit 1, empty output; expected non-ancestry, not validator PASS or acceptance. |
+| Task 1A Task 9-to-research ancestry | `git merge-base --is-ancestor 49522aa1d782838706bd558b8e139b107918ffee 5cb154a00173088011dad15eb5f50bb87bde57c9`: exit 1, empty output; expected non-ancestry, not validator PASS or acceptance. |
+| Task 9 frozen owner-snapshot ancestry | `git merge-base --is-ancestor 49522aa1d782838706bd558b8e139b107918ffee 2b5fa6f7b4299e23972717204cc6b678eb688be4`: exit 0; owner-branch lineage only. Implementation-commit Task metadata was active; the later frozen snapshot carries completed metadata and binds that implementation. |
+| Observed Task 1A validation — metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 5cb154a00173088011dad15eb5f50bb87bde57c9 --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`: PASS, exit 0, `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`. |
+| Observed Task 1A validation — traceability | `python3 scripts/validation/check-document-links.py --mode traceability`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=1`; unchanged Task 0001 `document-not-regular`, attributable 0. |
+| Observed Task 1A validation — alignment | `python3 scripts/validation/check-document-links.py --mode alignment`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=42`; every finding path outside changed Task 0004, attributable 0. |
+| Observed Task 1A validation — scope and whitespace | `git diff --check` exit 0; `git diff --name-only` and `git status --short` exit 0 and list only Task 0004. `git diff --quiet HEAD -- . ':(exclude)docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md'` exit 0 proves all other files unchanged, supporting inherited classification above. |
+| Task 1A exact-tree evidence binding | The results above are actual observed validation outcomes, including executed reruns. The final exact-tree execution report binds the recorded outcomes to the mandatory rerun after this text is finalized, without another self-recording edit. Terminal review remains Not Run in-tree and external; no file mutation follows that review before commit. |
+| Post-Task9 synchronization and frozen ladder | Not Run; Task 9 owner-branch completion is observed, but canonical acceptance and the destination remain absent from `main`. |
 
 Later evidence is appended only after execution. Each result records the exact
 command, baseline or range, exit status, selected path count, and attributable
@@ -78,8 +99,17 @@ repository adoption; it does not prove remote enforcement or a successful run.
 | Plan/Task R3 — next | Failed pair: rules C0/I1/M0; quality C0/I0/M0. No commit authority; findings corrected before R4. |
 | Plan/Task R4 — acceptance | Failed pair: rules C0/I0/M0; quality C0/I1/M0. Not approved despite the round label; no commit authority; findings corrected before R5. |
 | Plan/Task R5 — absolute-final preliminary | Failed pair: rules C0/I0/M0; quality C0/I3/M0. No commit authority; findings corrected before R6. |
-| Plan/Task R6 — terminal attempt | Failed pair: rules C0/I1/M0; quality C0/I0/M0. No commit authority; findings corrected by the current evidence-only update. |
-| Next fresh Plan/Task terminal publication review | Not Run at this in-tree publication point; the required verdict stays external to the reviewed tree and is not written back before commit. |
+| Plan/Task R6 — terminal attempt | Failed pair: rules C0/I1/M0; quality C0/I0/M0. No commit authority; its then-current correction wording is superseded historical context. |
+| Historical next fresh Plan/Task terminal publication review | Recorded as Not Run at the 2026-08-23 publication point; superseded as a prospective instruction. No terminal verdict for `796f92f58d1c491a804d600fd90a65f858267d06` is inferred from Git. |
+| Architecture Spec correction — final | Rules/specification C0/I0/M0; documentation-quality C0/I0/M0; explicit user approval for `68354fc8e92658a53043a9a8242397d48c4f6caf`. |
+| Architecture Plan — initial | Failed pair: rules C0/I3/M1; quality C0/I5/M0. No commit authority. |
+| Architecture Plan — fix1 | Failed pair: rules C0/I3/M0; quality C0/I4/M0. No commit authority. |
+| Architecture Plan — fix2 | Failed pair: rules C0/I5/M0; quality C0/I5/M1. No commit authority. |
+| Architecture Plan — fix3 | Failed pair: rules C0/I0/M0; quality C0/I4/M0. No commit authority. |
+| Architecture Plan — fix4 full review | Rules C0/I0/M0 (`/root/plan0137_rules_final_review`); quality C0/I1/M0 (`/root/plan0137_quality_final_review`). Nonzero pair remained nonauthorizing pending closure. |
+| Architecture Plan — fix5 scoped closure | Rules C0/I0/M0 (`/root/plan0137_link_fix_rules_review`); quality C0/I0/M0 (`/root/plan0137_link_fix_quality_review`), closing the absolute-path link guard. Combined with the full reviews, no finding remained open before Plan commit `5cb154a00173088011dad15eb5f50bb87bde57c9`. |
+| Task 1A terminal publication review | Not Run in-tree; fresh rules/specification and documentation-quality exact-tree verdicts remain external, with no later file mutation before commit. |
+| Task 1B delta-observation review | Not Run; no source request or delta evidence has been recorded. |
 | Research unit reviews | Not Run; research files have not been authored. |
 | Final exact-range rules/specification/quality review | Not Run. |
 | Branch-readiness terminal publication review | Not Run; the final-tree verdict and resulting readiness commit ID are external handoff evidence. |
@@ -108,8 +138,12 @@ change.
 | --- | --- | --- |
 | Correct canonical research Spec | `11fda02484c78df957156bfd27228851e764116d` — `docs(spec): align canonical agentic research contract` | Committed and dual-reviewed C0/I0/M0. |
 | Read-only external research | No commit | Complete as advisory input; no content authored. |
-| Reset Plan/Task authority | Commit identity intentionally not self-claimed by this same commit | Expected title `docs(plan): reset canonical research execution`; the next authorized Task update records the resolved identity. |
-| Bind accepted post-Task9 main baseline | No commit | Blocked pending Task 9 completion and merge. |
+| Reset Plan/Task authority — historical | `796f92f58d1c491a804d600fd90a65f858267d06` | Resolved original authority-correction identity; terminal verdict not established by Git identity. R1–R6 remain failed historical evidence. |
+| Extend architecture research Spec | `68354fc8e92658a53043a9a8242397d48c4f6caf` — `docs(spec): extend architecture research scope` | Committed, explicitly approved, and independently dual-reviewed C0/I0/M0. |
+| Align architecture research Plan | `5cb154a00173088011dad15eb5f50bb87bde57c9` — `docs(plan): align architecture research delta` | Committed Plan-only unit; full reviews plus scoped closure leave C0/I0/M0 and no open finding. |
+| Align canonical research Task ledger | No self-commit identity | This Task-only unit; expected title `docs(task): align canonical research delta ledger`. Terminal review Not Run in-tree; resulting identity and verdict belong to the external handoff. |
+| Observe closed architecture delta | No commit | Not Run; separate Plan Task 1B owns observations, subject to every-request date and roster gates. |
+| Bind accepted post-Task9 main baseline | No commit | Blocked pending canonical Task 9 acceptance on `main` and the exact destination census; owner-branch completion alone is insufficient. |
 | Research content and integration units | No commits | Blocked pending the baseline gate. |
 | Record research-branch readiness | No commit | Not Run; Task remains active; expected title `docs(task): record canonical research readiness`. The resulting self-identity and terminal verdict are recorded externally, not by mutating this Task after review. |
 | Readiness-HEAD finishing gate | No commit by design | Not Run; invoke `superpowers:finishing-a-development-branch` and require every applicable full-ladder command to exit zero on the exact readiness commit before main merge. |
@@ -124,9 +158,14 @@ change.
   content authority before the dependency gate passes.
 - Tasks 0001, 0002, and 0003 are cancelled historical records. Their retained
   bodies do not authorize future work and are not reclassified as completed.
-- After Task 9 is independently accepted and merged, merge that post-Task9
-  `main` into this branch. Rebase, reset, checkout-based restoration, history
-  rewriting, and changes to Task 9 are forbidden.
+- Future synchronization follows committed Plan Task 2 exclusively: first
+  prove canonical Task 9 acceptance and the exact census on a captured literal
+  main commit, then prepare its literal-target `--no-commit --no-ff` merge.
+  Validate and independently review the uncommitted merge tree before its
+  dedicated commit; prove the reviewed tree and ordered literal parents, then
+  revalidate and publish the separate baseline-evidence unit. No current
+  synchronization is authorized. Rebase, reset, checkout-based restoration,
+  history rewriting, and changes to Task 9 are forbidden.
 - If the accepted `main` does not contain both the Task 9 acceptance evidence
   and the canonical `RES-0002` destination, stop. Do not create the destination
   from this Task.
@@ -153,17 +192,16 @@ change.
   review. That verdict and the resulting commit identity stay in the external
   Task 0004 execution handoff; no file mutation occurs between review and
   commit, and this Task never self-records its own commit hash.
-- The conflict-free post-Task9 synchronized commit freezes every selected
-  repository/corpus-wide command, exact expanded argv, raw exit/status, and
-  deterministic finding identity set. Later exact five-field matches are
-  inherited; new identities or changed detail on the same
-  validator/code/path core are attributable.
-- If the ADR-0029 suite runner is absent, the synchronized baseline freezes
-  `bash scripts/validation/check-repo-contracts.sh` as the current full
-  aggregate, including its exact argv, raw exit/status, summary, and
-  deterministic finding identities; the seven focused commands remain
-  diagnostic components and are frozen separately. The known Task-8-derived
-  `FAIL failures=13` is not a bypass or PASS claim.
+- The sole future validator authority is committed Plan Task 2's reviewed
+  freeze from the accepted tree's literal `scripts/manifest.yaml` and actually
+  available manifest-backed argv, mapped to all six ADR-0029 responsibilities:
+  `document-contract`, `document-graph`, `document-lifecycle`, `operations`,
+  `agent-governance`, and `repository-integrity`. Freeze command IDs/order,
+  exact argv, raw exits/summaries, and deterministic five-field identities
+  under the Plan's comparison contract. Missing mapping, entrypoint or argv
+  drift, or ambiguous topology requires reviewed Plan correction. Every skip
+  remains `Not Run` with rationale. The pre-sync aggregate and its historical
+  `FAIL failures=13` are diagnostic only, never a prospective fallback or PASS.
 - Task 0004 remains active through research-branch merge. Main integration is
   allowed only after `superpowers:finishing-a-development-branch` verifies the
   exact readiness commit, post-Task9 main ancestry, clean state, and an actually
@@ -177,41 +215,53 @@ change.
   terminal nonzero blocks cleanup and requires a separately reviewed lifecycle
   correction or approved revert. Task 9 and the legacy delta worktrees are
   preserved.
-- Immediately before merge, the main worktree must already be on clean `main`.
-  Controller-side literal comparisons require main HEAD to equal this Task's
-  accepted/frozen main ID and the research branch tip to equal the external
-  readiness handoff ID; main must be an ancestor of that tip. Any mismatch
-  stops before merge, with no placeholder shell evaluation or inferred ID.
-- The 2026-08-23 external observations and fixed pins are the closed research
-  evidence snapshot. No content unit re-accesses mutable external sources. A
-  missing fact or needed later access stops and requires a separately corrected
-  and reviewed Spec and Plan with the actual access date.
+- Main integration follows committed Plan Task 10's literal-readiness protocol:
+  clean `main`, exact accepted/frozen main identity, and an external literal
+  readiness commit that exists and descends from that main identity. The final
+  no-shell ancestry check and immediately following merge consume the same
+  literal readiness commit, with no intervening observation or moving-ref
+  resolution. Any mismatch stops before merge. The frozen ladder applies to
+  final uncommitted publication trees and readiness, merged, and completion
+  commits as specified there; this Task does not replace that protocol.
+- The 2026-08-23 baseline and `DOCARCH-DIATAXIS-BASE-001` remain preserved with
+  no refetch. The only delta claims are `DOCARCH-C4-001`, `DOCARCH-ARC42-001`,
+  `SDLCDOC-ADR-001`, `SDLCDOC-ADR-002`, `SDLCDOC-ADR-003`, `DOCARCH-COMP-001`,
+  and `SCOPE-COMP-001`. Five source-backed claim-family mappings cover the
+  three roots `c4model.com`, `arc42.org`, and `adr.github.io`; they are not five
+  source rows. The committed Plan alone defines eight proposed direct pages;
+  the two synthesis-only claims authorize no request. Plan Task 1B owns later
+  observations and evidence records; none are prefilled here.
+- Before every delta request, check the authorized Asia/Seoul date and apply
+  committed Plan Task 1B's exact roster, origin, redirect, response, and stop
+  rules. `2026-08-28` authorizes requests only on that actual date, not access
+  evidence. A later date requires corrected and reviewed Spec plus Plan before
+  any request on that date. No content unit re-accesses sources; evidence
+  outside the preserved baseline or authorized delta requires new authority.
 
 ## Deferred Items
 
-- SPEC-0153 Task 9 completion, acceptance, structural migration, parent routing,
-  generator updates, and dated-pack cleanup remain with its existing owner.
+- SPEC-0153 Task 9 is completed only in the frozen owner-branch evidence;
+  independent acceptance on `main`, structural integration, parent routing,
+  generator updates, and dated-pack disposition remain with its existing owner.
 - The accepted post-Task9 `main` commit and new research baseline have not been
-  frozen because the dependency is not yet complete. The future freeze includes
-  exact command argv, raw statuses, and deterministic finding identity sets for
-  every later-compared repository/corpus-wide validator.
+  frozen because canonical main acceptance and the exact destination are absent.
+  Future synchronization and the manifest-backed six-responsibility freeze
+  follow committed Plan Task 2; owner-branch evidence cannot substitute.
 - The twenty-one `RES-0002` files are not authored until the dependency gate
   passes.
-- Terminal publication reviews for this authority correction and every later
+- Terminal publication reviews for this Task 1A unit and every later
   evidence commit remain external to the tree they review. Their current
   tracked state is `Not Run`; a commit still requires external C0/I0/M0 and no
   subsequent file mutation.
-- Any external evidence not present in the preserved 2026-08-23 observations or
-  fixed pins is deferred. Later external access is forbidden under the current
-  cutoff until a separately corrected/reviewed Spec and Plan records its actual
-  date.
-- Public-suite execution is deferred until synchronization establishes whether
-  the ADR-0029 suite runner has been implemented. An absent runner is recorded
-  as a skipped gate with rationale, never as PASS. In that case the current
-  full aggregate `bash scripts/validation/check-repo-contracts.sh` and all seven
-  focused diagnostics are run and frozen. The currently known aggregate
-  `failures=13` remains FAIL and blocks readiness-HEAD integration, merged-main
-  completion, and terminal cleanup until an actual strict run exits zero.
+- All architecture-delta access and evidence remain `Not Run` for separate
+  Plan Task 1B; the authorized date is conditional and checked per request.
+  Evidence outside the preserved baseline and closed delta remains deferred;
+  later-date requests require reviewed Spec and Plan correction first.
+- Post-sync validator execution is deferred to Plan Task 2's manifest-backed
+  freeze. No historical aggregate or presumed suite runner selects future
+  commands. Raw inherited failures remain FAIL/non-PASS; every applicable
+  frozen command must actually exit zero before readiness integration,
+  merged-main completion, and terminal cleanup.
 - Main merge and current research branch/worktree cleanup are deferred exactly
   as scheduled by the user. Main merge first waits for the readiness-HEAD
   finishing gate to exit zero. Cleanup additionally waits for the terminal
