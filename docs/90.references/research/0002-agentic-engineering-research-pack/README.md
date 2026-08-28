@@ -21,14 +21,15 @@ entitlement, runtime execution, Task 9 acceptance, or final integration?
 ## Scope
 
 This is the draft `RES-0002` pack authorized by SPEC-0137's pre-acceptance
-exception. It currently contains this README, two foundation leaves, and four
-D2 analysis leaves; the remaining fourteen inventory entries are future draft work. The
+exception. It currently contains this README, two foundation leaves, four D2
+analysis leaves, and four D3 model/catalog/memory leaves; the remaining ten
+inventory entries are future draft work. The
 `observed_at` date measures local draft measurement, not external access.
 
 | Area | Inventory |
 | --- | --- |
 | Foundation | [README](./README.md), [workspace-baseline](./workspace-baseline.md), [scope-application-matrix](./scope-application-matrix.md) |
-| Agentic | [harness engineering](./harness-engineering.md), [loop engineering](./loop-engineering.md), [provider implementation comparison](./provider-implementation-comparison.md), [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md), `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md` |
+| Agentic | [harness engineering](./harness-engineering.md), [loop engineering](./loop-engineering.md), [provider implementation comparison](./provider-implementation-comparison.md), [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md), [provider model landscape](./provider-model-landscape.md), [agent model selection](./agent-model-selection.md), [AI agent catalogs](./ai-agent-catalogs.md), [memory hierarchy](./memory-hierarchy.md) |
 | SDLC and documentation | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md` |
 | Delivery and quality | `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md` |
 | Infrastructure and security | `docker-compose-infrastructure.md`, `security-governance.md` |
@@ -56,8 +57,9 @@ leaf uses the same claim table (`Claim ID`, `Claim`, `Evidence class`, `State`,
 ## Findings
 
 The authored evidence now includes a reproducible workspace baseline, the
-closed eight-scope routing model, and D2's advisory harness, loop, provider,
-and instruction analysis. The 2026-08-23 source roster is not per-claim proof.
+closed eight-scope routing model, D2's advisory harness, loop, provider, and
+instruction analysis, and D3's model-control, static-selection, catalog-intake,
+and provider-memory boundaries. The 2026-08-23 source roster is not per-claim proof.
 Retained Task 0001 ledger observations retain their original 2026-08-08 and
 2026-08-09 dates; Task 0004's architecture-delta record is dated 2026-08-28.
 Graphify revision `f8a72211` is stale advisory material and is not used as proof.
@@ -92,6 +94,22 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `AIV-003` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
 | `AIV-004` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | ADVISORY |
 | `AIV-005` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PML-001` | [provider model landscape](./provider-model-landscape.md) | VERIFIED (tracked configuration) |
+| `PML-002` | [provider model landscape](./provider-model-landscape.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PML-003` | [provider model landscape](./provider-model-landscape.md) | UNVERIFIED |
+| `PML-004` | [provider model landscape](./provider-model-landscape.md) | ADVISORY |
+| `AMS-001` | [agent model selection](./agent-model-selection.md) | VERIFIED (tracked configuration) |
+| `AMS-002` | [agent model selection](./agent-model-selection.md) | ADVISORY |
+| `AMS-003` | [agent model selection](./agent-model-selection.md) | HISTORICAL VERIFIED (retained official observation) |
+| `AMS-004` | [agent model selection](./agent-model-selection.md) | VERIFIED (tracked configuration) |
+| `AAC-001` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-002` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-003` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-004` | [AI agent catalogs](./ai-agent-catalogs.md) | VERIFIED (tracked governance) |
+| `MH-001` | [memory hierarchy](./memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
+| `MH-002` | [memory hierarchy](./memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
+| `MH-003` | [memory hierarchy](./memory-hierarchy.md) | UNVERIFIED |
+| `MH-004` | [memory hierarchy](./memory-hierarchy.md) | ADVISORY |
 
 ## Sources
 
@@ -129,13 +147,30 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `AIV-SRC-003` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
 | `AIV-SRC-004` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
 | `AIV-SRC-005` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
+| `PML-SRC-001` | [provider model landscape](./provider-model-landscape.md) |
+| `PML-SRC-002` | [provider model landscape](./provider-model-landscape.md) |
+| `PML-SRC-003` | [provider model landscape](./provider-model-landscape.md) |
+| `PML-SRC-004` | [provider model landscape](./provider-model-landscape.md) |
+| `PML-SRC-005` | [provider model landscape](./provider-model-landscape.md) |
+| `AMS-SRC-001` | [agent model selection](./agent-model-selection.md) |
+| `AMS-SRC-002` | [agent model selection](./agent-model-selection.md) |
+| `AMS-SRC-003` | [agent model selection](./agent-model-selection.md) |
+| `AAC-SRC-001` | [AI agent catalogs](./ai-agent-catalogs.md) |
+| `AAC-SRC-002` | [AI agent catalogs](./ai-agent-catalogs.md) |
+| `AAC-SRC-003` | [AI agent catalogs](./ai-agent-catalogs.md) |
+| `AAC-SRC-004` | [AI agent catalogs](./ai-agent-catalogs.md) |
+| `MH-SRC-001` | [memory hierarchy](./memory-hierarchy.md) |
+| `MH-SRC-002` | [memory hierarchy](./memory-hierarchy.md) |
+| `MH-SRC-003` | [memory hierarchy](./memory-hierarchy.md) |
 
 ## Implications
 
 Later leaves may reuse these conventions and link only to files that exist at
 their authoring unit. D2 distinguishes retained historical provider capability
 from current tracked configuration and labels its cross-surface recommendation
-as advisory. `SCOPE-COMP-001` and the three composition-link sections belong
+as advisory. D3 adds native model-control boundaries, static (not dynamic)
+selection, a pinned catalog intake path, and advisory provider-memory controls.
+`SCOPE-COMP-001` and the three composition-link sections belong
 exclusively to D4, after all three participating files exist.
 
 ## Traceability
@@ -146,3 +181,7 @@ exclusively to D4, after all three participating files exist.
 - Closed-scope routing: [scope application matrix](./scope-application-matrix.md).
 - D2 harness boundary: [harness engineering](./harness-engineering.md).
 - D2 provider comparison: [provider implementation comparison](./provider-implementation-comparison.md).
+- D3 model landscape: [provider model landscape](./provider-model-landscape.md).
+- D3 selection: [agent model selection](./agent-model-selection.md).
+- D3 catalog intake: [AI agent catalogs](./ai-agent-catalogs.md).
+- D3 memory boundary: [memory hierarchy](./memory-hierarchy.md).

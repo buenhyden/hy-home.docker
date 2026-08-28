@@ -59,8 +59,8 @@ runtime, remote, or protected authority is changed.
 | --- | --- |
 | D0 — Spec/Plan/Task exception | Previous published unit at `264a6d1d64a41c329cd86b5978fb47f38503673f` — `docs(plan): permit isolated research draft authoring`; its original in-tree Not Run record is historical. External rules/specification and documentation-quality reviews were C0/I0/M0, with controller approval. |
 | D1 — foundation: README, workspace baseline, scope matrix | Previous published unit at `bbe8d9f35b5b57f0fdd647504f4015f651a4d58f` — `docs(research): establish isolated draft foundation`. Its corrected external rules/specification (`/root/draft_d1_rules_review`) and documentation-quality (`/root/draft_d1_quality_review`) reviews were C0/I0/M0, with controller approval; original in-tree Not Run terminal rows are historical. |
-| D2 — four harness/provider/instruction leaves | In progress against literal unit base `bbe8d9f35b5b57f0fdd647504f4015f651a4d58f`; owns four leaves, README aggregate updates, and this Task only. Focused checks are pending final text; terminal review remains Not Run externally. |
-| D3 — four model/catalog/memory leaves | Not Run. |
+| D2 — four harness/provider/instruction leaves | Previous published unit at `4481e73d433f6738e0e09b9e94977d4a2ac127cf` — `docs(research): analyze harness and provider controls`. Corrected external rules/specification (`/root/draft_d2_rules_review`) and documentation-quality (`/root/draft_d2_quality_review`) reviews were C0/I0/M0, with controller C0/I0/M0; its original in-tree Not Run terminal row is historical. |
+| D3 — four model/catalog/memory leaves | In progress against literal unit base `4481e73d433f6738e0e09b9e94977d4a2ac127cf`; owns four leaves, README aggregate updates, and this Task only. Focused checks are pending final text; terminal review remains Not Run externally. |
 | D4 — five SDLC/docs/wiki leaves and composition reconciliation | Not Run; both unresolved ADR claims must remain `UNVERIFIED`. |
 | D5 — three delivery/quality leaves | Not Run. |
 | D6 — two infrastructure/security leaves | Not Run. |
@@ -623,6 +623,9 @@ Inherited failures remain raw FAIL/non-PASS, not final acceptance.
 | D2 terminal focused rerun and review | Not Run in-tree. Rerun the explicit six-path metadata command and scoped whitespace check after this final evidence text, then bind fresh independent review and controller approval externally without a later mutation. |
 | D2 corrected focused checks | Explicit six-path metadata command: PASS, exit 0; `selected=6 violations=0 legacy_exceptions=0 transition_overrides=0`. Direct inspection: `7` regular non-symlink pack files, `26` unique claims, `30` unique sources, README aggregate missing/extra=`0`, eight scope rows per leaf, and local Markdown destinations missing=`0`; scoped `git diff --check` passed. Traceability/alignment remain inherited FAIL/non-PASS, exit 1, at `documents=359 links=2472 failures=1/42`, exact finding sets equal D1 and introduced/worsened=`0`. Initial `20`/`21` counts above remain the pre-correction snapshot. |
 | D2 corrected terminal rerun and review | Not Run in-tree. Rerun the explicit six-path metadata command, direct inspection, link commands, and scoped whitespace check after this final evidence text; fresh independent review and controller approval bind the exact frozen tree externally. |
+| D3 terminal focused rerun and review | Not Run in-tree. Rerun the explicit six-path metadata command, direct inspection, link commands, and scoped whitespace check after this final evidence text; fresh independent review and controller approval bind the exact frozen tree externally. |
+| D3 focused pre-rerun checks | Explicit six-path metadata command with baseline `4481e73d433f6738e0e09b9e94977d4a2ac127cf`: PASS, exit 0; `selected=6 violations=0 legacy_exceptions=0 transition_overrides=0`. Direct inspection: `11` regular non-symlink pack files, `42` unique claims, `45` unique sources, README aggregate missing/extra=`0`, and eight scope rows per leaf; scoped `git diff --check` passed. Traceability/alignment remain inherited FAIL/non-PASS, exit 1, at `documents=359 links=2472 failures=1/42`; introduced/worsened findings=`0`. Terminal review remains external and Not Run in-tree. |
+| D3 initial review and sole correction | Frozen initial rules/specification review `/root/draft_d3_rules_review` was C0/I0/M1; documentation-quality review `/root/draft_d3_quality_review` was C0/I0/M0; controller agreed C0/I0/M1. The sole narrower correction adds the MH-004 advisory domain-partition/lifecycle boundary. Corrected terminal review remains Not Run in-tree and external. |
 
 Later evidence is appended only after execution. Each result records the exact
 command, baseline or range, exit status, selected path count, and attributable
@@ -636,8 +639,9 @@ D0 is the previous published unit at
 record is historical, while its external rules/specification and
 documentation-quality reviews and controller approval are C0/I0/M0. D1 is
 now published at `bbe8d9f35b5b57f0fdd647504f4015f651a4d58f`; its original
-in-tree Not Run terminal rows are historical. D2 terminal review remains Not
-Run externally until its final tree is frozen.
+in-tree Not Run terminal rows are historical. D2's corrected external rules/
+specification and documentation-quality reviews were C0/I0/M0, with controller
+C0/I0/M0. D3 terminal review remains Not Run externally until its final tree is frozen.
 
 | Review | Verdict |
 | --- | --- |
@@ -668,7 +672,10 @@ Run externally until its final tree is frozen.
 | D1 corrected publication review | External rules/specification C0/I0/M0 (`/root/draft_d1_rules_review`) and documentation-quality C0/I0/M0 (`/root/draft_d1_quality_review`), with controller approval before `bbe8d9f35b5b57f0fdd647504f4015f651a4d58f`. The original Not Run row is historical. |
 | D2 initial review | Rules/specification C0/I0/M1 and documentation-quality C0/I1/M1; nonauthorizing. The sole narrower correction adds retained, source-bound mechanics and fixes instruction-source ownership. |
 | D2 corrected terminal review | Not Run externally; fresh independent review must bind the corrected frozen D2 tree without a later mutation. |
-| D3–D7 research unit reviews | Not Run; those units have not been authored. |
+| D2 corrected publication review | External rules/specification C0/I0/M0 (`/root/draft_d2_rules_review`) and documentation-quality C0/I0/M0 (`/root/draft_d2_quality_review`), with controller C0/I0/M0 before `4481e73d433f6738e0e09b9e94977d4a2ac127cf`. The original Not Run row is historical. |
+| D3 initial review | Rules/specification C0/I0/M1 (`/root/draft_d3_rules_review`) and documentation-quality C0/I0/M0 (`/root/draft_d3_quality_review`); controller C0/I0/M1 agreed. The sole narrower correction adds advisory domain ownership, provenance, retrieval, review, and deletion boundaries under MH-004. |
+| D3 terminal review | Not Run externally; fresh independent review must bind the frozen D3 tree without a later mutation. |
+| D4–D7 research unit reviews | Not Run; those units have not been authored. |
 | Final exact-range rules/specification/quality review | Not Run. |
 | Branch-readiness terminal publication review | Not Run; the final-tree verdict and resulting readiness commit ID are external handoff evidence. |
 | Main-completion terminal publication review | Not Run; the final Task-only verdict is external handoff evidence. |
@@ -705,8 +712,9 @@ change.
 | Reobserve corrected architecture delta | `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` — `docs(task): record architecture delta reobservations` | Published previous Task 1C unit; five corrected URLs were observed once, yielding six active VERIFIED pages and two UNVERIFIED pages. Its original terminal-review record remains external. |
 | D0 — permit isolated research draft authoring | `264a6d1d64a41c329cd86b5978fb47f38503673f` — `docs(plan): permit isolated research draft authoring` | Previous published unit. Its original in-tree Not Run terminal row is historical; external dual C0/I0/M0 and controller approval establish its publication review. |
 | D1 — establish isolated draft foundation | `bbe8d9f35b5b57f0fdd647504f4015f651a4d58f` — `docs(research): establish isolated draft foundation` | Previous published unit after corrected independent dual C0/I0/M0 and controller approval; no later mutation is attributed to its terminal review. |
-| D2 — analyze harness and provider controls | No commit yet | In progress. Owns four D2 leaves, README, and this Task only; proposed title `docs(research): analyze harness and provider controls`. |
-| D3–D7 — isolated draft units | No commits | Not Run; execute only under Current Draft Execution, with bounded reviews and logical commits. Final acceptance/integration are deferred. |
+| D2 — analyze harness and provider controls | `4481e73d433f6738e0e09b9e94977d4a2ac127cf` — `docs(research): analyze harness and provider controls` | Previous published unit after corrected independent dual C0/I0/M0 and controller C0/I0/M0; no later mutation is attributed to its terminal review. |
+| D3 — analyze models agents and memory | No commit yet | In progress. Owns four D3 leaves, README, and this Task only; proposed title `docs(research): analyze models agents and memory`. |
+| D4–D7 — isolated draft units | No commits | Not Run; execute only under Current Draft Execution, with bounded reviews and logical commits. Final acceptance/integration are deferred. |
 | Bind accepted post-Task9 main baseline | No commit | Blocked pending canonical Task 9 acceptance on `main` and the exact destination census; owner-branch completion alone is insufficient. |
 | Research content and integration units | No commits | Blocked pending the baseline gate. |
 | Record research-branch readiness | No commit | Not Run; Task remains active; expected title `docs(task): record canonical research readiness`. The resulting self-identity and terminal verdict are recorded externally, not by mutating this Task after review. |
