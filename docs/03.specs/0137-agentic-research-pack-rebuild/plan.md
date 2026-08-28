@@ -22,11 +22,12 @@ over SPEC-0153 Task 9 or promoting advisory research into workspace authority.
 **Architecture:** Approved SPEC-0137 commit
 `68354fc8e92658a53043a9a8242397d48c4f6caf` preserves the 2026-08-23 research
 baseline and authorizes one conditional 2026-08-28 Asia/Seoul architecture-
-practice delta. This Plan-only correction is followed by separate Task-only
-ledger and delta-observation units. Content authoring remains blocked until
-the canonical SPEC-0153 Task 9 disposition is independently accepted on `main` and the
-exact canonical `RES-0002` set exists. Seven bounded content units then author
-the README and twenty leaves, reconcile one aggregate ownership model, and pass
+practice delta. Original Tasks 1, 1A, and 1B are consumed history. This
+Plan-only retry correction precedes Task 1C's five-page reobservation; the
+three verified C4 observations are retained without refetch. Content authoring
+remains blocked until the canonical SPEC-0153 Task 9 disposition is independently
+accepted on `main` and the exact canonical `RES-0002` set exists. Seven bounded
+content units then author the README and twenty leaves, reconcile one aggregate ownership model, and pass
 focused and repository verification before any separately scheduled finish.
 
 **Tech Stack:** Markdown, Git, Stage 00 and Stage 99 document contracts, official
@@ -73,6 +74,14 @@ and independent rules/specification and documentation-quality review.
   C4 pages and one page for each other source-backed claim. Every used direct
   page owns one row. `DOCARCH-DIATAXIS-BASE-001` remains a preserved non-delta
   synthesis input and authorizes no refetch.
+- The only further requests are Task 1C's five corrected direct URLs, once
+  each, after this Plan-only correction is committed with independent dual
+  C0/I0/M0. The original eight-request attempt is retained at
+  `2643d9b9008f21d472e998039cd37b8ceb421109`. Stage 00 registry
+  `max_attempts: 2` means the initial attempt plus this one narrower retry;
+  repeated failure stops and escalates, regardless of any skill's larger cap.
+  No extra prefetch Task commit, retained-page refetch, retry within Task 1C,
+  root/linked-page request, or alternate client is authorized.
 - SPEC-0153 Task 9 exclusively owns structural Stage 90 migration, parent
   routers/indexes/generators, route switching, and dated-pack cleanup. Its
   implementation commit beginning `49522aa1` is completed/reviewed only on the
@@ -132,9 +141,8 @@ author a current research pack aligned with workspace-governance simplification.
 
 | Unit | Exact owned files | Responsibility |
 | --- | --- | --- |
-| Plan correction | `plan.md` only | Align the execution authority to approved SPEC-0137 and the closed architecture-practice delta. |
-| Task ledger alignment | Task 0004 only | Record the resolved Plan commit, current heads, and Task 9 branch-only/non-main status before any external request. |
-| Delta observation evidence | Task 0004 only | Observe only the approved direct-page roster and publish actual status/date/redirect/sufficiency evidence without creating or authoring `RES-0002`. |
+| Current Plan-only retry correction | `plan.md` only | Correct five proposed URLs and bounded single-page capture, retaining the original consumed units and closed Spec boundaries. |
+| Task 1C reobservation evidence | Task 0004 only | Request only the five corrected URLs once; retain the first three C4 rows and their summaries/digests, update the active eight-row projection, and preserve original failures as history. No `RES-0002` authoring. |
 | Structural synchronization merge | The accepted structural changes introduced by merging literal `structural_base_commit`; no authored research content | Validate and independently review the exact uncommitted merge tree, then create one dedicated merge commit and freeze its literal identity. |
 | Foundation and aggregate | `RES-0002/README.md`; `workspace-baseline.md`; `scope-application-matrix.md`; Task 0004 | Research profile, navigation, aggregate ownership, workspace measurement, and closed eight-scope dispositions. |
 | Harness, loop, providers, instructions | `harness-engineering.md`; `loop-engineering.md`; `provider-implementation-comparison.md`; `agent-instructions-vibe-coding.md`; Task 0004 | Harness and loop controls, Claude/Codex implementation comparison, and provider-neutral instruction layering. |
@@ -188,18 +196,19 @@ permitted.
 
 1. SPEC-0137 commit
    `68354fc8e92658a53043a9a8242397d48c4f6caf` is the approved content contract.
-2. This Plan-only correction must pass focused metadata, link/diff review, and
-   terminal dual C0/I0/M0, then commit exactly `plan.md` as
-   `docs(plan): align architecture research delta`.
-3. The next separate Task-only ledger unit records the resolved Plan commit,
-   current branch and `main` heads, exact absence/presence observations, and the
-   `49522aa1` Task 9 implementation's branch-only/non-main status. It commits
-   only Task 0004 as `docs(task): align canonical research delta ledger`.
-4. Only after that ledger unit, a separate read-only delta-observation unit may
-   request the closed roster below and publish actual dates, statuses,
-   redirects, and claim sufficiency into Task 0004 in a separate reviewed
-   Task-only evidence commit. It creates no `RES-0002` file and opens no
-   authoring gate.
+2. Original Tasks 1, 1A, and 1B are consumed at their literal commits listed
+   below. Task 1A remains accepted evidence; Task 1B's completed invocations
+   are not successful collection or content acceptance.
+3. This Plan-only correction from
+   `2643d9b9008f21d472e998039cd37b8ceb421109` must pass focused metadata,
+   link/diff review, and terminal dual C0/I0/M0, then commit exactly `plan.md`
+   as `docs(plan): correct architecture delta source retry`.
+4. That new Plan commit and accepted original Task 1A bind Task 1C directly;
+   no additional prefetch Task commit is required. Task 1C requests only the
+   five corrected pages once each and publishes actual evidence in the
+   separate Task-only commit `docs(task): record architecture delta reobservations`.
+   It retains the original three verified C4 pages and opens no authoring or
+   synchronization gate.
 5. SPEC-0153 Task 9 must later be independently accepted and integrated on
    `main`; accepted `main` must contain the exact canonical `RES-0002` README
    plus twenty leaves. Branch completion/review alone is insufficient.
@@ -258,23 +267,26 @@ The two synthesis-only claims receive no external request and no independent
 source row. A direct page is distinct from, and inherits rather than expands,
 its family root.
 
-The following direct-page roster is proposed only; this Plan claims no access,
-status, redirect, or content observation:
+The active roster remains exactly eight pages. Its first three rows retain
+Task 1B's observations, summaries, dates, and digests from
+`2643d9b9008f21d472e998039cd37b8ceb421109` without refetch. The remaining five
+URLs are proposed corrections only, not observed support. A candidate's HTTP
+success cannot substitute for its unchanged page-level sub-boundary.
 
-| Page key | Claim ID | Family root | Proposed direct page | Page-level sub-boundary |
+| Page key | Claim ID | Family root | Retained or proposed direct page | Page-level sub-boundary |
 | --- | --- | --- | --- | --- |
 | `C4-INTRODUCTION` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/introduction` | C4 purpose, intended audience/use, and the introduction's abstraction/view framing. |
 | `C4-ABSTRACTIONS` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/abstractions` | The named C4 abstraction vocabulary, nesting, and relationships. |
 | `C4-DIAGRAMS` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams` | Diagram/view types, intended granularity, and use of the abstraction hierarchy. |
-| `C4-NOTATION` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/notation` | Notation guidance, consistency expectations, and stated limitations. |
-| `ARC42-OVERVIEW` | `DOCARCH-ARC42-001` | `https://arc42.org/` | `https://arc42.org/overview` | arc42 purpose, template/section structure, granularity, and stated limitations. |
-| `ADR-ROLE` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0001-record-architecture-decisions.html` | ADR role and decision scope. |
-| `ADR-LIFECYCLE` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/` | ADR lifecycle, status, and supersession. |
-| `ADR-RELATIONSHIPS` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/` | ADR relationships to Architecture Description and Spec, with the local `ARD` distinction treated as local interpretation. |
+| `C4-NOTATION` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams/notation` | Notation guidance, consistency expectations, and stated limitations. |
+| `ARC42-OVERVIEW` | `DOCARCH-ARC42-001` | `https://arc42.org/` | `https://arc42.org/overview/` | arc42 purpose, template/section structure, granularity, and stated limitations. |
+| `ADR-ROLE` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html` | ADR role and decision scope. |
+| `ADR-LIFECYCLE` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0008-add-status-field.html` | ADR lifecycle, status, and supersession. |
+| `ADR-RELATIONSHIPS` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/` | ADR relationships to Architecture Description and Spec, with the local `ARD` distinction treated as local interpretation. |
 
 Each direct page maps to exactly its one row's claim and family. Before every
 network request, record the current Asia/Seoul date and prove it equals the
-Plan's conditional request date. Task 1B uses the exact no-shell, no-follow
+Plan's conditional request date. Task 1C uses the exact no-shell, no-follow
 curl GET defined there as the sole transport and content observation. Its
 returned body is the only body eligible for page-boundary analysis. A redirect
 response records its target without following it. A cross-
@@ -282,29 +294,36 @@ origin target is terminal `UNVERIFIED`. A same-origin target is eligible only
 when it remains a descendant of the mapped family and maps to the same claim,
 but it is still an unrostered URL and therefore requires a reviewed Plan
 correction before any request; it never silently expands this roster. The full
-closed roster is evaluated without alternatives. `DOCARCH-C4-001` sufficiency
+closed roster is evaluated using the three retained observations and five
+new observations, without alternatives. `DOCARCH-C4-001` sufficiency
 is decided only after combining all four required C4 page sub-boundaries; a
 failed, redirected, unavailable, or insufficient required C4 page makes the
 claim `UNVERIFIED` after roster evaluation. The same rule applies to the one
-required page for each other source-backed claim. Do not retry through an
-alternative, open third-party links, or add a page, claim, or family without a
-reviewed Plan correction. The synthesis and preserved Diataxis rows receive no
-request.
+required page for each other source-backed claim. `ADR-LIFECYCLE` must support
+lifecycle, status, and supersession; status alone is insufficient.
+`ADR-RELATIONSHIPS` must establish the Architecture Description/Spec relation;
+ADR-to-ADR links alone are insufficient, and historical `ARD` remains local
+interpretation. An insufficient candidate remains `UNVERIFIED`. No retry,
+alternative, linked page, added claim, or added family is authorized after
+Task 1C; repeated failure stops for user direction. The synthesis and preserved
+Diataxis rows receive no request.
 
 ### Deterministic architecture-delta document contract and audit
 
-Task 1B publishes exactly one
+Task 1C updates, rather than duplicates, exactly one active
 `## Architecture Practice Delta Observations` table in Task 0004 with columns
 `Page key | Claim ID | Family root | Direct URL | Accessed at | State` and the
 eight roster keys above. Task 6 may proceed only when all eight rows are
 `VERIFIED` and each `Accessed at` value is exactly the Plan-authorized literal
 `2026-08-28`. A later request date is possible only after a reviewed Spec and
 Plan correction updates that literal before the request. Failure states remain
-preserved in Task 0004 and block Task 6; they are never converted to evidence
-rows.
+preserved in Task 0004 and block Task 6; they are never promoted to verified
+source rows. Original failed observations remain explicitly historical with
+their original URLs, dates, states, and evidence at
+`2643d9b9008f21d472e998039cd37b8ceb421109`; they are not extra active rows.
 
 That machine table is only the roster/status projection. Immediately after it,
-Task 1B publishes exactly one `## Architecture Practice Delta Evidence Records`
+Task 1C updates exactly one `## Architecture Practice Delta Evidence Records`
 section with exactly eight `### <Page key>` subsections in roster order. Every
 subsection contains these labels exactly once: `Claim ID`, `Direct URL`, `Page
 title`, `Publisher`, `Observed version or revision marker`, `Paraphrased
@@ -328,10 +347,12 @@ instead.
 A `VERIFIED` status or digest without that page's complete durable evidence
 record is explicitly insufficient and blocks Task 6. The inline
 `DELTA_AUDIT` below intentionally consumes only the stable six-column machine
-table; Task 1B's terminal reviewers validate the evidence-record cardinality,
+table; Task 1C's terminal reviewers validate the evidence-record cardinality,
 exact labels, proposition/sub-boundary fit, paraphrase support, limitations,
 and quotation bound. Task 6 consumes the committed summaries, propositions,
 limitations, and direct-page citations without reaccessing any page.
+For the retained three pages, reviewers compare the unchanged records to
+Task 1B's BASE publication; only the five retry pages use newly captured bytes.
 
 Task 6 authors these exact machine-checkable tables:
 
@@ -534,11 +555,11 @@ expected_pages = {
     "C4-INTRODUCTION": ("DOCARCH-C4-001", "https://c4model.com/", "https://c4model.com/introduction"),
     "C4-ABSTRACTIONS": ("DOCARCH-C4-001", "https://c4model.com/", "https://c4model.com/abstractions"),
     "C4-DIAGRAMS": ("DOCARCH-C4-001", "https://c4model.com/", "https://c4model.com/diagrams"),
-    "C4-NOTATION": ("DOCARCH-C4-001", "https://c4model.com/", "https://c4model.com/notation"),
-    "ARC42-OVERVIEW": ("DOCARCH-ARC42-001", "https://arc42.org/", "https://arc42.org/overview"),
-    "ADR-ROLE": ("SDLCDOC-ADR-001", "https://adr.github.io/", "https://adr.github.io/madr/decisions/0001-record-architecture-decisions.html"),
-    "ADR-LIFECYCLE": ("SDLCDOC-ADR-002", "https://adr.github.io/", "https://adr.github.io/madr/"),
-    "ADR-RELATIONSHIPS": ("SDLCDOC-ADR-003", "https://adr.github.io/", "https://adr.github.io/madr/decisions/"),
+    "C4-NOTATION": ("DOCARCH-C4-001", "https://c4model.com/", "https://c4model.com/diagrams/notation"),
+    "ARC42-OVERVIEW": ("DOCARCH-ARC42-001", "https://arc42.org/", "https://arc42.org/overview/"),
+    "ADR-ROLE": ("SDLCDOC-ADR-001", "https://adr.github.io/", "https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html"),
+    "ADR-LIFECYCLE": ("SDLCDOC-ADR-002", "https://adr.github.io/", "https://adr.github.io/madr/decisions/0008-add-status-field.html"),
+    "ADR-RELATIONSHIPS": ("SDLCDOC-ADR-003", "https://adr.github.io/", "https://adr.github.io/madr/"),
 }
 observation_header = ["Page key", "Claim ID", "Family root", "Direct URL", "Accessed at", "State"]
 observations = table(task, "## Architecture Practice Delta Observations", observation_header)
@@ -707,10 +728,10 @@ reclassified as PASS, or treated as acceptance.
 ### Evidence publication and terminal review protocol
 
 This protocol applies to every unit that writes evidence into Task 0004:
-Task 1A, Task 1B, the synchronized-baseline Task 2 unit, Tasks 3–9, branch
-readiness, and the main-worktree completion record. Plan-only Task 1 never
-writes Task 0004 evidence. A condensed command block never removes these
-ordering barriers:
+consumed Tasks 1A and 1B, Task 1C, the synchronized-baseline Task 2 unit,
+Tasks 3–9, branch readiness, and the main-worktree completion record. The
+current Plan-only correction never writes Task 0004 evidence. A condensed
+command block never removes these ordering barriers:
 
 1. Complete the owned content and publish only already observed validator and
    preliminary-review evidence into Task 0004. A terminal publication review
@@ -729,175 +750,118 @@ ordering barriers:
 
 ## Execution Sequence
 
-### Task 1: Correct the Plan Contract
+### Consumed Tasks 1, 1A, and 1B
 
-**Files:**
+These units are history, not executable rerun instructions. Their exact
+contracts and evidence remain recoverable at these commits:
 
-- Modify only:
-  `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`
+| Unit | Consumed commit | Retained disposition |
+| --- | --- | --- |
+| Task 1 — original Plan correction | `5cb154a00173088011dad15eb5f50bb87bde57c9` | Approved Plan-only contract; superseded prospectively only by this retry correction. |
+| Task 1A — Task ledger alignment | `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072` | Accepted Task-only evidence; no new prefetch ledger unit is required. |
+| Task 1B — original observations | `2643d9b9008f21d472e998039cd37b8ceb421109` | Eight actual requests: three C4 pages VERIFIED, five pages UNVERIFIED, all five source-backed claims UNVERIFIED. No content or structural acceptance. |
 
-**Interfaces:**
+Task 1B's five failures are retained without reinterpretation: C4-NOTATION
+HTTP 404, ARC42-OVERVIEW unfollowed HTTP 301, ADR-ROLE HTTP 404,
+ADR-LIFECYCLE lost response evidence, and ADR-RELATIONSHIPS HTTP 200 with an
+insufficient decision index. A missing response record is unavailable evidence,
+never an observed absence. Do not rerun the original eight-request sequence.
 
-- Consumes: approved SPEC-0137 commit
-  `68354fc8e92658a53043a9a8242397d48c4f6caf`.
-- Produces: a Plan-only correction that preserves the 2026-08-23 baseline,
-  closes the conditional 2026-08-28 delta roster, and schedules later Task-only
-  evidence units without claiming source access, Task 9 acceptance, or content
-  authoring.
+### Current Plan-only Correction: Bind the Single Narrower Retry
 
-- [ ] **Step 1: Verify the immutable correction base and path scope**
+**Files:** Modify only
+`docs/03.specs/0137-agentic-research-pack-rebuild/plan.md`.
+
+**Interfaces:** Consume the approved Spec, accepted Task 1A, and original
+Task 1B evidence at `2643d9b9008f21d472e998039cd37b8ceb421109`. Produce only
+the five proposed URL corrections, single-page capture barrier, history/current
+projection rule, and Task 1C sequence. No request or Task edit occurs here.
+
+- [ ] **Step 1: Verify the literal base and clean ownership boundary**
 
 ```bash
 git rev-parse HEAD
 git status --short
 git diff --name-only
+git diff --cached --name-only
 ```
 
 Expected before editing: HEAD is exactly
-`68354fc8e92658a53043a9a8242397d48c4f6caf`, the worktree is clean, and no
-path is listed. Any different base or pre-existing mutation stops this unit.
+`2643d9b9008f21d472e998039cd37b8ceb421109`, worktree/index are clean, and no
+path is listed. Preserve all other workers' state; any drift stops this unit.
 
-- [ ] **Step 2: Apply only the approved Plan correction**
+- [ ] **Step 2: Apply the approved Plan-only correction**
 
-Set `updated: 2026-08-28`; bind the approved Spec commit, preserved baseline,
-closed seven-claim delta, exact direct-page roster, date/redirect/stop
-semantics, current Task 9/main/research truth, separate Task-only evidence
-units, and post-acceptance validator rediscovery contract. Do not modify a Task,
-`RES-0002`, SPEC-0153, source content, runtime state, or any external system.
+Retain the Spec's date, seven claims, three roots, five mappings, two synthesis
+claims, owners, sufficiency boundaries, and independent main/RES dependency.
+Update the five URLs consistently in the active roster, Task 1C, and inline
+audit. Preserve the three original C4 observations without refetch. Keep raw
+capture transient and Task evidence separate; do not create scratch artifacts,
+scripts, tests, brief files, or any other repository change.
 
-- [ ] **Step 3: Run the exact Plan-only validators and diff checks**
+- [ ] **Step 3: Validate the final Plan-only tree**
+
+Disable bytecode writes for local Python checks with
+`PYTHONDONTWRITEBYTECODE=1`; this is not an added request-environment key.
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed \
-  --base-ref 68354fc8e92658a53043a9a8242397d48c4f6caf \
+  --base-ref 2643d9b9008f21d472e998039cd37b8ceb421109 \
   --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/plan.md
 python3 scripts/validation/check-document-links.py --mode traceability
 python3 scripts/validation/check-document-links.py --mode alignment
 git diff --check -- docs/03.specs/0137-agentic-research-pack-rebuild/plan.md
 git diff --name-only
 git status --short
+git diff --quiet 2643d9b9008f21d472e998039cd37b8ceb421109 -- . ':(exclude)docs/03.specs/0137-agentic-research-pack-rebuild/plan.md'
 ```
 
-Expected: focused metadata and path-scoped diff check exit zero; the only
-changed path is `plan.md`. Link validators retain raw status: an attributable
-finding blocks, while an inherited finding remains explicitly FAIL/non-PASS.
+Also parse each changed inline Python block with `ast.parse` without
+executing `DELTA_AUDIT`: its absent `RES-0002` inputs still block execution.
+Metadata, AST parsing, whitespace, and exclusion checks must exit zero.
+Link validators retain their raw outcomes and attributable/inherited analysis;
+an attributable finding blocks, and inherited nonzero remains FAIL/non-PASS.
+Report actual commands and results in chat; this Plan-only unit writes no Task
+evidence and no prospective review verdict.
 
-- [ ] **Step 4: Terminal-review the exact final Plan diff**
+- [ ] **Step 4: Terminal-review and commit exactly the corrected Plan**
 
 Fresh independent rules/specification and documentation-quality reviewers
-inspect the final uncommitted diff from
-`68354fc8e92658a53043a9a8242397d48c4f6caf`. Both must return C0/I0/M0. No file
-mutation is allowed after terminal review; any edit or nonzero finding restarts
-validation and both reviews. This Plan must not pre-record either verdict.
-
-- [ ] **Step 5: Commit only the reviewed Plan**
+inspect the final diff from the literal base and both must return C0/I0/M0.
+Any edit invalidates both terminal reviews; rerun the affected checks and
+reviews within Stage 00's initial-plus-one-narrower-retry bound, otherwise stop
+and escalate. No file mutation follows terminal review.
 
 ```bash
 git add docs/03.specs/0137-agentic-research-pack-rebuild/plan.md
 git diff --cached --name-only
-git commit -m "docs(plan): align architecture research delta"
+git diff --cached
+git commit -m "docs(plan): correct architecture delta source retry"
 ```
 
-Expected: the staged and committed path set contains exactly `plan.md`.
+The staged/committed set must be exactly `plan.md`. The resulting Plan commit
+identity and terminal verdict remain external, not self-recorded in this file.
 
-### Task 1A: Align the Task 0004 Ledger
+### Task 1C: Reobserve Only the Five Unverified Pages
 
 **Files:**
 
 - Modify only:
   `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`
+- Read externally only: the five corrected URLs in Step 2, once each.
 
 **Interfaces:**
 
-- Consumes: the accepted Task 1 Plan commit and read-only repository facts.
-- Produces: a Task-only ledger correction recording the resolved Plan commit,
-  current heads, absence/presence observations, and the distinction between
-  Task 9 owner-branch completion evidence and Task 0004/`main` acceptance.
-
-- [ ] **Step 1: Reobserve heads, ancestry, and exact path absence**
-
-```bash
-git status --short
-git branch --show-current
-git rev-parse HEAD
-git rev-parse main
-git show -s --format='%H %s' 49522aa1d782838706bd558b8e139b107918ffee
-git ls-tree -r --name-only 68354fc8e92658a53043a9a8242397d48c4f6caf -- \
-  docs/90.references/research/0002-agentic-engineering-research-pack
-```
-
-Record the `git rev-parse main` output as `task1a_main_snapshot_commit`. The
-controller then invokes Git without a shell using the exact argv
-`["git", "ls-tree", "-r", "--name-only",
-task1a_main_snapshot_commit, "--",
-"docs/90.references/research/0002-agentic-engineering-research-pack"]` and
-also invokes
-`["git", "merge-base", "--is-ancestor",
-"49522aa1d782838706bd558b8e139b107918ffee",
-task1a_main_snapshot_commit]`. Record both fully expanded argv, outputs, and
-exit codes. Never substitute the moving `main` name in either observation. Commit
-`d6cac43d77653e833732ec589f333db333222e07` is historical comparison context
-only; it is not the Task 1A snapshot unless the new observation happens to
-equal it. Also record the research-base tree observation above and the actual
-Task 9 ancestry result. Any changed fact is recorded as observed and requires
-reviewed Plan correction when it changes the contract; it is never silently
-normalized to the historical snapshot.
-
-- [ ] **Step 2: Publish only the ledger alignment**
-
-Record the resolved Task 1 Plan commit, current research and `main` heads, the
-  literal `task1a_main_snapshot_commit`, the two exact tree observations, and Task 9 commit
-`49522aa1d782838706bd558b8e139b107918ffee` as owner-branch completion evidence
-only. State that Task 0004 acceptance, `main` integration, content authoring,
-and external delta observation have not occurred. Do not edit Plan, Spec,
-Tasks 0001–0003, SPEC-0153, or `RES-0002`.
-
-- [ ] **Step 3: Validate and terminal-review the Task-only diff**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed \
-  --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md
-python3 scripts/validation/check-document-links.py --mode traceability
-python3 scripts/validation/check-document-links.py --mode alignment
-git diff --check -- \
-  docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md
-git diff --name-only
-git status --short
-```
-
-Expected: metadata and path-scoped diff check exit zero; only Task 0004 is
-modified; link results have zero attributable findings. Fresh independent
-rules/specification and documentation-quality reviewers then inspect the exact
-final Task-only diff and both return C0/I0/M0. Do not mutate the file after
-terminal review; this Task does not prospectively record its own terminal
-verdict.
-
-- [ ] **Step 4: Commit the Task-only ledger alignment**
-
-```bash
-git add docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md
-git diff --cached --name-only
-git commit -m "docs(task): align canonical research delta ledger"
-```
-
-Expected: exactly one reviewed Task-only commit and no source request.
-
-### Task 1B: Observe the Closed Delta Source Roster
-
-**Files:**
-
-- Modify only:
-  `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`
-- Read externally only: the eight exact direct pages in the closed delta roster.
-
-**Interfaces:**
-
-- Consumes: accepted Task 1A and the still-current Spec/Plan request date and
-  literal claim/family/page mapping.
-- Produces: a separate Task-only observation record containing only actually
-  observed request date, literal URL, status or transport result, redirect
-  evidence, and claim-boundary sufficiency. It creates no source row or
-  `RES-0002` content and opens no authoring or synchronization gate.
+- Consumes: accepted original Task 1A, original Task 1B at
+  `2643d9b9008f21d472e998039cd37b8ceb421109`, and this correction's committed,
+  dual-C0/I0/M0 Plan with the still-current Spec/Plan request date and exact
+  claim/family/page mapping. Resolve that new Plan commit as the literal
+  `retry_plan_commit` before access; no extra prefetch Task commit is required.
+- Produces: a separate Task-only reobservation record and updated active
+  eight-row projection, preserving the first three C4 rows and summaries/
+  digests exactly and retaining the old five failures as explicitly historical
+  evidence. It creates no source row or `RES-0002` content and opens no
+  authoring or synchronization gate.
 
 - [ ] **Step 1: Pass the preflight immediately before every network request**
 
@@ -910,14 +874,14 @@ TZ=Asia/Seoul date +%F
 The observed value must literally equal `2026-08-28`. Recompare the literal
 absolute URL to the Plan roster, its page key, single claim ID, and single
 family root and prove the URL is a same-origin descendant. Run this preflight
-once immediately before the sole curl request for each roster row. If the date
-differs, stop before that request and correct and review both Spec and Plan to
-that actual date. If
+once immediately before the sole curl request for each of the five retry rows.
+If the date differs, stop before that request and correct and review both Spec
+and Plan to that actual date. If
 the literal URL, page key, claim, family, origin, or redirect control differs,
 stop for a reviewed Plan correction. A preflight is evidence of eligibility
 only, never a prospective PASS or content observation.
 
-For each roster row, the sole transport and content observation is one no-shell
+For each retry row, the sole transport and content observation is one no-shell
 `subprocess.run` equivalent with `timeout=30`, `check=False`, and
 `capture_output=True` using this exact argv, with `literal_url` replaced only
 by that row's already listed literal URL:
@@ -960,27 +924,122 @@ curl-returned body for the mapped page-boundary sufficiency analysis. No
 product browsing interface, browser, second HTTP client, effective-URL
 observation, or follow-up content request is authorized.
 
-- [ ] **Step 2: Process only the exact roster**
+- [ ] **Step 2: Capture the five corrected pages one call at a time**
 
-Process one curl observation per eligible literal URL, in roster order, and
-inspect no linked page:
+Use one executor call containing exactly one curl observation per eligible
+literal URL, in this order. Never batch page outputs or refetch the first three
+C4 pages:
 
-1. `https://c4model.com/introduction` → `DOCARCH-C4-001` →
+1. `https://c4model.com/diagrams/notation` → `DOCARCH-C4-001` →
    `https://c4model.com/`
-2. `https://c4model.com/abstractions` → `DOCARCH-C4-001` →
-   `https://c4model.com/`
-3. `https://c4model.com/diagrams` → `DOCARCH-C4-001` →
-   `https://c4model.com/`
-4. `https://c4model.com/notation` → `DOCARCH-C4-001` →
-   `https://c4model.com/`
-5. `https://arc42.org/overview` → `DOCARCH-ARC42-001` →
+2. `https://arc42.org/overview/` → `DOCARCH-ARC42-001` →
    `https://arc42.org/`
-6. `https://adr.github.io/madr/decisions/0001-record-architecture-decisions.html`
+3. `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html`
    → `SDLCDOC-ADR-001` → `https://adr.github.io/`
-7. `https://adr.github.io/madr/` → `SDLCDOC-ADR-002` →
+4. `https://adr.github.io/madr/decisions/0008-add-status-field.html` → `SDLCDOC-ADR-002` →
    `https://adr.github.io/`
-8. `https://adr.github.io/madr/decisions/` → `SDLCDOC-ADR-003` →
+5. `https://adr.github.io/madr/` → `SDLCDOC-ADR-003` →
    `https://adr.github.io/`
+
+The executor retains raw stdout/stderr and the separated body only in memory.
+Before transfer, compute each available stream's byte length and SHA-256;
+unseparable body metadata is `null`, not an empty-body assertion. Transfer
+complete stdout and stderr as `base64.b64encode(zlib.compress(raw))`, decoded
+to ASCII, in one JSON envelope. Its `identity` contains the exact page key,
+claim ID, family root, direct URL, full curl argv, and closed environment.
+Include actual `observed_at` with `+09:00` offset, `exit_code` (or `null` on
+timeout), `transport_error` (a bounded error tag, never raw stderr),
+`body_offset`, `lengths`, `sha256`, and
+`capture_failure`. `body_offset` is the byte after the sole response-header
+delimiter, or `null` when the body cannot be separated. `raw_zlib_b64` has only
+`stdout` and `stderr`; the controller reconstructs the body from stdout.
+Every metadata field is mandatory even for capture-limit. Lengths are
+nonnegative integers and digests are 64 lowercase hexadecimal characters;
+only an unavailable body uses explicit `null` for its offset, length, and
+digest together. Error tags are `null` or 1–64 ASCII alphanumeric, dot,
+underscore, or hyphen characters starting with an alphanumeric character.
+A `null` exit code requires the `timeout` tag.
+
+Serialize with `json.dumps(record, ensure_ascii=True, separators=(',', ':'))`.
+The entire serialized envelope must be at most 16000 ASCII characters. Set
+the executor and its enclosing tool output budgets to `max_output_tokens`
+at least 20000 and emit only this single envelope, without raw-page echo or
+batching. If the complete envelope exceeds 16000, remove `raw_zlib_b64`, set
+`capture_failure` to `capture-limit`, and emit only the bounded metadata and
+pre-transfer digests. Check the metadata-only envelope against the same bound.
+Never truncate a body and label it complete; capture-limit is `UNVERIFIED` and
+authorizes no re-fetch.
+
+The following memory-only controller check makes the ownership and digest
+barrier executable. `expected_identity` is constructed from the approved
+roster, exact argv, and closed environment, not copied from the envelope.
+The existing status/single-header/Location/sufficiency checks still apply to
+the reconstructed bytes; this helper makes no request and grants no approval.
+
+```python
+import base64
+from datetime import datetime
+import hashlib
+import json
+import re
+import zlib
+
+def accept_capture(wire, expected_identity):
+    assert wire.isascii() and len(wire) <= 16000
+    record = json.loads(wire)
+    required = {"identity", "observed_at", "exit_code", "transport_error",
+                "body_offset", "lengths", "sha256", "capture_failure"}
+    assert isinstance(record, dict) and required <= set(record)
+    assert record["identity"] == expected_identity
+    assert record["observed_at"][:10] == "2026-08-28"
+    assert record["observed_at"].endswith("+09:00")
+    datetime.fromisoformat(record["observed_at"])
+    error = record["transport_error"]
+    assert error is None or (isinstance(error, str) and
+                             re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", error))
+    assert type(record["exit_code"]) is int or (record["exit_code"] is None and error == "timeout")
+    for field in ("lengths", "sha256"):
+        assert isinstance(record[field], dict)
+        assert set(record[field]) == {"stdout", "stderr", "body"}
+    offset = record["body_offset"]
+    for name in ("stdout", "stderr", "body"):
+        length, digest = record["lengths"][name], record["sha256"][name]
+        if name == "body" and offset is None:
+            assert length is None and digest is None
+        else:
+            assert type(length) is int and length >= 0
+            assert isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest)
+    if offset is not None:
+        assert type(offset) is int and 4 <= offset <= record["lengths"]["stdout"]
+        assert record["lengths"]["body"] == record["lengths"]["stdout"] - offset
+    if record["capture_failure"] is not None:
+        assert record["capture_failure"] == "capture-limit"
+        assert "raw_zlib_b64" not in record
+        return record, None
+    assert set(record["raw_zlib_b64"]) == {"stdout", "stderr"}
+    raw = {name: zlib.decompress(base64.b64decode(value, validate=True))
+           for name, value in record["raw_zlib_b64"].items()}
+    if offset is not None:
+        header, separator, body = raw["stdout"].partition(b"\r\n\r\n")
+        assert separator and offset == len(header) + len(separator)
+        raw["body"] = body
+    for name, value in raw.items():
+        assert len(value) == record["lengths"][name]
+        assert hashlib.sha256(value).hexdigest() == record["sha256"][name]
+    return record, raw
+```
+
+Before the next request, the controller must completely parse and validate
+the envelope, verify all available raw lengths/digests, reconstruct and retain
+the body in transient memory, and settle that page's capture disposition. A
+validated metadata-only capture-limit record permits only an `UNVERIFIED`
+disposition, not body analysis. A malformed, truncated, missing, mismatched,
+or digest-invalid record stops before the next request; unavailable fields
+remain unavailable, never observed absence. If the executor yields a running
+session, resume that same session until its one result is complete; a yield
+or timeout never authorizes a new request. A terminated transport timeout is
+recorded as failure, not restarted. No raw bytes, envelope, or scratch file is
+committed; keep only metadata/digests and reviewed paraphrases in Task 0004.
 
 For each issued request, record the page key, actual Asia/Seoul request date,
 literal requested URL, mapped claim/family, exact curl argv, HTTP status or
@@ -997,32 +1056,56 @@ alternative, a redirect target, or any third-party link.
 
 - [ ] **Step 3: Apply closed stop semantics per claim**
 
-An unavailable or non-2xx response, cross-origin redirect, transport failure,
-or body insufficient for the page sub-boundary marks that page `UNVERIFIED`.
+An unavailable or non-2xx response, cross-origin redirect, transport/capture
+failure, or body insufficient for the unchanged page sub-boundary marks that
+page `UNVERIFIED`.
 Any redirect is recorded without following it. A same-origin redirect target
 must remain under the mapped family and retain the same claim mapping, but it
-is unrostered and remains unauthorized until a reviewed Plan correction. Do
-not retry through an alternative or substitute a page. Unless a date/authority
-preflight blocks all further network access, continue evaluating the remaining
-closed roster rows once each so the roster result is complete. After all four
-C4 rows are evaluated together, any failed or insufficient required C4 row
+is unrostered and unauthorized. Do not retry, follow a redirect, or substitute
+a page. Unless the date/authority preflight or capture-integrity barrier stops
+further access, finish only the remaining five-page retry rows once each.
+After the three retained C4 rows and reobserved C4-NOTATION are evaluated
+together, any failed or insufficient required C4 row
 makes `DOCARCH-C4-001` `UNVERIFIED`; each other source-backed claim is decided
 from its one required row. A successful response is an observation, not
 repository adoption, runtime execution, Task 9 acceptance, or authorization to
-author content.
+author content. If lifecycle/status/supersession or Architecture Description/
+Spec relationship support is missing, keep that claim `UNVERIFIED`; the local
+historical `ARD` interpretation supplies no missing upstream evidence. This is
+the single narrower retry, so unresolved failure is reported for user direction
+without another request or changed sufficiency criterion.
 
 - [ ] **Step 4: Publish, validate, and terminal-review only observed evidence**
 
-Write the exact eight-row `## Architecture Practice Delta Observations` table,
-the exact eight-subsection durable evidence record, the actual per-request
-observations, and combined claim-level sufficiency or `UNVERIFIED`/`Not Run`
-result to Task 0004. The committed record contains digests and paraphrases, not
-raw response/body bytes. Never prefill an access date, status, redirect result,
-sufficiency result, evidence summary, proposition, or PASS. Then run:
+Update the existing eight-row `## Architecture Practice Delta Observations`
+table and eight-subsection durable evidence record in place. Keep the first
+three C4 observations, dates, summaries, and digests exactly as recorded at
+`2643d9b9008f21d472e998039cd37b8ceb421109`. Only the five retry rows become the
+new active observations, with their actual dates/statuses and reviewed
+paraphrases or failure dispositions. Preserve the original five failed rows,
+their evidence/transport/claim outcomes, and Task 1B publication point under
+explicit historical headings with that BASE pointer; do not rewrite old
+dates/statuses or count history as extra active roster/evidence rows.
+
+Bind `retry_plan_commit` and publish actual per-request capture/transport
+observations plus combined claim-level sufficiency or `UNVERIFIED`/`Not Run`
+results. Any page not requested after a stop has no new access date; retain its
+old failure as history and explicitly mark the proposed active row
+`Not observed`/`UNVERIFIED`, which blocks Task 6. The committed record contains
+metadata/digests and paraphrases, never raw response/body/envelope bytes. Never
+prefill a result. Disable bytecode writes for these local checks. Invoke
+metadata without a shell using this exact argv, with the already captured
+literal commit substituted for `retry_plan_commit`:
+
+```text
+["python3", "scripts/validation/check-document-metadata.py", "--mode", "check-changed",
+ "--base-ref", retry_plan_commit, "--changed-path",
+ "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md"]
+```
+
+Then run the remaining checks:
 
 ```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed \
-  --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md
 python3 scripts/validation/check-document-links.py --mode traceability
 python3 scripts/validation/check-document-links.py --mode alignment
 git diff --check -- \
@@ -1032,16 +1115,19 @@ git status --short
 ```
 
 Expected: only Task 0004 is modified, focused checks exit zero, and links have
-zero attributable findings. Fresh independent rules/specification and
+zero attributable findings with raw inherited FAIL/non-PASS retained. Follow
+the exact Evidence publication and terminal review protocol: finalize evidence,
+rerun on that final tree, then obtain external terminal verdicts without a
+self-recording edit. Fresh independent rules/specification and
 documentation-quality reviewers inspect the final Task-only diff and both
 return C0/I0/M0. No mutation follows terminal review.
 
-- [ ] **Step 5: Commit the separate observation record**
+- [ ] **Step 5: Commit the separate reobservation record**
 
 ```bash
 git add docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md
 git diff --cached --name-only
-git commit -m "docs(task): record architecture delta observations"
+git commit -m "docs(task): record architecture delta reobservations"
 ```
 
 Expected: a reviewed Task-only evidence commit. No `RES-0002`, Spec, Plan,
@@ -1331,8 +1417,8 @@ and only Task 0004 is in the evidence commit.
 
 - Consumes: the independently accepted canonical SPEC-0153 Task 9 disposition, Stage 99
   research profile, SPEC-0137 twenty-leaf inventory, preserved 2026-08-23
-  evidence, Task 1B delta observations, and the synchronized tracked workspace
-  baseline.
+  evidence, Task 1C's active delta projection (including the retained Task 1B
+  C4 evidence), and the synchronized tracked workspace baseline.
 - Produces: stable leaf claim prefixes, detailed source-row schema, aggregate
   schemas, exact eight-scope vocabulary, navigation, and measured local
   baseline used by every later unit without taking Task 6 leaf ownership.
@@ -1360,11 +1446,12 @@ same-origin direct page is the observed evidence URL and inherits that family
 without becoming another family.
 
 Preserved-baseline rows retain their actual `2026-08-23` access date and are
-never refreshed. Delta rows are a separate class: they consume Task 1B's
+never refreshed. Delta rows are a separate class: they consume Task 1C's active
+projection, including the unchanged first three Task 1B observations, and its
 already published literal URL, response, redirect, sufficiency, and actual
 Asia/Seoul observation date. A delta date is never prefilled and never inferred
 from the Plan date. No content unit re-accesses any delta page. An absent,
-stopped, or insufficient Task 1B observation remains `UNVERIFIED` and cannot
+stopped, or insufficient active observation remains `UNVERIFIED` and cannot
 become a source row.
 
 README aggregate rows contain owner leaf and exact row identity, not copied
@@ -1629,8 +1716,9 @@ and model docs are not reported as entitlement or runtime proof.
 **Interfaces:**
 
 - Consumes: preserved 2026-08-23 ISO/IEC/IEEE, Spec Kit, NIST incident, Google
-  SRE, and `DOCARCH-DIATAXIS-BASE-001` evidence; Task 1B's already observed
-  delta evidence; and current Stage 00/99 and Stage 03/05 tracked owners.
+  SRE, and `DOCARCH-DIATAXIS-BASE-001` evidence; Task 1C's active eight-row
+  evidence projection, including the three retained Task 1B C4 observations;
+  and current Stage 00/99 and Stage 03/05 tracked owners.
 - Produces: standards-bounded lifecycle, local document-role mapping, metadata
   state model, reader-mode architecture, LLM Wiki knowledge flow, and exactly
   the seven closed delta claims with their required three-leaf link graph.
@@ -1666,7 +1754,7 @@ purpose, trigger, owner, consumer, system, evidence, rules, and relationships.
 State explicitly: no Stage 04; no standalone ordinary Release role; prefixless
 Operations; Task plus Git/PR owns ordinary delivery.
 
-Consume Task 1B's committed page-level summaries, supported propositions,
+Consume Task 1C's committed active page-level summaries, supported propositions,
 limitations/caveats, and direct-page citations without another external
 request; digest plus `VERIFIED` alone is insufficient. Author exactly
 `SDLCDOC-ADR-001`, `SDLCDOC-ADR-002`, and `SDLCDOC-ADR-003` in
@@ -1677,8 +1765,9 @@ and the local historical `ARD` distinction. Author `DOCARCH-C4-001` and
 five source-backed claim-to-family mappings and, when all required observations
 verify, exactly eight distinct direct-page source/evidence rows: four for C4
 and one for each other source-backed claim. Each row distinguishes its direct
-page from, and inherits, its family root and records Task 1B's actual observed
-date; no date is prefilled. Decide C4 sufficiency across the combined four-page
+page from, and inherits, its family root and records that active row's actual
+observed date, including the unchanged first three C4 dates; no date is
+prefilled. Decide C4 sufficiency across the combined four-page
 set. Any insufficient required page leaves its claim `UNVERIFIED` and blocks
 this unit.
 
@@ -1949,13 +2038,15 @@ and no runtime or secret access occurred.
 Check exactly README plus twenty leaves, unique claim/source IDs, one owner per
 aggregate row, no blank scope cell, only the three allowed scope dispositions,
 and complete required-subject routing. Preserved rows retain their actual
-2026-08-23 date. Delta rows contain only the actual dates published by Task 1B;
+2026-08-23 date. Delta rows contain only the actual dates in Task 1C's active
+projection, including the three retained Task 1B C4 observations;
 they never inherit or prefill the preserved date.
 
 Reconcile exactly the seven delta IDs with their Spec owners, exactly five
 claim-to-family mappings, exactly eight direct-page rows whose URLs inherit
-their three listed family roots and whose dates equal Task 1B observations, and
-exactly two source-free synthesis claims. Prove `DOCARCH-DIATAXIS-BASE-001` remains a
+their three listed family roots and whose dates equal the active Task 1C
+projection, and exactly two source-free synthesis claims. Prove
+`DOCARCH-DIATAXIS-BASE-001` remains a
 preserved non-delta input with no refetch; ADR facts remain solely owned by
 `sdlc-document-roles.md`; every documentation-architecture synthesis
 proposition compares at least two practices; `SCOPE-COMP-001` covers exactly
@@ -2310,7 +2401,7 @@ worktrees remain listed; `main` is clean. No push or remote deletion occurs.
 | Canonical Task 9 disposition not accepted or canonical target absent | The Task 9 result exists only on its owner branch, canonical SPEC-0153 Task 9 acceptance evidence is absent from `main`, or the exact README-plus-twenty-leaf census is absent | Stop before synchronization or content. Owner-branch commit `49522aa1d782838706bd558b8e139b107918ffee` is nonacceptance evidence only. Leave Task 0004 active and await accepted canonical Task 9 integration. Any alternative requires a separate reviewed Plan correction naming its exact tracked evidence path and resolution. |
 | Any synchronization merge conflict | Conflict in any path before the post-Task9 baseline is frozen | Stop in place and request a new synchronization Plan and authority. Do not resolve, reset, checkout, rebase, or rewrite history. |
 | Research duplicates structural ownership | The literal structural-base-to-research changed-path set differs from the exact owned-path allowlist or touches a parent router/index, generator, Task 9, Stage 00/05, `2026-07-05-agentic-research-pack-refresh/`, or `2026-08-08-agentic-engineering-research-pack/` | Reject the unit and correct only an uncommitted research-owned edit with an approved patch. Both dated packs and every other protected path remain untouched. |
-| Delta request contract fails | Before any one request, the Asia/Seoul date differs from the currently authorized date; the URL is outside the closed eight-page direct-page roster; direct-page-to-family inheritance is wrong; a non-2xx/transport result, redirect, or page-sub-boundary-insufficient body occurs | Stop before an ineligible request; otherwise record the failed page `UNVERIFIED` and finish only the remaining authorized roster observations once each. Decide C4 only after its four-page set is evaluated. Issue no alternative, substitute, redirect-target, family-root, or third-party request. Any retry or alternative requires a reviewed Plan correction; a later date requires both Spec and Plan correction before the first request on that date. Never refetch Diataxis. |
+| Delta retry contract fails | Date/authority preflight or capture-integrity barrier fails; a URL differs from Task 1C's five exact retry URLs; a non-2xx/transport/capture-limit result, redirect, or insufficient body occurs | Stop before an ineligible request or after a capture-integrity failure; otherwise record `UNVERIFIED` and finish only the remaining five retry rows once each. Retain the first three C4 rows without refetch and decide C4 from all four sub-boundaries. No alternative, substitute, redirect-target, family-root, third-party request, or further retry; repeated failure escalates. A later date requires both Spec and Plan correction before access. Never refetch Diataxis. |
 | Delta composition diverges | The result is not exactly seven claims, five source-backed claim-to-family mappings, eight direct-page evidence rows with the authorized literal `2026-08-28`, and two source-free synthesis claims; ownership differs; or the three named `## Architecture Practice Composition Links` sections do not form exactly six unique sibling edges | Keep the unit uncommitted. Correct README and the owning leaves within their exact ownership, rerun the delta audit and frozen ladder, and repeat terminal review. |
 | Preserved external snapshot is insufficient | A non-delta claim needs evidence absent from the preserved 2026-08-23 observations/pins | Stop authoring that claim. Preserve the baseline observation and require a separately corrected and reviewed Spec/Plan authority before any new access; never relabel later evidence as 2026-08-23. |
 | Aggregate/leaf divergence | Duplicate/missing claim/source owner, missing requirement, invalid scope cell, or non-reconciling totals | Keep the unit uncommitted; correct README and the owning leaf in the same logical unit and rerun focused checks. |
@@ -2384,8 +2475,11 @@ research Plan.
   proof requires separate authorization, target, timestamp, and redaction.
 - The final changed-path set from the literal frozen structural base to the
   literal readiness HEAD must equal the exact owned-path allowlist in Task 10.
-- Delta verification proves the closed eight-page direct roster and its
-  distinction from the three family roots; every-request authorized-date
+- Delta verification proves the closed eight-page active roster (three
+  retained C4 rows plus five Task 1C retry rows) and its distinction from the
+  three family roots; one page per executor call, bounded complete capture or
+  explicit failure, identity/length/digest verification before the next call,
+  and no retained-page refetch; every-request authorized-date
   preflight and rollover rule; no cross-origin/404/insufficient substitution;
   no Diataxis refetch; exactly seven claims, five source-backed claim-to-family
   mappings, eight page-level rows with the authorized literal `2026-08-28`, two source-free
@@ -2401,6 +2495,12 @@ research Plan.
   are cancelled, not completed.
 - Task 0004 is the only prospective execution ledger. Its active metadata does
   not bypass the explicit blocked dependency.
+- Original Tasks 1, 1A, and 1B are consumed history at the commits listed in
+  the execution sequence. This Plan-only correction binds Task 1C without an
+  extra prefetch Task commit. Task 1C preserves old failed evidence explicitly
+  as history and the three verified C4 rows unchanged; its five candidate URLs
+  are not pre-observed evidence. The single narrower retry cannot relax the
+  Spec's page sufficiency, owner, claim, family, or structural boundaries.
 - Task 0004 remains active through the research branch's merge to `main`; only
   a later main-worktree evidence commit may transition it to completed after
   post-merge gates pass.
@@ -2429,8 +2529,9 @@ research Plan.
   request on any later date, correct and review both Spec and Plan to that
   actual date. The closed direct pages inherit, but do not expand, their three
   family roots; cross-origin redirects, 404/unavailable responses, and
-  insufficient bodies stop without an alternative until reviewed Plan
-  correction. `DOCARCH-DIATAXIS-BASE-001` is preserved and is never refetched.
+  insufficient bodies remain `UNVERIFIED` without an alternative. After
+  Task 1C, unresolved failure stops for user direction, not another retry.
+  `DOCARCH-DIATAXIS-BASE-001` is preserved and is never refetched.
 - The preserved 2026-08-23 Codex finding is upstream source support for
   `SessionEnd` and `SubagentStop`. Local adoption and actual dispatch are
   remeasured after Task 9; neither is inferred from upstream source.
