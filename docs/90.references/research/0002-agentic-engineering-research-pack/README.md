@@ -23,8 +23,8 @@ entitlement, runtime execution, Task 9 acceptance, or final integration?
 This is the draft `RES-0002` pack authorized by SPEC-0137's pre-acceptance
 exception. It currently contains this README, two foundation leaves, four D2
 analysis leaves, four D3 model/catalog/memory leaves, five D4 SDLC/docs
-leaves, and three D5 delivery/quality leaves; the remaining two inventory
-entries are future draft work. The
+leaves, three D5 delivery/quality leaves, and two D6 infrastructure/security
+leaves. The
 `observed_at` date measures local draft measurement, not external access.
 
 | Area | Inventory |
@@ -33,7 +33,7 @@ entries are future draft work. The
 | Agentic | [harness engineering](./harness-engineering.md), [loop engineering](./loop-engineering.md), [provider implementation comparison](./provider-implementation-comparison.md), [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md), [provider model landscape](./provider-model-landscape.md), [agent model selection](./agent-model-selection.md), [AI agent catalogs](./ai-agent-catalogs.md), [memory hierarchy](./memory-hierarchy.md) |
 | SDLC and documentation | [spec-driven SDLC](./spec-driven-sdlc.md), [SDLC document roles](./sdlc-document-roles.md), [document metadata lifecycle](./document-metadata-lifecycle.md), [documentation architecture](./documentation-architecture.md), [LLM Wiki system](./llm-wiki-system.md) |
 | Delivery and quality | [automation pipeline workflow](./automation-pipeline-workflow.md), [quality CI and formatting](./quality-ci-formatting.md), [verification and validation](./verification-validation.md) |
-| Infrastructure and security | `docker-compose-infrastructure.md`, `security-governance.md` |
+| Infrastructure and security | [Docker Compose infrastructure](./docker-compose-infrastructure.md), [security governance](./security-governance.md) |
 
 The final subject/category × scope matrix is D7 work and is not yet covered by
 this partial draft. Identity reconciliation and any main-merge cleanup are
@@ -61,7 +61,9 @@ closed eight-scope routing model, D2's advisory harness, loop, provider, and
 instruction analysis, and D3's model-control, static-selection, catalog-intake,
 and provider-memory boundaries. D4 adds retained SDLC/document evidence and an
 evidence-limited C4/arc42/ADR composition. D5 adds declared automation,
-quality-control, and V&V boundaries. The 2026-08-23 source roster is not per-claim proof.
+quality-control, and V&V boundaries. D6 adds non-runtime Compose and layered
+secure-SDLC/supply-chain boundaries. The 2026-08-23 source roster is not
+per-claim proof.
 Retained Task 0001 ledger observations retain their original 2026-08-08 and
 2026-08-09 dates; Task 0004's architecture-delta record is dated 2026-08-28.
 Graphify revision `f8a72211` is stale advisory material and is not used as proof.
@@ -148,6 +150,13 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `VV-001` | [verification and validation](./verification-validation.md) | VERIFIED (tracked configuration) |
 | `VV-002` | [verification and validation](./verification-validation.md) | HISTORICAL VERIFIED (retained official observation) |
 | `VV-003` | [verification and validation](./verification-validation.md) | VERIFIED (tracked governance) |
+| `DCI-001` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | VERIFIED (tracked configuration) |
+| `DCI-002` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | HISTORICAL VERIFIED (retained official observation) |
+| `DCI-003` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | UNVERIFIED |
+| `SG-001` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-002` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-003` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-004` | [security governance](./security-governance.md) | VERIFIED (tracked configuration) |
 
 ## Architecture Practice Delta Claim Index
 
@@ -261,6 +270,19 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `VV-SRC-001` | [verification and validation](./verification-validation.md) |
 | `VV-SRC-002` | [verification and validation](./verification-validation.md) |
 | `VV-SRC-003` | [verification and validation](./verification-validation.md) |
+| `DCI-SRC-001` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
+| `DCI-SRC-002` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
+| `DCI-SRC-003` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
+| `DCI-SRC-004` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
+| `SG-SRC-001` | [security governance](./security-governance.md) |
+| `SG-SRC-002` | [security governance](./security-governance.md) |
+| `SG-SRC-003` | [security governance](./security-governance.md) |
+| `SG-SRC-004` | [security governance](./security-governance.md) |
+| `SG-SRC-005` | [security governance](./security-governance.md) |
+| `SG-SRC-006` | [security governance](./security-governance.md) |
+| `SG-SRC-007` | [security governance](./security-governance.md) |
+| `SG-SRC-008` | [security governance](./security-governance.md) |
+| `SG-SRC-009` | [security governance](./security-governance.md) |
 
 ## Implications
 
@@ -272,7 +294,10 @@ selection, a pinned catalog intake path, and advisory provider-memory controls.
 D4 adds retained SDLC/document evidence and an evidence-limited C4/arc42/ADR
 composition. `DOCARCH-COMP-001` and `SCOPE-COMP-001` are advisory synthesis;
 the two ADR gaps remain `UNVERIFIED`. D5 distinguishes configuration from local,
-hosted, enforced, runtime, validation, and acceptance evidence.
+hosted, enforced, runtime, validation, and acceptance evidence. D6 keeps
+Compose declarations distinct from execution and frames secure-SDLC and
+supply-chain sources as advisory, source-bounded inputs rather than local
+assurance.
 
 ## Traceability
 
@@ -294,3 +319,5 @@ hosted, enforced, runtime, validation, and acceptance evidence.
 - D5 automation boundary: [automation pipeline workflow](./automation-pipeline-workflow.md).
 - D5 quality taxonomy: [quality CI and formatting](./quality-ci-formatting.md).
 - D5 V&V responsibility model: [verification and validation](./verification-validation.md).
+- D6 Compose infrastructure boundary: [Docker Compose infrastructure](./docker-compose-infrastructure.md).
+- D6 security governance boundary: [security governance](./security-governance.md).
