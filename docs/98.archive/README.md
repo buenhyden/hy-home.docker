@@ -58,11 +58,11 @@ line-number SHA, blob digest, archive snapshot 또는 snapshot count를 넣지
 않습니다. 별도의 감사·법적 보존 요구가 승인되지 않으면 본문 복사본을
 추가하지 않습니다.
 
-Migration 0003은 승인된 실행 ledger이므로 Task 10에서 byte-identical하게
-유지합니다. 실행형 ledger의 압축은 Task 13만 수행합니다.
+Migration 0003은 실행된 경로 이동과 검증된 복구 commit만 기록합니다.
+원래 승인 계획과 실행 Task는 Git history에서 조회하며 본문을 복제하지 않습니다.
 
 ## Related Documents
 
 - [Workspace governance simplification Migration](migrations/0003-workspace-governance-simplification.md)
 - [Stage 99 document registry](../99.templates/registry.json)
-- [Task 10 evidence](../03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md)
+- [Authority decision](../02.architecture/decisions/0029-workspace-governance-authority.md)

@@ -142,7 +142,6 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- [Workspace Governance and SDLC Simplification Spec](../../03.specs/0153-workspace-governance-simplification/spec.md)
-- [Workspace Governance and SDLC Simplification Plan](../../03.specs/0153-workspace-governance-simplification/plan.md)
+- [Governance migration execution and recovery](../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - [Agent Governance Canonical Adapter Architecture Description](../descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0027: Stage 00 Canonical Adapter Model](0027-stage-00-canonical-adapter-model.md)

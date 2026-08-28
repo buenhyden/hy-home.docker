@@ -443,10 +443,10 @@ bash scripts/operations/sync-provider-surfaces.sh --write
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
 # Run provider-neutral post-edit validation from a file-edit hook payload
-printf '{"tool_input":{"file_path":"docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"}}' | bash scripts/hooks/post-tool-validate.sh
+printf '{"tool_input":{"file_path":"docs/00.agent-governance/policies/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
 # Run provider-neutral post-edit validation without formatting writes
-printf '{"tool_input":{"file_path":"docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
+printf '{"tool_input":{"file_path":"docs/00.agent-governance/policies/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
 
 # Enforce all tier hardening baselines
 ./scripts/hardening/check-all-hardening.sh
@@ -536,7 +536,7 @@ generators; it never invokes runtime-changing rows.
 - [📘 Runbooks](../docs/05.operations/README.md)
 - [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
 - [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
-- [Public Suite Routing Task](../docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md)
+- [Public Suite Ownership Manifest](manifest.yaml)
 - [Script Lifecycle Taxonomy Specification](../docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

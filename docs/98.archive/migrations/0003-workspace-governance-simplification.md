@@ -1,1039 +1,4595 @@
 ---
-status: archived
+profile_id: migration
+status: completed
 artifact_id: mig-0003
-artifact_type: archive
-parent_ids:
-  - SPEC-0153
-archived_from: docs/03.specs/0153-workspace-governance-simplification/spec.md
-archived_at: 2026-08-20T00:00:00+09:00
-archive_reason: evidence-preserve
-archive_disposition: evidence-preserve
-archived_commit: 889d3868ecd0913cddac79a718584a54a8453525
-archived_blob: 0231b3c433b8e9a48d5d15c1bc3d52fda62ff1e1
-preservation_class: git-history
+artifact_type: migration
+parent_ids: [ADR-0029]
+created: 2026-08-20
+updated: 2026-08-28
 ---
 
-# Workspace Governance Simplification Migration Ledger
+# Workspace Governance Simplification Migration
 
-## Overview
+## Purpose
 
-This approved execution ledger freezes the structural source dispositions selected by the
-approved Spec 0153 Plan. It records rename, merge, and delete transitions only;
-ordinary in-place semantic edits remain owned by their Task file lists and are
-not duplicated here.
+Record the executed path and authority changes. Git history owns the complete
+previous bodies; this document is a lookup record, not current SDLC policy.
 
-The initial RED exposed that a tracked-source-only row could not represent a
-Task-created artifact consumed by a later Task. Schema version 2 therefore
-separates typed `planned_creations` from transitions and gives every transition
-a unique identity, provenance kind, upstream owner, and frozen active-consumer
-set. This is a bounded Task 1 correction; it does not change the Spec's semantic
-authority contract and moves no corpus source.
+## Authority Change
 
-## Archive Metadata
+Stage 00 owns shared policy and supported provider adapters. Stage 99 owns
+document profiles, identities, lifecycle and templates. Registered scripts own
+executable validation. Stages 01, 02, 03 and 05 own their current requirements,
+architecture, behavior and operations; Stage 90 remains reference evidence.
 
-- Baseline commit: `889d3868ecd0913cddac79a718584a54a8453525`
-- Planned creations consumed by later transitions: `17`
-- Transition rows: `903`
-- Actions: rename `547`, merge `0`, delete `356`
-- Source kinds: tracked `884`, planned-output `19`
-- Active consumers combine exact repository-relative literal references with
-  repository-local Markdown links resolved by the shared safe parser. A
-  delete-disposition consumer is inactive only when its owner Task is no later
-  than the source transition owner. Stage 98 recovery, Graphify collateral, and
-  immutable or generated Stage 90 evidence remain noncurrent exclusions.
-- Derived active-consumer edges: `3,571`; edge SHA-256
-  `2f1840983d98ed93ffdc183305c49b389b17e5c8362538e5df97d451be2b9139`.
-- Approved selection SHA-256, bound to the baseline commit, consumer policy,
-  derived-edge digest, final-compaction contract, creations, and rows:
-  `9328d04dc01ad60faa9be3f805eaa9414af1bacfe4751c61ef133749390e30e1`.
+## Path Mapping
 
-| Owner Task | Rows |
-| :--- | ---: |
-| 3 | 3 |
-| 4 | 128 |
-| 5 | 25 |
-| 6 | 51 |
-| 7 | 49 |
-| 8 | 193 |
-| 9 | 116 |
-| 10 | 275 |
-| 11 | 4 |
-| 12 | 8 |
-| 13 | 51 |
-
-## Approval Boundary
-
-Independent specification and quality re-reviews each returned `C0/I0/M0` for
-this exact selection after the earlier quality `I5` and lifecycle `I1` were
-addressed. The user approved this exact selection digest on `2026-08-20`, and
-the state-specific approval fields now record `approved/user/2026-08-20`. No
-transition has executed in Task 1. A later change to a source, target, action,
-artifact, owner, or consumer list requires a new reviewed ledger revision and
-approval.
-
-The schema-version-2 execution ledger accepts only `pending` and `approved`.
-Pending approval identity/date are null; approved identity is nonempty and its
-date is canonical `YYYY-MM-DD`. Task 10 preserves this execution form while
-Stage 98 is minimized. After execution and recovery binding, Task 13 must emit
-the schema-version-3 durable Migration with only top-level `schema_version`,
-`migration_id`, and `rows`; each row retains only `source_path`, `target_path`,
-`artifact_id`, `action`, and `recovery_commit`.
-
-## Archive Ledger
+The ordered mapping projects the historical approved selection onto actual
+execution. Three unexecuted plans (r0842, r0848, r0852) are omitted: the metadata
+CLI test, runtime rehearsal and unique hook-parity report remain current.
+Task 11 commit `f042bc1e26cfb9169c94baa0ff4ac2269a0a6953` records the actual
+identity-test move; Task 12 commit `1c620dd079c1c28f5bea434f00093463e7764e1a`
+records retained script ownership. Five Task targets use their canonical
+`tasks/` paths. Terminal mappings record two helper and three session deletions.
 
 ```yaml
-schema_version: 2
+schema_version: 3
 migration_id: mig-0003
-baseline_commit: 889d3868ecd0913cddac79a718584a54a8453525
-approval:
-  status: approved
-  approved_by: user
-  approved_at: '2026-08-20'
-consumer_policy:
-  version: 1
-  literal_references: exact-repository-relative-path
-  markdown_links: shared-local-relative-parser
-  delete_consumers: inactive-when-delete-owner-task-lte-source-owner-task
-  excluded_noncurrent: [docs/98.archive/, graphify-out/, docs/90.references/research/, docs/90.references/audits/, docs/90.references/llm-wiki/, docs/90.references/data/knowledge/, docs/90.references/data/security/, docs/90.references/data/governance/document-corpus-lifecycle/, 'docs/90.references/*[generated_by]']
-  derived_edges_sha256: 2f1840983d98ed93ffdc183305c49b389b17e5c8362538e5df97d451be2b9139
-final_compaction:
-  owner_task: 13
-  schema_version: 3
-  top_level_keys: [schema_version, migration_id, rows]
-  row_keys: [source_path, target_path, artifact_id, action, recovery_commit]
-planned_creations:
-- {path: docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md, artifact_id: adr-0029, owner_task: 1}
-- {path: docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md, artifact_id: mig-0003, owner_task: 1}
-- {path: docs/03.specs/spec-0153-workspace-governance-simplification/task.md, artifact_id: task-0153-01, owner_task: 1}
-- {path: docs/03.specs/0153-workspace-governance-simplification/README.md, artifact_id: null, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md, artifact_id: task-0153-0001, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md, artifact_id: task-0153-0002, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0003-bootstrap.md, artifact_id: task-0153-0003, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md, artifact_id: task-0153-0004, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0005-requirements.md, artifact_id: task-0153-0005, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0006-architecture.md, artifact_id: task-0153-0006, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0007-spec-lifecycle.md, artifact_id: task-0153-0007, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0008-operations.md, artifact_id: task-0153-0008, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md, artifact_id: task-0153-0009, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md, artifact_id: task-0153-0010, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0011-script-tests.md, artifact_id: task-0153-0011, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md, artifact_id: task-0153-0012, owner_task: 3}
-- {path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md, artifact_id: task-0153-0013, owner_task: 3}
 rows:
-- {row_id: mig-0003-r0001, source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md, target_path: docs/03.specs/0153-workspace-governance-simplification/spec.md, artifact_id: SPEC-0153, action: rename, owner_task: 3, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0002, source_path: docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, target_path: docs/03.specs/0153-workspace-governance-simplification/plan.md, artifact_id: plan-0153, action: rename, owner_task: 3, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0003, source_path: docs/03.specs/spec-0153-workspace-governance-simplification/task.md, target_path: null, artifact_id: task-0153-01, action: delete, owner_task: 3, source_kind: planned-output, source_owner_task: 1, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0004, source_path: docs/00.agent-governance/rules/agentic.md, target_path: docs/00.agent-governance/policies/agentic.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/rules/workspace.md, docs/00.agent-governance/rules/approval-boundaries.md, docs/00.agent-governance/rules/bootstrap.md, docs/00.agent-governance/rules/quality-standards.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/standards.md, docs/00.agent-governance/rules/task-checklists.md, docs/00.agent-governance/scopes/agentic.md, docs/00.agent-governance/scopes/architecture.md, docs/00.agent-governance/scopes/infra.md, docs/00.agent-governance/scopes/ops.md, docs/00.agent-governance/scopes/qa.md, docs/00.agent-governance/scopes/security.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/99.templates/support/readme-profile-contract.md, infra/01-gateway/nginx/README.md, infra/01-gateway/traefik/README.md, infra/02-auth/README.md, infra/02-auth/keycloak/README.md, infra/02-auth/oauth2-proxy/README.md, infra/03-security/README.md, infra/03-security/vault/README.md, infra/04-data/analytics/README.md, infra/04-data/analytics/influxdb/README.md, infra/04-data/analytics/ksql/README.md, infra/04-data/analytics/opensearch/README.md, infra/04-data/analytics/warehouses/README.md, infra/05-messaging/README.md, infra/05-messaging/kafka/README.md, infra/06-observability/README.md, infra/06-observability/alertmanager/README.md, infra/06-observability/alloy/README.md, infra/06-observability/prometheus/README.md, infra/06-observability/pushgateway/README.md, infra/06-observability/pyroscope/README.md, infra/06-observability/tempo/README.md, infra/07-workflow/README.md, infra/07-workflow/airflow/README.md, infra/07-workflow/n8n/README.md, infra/08-ai/README.md, infra/README.md, scripts/operations/provider_surface_renderer.py, scripts/validation/agent_output_eval.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_target_surface_contracts.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0005, source_path: docs/00.agent-governance/rules/approval-boundaries.md, target_path: docs/00.agent-governance/policies/approval-boundaries.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/security-auditor.md, .agents/skills/deployment-pipeline-design/SKILL.md, .agents/skills/incident-response/SKILL.md, .agents/skills/policy-gate-agent/SKILL.md, .claude/agents/security-auditor.md, .claude/skills/deployment-pipeline-design/SKILL.md, .claude/skills/incident-response/SKILL.md, .claude/skills/policy-gate-agent/SKILL.md, .codex/agents/security-auditor.toml, .github/PULL_REQUEST_TEMPLATE.md, docs/00.agent-governance/agents/agents/security-auditor.md, docs/00.agent-governance/agents/functions/deployment-pipeline-design.md, docs/00.agent-governance/agents/functions/incident-response.md, docs/00.agent-governance/agents/functions/policy-gate-agent.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/99.templates/support/common-document-contract.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0006, source_path: docs/00.agent-governance/rules/bootstrap.md, target_path: docs/00.agent-governance/policies/bootstrap.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [AGENTS.md, CLAUDE.md, docs/00.agent-governance/providers/claude.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/github-governance.md, docs/00.agent-governance/rules/persona.md, docs/00.agent-governance/rules/standards.md, docs/00.agent-governance/rules/task-checklists.md, docs/00.agent-governance/scopes/agentic.md, docs/00.agent-governance/scopes/architecture.md, docs/00.agent-governance/scopes/infra.md, docs/00.agent-governance/scopes/ops.md, docs/00.agent-governance/scopes/qa.md, docs/00.agent-governance/scopes/security.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, scripts/validation/agent_governance_contract.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0007, source_path: docs/00.agent-governance/rules/documentation-protocol.md, target_path: docs/00.agent-governance/policies/documentation-protocol.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/adr-writing/SKILL.md, .agents/skills/ops-runbook-agent/SKILL.md, .agents/workflows/documentation.md, .claude/skills/adr-writing/SKILL.md, .claude/skills/ops-runbook-agent/SKILL.md, README.md, docs/00.agent-governance/agents/functions/adr-writing.md, docs/00.agent-governance/agents/functions/ops-runbook-agent.md, docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md, docs/00.agent-governance/rules/hooks/hookify.warn-korean-in-governance.md, docs/00.agent-governance/rules/output-style.md, docs/00.agent-governance/rules/postflight-checklist.md, docs/00.agent-governance/rules/provider-capability-matrix.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/task-checklists.md, docs/00.agent-governance/rules/workflows.md, docs/00.agent-governance/scopes/docs.md, docs/00.agent-governance/scopes/qa.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0008-workflow/spec.md, docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/03.specs/spec-0095-infra-secrets-docs-refresh/spec.md, docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/README.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, docs/05.operations/README.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/glossary/README.md, docs/90.references/data/glossary/ref-0062-stable-reference-terms.md, docs/90.references/data/governance/README.md, docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md, docs/90.references/data/hads/README.md, docs/90.references/data/hads/ref-0075-profile.md, docs/99.templates/README.md, docs/99.templates/support/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/readme-profile-contract.md, infra/01-gateway/nginx/README.md, infra/01-gateway/traefik/README.md, infra/02-auth/README.md, infra/02-auth/keycloak/README.md, infra/02-auth/oauth2-proxy/README.md, infra/03-security/README.md, infra/03-security/vault/README.md, infra/04-data/analytics/README.md, infra/04-data/analytics/influxdb/README.md, infra/04-data/analytics/ksql/README.md, infra/04-data/analytics/opensearch/README.md, infra/04-data/analytics/warehouses/README.md, infra/05-messaging/README.md, infra/05-messaging/kafka/README.md, infra/06-observability/README.md, infra/06-observability/alertmanager/README.md, infra/06-observability/alloy/README.md, infra/06-observability/prometheus/README.md, infra/06-observability/pushgateway/README.md, infra/06-observability/pyroscope/README.md, infra/06-observability/tempo/README.md, infra/07-workflow/README.md, infra/07-workflow/airflow/README.md, infra/07-workflow/n8n/README.md, infra/08-ai/README.md, infra/README.md, scripts/README.md, scripts/lib/document_governance/metadata_validator.py, scripts/manifest.yaml, scripts/operations/provider_surface_renderer.py, scripts/validation/agent_governance_contract.py, scripts/validation/check-doc-implementation-alignment.sh, scripts/validation/check-document-links.py, scripts/validation/check-repo-contracts.sh, scripts/validation/recommend-gap-routing.sh, tests/README.md, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py, tests/validation/test_target_surface_contracts.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0008, source_path: docs/00.agent-governance/rules/environment-constraints.md, target_path: docs/00.agent-governance/policies/environment-constraints.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/knowledge-map-agent/SKILL.md, .claude/skills/knowledge-map-agent/SKILL.md, _workspace/README.md, docs/00.agent-governance/agents/functions/knowledge-map-agent.md, docs/00.agent-governance/rules/approval-boundaries.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0009, source_path: docs/00.agent-governance/rules/git-workflow.md, target_path: docs/00.agent-governance/policies/git-workflow.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.github/PULL_REQUEST_TEMPLATE.md, README.md, docs/00.agent-governance/rules/github-governance.md, docs/00.agent-governance/rules/hooks/hookify.block-git-no-verify.md, docs/00.agent-governance/rules/hooks/hookify.warn-branch-naming.md, docs/00.agent-governance/rules/hooks/hookify.warn-conventional-commit.md, docs/00.agent-governance/rules/quality-standards.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0010, source_path: docs/00.agent-governance/rules/github-governance.md, target_path: docs/00.agent-governance/policies/github-governance.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/ci-cd-patterns/SKILL.md, .claude/skills/ci-cd-patterns/SKILL.md, .github/INDEX.md, README.md, docs/00.agent-governance/agents/functions/ci-cd-patterns.md, docs/00.agent-governance/providers/claude.md, docs/00.agent-governance/rules/approval-boundaries.md, docs/00.agent-governance/rules/bootstrap.md, docs/00.agent-governance/rules/git-workflow.md, docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md, docs/00.agent-governance/rules/hooks/hookify.block-gha-secrets-in-run.md, docs/00.agent-governance/rules/hooks/hookify.block-unpinned-gha-action.md, docs/00.agent-governance/rules/hooks/hookify.warn-force-push.md, docs/00.agent-governance/rules/quality-standards.md, docs/00.agent-governance/rules/standards.md, docs/00.agent-governance/scopes/common.md, docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-doc-implementation-alignment.sh, scripts/validation/check-document-links.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0011, source_path: docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-absolute-file-link.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0012, source_path: docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-direct-main-push.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0013, source_path: docs/00.agent-governance/rules/hooks/hookify.block-gha-secrets-in-run.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-gha-secrets-in-run.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0014, source_path: docs/00.agent-governance/rules/hooks/hookify.block-git-no-verify.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-git-no-verify.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0015, source_path: docs/00.agent-governance/rules/hooks/hookify.block-plaintext-secret-compose.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-plaintext-secret-compose.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0016, source_path: docs/00.agent-governance/rules/hooks/hookify.block-unpinned-gha-action.md, target_path: docs/00.agent-governance/policies/hooks/hookify.block-unpinned-gha-action.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0017, source_path: docs/00.agent-governance/rules/hooks/hookify.enforce-docs-templates.md, target_path: docs/00.agent-governance/policies/hooks/hookify.enforce-docs-templates.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0018, source_path: docs/00.agent-governance/rules/hooks/hookify.require-logical-commits-before-stop.md, target_path: docs/00.agent-governance/policies/hooks/hookify.require-logical-commits-before-stop.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0019, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-branch-naming.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-branch-naming.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0020, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-conventional-commit.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-conventional-commit.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0021, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-docker-infra-stop.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0022, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-force-push.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-force-push.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0023, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-governance-memory-edit.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-governance-memory-edit.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0024, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-hook-parity-edit.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-hook-parity-edit.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0025, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-korean-in-governance.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-korean-in-governance.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0026, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-parallel-doc-file.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-parallel-doc-file.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0027, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-post-edit-style-automation.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-post-edit-style-automation.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0028, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-pre-commit-manual.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0029, source_path: docs/00.agent-governance/rules/hooks/hookify.warn-stage-doc-edit.md, target_path: docs/00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0030, source_path: docs/00.agent-governance/rules/jit-markers.md, target_path: docs/00.agent-governance/policies/jit-markers.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0031, source_path: docs/00.agent-governance/rules/output-style.md, target_path: docs/00.agent-governance/policies/output-style.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.claude/output-styles/hy-home.md, docs/00.agent-governance/README.md, docs/00.agent-governance/rules/provider-capability-matrix.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0032, source_path: docs/00.agent-governance/rules/persona.md, target_path: docs/00.agent-governance/policies/persona.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/output-style.md, docs/00.agent-governance/rules/task-checklists.md, docs/00.agent-governance/scopes/agentic.md, docs/00.agent-governance/scopes/architecture.md, docs/00.agent-governance/scopes/infra.md, docs/00.agent-governance/scopes/ops.md, docs/00.agent-governance/scopes/qa.md, docs/00.agent-governance/scopes/security.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0033, source_path: docs/00.agent-governance/rules/postflight-checklist.md, target_path: docs/00.agent-governance/policies/postflight-checklist.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/hooks/hookify.warn-pre-commit-manual.md, docs/00.agent-governance/scopes/common.md, docs/00.agent-governance/scopes/qa.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_output_eval.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0034, source_path: docs/00.agent-governance/rules/provider-capability-matrix.md, target_path: docs/00.agent-governance/policies/provider-capability-matrix.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/README.md, .agents/agents/hook-developer.md, .claude/CLAUDE.md, .claude/agents/hook-developer.md, .codex/README.md, .codex/agents/hook-developer.toml, docs/00.agent-governance/README.md, docs/00.agent-governance/agents/agents/hook-developer.md, docs/00.agent-governance/rules/output-style.md, docs/00.agent-governance/rules/workflows.md, docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/operations/provider_surface_renderer.py, scripts/validation/agent_output_eval.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0035, source_path: docs/00.agent-governance/rules/quality-standards.md, target_path: docs/00.agent-governance/policies/quality-standards.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/style-validation/SKILL.md, .claude/skills/style-validation/SKILL.md, docs/00.agent-governance/agents/functions/style-validation.md, docs/00.agent-governance/rules/git-workflow.md, docs/00.agent-governance/rules/github-governance.md, docs/00.agent-governance/rules/hooks/hookify.block-plaintext-secret-compose.md, docs/00.agent-governance/rules/output-style.md, docs/00.agent-governance/rules/standards.md, docs/00.agent-governance/scopes/architecture.md, docs/00.agent-governance/scopes/common.md, docs/00.agent-governance/scopes/infra.md, docs/00.agent-governance/scopes/ops.md, docs/00.agent-governance/scopes/qa.md, docs/00.agent-governance/scopes/security.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0036, source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md, target_path: docs/00.agent-governance/policies/stage-authoring-matrix.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/task-checklists.md, docs/00.agent-governance/rules/workflows.md, docs/00.agent-governance/scopes/docs.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/README.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/README.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/README.md, docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md, docs/05.operations/catalog/README.md, docs/05.operations/releases/README.md, docs/90.references/README.md, docs/90.references/data/glossary/ref-0062-stable-reference-terms.md, docs/99.templates/README.md, docs/99.templates/support/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/templates/README.md, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-doc-implementation-alignment.sh, scripts/validation/check-document-links.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0037, source_path: docs/00.agent-governance/rules/standards.md, target_path: docs/00.agent-governance/policies/standards.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/github-governance.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0038, source_path: docs/00.agent-governance/rules/task-checklists.md, target_path: docs/00.agent-governance/policies/task-checklists.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/ci-cd-patterns/SKILL.md, .agents/skills/execution-plan-agent/SKILL.md, .agents/skills/style-validation/SKILL.md, .claude/skills/ci-cd-patterns/SKILL.md, .claude/skills/execution-plan-agent/SKILL.md, .claude/skills/style-validation/SKILL.md, docs/00.agent-governance/agents/functions/ci-cd-patterns.md, docs/00.agent-governance/agents/functions/execution-plan-agent.md, docs/00.agent-governance/agents/functions/style-validation.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/bootstrap.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/environment-constraints.md, docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md, docs/00.agent-governance/rules/postflight-checklist.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/scopes/agentic.md, docs/00.agent-governance/scopes/architecture.md, docs/00.agent-governance/scopes/docs.md, docs/00.agent-governance/scopes/infra.md, docs/00.agent-governance/scopes/ops.md, docs/00.agent-governance/scopes/qa.md, docs/00.agent-governance/scopes/security.md, docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, scripts/validation/agentic-audit-semantic-contract.json, scripts/validation/check-repo-contracts.sh, tests/README.md, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0039, source_path: docs/00.agent-governance/rules/workflows.md, target_path: docs/00.agent-governance/policies/workflows.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/README.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/persona.md, docs/00.agent-governance/rules/provider-capability-matrix.md, scripts/validation/agent_governance_contract.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0040, source_path: docs/00.agent-governance/scopes/agentic.md, target_path: docs/00.agent-governance/roles/agentic.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/hook-developer.md, .agents/agents/rules-engineer.md, .agents/agents/skill-creator.md, .agents/agents/workflow-supervisor.md, .agents/skills/workspace-audit-revalidation/SKILL.md, .claude/agents/hook-developer.md, .claude/agents/rules-engineer.md, .claude/agents/skill-creator.md, .claude/agents/workflow-supervisor.md, .claude/skills/workspace-audit-revalidation/SKILL.md, .codex/agents/hook-developer.toml, .codex/agents/rules-engineer.toml, .codex/agents/skill-creator.toml, .codex/agents/workflow-supervisor.toml, docs/00.agent-governance/agents/agents/hook-developer.md, docs/00.agent-governance/agents/agents/rules-engineer.md, docs/00.agent-governance/agents/agents/skill-creator.md, docs/00.agent-governance/agents/agents/workflow-supervisor.md, docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0041, source_path: docs/00.agent-governance/scopes/architecture.md, target_path: docs/00.agent-governance/roles/architecture.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/requirements-to-design-agent/SKILL.md, .claude/skills/requirements-to-design-agent/SKILL.md, docs/00.agent-governance/agents/functions/requirements-to-design-agent.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0042, source_path: docs/00.agent-governance/scopes/common.md, target_path: docs/00.agent-governance/roles/common.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/code-reviewer.md, .agents/skills/code-review-dimensions/SKILL.md, .claude/agents/code-reviewer.md, .claude/skills/code-review-dimensions/SKILL.md, .codex/agents/code-reviewer.toml, docs/00.agent-governance/agents/agents/code-reviewer.md, docs/00.agent-governance/agents/functions/code-review-dimensions.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0043, source_path: docs/00.agent-governance/scopes/docs.md, target_path: docs/00.agent-governance/roles/docs.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/doc-writer.md, .agents/skills/adr-writing/SKILL.md, .agents/skills/knowledge-map-agent/SKILL.md, .claude/agents/doc-writer.md, .claude/skills/adr-writing/SKILL.md, .claude/skills/knowledge-map-agent/SKILL.md, .codex/agents/doc-writer.toml, README.md, docs/00.agent-governance/agents/agents/doc-writer.md, docs/00.agent-governance/agents/functions/adr-writing.md, docs/00.agent-governance/agents/functions/knowledge-map-agent.md, docs/00.agent-governance/rules/bootstrap.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0044, source_path: docs/00.agent-governance/scopes/infra.md, target_path: docs/00.agent-governance/roles/infra.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/drift-detector.md, .agents/agents/iac-reviewer.md, .agents/agents/infra-implementer.md, .agents/skills/docker-compose-patterns/SKILL.md, .agents/skills/infra-validate/SKILL.md, .claude/agents/drift-detector.md, .claude/agents/iac-reviewer.md, .claude/agents/infra-implementer.md, .claude/skills/docker-compose-patterns/SKILL.md, .claude/skills/infra-validate/SKILL.md, .codex/agents/drift-detector.toml, .codex/agents/iac-reviewer.toml, .codex/agents/infra-implementer.toml, docs/00.agent-governance/agents/agents/drift-detector.md, docs/00.agent-governance/agents/agents/iac-reviewer.md, docs/00.agent-governance/agents/agents/infra-implementer.md, docs/00.agent-governance/agents/functions/docker-compose-patterns.md, docs/00.agent-governance/agents/functions/infra-validate.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0045, source_path: docs/00.agent-governance/scopes/ops.md, target_path: docs/00.agent-governance/roles/ops.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/ci-cd-engineer.md, .agents/agents/incident-responder.md, .agents/skills/incident-response/SKILL.md, .agents/skills/ops-runbook-agent/SKILL.md, .claude/agents/ci-cd-engineer.md, .claude/agents/incident-responder.md, .claude/skills/incident-response/SKILL.md, .claude/skills/ops-runbook-agent/SKILL.md, .codex/agents/ci-cd-engineer.toml, .codex/agents/incident-responder.toml, docs/00.agent-governance/agents/agents/ci-cd-engineer.md, docs/00.agent-governance/agents/agents/incident-responder.md, docs/00.agent-governance/agents/functions/incident-response.md, docs/00.agent-governance/agents/functions/ops-runbook-agent.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0046, source_path: docs/00.agent-governance/scopes/qa.md, target_path: docs/00.agent-governance/roles/qa.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/eval-engineer.md, .agents/agents/qa-engineer.md, .agents/skills/e2e-testing/SKILL.md, .agents/skills/test-automator/SKILL.md, .claude/agents/eval-engineer.md, .claude/agents/qa-engineer.md, .claude/skills/e2e-testing/SKILL.md, .claude/skills/test-automator/SKILL.md, .codex/agents/eval-engineer.toml, .codex/agents/qa-engineer.toml, .pre-commit-config.yaml, docs/00.agent-governance/agents/agents/eval-engineer.md, docs/00.agent-governance/agents/agents/qa-engineer.md, docs/00.agent-governance/agents/functions/e2e-testing.md, docs/00.agent-governance/agents/functions/test-automator.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-metadata-profiles.yaml, scripts/manifest.yaml, scripts/validation/check-doc-implementation-alignment.sh, scripts/validation/check-document-links.py, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0047, source_path: docs/00.agent-governance/scopes/security.md, target_path: docs/00.agent-governance/roles/security.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/security-auditor.md, .agents/skills/container-threat-modeling/SKILL.md, .agents/skills/security-audit/SKILL.md, .claude/agents/security-auditor.md, .claude/skills/container-threat-modeling/SKILL.md, .claude/skills/security-audit/SKILL.md, .codex/agents/security-auditor.toml, docs/00.agent-governance/agents/agents/security-auditor.md, docs/00.agent-governance/agents/functions/container-threat-modeling.md, docs/00.agent-governance/agents/functions/security-audit.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0048, source_path: docs/00.agent-governance/agents/agents/ci-cd-engineer.md, target_path: docs/00.agent-governance/roles/ci-cd-engineer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/ci-cd-engineer.md, .agents/skills/ci-cd-patterns/SKILL.md, .agents/skills/deployment-pipeline-design/SKILL.md, .claude/agents/ci-cd-engineer.md, .claude/skills/ci-cd-patterns/SKILL.md, .claude/skills/deployment-pipeline-design/SKILL.md, .codex/agents/ci-cd-engineer.toml, docs/00.agent-governance/agents/functions/ci-cd-patterns.md, docs/00.agent-governance/agents/functions/deployment-pipeline-design.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0049, source_path: docs/00.agent-governance/agents/agents/code-reviewer.md, target_path: docs/00.agent-governance/roles/code-reviewer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/code-reviewer.md, .agents/skills/code-review-dimensions/SKILL.md, .agents/skills/code-reviewer/SKILL.md, .claude/agents/code-reviewer.md, .claude/skills/code-review-dimensions/SKILL.md, .claude/skills/code-reviewer/SKILL.md, .codex/agents/code-reviewer.toml, docs/00.agent-governance/agents/functions/code-review-dimensions.md, docs/00.agent-governance/agents/functions/code-reviewer.md, tests/validation/test_document_metadata.py, tests/validation/test_provider_surface_renderer.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0050, source_path: docs/00.agent-governance/agents/agents/doc-writer.md, target_path: docs/00.agent-governance/roles/doc-writer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/doc-writer.md, .agents/skills/knowledge-map-agent/SKILL.md, .agents/skills/ops-runbook-agent/SKILL.md, .agents/skills/project-memory-stewardship/SKILL.md, .claude/agents/doc-writer.md, .claude/skills/knowledge-map-agent/SKILL.md, .claude/skills/ops-runbook-agent/SKILL.md, .claude/skills/project-memory-stewardship/SKILL.md, .codex/agents/doc-writer.toml, docs/00.agent-governance/agents/functions/knowledge-map-agent.md, docs/00.agent-governance/agents/functions/ops-runbook-agent.md, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/knowledge/generate-llm-wiki-index.sh, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0051, source_path: docs/00.agent-governance/agents/agents/drift-detector.md, target_path: docs/00.agent-governance/roles/drift-detector.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/drift-detector.md, .agents/agents/iac-reviewer.md, .agents/skills/infra-cross-validate/SKILL.md, .claude/agents/drift-detector.md, .claude/agents/iac-reviewer.md, .claude/skills/infra-cross-validate/SKILL.md, .codex/agents/drift-detector.toml, .codex/agents/iac-reviewer.toml, docs/00.agent-governance/agents/agents/iac-reviewer.md, docs/00.agent-governance/agents/functions/infra-cross-validate.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0052, source_path: docs/00.agent-governance/agents/agents/eval-engineer.md, target_path: docs/00.agent-governance/roles/eval-engineer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/eval-engineer.md, .agents/skills/provider-model-evaluation/SKILL.md, .agents/skills/workspace-audit-revalidation/SKILL.md, .claude/agents/eval-engineer.md, .claude/skills/provider-model-evaluation/SKILL.md, .claude/skills/workspace-audit-revalidation/SKILL.md, .codex/agents/eval-engineer.toml, docs/00.agent-governance/agents/functions/provider-model-evaluation.md, docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0053, source_path: docs/00.agent-governance/agents/agents/hook-developer.md, target_path: docs/00.agent-governance/roles/hook-developer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/hook-developer.md, .claude/agents/hook-developer.md, .codex/agents/hook-developer.toml, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0054, source_path: docs/00.agent-governance/agents/agents/iac-reviewer.md, target_path: docs/00.agent-governance/roles/iac-reviewer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/drift-detector.md, .agents/agents/iac-reviewer.md, .agents/skills/infra-cross-validate/SKILL.md, .claude/agents/drift-detector.md, .claude/agents/iac-reviewer.md, .claude/skills/infra-cross-validate/SKILL.md, .codex/agents/drift-detector.toml, .codex/agents/iac-reviewer.toml, docs/00.agent-governance/agents/agents/drift-detector.md, docs/00.agent-governance/agents/functions/infra-cross-validate.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0055, source_path: docs/00.agent-governance/agents/agents/incident-responder.md, target_path: docs/00.agent-governance/roles/incident-responder.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/incident-responder.md, .agents/skills/incident-response/SKILL.md, .claude/agents/incident-responder.md, .claude/skills/incident-response/SKILL.md, .codex/agents/incident-responder.toml, docs/00.agent-governance/agents/functions/incident-response.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0056, source_path: docs/00.agent-governance/agents/agents/infra-implementer.md, target_path: docs/00.agent-governance/roles/infra-implementer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/infra-implementer.md, .agents/skills/compose-stack-agent/SKILL.md, .agents/skills/docker-compose-patterns/SKILL.md, .agents/skills/infra-validate/SKILL.md, .claude/agents/infra-implementer.md, .claude/skills/compose-stack-agent/SKILL.md, .claude/skills/docker-compose-patterns/SKILL.md, .claude/skills/infra-validate/SKILL.md, .codex/agents/infra-implementer.toml, docs/00.agent-governance/agents/functions/compose-stack-agent.md, docs/00.agent-governance/agents/functions/docker-compose-patterns.md, docs/00.agent-governance/agents/functions/infra-validate.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0057, source_path: docs/00.agent-governance/agents/agents/qa-engineer.md, target_path: docs/00.agent-governance/roles/qa-engineer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/qa-engineer.md, .agents/skills/e2e-testing/SKILL.md, .agents/skills/style-validation/SKILL.md, .agents/skills/test-automator/SKILL.md, .claude/agents/qa-engineer.md, .claude/skills/e2e-testing/SKILL.md, .claude/skills/style-validation/SKILL.md, .claude/skills/test-automator/SKILL.md, .codex/agents/qa-engineer.toml, docs/00.agent-governance/agents/functions/e2e-testing.md, docs/00.agent-governance/agents/functions/style-validation.md, docs/00.agent-governance/agents/functions/test-automator.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0058, source_path: docs/00.agent-governance/agents/agents/rules-engineer.md, target_path: docs/00.agent-governance/roles/rules-engineer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/rules-engineer.md, .agents/skills/policy-gate-agent/SKILL.md, .agents/skills/requirements-to-design-agent/SKILL.md, .claude/agents/rules-engineer.md, .claude/skills/policy-gate-agent/SKILL.md, .claude/skills/requirements-to-design-agent/SKILL.md, .codex/agents/rules-engineer.toml, docs/00.agent-governance/agents/functions/policy-gate-agent.md, docs/00.agent-governance/agents/functions/requirements-to-design-agent.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0059, source_path: docs/00.agent-governance/agents/agents/security-auditor.md, target_path: docs/00.agent-governance/roles/security-auditor.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/iac-reviewer.md, .agents/agents/incident-responder.md, .agents/agents/security-auditor.md, .agents/skills/container-threat-modeling/SKILL.md, .agents/skills/security-audit/SKILL.md, .claude/agents/iac-reviewer.md, .claude/agents/incident-responder.md, .claude/agents/security-auditor.md, .claude/skills/container-threat-modeling/SKILL.md, .claude/skills/security-audit/SKILL.md, .codex/agents/iac-reviewer.toml, .codex/agents/incident-responder.toml, .codex/agents/security-auditor.toml, docs/00.agent-governance/agents/agents/iac-reviewer.md, docs/00.agent-governance/agents/agents/incident-responder.md, docs/00.agent-governance/agents/functions/container-threat-modeling.md, docs/00.agent-governance/agents/functions/security-audit.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0060, source_path: docs/00.agent-governance/agents/agents/skill-creator.md, target_path: docs/00.agent-governance/roles/skill-creator.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/skill-creator.md, .claude/agents/skill-creator.md, .codex/agents/skill-creator.toml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0061, source_path: docs/00.agent-governance/agents/agents/workflow-supervisor.md, target_path: docs/00.agent-governance/roles/workflow-supervisor.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/workflow-supervisor.md, .agents/skills/execution-plan-agent/SKILL.md, .agents/skills/task-breakdown-agent/SKILL.md, .claude/agents/workflow-supervisor.md, .claude/skills/execution-plan-agent/SKILL.md, .claude/skills/task-breakdown-agent/SKILL.md, .codex/agents/workflow-supervisor.toml, docs/00.agent-governance/agents/functions/execution-plan-agent.md, docs/00.agent-governance/agents/functions/task-breakdown-agent.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0062, source_path: docs/00.agent-governance/agents/functions/adr-writing.md, target_path: docs/00.agent-governance/skills/adr-writing.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/doc-writer.md, .agents/skills/adr-writing/SKILL.md, .agents/skills/requirements-to-design-agent/SKILL.md, .claude/agents/doc-writer.md, .claude/skills/adr-writing/SKILL.md, .claude/skills/requirements-to-design-agent/SKILL.md, .codex/agents/doc-writer.toml, docs/00.agent-governance/agents/agents/doc-writer.md, docs/00.agent-governance/agents/functions/requirements-to-design-agent.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0063, source_path: docs/00.agent-governance/agents/functions/ci-cd-patterns.md, target_path: docs/00.agent-governance/skills/ci-cd-patterns.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/ci-cd-engineer.md, .agents/skills/ci-cd-patterns/SKILL.md, .agents/skills/deployment-pipeline-design/SKILL.md, .claude/agents/ci-cd-engineer.md, .claude/skills/ci-cd-patterns/SKILL.md, .claude/skills/deployment-pipeline-design/SKILL.md, .codex/agents/ci-cd-engineer.toml, docs/00.agent-governance/agents/agents/ci-cd-engineer.md, docs/00.agent-governance/agents/functions/deployment-pipeline-design.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0064, source_path: docs/00.agent-governance/agents/functions/code-review-dimensions.md, target_path: docs/00.agent-governance/skills/code-review-dimensions.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/code-reviewer.md, .agents/skills/code-review-dimensions/SKILL.md, .agents/skills/code-reviewer/SKILL.md, .claude/agents/code-reviewer.md, .claude/skills/code-review-dimensions/SKILL.md, .claude/skills/code-reviewer/SKILL.md, .codex/agents/code-reviewer.toml, docs/00.agent-governance/agents/agents/code-reviewer.md, docs/00.agent-governance/agents/functions/code-reviewer.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0065, source_path: docs/00.agent-governance/agents/functions/code-reviewer.md, target_path: docs/00.agent-governance/skills/code-reviewer.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/code-reviewer.md, .agents/skills/code-review-dimensions/SKILL.md, .agents/skills/code-reviewer/SKILL.md, .claude/agents/code-reviewer.md, .claude/skills/code-review-dimensions/SKILL.md, .claude/skills/code-reviewer/SKILL.md, .codex/agents/code-reviewer.toml, docs/00.agent-governance/agents/agents/code-reviewer.md, docs/00.agent-governance/agents/functions/code-review-dimensions.md, tests/validation/test_document_metadata.py, tests/validation/test_provider_surface_renderer.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0066, source_path: docs/00.agent-governance/agents/functions/compose-stack-agent.md, target_path: docs/00.agent-governance/skills/compose-stack-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/infra-implementer.md, .agents/skills/compose-stack-agent/SKILL.md, .agents/skills/docker-compose-patterns/SKILL.md, .agents/skills/infra-validate/SKILL.md, .claude/agents/infra-implementer.md, .claude/skills/compose-stack-agent/SKILL.md, .claude/skills/docker-compose-patterns/SKILL.md, .claude/skills/infra-validate/SKILL.md, .codex/agents/infra-implementer.toml, docs/00.agent-governance/agents/agents/infra-implementer.md, docs/00.agent-governance/agents/functions/docker-compose-patterns.md, docs/00.agent-governance/agents/functions/infra-validate.md, scripts/hooks/agent-event-hook.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0067, source_path: docs/00.agent-governance/agents/functions/container-threat-modeling.md, target_path: docs/00.agent-governance/skills/container-threat-modeling.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/security-auditor.md, .agents/skills/container-threat-modeling/SKILL.md, .agents/skills/security-audit/SKILL.md, .claude/agents/security-auditor.md, .claude/skills/container-threat-modeling/SKILL.md, .claude/skills/security-audit/SKILL.md, .codex/agents/security-auditor.toml, docs/00.agent-governance/agents/agents/security-auditor.md, docs/00.agent-governance/agents/functions/security-audit.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0068, source_path: docs/00.agent-governance/agents/functions/deployment-pipeline-design.md, target_path: docs/00.agent-governance/skills/deployment-pipeline-design.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/ci-cd-engineer.md, .agents/skills/deployment-pipeline-design/SKILL.md, .claude/agents/ci-cd-engineer.md, .claude/skills/deployment-pipeline-design/SKILL.md, .codex/agents/ci-cd-engineer.toml, docs/00.agent-governance/agents/agents/ci-cd-engineer.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0069, source_path: docs/00.agent-governance/agents/functions/docker-compose-patterns.md, target_path: docs/00.agent-governance/skills/docker-compose-patterns.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/infra-implementer.md, .agents/skills/compose-stack-agent/SKILL.md, .agents/skills/docker-compose-patterns/SKILL.md, .claude/agents/infra-implementer.md, .claude/skills/compose-stack-agent/SKILL.md, .claude/skills/docker-compose-patterns/SKILL.md, .codex/agents/infra-implementer.toml, docs/00.agent-governance/agents/agents/infra-implementer.md, docs/00.agent-governance/agents/functions/compose-stack-agent.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0070, source_path: docs/00.agent-governance/agents/functions/e2e-testing.md, target_path: docs/00.agent-governance/skills/e2e-testing.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/qa-engineer.md, .agents/skills/e2e-testing/SKILL.md, .agents/skills/test-automator/SKILL.md, .claude/agents/qa-engineer.md, .claude/skills/e2e-testing/SKILL.md, .claude/skills/test-automator/SKILL.md, .codex/agents/qa-engineer.toml, docs/00.agent-governance/agents/agents/qa-engineer.md, docs/00.agent-governance/agents/functions/test-automator.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0071, source_path: docs/00.agent-governance/agents/functions/execution-plan-agent.md, target_path: docs/00.agent-governance/skills/execution-plan-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/workflow-supervisor.md, .agents/skills/execution-plan-agent/SKILL.md, .agents/skills/task-breakdown-agent/SKILL.md, .claude/agents/workflow-supervisor.md, .claude/skills/execution-plan-agent/SKILL.md, .claude/skills/task-breakdown-agent/SKILL.md, .codex/agents/workflow-supervisor.toml, docs/00.agent-governance/agents/agents/workflow-supervisor.md, docs/00.agent-governance/agents/functions/task-breakdown-agent.md, scripts/hooks/agent-event-hook.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0072, source_path: docs/00.agent-governance/agents/functions/incident-response.md, target_path: docs/00.agent-governance/skills/incident-response.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/incident-responder.md, .agents/skills/incident-response/SKILL.md, .claude/agents/incident-responder.md, .claude/skills/incident-response/SKILL.md, .codex/agents/incident-responder.toml, docs/00.agent-governance/agents/agents/incident-responder.md, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0073, source_path: docs/00.agent-governance/agents/functions/infra-cross-validate.md, target_path: docs/00.agent-governance/skills/infra-cross-validate.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/drift-detector.md, .agents/agents/iac-reviewer.md, .agents/skills/infra-cross-validate/SKILL.md, .claude/agents/drift-detector.md, .claude/agents/iac-reviewer.md, .claude/skills/infra-cross-validate/SKILL.md, .codex/agents/drift-detector.toml, .codex/agents/iac-reviewer.toml, docs/00.agent-governance/agents/agents/drift-detector.md, docs/00.agent-governance/agents/agents/iac-reviewer.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0074, source_path: docs/00.agent-governance/agents/functions/infra-validate.md, target_path: docs/00.agent-governance/skills/infra-validate.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/infra-implementer.md, .agents/skills/compose-stack-agent/SKILL.md, .agents/skills/infra-cross-validate/SKILL.md, .agents/skills/infra-validate/SKILL.md, .claude/agents/infra-implementer.md, .claude/skills/compose-stack-agent/SKILL.md, .claude/skills/infra-cross-validate/SKILL.md, .claude/skills/infra-validate/SKILL.md, .codex/agents/infra-implementer.toml, docs/00.agent-governance/agents/agents/infra-implementer.md, docs/00.agent-governance/agents/functions/compose-stack-agent.md, docs/00.agent-governance/agents/functions/infra-cross-validate.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0075, source_path: docs/00.agent-governance/agents/functions/knowledge-map-agent.md, target_path: docs/00.agent-governance/skills/knowledge-map-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/doc-writer.md, .agents/skills/knowledge-map-agent/SKILL.md, .claude/agents/doc-writer.md, .claude/skills/knowledge-map-agent/SKILL.md, .codex/agents/doc-writer.toml, docs/00.agent-governance/agents/agents/doc-writer.md, scripts/hooks/agent-event-hook.sh, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/knowledge/generate-llm-wiki-index.sh, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0076, source_path: docs/00.agent-governance/agents/functions/ops-runbook-agent.md, target_path: docs/00.agent-governance/skills/ops-runbook-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/doc-writer.md, .agents/skills/ops-runbook-agent/SKILL.md, .claude/agents/doc-writer.md, .claude/skills/ops-runbook-agent/SKILL.md, .codex/agents/doc-writer.toml, docs/00.agent-governance/agents/agents/doc-writer.md, scripts/hooks/agent-event-hook.sh, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0077, source_path: docs/00.agent-governance/agents/functions/policy-gate-agent.md, target_path: docs/00.agent-governance/skills/policy-gate-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/rules-engineer.md, .agents/skills/policy-gate-agent/SKILL.md, .claude/agents/rules-engineer.md, .claude/skills/policy-gate-agent/SKILL.md, .codex/agents/rules-engineer.toml, docs/00.agent-governance/agents/agents/rules-engineer.md, scripts/hooks/agent-event-hook.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0078, source_path: docs/00.agent-governance/agents/functions/project-memory-stewardship.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/project-memory-stewardship/SKILL.md, .claude/skills/project-memory-stewardship/SKILL.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_output_eval.py, tests/validation/test_agent_output_eval_fixtures.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0079, source_path: docs/00.agent-governance/agents/functions/provider-model-evaluation.md, target_path: docs/00.agent-governance/skills/provider-model-evaluation.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/provider-model-evaluation/SKILL.md, .claude/skills/provider-model-evaluation/SKILL.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_output_eval.py, tests/validation/test_agent_output_eval_fixtures.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0080, source_path: docs/00.agent-governance/agents/functions/requirements-to-design-agent.md, target_path: docs/00.agent-governance/skills/requirements-to-design-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/rules-engineer.md, .agents/skills/requirements-to-design-agent/SKILL.md, .claude/agents/rules-engineer.md, .claude/skills/requirements-to-design-agent/SKILL.md, .codex/agents/rules-engineer.toml, docs/00.agent-governance/agents/agents/rules-engineer.md, scripts/hooks/agent-event-hook.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0081, source_path: docs/00.agent-governance/agents/functions/security-audit.md, target_path: docs/00.agent-governance/skills/security-audit.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/security-auditor.md, .agents/skills/container-threat-modeling/SKILL.md, .agents/skills/security-audit/SKILL.md, .claude/agents/security-auditor.md, .claude/skills/container-threat-modeling/SKILL.md, .claude/skills/security-audit/SKILL.md, .codex/agents/security-auditor.toml, docs/00.agent-governance/agents/agents/security-auditor.md, docs/00.agent-governance/agents/functions/container-threat-modeling.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0082, source_path: docs/00.agent-governance/agents/functions/style-validation.md, target_path: docs/00.agent-governance/skills/style-validation.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/qa-engineer.md, .agents/skills/style-validation/SKILL.md, .claude/agents/qa-engineer.md, .claude/skills/style-validation/SKILL.md, .codex/agents/qa-engineer.toml, docs/00.agent-governance/agents/agents/qa-engineer.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0083, source_path: docs/00.agent-governance/agents/functions/task-breakdown-agent.md, target_path: docs/00.agent-governance/skills/task-breakdown-agent.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/workflow-supervisor.md, .agents/skills/execution-plan-agent/SKILL.md, .agents/skills/task-breakdown-agent/SKILL.md, .claude/agents/workflow-supervisor.md, .claude/skills/execution-plan-agent/SKILL.md, .claude/skills/task-breakdown-agent/SKILL.md, .codex/agents/workflow-supervisor.toml, docs/00.agent-governance/agents/agents/workflow-supervisor.md, docs/00.agent-governance/agents/functions/execution-plan-agent.md, scripts/hooks/agent-event-hook.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0084, source_path: docs/00.agent-governance/agents/functions/test-automator.md, target_path: docs/00.agent-governance/skills/test-automator.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/qa-engineer.md, .agents/skills/e2e-testing/SKILL.md, .agents/skills/test-automator/SKILL.md, .claude/agents/qa-engineer.md, .claude/skills/e2e-testing/SKILL.md, .claude/skills/test-automator/SKILL.md, .codex/agents/qa-engineer.toml, docs/00.agent-governance/agents/agents/qa-engineer.md, docs/00.agent-governance/agents/functions/e2e-testing.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0085, source_path: docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md, target_path: docs/00.agent-governance/skills/workspace-audit-revalidation.md, artifact_id: null, action: rename, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/eval-engineer.md, .agents/skills/workspace-audit-revalidation/SKILL.md, .claude/agents/eval-engineer.md, .claude/skills/workspace-audit-revalidation/SKILL.md, .codex/agents/eval-engineer.toml, docs/00.agent-governance/agents/agents/eval-engineer.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0086, source_path: .gemini/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, docs/99.templates/support/document-metadata-profiles.yaml, scripts/operations/provider_surface_renderer.py, tests/validation/test_agent_governance_contract.py, tests/validation/test_provider_native_surfaces.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0087, source_path: .gemini/agents/ci-cd-engineer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0088, source_path: .gemini/agents/code-reviewer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_agent_governance_ci_routing.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0089, source_path: .gemini/agents/doc-writer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0090, source_path: .gemini/agents/drift-detector.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0091, source_path: .gemini/agents/eval-engineer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0092, source_path: .gemini/agents/hook-developer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0093, source_path: .gemini/agents/iac-reviewer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0094, source_path: .gemini/agents/incident-responder.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0095, source_path: .gemini/agents/infra-implementer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0096, source_path: .gemini/agents/qa-engineer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0097, source_path: .gemini/agents/rules-engineer.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0098, source_path: .gemini/agents/security-auditor.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0099, source_path: .gemini/agents/skill-creator.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0100, source_path: .gemini/agents/workflow-supervisor.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0101, source_path: .gemini/hooks/agent-event-hook.sh, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, scripts/operations/provider_surface_renderer.py, scripts/validation/agent_governance_contract.py, scripts/validation/report-provider-hook-parity.sh, tests/validation/test_provider_native_surfaces.py, tests/validation/test_provider_surface_renderer.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0102, source_path: .gemini/settings.json, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/provider-capability-matrix.md, docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, scripts/hooks/post-tool-validate.sh, scripts/operations/provider_surface_renderer.py, scripts/validation/report-provider-hook-parity.sh, tests/validation/test_provider_native_surfaces.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0103, source_path: GEMINI.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.github/CODEOWNERS, .github/labeler.yml, .markdownlint-cli2.yaml, docs/00.agent-governance/README.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/github-governance.md, docs/00.agent-governance/rules/standards.md, docs/00.agent-governance/scopes/docs.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/spec.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, scripts/hooks/post-tool-validate.sh, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/knowledge/generate-llm-wiki-index.sh, scripts/knowledge/generate-llm-wiki.py, scripts/lib/document_governance/links.py, scripts/validation/check-doc-implementation-alignment.sh, scripts/validation/check-repo-contracts.sh, scripts/validation/recommend-qa-gates.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0104, source_path: docs/00.agent-governance/agents/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/skill-creator.md, .agents/skills/adr-writing/SKILL.md, .claude/agents/skill-creator.md, .claude/skills/adr-writing/SKILL.md, .codex/agents/skill-creator.toml, docs/00.agent-governance/agents/agents/skill-creator.md, docs/00.agent-governance/agents/functions/adr-writing.md, docs/00.agent-governance/rules/workflows.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0105, source_path: docs/00.agent-governance/contracts/agent-catalog.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/eval-engineer.md, .agents/agents/hook-developer.md, .agents/agents/skill-creator.md, .agents/skills/workspace-audit-revalidation/SKILL.md, .claude/agents/eval-engineer.md, .claude/agents/hook-developer.md, .claude/agents/skill-creator.md, .claude/skills/workspace-audit-revalidation/SKILL.md, .codex/agents/eval-engineer.toml, .codex/agents/hook-developer.toml, .codex/agents/skill-creator.toml, docs/00.agent-governance/agents/agents/eval-engineer.md, docs/00.agent-governance/agents/agents/hook-developer.md, docs/00.agent-governance/agents/agents/skill-creator.md, docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md, docs/00.agent-governance/rules/persona.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_agent_governance_contract.py, tests/validation/test_agent_output_eval_fixtures.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0106, source_path: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/rules-engineer.md, .agents/skills/policy-gate-agent/SKILL.md, .claude/agents/rules-engineer.md, .claude/skills/policy-gate-agent/SKILL.md, .codex/agents/rules-engineer.toml, docs/00.agent-governance/agents/agents/rules-engineer.md, docs/00.agent-governance/agents/functions/policy-gate-agent.md, docs/00.agent-governance/rules/persona.md, docs/00.agent-governance/rules/postflight-checklist.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, scripts/lib/document_governance/metadata_validator.py, scripts/manifest.yaml, scripts/validation/agent_governance_contract.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0107, source_path: docs/00.agent-governance/contracts/deferred-paths.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/hooks/agent-event-hook.sh, tests/validation/test_stop_gate_deferred_paths.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0108, source_path: docs/00.agent-governance/contracts/provider-models.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/provider-model-evaluation/SKILL.md, .claude/skills/provider-model-evaluation/SKILL.md, docs/00.agent-governance/agents/functions/provider-model-evaluation.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, scripts/validation/report-provider-hook-parity.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_agent_output_eval_fixtures.py, tests/validation/test_provider_native_surfaces.py, tests/validation/test_provider_surface_renderer.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0109, source_path: docs/00.agent-governance/harness-implementation-map.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/approval-boundaries.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, scripts/validation/agent_governance_contract.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0110, source_path: docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0111, source_path: docs/00.agent-governance/memory/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/project-memory-stewardship/SKILL.md, .claude/skills/project-memory-stewardship/SKILL.md, AGENTS.md, CLAUDE.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/jit-markers.md, docs/00.agent-governance/rules/provider-capability-matrix.md, docs/00.agent-governance/rules/task-checklists.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/99.templates/templates/governance/README.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0112, source_path: docs/00.agent-governance/memory/agentic-harness-contract-hardening.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0113, source_path: docs/00.agent-governance/memory/current.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/project-memory-stewardship/SKILL.md, .claude/skills/project-memory-stewardship/SKILL.md, .github/INDEX.md, AGENTS.md, CLAUDE.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/bootstrap.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/hooks/hookify.warn-governance-memory-edit.md, docs/00.agent-governance/rules/task-checklists.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0114, source_path: docs/00.agent-governance/memory/direct-deletion-branch-unadopted-design.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0115, source_path: docs/00.agent-governance/memory/docker-doc-contract-backlog.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0116, source_path: docs/00.agent-governance/memory/execution-stage-legacy-debt.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0117, source_path: docs/00.agent-governance/memory/governance-memory-usage-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0118, source_path: docs/00.agent-governance/memory/harness-agent-first-gap-audit.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0119, source_path: docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0120, source_path: docs/00.agent-governance/memory/operations-target-marker-contract-tension.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0121, source_path: docs/00.agent-governance/memory/progress.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.markdownlint-cli2.yaml, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/github-governance.md, docs/03.specs/spec-0008-workflow/spec.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/template-selection.md, scripts/README.md, scripts/hooks/agent-event-hook.sh, scripts/lib/document_governance/metadata_validator.py, scripts/lib/document_governance/operations_catalog.py, scripts/validation/check-repo-contracts.sh, tests/validation/test_document_metadata.py, tests/validation/test_document_taxonomy.py, tests/validation/test_operations_catalog.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0122, source_path: docs/00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0123, source_path: docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0124, source_path: docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0125, source_path: docs/00.agent-governance/memory/stop-gate-ignores-task-ownership.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0126, source_path: docs/00.agent-governance/memory/worktree-consolidation-2026-08-18.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0127, source_path: docs/00.agent-governance/providers/agents-md.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/README.md, AGENTS.md, docs/00.agent-governance/providers/claude.md, docs/00.agent-governance/rules/github-governance.md, docs/00.agent-governance/rules/provider-capability-matrix.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/support/document-metadata-profiles.yaml, scripts/operations/provider_surface_renderer.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0128, source_path: docs/00.agent-governance/providers/gemini.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/github-governance.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0129, source_path: docs/00.agent-governance/subagent-protocol.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/agents/ci-cd-engineer.md, .agents/agents/code-reviewer.md, .agents/agents/drift-detector.md, .agents/agents/eval-engineer.md, .agents/agents/hook-developer.md, .agents/agents/incident-responder.md, .agents/agents/skill-creator.md, .agents/agents/workflow-supervisor.md, .agents/skills/code-reviewer/SKILL.md, .agents/skills/task-breakdown-agent/SKILL.md, .claude/agents/ci-cd-engineer.md, .claude/agents/code-reviewer.md, .claude/agents/drift-detector.md, .claude/agents/eval-engineer.md, .claude/agents/hook-developer.md, .claude/agents/incident-responder.md, .claude/agents/skill-creator.md, .claude/agents/workflow-supervisor.md, .claude/skills/code-reviewer/SKILL.md, .claude/skills/task-breakdown-agent/SKILL.md, .codex/agents/ci-cd-engineer.toml, .codex/agents/code-reviewer.toml, .codex/agents/drift-detector.toml, .codex/agents/eval-engineer.toml, .codex/agents/hook-developer.toml, .codex/agents/incident-responder.toml, .codex/agents/skill-creator.toml, .codex/agents/workflow-supervisor.toml, _workspace/README.md, docs/00.agent-governance/agents/agents/ci-cd-engineer.md, docs/00.agent-governance/agents/agents/code-reviewer.md, docs/00.agent-governance/agents/agents/drift-detector.md, docs/00.agent-governance/agents/agents/eval-engineer.md, docs/00.agent-governance/agents/agents/hook-developer.md, docs/00.agent-governance/agents/agents/incident-responder.md, docs/00.agent-governance/agents/agents/skill-creator.md, docs/00.agent-governance/agents/agents/workflow-supervisor.md, docs/00.agent-governance/agents/functions/code-reviewer.md, docs/00.agent-governance/agents/functions/task-breakdown-agent.md, docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/persona.md, docs/00.agent-governance/rules/postflight-checklist.md, docs/00.agent-governance/rules/provider-capability-matrix.md, docs/00.agent-governance/rules/workflows.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0008-workflow/spec.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, scripts/validation/agent_output_eval.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0130, source_path: docs/99.templates/templates/governance/memory.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/agentic.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/hooks/hookify.warn-governance-memory-edit.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/task-checklists.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/template-selection.md, docs/99.templates/templates/governance/README.md, scripts/hooks/agent-event-hook.sh, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0131, source_path: docs/99.templates/templates/governance/progress.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 4, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/template-selection.md, docs/99.templates/templates/governance/README.md, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0132, source_path: docs/01.requirements/prd-0001-gateway.md, target_path: docs/01.requirements/0001-gateway.md, artifact_id: REQ-0001, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md, docs/02.architecture/descriptions/ad-0001-gateway-architecture.md, docs/03.specs/spec-0001-gateway/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0133, source_path: docs/01.requirements/prd-0002-auth.md, target_path: docs/01.requirements/0002-auth.md, artifact_id: REQ-0002, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md, docs/02.architecture/descriptions/ad-0002-auth-architecture.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0134, source_path: docs/01.requirements/prd-0003-security.md, target_path: docs/01.requirements/0003-security.md, artifact_id: REQ-0003, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md, docs/02.architecture/descriptions/ad-0003-security-architecture.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0135, source_path: docs/01.requirements/prd-0004-data.md, target_path: docs/01.requirements/0004-data.md, artifact_id: REQ-0004, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0004-postgresql-ha-patroni.md, docs/02.architecture/descriptions/ad-0004-data-architecture.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0136, source_path: docs/01.requirements/prd-0005-data-analytics.md, target_path: docs/01.requirements/0005-data-analytics.md, artifact_id: REQ-0005, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0015-analytics-engine-selection.md, docs/02.architecture/descriptions/ad-0012-data-analytics-architecture.md, docs/03.specs/spec-0005-data-analytics/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0137, source_path: docs/01.requirements/prd-0006-messaging.md, target_path: docs/01.requirements/0006-messaging.md, artifact_id: REQ-0006, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md, docs/02.architecture/descriptions/ad-0005-messaging-architecture.md, infra/05-messaging/kafka/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0138, source_path: docs/01.requirements/prd-0007-observability.md, target_path: docs/01.requirements/0007-observability.md, artifact_id: REQ-0007, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0006-lgtm-stack-selection.md, docs/02.architecture/descriptions/ad-0006-observability-architecture.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0139, source_path: docs/01.requirements/prd-0008-workflow.md, target_path: docs/01.requirements/0008-workflow.md, artifact_id: REQ-0008, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md, docs/02.architecture/descriptions/ad-0007-workflow-architecture.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0140, source_path: docs/01.requirements/prd-0009-ai.md, target_path: docs/01.requirements/0009-ai.md, artifact_id: REQ-0009, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md, docs/02.architecture/descriptions/ad-0008-ai-architecture.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0141, source_path: docs/01.requirements/prd-0010-tooling.md, target_path: docs/01.requirements/0010-tooling.md, artifact_id: REQ-0010, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0009-tooling-services.md, docs/02.architecture/descriptions/ad-0009-tooling-architecture.md, infra/09-tooling/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0142, source_path: docs/01.requirements/prd-0011-communication.md, target_path: docs/01.requirements/0011-communication.md, artifact_id: REQ-0011, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0010-communication-services.md, docs/02.architecture/descriptions/ad-0010-communication-architecture.md, docs/03.specs/spec-0011-communication/spec.md, infra/10-communication/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0143, source_path: docs/01.requirements/prd-0012-laboratory.md, target_path: docs/01.requirements/0012-laboratory.md, artifact_id: REQ-0012, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0011-laboratory-services.md, docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md, infra/11-laboratory/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0144, source_path: docs/01.requirements/prd-0013-ai-open-webui.md, target_path: docs/01.requirements/0013-ai-open-webui.md, artifact_id: REQ-0013, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0016-open-webui-implementation.md, docs/02.architecture/descriptions/ad-0013-open-webui-architecture.md, docs/03.specs/spec-0009-ai/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0145, source_path: docs/01.requirements/prd-0014-auth-optimization-hardening.md, target_path: docs/01.requirements/0014-auth-optimization-hardening.md, artifact_id: REQ-0014, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md, docs/02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md, docs/03.specs/spec-0002-auth/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0146, source_path: docs/01.requirements/prd-0015-security-optimization-hardening.md, target_path: docs/01.requirements/0015-security-optimization-hardening.md, artifact_id: REQ-0015, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, docs/03.specs/spec-0003-security/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0147, source_path: docs/01.requirements/prd-0016-data-optimization-hardening.md, target_path: docs/01.requirements/0016-data-optimization-hardening.md, artifact_id: REQ-0016, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/spec-0004-data/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0148, source_path: docs/01.requirements/prd-0017-messaging-optimization-hardening.md, target_path: docs/01.requirements/0017-messaging-optimization-hardening.md, artifact_id: REQ-0017, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/spec-0006-messaging/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0149, source_path: docs/01.requirements/prd-0018-observability-optimization-hardening.md, target_path: docs/01.requirements/0018-observability-optimization-hardening.md, artifact_id: REQ-0018, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/spec-0007-observability/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0150, source_path: docs/01.requirements/prd-0019-workflow-optimization-hardening.md, target_path: docs/01.requirements/0019-workflow-optimization-hardening.md, artifact_id: REQ-0019, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/spec-0008-workflow/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0151, source_path: docs/01.requirements/prd-0020-ai-optimization-hardening.md, target_path: docs/01.requirements/0020-ai-optimization-hardening.md, artifact_id: REQ-0020, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/spec-0009-ai/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0152, source_path: docs/01.requirements/prd-0021-tooling-optimization-hardening.md, target_path: docs/01.requirements/0021-tooling-optimization-hardening.md, artifact_id: REQ-0021, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/spec-0010-tooling/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0153, source_path: docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, target_path: docs/01.requirements/0022-laboratory-optimization-hardening.md, artifact_id: REQ-0022, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0154, source_path: docs/01.requirements/prd-0023-standardize-infra-net.md, target_path: docs/01.requirements/0023-standardize-infra-net.md, artifact_id: REQ-0023, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/02.architecture/decisions/adr-0026-standardize-infra-net.md, docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md, docs/03.specs/spec-0098-standardize-infra-net/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0155, source_path: docs/01.requirements/prd-0024-agent-governance-standardization.md, target_path: docs/01.requirements/0024-agent-governance-standardization.md, artifact_id: REQ-0024, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/providers/codex.md, docs/01.requirements/README.md, docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md, docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0156, source_path: docs/01.requirements/prd-0025-operational-readiness-closure.md, target_path: docs/01.requirements/0025-operational-readiness-closure.md, artifact_id: REQ-0025, action: rename, owner_task: 5, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/README.md, docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md, docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0157, source_path: docs/02.architecture/descriptions/ad-0001-gateway-architecture.md, target_path: docs/02.architecture/descriptions/0001-gateway-architecture.md, artifact_id: AD-0001, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0001-gateway.md, docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md, docs/03.specs/spec-0001-gateway/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0158, source_path: docs/02.architecture/descriptions/ad-0002-auth-architecture.md, target_path: docs/02.architecture/descriptions/0002-auth-architecture.md, artifact_id: AD-0002, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0002-auth.md, docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0159, source_path: docs/02.architecture/descriptions/ad-0003-security-architecture.md, target_path: docs/02.architecture/descriptions/0003-security-architecture.md, artifact_id: AD-0003, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0003-security.md, docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0160, source_path: docs/02.architecture/descriptions/ad-0004-data-architecture.md, target_path: docs/02.architecture/descriptions/0004-data-architecture.md, artifact_id: AD-0004, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0004-data.md, docs/02.architecture/decisions/adr-0004-postgresql-ha-patroni.md, infra/04-data/nosql/README.md, infra/04-data/operational/mng-db/README.md, infra/04-data/relational/README.md, infra/04-data/relational/postgresql-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0161, source_path: docs/02.architecture/descriptions/ad-0005-messaging-architecture.md, target_path: docs/02.architecture/descriptions/0005-messaging-architecture.md, artifact_id: AD-0005, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0006-messaging.md, docs/02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md, infra/05-messaging/kafka/README.md, infra/05-messaging/rabbitmq/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0162, source_path: docs/02.architecture/descriptions/ad-0006-observability-architecture.md, target_path: docs/02.architecture/descriptions/0006-observability-architecture.md, artifact_id: AD-0006, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0007-observability.md, docs/02.architecture/decisions/adr-0006-lgtm-stack-selection.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0163, source_path: docs/02.architecture/descriptions/ad-0007-workflow-architecture.md, target_path: docs/02.architecture/descriptions/0007-workflow-architecture.md, artifact_id: AD-0007, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md, infra/07-workflow/airflow/README.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0164, source_path: docs/02.architecture/descriptions/ad-0008-ai-architecture.md, target_path: docs/02.architecture/descriptions/0008-ai-architecture.md, artifact_id: AD-0008, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0009-ai.md, docs/02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0165, source_path: docs/02.architecture/descriptions/ad-0009-tooling-architecture.md, target_path: docs/02.architecture/descriptions/0009-tooling-architecture.md, artifact_id: AD-0009, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0010-tooling.md, docs/02.architecture/decisions/adr-0009-tooling-services.md, infra/09-tooling/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0166, source_path: docs/02.architecture/descriptions/ad-0010-communication-architecture.md, target_path: docs/02.architecture/descriptions/0010-communication-architecture.md, artifact_id: AD-0010, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0011-communication.md, docs/02.architecture/decisions/adr-0010-communication-services.md, docs/03.specs/spec-0011-communication/spec.md, infra/10-communication/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0167, source_path: docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md, target_path: docs/02.architecture/descriptions/0011-laboratory-architecture.md, artifact_id: AD-0011, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0012-laboratory.md, docs/02.architecture/decisions/adr-0011-laboratory-services.md, infra/11-laboratory/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0168, source_path: docs/02.architecture/descriptions/ad-0012-data-analytics-architecture.md, target_path: docs/02.architecture/descriptions/0012-data-analytics-architecture.md, artifact_id: AD-0012, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0005-data-analytics.md, docs/02.architecture/decisions/adr-0015-analytics-engine-selection.md, docs/03.specs/spec-0005-data-analytics/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0169, source_path: docs/02.architecture/descriptions/ad-0013-open-webui-architecture.md, target_path: docs/02.architecture/descriptions/0013-open-webui-architecture.md, artifact_id: AD-0013, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0013-ai-open-webui.md, docs/02.architecture/decisions/adr-0016-open-webui-implementation.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0170, source_path: docs/02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md, artifact_id: AD-0014, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0014-auth-optimization-hardening.md, docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md, docs/03.specs/spec-0002-auth/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0171, source_path: docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0018-security-optimization-hardening-architecture.md, artifact_id: AD-0018, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0003-security/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0172, source_path: docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0019-data-optimization-hardening-architecture.md, artifact_id: AD-0019, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0004-data/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0173, source_path: docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md, artifact_id: AD-0020, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0006-messaging/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0174, source_path: docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md, artifact_id: AD-0021, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0007-observability/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0175, source_path: docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md, artifact_id: AD-0022, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0008-workflow/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0176, source_path: docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md, artifact_id: AD-0023, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0009-ai/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0177, source_path: docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md, artifact_id: AD-0024, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0010-tooling/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0178, source_path: docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, target_path: docs/02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md, artifact_id: AD-0025, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md, docs/03.specs/spec-0012-laboratory/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0179, source_path: docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md, target_path: docs/02.architecture/descriptions/0026-standardize-infra-net.md, artifact_id: AD-0026, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0023-standardize-infra-net.md, docs/02.architecture/decisions/adr-0026-standardize-infra-net.md, docs/03.specs/spec-0098-standardize-infra-net/spec.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0180, source_path: docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md, target_path: docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md, artifact_id: AD-0027, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/providers/codex.md, docs/01.requirements/prd-0024-agent-governance-standardization.md, docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md, docs/02.architecture/descriptions/README.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0181, source_path: docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md, target_path: docs/02.architecture/descriptions/0028-operational-readiness-closure.md, artifact_id: AD-0028, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0025-operational-readiness-closure.md, docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md, docs/02.architecture/descriptions/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0182, source_path: docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md, target_path: docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md, artifact_id: ADR-0001, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0001-gateway.md, docs/02.architecture/descriptions/ad-0001-gateway-architecture.md, docs/03.specs/spec-0001-gateway/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0183, source_path: docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md, target_path: docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md, artifact_id: ADR-0002, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0002-auth.md, docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md, docs/02.architecture/descriptions/ad-0002-auth-architecture.md, docs/03.specs/spec-0002-auth/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0184, source_path: docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md, target_path: docs/02.architecture/decisions/0003-vault-as-secrets-manager.md, artifact_id: ADR-0003, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0003-security.md, docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0003-security-architecture.md, docs/03.specs/spec-0003-security/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0185, source_path: docs/02.architecture/decisions/adr-0004-postgresql-ha-patroni.md, target_path: docs/02.architecture/decisions/0004-postgresql-ha-patroni.md, artifact_id: ADR-0004, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0004-data.md, docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0004-data-architecture.md, docs/03.specs/spec-0004-data/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0186, source_path: docs/02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md, target_path: docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md, artifact_id: ADR-0005, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0006-messaging.md, docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0005-messaging-architecture.md, docs/03.specs/spec-0006-messaging/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0187, source_path: docs/02.architecture/decisions/adr-0006-lgtm-stack-selection.md, target_path: docs/02.architecture/decisions/0006-lgtm-stack-selection.md, artifact_id: ADR-0006, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0007-observability.md, docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0006-observability-architecture.md, docs/03.specs/spec-0007-observability/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0188, source_path: docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md, target_path: docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md, artifact_id: ADR-0007, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0007-workflow-architecture.md, docs/03.specs/spec-0008-workflow/spec.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0189, source_path: docs/02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md, target_path: docs/02.architecture/decisions/0008-ollama-openwebui-local-ai.md, artifact_id: ADR-0008, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0009-ai.md, docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0008-ai-architecture.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0190, source_path: docs/02.architecture/decisions/adr-0009-tooling-services.md, target_path: docs/02.architecture/decisions/0009-tooling-services.md, artifact_id: ADR-0009, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0010-tooling.md, docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0009-tooling-architecture.md, docs/03.specs/spec-0010-tooling/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0191, source_path: docs/02.architecture/decisions/adr-0010-communication-services.md, target_path: docs/02.architecture/decisions/0010-communication-services.md, artifact_id: ADR-0010, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0011-communication.md, docs/02.architecture/descriptions/ad-0010-communication-architecture.md, docs/03.specs/spec-0011-communication/spec.md, infra/10-communication/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0192, source_path: docs/02.architecture/decisions/adr-0011-laboratory-services.md, target_path: docs/02.architecture/decisions/0011-laboratory-services.md, artifact_id: ADR-0011, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0012-laboratory.md, docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md, infra/11-laboratory/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0193, source_path: docs/02.architecture/decisions/adr-0015-analytics-engine-selection.md, target_path: docs/02.architecture/decisions/0015-analytics-engine-selection.md, artifact_id: ADR-0015, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0005-data-analytics.md, docs/02.architecture/descriptions/ad-0012-data-analytics-architecture.md, docs/03.specs/spec-0005-data-analytics/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0194, source_path: docs/02.architecture/decisions/adr-0016-open-webui-implementation.md, target_path: docs/02.architecture/decisions/0016-open-webui-implementation.md, artifact_id: ADR-0016, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0013-ai-open-webui.md, docs/02.architecture/descriptions/ad-0013-open-webui-architecture.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0195, source_path: docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md, target_path: docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md, artifact_id: ADR-0017, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0014-auth-optimization-hardening.md, docs/02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md, docs/03.specs/spec-0002-auth/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0196, source_path: docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0018, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, docs/03.specs/spec-0003-security/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0197, source_path: docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0019, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/spec-0004-data/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0198, source_path: docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0020, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/spec-0006-messaging/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0199, source_path: docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0021, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/spec-0007-observability/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0200, source_path: docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0022, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/spec-0008-workflow/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0201, source_path: docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0023, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/spec-0009-ai/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0202, source_path: docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0024, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/spec-0010-tooling/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0203, source_path: docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md, target_path: docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md, artifact_id: ADR-0025, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0204, source_path: docs/02.architecture/decisions/adr-0026-standardize-infra-net.md, target_path: docs/02.architecture/decisions/0026-standardize-infra-net.md, artifact_id: ADR-0026, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0023-standardize-infra-net.md, docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md, docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md, docs/03.specs/spec-0098-standardize-infra-net/spec.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0205, source_path: docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md, target_path: docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md, artifact_id: ADR-0027, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/providers/codex.md, docs/01.requirements/prd-0024-agent-governance-standardization.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0206, source_path: docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md, target_path: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md, artifact_id: ADR-0028, action: rename, owner_task: 6, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0025-operational-readiness-closure.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0207, source_path: docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md, target_path: docs/02.architecture/decisions/0029-workspace-governance-authority.md, artifact_id: adr-0029, action: rename, owner_task: 6, source_kind: planned-output, source_owner_task: 1, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0208, source_path: docs/03.specs/spec-0001-gateway/spec.md, target_path: docs/03.specs/0001-gateway/spec.md, artifact_id: SPEC-0001, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0001-gateway.md, docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md, docs/02.architecture/descriptions/ad-0001-gateway-architecture.md, docs/03.specs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0209, source_path: docs/03.specs/spec-0002-auth/spec.md, target_path: docs/03.specs/0002-auth/spec.md, artifact_id: SPEC-0002, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0002-auth.md, docs/01.requirements/prd-0014-auth-optimization-hardening.md, docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md, docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md, docs/02.architecture/descriptions/ad-0002-auth-architecture.md, docs/02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md, docs/03.specs/README.md, infra/02-auth/keycloak/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0210, source_path: docs/03.specs/spec-0003-security/spec.md, target_path: docs/03.specs/0003-security/spec.md, artifact_id: SPEC-0003, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0003-security.md, docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md, docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0003-security-architecture.md, docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/03-security/ops-0016-vault/runbook.md, infra/03-security/vault/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0211, source_path: docs/03.specs/spec-0004-data/spec.md, target_path: docs/03.specs/0004-data/spec.md, artifact_id: SPEC-0004, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0004-data.md, docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/decisions/adr-0004-postgresql-ha-patroni.md, docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0004-data-architecture.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/runbook.md, docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/runbook.md, docs/05.operations/catalog/04-data/ops-0028-management-database/runbook.md, docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md, docs/05.operations/catalog/04-data/ops-0035-storage-exhaustion/runbook.md, infra/04-data/lake-and-object/README.md, infra/04-data/lake-and-object/minio/README.md, infra/04-data/lake-and-object/seaweedfs/README.md, infra/04-data/operational/mng-db/README.md, infra/04-data/specialized/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0212, source_path: docs/03.specs/spec-0005-data-analytics/spec.md, target_path: docs/03.specs/0005-data-analytics/spec.md, artifact_id: SPEC-0005, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0005-data-analytics.md, docs/02.architecture/decisions/adr-0015-analytics-engine-selection.md, docs/02.architecture/descriptions/ad-0012-data-analytics-architecture.md, docs/03.specs/README.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/runbook.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/runbook.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0213, source_path: docs/03.specs/spec-0006-messaging/spec.md, target_path: docs/03.specs/0006-messaging/spec.md, artifact_id: SPEC-0006, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0006-messaging.md, docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md, docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0005-messaging-architecture.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0214, source_path: docs/03.specs/spec-0007-observability/spec.md, target_path: docs/03.specs/0007-observability/spec.md, artifact_id: SPEC-0007, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0007-observability.md, docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/decisions/adr-0006-lgtm-stack-selection.md, docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0006-observability-architecture.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0215, source_path: docs/03.specs/spec-0008-workflow/spec.md, target_path: docs/03.specs/0008-workflow/spec.md, artifact_id: SPEC-0008, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md, docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0007-workflow-architecture.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md, infra/07-workflow/airflow/README.md, infra/07-workflow/n8n/README.md, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0216, source_path: docs/03.specs/spec-0009-ai/spec.md, target_path: docs/03.specs/0009-ai/spec.md, artifact_id: SPEC-0009, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0009-ai.md, docs/01.requirements/prd-0013-ai-open-webui.md, docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md, docs/02.architecture/decisions/adr-0016-open-webui-implementation.md, docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0008-ai-architecture.md, docs/02.architecture/descriptions/ad-0013-open-webui-architecture.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0217, source_path: docs/03.specs/spec-0010-tooling/spec.md, target_path: docs/03.specs/0010-tooling/spec.md, artifact_id: SPEC-0010, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0010-tooling.md, docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/decisions/adr-0009-tooling-services.md, docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0009-tooling-architecture.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md, infra/09-tooling/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0218, source_path: docs/03.specs/spec-0011-communication/spec.md, target_path: docs/03.specs/0011-communication/spec.md, artifact_id: SPEC-0011, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0011-communication.md, docs/02.architecture/decisions/adr-0010-communication-services.md, docs/02.architecture/descriptions/ad-0010-communication-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, infra/10-communication/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0219, source_path: docs/03.specs/spec-0012-laboratory/spec.md, target_path: docs/03.specs/0012-laboratory/spec.md, artifact_id: SPEC-0012, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0012-laboratory.md, docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/decisions/adr-0011-laboratory-services.md, docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md, docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/README.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/runbook.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md, infra/11-laboratory/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0220, source_path: docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, target_path: docs/03.specs/0090-workspace-audit-2026-05/spec.md, artifact_id: SPEC-0090, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0091-workspace-doc-consistency-2026-05/spec.md, docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md, docs/05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0221, source_path: docs/03.specs/spec-0091-workspace-doc-consistency-2026-05/spec.md, target_path: docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md, artifact_id: SPEC-0091, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0222, source_path: docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, target_path: docs/03.specs/0092-workspace-consistency-2026-05b/spec.md, artifact_id: SPEC-0092, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0223, source_path: docs/03.specs/spec-0093-docs-taxonomy-agent-first-migration/spec.md, target_path: docs/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md, artifact_id: SPEC-0093, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0224, source_path: docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, target_path: docs/03.specs/0094-harness-agent-first-engineering/spec.md, artifact_id: SPEC-0094, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0225, source_path: docs/03.specs/spec-0095-infra-secrets-docs-refresh/spec.md, target_path: docs/03.specs/0095-infra-secrets-docs-refresh/spec.md, artifact_id: SPEC-0095, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/03.specs/README.md, docs/README.md, secrets/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0226, source_path: docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, target_path: docs/03.specs/0096-llm-wiki-agent-first-completion/spec.md, artifact_id: SPEC-0096, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0227, source_path: docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md, target_path: docs/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md, artifact_id: SPEC-0097, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0228, source_path: docs/03.specs/spec-0098-standardize-infra-net/spec.md, target_path: docs/03.specs/0098-standardize-infra-net/spec.md, artifact_id: SPEC-0098, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0023-standardize-infra-net.md, docs/02.architecture/decisions/adr-0026-standardize-infra-net.md, docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md, docs/03.specs/README.md, docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, docs/05.operations/catalog/12-infra-net/README.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0229, source_path: docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, target_path: docs/03.specs/0102-workspace-document-contract-audit-pack/spec.md, artifact_id: SPEC-0102, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0230, source_path: docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, target_path: docs/03.specs/0103-document-restructure-audit-contract-archive/spec.md, artifact_id: SPEC-0103, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0231, source_path: docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md, target_path: docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md, artifact_id: SPEC-0105, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, tests/validation/test_old_path_gate_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0232, source_path: docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, target_path: docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md, artifact_id: SPEC-0123, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-metadata-profiles.yaml, tests/validation/test_document_metadata.py, tests/validation/test_old_path_gate_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0233, source_path: docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, target_path: docs/03.specs/0123-agentic-engineering-audit-remediation/task.md, artifact_id: TASK-0123-01, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, tests/validation/test_old_path_gate_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0234, source_path: docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, target_path: docs/03.specs/0131-document-corpus-lifecycle-migration-foundation/spec.md, artifact_id: SPEC-0131, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0235, source_path: docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, target_path: docs/03.specs/0132-agent-governance-harness-convergence/spec.md, artifact_id: SPEC-0132, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, tests/validation/test_provider_native_surfaces.py, tests/validation/test_provider_surface_renderer.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0236, source_path: docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, target_path: docs/03.specs/0133-target-surface-contract-convergence/spec.md, artifact_id: SPEC-0133, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0237, source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, target_path: docs/03.specs/0134-agent-governance-canonical-convergence/plan.md, artifact_id: PLAN-0134, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0238, source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, target_path: docs/03.specs/0134-agent-governance-canonical-convergence/spec.md, artifact_id: SPEC-0134, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/project-memory-stewardship/SKILL.md, .agents/skills/provider-model-evaluation/SKILL.md, .claude/skills/project-memory-stewardship/SKILL.md, .claude/skills/provider-model-evaluation/SKILL.md, docs/00.agent-governance/agents/functions/provider-model-evaluation.md, docs/03.specs/README.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0239, source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, target_path: docs/03.specs/0134-agent-governance-canonical-convergence/task.md, artifact_id: TASK-0134-01, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0240, source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, target_path: docs/03.specs/0135-target-surface-delta-convergence/plan.md, artifact_id: PLAN-0135, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0241, source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, target_path: docs/03.specs/0135-target-surface-delta-convergence/spec.md, artifact_id: SPEC-0135, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0242, source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, target_path: docs/03.specs/0135-target-surface-delta-convergence/task.md, artifact_id: TASK-0135-01, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [.github/INDEX.md, docs/03.specs/README.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0243, source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md, artifact_id: PLAN-0136, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/spec.md, tests/validation/test_operations_catalog.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0244, source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md, artifact_id: SPEC-0136, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/spec.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/manifest.yaml, tests/validation/test_document_metadata.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0245, source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/task.md, artifact_id: TASK-0136-01, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/spec.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0246, source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md, target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/plan.md, artifact_id: PLAN-0152, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/task.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0247, source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md, target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/spec.md, artifact_id: SPEC-0152, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/task.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0248, source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/task.md, target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/task.md, artifact_id: TASK-0152-01, action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/README.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0249, source_path: docs/03.specs/137-agentic-research-pack-rebuild/spec.md, target_path: docs/03.specs/0137-agentic-research-pack-rebuild/spec.md, artifact_id: 'SPEC:137-AGENTIC-RESEARCH-PACK-REBUILD', action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/manifest.yaml, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0250, source_path: docs/04.execution/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-doc-traceability.sh, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0251, source_path: docs/04.execution/plans/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-doc-traceability.sh, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0252, source_path: docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, target_path: docs/03.specs/0137-agentic-research-pack-rebuild/plan.md, artifact_id: 'plan:2026-08-08-agentic-research-pack-rebuild', action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0253, source_path: docs/04.execution/tasks/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agent_output_eval.py, scripts/validation/check-doc-traceability.sh, scripts/validation/check-repo-contracts.sh, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0254, source_path: docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md, artifact_id: 'task:2026-08-08-agentic-research-pack-rebuild', action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/validation/agentic-research-gate9-evidence.py, scripts/validation/carry_owner_contract.py, scripts/validation/old_path_gate_contract.py, tests/validation/test_agentic_research_gate9_evidence.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0255, source_path: docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md, artifact_id: 'task:2026-08-11-agentic-research-pack-source-refresh', action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0256, source_path: docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md, artifact_id: 'task:2026-08-14-agentic-research-pack-deepening', action: rename, owner_task: 7, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0257, source_path: docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md, target_path: docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md, artifact_id: policy-0001, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0258, source_path: docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md, target_path: docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md, artifact_id: guide-0002, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/00-workspace/README.md, secrets/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0259, source_path: docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md, target_path: docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md, artifact_id: guide-0003, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0260, source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md, artifact_id: guide-0004, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0261, source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md, target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md, artifact_id: policy-0004, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0093-docs-taxonomy-agent-first-migration/spec.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0262, source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md, artifact_id: runbook-0004, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0263, source_path: docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, target_path: docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md, artifact_id: policy-0006, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0006-messaging/spec.md, docs/03.specs/spec-0007-observability/spec.md, docs/03.specs/spec-0008-workflow/spec.md, docs/03.specs/spec-0009-ai/spec.md, docs/03.specs/spec-0010-tooling/spec.md, docs/03.specs/spec-0012-laboratory/spec.md, docs/05.operations/catalog/00-workspace/README.md, scripts/lib/document_governance/links.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_links.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0264, source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md, target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md, artifact_id: guide-0007, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, docs/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0265, source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md, target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md, artifact_id: policy-0007, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, scripts/manifest.yaml, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0266, source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md, artifact_id: runbook-0007, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md, docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md, scripts/manifest.yaml, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0267, source_path: docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md, target_path: docs/05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md, artifact_id: guide-0008, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/README.md, examples/sample-web-service/README.md, examples/sample-web-service/service.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0268, source_path: docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md, target_path: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md, artifact_id: runbook-0009, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md, examples/sample-web-service/README.md, examples/sample-web-service/service.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0269, source_path: docs/05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md, target_path: docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md, artifact_id: guide-0010, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/05.operations/catalog/00-workspace/README.md, docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0270, source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md, target_path: docs/05.operations/catalog/01-gateway/0011-nginx/guide.md, artifact_id: guide-0011, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md, docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md, infra/01-gateway/nginx/README.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0271, source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md, target_path: docs/05.operations/catalog/01-gateway/0011-nginx/policy.md, artifact_id: policy-0011, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md, infra/01-gateway/nginx/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0272, source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md, target_path: docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md, artifact_id: runbook-0011, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md, docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md, docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md, infra/01-gateway/nginx/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0273, source_path: docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md, target_path: docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md, artifact_id: guide-0012, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/01-gateway/README.md, infra/01-gateway/README.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0274, source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md, target_path: docs/05.operations/catalog/01-gateway/0013-traefik/guide.md, artifact_id: guide-0013, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md, infra/01-gateway/traefik/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0275, source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md, target_path: docs/05.operations/catalog/01-gateway/0013-traefik/policy.md, artifact_id: policy-0013, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md, infra/01-gateway/traefik/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0276, source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md, target_path: docs/05.operations/catalog/01-gateway/0013-traefik/runbook.md, artifact_id: runbook-0013, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/01-gateway/README.md, docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md, docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md, infra/01-gateway/traefik/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0277, source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md, target_path: docs/05.operations/catalog/02-auth/0014-keycloak/guide.md, artifact_id: guide-0014, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md, infra/02-auth/keycloak/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0278, source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md, target_path: docs/05.operations/catalog/02-auth/0014-keycloak/policy.md, artifact_id: policy-0014, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md, infra/02-auth/keycloak/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0279, source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md, target_path: docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md, artifact_id: runbook-0014, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md, docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md, infra/02-auth/keycloak/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0280, source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md, target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md, artifact_id: guide-0015, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/policy.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/runbook.md, infra/02-auth/oauth2-proxy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0281, source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/policy.md, target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md, artifact_id: policy-0015, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/runbook.md, infra/02-auth/oauth2-proxy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0282, source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/runbook.md, target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md, artifact_id: runbook-0015, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/02-auth/README.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md, docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/policy.md, infra/02-auth/oauth2-proxy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0283, source_path: docs/05.operations/catalog/03-security/ops-0016-vault/guide.md, target_path: docs/05.operations/catalog/03-security/0016-vault/guide.md, artifact_id: guide-0016, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/03.specs/spec-0003-security/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/03-security/README.md, docs/05.operations/catalog/03-security/ops-0016-vault/policy.md, docs/05.operations/catalog/03-security/ops-0016-vault/runbook.md, infra/03-security/README.md, infra/03-security/vault/README.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0284, source_path: docs/05.operations/catalog/03-security/ops-0016-vault/policy.md, target_path: docs/05.operations/catalog/03-security/0016-vault/policy.md, artifact_id: policy-0016, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, docs/03.specs/spec-0003-security/spec.md, docs/05.operations/catalog/03-security/README.md, docs/05.operations/catalog/03-security/ops-0016-vault/guide.md, docs/05.operations/catalog/03-security/ops-0016-vault/runbook.md, infra/03-security/vault/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0285, source_path: docs/05.operations/catalog/03-security/ops-0016-vault/runbook.md, target_path: docs/05.operations/catalog/03-security/0016-vault/runbook.md, artifact_id: runbook-0016, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0015-security-optimization-hardening.md, docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md, docs/03.specs/spec-0003-security/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/03-security/README.md, docs/05.operations/catalog/03-security/ops-0016-vault/guide.md, docs/05.operations/catalog/03-security/ops-0016-vault/policy.md, infra/03-security/vault/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0286, source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md, target_path: docs/05.operations/catalog/04-data/0017-influxdb/guide.md, artifact_id: guide-0017, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/runbook.md, infra/04-data/analytics/influxdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0287, source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md, target_path: docs/05.operations/catalog/04-data/0017-influxdb/policy.md, artifact_id: policy-0017, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/runbook.md, infra/04-data/analytics/influxdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0288, source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/runbook.md, target_path: docs/05.operations/catalog/04-data/0017-influxdb/runbook.md, artifact_id: runbook-0017, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0005-data-analytics/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md, infra/04-data/analytics/influxdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0289, source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md, target_path: docs/05.operations/catalog/04-data/0018-ksqldb/guide.md, artifact_id: guide-0018, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md, docs/05.operations/catalog/05-messaging/README.md, infra/04-data/analytics/ksql/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0290, source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md, target_path: docs/05.operations/catalog/04-data/0018-ksqldb/policy.md, artifact_id: policy-0018, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md, infra/04-data/analytics/ksql/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0291, source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md, target_path: docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md, artifact_id: runbook-0018, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md, infra/04-data/analytics/ksql/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0292, source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/guide.md, target_path: docs/05.operations/catalog/04-data/0019-opensearch/guide.md, artifact_id: guide-0019, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/policy.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/runbook.md, infra/04-data/analytics/opensearch/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0293, source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/policy.md, target_path: docs/05.operations/catalog/04-data/0019-opensearch/policy.md, artifact_id: policy-0019, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/guide.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/runbook.md, infra/04-data/analytics/opensearch/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0294, source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/runbook.md, target_path: docs/05.operations/catalog/04-data/0019-opensearch/runbook.md, artifact_id: runbook-0019, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/guide.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/policy.md, infra/04-data/analytics/opensearch/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0295, source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/guide.md, target_path: docs/05.operations/catalog/04-data/0020-starrocks/guide.md, artifact_id: guide-0020, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/policy.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/runbook.md, infra/04-data/analytics/warehouses/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0296, source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/policy.md, target_path: docs/05.operations/catalog/04-data/0020-starrocks/policy.md, artifact_id: policy-0020, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/guide.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/runbook.md, infra/04-data/analytics/warehouses/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0297, source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/runbook.md, target_path: docs/05.operations/catalog/04-data/0020-starrocks/runbook.md, artifact_id: runbook-0020, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/guide.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/policy.md, infra/04-data/analytics/warehouses/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0298, source_path: docs/05.operations/catalog/04-data/ops-0021-backup-and-restore/policy.md, target_path: docs/05.operations/catalog/04-data/0021-backup-and-restore/policy.md, artifact_id: policy-0021, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0035-storage-exhaustion/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0299, source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/guide.md, target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md, artifact_id: guide-0022, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/policy.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/runbook.md, infra/04-data/cache-and-kv/README.md, infra/04-data/cache-and-kv/valkey-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0300, source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/policy.md, target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md, artifact_id: policy-0022, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/guide.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/runbook.md, infra/04-data/cache-and-kv/README.md, infra/04-data/cache-and-kv/valkey-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0301, source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/runbook.md, target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md, artifact_id: runbook-0022, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/guide.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/policy.md, infra/04-data/cache-and-kv/README.md, infra/04-data/cache-and-kv/valkey-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0302, source_path: docs/05.operations/catalog/04-data/ops-0023-minio/guide.md, target_path: docs/05.operations/catalog/04-data/0023-minio/guide.md, artifact_id: guide-0023, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0023-minio/policy.md, docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md, infra/04-data/lake-and-object/minio/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0303, source_path: docs/05.operations/catalog/04-data/ops-0023-minio/policy.md, target_path: docs/05.operations/catalog/04-data/0023-minio/policy.md, artifact_id: policy-0023, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0023-minio/guide.md, docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md, infra/04-data/lake-and-object/minio/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0304, source_path: docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md, target_path: docs/05.operations/catalog/04-data/0023-minio/runbook.md, artifact_id: runbook-0023, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0023-minio/guide.md, docs/05.operations/catalog/04-data/ops-0023-minio/policy.md, infra/04-data/lake-and-object/minio/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0305, source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/guide.md, target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md, artifact_id: guide-0024, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/policy.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/runbook.md, infra/04-data/lake-and-object/seaweedfs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0306, source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/policy.md, target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md, artifact_id: policy-0024, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/guide.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/runbook.md, infra/04-data/lake-and-object/seaweedfs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0307, source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/runbook.md, target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md, artifact_id: runbook-0024, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/guide.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/policy.md, infra/04-data/lake-and-object/seaweedfs/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0308, source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/guide.md, target_path: docs/05.operations/catalog/04-data/0025-cassandra/guide.md, artifact_id: guide-0025, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/policy.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/runbook.md, infra/04-data/nosql/cassandra/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0309, source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/policy.md, target_path: docs/05.operations/catalog/04-data/0025-cassandra/policy.md, artifact_id: policy-0025, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/guide.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/runbook.md, infra/04-data/nosql/cassandra/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0310, source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/runbook.md, target_path: docs/05.operations/catalog/04-data/0025-cassandra/runbook.md, artifact_id: runbook-0025, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/guide.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/policy.md, infra/04-data/nosql/cassandra/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0311, source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md, target_path: docs/05.operations/catalog/04-data/0026-couchdb/guide.md, artifact_id: guide-0026, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md, infra/04-data/nosql/couchdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0312, source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md, target_path: docs/05.operations/catalog/04-data/0026-couchdb/policy.md, artifact_id: policy-0026, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md, infra/04-data/nosql/couchdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0313, source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md, target_path: docs/05.operations/catalog/04-data/0026-couchdb/runbook.md, artifact_id: runbook-0026, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md, infra/04-data/nosql/couchdb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0314, source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/guide.md, target_path: docs/05.operations/catalog/04-data/0027-mongodb/guide.md, artifact_id: guide-0027, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/policy.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/runbook.md, infra/04-data/nosql/mongodb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0315, source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/policy.md, target_path: docs/05.operations/catalog/04-data/0027-mongodb/policy.md, artifact_id: policy-0027, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/guide.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/runbook.md, infra/04-data/nosql/mongodb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0316, source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/runbook.md, target_path: docs/05.operations/catalog/04-data/0027-mongodb/runbook.md, artifact_id: runbook-0027, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/guide.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/policy.md, infra/04-data/nosql/mongodb/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0317, source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/guide.md, target_path: docs/05.operations/catalog/04-data/0028-management-database/guide.md, artifact_id: guide-0028, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md, docs/05.operations/catalog/04-data/ops-0028-management-database/runbook.md, infra/04-data/operational/mng-db/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0318, source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md, target_path: docs/05.operations/catalog/04-data/0028-management-database/policy.md, artifact_id: policy-0028, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0028-management-database/guide.md, docs/05.operations/catalog/04-data/ops-0028-management-database/runbook.md, infra/04-data/operational/mng-db/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0319, source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/runbook.md, target_path: docs/05.operations/catalog/04-data/0028-management-database/runbook.md, artifact_id: runbook-0028, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0028-management-database/guide.md, docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md, infra/04-data/operational/mng-db/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0320, source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/guide.md, target_path: docs/05.operations/catalog/04-data/0029-supabase/guide.md, artifact_id: guide-0029, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0029-supabase/policy.md, docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md, infra/04-data/operational/supabase/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0321, source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/policy.md, target_path: docs/05.operations/catalog/04-data/0029-supabase/policy.md, artifact_id: policy-0029, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0029-supabase/guide.md, docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md, infra/04-data/operational/supabase/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0322, source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md, target_path: docs/05.operations/catalog/04-data/0029-supabase/runbook.md, artifact_id: runbook-0029, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0029-supabase/guide.md, docs/05.operations/catalog/04-data/ops-0029-supabase/policy.md, infra/04-data/operational/supabase/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0323, source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/guide.md, artifact_id: guide-0030, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/spec-0004-data/spec.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/policy.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0324, source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/policy.md, artifact_id: policy-0030, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/spec-0004-data/spec.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/guide.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0325, source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/runbook.md, artifact_id: runbook-0030, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0016-data-optimization-hardening.md, docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md, docs/03.specs/spec-0004-data/spec.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/guide.md, docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0326, source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md, target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md, artifact_id: guide-0031, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md, infra/04-data/relational/README.md, infra/04-data/relational/postgresql-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0327, source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md, target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/policy.md, artifact_id: policy-0031, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md, infra/04-data/relational/postgresql-cluster/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0328, source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md, target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md, artifact_id: runbook-0031, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md, docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md, infra/04-data/relational/postgresql-cluster/README.md, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0329, source_path: docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md, target_path: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md, artifact_id: runbook-0032, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, scripts/manifest.yaml, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0330, source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md, target_path: docs/05.operations/catalog/04-data/0033-neo4j/guide.md, artifact_id: guide-0033, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md, infra/04-data/specialized/neo4j/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0331, source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md, target_path: docs/05.operations/catalog/04-data/0033-neo4j/policy.md, artifact_id: policy-0033, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md, infra/04-data/specialized/neo4j/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0332, source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md, target_path: docs/05.operations/catalog/04-data/0033-neo4j/runbook.md, artifact_id: runbook-0033, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md, infra/04-data/specialized/neo4j/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0333, source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/guide.md, target_path: docs/05.operations/catalog/04-data/0034-qdrant/guide.md, artifact_id: guide-0034, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/policy.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/runbook.md, infra/04-data/specialized/qdrant/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0334, source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/policy.md, target_path: docs/05.operations/catalog/04-data/0034-qdrant/policy.md, artifact_id: policy-0034, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/guide.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/runbook.md, infra/04-data/specialized/qdrant/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0335, source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/runbook.md, target_path: docs/05.operations/catalog/04-data/0034-qdrant/runbook.md, artifact_id: runbook-0034, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/guide.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/policy.md, infra/04-data/specialized/qdrant/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0336, source_path: docs/05.operations/catalog/04-data/ops-0035-storage-exhaustion/runbook.md, target_path: docs/05.operations/catalog/04-data/0035-storage-exhaustion/runbook.md, artifact_id: runbook-0035, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/04-data/README.md, docs/05.operations/catalog/04-data/ops-0021-backup-and-restore/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0337, source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md, target_path: docs/05.operations/catalog/05-messaging/0036-kafka/guide.md, artifact_id: guide-0036, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/policy.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md, infra/05-messaging/README.md, infra/05-messaging/kafka/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0338, source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/policy.md, target_path: docs/05.operations/catalog/05-messaging/0036-kafka/policy.md, artifact_id: policy-0036, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md, infra/05-messaging/kafka/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0339, source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md, target_path: docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md, artifact_id: runbook-0036, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md, docs/05.operations/catalog/05-messaging/ops-0036-kafka/policy.md, infra/05-messaging/kafka/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0340, source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md, artifact_id: guide-0037, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/spec-0006-messaging/spec.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0341, source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md, artifact_id: policy-0037, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/spec-0006-messaging/spec.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0342, source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/runbook.md, artifact_id: runbook-0037, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0017-messaging-optimization-hardening.md, docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md, docs/03.specs/spec-0006-messaging/spec.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md, docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0343, source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/guide.md, target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md, artifact_id: guide-0038, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/policy.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/runbook.md, infra/05-messaging/README.md, infra/05-messaging/rabbitmq/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0344, source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/policy.md, target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md, artifact_id: policy-0038, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/guide.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/runbook.md, infra/05-messaging/rabbitmq/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0345, source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/runbook.md, target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md, artifact_id: runbook-0038, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/05-messaging/README.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/guide.md, docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/policy.md, infra/05-messaging/rabbitmq/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0346, source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/guide.md, target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/guide.md, artifact_id: guide-0039, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/policy.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/runbook.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, infra/06-observability/alertmanager/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0347, source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/policy.md, target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/policy.md, artifact_id: policy-0039, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/guide.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/runbook.md, infra/06-observability/alertmanager/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0348, source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/runbook.md, target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/runbook.md, artifact_id: runbook-0039, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/guide.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/policy.md, infra/06-observability/alertmanager/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0349, source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md, target_path: docs/05.operations/catalog/06-observability/0040-alloy/guide.md, artifact_id: guide-0040, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/runbook.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md, infra/06-observability/README.md, infra/06-observability/alloy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0350, source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md, target_path: docs/05.operations/catalog/06-observability/0040-alloy/policy.md, artifact_id: policy-0040, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/runbook.md, infra/06-observability/alloy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0351, source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/runbook.md, target_path: docs/05.operations/catalog/06-observability/0040-alloy/runbook.md, artifact_id: runbook-0040, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md, infra/06-observability/alloy/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0352, source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md, target_path: docs/05.operations/catalog/06-observability/0041-grafana/guide.md, artifact_id: guide-0041, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md, infra/06-observability/grafana/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0353, source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md, target_path: docs/05.operations/catalog/06-observability/0041-grafana/policy.md, artifact_id: policy-0041, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md, infra/06-observability/grafana/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0354, source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md, target_path: docs/05.operations/catalog/06-observability/0041-grafana/runbook.md, artifact_id: runbook-0041, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md, infra/06-observability/grafana/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0355, source_path: docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, target_path: docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md, artifact_id: guide-0042, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, infra/06-observability/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0356, source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md, target_path: docs/05.operations/catalog/06-observability/0043-loki/guide.md, artifact_id: guide-0043, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md, docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, infra/06-observability/loki/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0357, source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md, target_path: docs/05.operations/catalog/06-observability/0043-loki/policy.md, artifact_id: policy-0043, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md, docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, infra/06-observability/loki/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0358, source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md, target_path: docs/05.operations/catalog/06-observability/0043-loki/runbook.md, artifact_id: runbook-0043, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md, docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md, infra/06-observability/loki/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0359, source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/guide.md, artifact_id: guide-0044, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/spec-0007-observability/spec.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0360, source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/policy.md, artifact_id: policy-0044, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/spec-0007-observability/spec.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/guide.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0361, source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md, artifact_id: runbook-0044, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0018-observability-optimization-hardening.md, docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md, docs/03.specs/spec-0007-observability/spec.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/guide.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0362, source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/guide.md, target_path: docs/05.operations/catalog/06-observability/0045-prometheus/guide.md, artifact_id: guide-0045, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/runbook.md, infra/06-observability/prometheus/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0363, source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md, target_path: docs/05.operations/catalog/06-observability/0045-prometheus/policy.md, artifact_id: policy-0045, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/guide.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/runbook.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, infra/06-observability/prometheus/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0364, source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/runbook.md, target_path: docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md, artifact_id: runbook-0045, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/guide.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md, infra/06-observability/prometheus/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0365, source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/guide.md, target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/guide.md, artifact_id: guide-0046, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/policy.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/runbook.md, infra/06-observability/pushgateway/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0366, source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/policy.md, target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/policy.md, artifact_id: policy-0046, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/guide.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/runbook.md, infra/06-observability/pushgateway/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0367, source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/runbook.md, target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/runbook.md, artifact_id: runbook-0046, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/guide.md, docs/05.operations/catalog/06-observability/ops-0046-pushgateway/policy.md, infra/06-observability/pushgateway/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0368, source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md, target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/guide.md, artifact_id: guide-0047, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, infra/06-observability/pyroscope/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0369, source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md, target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/policy.md, artifact_id: policy-0047, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, infra/06-observability/pyroscope/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0370, source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md, target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/runbook.md, artifact_id: runbook-0047, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md, infra/06-observability/pyroscope/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0371, source_path: docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, target_path: docs/05.operations/catalog/06-observability/0048-telemetry-retention/policy.md, artifact_id: policy-0048, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md, docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0372, source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md, target_path: docs/05.operations/catalog/06-observability/0049-tempo/guide.md, artifact_id: guide-0049, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md, infra/06-observability/tempo/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0373, source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md, target_path: docs/05.operations/catalog/06-observability/0049-tempo/policy.md, artifact_id: policy-0049, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md, infra/06-observability/tempo/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0374, source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md, target_path: docs/05.operations/catalog/06-observability/0049-tempo/runbook.md, artifact_id: runbook-0049, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/06-observability/README.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md, infra/06-observability/tempo/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0375, source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md, target_path: docs/05.operations/catalog/07-workflow/0050-airflow/guide.md, artifact_id: guide-0050, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md, docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md, infra/07-workflow/airflow/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0376, source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md, target_path: docs/05.operations/catalog/07-workflow/0050-airflow/policy.md, artifact_id: policy-0050, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md, infra/07-workflow/airflow/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0377, source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md, target_path: docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md, artifact_id: runbook-0050, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md, docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md, docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md, docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md, infra/07-workflow/airflow/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0378, source_path: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md, target_path: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/guide.md, artifact_id: guide-0051, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md, infra/07-workflow/README.md, infra/07-workflow/airflow/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0379, source_path: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md, target_path: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md, artifact_id: policy-0052, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0380, source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md, target_path: docs/05.operations/catalog/07-workflow/0053-n8n/guide.md, artifact_id: guide-0053, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/policy.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md, infra/07-workflow/README.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0381, source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/policy.md, target_path: docs/05.operations/catalog/07-workflow/0053-n8n/policy.md, artifact_id: policy-0053, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0382, source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md, target_path: docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md, artifact_id: runbook-0053, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0008-workflow.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md, docs/05.operations/catalog/07-workflow/ops-0053-n8n/policy.md, infra/07-workflow/n8n/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0383, source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md, artifact_id: guide-0054, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/spec-0008-workflow/spec.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0384, source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md, artifact_id: policy-0054, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/spec-0008-workflow/spec.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0385, source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md, artifact_id: runbook-0054, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0019-workflow-optimization-hardening.md, docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md, docs/03.specs/spec-0008-workflow/spec.md, docs/05.operations/catalog/07-workflow/README.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md, docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0386, source_path: docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md, target_path: docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md, artifact_id: runbook-0055, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/08-ai/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0387, source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/guide.md, target_path: docs/05.operations/catalog/08-ai/0056-ollama/guide.md, artifact_id: guide-0056, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/policy.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md, infra/08-ai/README.md, infra/08-ai/ollama/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0388, source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/policy.md, target_path: docs/05.operations/catalog/08-ai/0056-ollama/policy.md, artifact_id: policy-0056, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/guide.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md, infra/08-ai/ollama/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0389, source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md, target_path: docs/05.operations/catalog/08-ai/0056-ollama/runbook.md, artifact_id: runbook-0056, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/guide.md, docs/05.operations/catalog/08-ai/ops-0056-ollama/policy.md, infra/08-ai/ollama/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0390, source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md, target_path: docs/05.operations/catalog/08-ai/0057-open-webui/guide.md, artifact_id: guide-0057, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md, docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md, infra/08-ai/README.md, infra/08-ai/open-webui/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0391, source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md, target_path: docs/05.operations/catalog/08-ai/0057-open-webui/policy.md, artifact_id: policy-0057, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md, docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md, infra/08-ai/open-webui/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0392, source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md, target_path: docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md, artifact_id: runbook-0057, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md, docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md, docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md, infra/08-ai/open-webui/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0393, source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/guide.md, artifact_id: guide-0058, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0394, source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/policy.md, artifact_id: policy-0058, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0395, source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md, artifact_id: runbook-0058, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0020-ai-optimization-hardening.md, docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md, docs/03.specs/spec-0009-ai/spec.md, docs/05.operations/catalog/08-ai/README.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md, docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0396, source_path: docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md, target_path: docs/05.operations/catalog/08-ai/0059-rag-workflow/guide.md, artifact_id: guide-0059, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/08-ai/README.md, infra/08-ai/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0397, source_path: docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, target_path: docs/05.operations/catalog/09-tooling/0060-iac-deployment/policy.md, artifact_id: policy-0060, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0398, source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md, target_path: docs/05.operations/catalog/09-tooling/0061-k6/guide.md, artifact_id: guide-0061, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, infra/09-tooling/k6/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0399, source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md, target_path: docs/05.operations/catalog/09-tooling/0061-k6/policy.md, artifact_id: policy-0061, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md, infra/09-tooling/k6/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0400, source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0061-k6/runbook.md, artifact_id: runbook-0061, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md, infra/09-tooling/k6/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0401, source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md, target_path: docs/05.operations/catalog/09-tooling/0062-locust/guide.md, artifact_id: guide-0062, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, infra/09-tooling/locust/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0402, source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md, target_path: docs/05.operations/catalog/09-tooling/0062-locust/policy.md, artifact_id: policy-0062, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md, infra/09-tooling/locust/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0403, source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0062-locust/runbook.md, artifact_id: runbook-0062, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md, infra/09-tooling/locust/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0404, source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md, artifact_id: guide-0063, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/spec-0010-tooling/spec.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0405, source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md, artifact_id: policy-0063, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/spec-0010-tooling/spec.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0406, source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md, artifact_id: runbook-0063, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0021-tooling-optimization-hardening.md, docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md, docs/03.specs/spec-0010-tooling/spec.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0407, source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/guide.md, artifact_id: guide-0064, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/policy.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0408, source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/policy.md, target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/policy.md, artifact_id: policy-0064, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0409, source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/runbook.md, artifact_id: runbook-0064, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0410, source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/guide.md, target_path: docs/05.operations/catalog/09-tooling/0065-registry/guide.md, artifact_id: guide-0065, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/policy.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/runbook.md, infra/09-tooling/registry/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0411, source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/policy.md, target_path: docs/05.operations/catalog/09-tooling/0065-registry/policy.md, artifact_id: policy-0065, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/guide.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/runbook.md, infra/09-tooling/registry/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0412, source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0065-registry/runbook.md, artifact_id: runbook-0065, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/guide.md, docs/05.operations/catalog/09-tooling/ops-0065-registry/policy.md, infra/09-tooling/registry/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0413, source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md, target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/guide.md, artifact_id: guide-0066, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md, infra/09-tooling/sonarqube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0414, source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md, target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/policy.md, artifact_id: policy-0066, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md, infra/09-tooling/sonarqube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0415, source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/runbook.md, artifact_id: runbook-0066, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md, infra/09-tooling/sonarqube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0416, source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/guide.md, target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md, artifact_id: guide-0067, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/policy.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/runbook.md, infra/09-tooling/syncthing/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0417, source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/policy.md, target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md, artifact_id: policy-0067, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/guide.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/runbook.md, infra/09-tooling/syncthing/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0418, source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md, artifact_id: runbook-0067, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/guide.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/policy.md, infra/09-tooling/syncthing/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0419, source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/guide.md, target_path: docs/05.operations/catalog/09-tooling/0068-terraform/guide.md, artifact_id: guide-0068, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/policy.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md, infra/09-tooling/terraform/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0420, source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/policy.md, target_path: docs/05.operations/catalog/09-tooling/0068-terraform/policy.md, artifact_id: policy-0068, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/guide.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md, infra/09-tooling/terraform/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0421, source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md, artifact_id: runbook-0068, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/guide.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/policy.md, infra/09-tooling/terraform/README.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0422, source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/guide.md, target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md, artifact_id: guide-0069, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/policy.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/runbook.md, infra/09-tooling/terrakube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0423, source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/policy.md, target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md, artifact_id: policy-0069, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/guide.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/runbook.md, infra/09-tooling/terrakube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0424, source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/runbook.md, target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md, artifact_id: runbook-0069, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/09-tooling/README.md, docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/guide.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/policy.md, infra/09-tooling/terrakube/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0425, source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md, target_path: docs/05.operations/catalog/10-communication/0070-mail/guide.md, artifact_id: guide-0070, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0011-communication/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/10-communication/README.md, docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md, docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, infra/10-communication/README.md, infra/10-communication/mail/README.md, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0426, source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md, target_path: docs/05.operations/catalog/10-communication/0070-mail/policy.md, artifact_id: policy-0070, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0011-communication/spec.md, docs/05.operations/catalog/10-communication/README.md, docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md, docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, infra/10-communication/README.md, infra/10-communication/mail/README.md, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0427, source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, target_path: docs/05.operations/catalog/10-communication/0070-mail/runbook.md, artifact_id: runbook-0070, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0011-communication/spec.md, docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/10-communication/README.md, docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md, docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md, infra/10-communication/README.md, infra/10-communication/mail/README.md, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0428, source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/guide.md, artifact_id: guide-0071, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md, infra/11-laboratory/dashboard/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0429, source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/policy.md, artifact_id: policy-0071, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md, infra/11-laboratory/dashboard/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0430, source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/runbook.md, artifact_id: runbook-0071, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md, docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md, infra/11-laboratory/dashboard/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0431, source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/guide.md, artifact_id: guide-0072, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md, infra/11-laboratory/dozzle/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0432, source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/policy.md, artifact_id: policy-0072, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md, infra/11-laboratory/dozzle/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0433, source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/runbook.md, artifact_id: runbook-0072, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md, docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md, infra/11-laboratory/dozzle/README.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0434, source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md, artifact_id: guide-0073, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/policy.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/runbook.md, infra/11-laboratory/open-notebook/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0435, source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md, artifact_id: policy-0073, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/guide.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/runbook.md, infra/11-laboratory/open-notebook/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0436, source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md, artifact_id: runbook-0073, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/guide.md, docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/policy.md, infra/11-laboratory/open-notebook/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0437, source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md, artifact_id: guide-0074, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0438, source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md, artifact_id: policy-0074, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0439, source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md, artifact_id: runbook-0074, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md, docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md, docs/03.specs/spec-0012-laboratory/spec.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md, docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0440, source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md, artifact_id: guide-0075, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md, infra/11-laboratory/portainer/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0441, source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md, artifact_id: policy-0075, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md, infra/11-laboratory/portainer/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0442, source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md, artifact_id: runbook-0075, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md, docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md, infra/11-laboratory/portainer/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0443, source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md, target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/guide.md, artifact_id: guide-0076, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md, infra/11-laboratory/redisinsight/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0444, source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md, target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/policy.md, artifact_id: policy-0076, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md, infra/11-laboratory/redisinsight/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0445, source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md, target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md, artifact_id: runbook-0076, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md, docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md, infra/11-laboratory/redisinsight/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0446, source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md, target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md, artifact_id: guide-0077, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0098-standardize-infra-net/spec.md, docs/05.operations/catalog/12-infra-net/README.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0447, source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md, target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md, artifact_id: policy-0077, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0098-standardize-infra-net/spec.md, docs/05.operations/catalog/12-infra-net/README.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0448, source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md, target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md, artifact_id: runbook-0077, action: rename, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0098-standardize-infra-net/spec.md, docs/05.operations/catalog/12-infra-net/README.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md, docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0449, source_path: docs/05.operations/releases/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 8, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/05.operations/README.md, docs/05.operations/catalog/10-communication/README.md, docs/05.operations/catalog/11-laboratory/README.md, docs/05.operations/catalog/12-infra-net/README.md, docs/05.operations/catalog/README.md, docs/99.templates/support/document-metadata-profiles.yaml, tests/validation/test_document_metadata.py, tests/validation/test_operations_catalog.py, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0450, source_path: docs/90.references/audits/ref-0001-readme.md, target_path: docs/90.references/audits/0001-readme/README.md, artifact_id: AUD-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0451, source_path: docs/90.references/audits/ref-0002-automation-coverage-map.md, target_path: docs/90.references/audits/0002-automation-coverage-map/README.md, artifact_id: AUD-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0452, source_path: docs/90.references/audits/ref-0003-ci-qa-parser-graphify-decision.md, target_path: docs/90.references/audits/0003-ci-qa-parser-graphify-decision/README.md, artifact_id: AUD-0003, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0453, source_path: docs/90.references/audits/ref-0004-contract-governance-map.md, target_path: docs/90.references/audits/0004-contract-governance-map/README.md, artifact_id: AUD-0004, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0454, source_path: docs/90.references/audits/ref-0005-frontmatter-inventory.md, target_path: docs/90.references/audits/0005-frontmatter-inventory/README.md, artifact_id: AUD-0005, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0455, source_path: docs/90.references/audits/ref-0006-frontmatter-routing-profile.md, target_path: docs/90.references/audits/0006-frontmatter-routing-profile/README.md, artifact_id: AUD-0006, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0456, source_path: docs/90.references/audits/ref-0007-gap-register.md, target_path: docs/90.references/audits/0007-gap-register/README.md, artifact_id: AUD-0007, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0457, source_path: docs/90.references/audits/ref-0008-historical-evidence-preservation.md, target_path: docs/90.references/audits/0008-historical-evidence-preservation/README.md, artifact_id: AUD-0008, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0458, source_path: docs/90.references/audits/ref-0009-readme-profile-inventory.md, target_path: docs/90.references/audits/0009-readme-profile-inventory/README.md, artifact_id: AUD-0009, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0459, source_path: docs/90.references/audits/ref-0010-section-profile-inventory.md, target_path: docs/90.references/audits/0010-section-profile-inventory/README.md, artifact_id: AUD-0010, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0460, source_path: docs/90.references/audits/ref-0011-template-application-gaps.md, target_path: docs/90.references/audits/0011-template-application-gaps/README.md, artifact_id: AUD-0011, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0461, source_path: docs/90.references/audits/ref-0012-readme.md, target_path: docs/90.references/audits/0012-readme/README.md, artifact_id: AUD-0012, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0462, source_path: docs/90.references/audits/ref-0013-ci-qa-formatting-contract.md, target_path: docs/90.references/audits/0013-ci-qa-formatting-contract/README.md, artifact_id: AUD-0013, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0463, source_path: docs/90.references/audits/ref-0014-frontmatter-profile-inventory.md, target_path: docs/90.references/audits/0014-frontmatter-profile-inventory/README.md, artifact_id: AUD-0014, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0464, source_path: docs/90.references/audits/ref-0015-operations-bucket-restructure.md, target_path: docs/90.references/audits/0015-operations-bucket-restructure/README.md, artifact_id: AUD-0015, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0465, source_path: docs/90.references/audits/ref-0016-restructure-gap-register.md, target_path: docs/90.references/audits/0016-restructure-gap-register/README.md, artifact_id: AUD-0016, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0466, source_path: docs/90.references/audits/ref-0017-sdlc-spec-archive-candidates.md, target_path: docs/90.references/audits/0017-sdlc-spec-archive-candidates/README.md, artifact_id: AUD-0017, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0467, source_path: docs/90.references/audits/ref-0018-template-contract-drift.md, target_path: docs/90.references/audits/0018-template-contract-drift/README.md, artifact_id: AUD-0018, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0468, source_path: docs/90.references/audits/ref-0019-readme.md, target_path: docs/90.references/audits/0019-readme/README.md, artifact_id: AUD-0019, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0469, source_path: docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md, target_path: docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md, artifact_id: AUD-0020, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0470, source_path: docs/90.references/audits/ref-0021-automation-candidates.md, target_path: docs/90.references/audits/0021-automation-candidates/README.md, artifact_id: AUD-0021, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agentic-audit-semantic-contract.json, tests/validation/test_security_automation_readiness.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0471, source_path: docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md, target_path: docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md, artifact_id: AUD-0022, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0472, source_path: docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md, target_path: docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md, artifact_id: AUD-0023, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/frontmatter-contract.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0473, source_path: docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md, target_path: docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md, artifact_id: AUD-0024, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agentic-audit-semantic-contract.json, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0474, source_path: docs/90.references/audits/ref-0025-harness-engineering-implementation.md, target_path: docs/90.references/audits/0025-harness-engineering-implementation/README.md, artifact_id: AUD-0025, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0475, source_path: docs/90.references/audits/ref-0026-implementation-overview.md, target_path: docs/90.references/audits/0026-implementation-overview/README.md, artifact_id: AUD-0026, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agentic-audit-semantic-contract.json], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0476, source_path: docs/90.references/audits/ref-0027-loop-engineering-implementation.md, target_path: docs/90.references/audits/0027-loop-engineering-implementation/README.md, artifact_id: AUD-0027, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0477, source_path: docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md, target_path: docs/90.references/audits/0028-provider-harness-loop-implementation/README.md, artifact_id: AUD-0028, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/90.references/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0478, source_path: docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md, target_path: docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md, artifact_id: AUD-0029, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0479, source_path: docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md, target_path: docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md, artifact_id: AUD-0030, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agentic-audit-semantic-contract.json], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0480, source_path: docs/90.references/audits/ref-0031-security-framework-maturity.md, target_path: docs/90.references/audits/0031-security-framework-maturity/README.md, artifact_id: AUD-0031, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_security_automation_readiness.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0481, source_path: docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md, target_path: docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md, artifact_id: AUD-0032, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0482, source_path: docs/90.references/audits/ref-0033-readme.md, target_path: docs/90.references/audits/0033-readme/README.md, artifact_id: AUD-0033, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, scripts/validation/check-agentic-audit-semantic-freshness.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0483, source_path: docs/90.references/audits/ref-0034-agent-catalog-audit.md, target_path: docs/90.references/audits/0034-agent-catalog-audit/README.md, artifact_id: AUD-0034, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0484, source_path: docs/90.references/audits/ref-0035-automation-candidates.md, target_path: docs/90.references/audits/0035-automation-candidates/README.md, artifact_id: AUD-0035, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0485, source_path: docs/90.references/audits/ref-0036-harness-loop-audit.md, target_path: docs/90.references/audits/0036-harness-loop-audit/README.md, artifact_id: AUD-0036, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0486, source_path: docs/90.references/audits/ref-0037-implementation-overview.md, target_path: docs/90.references/audits/0037-implementation-overview/README.md, artifact_id: AUD-0037, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0487, source_path: docs/90.references/audits/ref-0038-sdlc-qa-security-audit.md, target_path: docs/90.references/audits/0038-sdlc-qa-security-audit/README.md, artifact_id: AUD-0038, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0488, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/README.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0489, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/agent-instructions-vibe-coding.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0490, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/agent-model-selection.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0491, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/ai-agent-catalogs.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0492, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/automation-pipeline-workflow.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0493, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/docker-compose-infrastructure.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0494, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/document-metadata-lifecycle.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0495, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/documentation-architecture.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0496, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/harness-engineering.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0497, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/llm-wiki-system.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0498, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/loop-engineering.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0499, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/memory-hierarchy.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0500, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/provider-implementation-comparison.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0501, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/provider-model-landscape.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0502, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/quality-ci-formatting.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0503, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/scope-application-matrix.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0504, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/sdlc-document-roles.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0505, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/security-governance.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0506, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/spec-driven-sdlc.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0507, source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md, target_path: docs/90.references/research/0001-agentic-research-pack-refresh/workspace-baseline.md, artifact_id: RES-0001, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0508, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/README.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0509, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/agent-instructions-vibe-coding.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0510, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/agent-model-selection.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0511, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/ai-agent-catalogs.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0512, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/automation-pipeline-workflow.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0513, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/docker-compose-infrastructure.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0514, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/document-metadata-lifecycle.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0515, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/documentation-architecture.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0516, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/harness-engineering.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0517, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/llm-wiki-system.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0518, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/loop-engineering.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0519, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/memory-hierarchy.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/memory-hierarchy.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0520, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/provider-implementation-comparison.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0521, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/provider-model-landscape.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0522, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/quality-ci-formatting.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0523, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0524, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/sdlc-document-roles.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0525, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0526, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/spec-driven-sdlc.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0527, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0528, source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md, target_path: docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md, artifact_id: RES-0002, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0529, source_path: docs/90.references/research/ref-0084-github-actions-platform.md, target_path: docs/90.references/research/0084-github-actions-platform/README.md, artifact_id: RES-0084, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/validation/check-document-corpus-lifecycle.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0530, source_path: docs/90.references/learning/ref-0080-roadmap-v1.md, target_path: docs/90.references/research/0080-roadmap-v1/README.md, artifact_id: RES-0080, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0531, source_path: docs/90.references/learning/ref-0081-roadmap.md, target_path: docs/90.references/research/0081-roadmap/README.md, artifact_id: RES-0081, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/learning/ref-0080-roadmap-v1.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0532, source_path: docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md, target_path: docs/90.references/data/0059-compose-profile-service-coverage/README.md, artifact_id: DATA-0059, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, scripts/operations/generate-compose-profile-service-coverage.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0533, source_path: docs/90.references/data/docker/ref-0060-image-version-interpretation.md, target_path: docs/90.references/data/0060-image-version-interpretation/README.md, artifact_id: DATA-0060, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0534, source_path: docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md, target_path: docs/90.references/data/0061-tech-stack-version-provenance/README.md, artifact_id: DATA-0061, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/README.md, scripts/operations/generate-tech-stack-version-provenance.sh, scripts/validation/generate-audit-implementation-matrix.sh, scripts/validation/generate-security-automation-readiness.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0535, source_path: docs/90.references/data/glossary/ref-0062-stable-reference-terms.md, target_path: docs/90.references/data/0062-stable-reference-terms/README.md, artifact_id: DATA-0062, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/learning/ref-0080-roadmap-v1.md, docs/90.references/learning/ref-0081-roadmap.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0536, source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md, target_path: docs/90.references/data/0066-foundation-summary/README.md, artifact_id: DATA-0066, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0537, source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml, target_path: docs/90.references/data/0067-foundation/data.yaml, artifact_id: DATA-0067, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0538, source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md, target_path: docs/90.references/data/0068-target-surface-convergence-summary/README.md, artifact_id: DATA-0068, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/99.templates/support/document-metadata-profiles.yaml, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_document_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0539, source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml, target_path: docs/90.references/data/0069-target-surface-convergence/data.yaml, artifact_id: DATA-0069, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py, scripts/validation/recommend-qa-gates.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_operations_taxonomy.py, tests/validation/test_target_surface_contracts.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0540, source_path: docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml, target_path: docs/90.references/data/0063-agent-governance-retirement-ledger/data.yaml, artifact_id: DATA-0063, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, scripts/validation/agent_governance_contract.py, tests/validation/test_agent_governance_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0541, source_path: docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, target_path: docs/90.references/data/0064-agent-output-eval-fixtures/README.md, artifact_id: DATA-0064, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [.agents/skills/provider-model-evaluation/SKILL.md, .claude/skills/provider-model-evaluation/SKILL.md, docs/00.agent-governance/agents/functions/provider-model-evaluation.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/README.md, scripts/validation/agent_governance_contract.py, scripts/validation/agent_output_eval.py, scripts/validation/generate-audit-implementation-matrix.sh, tests/validation/test_agent_governance_contract.py, tests/validation/test_agent_output_eval_fixtures.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0542, source_path: docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md, target_path: docs/90.references/data/0065-audit-implementation-matrix/README.md, artifact_id: DATA-0065, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/01.requirements/prd-0025-operational-readiness-closure.md, docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/README.md, scripts/validation/generate-audit-implementation-matrix.sh, tests/validation/test_agentic_audit_semantic_freshness.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0543, source_path: docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md, target_path: docs/90.references/data/0070-gap-to-stage-routing/README.md, artifact_id: DATA-0070, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0544, source_path: docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml, target_path: docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml, artifact_id: DATA-0071, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [.github/INDEX.md, .github/rulesets/main-protection.md, docs/00.agent-governance/rules/github-governance.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0545, source_path: docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md, target_path: docs/90.references/data/0072-provider-hook-parity-matrix/README.md, artifact_id: DATA-0072, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, scripts/validation/agent_output_eval.py, scripts/validation/generate-audit-implementation-matrix.sh, scripts/validation/report-provider-hook-parity.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0546, source_path: docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml, target_path: docs/90.references/data/0073-target-surface-delta-manifest/data.yaml, artifact_id: DATA-0073, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, scripts/validation/target_surface_delta_contract.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_target_surface_contracts.py, tests/validation/test_target_surface_delta_contracts.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0547, source_path: docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md, target_path: docs/90.references/data/0074-target-surface-delta-summary/README.md, artifact_id: DATA-0074, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/99.templates/support/document-metadata-profiles.yaml, scripts/validation/target_surface_delta_contract.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0548, source_path: docs/90.references/data/hads/ref-0075-profile.md, target_path: docs/90.references/data/0075-profile/README.md, artifact_id: DATA-0075, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0549, source_path: docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md, target_path: docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md, artifact_id: DATA-0076, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/knowledge/generate-llm-wiki.py, scripts/lib/document_governance/metadata_validator.py, scripts/lib/document_governance/operations_catalog.py, scripts/manifest.yaml, scripts/validation/check-repo-contracts.sh, scripts/validation/generate-audit-implementation-matrix.sh, tests/validation/test_generate_llm_wiki.py, tests/validation/test_operations_catalog.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0550, source_path: docs/90.references/data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md, target_path: docs/90.references/data/0077-docker-compose-to-k3s-migration/README.md, artifact_id: DATA-0077, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0551, source_path: docs/90.references/data/security/ref-0078-security-automation-readiness.md, target_path: docs/90.references/data/0078-security-automation-readiness/README.md, artifact_id: DATA-0078, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/README.md, docs/90.references/data/README.md, scripts/validation/generate-audit-implementation-matrix.sh, scripts/validation/generate-security-automation-readiness.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0552, source_path: docs/90.references/data/security/ref-0079-supply-chain-sample-service.md, target_path: docs/90.references/data/0079-supply-chain-sample-service/README.md, artifact_id: DATA-0079, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/security/generate-supply-chain-sample-service-summary.sh, scripts/validation/recommend-qa-gates.sh, tests/validation/test_supply_chain_policy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0553, source_path: docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md, target_path: docs/90.references/data/0082-llm-wiki-index/README.md, artifact_id: DATA-0082, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md, docs/90.references/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, docs/README.md, llms.txt, scripts/knowledge/generate-llm-wiki.py, scripts/lib/document_governance/metadata_validator.py, scripts/lib/document_governance/operations_catalog.py, scripts/manifest.yaml, scripts/validation/check-repo-contracts.sh, tests/validation/test_agent_governance_contract.py, tests/validation/test_generate_llm_wiki.py, tests/validation/test_operations_catalog.py, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0554, source_path: docs/90.references/llm-wiki/ref-0083-repository-map.md, target_path: docs/90.references/data/0083-repository-map/README.md, artifact_id: DATA-0083, action: rename, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/90.references/README.md, docs/90.references/data/glossary/ref-0062-stable-reference-terms.md, docs/README.md, llms.txt, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0555, source_path: docs/90.references/learning/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0556, source_path: docs/90.references/llm-wiki/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/README.md, scripts/validation/agent_output_eval.py, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0557, source_path: docs/90.references/llm-wiki/llm-wiki-index.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/README.md, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/knowledge/generate-llm-wiki-index.sh, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py, tests/validation/test_document_metadata.py, tests/validation/test_llm_wiki_retiring_pack_exclusion.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0558, source_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py, tests/validation/test_document_metadata.py, tests/validation/test_llm_wiki_retiring_pack_exclusion.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0559, source_path: docs/90.references/data/docker/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [README.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0560, source_path: docs/90.references/data/glossary/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0561, source_path: docs/90.references/data/governance/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/99.templates/support/document-corpus-migration-contract.yaml, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0562, source_path: docs/90.references/data/hads/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0563, source_path: docs/90.references/data/knowledge/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md, scripts/knowledge/generate-llm-wiki-coverage.sh, scripts/manifest.yaml, scripts/validation/check-repo-contracts.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0564, source_path: docs/90.references/data/kubernetes/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0565, source_path: docs/90.references/data/security/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 9, source_kind: tracked, source_owner_task: null, active_consumers: [docs/90.references/README.md, docs/90.references/data/README.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0566, source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md, target_path: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md, artifact_id: mig-0001, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-document-corpus-lifecycle.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_document_taxonomy.py, tests/validation/test_old_path_gate_contract.py, tests/validation/test_operations_taxonomy.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0567, source_path: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md, target_path: docs/98.archive/migrations/0002-operations-catalog-convergence.md, artifact_id: mig-0002, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/support/template-selection.md, scripts/manifest.yaml, scripts/validation/check-operations-catalog.py, tests/validation/test_operations_catalog.py, tests/validation/test_operations_taxonomy.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0568, source_path: docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md, target_path: docs/98.archive/migrations/0003-workspace-governance-simplification.md, artifact_id: mig-0003, action: rename, owner_task: 10, source_kind: planned-output, source_owner_task: 1, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0569, source_path: docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md, target_path: null, artifact_id: plan-0002, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0570, source_path: docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md, target_path: null, artifact_id: plan-0003, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0571, source_path: docs/98.archive/changes/chg-0004-03-security-standardization/plan.md, target_path: null, artifact_id: plan-0004, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0572, source_path: docs/98.archive/changes/chg-0005-04-data-standardization/plan.md, target_path: null, artifact_id: plan-0005, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0573, source_path: docs/98.archive/changes/chg-0006-05-messaging-standardization/plan.md, target_path: null, artifact_id: plan-0006, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0574, source_path: docs/98.archive/changes/chg-0007-06-observability-standardization/plan.md, target_path: null, artifact_id: plan-0007, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0575, source_path: docs/98.archive/changes/chg-0008-07-workflow-standardization/plan.md, target_path: null, artifact_id: plan-0008, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0576, source_path: docs/98.archive/changes/chg-0009-08-ai-standardization/plan.md, target_path: null, artifact_id: plan-0009, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0577, source_path: docs/98.archive/changes/chg-0010-09-tooling-standardization/plan.md, target_path: null, artifact_id: plan-0010, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0578, source_path: docs/98.archive/changes/chg-0011-10-communication-standardization/plan.md, target_path: null, artifact_id: plan-0011, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0579, source_path: docs/98.archive/changes/chg-0012-11-laboratory-standardization/plan.md, target_path: null, artifact_id: plan-0012, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0580, source_path: docs/98.archive/changes/chg-0013-08-ai-open-webui/plan.md, target_path: null, artifact_id: plan-0013, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0581, source_path: docs/98.archive/changes/chg-0013-08-ai-open-webui/task.md, target_path: null, artifact_id: task-0013-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0582, source_path: docs/98.archive/changes/chg-0015-01-gateway-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0015, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0583, source_path: docs/98.archive/changes/chg-0015-01-gateway-optimization-hardening/task.md, target_path: null, artifact_id: task-0015-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0584, source_path: docs/98.archive/changes/chg-0016-02-auth-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0016, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0585, source_path: docs/98.archive/changes/chg-0016-02-auth-optimization-hardening/task.md, target_path: null, artifact_id: task-0016-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0586, source_path: docs/98.archive/changes/chg-0017-03-security-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0017, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0587, source_path: docs/98.archive/changes/chg-0017-03-security-optimization-hardening/task.md, target_path: null, artifact_id: task-0017-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0588, source_path: docs/98.archive/changes/chg-0018-04-data-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0018, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0589, source_path: docs/98.archive/changes/chg-0018-04-data-optimization-hardening/task.md, target_path: null, artifact_id: task-0018-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0590, source_path: docs/98.archive/changes/chg-0019-05-messaging-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0019, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0591, source_path: docs/98.archive/changes/chg-0019-05-messaging-optimization-hardening/task.md, target_path: null, artifact_id: task-0019-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0592, source_path: docs/98.archive/changes/chg-0020-06-observability-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0020, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0593, source_path: docs/98.archive/changes/chg-0020-06-observability-optimization-hardening/task.md, target_path: null, artifact_id: task-0020-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0594, source_path: docs/98.archive/changes/chg-0021-07-workflow-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0021, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0595, source_path: docs/98.archive/changes/chg-0021-07-workflow-optimization-hardening/task.md, target_path: null, artifact_id: task-0021-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0596, source_path: docs/98.archive/changes/chg-0022-08-ai-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0022, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0597, source_path: docs/98.archive/changes/chg-0022-08-ai-optimization-hardening/task.md, target_path: null, artifact_id: task-0022-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0598, source_path: docs/98.archive/changes/chg-0023-09-tooling-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0023, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0599, source_path: docs/98.archive/changes/chg-0023-09-tooling-optimization-hardening/task.md, target_path: null, artifact_id: task-0023-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0600, source_path: docs/98.archive/changes/chg-0024-11-laboratory-optimization-hardening/plan.md, target_path: null, artifact_id: plan-0024, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0601, source_path: docs/98.archive/changes/chg-0024-11-laboratory-optimization-hardening/task.md, target_path: null, artifact_id: task-0024-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0602, source_path: docs/98.archive/changes/chg-0025-standardize-infra-net/plan.md, target_path: null, artifact_id: plan-0025, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0603, source_path: docs/98.archive/changes/chg-0025-standardize-infra-net/task.md, target_path: null, artifact_id: task-0025-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0604, source_path: docs/98.archive/changes/chg-0026-infra-team-agent-cross-validation/plan.md, target_path: null, artifact_id: plan-0026, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0605, source_path: docs/98.archive/changes/chg-0026-infra-team-agent-cross-validation/task.md, target_path: null, artifact_id: task-0026-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0606, source_path: docs/98.archive/changes/chg-0027-harness-agent-first-engineering/plan.md, target_path: null, artifact_id: plan-0027, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0607, source_path: docs/98.archive/changes/chg-0027-harness-agent-first-engineering/task.md, target_path: null, artifact_id: task-0027-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0608, source_path: docs/98.archive/changes/chg-0028-infra-secrets-docs-refresh/plan.md, target_path: null, artifact_id: plan-0028, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0609, source_path: docs/98.archive/changes/chg-0028-infra-secrets-docs-refresh/task.md, target_path: null, artifact_id: task-0028-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0610, source_path: docs/98.archive/changes/chg-0029-scripts-lifecycle-contract-cleanup/plan.md, target_path: null, artifact_id: plan-0029, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0611, source_path: docs/98.archive/changes/chg-0029-scripts-lifecycle-contract-cleanup/task.md, target_path: null, artifact_id: task-0029-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0612, source_path: docs/98.archive/changes/chg-0030-docs-taxonomy-agent-first-migration/plan.md, target_path: null, artifact_id: plan-0030, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0613, source_path: docs/98.archive/changes/chg-0030-docs-taxonomy-agent-first-migration/task.md, target_path: null, artifact_id: task-0030-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0614, source_path: docs/98.archive/changes/chg-0031-llm-wiki-agent-first-completion/plan.md, target_path: null, artifact_id: plan-0031, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0615, source_path: docs/98.archive/changes/chg-0031-llm-wiki-agent-first-completion/task.md, target_path: null, artifact_id: task-0031-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0616, source_path: docs/98.archive/changes/chg-0032-requirements-standardization/plan.md, target_path: null, artifact_id: plan-0032, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0617, source_path: docs/98.archive/changes/chg-0032-requirements-standardization/task.md, target_path: null, artifact_id: task-0032-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0618, source_path: docs/98.archive/changes/chg-0033-scripts-ci-qa-cleanup/plan.md, target_path: null, artifact_id: plan-0033, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0619, source_path: docs/98.archive/changes/chg-0033-scripts-ci-qa-cleanup/task.md, target_path: null, artifact_id: task-0033-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0620, source_path: docs/98.archive/changes/chg-0034-docs-05-operations-purpose-remediation/plan.md, target_path: null, artifact_id: plan-0034, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0621, source_path: docs/98.archive/changes/chg-0034-docs-05-operations-purpose-remediation/task.md, target_path: null, artifact_id: task-0034-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0622, source_path: docs/98.archive/changes/chg-0035-docs-bounded-consistency-audit/plan.md, target_path: null, artifact_id: plan-0035, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0623, source_path: docs/98.archive/changes/chg-0035-docs-bounded-consistency-audit/task.md, target_path: null, artifact_id: task-0035-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0624, source_path: docs/98.archive/changes/chg-0036-execution-stage-remediation/plan.md, target_path: null, artifact_id: plan-0036, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0625, source_path: docs/98.archive/changes/chg-0036-execution-stage-remediation/task.md, target_path: null, artifact_id: task-0036-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0626, source_path: docs/98.archive/changes/chg-0037-targeted-docs-precision-remediation/plan.md, target_path: null, artifact_id: plan-0037, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0627, source_path: docs/98.archive/changes/chg-0037-targeted-docs-precision-remediation/task.md, target_path: null, artifact_id: task-0037-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0628, source_path: docs/98.archive/changes/chg-0038-agent-hook-completion-style-automation/plan.md, target_path: null, artifact_id: plan-0038, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0629, source_path: docs/98.archive/changes/chg-0038-agent-hook-completion-style-automation/task.md, target_path: null, artifact_id: task-0038-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0630, source_path: docs/98.archive/changes/chg-0039-data-analytics-execution-traceability/plan.md, target_path: null, artifact_id: plan-0039, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0631, source_path: docs/98.archive/changes/chg-0039-data-analytics-execution-traceability/task.md, target_path: null, artifact_id: task-0039-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0632, source_path: docs/98.archive/changes/chg-0040-lifecycle-readme-debt-closure/plan.md, target_path: null, artifact_id: plan-0040, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0633, source_path: docs/98.archive/changes/chg-0040-lifecycle-readme-debt-closure/task.md, target_path: null, artifact_id: task-0040-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0634, source_path: docs/98.archive/changes/chg-0041-spec-execution-implementation-audit/plan.md, target_path: null, artifact_id: plan-0041, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0635, source_path: docs/98.archive/changes/chg-0041-spec-execution-implementation-audit/task.md, target_path: null, artifact_id: task-0041-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0636, source_path: docs/98.archive/changes/chg-0042-workspace-docs-agent-governance-remediation/plan.md, target_path: null, artifact_id: plan-0042, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0637, source_path: docs/98.archive/changes/chg-0042-workspace-docs-agent-governance-remediation/task.md, target_path: null, artifact_id: task-0042-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0638, source_path: docs/98.archive/changes/chg-0043-workspace-governance-bounded-reaudit/plan.md, target_path: null, artifact_id: plan-0043, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0639, source_path: docs/98.archive/changes/chg-0043-workspace-governance-bounded-reaudit/task.md, target_path: null, artifact_id: task-0043-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0640, source_path: docs/98.archive/changes/chg-0044-workspace-audit-grill-review/plan.md, target_path: null, artifact_id: plan-0044, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0641, source_path: docs/98.archive/changes/chg-0044-workspace-audit-grill-review/task.md, target_path: null, artifact_id: task-0044-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0642, source_path: docs/98.archive/changes/chg-0045-workspace-audit-improvement/plan.md, target_path: null, artifact_id: plan-0045, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0643, source_path: docs/98.archive/changes/chg-0045-workspace-audit-improvement/task.md, target_path: null, artifact_id: task-0045-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0644, source_path: docs/98.archive/changes/chg-0046-workspace-audit-input-task-gap-closure/plan.md, target_path: null, artifact_id: plan-0046, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0645, source_path: docs/98.archive/changes/chg-0046-workspace-audit-input-task-gap-closure/task.md, target_path: null, artifact_id: task-0046-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0646, source_path: docs/98.archive/changes/chg-0047-home-docker-revalidation-deferred-follow-up/plan.md, target_path: null, artifact_id: plan-0047, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0647, source_path: docs/98.archive/changes/chg-0047-home-docker-revalidation-deferred-follow-up/task.md, target_path: null, artifact_id: task-0047-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0648, source_path: docs/98.archive/changes/chg-0048-home-docker-workspace-audit-improvement/plan.md, target_path: null, artifact_id: plan-0048, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0649, source_path: docs/98.archive/changes/chg-0048-home-docker-workspace-audit-improvement/task.md, target_path: null, artifact_id: task-0048-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0650, source_path: docs/98.archive/changes/chg-0049-large-scale-authored-ssot-review/plan.md, target_path: null, artifact_id: plan-0049, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0651, source_path: docs/98.archive/changes/chg-0049-large-scale-authored-ssot-review/task.md, target_path: null, artifact_id: task-0049-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0652, source_path: docs/98.archive/changes/chg-0050-workspace-audit-gap-closure/plan.md, target_path: null, artifact_id: plan-0050, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0653, source_path: docs/98.archive/changes/chg-0050-workspace-audit-gap-closure/task.md, target_path: null, artifact_id: task-0050-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0654, source_path: docs/98.archive/changes/chg-0051-workspace-audit/plan.md, target_path: null, artifact_id: plan-0051, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0655, source_path: docs/98.archive/changes/chg-0051-workspace-audit/task.md, target_path: null, artifact_id: task-0051-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0656, source_path: docs/98.archive/changes/chg-0052-workspace-doc-consistency/plan.md, target_path: null, artifact_id: plan-0052, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0657, source_path: docs/98.archive/changes/chg-0052-workspace-doc-consistency/task.md, target_path: null, artifact_id: task-0052-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0658, source_path: docs/98.archive/changes/chg-0053-workspace-consistency-2026-05b/plan.md, target_path: null, artifact_id: plan-0053, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0659, source_path: docs/98.archive/changes/chg-0053-workspace-consistency-2026-05b/task.md, target_path: null, artifact_id: task-0053-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0660, source_path: docs/98.archive/changes/chg-0054-claude-harness-governance-verification/plan.md, target_path: null, artifact_id: plan-0054, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0661, source_path: docs/98.archive/changes/chg-0054-claude-harness-governance-verification/task.md, target_path: null, artifact_id: task-0054-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0662, source_path: docs/98.archive/changes/chg-0055-agent-governance-decision-items/plan.md, target_path: null, artifact_id: plan-0055, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0663, source_path: docs/98.archive/changes/chg-0056-agent-governance-phase-1-revalidation/plan.md, target_path: null, artifact_id: plan-0056, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0664, source_path: docs/98.archive/changes/chg-0056-agent-governance-phase-1-revalidation/task.md, target_path: null, artifact_id: task-0056-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0665, source_path: docs/98.archive/changes/chg-0057-agent-governance-phase-2-strategy-integration/plan.md, target_path: null, artifact_id: plan-0057, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0666, source_path: docs/98.archive/changes/chg-0057-agent-governance-phase-2-strategy-integration/task.md, target_path: null, artifact_id: task-0057-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0667, source_path: docs/98.archive/changes/chg-0058-agent-governance-phase-3-approved-surface-activation/plan.md, target_path: null, artifact_id: plan-0058, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0668, source_path: docs/98.archive/changes/chg-0058-agent-governance-phase-3-approved-surface-activation/task.md, target_path: null, artifact_id: task-0058-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0669, source_path: docs/98.archive/changes/chg-0059-agent-governance-phase-4-closure-reconciliation/plan.md, target_path: null, artifact_id: plan-0059, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0670, source_path: docs/98.archive/changes/chg-0059-agent-governance-phase-4-closure-reconciliation/task.md, target_path: null, artifact_id: task-0059-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0671, source_path: docs/98.archive/changes/chg-0060-docs-implementation-reconciliation/plan.md, target_path: null, artifact_id: plan-0060, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0672, source_path: docs/98.archive/changes/chg-0060-docs-implementation-reconciliation/task.md, target_path: null, artifact_id: task-0060-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0673, source_path: docs/98.archive/changes/chg-0061-governance-optimization/plan.md, target_path: null, artifact_id: plan-0061, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0674, source_path: docs/98.archive/changes/chg-0061-governance-optimization/task.md, target_path: null, artifact_id: task-0061-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0675, source_path: docs/98.archive/changes/chg-0062-governance-surgical-reverification/plan.md, target_path: null, artifact_id: plan-0062, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0676, source_path: docs/98.archive/changes/chg-0062-governance-surgical-reverification/task.md, target_path: null, artifact_id: task-0062-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0677, source_path: docs/98.archive/changes/chg-0063-template-system-reorganization/plan.md, target_path: null, artifact_id: plan-0063, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0678, source_path: docs/98.archive/changes/chg-0063-template-system-reorganization/task.md, target_path: null, artifact_id: task-0063-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0679, source_path: docs/98.archive/changes/chg-0064-document-contract-remediation-batches/plan.md, target_path: null, artifact_id: plan-0064, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0680, source_path: docs/98.archive/changes/chg-0064-document-contract-remediation-batches/task.md, target_path: null, artifact_id: task-0064-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0681, source_path: docs/98.archive/changes/chg-0065-template-system-contract-standardization/plan.md, target_path: null, artifact_id: plan-0065, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0682, source_path: docs/98.archive/changes/chg-0065-template-system-contract-standardization/task.md, target_path: null, artifact_id: task-0065-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0683, source_path: docs/98.archive/changes/chg-0066-workspace-document-contract-audit-pack/plan.md, target_path: null, artifact_id: plan-0066, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0684, source_path: docs/98.archive/changes/chg-0066-workspace-document-contract-audit-pack/task.md, target_path: null, artifact_id: task-0066-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0685, source_path: docs/98.archive/changes/chg-0067-document-restructure-audit-contract-archive/plan.md, target_path: null, artifact_id: plan-0067, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0686, source_path: docs/98.archive/changes/chg-0067-document-restructure-audit-contract-archive/task.md, target_path: null, artifact_id: task-0067-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0687, source_path: docs/98.archive/changes/chg-0068-agent-output-eval-fixtures/plan.md, target_path: null, artifact_id: plan-0068, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0688, source_path: docs/98.archive/changes/chg-0068-agent-output-eval-fixtures/task.md, target_path: null, artifact_id: task-0068-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0689, source_path: docs/98.archive/changes/chg-0069-agentic-engineering-implementation-audit-pack/plan.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0690, source_path: docs/98.archive/changes/chg-0069-agentic-engineering-implementation-audit-pack/task.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0691, source_path: docs/98.archive/changes/chg-0070-agentic-research-pack-refresh/plan.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0692, source_path: docs/98.archive/changes/chg-0070-agentic-research-pack-refresh/task.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0693, source_path: docs/98.archive/changes/chg-0071-audit-pack-coverage-report/plan.md, target_path: null, artifact_id: plan-0071, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0694, source_path: docs/98.archive/changes/chg-0071-audit-pack-coverage-report/task.md, target_path: null, artifact_id: task-0071-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0695, source_path: docs/98.archive/changes/chg-0072-compose-profile-service-coverage-snapshot/plan.md, target_path: null, artifact_id: plan-0072, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0696, source_path: docs/98.archive/changes/chg-0072-compose-profile-service-coverage-snapshot/task.md, target_path: null, artifact_id: task-0072-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0697, source_path: docs/98.archive/changes/chg-0073-gap-routing-recommendation/plan.md, target_path: null, artifact_id: plan-0073, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0698, source_path: docs/98.archive/changes/chg-0073-gap-routing-recommendation/task.md, target_path: null, artifact_id: task-0073-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0699, source_path: docs/98.archive/changes/chg-0074-provider-semantic-parity-validator/plan.md, target_path: null, artifact_id: plan-0074, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0700, source_path: docs/98.archive/changes/chg-0074-provider-semantic-parity-validator/task.md, target_path: null, artifact_id: task-0074-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0701, source_path: docs/98.archive/changes/chg-0075-provider-workspace-artifact-path-parity/plan.md, target_path: null, artifact_id: plan-0075, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0702, source_path: docs/98.archive/changes/chg-0075-provider-workspace-artifact-path-parity/task.md, target_path: null, artifact_id: task-0075-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0703, source_path: docs/98.archive/changes/chg-0076-qa-gate-recommendation-ci-summary/plan.md, target_path: null, artifact_id: plan-0076, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0704, source_path: docs/98.archive/changes/chg-0076-qa-gate-recommendation-ci-summary/task.md, target_path: null, artifact_id: task-0076-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0705, source_path: docs/98.archive/changes/chg-0077-template-system-numbered-sdlc-paths/plan.md, target_path: null, artifact_id: plan-0077, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0706, source_path: docs/98.archive/changes/chg-0077-template-system-numbered-sdlc-paths/task.md, target_path: null, artifact_id: task-0077-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0707, source_path: docs/98.archive/changes/chg-0078-workspace-support-surface-contract/plan.md, target_path: null, artifact_id: plan-0078, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0708, source_path: docs/98.archive/changes/chg-0078-workspace-support-surface-contract/task.md, target_path: null, artifact_id: task-0078-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0709, source_path: docs/98.archive/changes/chg-0079-agent-output-eval-ci-gate/plan.md, target_path: null, artifact_id: plan-0079, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0710, source_path: docs/98.archive/changes/chg-0079-agent-output-eval-ci-gate/task.md, target_path: null, artifact_id: task-0079-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0711, source_path: docs/98.archive/changes/chg-0080-agent-output-eval-runner/plan.md, target_path: null, artifact_id: plan-0080, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0712, source_path: docs/98.archive/changes/chg-0080-agent-output-eval-runner/task.md, target_path: null, artifact_id: task-0080-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0713, source_path: docs/98.archive/changes/chg-0081-audit-implementation-matrix-snapshot/plan.md, target_path: null, artifact_id: plan-0081, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0714, source_path: docs/98.archive/changes/chg-0081-audit-implementation-matrix-snapshot/task.md, target_path: null, artifact_id: task-0081-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0715, source_path: docs/98.archive/changes/chg-0082-dependency-vulnerability-audit-gate/plan.md, target_path: null, artifact_id: plan-0082, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0716, source_path: docs/98.archive/changes/chg-0082-dependency-vulnerability-audit-gate/task.md, target_path: null, artifact_id: task-0082-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0717, source_path: docs/98.archive/changes/chg-0083-llm-wiki-stage-category-coverage/plan.md, target_path: null, artifact_id: plan-0083, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0718, source_path: docs/98.archive/changes/chg-0083-llm-wiki-stage-category-coverage/task.md, target_path: null, artifact_id: task-0083-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0719, source_path: docs/98.archive/changes/chg-0084-provider-hook-parity-matrix/plan.md, target_path: null, artifact_id: plan-0084, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0720, source_path: docs/98.archive/changes/chg-0084-provider-hook-parity-matrix/task.md, target_path: null, artifact_id: task-0084-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0721, source_path: docs/98.archive/changes/chg-0085-sdlc-document-contract-corpus-normalization/plan.md, target_path: null, artifact_id: plan-0085, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0722, source_path: docs/98.archive/changes/chg-0085-sdlc-document-contract-corpus-normalization/task.md, target_path: null, artifact_id: task-0085-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0723, source_path: docs/98.archive/changes/chg-0086-security-automation-readiness-snapshot/plan.md, target_path: null, artifact_id: plan-0086, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0724, source_path: docs/98.archive/changes/chg-0086-security-automation-readiness-snapshot/task.md, target_path: null, artifact_id: task-0086-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0725, source_path: docs/98.archive/changes/chg-0087-tech-stack-version-provenance/plan.md, target_path: null, artifact_id: plan-0087, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0726, source_path: docs/98.archive/changes/chg-0087-tech-stack-version-provenance/task.md, target_path: null, artifact_id: task-0087-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0727, source_path: docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/plan.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0728, source_path: docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/task.md, target_path: null, artifact_id: null, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0729, source_path: docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/plan.md, target_path: null, artifact_id: 'plan:2026-07-11-agentic-engineering-audit-remediation', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0730, source_path: docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/task.md, target_path: null, artifact_id: 'task:2026-07-11-agentic-engineering-audit-remediation', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/validation/agentic-audit-semantic-contract.json, scripts/validation/check-agentic-audit-semantic-freshness.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0731, source_path: docs/98.archive/changes/chg-0090-compose-runtime-readiness-remediation/plan.md, target_path: null, artifact_id: plan-0090, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0732, source_path: docs/98.archive/changes/chg-0090-compose-runtime-readiness-remediation/task.md, target_path: null, artifact_id: task-0090-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0733, source_path: docs/98.archive/changes/chg-0091-deployment-release-engineering-remediation/plan.md, target_path: null, artifact_id: plan-0091, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0734, source_path: docs/98.archive/changes/chg-0091-deployment-release-engineering-remediation/task.md, target_path: null, artifact_id: task-0091-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0735, source_path: docs/98.archive/changes/chg-0092-infrastructure-operations-readiness-remediation/plan.md, target_path: null, artifact_id: plan-0092, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0736, source_path: docs/98.archive/changes/chg-0092-infrastructure-operations-readiness-remediation/task.md, target_path: null, artifact_id: task-0092-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0737, source_path: docs/98.archive/changes/chg-0093-security-supply-chain-remediation/plan.md, target_path: null, artifact_id: plan-0093, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0738, source_path: docs/98.archive/changes/chg-0093-security-supply-chain-remediation/task.md, target_path: null, artifact_id: task-0093-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0739, source_path: docs/98.archive/changes/chg-0094-agentic-audit-harness-consolidation/plan.md, target_path: null, artifact_id: plan-0094, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0740, source_path: docs/98.archive/changes/chg-0094-agentic-audit-harness-consolidation/task.md, target_path: null, artifact_id: task-0094-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0741, source_path: docs/98.archive/changes/chg-0095-document-contract-canonicalization/plan.md, target_path: null, artifact_id: 'plan:2026-07-13-document-contract-canonicalization', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0742, source_path: docs/98.archive/changes/chg-0095-document-contract-canonicalization/task.md, target_path: null, artifact_id: 'task:2026-07-13-document-contract-canonicalization', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0743, source_path: docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/plan.md, target_path: null, artifact_id: plan-0096, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0744, source_path: docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/task.md, target_path: null, artifact_id: task-0096-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0745, source_path: docs/98.archive/changes/chg-0097-document-corpus-lifecycle-migration-foundation/plan.md, target_path: null, artifact_id: plan-0097, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0746, source_path: docs/98.archive/changes/chg-0097-document-corpus-lifecycle-migration-foundation/task.md, target_path: null, artifact_id: task-0097-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0747, source_path: docs/98.archive/changes/chg-0098-agent-governance-harness-convergence/plan.md, target_path: null, artifact_id: 'plan:2026-07-15-agent-governance-harness-convergence', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0748, source_path: docs/98.archive/changes/chg-0098-agent-governance-harness-convergence/task.md, target_path: null, artifact_id: 'task:2026-07-15-agent-governance-harness-convergence', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0749, source_path: docs/98.archive/changes/chg-0099-target-surface-contract-convergence/plan.md, target_path: null, artifact_id: 'plan:2026-07-18-target-surface-contract-convergence', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0750, source_path: docs/98.archive/changes/chg-0099-target-surface-contract-convergence/task.md, target_path: null, artifact_id: 'task:2026-07-18-target-surface-contract-convergence', action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0751, source_path: docs/98.archive/changes/chg-0100-operational-readiness-closure-program/plan.md, target_path: null, artifact_id: plan-0100, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0752, source_path: docs/98.archive/changes/chg-0100-operational-readiness-closure-program/task.md, target_path: null, artifact_id: task-0100-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0753, source_path: docs/98.archive/changes/chg-0104-01-gateway/task.md, target_path: null, artifact_id: task-0104-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0754, source_path: docs/98.archive/changes/chg-0105-02-auth/task.md, target_path: null, artifact_id: task-0105-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0755, source_path: docs/98.archive/changes/chg-0106-03-security/task.md, target_path: null, artifact_id: task-0106-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0756, source_path: docs/98.archive/changes/chg-0107-04-data/task.md, target_path: null, artifact_id: task-0107-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0757, source_path: docs/98.archive/changes/chg-0108-05-messaging/task.md, target_path: null, artifact_id: task-0108-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0758, source_path: docs/98.archive/changes/chg-0109-06-observability/task.md, target_path: null, artifact_id: task-0109-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0759, source_path: docs/98.archive/changes/chg-0110-07-workflow/task.md, target_path: null, artifact_id: task-0110-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0760, source_path: docs/98.archive/changes/chg-0111-08-ai/task.md, target_path: null, artifact_id: task-0111-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0761, source_path: docs/98.archive/changes/chg-0112-09-tooling/task.md, target_path: null, artifact_id: task-0112-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0762, source_path: docs/98.archive/changes/chg-0113-10-communication/task.md, target_path: null, artifact_id: task-0113-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0763, source_path: docs/98.archive/changes/chg-0114-11-laboratory/task.md, target_path: null, artifact_id: task-0114-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0764, source_path: docs/98.archive/changes/chg-0115-agent-governance-missing-items-implementation/task.md, target_path: null, artifact_id: task-0115-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0765, source_path: docs/98.archive/changes/chg-0116-docs-implementation-audit/task.md, target_path: null, artifact_id: task-0116-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0766, source_path: docs/98.archive/changes/chg-0117-harness-engineering/task.md, target_path: null, artifact_id: task-0117-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0767, source_path: docs/98.archive/changes/chg-0118-language-policy-boundary-audit/task.md, target_path: null, artifact_id: task-0118-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0768, source_path: docs/98.archive/changes/chg-0119-language-policy-hard-enforcement/task.md, target_path: null, artifact_id: task-0119-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0769, source_path: docs/98.archive/changes/chg-0120-language-policy-normalization-batch-1/task.md, target_path: null, artifact_id: task-0120-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0770, source_path: docs/98.archive/changes/chg-0121-language-policy-normalization-batch-2/task.md, target_path: null, artifact_id: task-0121-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0771, source_path: docs/98.archive/changes/chg-0122-language-policy-normalization-batch-3/task.md, target_path: null, artifact_id: task-0122-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0772, source_path: docs/98.archive/changes/chg-0123-language-policy-plan-normalization-batch-1/task.md, target_path: null, artifact_id: task-0123-02, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0773, source_path: docs/98.archive/changes/chg-0124-language-policy-plan-normalization-batch-2/task.md, target_path: null, artifact_id: task-0124-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0774, source_path: docs/98.archive/changes/chg-0125-language-policy-plan-normalization-batch-3/task.md, target_path: null, artifact_id: task-0125-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0775, source_path: docs/98.archive/changes/chg-0126-language-policy-plan-normalization-batch-4/task.md, target_path: null, artifact_id: task-0126-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0776, source_path: docs/98.archive/changes/chg-0127-language-policy-plan-normalization-batch-5/task.md, target_path: null, artifact_id: task-0127-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0777, source_path: docs/98.archive/changes/chg-0128-language-policy-plan-normalization-batch-6/task.md, target_path: null, artifact_id: task-0128-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0778, source_path: docs/98.archive/changes/chg-0129-language-policy-plan-normalization-batch-7/task.md, target_path: null, artifact_id: task-0129-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0779, source_path: docs/98.archive/changes/chg-0130-language-policy-plan-normalization-batch-8/task.md, target_path: null, artifact_id: task-0130-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0780, source_path: docs/98.archive/changes/chg-0131-language-policy-reference-normalization/task.md, target_path: null, artifact_id: task-0131-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0781, source_path: docs/98.archive/changes/chg-0132-language-policy-task-normalization-batch-1/task.md, target_path: null, artifact_id: task-0132-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0782, source_path: docs/98.archive/changes/chg-0133-language-policy-task-normalization-batch-2/task.md, target_path: null, artifact_id: task-0133-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0783, source_path: docs/98.archive/changes/chg-0134-language-policy-task-normalization-batch-3/task.md, target_path: null, artifact_id: task-0134-02, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0784, source_path: docs/98.archive/changes/chg-0135-language-policy-task-normalization-batch-4/task.md, target_path: null, artifact_id: task-0135-02, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0785, source_path: docs/98.archive/changes/chg-0136-language-policy-task-normalization-batch-5/task.md, target_path: null, artifact_id: task-0136-02, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0786, source_path: docs/98.archive/changes/chg-0137-language-policy-task-normalization-batch-6/task.md, target_path: null, artifact_id: task-0137-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0787, source_path: docs/98.archive/changes/chg-0138-language-policy-task-normalization-batch-7/task.md, target_path: null, artifact_id: task-0138-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0788, source_path: docs/98.archive/changes/chg-0139-examples-scaffold-contract-remediation/task.md, target_path: null, artifact_id: task-0139-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0789, source_path: docs/98.archive/changes/chg-0140-frontmatter-routing-evidence-refresh/task.md, target_path: null, artifact_id: task-0140-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0790, source_path: docs/98.archive/changes/chg-0141-github-branch-protection-reverification/task.md, target_path: null, artifact_id: task-0141-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0791, source_path: docs/98.archive/changes/chg-0142-infra-tech-stack-version-refresh/task.md, target_path: null, artifact_id: task-0142-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0792, source_path: docs/98.archive/changes/chg-0143-ai-governance-reorg/plan.md, target_path: null, artifact_id: plan-0143, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0793, source_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/plan.md, target_path: null, artifact_id: plan-0144, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0794, source_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/task.md, target_path: null, artifact_id: task-0144-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0795, source_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/plan.md, target_path: null, artifact_id: plan-0145, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0796, source_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/task.md, target_path: null, artifact_id: task-0145-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0797, source_path: docs/98.archive/changes/chg-0146-agent-governance-phase2-alignment/plan.md, target_path: null, artifact_id: plan-0146, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0798, source_path: docs/98.archive/changes/chg-0147-agent-governance-phase3-implementation/task.md, target_path: null, artifact_id: task-0147-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0799, source_path: docs/98.archive/changes/chg-0148-agent-governance-phase3-stage01-02-continuation/task.md, target_path: null, artifact_id: task-0148-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0800, source_path: docs/98.archive/changes/chg-0149-agent-governance-phase3-strategy-integration/task.md, target_path: null, artifact_id: task-0149-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0801, source_path: docs/98.archive/changes/chg-0150-agent-governance-phase4-closure/task.md, target_path: null, artifact_id: task-0150-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0802, source_path: docs/98.archive/changes/chg-0151-agent-governance-stage01-02-alignment/task.md, target_path: null, artifact_id: task-0151-01, action: delete, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0803, source_path: docs/98.archive/tombstones/03.specs/spec-0099-template-system-numbered-sdlc-paths.md, target_path: docs/98.archive/tombstones/03.specs/0099-template-system-numbered-sdlc-paths.md, artifact_id: spec-0099, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0804, source_path: docs/98.archive/tombstones/03.specs/spec-0100-template-system-contract-standardization.md, target_path: docs/98.archive/tombstones/03.specs/0100-template-system-contract-standardization.md, artifact_id: spec-0100, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0805, source_path: docs/98.archive/tombstones/03.specs/spec-0101-template-system-reorganization.md, target_path: docs/98.archive/tombstones/03.specs/0101-template-system-reorganization.md, artifact_id: spec-0101, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0806, source_path: docs/98.archive/tombstones/03.specs/spec-0104-agentic-research-pack-refresh.md, target_path: docs/98.archive/tombstones/03.specs/0104-agentic-research-pack-refresh.md, artifact_id: spec-0104, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0807, source_path: docs/98.archive/tombstones/03.specs/spec-0106-workspace-support-surface-contract.md, target_path: docs/98.archive/tombstones/03.specs/0106-workspace-support-surface-contract.md, artifact_id: spec-0106, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0808, source_path: docs/98.archive/tombstones/03.specs/spec-0107-provider-semantic-parity-validator.md, target_path: docs/98.archive/tombstones/03.specs/0107-provider-semantic-parity-validator.md, artifact_id: spec-0107, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0809, source_path: docs/98.archive/tombstones/03.specs/spec-0108-compose-profile-service-coverage-snapshot.md, target_path: docs/98.archive/tombstones/03.specs/0108-compose-profile-service-coverage-snapshot.md, artifact_id: spec-0108, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0810, source_path: docs/98.archive/tombstones/03.specs/spec-0109-gap-routing-recommendation.md, target_path: docs/98.archive/tombstones/03.specs/0109-gap-routing-recommendation.md, artifact_id: spec-0109, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0811, source_path: docs/98.archive/tombstones/03.specs/spec-0110-agent-output-eval-fixtures.md, target_path: docs/98.archive/tombstones/03.specs/0110-agent-output-eval-fixtures.md, artifact_id: spec-0110, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0812, source_path: docs/98.archive/tombstones/03.specs/spec-0111-qa-gate-recommendation-ci-summary.md, target_path: docs/98.archive/tombstones/03.specs/0111-qa-gate-recommendation-ci-summary.md, artifact_id: spec-0111, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0813, source_path: docs/98.archive/tombstones/03.specs/spec-0112-audit-pack-coverage-report.md, target_path: docs/98.archive/tombstones/03.specs/0112-audit-pack-coverage-report.md, artifact_id: spec-0112, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0814, source_path: docs/98.archive/tombstones/03.specs/spec-0113-llm-wiki-stage-category-coverage.md, target_path: docs/98.archive/tombstones/03.specs/0113-llm-wiki-stage-category-coverage.md, artifact_id: spec-0113, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0815, source_path: docs/98.archive/tombstones/03.specs/spec-0114-tech-stack-version-provenance.md, target_path: docs/98.archive/tombstones/03.specs/0114-tech-stack-version-provenance.md, artifact_id: spec-0114, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0816, source_path: docs/98.archive/tombstones/03.specs/spec-0115-provider-hook-parity-matrix.md, target_path: docs/98.archive/tombstones/03.specs/0115-provider-hook-parity-matrix.md, artifact_id: spec-0115, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/validation/report-provider-hook-parity.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0817, source_path: docs/98.archive/tombstones/03.specs/spec-0116-agent-output-eval-runner.md, target_path: docs/98.archive/tombstones/03.specs/0116-agent-output-eval-runner.md, artifact_id: spec-0116, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0818, source_path: docs/98.archive/tombstones/03.specs/spec-0117-security-automation-readiness-snapshot.md, target_path: docs/98.archive/tombstones/03.specs/0117-security-automation-readiness-snapshot.md, artifact_id: spec-0117, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0819, source_path: docs/98.archive/tombstones/03.specs/spec-0118-audit-implementation-matrix-snapshot.md, target_path: docs/98.archive/tombstones/03.specs/0118-audit-implementation-matrix-snapshot.md, artifact_id: spec-0118, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/validation/generate-audit-implementation-matrix.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0820, source_path: docs/98.archive/tombstones/03.specs/spec-0119-sdlc-document-contract-corpus-normalization.md, target_path: docs/98.archive/tombstones/03.specs/0119-sdlc-document-contract-corpus-normalization.md, artifact_id: spec-0119, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0821, source_path: docs/98.archive/tombstones/03.specs/spec-0120-agent-output-eval-ci-gate.md, target_path: docs/98.archive/tombstones/03.specs/0120-agent-output-eval-ci-gate.md, artifact_id: spec-0120, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0822, source_path: docs/98.archive/tombstones/03.specs/spec-0121-dependency-vulnerability-audit-gate.md, target_path: docs/98.archive/tombstones/03.specs/0121-dependency-vulnerability-audit-gate.md, artifact_id: spec-0121, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0823, source_path: docs/98.archive/tombstones/03.specs/spec-0122-agentic-research-pack-consolidation.md, target_path: docs/98.archive/tombstones/03.specs/0122-agentic-research-pack-consolidation.md, artifact_id: spec-0122, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0824, source_path: docs/98.archive/tombstones/03.specs/spec-0124-compose-runtime-readiness-remediation.md, target_path: docs/98.archive/tombstones/03.specs/0124-compose-runtime-readiness-remediation.md, artifact_id: spec-0124, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0825, source_path: docs/98.archive/tombstones/03.specs/spec-0125-infrastructure-operations-readiness-remediation.md, target_path: docs/98.archive/tombstones/03.specs/0125-infrastructure-operations-readiness-remediation.md, artifact_id: spec-0125, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0826, source_path: docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md, target_path: docs/98.archive/tombstones/03.specs/0126-security-supply-chain-remediation.md, artifact_id: spec-0126, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/security/generate-supply-chain-sample-service-summary.sh, scripts/validation/generate-security-automation-readiness.sh], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0827, source_path: docs/98.archive/tombstones/03.specs/spec-0127-deployment-release-engineering-remediation.md, target_path: docs/98.archive/tombstones/03.specs/0127-deployment-release-engineering-remediation.md, artifact_id: spec-0127, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0828, source_path: docs/98.archive/tombstones/03.specs/spec-0128-agentic-audit-harness-consolidation.md, target_path: docs/98.archive/tombstones/03.specs/0128-agentic-audit-harness-consolidation.md, artifact_id: spec-0128, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0829, source_path: docs/98.archive/tombstones/03.specs/spec-0129-document-contract-canonicalization.md, target_path: docs/98.archive/tombstones/03.specs/0129-document-contract-canonicalization.md, artifact_id: spec-0129, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0830, source_path: docs/98.archive/tombstones/03.specs/spec-0130-template-contract-system-canonicalization.md, target_path: docs/98.archive/tombstones/03.specs/0130-template-contract-system-canonicalization.md, artifact_id: spec-0130, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0831, source_path: docs/98.archive/tombstones/05.operations/ref-0086-01-setup.md, target_path: docs/98.archive/tombstones/05.operations/0086-01-setup.md, artifact_id: ref-0086, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0832, source_path: docs/98.archive/tombstones/05.operations/ref-0087-ksql-streaming.md, target_path: docs/98.archive/tombstones/05.operations/0087-ksql-streaming.md, artifact_id: ref-0087, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0833, source_path: docs/98.archive/tombstones/05.operations/ref-0088-01-airflow-dag-dev.md, target_path: docs/98.archive/tombstones/05.operations/0088-01-airflow-dag-dev.md, artifact_id: ref-0088, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0834, source_path: docs/98.archive/tombstones/05.operations/ref-0089-airbyte.md, target_path: docs/98.archive/tombstones/05.operations/0089-airbyte.md, artifact_id: ref-0089, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0835, source_path: docs/98.archive/tombstones/05.operations/ref-0090-01-llm-inference.md, target_path: docs/98.archive/tombstones/05.operations/0090-01-llm-inference.md, artifact_id: ref-0090, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0836, source_path: docs/98.archive/tombstones/05.operations/ref-0091-local-llm-setup.md, target_path: docs/98.archive/tombstones/05.operations/0091-local-llm-setup.md, artifact_id: ref-0091, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0837, source_path: docs/98.archive/tombstones/05.operations/ref-0092-01-iac-automation.md, target_path: docs/98.archive/tombstones/05.operations/0092-01-iac-automation.md, artifact_id: ref-0092, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0838, source_path: docs/98.archive/tombstones/05.operations/ref-0093-airbyte.md, target_path: docs/98.archive/tombstones/05.operations/0093-airbyte.md, artifact_id: ref-0093, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0839, source_path: docs/98.archive/tombstones/05.operations/ref-0094-airbyte.md, target_path: docs/98.archive/tombstones/05.operations/0094-airbyte.md, artifact_id: ref-0094, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0840, source_path: docs/98.archive/tombstones/05.operations/ref-0095-windows-network-ip.md, target_path: docs/98.archive/tombstones/05.operations/0095-windows-network-ip.md, artifact_id: ref-0095, action: rename, owner_task: 10, source_kind: tracked, source_owner_task: null, active_consumers: [scripts/validation/check-document-corpus-lifecycle.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0841, source_path: tests/validation/test_document_links.py, target_path: tests/lib/document_governance/test_links.py, artifact_id: null, action: rename, owner_task: 11, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0842, source_path: tests/validation/test_document_metadata.py, target_path: tests/lib/document_governance/test_metadata_validator.py, artifact_id: null, action: rename, owner_task: 11, source_kind: tracked, source_owner_task: null, active_consumers: [.github/CODEOWNERS, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml, docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md, scripts/manifest.yaml, scripts/validation/agentic-audit-semantic-contract.json, scripts/validation/check-document-corpus-lifecycle.py, tests/validation/test_agent_governance_contract.py, tests/validation/test_script_manifest.py, tests/validation/test_target_surface_delta_contracts.py, tests/validation/test_tech_stack_version_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0843, source_path: tests/validation/test_document_taxonomy.py, target_path: tests/lib/document_governance/test_taxonomy.py, artifact_id: null, action: rename, owner_task: 11, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/manifest.yaml, tests/validation/test_old_path_gate_contract.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0844, source_path: tests/validation/test_operations_catalog.py, target_path: tests/lib/document_governance/test_operations_catalog.py, artifact_id: null, action: rename, owner_task: 11, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, scripts/manifest.yaml], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0845, source_path: scripts/hooks/patch-graphify-post-commit.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, scripts/README.md, scripts/manifest.yaml, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0846, source_path: scripts/knowledge/generate-llm-wiki-coverage.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/README.md, scripts/manifest.yaml, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py, tests/validation/test_generate_llm_wiki.py, tests/validation/test_llm_wiki_retiring_pack_exclusion.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0847, source_path: scripts/knowledge/generate-llm-wiki-index.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md, docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, scripts/README.md, scripts/knowledge/generate-llm-wiki.py, scripts/manifest.yaml, scripts/validation/agentic-research-gate9-evidence.py, tests/validation/test_agentic_research_gate9_evidence.py, tests/validation/test_generate_llm_wiki.py, tests/validation/test_llm_wiki_retiring_pack_exclusion.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0848, source_path: scripts/operations/rehearse-sample-service-delivery.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md, docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml, docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md, scripts/README.md, scripts/manifest.yaml, tests/validation/test_sample_service_delivery_rehearsal.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0849, source_path: scripts/validation/check-repo-contracts.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [.claude/settings.json, .github/INDEX.md, .github/workflow-contract.yml, .pre-commit-config.yaml, README.md, docs/00.agent-governance/providers/claude.md, docs/00.agent-governance/rules/hooks/hookify.enforce-docs-templates.md, docs/00.agent-governance/rules/hooks/hookify.warn-hook-parity-edit.md, docs/00.agent-governance/rules/hooks/hookify.warn-stage-doc-edit.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/spec-0010-tooling/spec.md, docs/03.specs/spec-0011-communication/spec.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0091-workspace-doc-consistency-2026-05/spec.md, docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, docs/03.specs/spec-0093-docs-taxonomy-agent-first-migration/spec.md, docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md, docs/03.specs/spec-0095-infra-secrets-docs-refresh/spec.md, docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md, docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md, docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md, docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md, docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md, docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md, docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md, docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md, docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/guide.md, docs/05.operations/catalog/04-data/ops-0019-opensearch/policy.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/guide.md, docs/05.operations/catalog/04-data/ops-0020-starrocks/policy.md, docs/05.operations/catalog/04-data/ops-0021-backup-and-restore/policy.md, docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/policy.md, docs/05.operations/catalog/04-data/ops-0023-minio/policy.md, docs/05.operations/catalog/04-data/ops-0024-seaweedfs/policy.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/policy.md, docs/05.operations/catalog/04-data/ops-0025-cassandra/runbook.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md, docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/policy.md, docs/05.operations/catalog/04-data/ops-0027-mongodb/runbook.md, docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md, docs/05.operations/catalog/04-data/ops-0029-supabase/policy.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md, docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md, docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/policy.md, docs/05.operations/catalog/04-data/ops-0034-qdrant/runbook.md, docs/05.operations/catalog/06-observability/ops-0039-alertmanager/policy.md, docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md, docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md, docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md, docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md, docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md, docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md, docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md, docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md, docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md, docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md, docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/policy.md, docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md, docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md, docs/05.operations/catalog/09-tooling/ops-0067-syncthing/policy.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/guide.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/policy.md, docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md, docs/05.operations/catalog/09-tooling/ops-0069-terrakube/policy.md, docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md, docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md, docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/docker/ref-0060-image-version-interpretation.md, docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml, docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md, docs/90.references/data/hads/ref-0075-profile.md, docs/99.templates/support/document-metadata-profiles.yaml, docs/99.templates/support/template-governance.md, docs/README.md, infra/01-gateway/nginx/README.md, infra/01-gateway/traefik/README.md, infra/02-auth/keycloak/README.md, infra/02-auth/oauth2-proxy/README.md, infra/03-security/vault/README.md, infra/04-data/analytics/influxdb/README.md, infra/04-data/analytics/ksql/README.md, infra/04-data/analytics/opensearch/README.md, infra/04-data/analytics/warehouses/README.md, infra/04-data/cache-and-kv/valkey-cluster/README.md, infra/04-data/lake-and-object/minio/README.md, infra/04-data/lake-and-object/seaweedfs/README.md, infra/04-data/nosql/cassandra/README.md, infra/04-data/nosql/couchdb/README.md, infra/04-data/nosql/mongodb/README.md, infra/04-data/operational/mng-db/README.md, infra/04-data/operational/supabase/README.md, infra/04-data/relational/postgresql-cluster/README.md, infra/04-data/specialized/neo4j/README.md, infra/04-data/specialized/qdrant/README.md, infra/05-messaging/kafka/README.md, infra/05-messaging/rabbitmq/README.md, infra/06-observability/README.md, infra/06-observability/grafana/README.md, infra/06-observability/loki/README.md, infra/06-observability/tempo/README.md, infra/07-workflow/airflow/README.md, infra/07-workflow/n8n/README.md, infra/08-ai/ollama/README.md, infra/08-ai/open-webui/README.md, infra/09-tooling/k6/README.md, infra/09-tooling/locust/README.md, infra/09-tooling/registry/README.md, infra/09-tooling/sonarqube/README.md, infra/09-tooling/syncthing/README.md, infra/09-tooling/terraform/README.md, infra/09-tooling/terrakube/README.md, infra/10-communication/mail/README.md, infra/11-laboratory/dashboard/README.md, infra/11-laboratory/dozzle/README.md, infra/11-laboratory/open-notebook/README.md, infra/11-laboratory/portainer/README.md, infra/11-laboratory/redisinsight/README.md, scripts/README.md, scripts/hooks/agent-event-hook.sh, scripts/hooks/post-tool-validate.sh, scripts/manifest.yaml, scripts/operations/generate-tech-stack-version-provenance.sh, scripts/operations/provider_surface_renderer.py, scripts/operations/sync-tech-stack-versions.sh, scripts/validation/generate-security-automation-readiness.sh, scripts/validation/github_workflow_contract.py, scripts/validation/target_surface_delta_contract.py, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_agentic_audit_semantic_freshness.py, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py, tests/validation/test_github_workflow_contract.py, tests/validation/test_operations_catalog.py, tests/validation/test_postgres_logical_upgrade_rehearsal.py, tests/validation/test_script_manifest.py, tests/validation/test_target_surface_delta_contracts.py, tests/validation/test_tech_stack_version_contract.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0850, source_path: scripts/validation/recommend-gap-routing.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md, scripts/README.md, scripts/manifest.yaml, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0851, source_path: scripts/validation/recommend-qa-gates.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml, docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md, scripts/README.md, scripts/manifest.yaml, scripts/validation/ci_gate_adapters.py, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_ci_gate_adapters.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0852, source_path: scripts/validation/report-provider-hook-parity.sh, target_path: null, artifact_id: null, action: delete, owner_task: 12, source_kind: tracked, source_owner_task: null, active_consumers: [.github/CODEOWNERS, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, scripts/README.md, scripts/manifest.yaml, scripts/validation/generate-audit-implementation-matrix.sh, tests/validation/test_agent_governance_ci_routing.py, tests/validation/test_script_manifest.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0853, source_path: docs/99.templates/support/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/99.templates/README.md, docs/99.templates/templates/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0854, source_path: docs/99.templates/support/archive-retention-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/task-checklists.md, docs/03.specs/README.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, docs/99.templates/templates/common/README.md, docs/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0855, source_path: docs/99.templates/support/common-document-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/99.templates/templates/common/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0856, source_path: docs/99.templates/support/corpus-migration-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/task-checklists.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/99.templates/templates/common/README.md, docs/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0857, source_path: docs/99.templates/support/document-corpus-migration-contract.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/lib/document_governance/metadata_validator.py, scripts/validation/check-document-corpus-lifecycle.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0858, source_path: docs/99.templates/support/document-metadata-profiles.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/README.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md, docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/lib/document_governance/metadata_validator.py, scripts/manifest.yaml, scripts/validation/agentic-audit-semantic-contract.json, scripts/validation/check-document-corpus-lifecycle.py, scripts/validation/target_surface_delta_contract.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py, tests/validation/test_operations_taxonomy.py, tests/validation/test_target_surface_contracts.py, tests/validation/test_target_surface_delta_contracts.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0859, source_path: docs/99.templates/support/external-source-rationale.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0860, source_path: docs/99.templates/support/frontmatter-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/99.templates/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0861, source_path: docs/99.templates/support/lifecycle-status.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0862, source_path: docs/99.templates/support/readme-profile-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/task.md, docs/99.templates/templates/common/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0863, source_path: docs/99.templates/support/sdlc-document-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md, docs/99.templates/templates/operations/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0864, source_path: docs/99.templates/support/template-contract.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/99.templates/README.md, docs/99.templates/templates/README.md, docs/99.templates/templates/common/README.md, docs/99.templates/templates/governance/README.md, docs/99.templates/templates/operations/README.md, scripts/lib/document_governance/metadata_validator.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0865, source_path: docs/99.templates/support/template-governance.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/99.templates/README.md, docs/99.templates/templates/operations/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0866, source_path: docs/99.templates/support/template-selection.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md, docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md, docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/99.templates/README.md, docs/99.templates/templates/README.md, docs/99.templates/templates/common/README.md, docs/99.templates/templates/governance/README.md, docs/99.templates/templates/operations/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0867, source_path: docs/99.templates/templates/common/archive.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/templates/common/README.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_corpus_lifecycle.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0868, source_path: docs/99.templates/templates/common/audit.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/99.templates/templates/common/README.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0869, source_path: docs/99.templates/templates/common/reference.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md, docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md, docs/03.specs/spec-0153-workspace-governance-simplification/plan.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md, docs/90.references/README.md, docs/90.references/data/README.md, docs/90.references/data/docker/ref-0060-image-version-interpretation.md, docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md, docs/99.templates/templates/common/README.md, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agent_output_eval.py, tests/validation/test_agent_output_eval_fixtures.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0870, source_path: docs/99.templates/templates/sdlc/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/99.templates/templates/README.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0871, source_path: docs/99.templates/templates/sdlc/adr.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/02.architecture/README.md, docs/02.architecture/decisions/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0872, source_path: docs/99.templates/templates/sdlc/architecture-description.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/02.architecture/README.md, docs/02.architecture/descriptions/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0873, source_path: docs/99.templates/templates/sdlc/interface-requirement.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0874, source_path: docs/99.templates/templates/sdlc/plan.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/00.agent-governance/rules/workflows.md, docs/03.specs/README.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0875, source_path: docs/99.templates/templates/sdlc/prd.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/01.requirements/README.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0876, source_path: docs/99.templates/templates/sdlc/spec.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/137-agentic-research-pack-rebuild/spec.md, docs/03.specs/README.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, scripts/lib/document_governance/metadata_validator.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0877, source_path: docs/99.templates/templates/sdlc/srs.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, tests/validation/test_document_metadata.py, tests/validation/test_four_digit_document_identity.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0878, source_path: docs/99.templates/templates/sdlc/task.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/approval-boundaries.md, docs/00.agent-governance/rules/documentation-protocol.md, docs/00.agent-governance/rules/stage-authoring-matrix.md, docs/03.specs/README.md, docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md, docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md, docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md, docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md, docs/99.templates/templates/governance/README.md, scripts/lib/document_governance/metadata_validator.py, scripts/validation/agent_governance_contract.py, tests/validation/test_agent_governance_contract.py, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0879, source_path: docs/99.templates/templates/spec-contracts/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/99.templates/templates/README.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0880, source_path: docs/99.templates/templates/spec-contracts/agent-design.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0881, source_path: docs/99.templates/templates/spec-contracts/api-spec.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0882, source_path: docs/99.templates/templates/spec-contracts/data-model.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0883, source_path: docs/99.templates/templates/spec-contracts/openapi.template.yaml, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0884, source_path: docs/99.templates/templates/spec-contracts/schema.template.graphql, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0885, source_path: docs/99.templates/templates/spec-contracts/service.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md, examples/sample-web-service/README.md, examples/sample-web-service/service.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0886, source_path: docs/99.templates/templates/spec-contracts/service.template.proto, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0887, source_path: docs/99.templates/templates/spec-contracts/tests.template.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: tracked, source_owner_task: null, active_consumers: [docs/00.agent-governance/rules/documentation-protocol.md, tests/validation/test_document_metadata.py], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0888, source_path: docs/03.specs/0153-workspace-governance-simplification/spec.md, target_path: null, artifact_id: SPEC-0153, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0889, source_path: docs/03.specs/0153-workspace-governance-simplification/plan.md, target_path: null, artifact_id: plan-0153, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0890, source_path: docs/03.specs/0153-workspace-governance-simplification/README.md, target_path: null, artifact_id: null, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0891, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md, target_path: null, artifact_id: task-0153-0001, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0892, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md, target_path: null, artifact_id: task-0153-0002, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0893, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0003-bootstrap.md, target_path: null, artifact_id: task-0153-0003, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0894, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md, target_path: null, artifact_id: task-0153-0004, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0895, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0005-requirements.md, target_path: null, artifact_id: task-0153-0005, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0896, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0006-architecture.md, target_path: null, artifact_id: task-0153-0006, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0897, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0007-spec-lifecycle.md, target_path: null, artifact_id: task-0153-0007, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0898, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0008-operations.md, target_path: null, artifact_id: task-0153-0008, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0899, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md, target_path: null, artifact_id: task-0153-0009, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0900, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md, target_path: null, artifact_id: task-0153-0010, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0901, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0011-script-tests.md, target_path: null, artifact_id: task-0153-0011, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0902, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md, target_path: null, artifact_id: task-0153-0012, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
-- {row_id: mig-0003-r0903, source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md, target_path: null, artifact_id: task-0153-0013, action: delete, owner_task: 13, source_kind: planned-output, source_owner_task: 3, active_consumers: [], recovery_commit: null, status: planned}
+- source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md
+  target_path: docs/03.specs/0153-workspace-governance-simplification/spec.md
+  artifact_id: SPEC-0153
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0153-workspace-governance-simplification/plan.md
+  target_path: docs/03.specs/0153-workspace-governance-simplification/plan.md
+  artifact_id: plan-0153
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0153-workspace-governance-simplification/task.md
+  target_path: null
+  artifact_id: task-0153-01
+  action: delete
+  recovery_commit: 71f89ba1430245c89d10c36a084fc2fae9cfe98b
+- source_path: docs/00.agent-governance/rules/agentic.md
+  target_path: docs/00.agent-governance/policies/agentic.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/approval-boundaries.md
+  target_path: docs/00.agent-governance/policies/approval-boundaries.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/bootstrap.md
+  target_path: docs/00.agent-governance/policies/bootstrap.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/documentation-protocol.md
+  target_path: docs/00.agent-governance/policies/documentation-protocol.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/environment-constraints.md
+  target_path: docs/00.agent-governance/policies/environment-constraints.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/git-workflow.md
+  target_path: docs/00.agent-governance/policies/git-workflow.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/github-governance.md
+  target_path: docs/00.agent-governance/policies/github-governance.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-absolute-file-link.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-direct-main-push.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-gha-secrets-in-run.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-gha-secrets-in-run.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-git-no-verify.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-git-no-verify.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-plaintext-secret-compose.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-plaintext-secret-compose.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.block-unpinned-gha-action.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.block-unpinned-gha-action.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.enforce-docs-templates.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.enforce-docs-templates.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.require-logical-commits-before-stop.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.require-logical-commits-before-stop.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-branch-naming.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-branch-naming.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-conventional-commit.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-conventional-commit.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-docker-infra-stop.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-force-push.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-force-push.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-governance-memory-edit.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-governance-memory-edit.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-hook-parity-edit.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-hook-parity-edit.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-korean-in-governance.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-korean-in-governance.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-parallel-doc-file.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-parallel-doc-file.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-post-edit-style-automation.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-post-edit-style-automation.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-pre-commit-manual.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/hooks/hookify.warn-stage-doc-edit.md
+  target_path: docs/00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/jit-markers.md
+  target_path: docs/00.agent-governance/policies/jit-markers.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/output-style.md
+  target_path: docs/00.agent-governance/policies/output-style.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/persona.md
+  target_path: docs/00.agent-governance/policies/persona.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/postflight-checklist.md
+  target_path: docs/00.agent-governance/policies/postflight-checklist.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/provider-capability-matrix.md
+  target_path: docs/00.agent-governance/policies/provider-capability-matrix.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/quality-standards.md
+  target_path: docs/00.agent-governance/policies/quality-standards.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
+  target_path: docs/00.agent-governance/policies/stage-authoring-matrix.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/standards.md
+  target_path: docs/00.agent-governance/policies/standards.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/task-checklists.md
+  target_path: docs/00.agent-governance/policies/task-checklists.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/rules/workflows.md
+  target_path: docs/00.agent-governance/policies/workflows.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/agentic.md
+  target_path: docs/00.agent-governance/roles/agentic.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/architecture.md
+  target_path: docs/00.agent-governance/roles/architecture.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/common.md
+  target_path: docs/00.agent-governance/roles/common.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/docs.md
+  target_path: docs/00.agent-governance/roles/docs.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/infra.md
+  target_path: docs/00.agent-governance/roles/infra.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/ops.md
+  target_path: docs/00.agent-governance/roles/ops.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/qa.md
+  target_path: docs/00.agent-governance/roles/qa.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/scopes/security.md
+  target_path: docs/00.agent-governance/roles/security.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/ci-cd-engineer.md
+  target_path: docs/00.agent-governance/roles/ci-cd-engineer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/code-reviewer.md
+  target_path: docs/00.agent-governance/roles/code-reviewer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/doc-writer.md
+  target_path: docs/00.agent-governance/roles/doc-writer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/drift-detector.md
+  target_path: docs/00.agent-governance/roles/drift-detector.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/eval-engineer.md
+  target_path: docs/00.agent-governance/roles/eval-engineer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/hook-developer.md
+  target_path: docs/00.agent-governance/roles/hook-developer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/iac-reviewer.md
+  target_path: docs/00.agent-governance/roles/iac-reviewer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/incident-responder.md
+  target_path: docs/00.agent-governance/roles/incident-responder.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/infra-implementer.md
+  target_path: docs/00.agent-governance/roles/infra-implementer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/qa-engineer.md
+  target_path: docs/00.agent-governance/roles/qa-engineer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/rules-engineer.md
+  target_path: docs/00.agent-governance/roles/rules-engineer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/security-auditor.md
+  target_path: docs/00.agent-governance/roles/security-auditor.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/skill-creator.md
+  target_path: docs/00.agent-governance/roles/skill-creator.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/agents/workflow-supervisor.md
+  target_path: docs/00.agent-governance/roles/workflow-supervisor.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/adr-writing.md
+  target_path: docs/00.agent-governance/skills/adr-writing.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/ci-cd-patterns.md
+  target_path: docs/00.agent-governance/skills/ci-cd-patterns.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/code-review-dimensions.md
+  target_path: docs/00.agent-governance/skills/code-review-dimensions.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/code-reviewer.md
+  target_path: docs/00.agent-governance/skills/code-reviewer.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/compose-stack-agent.md
+  target_path: docs/00.agent-governance/skills/compose-stack-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/container-threat-modeling.md
+  target_path: docs/00.agent-governance/skills/container-threat-modeling.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/deployment-pipeline-design.md
+  target_path: docs/00.agent-governance/skills/deployment-pipeline-design.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/docker-compose-patterns.md
+  target_path: docs/00.agent-governance/skills/docker-compose-patterns.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/e2e-testing.md
+  target_path: docs/00.agent-governance/skills/e2e-testing.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/execution-plan-agent.md
+  target_path: docs/00.agent-governance/skills/execution-plan-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/incident-response.md
+  target_path: docs/00.agent-governance/skills/incident-response.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/infra-cross-validate.md
+  target_path: docs/00.agent-governance/skills/infra-cross-validate.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/infra-validate.md
+  target_path: docs/00.agent-governance/skills/infra-validate.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/knowledge-map-agent.md
+  target_path: docs/00.agent-governance/skills/knowledge-map-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/ops-runbook-agent.md
+  target_path: docs/00.agent-governance/skills/ops-runbook-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/policy-gate-agent.md
+  target_path: docs/00.agent-governance/skills/policy-gate-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/project-memory-stewardship.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/provider-model-evaluation.md
+  target_path: docs/00.agent-governance/skills/provider-model-evaluation.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/requirements-to-design-agent.md
+  target_path: docs/00.agent-governance/skills/requirements-to-design-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/security-audit.md
+  target_path: docs/00.agent-governance/skills/security-audit.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/style-validation.md
+  target_path: docs/00.agent-governance/skills/style-validation.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/task-breakdown-agent.md
+  target_path: docs/00.agent-governance/skills/task-breakdown-agent.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/test-automator.md
+  target_path: docs/00.agent-governance/skills/test-automator.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md
+  target_path: docs/00.agent-governance/skills/workspace-audit-revalidation.md
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/ci-cd-engineer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/code-reviewer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/doc-writer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/drift-detector.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/eval-engineer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/hook-developer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/iac-reviewer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/incident-responder.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/infra-implementer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/qa-engineer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/rules-engineer.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/security-auditor.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/skill-creator.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/agents/workflow-supervisor.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/hooks/agent-event-hook.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: .gemini/settings.json
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: GEMINI.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/agents/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/contracts/agent-catalog.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/contracts/deferred-paths.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/contracts/provider-models.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/harness-implementation-map.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/agentic-harness-contract-hardening.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/current.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/direct-deletion-branch-unadopted-design.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/docker-doc-contract-backlog.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/execution-stage-legacy-debt.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/governance-memory-usage-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/harness-agent-first-gap-audit.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/operations-target-marker-contract-tension.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/progress.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/reviewer-checkout-destroyed-dirty-state.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/stop-gate-ignores-task-ownership.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/memory/worktree-consolidation-2026-08-18.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/providers/agents-md.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/providers/gemini.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/00.agent-governance/subagent-protocol.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/governance/memory.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/governance/progress.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0001-gateway.md
+  target_path: docs/01.requirements/0001-gateway.md
+  artifact_id: REQ-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0002-auth.md
+  target_path: docs/01.requirements/0002-auth.md
+  artifact_id: REQ-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0003-security.md
+  target_path: docs/01.requirements/0003-security.md
+  artifact_id: REQ-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0004-data.md
+  target_path: docs/01.requirements/0004-data.md
+  artifact_id: REQ-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0005-data-analytics.md
+  target_path: docs/01.requirements/0005-data-analytics.md
+  artifact_id: REQ-0005
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0006-messaging.md
+  target_path: docs/01.requirements/0006-messaging.md
+  artifact_id: REQ-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0007-observability.md
+  target_path: docs/01.requirements/0007-observability.md
+  artifact_id: REQ-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0008-workflow.md
+  target_path: docs/01.requirements/0008-workflow.md
+  artifact_id: REQ-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0009-ai.md
+  target_path: docs/01.requirements/0009-ai.md
+  artifact_id: REQ-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0010-tooling.md
+  target_path: docs/01.requirements/0010-tooling.md
+  artifact_id: REQ-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0011-communication.md
+  target_path: docs/01.requirements/0011-communication.md
+  artifact_id: REQ-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0012-laboratory.md
+  target_path: docs/01.requirements/0012-laboratory.md
+  artifact_id: REQ-0012
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0013-ai-open-webui.md
+  target_path: docs/01.requirements/0013-ai-open-webui.md
+  artifact_id: REQ-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0014-auth-optimization-hardening.md
+  target_path: docs/01.requirements/0014-auth-optimization-hardening.md
+  artifact_id: REQ-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0015-security-optimization-hardening.md
+  target_path: docs/01.requirements/0015-security-optimization-hardening.md
+  artifact_id: REQ-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0016-data-optimization-hardening.md
+  target_path: docs/01.requirements/0016-data-optimization-hardening.md
+  artifact_id: REQ-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0017-messaging-optimization-hardening.md
+  target_path: docs/01.requirements/0017-messaging-optimization-hardening.md
+  artifact_id: REQ-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0018-observability-optimization-hardening.md
+  target_path: docs/01.requirements/0018-observability-optimization-hardening.md
+  artifact_id: REQ-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0019-workflow-optimization-hardening.md
+  target_path: docs/01.requirements/0019-workflow-optimization-hardening.md
+  artifact_id: REQ-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0020-ai-optimization-hardening.md
+  target_path: docs/01.requirements/0020-ai-optimization-hardening.md
+  artifact_id: REQ-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0021-tooling-optimization-hardening.md
+  target_path: docs/01.requirements/0021-tooling-optimization-hardening.md
+  artifact_id: REQ-0021
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0022-laboratory-optimization-hardening.md
+  target_path: docs/01.requirements/0022-laboratory-optimization-hardening.md
+  artifact_id: REQ-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0023-standardize-infra-net.md
+  target_path: docs/01.requirements/0023-standardize-infra-net.md
+  artifact_id: REQ-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0024-agent-governance-standardization.md
+  target_path: docs/01.requirements/0024-agent-governance-standardization.md
+  artifact_id: REQ-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/01.requirements/prd-0025-operational-readiness-closure.md
+  target_path: docs/01.requirements/0025-operational-readiness-closure.md
+  artifact_id: REQ-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0001-gateway-architecture.md
+  target_path: docs/02.architecture/descriptions/0001-gateway-architecture.md
+  artifact_id: AD-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0002-auth-architecture.md
+  target_path: docs/02.architecture/descriptions/0002-auth-architecture.md
+  artifact_id: AD-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0003-security-architecture.md
+  target_path: docs/02.architecture/descriptions/0003-security-architecture.md
+  artifact_id: AD-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0004-data-architecture.md
+  target_path: docs/02.architecture/descriptions/0004-data-architecture.md
+  artifact_id: AD-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0005-messaging-architecture.md
+  target_path: docs/02.architecture/descriptions/0005-messaging-architecture.md
+  artifact_id: AD-0005
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0006-observability-architecture.md
+  target_path: docs/02.architecture/descriptions/0006-observability-architecture.md
+  artifact_id: AD-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0007-workflow-architecture.md
+  target_path: docs/02.architecture/descriptions/0007-workflow-architecture.md
+  artifact_id: AD-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0008-ai-architecture.md
+  target_path: docs/02.architecture/descriptions/0008-ai-architecture.md
+  artifact_id: AD-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0009-tooling-architecture.md
+  target_path: docs/02.architecture/descriptions/0009-tooling-architecture.md
+  artifact_id: AD-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0010-communication-architecture.md
+  target_path: docs/02.architecture/descriptions/0010-communication-architecture.md
+  artifact_id: AD-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md
+  target_path: docs/02.architecture/descriptions/0011-laboratory-architecture.md
+  artifact_id: AD-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0012-data-analytics-architecture.md
+  target_path: docs/02.architecture/descriptions/0012-data-analytics-architecture.md
+  artifact_id: AD-0012
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0013-open-webui-architecture.md
+  target_path: docs/02.architecture/descriptions/0013-open-webui-architecture.md
+  artifact_id: AD-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md
+  artifact_id: AD-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0018-security-optimization-hardening-architecture.md
+  artifact_id: AD-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0019-data-optimization-hardening-architecture.md
+  artifact_id: AD-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md
+  artifact_id: AD-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md
+  artifact_id: AD-0021
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md
+  artifact_id: AD-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md
+  artifact_id: AD-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md
+  artifact_id: AD-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md
+  target_path: docs/02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md
+  artifact_id: AD-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md
+  target_path: docs/02.architecture/descriptions/0026-standardize-infra-net.md
+  artifact_id: AD-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md
+  target_path: docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md
+  artifact_id: AD-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md
+  target_path: docs/02.architecture/descriptions/0028-operational-readiness-closure.md
+  artifact_id: AD-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md
+  target_path: docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md
+  artifact_id: ADR-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md
+  target_path: docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md
+  artifact_id: ADR-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md
+  target_path: docs/02.architecture/decisions/0003-vault-as-secrets-manager.md
+  artifact_id: ADR-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0004-postgresql-ha-patroni.md
+  target_path: docs/02.architecture/decisions/0004-postgresql-ha-patroni.md
+  artifact_id: ADR-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md
+  target_path: docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md
+  artifact_id: ADR-0005
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0006-lgtm-stack-selection.md
+  target_path: docs/02.architecture/decisions/0006-lgtm-stack-selection.md
+  artifact_id: ADR-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md
+  target_path: docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md
+  artifact_id: ADR-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md
+  target_path: docs/02.architecture/decisions/0008-ollama-openwebui-local-ai.md
+  artifact_id: ADR-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0009-tooling-services.md
+  target_path: docs/02.architecture/decisions/0009-tooling-services.md
+  artifact_id: ADR-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0010-communication-services.md
+  target_path: docs/02.architecture/decisions/0010-communication-services.md
+  artifact_id: ADR-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0011-laboratory-services.md
+  target_path: docs/02.architecture/decisions/0011-laboratory-services.md
+  artifact_id: ADR-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0015-analytics-engine-selection.md
+  target_path: docs/02.architecture/decisions/0015-analytics-engine-selection.md
+  artifact_id: ADR-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0016-open-webui-implementation.md
+  target_path: docs/02.architecture/decisions/0016-open-webui-implementation.md
+  artifact_id: ADR-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md
+  target_path: docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md
+  artifact_id: ADR-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0021
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md
+  target_path: docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md
+  artifact_id: ADR-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0026-standardize-infra-net.md
+  target_path: docs/02.architecture/decisions/0026-standardize-infra-net.md
+  artifact_id: ADR-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md
+  target_path: docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md
+  artifact_id: ADR-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md
+  target_path: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  artifact_id: ADR-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/02.architecture/decisions/adr-0029-workspace-governance-authority.md
+  target_path: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  artifact_id: adr-0029
+  action: rename
+  recovery_commit: 71f89ba1430245c89d10c36a084fc2fae9cfe98b
+- source_path: docs/03.specs/spec-0001-gateway/spec.md
+  target_path: docs/03.specs/0001-gateway/spec.md
+  artifact_id: SPEC-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0002-auth/spec.md
+  target_path: docs/03.specs/0002-auth/spec.md
+  artifact_id: SPEC-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0003-security/spec.md
+  target_path: docs/03.specs/0003-security/spec.md
+  artifact_id: SPEC-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0004-data/spec.md
+  target_path: docs/03.specs/0004-data/spec.md
+  artifact_id: SPEC-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0005-data-analytics/spec.md
+  target_path: docs/03.specs/0005-data-analytics/spec.md
+  artifact_id: SPEC-0005
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0006-messaging/spec.md
+  target_path: docs/03.specs/0006-messaging/spec.md
+  artifact_id: SPEC-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0007-observability/spec.md
+  target_path: docs/03.specs/0007-observability/spec.md
+  artifact_id: SPEC-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0008-workflow/spec.md
+  target_path: docs/03.specs/0008-workflow/spec.md
+  artifact_id: SPEC-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0009-ai/spec.md
+  target_path: docs/03.specs/0009-ai/spec.md
+  artifact_id: SPEC-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0010-tooling/spec.md
+  target_path: docs/03.specs/0010-tooling/spec.md
+  artifact_id: SPEC-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0011-communication/spec.md
+  target_path: docs/03.specs/0011-communication/spec.md
+  artifact_id: SPEC-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0012-laboratory/spec.md
+  target_path: docs/03.specs/0012-laboratory/spec.md
+  artifact_id: SPEC-0012
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0090-workspace-audit-2026-05/spec.md
+  target_path: docs/03.specs/0090-workspace-audit-2026-05/spec.md
+  artifact_id: SPEC-0090
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0091-workspace-doc-consistency-2026-05/spec.md
+  target_path: docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md
+  artifact_id: SPEC-0091
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0092-workspace-consistency-2026-05b/spec.md
+  target_path: docs/03.specs/0092-workspace-consistency-2026-05b/spec.md
+  artifact_id: SPEC-0092
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0093-docs-taxonomy-agent-first-migration/spec.md
+  target_path: docs/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md
+  artifact_id: SPEC-0093
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md
+  target_path: docs/03.specs/0094-harness-agent-first-engineering/spec.md
+  artifact_id: SPEC-0094
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0095-infra-secrets-docs-refresh/spec.md
+  target_path: docs/03.specs/0095-infra-secrets-docs-refresh/spec.md
+  artifact_id: SPEC-0095
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md
+  target_path: docs/03.specs/0096-llm-wiki-agent-first-completion/spec.md
+  artifact_id: SPEC-0096
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0097-home-docker-revalidation-deferred-follow-up/spec.md
+  target_path: docs/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md
+  artifact_id: SPEC-0097
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0098-standardize-infra-net/spec.md
+  target_path: docs/03.specs/0098-standardize-infra-net/spec.md
+  artifact_id: SPEC-0098
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md
+  target_path: docs/03.specs/0102-workspace-document-contract-audit-pack/spec.md
+  artifact_id: SPEC-0102
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md
+  target_path: docs/03.specs/0103-document-restructure-audit-contract-archive/spec.md
+  artifact_id: SPEC-0103
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md
+  target_path: docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md
+  artifact_id: SPEC-0105
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md
+  target_path: docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md
+  artifact_id: SPEC-0123
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0123-agentic-engineering-audit-remediation/task.md
+  target_path: docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md
+  artifact_id: TASK-0123-01
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md
+  target_path: docs/03.specs/0131-document-corpus-lifecycle-migration-foundation/spec.md
+  artifact_id: SPEC-0131
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md
+  target_path: docs/03.specs/0132-agent-governance-harness-convergence/spec.md
+  artifact_id: SPEC-0132
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md
+  target_path: docs/03.specs/0133-target-surface-contract-convergence/spec.md
+  artifact_id: SPEC-0133
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/plan.md
+  target_path: docs/03.specs/0134-agent-governance-canonical-convergence/plan.md
+  artifact_id: PLAN-0134
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md
+  target_path: docs/03.specs/0134-agent-governance-canonical-convergence/spec.md
+  artifact_id: SPEC-0134
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0134-agent-governance-canonical-convergence/task.md
+  target_path: docs/03.specs/0134-agent-governance-canonical-convergence/tasks/tsk-0001-canonical-convergence.md
+  artifact_id: TASK-0134-01
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/plan.md
+  target_path: docs/03.specs/0135-target-surface-delta-convergence/plan.md
+  artifact_id: PLAN-0135
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/spec.md
+  target_path: docs/03.specs/0135-target-surface-delta-convergence/spec.md
+  artifact_id: SPEC-0135
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0135-target-surface-delta-convergence/task.md
+  target_path: docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md
+  artifact_id: TASK-0135-01
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md
+  target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md
+  artifact_id: PLAN-0136
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+  target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  artifact_id: SPEC-0136
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md
+  target_path: docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md
+  artifact_id: TASK-0136-01
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/plan.md
+  target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/plan.md
+  artifact_id: PLAN-0152
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/spec.md
+  target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/spec.md
+  artifact_id: SPEC-0152
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/spec-0152-deleted-reference-leaf-disposition/task.md
+  target_path: docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md
+  artifact_id: TASK-0152-01
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/137-agentic-research-pack-rebuild/spec.md
+  target_path: docs/03.specs/0137-agentic-research-pack-rebuild/spec.md
+  artifact_id: SPEC:137-AGENTIC-RESEARCH-PACK-REBUILD
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/plans/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md
+  target_path: docs/03.specs/0137-agentic-research-pack-rebuild/plan.md
+  artifact_id: plan:2026-08-08-agentic-research-pack-rebuild
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/tasks/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+  target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md
+  artifact_id: task:2026-08-08-agentic-research-pack-rebuild
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md
+  target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md
+  artifact_id: task:2026-08-11-agentic-research-pack-source-refresh
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md
+  target_path: docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md
+  artifact_id: task:2026-08-14-agentic-research-pack-deepening
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md
+  target_path: docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md
+  artifact_id: policy-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md
+  artifact_id: guide-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md
+  artifact_id: guide-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  artifact_id: guide-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md
+  target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md
+  artifact_id: policy-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md
+  target_path: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md
+  artifact_id: runbook-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md
+  target_path: docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md
+  artifact_id: policy-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md
+  artifact_id: guide-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md
+  target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
+  artifact_id: policy-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md
+  target_path: docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
+  artifact_id: runbook-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0008-new-service-onboarding/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md
+  artifact_id: guide-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md
+  target_path: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  artifact_id: runbook-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md
+  target_path: docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md
+  artifact_id: guide-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md
+  target_path: docs/05.operations/catalog/01-gateway/0011-nginx/guide.md
+  artifact_id: guide-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md
+  target_path: docs/05.operations/catalog/01-gateway/0011-nginx/policy.md
+  artifact_id: policy-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md
+  target_path: docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md
+  artifact_id: runbook-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md
+  target_path: docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
+  artifact_id: guide-0012
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md
+  target_path: docs/05.operations/catalog/01-gateway/0013-traefik/guide.md
+  artifact_id: guide-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md
+  target_path: docs/05.operations/catalog/01-gateway/0013-traefik/policy.md
+  artifact_id: policy-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md
+  target_path: docs/05.operations/catalog/01-gateway/0013-traefik/runbook.md
+  artifact_id: runbook-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/guide.md
+  target_path: docs/05.operations/catalog/02-auth/0014-keycloak/guide.md
+  artifact_id: guide-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/policy.md
+  target_path: docs/05.operations/catalog/02-auth/0014-keycloak/policy.md
+  artifact_id: policy-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0014-keycloak/runbook.md
+  target_path: docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md
+  artifact_id: runbook-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/guide.md
+  target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md
+  artifact_id: guide-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/policy.md
+  target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md
+  artifact_id: policy-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/02-auth/ops-0015-oauth2-proxy/runbook.md
+  target_path: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md
+  artifact_id: runbook-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/03-security/ops-0016-vault/guide.md
+  target_path: docs/05.operations/catalog/03-security/0016-vault/guide.md
+  artifact_id: guide-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/03-security/ops-0016-vault/policy.md
+  target_path: docs/05.operations/catalog/03-security/0016-vault/policy.md
+  artifact_id: policy-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/03-security/ops-0016-vault/runbook.md
+  target_path: docs/05.operations/catalog/03-security/0016-vault/runbook.md
+  artifact_id: runbook-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/guide.md
+  target_path: docs/05.operations/catalog/04-data/0017-influxdb/guide.md
+  artifact_id: guide-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/policy.md
+  target_path: docs/05.operations/catalog/04-data/0017-influxdb/policy.md
+  artifact_id: policy-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0017-influxdb/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0017-influxdb/runbook.md
+  artifact_id: runbook-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/guide.md
+  target_path: docs/05.operations/catalog/04-data/0018-ksqldb/guide.md
+  artifact_id: guide-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/policy.md
+  target_path: docs/05.operations/catalog/04-data/0018-ksqldb/policy.md
+  artifact_id: policy-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0018-ksqldb/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md
+  artifact_id: runbook-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/guide.md
+  target_path: docs/05.operations/catalog/04-data/0019-opensearch/guide.md
+  artifact_id: guide-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/policy.md
+  target_path: docs/05.operations/catalog/04-data/0019-opensearch/policy.md
+  artifact_id: policy-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0019-opensearch/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0019-opensearch/runbook.md
+  artifact_id: runbook-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/guide.md
+  target_path: docs/05.operations/catalog/04-data/0020-starrocks/guide.md
+  artifact_id: guide-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/policy.md
+  target_path: docs/05.operations/catalog/04-data/0020-starrocks/policy.md
+  artifact_id: policy-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0020-starrocks/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0020-starrocks/runbook.md
+  artifact_id: runbook-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0021-backup-and-restore/policy.md
+  target_path: docs/05.operations/catalog/04-data/0021-backup-and-restore/policy.md
+  artifact_id: policy-0021
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/guide.md
+  target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md
+  artifact_id: guide-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/policy.md
+  target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md
+  artifact_id: policy-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0022-valkey-cluster/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md
+  artifact_id: runbook-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0023-minio/guide.md
+  target_path: docs/05.operations/catalog/04-data/0023-minio/guide.md
+  artifact_id: guide-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0023-minio/policy.md
+  target_path: docs/05.operations/catalog/04-data/0023-minio/policy.md
+  artifact_id: policy-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0023-minio/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0023-minio/runbook.md
+  artifact_id: runbook-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/guide.md
+  target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md
+  artifact_id: guide-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/policy.md
+  target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md
+  artifact_id: policy-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0024-seaweedfs/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md
+  artifact_id: runbook-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/guide.md
+  target_path: docs/05.operations/catalog/04-data/0025-cassandra/guide.md
+  artifact_id: guide-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/policy.md
+  target_path: docs/05.operations/catalog/04-data/0025-cassandra/policy.md
+  artifact_id: policy-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0025-cassandra/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0025-cassandra/runbook.md
+  artifact_id: runbook-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/guide.md
+  target_path: docs/05.operations/catalog/04-data/0026-couchdb/guide.md
+  artifact_id: guide-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/policy.md
+  target_path: docs/05.operations/catalog/04-data/0026-couchdb/policy.md
+  artifact_id: policy-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0026-couchdb/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0026-couchdb/runbook.md
+  artifact_id: runbook-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/guide.md
+  target_path: docs/05.operations/catalog/04-data/0027-mongodb/guide.md
+  artifact_id: guide-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/policy.md
+  target_path: docs/05.operations/catalog/04-data/0027-mongodb/policy.md
+  artifact_id: policy-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0027-mongodb/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0027-mongodb/runbook.md
+  artifact_id: runbook-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/guide.md
+  target_path: docs/05.operations/catalog/04-data/0028-management-database/guide.md
+  artifact_id: guide-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/policy.md
+  target_path: docs/05.operations/catalog/04-data/0028-management-database/policy.md
+  artifact_id: policy-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0028-management-database/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0028-management-database/runbook.md
+  artifact_id: runbook-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/guide.md
+  target_path: docs/05.operations/catalog/04-data/0029-supabase/guide.md
+  artifact_id: guide-0029
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/policy.md
+  target_path: docs/05.operations/catalog/04-data/0029-supabase/policy.md
+  artifact_id: policy-0029
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0029-supabase/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0029-supabase/runbook.md
+  artifact_id: runbook-0029
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/guide.md
+  artifact_id: guide-0030
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/policy.md
+  artifact_id: policy-0030
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0030-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0030-optimization-hardening/runbook.md
+  artifact_id: runbook-0030
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/guide.md
+  target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md
+  artifact_id: guide-0031
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/policy.md
+  target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/policy.md
+  artifact_id: policy-0031
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0031-postgresql-cluster/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md
+  artifact_id: runbook-0031
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  artifact_id: runbook-0032
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/guide.md
+  target_path: docs/05.operations/catalog/04-data/0033-neo4j/guide.md
+  artifact_id: guide-0033
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/policy.md
+  target_path: docs/05.operations/catalog/04-data/0033-neo4j/policy.md
+  artifact_id: policy-0033
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0033-neo4j/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0033-neo4j/runbook.md
+  artifact_id: runbook-0033
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/guide.md
+  target_path: docs/05.operations/catalog/04-data/0034-qdrant/guide.md
+  artifact_id: guide-0034
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/policy.md
+  target_path: docs/05.operations/catalog/04-data/0034-qdrant/policy.md
+  artifact_id: policy-0034
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0034-qdrant/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0034-qdrant/runbook.md
+  artifact_id: runbook-0034
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/04-data/ops-0035-storage-exhaustion/runbook.md
+  target_path: docs/05.operations/catalog/04-data/0035-storage-exhaustion/runbook.md
+  artifact_id: runbook-0035
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/guide.md
+  target_path: docs/05.operations/catalog/05-messaging/0036-kafka/guide.md
+  artifact_id: guide-0036
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/policy.md
+  target_path: docs/05.operations/catalog/05-messaging/0036-kafka/policy.md
+  artifact_id: policy-0036
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0036-kafka/runbook.md
+  target_path: docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md
+  artifact_id: runbook-0036
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md
+  artifact_id: guide-0037
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md
+  artifact_id: policy-0037
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/runbook.md
+  artifact_id: runbook-0037
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/guide.md
+  target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md
+  artifact_id: guide-0038
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/policy.md
+  target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md
+  artifact_id: policy-0038
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/05-messaging/ops-0038-rabbitmq/runbook.md
+  target_path: docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md
+  artifact_id: runbook-0038
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/guide.md
+  artifact_id: guide-0039
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/policy.md
+  artifact_id: policy-0039
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0039-alertmanager/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0039-alertmanager/runbook.md
+  artifact_id: runbook-0039
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0040-alloy/guide.md
+  artifact_id: guide-0040
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0040-alloy/policy.md
+  artifact_id: policy-0040
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0040-alloy/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0040-alloy/runbook.md
+  artifact_id: runbook-0040
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0041-grafana/guide.md
+  artifact_id: guide-0041
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0041-grafana/policy.md
+  artifact_id: policy-0041
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0041-grafana/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0041-grafana/runbook.md
+  artifact_id: runbook-0041
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0042-lgtm-stack/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md
+  artifact_id: guide-0042
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0043-loki/guide.md
+  artifact_id: guide-0043
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0043-loki/policy.md
+  artifact_id: policy-0043
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0043-loki/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0043-loki/runbook.md
+  artifact_id: runbook-0043
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/guide.md
+  artifact_id: guide-0044
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/policy.md
+  artifact_id: policy-0044
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0044-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md
+  artifact_id: runbook-0044
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0045-prometheus/guide.md
+  artifact_id: guide-0045
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0045-prometheus/policy.md
+  artifact_id: policy-0045
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0045-prometheus/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md
+  artifact_id: runbook-0045
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/guide.md
+  artifact_id: guide-0046
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/policy.md
+  artifact_id: policy-0046
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0046-pushgateway/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0046-pushgateway/runbook.md
+  artifact_id: runbook-0046
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/guide.md
+  artifact_id: guide-0047
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/policy.md
+  artifact_id: policy-0047
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0047-pyroscope/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0047-pyroscope/runbook.md
+  artifact_id: runbook-0047
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0048-telemetry-retention/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0048-telemetry-retention/policy.md
+  artifact_id: policy-0048
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md
+  target_path: docs/05.operations/catalog/06-observability/0049-tempo/guide.md
+  artifact_id: guide-0049
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md
+  target_path: docs/05.operations/catalog/06-observability/0049-tempo/policy.md
+  artifact_id: policy-0049
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md
+  target_path: docs/05.operations/catalog/06-observability/0049-tempo/runbook.md
+  artifact_id: runbook-0049
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/guide.md
+  target_path: docs/05.operations/catalog/07-workflow/0050-airflow/guide.md
+  artifact_id: guide-0050
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/policy.md
+  target_path: docs/05.operations/catalog/07-workflow/0050-airflow/policy.md
+  artifact_id: policy-0050
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0050-airflow/runbook.md
+  target_path: docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md
+  artifact_id: runbook-0050
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/guide.md
+  target_path: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/guide.md
+  artifact_id: guide-0051
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md
+  target_path: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md
+  artifact_id: policy-0052
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/guide.md
+  target_path: docs/05.operations/catalog/07-workflow/0053-n8n/guide.md
+  artifact_id: guide-0053
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/policy.md
+  target_path: docs/05.operations/catalog/07-workflow/0053-n8n/policy.md
+  artifact_id: policy-0053
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0053-n8n/runbook.md
+  target_path: docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md
+  artifact_id: runbook-0053
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md
+  artifact_id: guide-0054
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md
+  artifact_id: policy-0054
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md
+  artifact_id: runbook-0054
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0055-gpu-recovery/runbook.md
+  target_path: docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md
+  artifact_id: runbook-0055
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/guide.md
+  target_path: docs/05.operations/catalog/08-ai/0056-ollama/guide.md
+  artifact_id: guide-0056
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/policy.md
+  target_path: docs/05.operations/catalog/08-ai/0056-ollama/policy.md
+  artifact_id: policy-0056
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md
+  target_path: docs/05.operations/catalog/08-ai/0056-ollama/runbook.md
+  artifact_id: runbook-0056
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/guide.md
+  target_path: docs/05.operations/catalog/08-ai/0057-open-webui/guide.md
+  artifact_id: guide-0057
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/policy.md
+  target_path: docs/05.operations/catalog/08-ai/0057-open-webui/policy.md
+  artifact_id: policy-0057
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md
+  target_path: docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md
+  artifact_id: runbook-0057
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/guide.md
+  artifact_id: guide-0058
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/policy.md
+  artifact_id: policy-0058
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md
+  artifact_id: runbook-0058
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/08-ai/ops-0059-rag-workflow/guide.md
+  target_path: docs/05.operations/catalog/08-ai/0059-rag-workflow/guide.md
+  artifact_id: guide-0059
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0060-iac-deployment/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0060-iac-deployment/policy.md
+  artifact_id: policy-0060
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0061-k6/guide.md
+  artifact_id: guide-0061
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0061-k6/policy.md
+  artifact_id: policy-0061
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0061-k6/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0061-k6/runbook.md
+  artifact_id: runbook-0061
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0062-locust/guide.md
+  artifact_id: guide-0062
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0062-locust/policy.md
+  artifact_id: policy-0062
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0062-locust/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0062-locust/runbook.md
+  artifact_id: runbook-0062
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md
+  artifact_id: guide-0063
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md
+  artifact_id: policy-0063
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md
+  artifact_id: runbook-0063
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/guide.md
+  artifact_id: guide-0064
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/policy.md
+  artifact_id: policy-0064
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0064-performance-testing/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0064-performance-testing/runbook.md
+  artifact_id: runbook-0064
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0065-registry/guide.md
+  artifact_id: guide-0065
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0065-registry/policy.md
+  artifact_id: policy-0065
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0065-registry/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0065-registry/runbook.md
+  artifact_id: runbook-0065
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/guide.md
+  artifact_id: guide-0066
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/policy.md
+  artifact_id: policy-0066
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0066-sonarqube/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0066-sonarqube/runbook.md
+  artifact_id: runbook-0066
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md
+  artifact_id: guide-0067
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md
+  artifact_id: policy-0067
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0067-syncthing/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md
+  artifact_id: runbook-0067
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0068-terraform/guide.md
+  artifact_id: guide-0068
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0068-terraform/policy.md
+  artifact_id: policy-0068
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0068-terraform/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md
+  artifact_id: runbook-0068
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/guide.md
+  target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md
+  artifact_id: guide-0069
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/policy.md
+  target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md
+  artifact_id: policy-0069
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/09-tooling/ops-0069-terrakube/runbook.md
+  target_path: docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md
+  artifact_id: runbook-0069
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md
+  target_path: docs/05.operations/catalog/10-communication/0070-mail/guide.md
+  artifact_id: guide-0070
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md
+  target_path: docs/05.operations/catalog/10-communication/0070-mail/policy.md
+  artifact_id: policy-0070
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md
+  target_path: docs/05.operations/catalog/10-communication/0070-mail/runbook.md
+  artifact_id: runbook-0070
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/guide.md
+  artifact_id: guide-0071
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/policy.md
+  artifact_id: policy-0071
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0071-homer-dashboard/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/runbook.md
+  artifact_id: runbook-0071
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/guide.md
+  artifact_id: guide-0072
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/policy.md
+  artifact_id: policy-0072
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0072-dozzle/runbook.md
+  artifact_id: runbook-0072
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md
+  artifact_id: guide-0073
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md
+  artifact_id: policy-0073
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0073-open-notebook/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md
+  artifact_id: runbook-0073
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md
+  artifact_id: guide-0074
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md
+  artifact_id: policy-0074
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0074-optimization-hardening/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md
+  artifact_id: runbook-0074
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md
+  artifact_id: guide-0075
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md
+  artifact_id: policy-0075
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0075-portainer/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md
+  artifact_id: runbook-0075
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md
+  target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/guide.md
+  artifact_id: guide-0076
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md
+  target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/policy.md
+  artifact_id: policy-0076
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md
+  target_path: docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md
+  artifact_id: runbook-0076
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/guide.md
+  target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md
+  artifact_id: guide-0077
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/policy.md
+  target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md
+  artifact_id: policy-0077
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/catalog/12-infra-net/ops-0077-ip-address-management/runbook.md
+  target_path: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md
+  artifact_id: runbook-0077
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/05.operations/releases/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0001-readme.md
+  target_path: docs/90.references/audits/0001-readme/README.md
+  artifact_id: AUD-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0002-automation-coverage-map.md
+  target_path: docs/90.references/audits/0002-automation-coverage-map/README.md
+  artifact_id: AUD-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0003-ci-qa-parser-graphify-decision.md
+  target_path: docs/90.references/audits/0003-ci-qa-parser-graphify-decision/README.md
+  artifact_id: AUD-0003
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0004-contract-governance-map.md
+  target_path: docs/90.references/audits/0004-contract-governance-map/README.md
+  artifact_id: AUD-0004
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0005-frontmatter-inventory.md
+  target_path: docs/90.references/audits/0005-frontmatter-inventory/README.md
+  artifact_id: AUD-0005
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0006-frontmatter-routing-profile.md
+  target_path: docs/90.references/audits/0006-frontmatter-routing-profile/README.md
+  artifact_id: AUD-0006
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0007-gap-register.md
+  target_path: docs/90.references/audits/0007-gap-register/README.md
+  artifact_id: AUD-0007
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0008-historical-evidence-preservation.md
+  target_path: docs/90.references/audits/0008-historical-evidence-preservation/README.md
+  artifact_id: AUD-0008
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0009-readme-profile-inventory.md
+  target_path: docs/90.references/audits/0009-readme-profile-inventory/README.md
+  artifact_id: AUD-0009
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0010-section-profile-inventory.md
+  target_path: docs/90.references/audits/0010-section-profile-inventory/README.md
+  artifact_id: AUD-0010
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0011-template-application-gaps.md
+  target_path: docs/90.references/audits/0011-template-application-gaps/README.md
+  artifact_id: AUD-0011
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0012-readme.md
+  target_path: docs/90.references/audits/0012-readme/README.md
+  artifact_id: AUD-0012
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0013-ci-qa-formatting-contract.md
+  target_path: docs/90.references/audits/0013-ci-qa-formatting-contract/README.md
+  artifact_id: AUD-0013
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0014-frontmatter-profile-inventory.md
+  target_path: docs/90.references/audits/0014-frontmatter-profile-inventory/README.md
+  artifact_id: AUD-0014
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0015-operations-bucket-restructure.md
+  target_path: docs/90.references/audits/0015-operations-bucket-restructure/README.md
+  artifact_id: AUD-0015
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0016-restructure-gap-register.md
+  target_path: docs/90.references/audits/0016-restructure-gap-register/README.md
+  artifact_id: AUD-0016
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0017-sdlc-spec-archive-candidates.md
+  target_path: docs/90.references/audits/0017-sdlc-spec-archive-candidates/README.md
+  artifact_id: AUD-0017
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0018-template-contract-drift.md
+  target_path: docs/90.references/audits/0018-template-contract-drift/README.md
+  artifact_id: AUD-0018
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0019-readme.md
+  target_path: docs/90.references/audits/0019-readme/README.md
+  artifact_id: AUD-0019
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md
+  target_path: docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md
+  artifact_id: AUD-0020
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0021-automation-candidates.md
+  target_path: docs/90.references/audits/0021-automation-candidates/README.md
+  artifact_id: AUD-0021
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md
+  target_path: docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md
+  artifact_id: AUD-0022
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
+  target_path: docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md
+  artifact_id: AUD-0023
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md
+  target_path: docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md
+  artifact_id: AUD-0024
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0025-harness-engineering-implementation.md
+  target_path: docs/90.references/audits/0025-harness-engineering-implementation/README.md
+  artifact_id: AUD-0025
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0026-implementation-overview.md
+  target_path: docs/90.references/audits/0026-implementation-overview/README.md
+  artifact_id: AUD-0026
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0027-loop-engineering-implementation.md
+  target_path: docs/90.references/audits/0027-loop-engineering-implementation/README.md
+  artifact_id: AUD-0027
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md
+  target_path: docs/90.references/audits/0028-provider-harness-loop-implementation/README.md
+  artifact_id: AUD-0028
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md
+  target_path: docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md
+  artifact_id: AUD-0029
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md
+  target_path: docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md
+  artifact_id: AUD-0030
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0031-security-framework-maturity.md
+  target_path: docs/90.references/audits/0031-security-framework-maturity/README.md
+  artifact_id: AUD-0031
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md
+  target_path: docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md
+  artifact_id: AUD-0032
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0033-readme.md
+  target_path: docs/90.references/audits/0033-readme/README.md
+  artifact_id: AUD-0033
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0034-agent-catalog-audit.md
+  target_path: docs/90.references/audits/0034-agent-catalog-audit/README.md
+  artifact_id: AUD-0034
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0035-automation-candidates.md
+  target_path: docs/90.references/audits/0035-automation-candidates/README.md
+  artifact_id: AUD-0035
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0036-harness-loop-audit.md
+  target_path: docs/90.references/audits/0036-harness-loop-audit/README.md
+  artifact_id: AUD-0036
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0037-implementation-overview.md
+  target_path: docs/90.references/audits/0037-implementation-overview/README.md
+  artifact_id: AUD-0037
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/audits/ref-0038-sdlc-qa-security-audit.md
+  target_path: docs/90.references/audits/0038-sdlc-qa-security-audit/README.md
+  artifact_id: AUD-0038
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/README.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/agent-instructions-vibe-coding.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/agent-model-selection.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/ai-agent-catalogs.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/automation-pipeline-workflow.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/docker-compose-infrastructure.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/document-metadata-lifecycle.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/documentation-architecture.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/harness-engineering.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/llm-wiki-system.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/loop-engineering.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/memory-hierarchy.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/provider-implementation-comparison.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/provider-model-landscape.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/quality-ci-formatting.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/scope-application-matrix.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/sdlc-document-roles.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/security-governance.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/spec-driven-sdlc.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
+  target_path: docs/90.references/research/0001-agentic-research-pack-refresh/workspace-baseline.md
+  artifact_id: RES-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/README.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/agent-instructions-vibe-coding.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/agent-model-selection.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/ai-agent-catalogs.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/automation-pipeline-workflow.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/docker-compose-infrastructure.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/document-metadata-lifecycle.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/documentation-architecture.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/harness-engineering.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/llm-wiki-system.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/loop-engineering.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/memory-hierarchy.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/memory-hierarchy.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/provider-implementation-comparison.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/provider-model-landscape.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/quality-ci-formatting.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/sdlc-document-roles.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/spec-driven-sdlc.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md
+  target_path: docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md
+  artifact_id: RES-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/research/ref-0084-github-actions-platform.md
+  target_path: docs/90.references/research/0084-github-actions-platform/README.md
+  artifact_id: RES-0084
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/learning/ref-0080-roadmap-v1.md
+  target_path: docs/90.references/research/0080-roadmap-v1/README.md
+  artifact_id: RES-0080
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/learning/ref-0081-roadmap.md
+  target_path: docs/90.references/research/0081-roadmap/README.md
+  artifact_id: RES-0081
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/docker/ref-0059-compose-profile-service-coverage.md
+  target_path: docs/90.references/data/0059-compose-profile-service-coverage/README.md
+  artifact_id: DATA-0059
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/docker/ref-0060-image-version-interpretation.md
+  target_path: docs/90.references/data/0060-image-version-interpretation/README.md
+  artifact_id: DATA-0060
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md
+  target_path: docs/90.references/data/0061-tech-stack-version-provenance/README.md
+  artifact_id: DATA-0061
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/glossary/ref-0062-stable-reference-terms.md
+  target_path: docs/90.references/data/0062-stable-reference-terms/README.md
+  artifact_id: DATA-0062
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md
+  target_path: docs/90.references/data/0066-foundation-summary/README.md
+  artifact_id: DATA-0066
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
+  target_path: docs/90.references/data/0067-foundation/data.yaml
+  artifact_id: DATA-0067
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md
+  target_path: docs/90.references/data/0068-target-surface-convergence-summary/README.md
+  artifact_id: DATA-0068
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml
+  target_path: docs/90.references/data/0069-target-surface-convergence/data.yaml
+  artifact_id: DATA-0069
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml
+  target_path: docs/90.references/data/0063-agent-governance-retirement-ledger/data.yaml
+  artifact_id: DATA-0063
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md
+  target_path: docs/90.references/data/0064-agent-output-eval-fixtures/README.md
+  artifact_id: DATA-0064
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md
+  target_path: docs/90.references/data/0065-audit-implementation-matrix/README.md
+  artifact_id: DATA-0065
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0070-gap-to-stage-routing.md
+  target_path: docs/90.references/data/0070-gap-to-stage-routing/README.md
+  artifact_id: DATA-0070
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml
+  target_path: docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml
+  artifact_id: DATA-0071
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md
+  target_path: docs/90.references/data/0072-provider-hook-parity-matrix/README.md
+  artifact_id: DATA-0072
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml
+  target_path: docs/90.references/data/0073-target-surface-delta-manifest/data.yaml
+  artifact_id: DATA-0073
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md
+  target_path: docs/90.references/data/0074-target-surface-delta-summary/README.md
+  artifact_id: DATA-0074
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/hads/ref-0075-profile.md
+  target_path: docs/90.references/data/0075-profile/README.md
+  artifact_id: DATA-0075
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md
+  target_path: docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
+  artifact_id: DATA-0076
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md
+  target_path: docs/90.references/data/0077-docker-compose-to-k3s-migration/README.md
+  artifact_id: DATA-0077
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/security/ref-0078-security-automation-readiness.md
+  target_path: docs/90.references/data/0078-security-automation-readiness/README.md
+  artifact_id: DATA-0078
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/security/ref-0079-supply-chain-sample-service.md
+  target_path: docs/90.references/data/0079-supply-chain-sample-service/README.md
+  artifact_id: DATA-0079
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md
+  target_path: docs/90.references/data/0082-llm-wiki-index/README.md
+  artifact_id: DATA-0082
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/llm-wiki/ref-0083-repository-map.md
+  target_path: docs/90.references/data/0083-repository-map/README.md
+  artifact_id: DATA-0083
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/learning/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/llm-wiki/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/llm-wiki/llm-wiki-index.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/docker/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/glossary/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/governance/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/hads/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/knowledge/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/kubernetes/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/90.references/data/security/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+  target_path: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md
+  artifact_id: mig-0001
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  target_path: docs/98.archive/migrations/0002-operations-catalog-convergence.md
+  artifact_id: mig-0002
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md
+  target_path: docs/98.archive/migrations/0003-workspace-governance-simplification.md
+  artifact_id: mig-0003
+  action: rename
+  recovery_commit: 71f89ba1430245c89d10c36a084fc2fae9cfe98b
+- source_path: docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0002
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0003
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0004-03-security-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0004
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0005-04-data-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0005
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0006-05-messaging-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0006
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0007-06-observability-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0007
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0008-07-workflow-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0008
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0009-08-ai-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0009
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0010-09-tooling-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0010
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0011-10-communication-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0011
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0012-11-laboratory-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0012
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0013-08-ai-open-webui/plan.md
+  target_path: null
+  artifact_id: plan-0013
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0013-08-ai-open-webui/task.md
+  target_path: null
+  artifact_id: task-0013-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0015-01-gateway-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0015
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0015-01-gateway-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0015-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0016-02-auth-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0016
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0016-02-auth-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0016-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0017-03-security-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0017
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0017-03-security-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0017-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0018-04-data-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0018
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0018-04-data-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0018-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0019-05-messaging-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0019
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0019-05-messaging-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0019-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0020-06-observability-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0020
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0020-06-observability-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0020-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0021-07-workflow-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0021
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0021-07-workflow-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0021-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0022-08-ai-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0022
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0022-08-ai-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0022-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0023-09-tooling-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0023
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0023-09-tooling-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0023-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0024-11-laboratory-optimization-hardening/plan.md
+  target_path: null
+  artifact_id: plan-0024
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0024-11-laboratory-optimization-hardening/task.md
+  target_path: null
+  artifact_id: task-0024-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0025-standardize-infra-net/plan.md
+  target_path: null
+  artifact_id: plan-0025
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0025-standardize-infra-net/task.md
+  target_path: null
+  artifact_id: task-0025-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0026-infra-team-agent-cross-validation/plan.md
+  target_path: null
+  artifact_id: plan-0026
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0026-infra-team-agent-cross-validation/task.md
+  target_path: null
+  artifact_id: task-0026-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0027-harness-agent-first-engineering/plan.md
+  target_path: null
+  artifact_id: plan-0027
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0027-harness-agent-first-engineering/task.md
+  target_path: null
+  artifact_id: task-0027-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0028-infra-secrets-docs-refresh/plan.md
+  target_path: null
+  artifact_id: plan-0028
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0028-infra-secrets-docs-refresh/task.md
+  target_path: null
+  artifact_id: task-0028-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0029-scripts-lifecycle-contract-cleanup/plan.md
+  target_path: null
+  artifact_id: plan-0029
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0029-scripts-lifecycle-contract-cleanup/task.md
+  target_path: null
+  artifact_id: task-0029-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0030-docs-taxonomy-agent-first-migration/plan.md
+  target_path: null
+  artifact_id: plan-0030
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0030-docs-taxonomy-agent-first-migration/task.md
+  target_path: null
+  artifact_id: task-0030-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0031-llm-wiki-agent-first-completion/plan.md
+  target_path: null
+  artifact_id: plan-0031
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0031-llm-wiki-agent-first-completion/task.md
+  target_path: null
+  artifact_id: task-0031-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0032-requirements-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0032
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0032-requirements-standardization/task.md
+  target_path: null
+  artifact_id: task-0032-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0033-scripts-ci-qa-cleanup/plan.md
+  target_path: null
+  artifact_id: plan-0033
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0033-scripts-ci-qa-cleanup/task.md
+  target_path: null
+  artifact_id: task-0033-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0034-docs-05-operations-purpose-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0034
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0034-docs-05-operations-purpose-remediation/task.md
+  target_path: null
+  artifact_id: task-0034-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0035-docs-bounded-consistency-audit/plan.md
+  target_path: null
+  artifact_id: plan-0035
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0035-docs-bounded-consistency-audit/task.md
+  target_path: null
+  artifact_id: task-0035-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0036-execution-stage-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0036
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0036-execution-stage-remediation/task.md
+  target_path: null
+  artifact_id: task-0036-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0037-targeted-docs-precision-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0037
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0037-targeted-docs-precision-remediation/task.md
+  target_path: null
+  artifact_id: task-0037-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0038-agent-hook-completion-style-automation/plan.md
+  target_path: null
+  artifact_id: plan-0038
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0038-agent-hook-completion-style-automation/task.md
+  target_path: null
+  artifact_id: task-0038-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0039-data-analytics-execution-traceability/plan.md
+  target_path: null
+  artifact_id: plan-0039
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0039-data-analytics-execution-traceability/task.md
+  target_path: null
+  artifact_id: task-0039-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0040-lifecycle-readme-debt-closure/plan.md
+  target_path: null
+  artifact_id: plan-0040
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0040-lifecycle-readme-debt-closure/task.md
+  target_path: null
+  artifact_id: task-0040-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0041-spec-execution-implementation-audit/plan.md
+  target_path: null
+  artifact_id: plan-0041
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0041-spec-execution-implementation-audit/task.md
+  target_path: null
+  artifact_id: task-0041-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0042-workspace-docs-agent-governance-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0042
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0042-workspace-docs-agent-governance-remediation/task.md
+  target_path: null
+  artifact_id: task-0042-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0043-workspace-governance-bounded-reaudit/plan.md
+  target_path: null
+  artifact_id: plan-0043
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0043-workspace-governance-bounded-reaudit/task.md
+  target_path: null
+  artifact_id: task-0043-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0044-workspace-audit-grill-review/plan.md
+  target_path: null
+  artifact_id: plan-0044
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0044-workspace-audit-grill-review/task.md
+  target_path: null
+  artifact_id: task-0044-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0045-workspace-audit-improvement/plan.md
+  target_path: null
+  artifact_id: plan-0045
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0045-workspace-audit-improvement/task.md
+  target_path: null
+  artifact_id: task-0045-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0046-workspace-audit-input-task-gap-closure/plan.md
+  target_path: null
+  artifact_id: plan-0046
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0046-workspace-audit-input-task-gap-closure/task.md
+  target_path: null
+  artifact_id: task-0046-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0047-home-docker-revalidation-deferred-follow-up/plan.md
+  target_path: null
+  artifact_id: plan-0047
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0047-home-docker-revalidation-deferred-follow-up/task.md
+  target_path: null
+  artifact_id: task-0047-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0048-home-docker-workspace-audit-improvement/plan.md
+  target_path: null
+  artifact_id: plan-0048
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0048-home-docker-workspace-audit-improvement/task.md
+  target_path: null
+  artifact_id: task-0048-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0049-large-scale-authored-ssot-review/plan.md
+  target_path: null
+  artifact_id: plan-0049
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0049-large-scale-authored-ssot-review/task.md
+  target_path: null
+  artifact_id: task-0049-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0050-workspace-audit-gap-closure/plan.md
+  target_path: null
+  artifact_id: plan-0050
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0050-workspace-audit-gap-closure/task.md
+  target_path: null
+  artifact_id: task-0050-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0051-workspace-audit/plan.md
+  target_path: null
+  artifact_id: plan-0051
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0051-workspace-audit/task.md
+  target_path: null
+  artifact_id: task-0051-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0052-workspace-doc-consistency/plan.md
+  target_path: null
+  artifact_id: plan-0052
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0052-workspace-doc-consistency/task.md
+  target_path: null
+  artifact_id: task-0052-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0053-workspace-consistency-2026-05b/plan.md
+  target_path: null
+  artifact_id: plan-0053
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0053-workspace-consistency-2026-05b/task.md
+  target_path: null
+  artifact_id: task-0053-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0054-claude-harness-governance-verification/plan.md
+  target_path: null
+  artifact_id: plan-0054
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0054-claude-harness-governance-verification/task.md
+  target_path: null
+  artifact_id: task-0054-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0055-agent-governance-decision-items/plan.md
+  target_path: null
+  artifact_id: plan-0055
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0056-agent-governance-phase-1-revalidation/plan.md
+  target_path: null
+  artifact_id: plan-0056
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0056-agent-governance-phase-1-revalidation/task.md
+  target_path: null
+  artifact_id: task-0056-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0057-agent-governance-phase-2-strategy-integration/plan.md
+  target_path: null
+  artifact_id: plan-0057
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0057-agent-governance-phase-2-strategy-integration/task.md
+  target_path: null
+  artifact_id: task-0057-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0058-agent-governance-phase-3-approved-surface-activation/plan.md
+  target_path: null
+  artifact_id: plan-0058
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0058-agent-governance-phase-3-approved-surface-activation/task.md
+  target_path: null
+  artifact_id: task-0058-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0059-agent-governance-phase-4-closure-reconciliation/plan.md
+  target_path: null
+  artifact_id: plan-0059
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0059-agent-governance-phase-4-closure-reconciliation/task.md
+  target_path: null
+  artifact_id: task-0059-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0060-docs-implementation-reconciliation/plan.md
+  target_path: null
+  artifact_id: plan-0060
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0060-docs-implementation-reconciliation/task.md
+  target_path: null
+  artifact_id: task-0060-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0061-governance-optimization/plan.md
+  target_path: null
+  artifact_id: plan-0061
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0061-governance-optimization/task.md
+  target_path: null
+  artifact_id: task-0061-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0062-governance-surgical-reverification/plan.md
+  target_path: null
+  artifact_id: plan-0062
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0062-governance-surgical-reverification/task.md
+  target_path: null
+  artifact_id: task-0062-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0063-template-system-reorganization/plan.md
+  target_path: null
+  artifact_id: plan-0063
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0063-template-system-reorganization/task.md
+  target_path: null
+  artifact_id: task-0063-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0064-document-contract-remediation-batches/plan.md
+  target_path: null
+  artifact_id: plan-0064
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0064-document-contract-remediation-batches/task.md
+  target_path: null
+  artifact_id: task-0064-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0065-template-system-contract-standardization/plan.md
+  target_path: null
+  artifact_id: plan-0065
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0065-template-system-contract-standardization/task.md
+  target_path: null
+  artifact_id: task-0065-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0066-workspace-document-contract-audit-pack/plan.md
+  target_path: null
+  artifact_id: plan-0066
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0066-workspace-document-contract-audit-pack/task.md
+  target_path: null
+  artifact_id: task-0066-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0067-document-restructure-audit-contract-archive/plan.md
+  target_path: null
+  artifact_id: plan-0067
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0067-document-restructure-audit-contract-archive/task.md
+  target_path: null
+  artifact_id: task-0067-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0068-agent-output-eval-fixtures/plan.md
+  target_path: null
+  artifact_id: plan-0068
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0068-agent-output-eval-fixtures/task.md
+  target_path: null
+  artifact_id: task-0068-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0069-agentic-engineering-implementation-audit-pack/plan.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0069-agentic-engineering-implementation-audit-pack/task.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0070-agentic-research-pack-refresh/plan.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0070-agentic-research-pack-refresh/task.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0071-audit-pack-coverage-report/plan.md
+  target_path: null
+  artifact_id: plan-0071
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0071-audit-pack-coverage-report/task.md
+  target_path: null
+  artifact_id: task-0071-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0072-compose-profile-service-coverage-snapshot/plan.md
+  target_path: null
+  artifact_id: plan-0072
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0072-compose-profile-service-coverage-snapshot/task.md
+  target_path: null
+  artifact_id: task-0072-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0073-gap-routing-recommendation/plan.md
+  target_path: null
+  artifact_id: plan-0073
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0073-gap-routing-recommendation/task.md
+  target_path: null
+  artifact_id: task-0073-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0074-provider-semantic-parity-validator/plan.md
+  target_path: null
+  artifact_id: plan-0074
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0074-provider-semantic-parity-validator/task.md
+  target_path: null
+  artifact_id: task-0074-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0075-provider-workspace-artifact-path-parity/plan.md
+  target_path: null
+  artifact_id: plan-0075
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0075-provider-workspace-artifact-path-parity/task.md
+  target_path: null
+  artifact_id: task-0075-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0076-qa-gate-recommendation-ci-summary/plan.md
+  target_path: null
+  artifact_id: plan-0076
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0076-qa-gate-recommendation-ci-summary/task.md
+  target_path: null
+  artifact_id: task-0076-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0077-template-system-numbered-sdlc-paths/plan.md
+  target_path: null
+  artifact_id: plan-0077
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0077-template-system-numbered-sdlc-paths/task.md
+  target_path: null
+  artifact_id: task-0077-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0078-workspace-support-surface-contract/plan.md
+  target_path: null
+  artifact_id: plan-0078
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0078-workspace-support-surface-contract/task.md
+  target_path: null
+  artifact_id: task-0078-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0079-agent-output-eval-ci-gate/plan.md
+  target_path: null
+  artifact_id: plan-0079
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0079-agent-output-eval-ci-gate/task.md
+  target_path: null
+  artifact_id: task-0079-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0080-agent-output-eval-runner/plan.md
+  target_path: null
+  artifact_id: plan-0080
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0080-agent-output-eval-runner/task.md
+  target_path: null
+  artifact_id: task-0080-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0081-audit-implementation-matrix-snapshot/plan.md
+  target_path: null
+  artifact_id: plan-0081
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0081-audit-implementation-matrix-snapshot/task.md
+  target_path: null
+  artifact_id: task-0081-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0082-dependency-vulnerability-audit-gate/plan.md
+  target_path: null
+  artifact_id: plan-0082
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0082-dependency-vulnerability-audit-gate/task.md
+  target_path: null
+  artifact_id: task-0082-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0083-llm-wiki-stage-category-coverage/plan.md
+  target_path: null
+  artifact_id: plan-0083
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0083-llm-wiki-stage-category-coverage/task.md
+  target_path: null
+  artifact_id: task-0083-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0084-provider-hook-parity-matrix/plan.md
+  target_path: null
+  artifact_id: plan-0084
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0084-provider-hook-parity-matrix/task.md
+  target_path: null
+  artifact_id: task-0084-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0085-sdlc-document-contract-corpus-normalization/plan.md
+  target_path: null
+  artifact_id: plan-0085
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0085-sdlc-document-contract-corpus-normalization/task.md
+  target_path: null
+  artifact_id: task-0085-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0086-security-automation-readiness-snapshot/plan.md
+  target_path: null
+  artifact_id: plan-0086
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0086-security-automation-readiness-snapshot/task.md
+  target_path: null
+  artifact_id: task-0086-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0087-tech-stack-version-provenance/plan.md
+  target_path: null
+  artifact_id: plan-0087
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0087-tech-stack-version-provenance/task.md
+  target_path: null
+  artifact_id: task-0087-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/plan.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0088-agentic-research-pack-consolidation/task.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/plan.md
+  target_path: null
+  artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/task.md
+  target_path: null
+  artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0090-compose-runtime-readiness-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0090
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0090-compose-runtime-readiness-remediation/task.md
+  target_path: null
+  artifact_id: task-0090-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0091-deployment-release-engineering-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0091
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0091-deployment-release-engineering-remediation/task.md
+  target_path: null
+  artifact_id: task-0091-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0092-infrastructure-operations-readiness-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0092
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0092-infrastructure-operations-readiness-remediation/task.md
+  target_path: null
+  artifact_id: task-0092-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0093-security-supply-chain-remediation/plan.md
+  target_path: null
+  artifact_id: plan-0093
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0093-security-supply-chain-remediation/task.md
+  target_path: null
+  artifact_id: task-0093-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0094-agentic-audit-harness-consolidation/plan.md
+  target_path: null
+  artifact_id: plan-0094
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0094-agentic-audit-harness-consolidation/task.md
+  target_path: null
+  artifact_id: task-0094-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0095-document-contract-canonicalization/plan.md
+  target_path: null
+  artifact_id: plan:2026-07-13-document-contract-canonicalization
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0095-document-contract-canonicalization/task.md
+  target_path: null
+  artifact_id: task:2026-07-13-document-contract-canonicalization
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/plan.md
+  target_path: null
+  artifact_id: plan-0096
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0096-template-contract-system-canonicalization/task.md
+  target_path: null
+  artifact_id: task-0096-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0097-document-corpus-lifecycle-migration-foundation/plan.md
+  target_path: null
+  artifact_id: plan-0097
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0097-document-corpus-lifecycle-migration-foundation/task.md
+  target_path: null
+  artifact_id: task-0097-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0098-agent-governance-harness-convergence/plan.md
+  target_path: null
+  artifact_id: plan:2026-07-15-agent-governance-harness-convergence
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0098-agent-governance-harness-convergence/task.md
+  target_path: null
+  artifact_id: task:2026-07-15-agent-governance-harness-convergence
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0099-target-surface-contract-convergence/plan.md
+  target_path: null
+  artifact_id: plan:2026-07-18-target-surface-contract-convergence
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0099-target-surface-contract-convergence/task.md
+  target_path: null
+  artifact_id: task:2026-07-18-target-surface-contract-convergence
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0100-operational-readiness-closure-program/plan.md
+  target_path: null
+  artifact_id: plan-0100
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0100-operational-readiness-closure-program/task.md
+  target_path: null
+  artifact_id: task-0100-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0104-01-gateway/task.md
+  target_path: null
+  artifact_id: task-0104-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0105-02-auth/task.md
+  target_path: null
+  artifact_id: task-0105-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0106-03-security/task.md
+  target_path: null
+  artifact_id: task-0106-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0107-04-data/task.md
+  target_path: null
+  artifact_id: task-0107-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0108-05-messaging/task.md
+  target_path: null
+  artifact_id: task-0108-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0109-06-observability/task.md
+  target_path: null
+  artifact_id: task-0109-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0110-07-workflow/task.md
+  target_path: null
+  artifact_id: task-0110-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0111-08-ai/task.md
+  target_path: null
+  artifact_id: task-0111-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0112-09-tooling/task.md
+  target_path: null
+  artifact_id: task-0112-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0113-10-communication/task.md
+  target_path: null
+  artifact_id: task-0113-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0114-11-laboratory/task.md
+  target_path: null
+  artifact_id: task-0114-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0115-agent-governance-missing-items-implementation/task.md
+  target_path: null
+  artifact_id: task-0115-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0116-docs-implementation-audit/task.md
+  target_path: null
+  artifact_id: task-0116-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0117-harness-engineering/task.md
+  target_path: null
+  artifact_id: task-0117-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0118-language-policy-boundary-audit/task.md
+  target_path: null
+  artifact_id: task-0118-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0119-language-policy-hard-enforcement/task.md
+  target_path: null
+  artifact_id: task-0119-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0120-language-policy-normalization-batch-1/task.md
+  target_path: null
+  artifact_id: task-0120-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0121-language-policy-normalization-batch-2/task.md
+  target_path: null
+  artifact_id: task-0121-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0122-language-policy-normalization-batch-3/task.md
+  target_path: null
+  artifact_id: task-0122-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0123-language-policy-plan-normalization-batch-1/task.md
+  target_path: null
+  artifact_id: task-0123-02
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0124-language-policy-plan-normalization-batch-2/task.md
+  target_path: null
+  artifact_id: task-0124-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0125-language-policy-plan-normalization-batch-3/task.md
+  target_path: null
+  artifact_id: task-0125-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0126-language-policy-plan-normalization-batch-4/task.md
+  target_path: null
+  artifact_id: task-0126-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0127-language-policy-plan-normalization-batch-5/task.md
+  target_path: null
+  artifact_id: task-0127-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0128-language-policy-plan-normalization-batch-6/task.md
+  target_path: null
+  artifact_id: task-0128-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0129-language-policy-plan-normalization-batch-7/task.md
+  target_path: null
+  artifact_id: task-0129-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0130-language-policy-plan-normalization-batch-8/task.md
+  target_path: null
+  artifact_id: task-0130-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0131-language-policy-reference-normalization/task.md
+  target_path: null
+  artifact_id: task-0131-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0132-language-policy-task-normalization-batch-1/task.md
+  target_path: null
+  artifact_id: task-0132-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0133-language-policy-task-normalization-batch-2/task.md
+  target_path: null
+  artifact_id: task-0133-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0134-language-policy-task-normalization-batch-3/task.md
+  target_path: null
+  artifact_id: task-0134-02
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0135-language-policy-task-normalization-batch-4/task.md
+  target_path: null
+  artifact_id: task-0135-02
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0136-language-policy-task-normalization-batch-5/task.md
+  target_path: null
+  artifact_id: task-0136-02
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0137-language-policy-task-normalization-batch-6/task.md
+  target_path: null
+  artifact_id: task-0137-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0138-language-policy-task-normalization-batch-7/task.md
+  target_path: null
+  artifact_id: task-0138-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0139-examples-scaffold-contract-remediation/task.md
+  target_path: null
+  artifact_id: task-0139-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0140-frontmatter-routing-evidence-refresh/task.md
+  target_path: null
+  artifact_id: task-0140-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0141-github-branch-protection-reverification/task.md
+  target_path: null
+  artifact_id: task-0141-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0142-infra-tech-stack-version-refresh/task.md
+  target_path: null
+  artifact_id: task-0142-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0143-ai-governance-reorg/plan.md
+  target_path: null
+  artifact_id: plan-0143
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/plan.md
+  target_path: null
+  artifact_id: plan-0144
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/task.md
+  target_path: null
+  artifact_id: task-0144-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/plan.md
+  target_path: null
+  artifact_id: plan-0145
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/task.md
+  target_path: null
+  artifact_id: task-0145-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0146-agent-governance-phase2-alignment/plan.md
+  target_path: null
+  artifact_id: plan-0146
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0147-agent-governance-phase3-implementation/task.md
+  target_path: null
+  artifact_id: task-0147-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0148-agent-governance-phase3-stage01-02-continuation/task.md
+  target_path: null
+  artifact_id: task-0148-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0149-agent-governance-phase3-strategy-integration/task.md
+  target_path: null
+  artifact_id: task-0149-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0150-agent-governance-phase4-closure/task.md
+  target_path: null
+  artifact_id: task-0150-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/changes/chg-0151-agent-governance-stage01-02-alignment/task.md
+  target_path: null
+  artifact_id: task-0151-01
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0099-template-system-numbered-sdlc-paths.md
+  target_path: docs/98.archive/tombstones/03.specs/0099-template-system-numbered-sdlc-paths.md
+  artifact_id: spec-0099
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0100-template-system-contract-standardization.md
+  target_path: docs/98.archive/tombstones/03.specs/0100-template-system-contract-standardization.md
+  artifact_id: spec-0100
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0101-template-system-reorganization.md
+  target_path: docs/98.archive/tombstones/03.specs/0101-template-system-reorganization.md
+  artifact_id: spec-0101
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0104-agentic-research-pack-refresh.md
+  target_path: docs/98.archive/tombstones/03.specs/0104-agentic-research-pack-refresh.md
+  artifact_id: spec-0104
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0106-workspace-support-surface-contract.md
+  target_path: docs/98.archive/tombstones/03.specs/0106-workspace-support-surface-contract.md
+  artifact_id: spec-0106
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0107-provider-semantic-parity-validator.md
+  target_path: docs/98.archive/tombstones/03.specs/0107-provider-semantic-parity-validator.md
+  artifact_id: spec-0107
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0108-compose-profile-service-coverage-snapshot.md
+  target_path: docs/98.archive/tombstones/03.specs/0108-compose-profile-service-coverage-snapshot.md
+  artifact_id: spec-0108
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0109-gap-routing-recommendation.md
+  target_path: docs/98.archive/tombstones/03.specs/0109-gap-routing-recommendation.md
+  artifact_id: spec-0109
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0110-agent-output-eval-fixtures.md
+  target_path: docs/98.archive/tombstones/03.specs/0110-agent-output-eval-fixtures.md
+  artifact_id: spec-0110
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0111-qa-gate-recommendation-ci-summary.md
+  target_path: docs/98.archive/tombstones/03.specs/0111-qa-gate-recommendation-ci-summary.md
+  artifact_id: spec-0111
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0112-audit-pack-coverage-report.md
+  target_path: docs/98.archive/tombstones/03.specs/0112-audit-pack-coverage-report.md
+  artifact_id: spec-0112
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0113-llm-wiki-stage-category-coverage.md
+  target_path: docs/98.archive/tombstones/03.specs/0113-llm-wiki-stage-category-coverage.md
+  artifact_id: spec-0113
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0114-tech-stack-version-provenance.md
+  target_path: docs/98.archive/tombstones/03.specs/0114-tech-stack-version-provenance.md
+  artifact_id: spec-0114
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0115-provider-hook-parity-matrix.md
+  target_path: docs/98.archive/tombstones/03.specs/0115-provider-hook-parity-matrix.md
+  artifact_id: spec-0115
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0116-agent-output-eval-runner.md
+  target_path: docs/98.archive/tombstones/03.specs/0116-agent-output-eval-runner.md
+  artifact_id: spec-0116
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0117-security-automation-readiness-snapshot.md
+  target_path: docs/98.archive/tombstones/03.specs/0117-security-automation-readiness-snapshot.md
+  artifact_id: spec-0117
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0118-audit-implementation-matrix-snapshot.md
+  target_path: docs/98.archive/tombstones/03.specs/0118-audit-implementation-matrix-snapshot.md
+  artifact_id: spec-0118
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0119-sdlc-document-contract-corpus-normalization.md
+  target_path: docs/98.archive/tombstones/03.specs/0119-sdlc-document-contract-corpus-normalization.md
+  artifact_id: spec-0119
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0120-agent-output-eval-ci-gate.md
+  target_path: docs/98.archive/tombstones/03.specs/0120-agent-output-eval-ci-gate.md
+  artifact_id: spec-0120
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0121-dependency-vulnerability-audit-gate.md
+  target_path: docs/98.archive/tombstones/03.specs/0121-dependency-vulnerability-audit-gate.md
+  artifact_id: spec-0121
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0122-agentic-research-pack-consolidation.md
+  target_path: docs/98.archive/tombstones/03.specs/0122-agentic-research-pack-consolidation.md
+  artifact_id: spec-0122
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0124-compose-runtime-readiness-remediation.md
+  target_path: docs/98.archive/tombstones/03.specs/0124-compose-runtime-readiness-remediation.md
+  artifact_id: spec-0124
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0125-infrastructure-operations-readiness-remediation.md
+  target_path: docs/98.archive/tombstones/03.specs/0125-infrastructure-operations-readiness-remediation.md
+  artifact_id: spec-0125
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md
+  target_path: docs/98.archive/tombstones/03.specs/0126-security-supply-chain-remediation.md
+  artifact_id: spec-0126
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0127-deployment-release-engineering-remediation.md
+  target_path: docs/98.archive/tombstones/03.specs/0127-deployment-release-engineering-remediation.md
+  artifact_id: spec-0127
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0128-agentic-audit-harness-consolidation.md
+  target_path: docs/98.archive/tombstones/03.specs/0128-agentic-audit-harness-consolidation.md
+  artifact_id: spec-0128
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0129-document-contract-canonicalization.md
+  target_path: docs/98.archive/tombstones/03.specs/0129-document-contract-canonicalization.md
+  artifact_id: spec-0129
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/03.specs/spec-0130-template-contract-system-canonicalization.md
+  target_path: docs/98.archive/tombstones/03.specs/0130-template-contract-system-canonicalization.md
+  artifact_id: spec-0130
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0086-01-setup.md
+  target_path: docs/98.archive/tombstones/05.operations/0086-01-setup.md
+  artifact_id: ref-0086
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0087-ksql-streaming.md
+  target_path: docs/98.archive/tombstones/05.operations/0087-ksql-streaming.md
+  artifact_id: ref-0087
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0088-01-airflow-dag-dev.md
+  target_path: docs/98.archive/tombstones/05.operations/0088-01-airflow-dag-dev.md
+  artifact_id: ref-0088
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0089-airbyte.md
+  target_path: docs/98.archive/tombstones/05.operations/0089-airbyte.md
+  artifact_id: ref-0089
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0090-01-llm-inference.md
+  target_path: docs/98.archive/tombstones/05.operations/0090-01-llm-inference.md
+  artifact_id: ref-0090
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0091-local-llm-setup.md
+  target_path: docs/98.archive/tombstones/05.operations/0091-local-llm-setup.md
+  artifact_id: ref-0091
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0092-01-iac-automation.md
+  target_path: docs/98.archive/tombstones/05.operations/0092-01-iac-automation.md
+  artifact_id: ref-0092
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0093-airbyte.md
+  target_path: docs/98.archive/tombstones/05.operations/0093-airbyte.md
+  artifact_id: ref-0093
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0094-airbyte.md
+  target_path: docs/98.archive/tombstones/05.operations/0094-airbyte.md
+  artifact_id: ref-0094
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/98.archive/tombstones/05.operations/ref-0095-windows-network-ip.md
+  target_path: docs/98.archive/tombstones/05.operations/0095-windows-network-ip.md
+  artifact_id: ref-0095
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: tests/validation/test_document_links.py
+  target_path: tests/lib/document_governance/test_links.py
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: tests/validation/test_document_taxonomy.py
+  target_path: tests/lib/document_governance/test_taxonomy.py
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: tests/validation/test_operations_catalog.py
+  target_path: tests/lib/document_governance/test_operations_catalog.py
+  artifact_id: null
+  action: rename
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/hooks/patch-graphify-post-commit.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/knowledge/generate-llm-wiki-coverage.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/knowledge/generate-llm-wiki-index.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/validation/check-repo-contracts.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/validation/recommend-gap-routing.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: scripts/validation/recommend-qa-gates.sh
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/archive-retention-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/common-document-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/corpus-migration-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/document-corpus-migration-contract.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/document-metadata-profiles.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/external-source-rationale.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/frontmatter-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/lifecycle-status.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/readme-profile-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/sdlc-document-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/template-contract.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/template-governance.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/support/template-selection.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/common/archive.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/common/audit.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/common/reference.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/adr.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/architecture-description.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/interface-requirement.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/plan.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/prd.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/spec.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/srs.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/sdlc/task.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/agent-design.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/api-spec.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/data-model.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/openapi.template.yaml
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/schema.template.graphql
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/service.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/service.template.proto
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/99.templates/templates/spec-contracts/tests.template.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
+- source_path: docs/03.specs/0153-workspace-governance-simplification/spec.md
+  target_path: null
+  artifact_id: SPEC-0153
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/plan.md
+  target_path: null
+  artifact_id: plan-0153
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/README.md
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md
+  target_path: null
+  artifact_id: task-0153-0001
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md
+  target_path: null
+  artifact_id: task-0153-0002
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0003-bootstrap.md
+  target_path: null
+  artifact_id: task-0153-0003
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+  target_path: null
+  artifact_id: task-0153-0004
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0005-requirements.md
+  target_path: null
+  artifact_id: task-0153-0005
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0006-architecture.md
+  target_path: null
+  artifact_id: task-0153-0006
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0007-spec-lifecycle.md
+  target_path: null
+  artifact_id: task-0153-0007
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0008-operations.md
+  target_path: null
+  artifact_id: task-0153-0008
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md
+  target_path: null
+  artifact_id: task-0153-0009
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md
+  target_path: null
+  artifact_id: task-0153-0010
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0011-script-tests.md
+  target_path: null
+  artifact_id: task-0153-0011
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md
+  target_path: null
+  artifact_id: task-0153-0012
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md
+  target_path: null
+  artifact_id: task-0153-0013
+  action: delete
+  recovery_commit: 5bab8b360b1e56de0c6b5f5d6f984a421ed81c44
+- source_path: scripts/validation/check-task4-migration.py
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 494065806794980080b081439298d7b534d10803
+- source_path: tests/validation/test_task4_migration_verifier.py
+  target_path: null
+  artifact_id: null
+  action: delete
+  recovery_commit: 494065806794980080b081439298d7b534d10803
+- source_path: docs/03.specs/0090-workspace-audit-2026-05/spec.md
+  target_path: null
+  artifact_id: SPEC-0090
+  action: delete
+  recovery_commit: 494065806794980080b081439298d7b534d10803
+- source_path: docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md
+  target_path: null
+  artifact_id: SPEC-0091
+  action: delete
+  recovery_commit: 494065806794980080b081439298d7b534d10803
+- source_path: docs/03.specs/0092-workspace-consistency-2026-05b/spec.md
+  target_path: null
+  artifact_id: SPEC-0092
+  action: delete
+  recovery_commit: 494065806794980080b081439298d7b534d10803
 ```
 
 ## Recovery
 
-Planned rows use `recovery_commit: null`. Before a row becomes `completed`, its
-owning Task must bind every moved or deleted tracked body to an existing regular
-Git blob. Task 13 rejects null recovery for completed deletion and retirement
-rows.
+Each row binds its original path to a verified regular Git blob at the stated
+commit. The one-time execution package is recoverable from closure commit
+`5bab8b360b1e56de0c6b5f5d6f984a421ed81c44`. Preserve recovery-bearing commit identities
+through history-preserving integration; a squash or rebase is not equivalent.
+The original approval selection remains in Git, not a duplicate current ledger.
 
-## Related Documents
+## Approval
 
-- [Workspace Governance and SDLC Simplification Spec](../../03.specs/0153-workspace-governance-simplification/spec.md)
-- [Workspace Governance and SDLC Simplification Plan](../../03.specs/0153-workspace-governance-simplification/plan.md)
-- [ADR-0029: Workspace Governance Authority](../../02.architecture/decisions/adr-0029-workspace-governance-authority.md)
+The user approved the authority-first structure, supported-provider removal,
+Operations domain/subject preservation, release removal and minimal Archive.
+The closure code/readiness reviews reported C0/I0/M0 for specification and
+implementation/security. Actual physical-retirement verification is recorded
+in the subsequent retirement commit; it is not inferred from those reviews.
+
+## Traceability
+
+- [Authority decision](../../02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Shared governance](../../00.agent-governance/README.md)
+- [Document authority](../../99.templates/README.md)
+- [Archive lookup](../README.md)
+
+## Execution Evidence
+
+Closure commit `5bab8b360b1e56de0c6b5f5d6f984a421ed81c44` preserves the execution
+Tasks, actual full-profile exit 0, recovery checks and independent review
+dispositions. It records 884 prior executed transitions separately from the
+then-pending package deletions and three unexecuted superseded plans.
+This compact record replaces execution-only fields and full-body copies.

@@ -317,9 +317,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0010-tooling/spec.md](../../../03.specs/0010-tooling/spec.md) | Markdown reference |
 | [docs/03.specs/0011-communication/spec.md](../../../03.specs/0011-communication/spec.md) | Markdown reference |
 | [docs/03.specs/0012-laboratory/spec.md](../../../03.specs/0012-laboratory/spec.md) | Markdown reference |
-| [docs/03.specs/0090-workspace-audit-2026-05/spec.md](../../../03.specs/0090-workspace-audit-2026-05/spec.md) | Markdown reference |
-| [docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md](../../../03.specs/0091-workspace-doc-consistency-2026-05/spec.md) | Markdown reference |
-| [docs/03.specs/0092-workspace-consistency-2026-05b/spec.md](../../../03.specs/0092-workspace-consistency-2026-05b/spec.md) | Markdown reference |
 | [docs/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../03.specs/0093-docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
 | [docs/03.specs/0094-harness-agent-first-engineering/spec.md](../../../03.specs/0094-harness-agent-first-engineering/spec.md) | Markdown reference |
 | [docs/03.specs/0095-infra-secrets-docs-refresh/spec.md](../../../03.specs/0095-infra-secrets-docs-refresh/spec.md) | Markdown reference |
@@ -351,22 +348,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/plan.md](../../../03.specs/0152-deleted-reference-leaf-disposition/plan.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/spec.md](../../../03.specs/0152-deleted-reference-leaf-disposition/spec.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md](../../../03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/README.md](../../../03.specs/0153-workspace-governance-simplification/README.md) | folder index |
-| [docs/03.specs/0153-workspace-governance-simplification/plan.md](../../../03.specs/0153-workspace-governance-simplification/plan.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/spec.md](../../../03.specs/0153-workspace-governance-simplification/spec.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0001-control-plane.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0002-stage99.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0003-bootstrap.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0003-bootstrap.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0005-requirements.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0005-requirements.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0006-architecture.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0006-architecture.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0007-spec-lifecycle.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0007-spec-lifecycle.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0008-operations.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0008-operations.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0011-script-tests.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0011-script-tests.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0012-gates.md) | Markdown reference |
-| [docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md](../../../03.specs/0153-workspace-governance-simplification/tasks/tsk-0013-closure.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

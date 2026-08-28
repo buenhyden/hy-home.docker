@@ -39,5 +39,5 @@ evidence.
 ## Related Documents
 
 - [Agent governance overview](../docs/00.agent-governance/README.md)
-- [Current Stage 00 task evidence](../docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md)
+- [Current Stage 00 task checklist](../docs/00.agent-governance/policies/task-checklists.md)
 - [Active convergence task](../docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md)

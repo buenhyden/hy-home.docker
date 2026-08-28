@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import io
 import pathlib
 import re
@@ -41,6 +42,68 @@ THREE_DIGIT_ARTIFACT_ID = re.compile(
     re.MULTILINE,
 )
 class FourDigitDocumentIdentityTests(unittest.TestCase):
+    def test_native_migration_compaction_requires_both_exact_provenance_states(self) -> None:
+        from scripts.lib.document_governance import archive, metadata_validator as metadata
+
+        path = pathlib.Path("docs/98.archive/migrations/0003-workspace-governance-simplification.md")
+        profiles = metadata.build_registry_profiles(self.registry)
+        base = next(
+            row["recovery_commit"] for row in archive._migration_document(ROOT)["rows"]
+            if row["source_path"] == "docs/03.specs/0153-workspace-governance-simplification/spec.md"
+            and row["action"] == "delete"
+        )
+        record = metadata._record_from_text(
+            path, (ROOT / path).read_text(), profiles=profiles, previous_status="archived"
+        )
+        witness = metadata._native_migration_compaction_witness(ROOT, record, base)
+        self.assertEqual(record, witness)
+        self.assertIn("invalid-transition", {
+            finding.code for finding in metadata.validate_record(record, profiles, {})
+        })
+        self.assertNotIn("invalid-transition", {
+            finding.code for finding in metadata.validate_record(
+                record, profiles, {}, migration_compaction_witness=witness
+            )
+        })
+        for changed in (
+            {"path": path.with_name("0004-other.md")},
+            {"metadata": {**record.metadata, "artifact_id": "mig-0004"}},
+            {"metadata": {**record.metadata, "status": "active"}},
+            {"previous_status": "superseded"},
+        ):
+            with self.subTest(changed=changed):
+                other = dataclasses.replace(record, **changed)
+                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, other, base))
+                self.assertIn("invalid-transition", {
+                    finding.code for finding in metadata.validate_record(
+                        other, profiles, {}, migration_compaction_witness=witness
+                    )
+                })
+        for invalid_base in (None, "0" * 40):
+            with self.subTest(base=invalid_base):
+                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, invalid_base))
+        with mock.patch.object(archive.HistoricalDocument, "read_bytes", return_value=b"unproved history"):
+            self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
+        current = (ROOT / path).read_bytes()
+        malformed_states = {
+            "schema": current.replace(b"schema_version: 3", b"schema_version: 4", 1),
+            "mapping": current.replace(
+                b"source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md",
+                b"source_path: docs/03.specs/spec-0153-unproved/spec.md", 1,
+            ),
+            "recovery": current.replace(
+                b"recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525",
+                b"recovery_commit: " + b"0" * 40, 1,
+            ),
+            "envelope": current.replace(b"parent_ids: [ADR-0029]", b"parent_ids: []", 1),
+        }
+        for failure, malformed in malformed_states.items():
+            self.assertNotEqual(current, malformed)
+            with self.subTest(failure=failure), mock.patch.object(archive, "_read_regular", return_value=malformed):
+                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
+        with mock.patch.object(archive, "_migration_document", return_value={"schema_version": 2}):
+            self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
+
     def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
 

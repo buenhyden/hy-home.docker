@@ -79,9 +79,6 @@ docs/03.specs/
 | `SPEC-0010` | [Tooling](./0010-tooling/spec.md) | Spec |
 | `SPEC-0011` | [Communication](./0011-communication/spec.md) | Spec |
 | `SPEC-0012` | [Laboratory](./0012-laboratory/spec.md) | Spec |
-| `SPEC-0090` | [Workspace Audit 2026-05](./0090-workspace-audit-2026-05/spec.md) | Spec |
-| `SPEC-0091` | [Workspace Document Consistency](./0091-workspace-doc-consistency-2026-05/spec.md) | Spec |
-| `SPEC-0092` | [Workspace Consistency Follow-up](./0092-workspace-consistency-2026-05b/spec.md) | Spec |
 | `SPEC-0093` | [Documentation Taxonomy Agent-first Migration](./0093-docs-taxonomy-agent-first-migration/spec.md) | Spec |
 | `SPEC-0094` | [Harness Agent-first Engineering](./0094-harness-agent-first-engineering/spec.md) | Spec |
 | `SPEC-0095` | [Infra, Secrets, and Docs Refresh](./0095-infra-secrets-docs-refresh/spec.md) | Spec |
@@ -100,7 +97,6 @@ docs/03.specs/
 | `SPEC-0136` | [SDLC Taxonomy Convergence](./0136-sdlc-taxonomy-convergence/spec.md) | [Plan](./0136-sdlc-taxonomy-convergence/plan.md), [Task](./0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md) |
 | `SPEC-0137` | [Agentic Research Pack Rebuild](./0137-agentic-research-pack-rebuild/spec.md) | [Plan](./0137-agentic-research-pack-rebuild/plan.md), [Tasks](./0137-agentic-research-pack-rebuild/tasks/) |
 | `SPEC-0152` | [Deleted Reference Leaf Disposition](./0152-deleted-reference-leaf-disposition/spec.md) | [Plan](./0152-deleted-reference-leaf-disposition/plan.md), [Task](./0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md) |
-| `SPEC-0153` | [Workspace Governance Simplification](./0153-workspace-governance-simplification/spec.md) | [Plan](./0153-workspace-governance-simplification/plan.md), [Tasks](./0153-workspace-governance-simplification/tasks/) |
 
 ## Role Contract
 

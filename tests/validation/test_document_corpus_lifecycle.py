@@ -716,21 +716,52 @@ class CoLocatedExecutionTests(unittest.TestCase):
 
     def test_all_capability_directories_use_stable_identity(self) -> None:
         packages = load_spec_packages(ROOT / "docs/03.specs")
-        self.assertEqual(34, len(packages))
+        migration = archive_authority._migration_document(ROOT)
+        self.assertEqual(3, migration["schema_version"])
+        self.assertTrue(packages)
+        identities = {package.spec.artifact_id for package in packages}
+        self.assertEqual(len(packages), len(identities))
+        for package in packages:
+            self.assertEqual(f"SPEC-{package.path.name[:4]}", package.spec.artifact_id)
+            self.assertEqual(
+                f"docs/03.specs/{package.path.name}/spec.md",
+                package.spec.path.as_posix(),
+            )
+        retired = {
+            row["source_path"] for row in migration["rows"]
+            if row["action"] == "delete"
+            and re.fullmatch(r"docs/03\.specs/\d{4}-[a-z0-9-]+/spec\.md", row["source_path"])
+        }
+        self.assertEqual(
+            {"0090", "0091", "0092", "0153"},
+            {path.split("/")[2][:4] for path in retired},
+        )
+        self.assertTrue(all(not (ROOT / path).parent.exists() for path in retired))
+        self.assertTrue(identities.isdisjoint({f"SPEC-{path.split('/')[2][:4]}" for path in retired}))
         self.assertTrue(
             all(re.fullmatch(r"\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*", package.path.name)
                 for package in packages)
         )
 
     def test_registered_package_readme_exception_is_exact(self) -> None:
-        readmes = sorted((ROOT / "docs/03.specs").glob("[0-9][0-9][0-9][0-9]-*/README.md"))
-        self.assertEqual(
-            [
-                ROOT
-                / "docs/03.specs/0153-workspace-governance-simplification/README.md"
-            ],
-            readmes,
-        )
+        from tests.lib.document_governance.test_spec_packages import _write_package
+
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(stage)
+            readme = package / "README.md"
+            text = "---\nprofile_id: spec-package-readme\n---\n# Package\n"
+            readme.write_text(text, encoding="utf-8")
+            self.assertEqual(1, len(load_spec_packages(stage)))
+            relative = readme.relative_to(pathlib.Path(directory))
+            record = metadata._record_from_text(relative, text, profiles=profiles)
+            self.assertEqual("spec-package-readme", record.artifact_type)
+            self.assertEqual([], metadata.validate_record(record, profiles, {}))
+            for wrong in ("readme.md", "README-extra.md"):
+                with self.subTest(name=wrong):
+                    invalid = metadata._record_from_text(relative.with_name(wrong), text, profiles=profiles)
+                    self.assertNotEqual("spec-package-readme", invalid.artifact_type)
 
     def test_stage_04_is_absent(self) -> None:
         self.assertFalse((ROOT / "docs/04.execution").exists())

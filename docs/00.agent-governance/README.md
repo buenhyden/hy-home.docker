@@ -56,4 +56,4 @@ No other active top-level entry is permitted.
 - [Bootstrap policy](policies/bootstrap.md)
 - [Provider registry](providers/registry.yaml)
 - [Stage 99 authority](../99.templates/README.md)
-- [Active governance specification](../03.specs/0153-workspace-governance-simplification/spec.md)
+- [Governance authority decision](../02.architecture/decisions/0029-workspace-governance-authority.md)

@@ -2732,12 +2732,45 @@ def _introduced_body_findings(
     ]
 
 
+def _native_migration_compaction_witness(
+    root: pathlib.Path, record: Record, base_ref: str | None,
+) -> Record | None:
+    """Bind the frozen historical ledger to its verified native compact state."""
+
+    if (
+        not base_ref
+        or record.path.as_posix() != "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+        or record.previous_status != "archived"
+        or record.artifact_type != "migration"
+        or record.metadata.get("artifact_type") != "migration"
+        or record.metadata.get("artifact_id") != "mig-0003"
+        or record.metadata.get("profile_id") != "migration"
+        or record.metadata.get("status") != "completed"
+    ):
+        return None
+    from scripts.lib.document_governance import archive
+
+    try:
+        previous = archive.HistoricalDocument(root, base_ref, record.path.as_posix()).read_bytes()
+        if hashlib.sha256(previous).hexdigest() != archive.FROZEN_MIGRATION_SHA256:
+            return None
+        if archive._migration_document(root)["schema_version"] != 3:
+            return None
+        current = archive._read_regular(root / record.path).decode("utf-8")
+        if _parse_frontmatter_text(current) != record.metadata:
+            return None
+    except ValueError:
+        return None
+    return record
+
+
 def validate_record(
     record: Record,
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
     transition_overrides: Mapping[tuple[str, str, str], TransitionOverride] | None = None,
     promoted_transition_witnesses: Mapping[str, PromotedTransitionWitness] | None = None,
+    migration_compaction_witness: Record | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -2975,6 +3008,7 @@ def validate_record(
             (status not in allowed_next or promoted_reversion)
             and override_key not in (transition_overrides or {})
             and not promoted_hop_valid
+            and record != migration_compaction_witness
         ):
             findings.append(
                 _finding(
@@ -7207,6 +7241,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             manifest,
             transition_overrides=transition_overrides,
             promoted_transition_witnesses=promoted_transition_witnesses,
+            migration_compaction_witness=(
+                _native_migration_compaction_witness(root, record, base.merge_base)
+                if args.mode == "check-changed" else None
+            ),
         )
         for record in records
     }
