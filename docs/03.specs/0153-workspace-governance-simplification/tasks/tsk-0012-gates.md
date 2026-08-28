@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0153-0012
 artifact_type: task
 parent_ids:
@@ -58,6 +58,7 @@ Replace overlapping gates with the six public validation suites and remove dupli
 | Scoped metadata | `check-document-metadata.py --mode check-changed --base-ref 2b5fa6f7...` with 76 repeated `--changed-path` arguments | PASS; selected 76, violations 0, legacy exceptions 0, transition overrides 0; no branch-wide verdict used |
 | Static syntax | Ruff/`py_compile` on 33 Python; YAML parse on 4 files; `bash -n` on 9 shell files | PASS |
 | Reviewer bounded suite | `PYTHONPATH=. timeout 60s python3 -m unittest -q tests.lib.document_governance.test_operations_taxonomy tests.lib.document_governance.test_metadata_validator tests.validation.test_tech_stack_version_contract` | PASS, 60 tests, no skips/failures/errors; 10.375 seconds |
+| Controller commit check | Runner plus the reviewer bounded suite; standalone manifest; workflow contract; cached diff boundary and whitespace | PASS, 87 tests in 16.952 seconds; zero manifest findings; workflow 7/9/8; exactly 179 Task-owned staged paths and six script deletions |
 | Generated freshness | LLM Wiki, security readiness, tech-stack provenance, provider-hook parity | PASS |
 | Cross-links/audit matrix | Both document-link modes; audit-matrix `--check` | Five Task 12 alignment findings fixed; 1 traceability and 26 alignment findings remain exclusively in untouched paths; audit matrix rejects old overview path |
 
@@ -69,11 +70,13 @@ Replace overlapping gates with the six public validation suites and remove dupli
 | Fix round 1 | Superseded in part | H3/H4/H5/M2 remain verified; independent re-review reopened H1/H2/M1 and the bounded metadata/version proof. |
 | Fix round 2 | Superseded in part | Immutable 35-validator ownership, metadata event bases, and exact two required jobs remain verified; independent re-review identified a final base-plan admission bypass. |
 | Fix round 3 | Done | All final direct invocations are context-eligible canonical validators or exact admitted internal commands; local hardening is absent, manual/runtime/recursive rebindings fail before execution, and focused 163 plus reviewer 60 tests pass. |
+| Independent re-review 3 | Approved | C0/H0/M0/L0. The final-plan context bypass is closed; immutable ownership, event-base dataflow, two public jobs, generated freshness, and the exact deletion boundary remain verified. |
 
 ## Commit Ledger
 
 | Commit | Description |
 | :--- | :--- |
+| `1c620dd079c1c28f5bea434f00093463e7764e1a` | Route validation through public suites, enforce context-safe final plans, and retire six proven duplicate scripts. |
 
 ## Rulings
 
