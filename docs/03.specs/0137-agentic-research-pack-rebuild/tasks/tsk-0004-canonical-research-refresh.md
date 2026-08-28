@@ -57,8 +57,8 @@ runtime, remote, or protected authority is changed.
 
 | Current unit | State at this publication point |
 | --- | --- |
-| D0 — Spec/Plan/Task exception | In progress; this three-file correction contains no research content. Initial focused checks are recorded below; final-tree rerun and terminal review: Not Run. |
-| D1 — foundation: README, workspace baseline, scope matrix | Not Run. |
+| D0 — Spec/Plan/Task exception | Previous published unit at `264a6d1d64a41c329cd86b5978fb47f38503673f` — `docs(plan): permit isolated research draft authoring`; its original in-tree Not Run record is historical. External rules/specification and documentation-quality reviews were C0/I0/M0, with controller approval. |
+| D1 — foundation: README, workspace baseline, scope matrix | In progress; three draft pack files are authored against literal baseline `264a6d1d64a41c329cd86b5978fb47f38503673f`. Initial focused checks are recorded below; terminal final rerun and terminal review are Not Run. |
 | D2 — four harness/provider/instruction leaves | Not Run. |
 | D3 — four model/catalog/memory leaves | Not Run. |
 | D4 — five SDLC/docs/wiki leaves and composition reconciliation | Not Run; both unresolved ADR claims must remain `UNVERIFIED`. |
@@ -611,6 +611,12 @@ Inherited failures remain raw FAIL/non-PASS, not final acceptance.
 | Task 1C exact-tree evidence binding | The outcomes above were executed against stable draft blob `1881aa897a6a5788c7d4886bc0bc291649bcb3fa`, with the same blob before and after. The mandatory final-text rerun binds them externally without another evidence edit; terminal review remains Not Run in-tree/external. |
 | Task 6 DELTA_AUDIT | Not Run in this Task-only unit; its content-file inputs are blocked, and two page states fail its every-page-VERIFIED precondition. No successful audit or authoring permission is inferred from the complete request count. |
 | Post-Task9 synchronization and frozen ladder | Not Run; Task 9 owner-branch completion is observed, but canonical acceptance and the destination remain absent from `main`. |
+| D1 initial focused metadata check | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 264a6d1d64a41c329cd86b5978fb47f38503673f --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/README.md --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md --changed-path docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`: PASS, exit 0; `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0`. |
+| D1 initial whitespace and scope check | `git diff --check --` on the four D1 paths: PASS, exit 0. `git diff --name-only` showed only the Task among tracked changes; `git status --short` showed the one authorized untracked pack directory. Final regular-file census, local-link, ID, and scope-table checks remain to run after this evidence text is final. |
+| D1 initial focused content snapshot | Read-only inline census/identity check: PASS, exit 0; `census=3 regular_non_symlink=3 scope_rows=8+8 leaf_claim_ids=4`. The three regular pack files are exactly README, workspace baseline, and scope matrix. |
+| D1 local Markdown path check | Read-only inline Markdown-destination check: PASS, exit 0; `local_markdown_destinations=30 missing=0` across the three pack files and Task. |
+| D1 focused final-text pre-rerun | Explicit four-path metadata command: PASS, exit 0; `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0`. Scoped `git diff --check` also passed, exit 0. Terminal review remains Not Run; rerun follows this evidence text without a later mutation. |
+| D1 controller post-freeze checks | Explicit four-path metadata with baseline `264a6d1d64a41c329cd86b5978fb47f38503673f`: PASS, exit 0; `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0`. Direct checks: `3` files, `4` claims, `5` sources, `8` scope rows per leaf, `30` local destinations, `0` missing; `git diff --check` exit 0. `python3 scripts/validation/check-document-links.py --mode traceability` and `python3 scripts/validation/check-document-links.py --mode alignment` were FAIL/non-PASS, exit 1, with inherited baselines respectively `failures=1` and `failures=42`, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0`; exact finding sets equal D0, introduced/worsened `0`. No PASS interpretation is made. |
 
 Later evidence is appended only after execution. Each result records the exact
 command, baseline or range, exit status, selected path count, and attributable
@@ -619,9 +625,11 @@ repository adoption; it does not prove remote enforcement or a successful run.
 
 ## Review Evidence
 
-Current D0 independent rules/specification, documentation-quality, and
-controller terminal reviews are Not Run in-tree; exact-tree final verdicts
-must be bound externally before commit without another file mutation.
+D0 is the previous published unit at
+`264a6d1d64a41c329cd86b5978fb47f38503673f`; its original in-tree Not Run
+record is historical, while its external rules/specification and
+documentation-quality reviews and controller approval are C0/I0/M0. D1
+terminal review remains Not Run externally until this corrected tree is frozen.
 
 | Review | Verdict |
 | --- | --- |
@@ -647,7 +655,10 @@ must be bound externally before commit without another file mutation.
 | Task 1A completed external review — previous unit | Final full reviews plus scoped closure: rules/specification C0/I0/M0 and documentation-quality C0/I0/M0 for `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072`. The preceding Not Run row preserves the historical publication point; no edit followed terminal review before that commit. |
 | Task 1B delta-observation terminal review | Not Run in-tree; eight actual requests and durable observation records are published above. Fresh independent final-tree reviews remain external, with no later mutation before commit. |
 | Task 1C reobservation terminal review | Not Run in-tree; controller must execute validators, obtain fresh independent exact-tree reviews, and commit without a later Task mutation. |
-| Research unit reviews | Not Run; research files have not been authored. |
+| D0 published-unit review | External rules/specification C0/I0/M0 and documentation-quality C0/I0/M0; controller approved `264a6d1d64a41c329cd86b5978fb47f38503673f`. The original in-tree Not Run row is historical. |
+| D1 initial review | Rules/specification C0/I0/M2 and documentation-quality C0/I0/M2. Nonauthorizing; this one narrower correction addresses the two identified items. |
+| D1 corrected terminal review | Not Run externally; fresh review must bind the frozen corrected tree without a later mutation. |
+| D2–D7 research unit reviews | Not Run; those units have not been authored. |
 | Final exact-range rules/specification/quality review | Not Run. |
 | Branch-readiness terminal publication review | Not Run; the final-tree verdict and resulting readiness commit ID are external handoff evidence. |
 | Main-completion terminal publication review | Not Run; the final Task-only verdict is external handoff evidence. |
@@ -682,8 +693,9 @@ change.
 | Align canonical research Task ledger | `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072` — `docs(task): align canonical research delta ledger` | Previous Task-only unit committed after final full/scoped independent dual C0/I0/M0; no edit after terminal review before commit. |
 | Observe closed architecture delta | `2643d9b9008f21d472e998039cd37b8ceb421109` — `docs(task): record architecture delta observations` | Historical Task 1B publication: eight requests observed, three pages VERIFIED and five UNVERIFIED. Its tracked Not Run terminal-review row is a historical publication point; Git identity/published state does not establish a terminal verdict. |
 | Reobserve corrected architecture delta | `2e1dc25935728c7d26388db72bc8b20e42cf2fe7` — `docs(task): record architecture delta reobservations` | Published previous Task 1C unit; five corrected URLs were observed once, yielding six active VERIFIED pages and two UNVERIFIED pages. Its original terminal-review record remains external. |
-| D0 — permit isolated research draft authoring | No commit yet | Current Spec/Plan/Task correction; proposed title `docs(plan): permit isolated research draft authoring`. Initial checks are recorded above; final-tree rerun and terminal review are Not Run. |
-| D1–D7 — isolated draft units | No commits | Not Run; execute only under Current Draft Execution, with bounded reviews and logical commits. Final acceptance/integration are deferred. |
+| D0 — permit isolated research draft authoring | `264a6d1d64a41c329cd86b5978fb47f38503673f` — `docs(plan): permit isolated research draft authoring` | Previous published unit. Its original in-tree Not Run terminal row is historical; external dual C0/I0/M0 and controller approval establish its publication review. |
+| D1 — establish isolated draft foundation | No commit yet | In progress. Owns README, workspace baseline, scope matrix, and this Task only; proposed title `docs(research): establish isolated draft foundation`. |
+| D2–D7 — isolated draft units | No commits | Not Run; execute only under Current Draft Execution, with bounded reviews and logical commits. Final acceptance/integration are deferred. |
 | Bind accepted post-Task9 main baseline | No commit | Blocked pending canonical Task 9 acceptance on `main` and the exact destination census; owner-branch completion alone is insufficient. |
 | Research content and integration units | No commits | Blocked pending the baseline gate. |
 | Record research-branch readiness | No commit | Not Run; Task remains active; expected title `docs(task): record canonical research readiness`. The resulting self-identity and terminal verdict are recorded externally, not by mutating this Task after review. |
