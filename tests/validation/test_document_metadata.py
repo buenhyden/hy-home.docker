@@ -8321,63 +8321,87 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertIn("replacement-free-supersession", result.stdout)
 
     def test_reverse_transition_without_override_is_blocked(self) -> None:
-        directory, root = self.new_repo()
-        with directory:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory) / "repo"
+            # The CLI validates native migration recovery against real Git history.
+            clone = subprocess.run(
+                ["git", "clone", "--no-hardlinks", str(ROOT), str(root)],
+                capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(0, clone.returncode, clone.stdout + clone.stderr)
+            fixture_registry = copy_registry_contract_fixture(root)
+            package = root / "docs/03.specs/0124-parent"
+            common = {"created": "2026-08-29", "updated": "2026-08-29"}
             write_doc(
-                root / "docs/01.requirements/prd-0124-parent.md",
+                package / "spec.md",
                 {
+                    **common,
+                    "profile_id": "spec",
                     "status": "active",
-                    "artifact_id": "prd-0124",
-                    "artifact_type": "prd",
+                    "artifact_id": "SPEC-0124",
+                    "artifact_type": "spec",
                     "parent_ids": [],
                 },
-                PRD_TARGET_BODY,
+                body_with_headings(
+                    "## Overview", "## Boundaries and Inputs", "## Behavior Contract",
+                    "## Technical Approach", "## Interfaces and Data",
+                    "## Failure Modes and Guardrails", "## Acceptance Contract",
+                    "## Traceability",
+                ),
             )
             write_doc(
-                root / "docs/02.architecture/descriptions/ad-0124-parent.md",
+                package / "plan.md",
                 {
+                    **common,
+                    "profile_id": "plan",
                     "status": "active",
-                    "artifact_id": "ad-0124",
-                    "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-0124"],
+                    "artifact_id": "plan-0124",
+                    "artifact_type": "plan",
+                    "parent_ids": ["SPEC-0124"],
                 },
-                ARCHITECTURE_DESCRIPTION_TARGET_BODY,
+                body_with_headings(
+                    "## Objective", "## Dependencies", "## Execution Sequence",
+                    "## Risk and Rollback", "## Verification",
+                ),
             )
-            write_doc(
-                root / "docs/03.specs/spec-0124-parent/spec.md",
-                {
-                    "status": "active",
-                    "artifact_id": "spec-0124",
-                    "artifact_type": "spec",
-                    "parent_ids": ["ad-0124"],
-                },
-                SPEC_TARGET_BODY,
+            task = package / "tasks/tsk-0001-transition.md"
+            values = {
+                **common,
+                "profile_id": "task",
+                "status": "active",
+                "artifact_id": "task-0124-0001",
+                "artifact_type": "task",
+                "parent_ids": ["SPEC-0124", "plan-0124"],
+            }
+            body = body_with_headings(
+                "## Objective", "## Inputs", "## Work Log", "## Verification Evidence",
+                "## Review Evidence", "## Commit Ledger",
             )
-            task = root / "docs/03.specs/spec-0124-parent/task.md"
-            write_doc(
-                task,
-                {
-                    "status": "completed",
-                    "artifact_id": "task-0124-01",
-                    "artifact_type": "task",
-                    "parent_ids": ["spec-0124"],
-                },
-            )
+            write_doc(task, values, body)
+            commit_all(root, "active task")
+            active_base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(task, {**values, "status": "completed"}, body)
             commit_all(root, "completed task")
-            base = git(root, "rev-parse", "HEAD").stdout.strip()
-            write_doc(
-                task,
-                {
-                    "status": "active",
-                    "artifact_id": "task-0124-01",
-                    "artifact_type": "task",
-                    "parent_ids": ["spec-0124"],
-                },
+            forward = run_checker(
+                root, "check-changed", "--base-ref", active_base,
+                profiles=fixture_registry,
             )
+            self.assertEqual(0, forward.returncode, forward.stdout + forward.stderr)
+            self.assertIn("selected=1 violations=0", forward.stdout)
+            self.assertIn(f"metadata base: source=explicit ref={active_base}", forward.stderr)
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(task, values, body)
             commit_all(root, "reverse task transition")
-            result = run_checker(root, "check-changed", "--base-ref", base)
+            result = run_checker(
+                root, "check-changed", "--base-ref", base,
+                profiles=fixture_registry,
+            )
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-            self.assertIn("invalid-transition", result.stdout)
+            self.assertIn(
+                f"{task.relative_to(root).as_posix()}: invalid-transition", result.stdout,
+            )
+            self.assertIn("selected=1 violations=1", result.stdout)
+            self.assertIn(f"metadata base: source=explicit ref={base}", result.stderr)
 
     def test_scoped_transition_override_requires_complete_colocated_task_evidence(self) -> None:
         directory, root = self.new_repo()
