@@ -22,16 +22,17 @@ entitlement, runtime execution, Task 9 acceptance, or final integration?
 
 This is the draft `RES-0002` pack authorized by SPEC-0137's pre-acceptance
 exception. It currently contains this README, two foundation leaves, four D2
-analysis leaves, four D3 model/catalog/memory leaves, and five D4 SDLC/docs
-leaves; the remaining five inventory entries are future draft work. The
+analysis leaves, four D3 model/catalog/memory leaves, five D4 SDLC/docs
+leaves, and three D5 delivery/quality leaves; the remaining two inventory
+entries are future draft work. The
 `observed_at` date measures local draft measurement, not external access.
 
 | Area | Inventory |
 | --- | --- |
 | Foundation | [README](./README.md), [workspace-baseline](./workspace-baseline.md), [scope-application-matrix](./scope-application-matrix.md) |
 | Agentic | [harness engineering](./harness-engineering.md), [loop engineering](./loop-engineering.md), [provider implementation comparison](./provider-implementation-comparison.md), [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md), [provider model landscape](./provider-model-landscape.md), [agent model selection](./agent-model-selection.md), [AI agent catalogs](./ai-agent-catalogs.md), [memory hierarchy](./memory-hierarchy.md) |
-| SDLC and documentation | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md` |
-| Delivery and quality | `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md` |
+| SDLC and documentation | [spec-driven SDLC](./spec-driven-sdlc.md), [SDLC document roles](./sdlc-document-roles.md), [document metadata lifecycle](./document-metadata-lifecycle.md), [documentation architecture](./documentation-architecture.md), [LLM Wiki system](./llm-wiki-system.md) |
+| Delivery and quality | [automation pipeline workflow](./automation-pipeline-workflow.md), [quality CI and formatting](./quality-ci-formatting.md), [verification and validation](./verification-validation.md) |
 | Infrastructure and security | `docker-compose-infrastructure.md`, `security-governance.md` |
 
 The final subject/category × scope matrix is D7 work and is not yet covered by
@@ -58,7 +59,9 @@ leaf uses the same claim table (`Claim ID`, `Claim`, `Evidence class`, `State`,
 The authored evidence now includes a reproducible workspace baseline, the
 closed eight-scope routing model, D2's advisory harness, loop, provider, and
 instruction analysis, and D3's model-control, static-selection, catalog-intake,
-and provider-memory boundaries. The 2026-08-23 source roster is not per-claim proof.
+and provider-memory boundaries. D4 adds retained SDLC/document evidence and an
+evidence-limited C4/arc42/ADR composition. D5 adds declared automation,
+quality-control, and V&V boundaries. The 2026-08-23 source roster is not per-claim proof.
 Retained Task 0001 ledger observations retain their original 2026-08-08 and
 2026-08-09 dates; Task 0004's architecture-delta record is dated 2026-08-28.
 Graphify revision `f8a72211` is stale advisory material and is not used as proof.
@@ -136,6 +139,15 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `SDLCDOC-ADR-001` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED |
 | `SDLCDOC-ADR-002` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
 | `SDLCDOC-ADR-003` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
+| `APW-001` | [automation pipeline workflow](./automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
+| `APW-002` | [automation pipeline workflow](./automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
+| `APW-003` | [automation pipeline workflow](./automation-pipeline-workflow.md) | HISTORICAL VERIFIED (retained official observation) |
+| `QCF-001` | [quality CI and formatting](./quality-ci-formatting.md) | VERIFIED (tracked configuration) |
+| `QCF-002` | [quality CI and formatting](./quality-ci-formatting.md) | VERIFIED (tracked configuration) |
+| `QCF-003` | [quality CI and formatting](./quality-ci-formatting.md) | HISTORICAL VERIFIED (retained official observation) |
+| `VV-001` | [verification and validation](./verification-validation.md) | VERIFIED (tracked configuration) |
+| `VV-002` | [verification and validation](./verification-validation.md) | HISTORICAL VERIFIED (retained official observation) |
+| `VV-003` | [verification and validation](./verification-validation.md) | VERIFIED (tracked governance) |
 
 ## Architecture Practice Delta Claim Index
 
@@ -236,6 +248,19 @@ Graphify revision `f8a72211` is stale advisory material and is not used as proof
 | `SDR-SRC-006` | [SDLC document roles](./sdlc-document-roles.md) |
 | `SDR-SRC-007` | [SDLC document roles](./sdlc-document-roles.md) |
 | `SDR-SRC-008` | [SDLC document roles](./sdlc-document-roles.md) |
+| `APW-SRC-001` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
+| `APW-SRC-002` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
+| `APW-SRC-003` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
+| `APW-SRC-004` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
+| `APW-SRC-005` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
+| `QCF-SRC-001` | [quality CI and formatting](./quality-ci-formatting.md) |
+| `QCF-SRC-002` | [quality CI and formatting](./quality-ci-formatting.md) |
+| `QCF-SRC-003` | [quality CI and formatting](./quality-ci-formatting.md) |
+| `QCF-SRC-004` | [quality CI and formatting](./quality-ci-formatting.md) |
+| `QCF-SRC-005` | [quality CI and formatting](./quality-ci-formatting.md) |
+| `VV-SRC-001` | [verification and validation](./verification-validation.md) |
+| `VV-SRC-002` | [verification and validation](./verification-validation.md) |
+| `VV-SRC-003` | [verification and validation](./verification-validation.md) |
 
 ## Implications
 
@@ -246,7 +271,8 @@ as advisory. D3 adds native model-control boundaries, static (not dynamic)
 selection, a pinned catalog intake path, and advisory provider-memory controls.
 D4 adds retained SDLC/document evidence and an evidence-limited C4/arc42/ADR
 composition. `DOCARCH-COMP-001` and `SCOPE-COMP-001` are advisory synthesis;
-the two ADR gaps remain `UNVERIFIED`.
+the two ADR gaps remain `UNVERIFIED`. D5 distinguishes configuration from local,
+hosted, enforced, runtime, validation, and acceptance evidence.
 
 ## Traceability
 
@@ -265,3 +291,6 @@ the two ADR gaps remain `UNVERIFIED`.
 - D4 metadata: [document metadata lifecycle](./document-metadata-lifecycle.md).
 - D4 architecture composition: [documentation architecture](./documentation-architecture.md).
 - D4 LLM Wiki boundary: [LLM Wiki system](./llm-wiki-system.md).
+- D5 automation boundary: [automation pipeline workflow](./automation-pipeline-workflow.md).
+- D5 quality taxonomy: [quality CI and formatting](./quality-ci-formatting.md).
+- D5 V&V responsibility model: [verification and validation](./verification-validation.md).
