@@ -25,13 +25,13 @@ cleanup of another worktree.
 | Input | Observed state on 2026-08-28 Asia/Seoul |
 | --- | --- |
 | Approved specification | `docs/03.specs/0137-agentic-research-pack-rebuild/spec.md` at `68354fc8e92658a53043a9a8242397d48c4f6caf`; explicit user approval and independent rules/specification and documentation-quality final C0/I0/M0. Original Spec evidence remains below. |
-| Active execution plan | `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md` at `5cb154a00173088011dad15eb5f50bb87bde57c9`; Plan-only commit `docs(plan): align architecture research delta`. Task 1A is committed at `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072`; Task 1B governs this separate observation publication. |
+| Active execution plan | `docs/03.specs/0137-agentic-research-pack-rebuild/plan.md` at approved retry-plan commit `c501ee371547540b3e7368b0d9f76e6811b08b16`; Task 1A is committed at `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072`, and Task 1B remains the historical publication. Task 1C governs this separate five-page reobservation. |
 | Structural dependency | `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0009-references.md`; owner-branch implementation `49522aa1d782838706bd558b8e139b107918ffee` is bound by completed Task evidence at frozen snapshot `2b5fa6f7b4299e23972717204cc6b678eb688be4` (last Task-path touch `9ef889b516dd03fc32ff850f7bec33fb59d760bc`). Neither owner-branch completion nor its C0/I0/M0 implementation reviews prove acceptance on `main`; no dirty owner worktree was inspected or absorbed. |
-| Content destination | `docs/90.references/research/0002-agentic-engineering-research-pack/`; absent at the literal main snapshot, approved Spec base, and current Plan HEAD below. Content and synchronization remain `BLOCKED`. |
+| Content destination | `docs/90.references/research/0002-agentic-engineering-research-pack/`; absent at literal main `d6cac43d77653e833732ec589f333db333222e07` and retry-plan commit `c501ee371547540b3e7368b0d9f76e6811b08b16`. Content and synchronization remain `BLOCKED`. |
 | Branch and main snapshots | Research branch `codex/0137-agentic-research-refresh` was clean at Task 1A entry, HEAD `5cb154a00173088011dad15eb5f50bb87bde57c9`. Newly observed `task1a_main_snapshot_commit` is `d6cac43d77653e833732ec589f333db333222e07`; it happens to equal the Plan's historical comparison. Preserved Task-8-derived baseline remains `0c841b086cd1e6adc2c1ca53ce14eec309fe8f47`. |
 | Graph evidence | `graphify-out/GRAPH_REPORT.md` was built from `f8a72211`; it is stale and advisory and requires corroboration against tracked sources and current governance. |
 | Preserved external-source baseline | 2026-08-23 observations and fixed pins remain unchanged. External research was read-only and did not observe secrets, provider entitlement, live runtime state, or remote enforcement. `DOCARCH-DIATAXIS-BASE-001` is preserved, outside the seven delta claims, and grants no refetch. |
-| Architecture-practice delta observation | All eight Plan roster pages were requested exactly once on 2026-08-28 Asia/Seoul after each date/origin preflight. Three pages are `VERIFIED`, five `UNVERIFIED`; all five source-backed claims are `UNVERIFIED`, and the two synthesis-only claims remain `Not Run`. One response record was lost to executor output truncation. The observations below project the Plan roster without expanding its authority; collection was not successful as a whole and no research content was authored. |
+| Architecture-practice delta observation | The first three C4 observations are retained from Task 1B. Under the approved narrow correction, the remaining five roster URLs were each reobserved exactly once on 2026-08-28 Asia/Seoul after date/origin preflight: six active pages are `VERIFIED` and two are `UNVERIFIED`. Source-backed claims C4, arc42, and ADR role are `VERIFIED`; ADR lifecycle and relationships remain `UNVERIFIED`; synthesis remains `Not Run`. No research content was authored. |
 
 ## Work Log
 
@@ -59,8 +59,157 @@ cleanup of another worktree.
 | 2026-08-28 | Task 1B capture limitation | Tool output was truncated (28,219 original tokens against a 22,000-token output limit), losing the ADR-LIFECYCLE JSON record/body. Its request and date preflight occurred between ADR-ROLE and ADR-RELATIONSHIPS, but its exact timestamp, status, exit, headers and digests were not retained. It is `UNVERIFIED`; no retry was made. The other seven raw records remained only in transient controller memory for analysis/review; no raw bytes are committed. |
 | 2026-08-28 | Task 1B source sufficiency | C4's notation page and ADR-ROLE returned 404; arc42 returned an unfollowed 301; ADR-LIFECYCLE evidence was lost; ADR-RELATIONSHIPS returned a decision index insufficient for its required relationship boundary. All five source-backed claims remain `UNVERIFIED`. Task 6 remains blocked by page verification and the separate structural dependency. |
 | 2026-08-28 | Task 1B focused validation | Metadata PASS (`selected=1 violations=0`); traceability FAIL (1 inherited finding) and alignment FAIL (42 inherited findings), attributable 0. Diff/whitespace and exact-path exclusion checks passed. The final-text rerun is bound externally without another evidence edit; terminal review remains Not Run in-tree. |
+| 2026-08-28 | Task 1C approved reobservation | The approved retry Plan at `c501ee371547540b3e7368b0d9f76e6811b08b16` authorized exactly five corrected URLs. Controller completed each once, in roster order, after the required 2026-08-28 preflight and closed-environment identity checks. No retry, redirect follow, linked-page request, or alternative source occurred. |
+| 2026-08-28 | Task 1C dependency recheck | `main` resolved to `d6cac43d77653e833732ec589f333db333222e07`; the canonical destination census was empty on that commit and on the retry Plan commit. Task 9 implementation `49522aa1d782838706bd558b8e139b107918ffee` is not an ancestor of main (exit 1), which is expected non-ancestry rather than a PASS. |
+| 2026-08-28 | Task 1C focused validation | Exact stable draft check: metadata PASS (`selected=1 violations=0`); traceability FAIL (1 inherited finding) and alignment FAIL (42 inherited findings), attributable 0. Scoped whitespace, exact-path, clean-exclusion, and memory-only record-consistency checks passed. Terminal review remains external. |
 
 ## Architecture Practice Delta Observations
+
+| Page key | Claim ID | Family root | Direct URL | Accessed at | State |
+| --- | --- | --- | --- | --- | --- |
+| `C4-INTRODUCTION` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/introduction` | 2026-08-28 | VERIFIED |
+| `C4-ABSTRACTIONS` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/abstractions` | 2026-08-28 | VERIFIED |
+| `C4-DIAGRAMS` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams` | 2026-08-28 | VERIFIED |
+| `C4-NOTATION` | `DOCARCH-C4-001` | `https://c4model.com/` | `https://c4model.com/diagrams/notation` | 2026-08-28 | VERIFIED |
+| `ARC42-OVERVIEW` | `DOCARCH-ARC42-001` | `https://arc42.org/` | `https://arc42.org/overview/` | 2026-08-28 | VERIFIED |
+| `ADR-ROLE` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html` | 2026-08-28 | VERIFIED |
+| `ADR-LIFECYCLE` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0008-add-status-field.html` | 2026-08-28 | UNVERIFIED |
+| `ADR-RELATIONSHIPS` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/` | 2026-08-28 | UNVERIFIED |
+
+## Architecture Practice Delta Evidence Records
+
+The first three retained records below are unchanged historical observations from
+`2643d9b9008f21d472e998039cd37b8ceb421109`. Their old missing-notation wording
+in the separately preserved Task 1B evidence is historical observation context,
+not the current combined C4 conclusion.
+
+### C4-INTRODUCTION
+
+- Claim ID: `DOCARCH-C4-001`
+- Direct URL: `https://c4model.com/introduction`
+- Page title: Introduction | C4 model
+- Publisher: C4 model (site identification)
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: C4 supports software-architecture communication during up-front design and retrospective documentation through progressively detailed views. Its uses include onboarding, architecture review, and risk or threat analysis.
+- Supported page-level propositions:
+
+  1. C4 helps teams communicate software architecture during design and documentation.
+  2. Its progressive views are system context, container (applications/data stores), component, and code.
+
+- Limitations and caveats: Mutable page observed only on the recorded date; no revision is stated. The page does not establish a lifecycle or approval contract, local adoption, entitlement, or runtime execution. Page-level sufficiency does not settle the four-page C4 claim.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### C4-ABSTRACTIONS
+
+- Claim ID: `DOCARCH-C4-001`
+- Direct URL: `https://c4model.com/abstractions`
+- Page title: Abstractions | C4 model
+- Publisher: C4 model (site identification)
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: C4 models static structure through nested abstractions, starting with people using software systems and progressing through containers, components, and code elements.
+- Supported page-level propositions:
+
+  1. People use software systems; systems contain containers, and containers contain components.
+  2. Containers represent applications or data stores; components comprise code elements such as classes, interfaces, objects, or functions.
+
+- Limitations and caveats: Mutable page; no revision is stated. A C4 container is not automatically a Docker container. Mapping these abstractions to this workspace is local interpretation, not proof of adoption or runtime behavior. No notation-page evidence is supplied here.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### C4-DIAGRAMS
+
+- Claim ID: `DOCARCH-C4-001`
+- Direct URL: `https://c4model.com/diagrams`
+- Page title: Diagrams | C4 model
+- Publisher: C4 model (site identification)
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: C4 uses four static diagram levels and supplementary views. Teams select useful levels rather than drawing every level; system-context and container diagrams are often sufficient.
+- Supported page-level propositions:
+
+  1. The static levels are system context, container, component, and code.
+  2. Supporting diagram types include system landscape, dynamic, and deployment views.
+  3. Teams need only the levels useful for their communication needs.
+
+- Limitations and caveats: Mutable page; no revision is stated. It mandates neither every level nor a local review gate. This view taxonomy does not substitute for the missing required notation-page guidance; navigation links were not requested.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### C4-NOTATION
+
+- Claim ID: `DOCARCH-C4-001`
+- Direct URL: `https://c4model.com/diagrams/notation`
+- Page title: Notation | C4 model
+- Publisher: C4 model
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: C4 notation is notation-independent. A standalone diagram should state its type and scope, include a legend, expand abbreviations, identify elements and responsibilities, show relevant technology, and label directed relationships and inter-container protocols. Consistent colour use and accessibility matter; UML is possible but has text and tool limitations.
+- Supported page-level propositions:
+
+  1. C4 diagrams should be understandable in isolation through type/scope context, a legend, and expanded abbreviations.
+  2. Containers and components should identify their technology, while directed relationships convey labels and relevant protocol detail.
+
+- Limitations and caveats: Mutable page with no stated revision. This is notation guidance, not a mandatory local gate, runtime/adoption proof, or a substitute for the C4 diagram taxonomy. Combined with the retained three C4 sub-boundaries, it makes the mapped C4 claim VERIFIED.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### ARC42-OVERVIEW
+
+- Claim ID: `DOCARCH-ARC42-001`
+- Direct URL: `https://arc42.org/overview/`
+- Page title: arc42 Template Overview - arc42
+- Publisher: arc42
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: arc42 answers what and how to document and communicate architecture through a tailorable twelve-section template: introduction/goals, constraints, context/scope, solution strategy, building blocks, runtime, deployment, cross-cutting concepts, decisions, quality, risks/debt, and glossary. Building blocks refine hierarchically; important decisions belong in section 9 unless described elsewhere, and detailed documents may be linked.
+- Supported page-level propositions:
+
+  1. arc42 defines a twelve-section architecture communication template.
+  2. The template includes hierarchical building-block refinement and an architectural-decisions section.
+
+- Limitations and caveats: Mutable page with no stated revision. Linked detailed documents were not visited. The tailorable overview does not mandate equal granularity or prove local adoption or complete implementation of every section.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### ADR-ROLE
+
+- Claim ID: `SDLCDOC-ADR-001`
+- Direct URL: `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html`
+- Page title: Use Markdown Architectural Decision Records | MADR
+- Publisher: MADR
+- Observed version or revision marker: MADR 4.0.0 chosen option; not independently established as the latest release
+- Paraphrased evidence summary: MADR records a project decision to use a structured, lean, maintainable Markdown format for architecture, code, and other decisions. It treats explicit assumptions and later understanding as reasons for the choice, and compares MADR with Nygard, Y-statement, and formless alternatives.
+- Supported page-level propositions:
+
+  1. MADR is a structured Markdown format for recording architecture and related decisions.
+  2. The page presents explicit assumptions and future maintainability as decision-record motivations.
+
+- Limitations and caveats: This is MADR's own decision and does not create a universal mandate or prove local adoption. Its observed version marker is a chosen option, not independently verified release currency.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### ADR-LIFECYCLE
+
+- Claim ID: `SDLCDOC-ADR-002`
+- Direct URL: `https://adr.github.io/madr/decisions/0008-add-status-field.html`
+- Page title: Add Status Field | MADR
+- Publisher: MADR
+- Observed version or revision marker: Not stated
+- Paraphrased evidence summary: The page considers whether and how a status field should be tracked, chooses YAML front matter, and compares several display styles. It shows on-hold and accepted examples and discusses a superseded-by identifier, including its per-ADR maintenance drawback, but does not define a complete lifecycle or supersession rule set.
+- Supported page-level propositions: None; page is UNVERIFIED
+- Limitations and caveats: HTTP 200 transport and partial status observations are insufficient for this unchanged boundary, which requires lifecycle, status, and supersession. No other page is used to rescue or remap this row.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+### ADR-RELATIONSHIPS
+
+- Claim ID: `SDLCDOC-ADR-003`
+- Direct URL: `https://adr.github.io/madr/`
+- Page title: About MADR | MADR
+- Publisher: MADR
+- Observed version or revision marker: News observes MADR 4.0.0 dated 2024-09-17 and a rendered development template; neither is independently established as current release
+- Paraphrased evidence summary: MADR defines an Architectural Decision as a justified design choice addressing an architecturally significant functional or non-functional requirement, and an ADR as its record with rationale. It discusses neighbouring documents, decision categories, Markdown linting, a template, and proposed/rejected/accepted/deprecated/superseded statuses, but does not establish the requested relationship to an Architecture Description or Spec.
+- Supported page-level propositions: None; page is UNVERIFIED
+- Limitations and caveats: `AD` means Architectural Decision, not Architecture Description. Generic requirements and local `ARD` interpretation do not prove the specified artifact relationship; this page cannot be conflated with it.
+- Very short excerpt: Omitted; paraphrase is sufficient
+
+## Historical Task 1B Architecture Practice Delta Evidence Records
+
+The following preserved Task 1B evidence records, outcomes, and transport
+observations are historical only and point to
+`2643d9b9008f21d472e998039cd37b8ceb421109`; they are not extra active rows.
+The active records above supersede only the five corrected roster observations.
 
 | Page key | Claim ID | Family root | Direct URL | Accessed at | State |
 | --- | --- | --- | --- | --- | --- |
@@ -72,8 +221,6 @@ cleanup of another worktree.
 | `ADR-ROLE` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0001-record-architecture-decisions.html` | 2026-08-28 | UNVERIFIED |
 | `ADR-LIFECYCLE` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/` | 2026-08-28 | UNVERIFIED |
 | `ADR-RELATIONSHIPS` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/` | 2026-08-28 | UNVERIFIED |
-
-## Architecture Practice Delta Evidence Records
 
 ### C4-INTRODUCTION
 
@@ -184,7 +331,7 @@ cleanup of another worktree.
 - Limitations and caveats: A decision index is not evidence for the mapped relationship. No linked page was followed; links between ADRs would not by themselves establish relationships to Architecture Description or Spec. The historical `ARD` distinction remains local interpretation, not an upstream-standard claim.
 - Very short excerpt: Omitted; paraphrase is sufficient
 
-## Architecture Practice Delta Transport Evidence
+## Historical Task 1B Architecture Practice Delta Transport Evidence
 
 These are observations of the controller's actual requests, not commands to
 rerun. The eight-row table above binds each page key to its literal URL, claim,
@@ -254,7 +401,65 @@ observations do not establish local adoption, runtime execution, entitlement,
 Task 9 acceptance, or content authority. No raw stdout/stderr, header, or body
 bytes are included in this publication.
 
-## Architecture Practice Delta Claim Outcomes
+## Architecture Practice Delta Transport Evidence
+
+These five Task 1C observations used exactly one no-shell `subprocess.run`
+curl GET per literal URL, with `timeout=30`, `check=False`, `capture_output=True`,
+the closed environment below, and the Plan's no-follow argv. Each preflight,
+exact roster mapping, origin, and descendant check passed immediately before
+its request. No redirect, second client, follow-up request, alternate source,
+or retry occurred. All five had exit 0, HTTP 200, no `Location`, no malformed
+or multiple response header block, no transport error, and no capture failure.
+
+```json
+{"LC_ALL":"C","LANG":"C","TZ":"Asia/Seoul","PATH":"/usr/bin:/bin"}
+```
+
+Each complete ASCII JSON capture envelope was at most 16,000 characters, with
+inner and outer output budgets of 20,000 tokens. The controller reconstructed
+base64/zlib stdout and stderr, independently compared identity to the roster,
+argv, and environment, then checked all lengths and SHA-256 digests plus body
+separation/status before the next request. Wire character lengths, in order,
+were 8640, 9032, 7042, 8085, and 14433; raw data was not committed.
+
+```text
+C4-NOTATION: ["curl","--disable","--noproxy","*","--silent","--show-error","--include","--max-time","30","--connect-timeout","10","--max-redirs","0","--proto","=https","--no-location","--compressed","--request","GET","https://c4model.com/diagrams/notation"]
+ARC42-OVERVIEW: ["curl","--disable","--noproxy","*","--silent","--show-error","--include","--max-time","30","--connect-timeout","10","--max-redirs","0","--proto","=https","--no-location","--compressed","--request","GET","https://arc42.org/overview/"]
+ADR-ROLE: ["curl","--disable","--noproxy","*","--silent","--show-error","--include","--max-time","30","--connect-timeout","10","--max-redirs","0","--proto","=https","--no-location","--compressed","--request","GET","https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html"]
+ADR-LIFECYCLE: ["curl","--disable","--noproxy","*","--silent","--show-error","--include","--max-time","30","--connect-timeout","10","--max-redirs","0","--proto","=https","--no-location","--compressed","--request","GET","https://adr.github.io/madr/decisions/0008-add-status-field.html"]
+ADR-RELATIONSHIPS: ["curl","--disable","--noproxy","*","--silent","--show-error","--include","--max-time","30","--connect-timeout","10","--max-redirs","0","--proto","=https","--no-location","--compressed","--request","GET","https://adr.github.io/madr/"]
+```
+
+| Page key | Actual request timestamp (Asia/Seoul) | Curl exit | HTTP status | Exact Location | Returned-body sufficiency |
+| --- | --- | --- | --- | --- | --- |
+| C4-NOTATION | 2026-08-28T16:51:21.237526+09:00 | 0 | 200 | None | Sufficient for notation guidance and stated limitations. |
+| ARC42-OVERVIEW | 2026-08-28T16:52:13.571085+09:00 | 0 | 200 | None | Sufficient for template structure and granularity. |
+| ADR-ROLE | 2026-08-28T16:52:36.477843+09:00 | 0 | 200 | None | Sufficient for ADR role and decision scope. |
+| ADR-LIFECYCLE | 2026-08-28T16:56:10.230598+09:00 | 0 | 200 | None | Insufficient for full lifecycle, status, and supersession boundary. |
+| ADR-RELATIONSHIPS | 2026-08-28T16:56:33.518082+09:00 | 0 | 200 | None | Insufficient for Architecture Description/Spec relationship boundary. |
+
+All stderr streams were empty (`length=0`, SHA-256
+`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`).
+Digests are over exact raw stdout or separated body bytes; raw response bytes,
+headers, stdout, and stderr remain transient controller memory only.
+
+| Page key | Stdout length | Raw stdout SHA-256 | Body offset | Body length | Returned body SHA-256 |
+| --- | ---: | --- | ---: | ---: | --- |
+| C4-NOTATION | 21713 | `48543571dd93a5f7f36bb3792fe09bf56d7dca93c0a51656168270beedd9e454` | 840 | 20873 | `09d636316f7ed85b756e18cc22abd087deb5b0f6c62c3b8f2162de46fd6f9bad` |
+| ARC42-OVERVIEW | 18217 | `bd3af4a1ee83c8a54977fc66a16d1c7e6a2e8cf33cdf9ccee6084ea8cb07c31b` | 447 | 17770 | `3ebcee7fd69015054e75251cc2a4f9f432560f4e874c744c3c0ff530bd8bdef8` |
+| ADR-ROLE | 15538 | `cd88a12c362ecb4f8b02caf47d768b3fe0780964e486ac7d42ca50584a8b9a72` | 726 | 14812 | `dd861e5916c4126b5044bac19c3ab50137f09fe8c8660c2c6fbb4ff9e5cc8401` |
+| ADR-LIFECYCLE | 19502 | `e976ae629099e8aba2f0b0bf536c04920a1873eddaafeb80785357bca915b6e6` | 726 | 18776 | `1c8879c6ba8b37f1f519f10ee34bc12a144ab1b60ef548edcb4e1bb6b6382d53` |
+| ADR-RELATIONSHIPS | 36111 | `ace9270ee610bffa65d4afe256d879ecf57bd8535e49fa9b6c46e4dced550f78` | 746 | 35365 | `7165f41f5912be85e4ee1b8aa826b20f016b3225f0fa5f1ec2c44d0b15334edf` |
+
+The fixed-path curl executable, OS resolver/network stack, system CA/TLS trust
+store, remote server, and network path remain the observation trust boundary.
+These observations establish neither local adoption nor runtime, entitlement,
+Task 9 acceptance, or content authority.
+
+## Historical Task 1B Architecture Practice Delta Claim Outcomes
+
+These original outcomes remain historical evidence from
+`2643d9b9008f21d472e998039cd37b8ceb421109`; they are not current outcomes.
 
 | Claim ID | State | Combined sufficiency or dependency |
 | --- | --- | --- |
@@ -266,11 +471,23 @@ bytes are included in this publication.
 | `DOCARCH-COMP-001` | Not Run | Synthesis-only; no request authorized or made, source inputs unverified and content blocked. |
 | `SCOPE-COMP-001` | Not Run | Synthesis-only; no request authorized or made, prerequisite claims/content blocked. |
 
-The eight requests are complete as invocations, not as successful collection
-or verified research. Task 6's every-page-VERIFIED gate fails independently of
-the still-blocked structural/content gate. No failed observation is promoted
-to a research source row; no substitute, retry, Plan correction, main merge,
-content authoring, or cleanup is authorized by this publication.
+## Architecture Practice Delta Claim Outcomes
+
+| Claim ID | State | Combined sufficiency or dependency |
+| --- | --- | --- |
+| `DOCARCH-C4-001` | VERIFIED | All four required C4 sub-boundaries are now supported: retained introduction, abstractions, and diagrams plus Task 1C notation. |
+| `DOCARCH-ARC42-001` | VERIFIED | The corrected overview page supports its required template, section, granularity, and limitation boundary. |
+| `SDLCDOC-ADR-001` | VERIFIED | The corrected MADR decision page supports ADR role and decision scope. |
+| `SDLCDOC-ADR-002` | UNVERIFIED | Status observations alone do not establish the required lifecycle and supersession boundary. |
+| `SDLCDOC-ADR-003` | UNVERIFIED | The MADR overview does not establish the required Architecture Description/Spec relationship. |
+| `DOCARCH-COMP-001` | Not Run | Synthesis-only; no request authorized or made, and content remains blocked. |
+| `SCOPE-COMP-001` | Not Run | Synthesis-only; no request authorized or made, and content remains blocked. |
+
+The active roster has six verified pages and two unverified pages. Task 6's
+every-page-VERIFIED gate still fails independently of the structural/content
+block. No failed observation is promoted to a research source row; no further
+source request, content authoring, synchronization, merge, or cleanup is
+authorized by this publication.
 
 ## Verification Evidence
 
@@ -303,7 +520,13 @@ content authoring, or cleanup is authorized by this publication.
 | Observed Task 1B validation — alignment | `python3 scripts/validation/check-document-links.py --mode alignment`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=42`; every finding path outside changed Task 0004, attributable 0. |
 | Observed Task 1B validation — scope and whitespace | `git diff --check -- docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md` exit 0; `git diff --name-only` and `git status --short` exit 0 and list only Task 0004. `git diff --quiet HEAD -- . ':(exclude)docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md'` exit 0 proves all other files unchanged, supporting inherited classification. |
 | Task 1B exact-tree evidence binding | The preceding results are actual observed validation outcomes, including executed reruns. The final exact-tree execution report binds those recorded outcomes to the mandatory final-text rerun without another self-recording edit. Terminal review remains Not Run in-tree/external. |
-| Task 6 DELTA_AUDIT | Not Run in this Task-only unit; its content-file inputs are blocked, and five page states fail its every-page-VERIFIED precondition. No successful audit or authoring permission is inferred from the complete request count. |
+| Observed Task 1C validation — metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref c501ee371547540b3e7368b0d9f76e6811b08b16 --changed-path docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md`: PASS, exit 0, `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`. |
+| Observed Task 1C validation — traceability | `python3 scripts/validation/check-document-links.py --mode traceability`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=1`; only unchanged Task 0001 `document-not-regular`, attributable 0. |
+| Observed Task 1C validation — alignment | `python3 scripts/validation/check-document-links.py --mode alignment`: FAIL/non-PASS, exit 1, `documents=359 links=2472 catalog_pairs_total=46 archive_direct_links_total=15 removed_template_mentions_total=0 failures=42`; all finding paths are outside Task 0004, attributable 0. |
+| Observed Task 1C validation — scope and whitespace | `git diff --check -- docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md` exit 0; `git diff --name-only` and `git status --short` list only Task 0004. `git diff --quiet HEAD -- . ':(exclude)docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md'` exit 0 proves all other files unchanged, supporting inherited classification. |
+| Observed Task 1C consistency check | Memory-only check exit 0, `failures=0`: active eight-row/evidence cardinality, mappings/states, exact retained first-three rows/subsections, historical failed-five subsections, nine labels, actual timestamps/digests/lengths, and seven claim states. No generated output, files, or network access. |
+| Task 1C exact-tree evidence binding | The outcomes above were executed against stable draft blob `1881aa897a6a5788c7d4886bc0bc291649bcb3fa`, with the same blob before and after. The mandatory final-text rerun binds them externally without another evidence edit; terminal review remains Not Run in-tree/external. |
+| Task 6 DELTA_AUDIT | Not Run in this Task-only unit; its content-file inputs are blocked, and two page states fail its every-page-VERIFIED precondition. No successful audit or authoring permission is inferred from the complete request count. |
 | Post-Task9 synchronization and frozen ladder | Not Run; Task 9 owner-branch completion is observed, but canonical acceptance and the destination remain absent from `main`. |
 
 Later evidence is appended only after execution. Each result records the exact
@@ -331,9 +554,12 @@ repository adoption; it does not prove remote enforcement or a successful run.
 | Architecture Plan — fix3 | Failed pair: rules C0/I0/M0; quality C0/I4/M0. No commit authority. |
 | Architecture Plan — fix4 full review | Rules C0/I0/M0 (`/root/plan0137_rules_final_review`); quality C0/I1/M0 (`/root/plan0137_quality_final_review`). Nonzero pair remained nonauthorizing pending closure. |
 | Architecture Plan — fix5 scoped closure | Rules C0/I0/M0 (`/root/plan0137_link_fix_rules_review`); quality C0/I0/M0 (`/root/plan0137_link_fix_quality_review`), closing the absolute-path link guard. Combined with the full reviews, no finding remained open before Plan commit `5cb154a00173088011dad15eb5f50bb87bde57c9`. |
+| Retry Plan — initial review | Rules/specification C0/I1/M0 and documentation-quality C0/I1/M0. Both seats identified the mandatory capture-limit metadata validation finding; no commit authority before its scoped correction. |
+| Retry Plan — final review | Following one scoped correction, fresh rules/specification and documentation-quality reviews both returned C0/I0/M0 for `c501ee371547540b3e7368b0d9f76e6811b08b16`. |
 | Task 1A terminal publication review | Not Run in-tree; fresh rules/specification and documentation-quality exact-tree verdicts remain external, with no later file mutation before commit. |
 | Task 1A completed external review — previous unit | Final full reviews plus scoped closure: rules/specification C0/I0/M0 and documentation-quality C0/I0/M0 for `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072`. The preceding Not Run row preserves the historical publication point; no edit followed terminal review before that commit. |
 | Task 1B delta-observation terminal review | Not Run in-tree; eight actual requests and durable observation records are published above. Fresh independent final-tree reviews remain external, with no later mutation before commit. |
+| Task 1C reobservation terminal review | Not Run in-tree; controller must execute validators, obtain fresh independent exact-tree reviews, and commit without a later Task mutation. |
 | Research unit reviews | Not Run; research files have not been authored. |
 | Final exact-range rules/specification/quality review | Not Run. |
 | Branch-readiness terminal publication review | Not Run; the final-tree verdict and resulting readiness commit ID are external handoff evidence. |
@@ -365,8 +591,10 @@ change.
 | Reset Plan/Task authority — historical | `796f92f58d1c491a804d600fd90a65f858267d06` | Resolved original authority-correction identity; terminal verdict not established by Git identity. R1–R6 remain failed historical evidence. |
 | Extend architecture research Spec | `68354fc8e92658a53043a9a8242397d48c4f6caf` — `docs(spec): extend architecture research scope` | Committed, explicitly approved, and independently dual-reviewed C0/I0/M0. |
 | Align architecture research Plan | `5cb154a00173088011dad15eb5f50bb87bde57c9` — `docs(plan): align architecture research delta` | Committed Plan-only unit; full reviews plus scoped closure leave C0/I0/M0 and no open finding. |
+| Correct architecture delta retry Plan | `c501ee371547540b3e7368b0d9f76e6811b08b16` — `docs(plan): correct architecture delta source retry` | Committed after initial independent dual C0/I1/M0 identified mandatory capture-limit metadata validation, one scoped correction, and final independent dual C0/I0/M0. |
 | Align canonical research Task ledger | `5b3fdaf7d3cfa9742e77efe4b8c1dc018b5ef072` — `docs(task): align canonical research delta ledger` | Previous Task-only unit committed after final full/scoped independent dual C0/I0/M0; no edit after terminal review before commit. |
-| Observe closed architecture delta | No self-commit identity | This separate Task 1B publication; eight requests observed, three pages VERIFIED and five UNVERIFIED. Expected title `docs(task): record architecture delta observations`; terminal review Not Run in-tree and resulting identity/verdict remain external. |
+| Observe closed architecture delta | `2643d9b9008f21d472e998039cd37b8ceb421109` — `docs(task): record architecture delta observations` | Historical Task 1B publication: eight requests observed, three pages VERIFIED and five UNVERIFIED. Its tracked Not Run terminal-review row is a historical publication point; Git identity/published state does not establish a terminal verdict. |
+| Reobserve corrected architecture delta | No self-commit identity | This separate Task 1C publication; five corrected URLs were observed once, yielding six active VERIFIED pages and two UNVERIFIED pages. Terminal review and resulting identity remain external. |
 | Bind accepted post-Task9 main baseline | No commit | Blocked pending canonical Task 9 acceptance on `main` and the exact destination census; owner-branch completion alone is insufficient. |
 | Research content and integration units | No commits | Blocked pending the baseline gate. |
 | Record research-branch readiness | No commit | Not Run; Task remains active; expected title `docs(task): record canonical research readiness`. The resulting self-identity and terminal verdict are recorded externally, not by mutating this Task after review. |
@@ -452,21 +680,16 @@ change.
 - The 2026-08-23 baseline and `DOCARCH-DIATAXIS-BASE-001` remain preserved with
   no refetch. The only delta claims are `DOCARCH-C4-001`, `DOCARCH-ARC42-001`,
   `SDLCDOC-ADR-001`, `SDLCDOC-ADR-002`, `SDLCDOC-ADR-003`, `DOCARCH-COMP-001`,
-  and `SCOPE-COMP-001`. Five source-backed claim-family mappings cover the
-  three roots `c4model.com`, `arc42.org`, and `adr.github.io`; they are not five
-  source rows. The committed Plan alone defines eight direct pages;
-  the two synthesis-only claims authorize no request. Plan Task 1B owns delta
-  observations and evidence records. This Task 1B unit records eight actual
-  requests and their observed failures without changing that roster. All five
-  source-backed claims are `UNVERIFIED`; synthesis remains `Not Run`.
-- Every Task 1B request passed the authorized Asia/Seoul date and exact roster,
+  and `SCOPE-COMP-001`. The committed retry Plan alone defines eight direct
+  pages; the two synthesis-only claims authorize no request. Task 1C preserves
+  Task 1B history and records the five approved corrected pages without
+  changing the roster. C4, arc42, and ADR role are `VERIFIED`; ADR lifecycle
+  and relationships are `UNVERIFIED`; synthesis remains `Not Run`.
+- Every Task 1C request passed the authorized Asia/Seoul date and exact roster,
   origin, descendant, and no-follow preflight. The observed request date was
-  `2026-08-28`, not a date inferred from authorization. No further request is
-  authorized by this record: any retry, alternative, or redirect-target access
-  requires reviewed Plan correction; a later date additionally requires
-  corrected and reviewed Spec before any request. No content unit re-accesses
-  sources; evidence outside the preserved baseline or authorized delta
-  requires new authority.
+  `2026-08-28`, not inferred from authorization. The single narrower retry is
+  consumed. Any further source/date/roster change requires separate reviewed
+  authority and user direction; no content unit re-accesses sources.
 
 ## Deferred Items
 
@@ -479,21 +702,23 @@ change.
   follow committed Plan Task 2; owner-branch evidence cannot substitute.
 - The twenty-one `RES-0002` files are not authored until the dependency gate
   passes.
-- Task 1A's prior external verdict is recorded above. Terminal publication
-  reviews for this Task 1B unit and every later evidence commit remain external
-  to the tree they review; the current Task 1B tracked review is `Not Run`.
-  A commit still requires external C0/I0/M0 and no subsequent file mutation.
-- Task 1B invoked all eight authorized URLs once, but every source-backed claim
-  remains `UNVERIFIED`. Task 6 is blocked until every required page has reviewed
-  sufficient evidence and the independent structural gate passes. No retry or
-  alternative is authorized; reviewed Plan correction is required first, plus
-  reviewed Spec date correction for a later-date request.
-- Already received page bodies exposed navigation candidates `/diagrams/notation`
-  on C4-DIAGRAMS and `/madr/decisions/0000-use-markdown-architectural-decision-records.html`,
+- Task 1A's prior external verdict is recorded above. Task 1C terminal review
+  remains external to the tree it reviews and is currently `Not Run`; a commit
+  still requires external C0/I0/M0 and no subsequent file mutation.
+- Task 1C leaves two active pages and two source-backed claims `UNVERIFIED`.
+  Task 6 is blocked by its every-page-VERIFIED gate and the independent
+  structural gate. The narrower retry is consumed; no alternative or retry is
+  authorized without separate reviewed authority and user direction.
+- Historical Task 1B navigation evidence identified `/diagrams/notation` on
+  C4-DIAGRAMS and `/madr/decisions/0000-use-markdown-architectural-decision-records.html`,
   `/madr/decisions/0008-add-status-field.html`, and
   `/madr/decisions/0009-support-links-between-adrs-inside-an-adrs.html` on
-  ADR-RELATIONSHIPS. These are unrequested, unverified hrefs, not new evidence
-  rows or access authority; a reviewed Plan correction must precede any access.
+  ADR-RELATIONSHIPS. Task 1C subsequently requested the first three candidates:
+  C4-NOTATION and ADR-ROLE are now `VERIFIED`; ADR-LIFECYCLE was requested but
+  remains `UNVERIFIED` because its body is insufficient. Only the listed
+  `0009-support-links-between-adrs-inside-an-adrs.html` candidate remains
+  unrequested and unverified. This historical discovery grants no further
+  access authority; a reviewed Plan correction must precede any new request.
   ADR-to-ADR links alone would not establish Architecture Description/Spec
   relationships.
 - Post-sync validator execution is deferred to Plan Task 2's manifest-backed
