@@ -49,8 +49,26 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 from scripts.lib.document_governance import archive  # noqa: E402
 from scripts.lib.document_governance.git_provenance import HistoricalDocument  # noqa: E402
 
-SLUG = "2026-07-05-agentic-research-pack-refresh"
+# The pack was RENAMED, not deleted, so one constant no longer serves both jobs
+# this module asks of it. `49522aa1` moved all twenty leaves from the date slug
+# to `0001-…`, and while this module still derived everything from the date slug
+# the gate reported `failures=0` while enforcing nothing: `RETIRING_DIR` named an
+# empty path so the self-exclusion excluded nothing, and a clickable link to the
+# pack where it actually lives matched no pattern at all.
+#
+# The two jobs are therefore separated. SLUG names where the pack IS, and fixes
+# the directory the scan protects and excludes. RETIRED_SLUG names what the pack
+# WAS, and stays in the detected set because tracked text still carries it and a
+# stale reference to the old name is exactly what gate 4 exists to find. Both are
+# detected; only the live one bounds a directory.
+SLUG = "0001-agentic-research-pack-refresh"
+RETIRED_SLUG = "2026-07-05-agentic-research-pack-refresh"
 RETIRING_DIR = f"docs/90.references/research/{SLUG}"
+# The Migration's task-9 rename rows are keyed by the pack's PRE-rename paths,
+# because that is what they renamed from. Source-evidence selection reads this,
+# never RETIRING_DIR.
+RETIRED_DIR = f"docs/90.references/research/{RETIRED_SLUG}"
+SLUGS = (SLUG, RETIRED_SLUG)
 TASK_PATH = "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md"
 ALLOWLIST_HEADING = "### Old-path allowlist"
 
@@ -68,7 +86,7 @@ FORBIDDEN_CLASSES = re.compile(
     r"|configuration route|canonical[- ]owner)\b"
 )
 
-_SLUG_BODY = re.escape(SLUG)
+_SLUG_BODY = "(?:" + "|".join(re.escape(slug) for slug in SLUGS) + ")"
 # A destination reaches the retiring directory when the slug is followed by a
 # path separator or ends the destination. The earlier form required a trailing
 # slash and therefore missed a direct link to the directory itself.
@@ -607,7 +625,7 @@ def _migration_literal_evidence(
         sources = {
             row["source_path"] for row in approved["rows"]
             if row["owner_task"] == 9 and row["action"] == "rename"
-            and row["source_path"].startswith(f"{RETIRING_DIR}/")
+            and row["source_path"].startswith(f"{RETIRED_DIR}/")
         }
         bodies = {}
         for row in document["rows"]:
@@ -616,7 +634,9 @@ def _migration_literal_evidence(
                     root, approved["baseline_commit"], row["source_path"]
                 ).read_text()
                 bodies[row["target_path"]] = collections.Counter(
-                    line for line in text.splitlines() if SLUG in _normalize(line)
+                    line
+                    for line in text.splitlines()
+                    if any(slug in _normalize(line) for slug in SLUGS)
                 )
         raw = archive._read_regular(path)
         if archive._parse_migration_document(raw) != document:
@@ -661,7 +681,7 @@ def scan(root: pathlib.Path) -> ScanResult:
     """Run the gate-4 literal scan."""
     rows = read_allowlist(root)
     result = ScanResult(rows=rows)
-    needle = _normalize(SLUG)
+    needles = tuple(_normalize(slug) for slug in SLUGS)
     source_bodies, migration_text, classified_migration = _migration_literal_evidence(root)
     migration_path = archive._migration_path(root)
 
@@ -690,7 +710,8 @@ def scan(root: pathlib.Path) -> ScanResult:
             # be left invisible.
             result.unreadable_files += 1
             continue
-        if needle not in _normalize(text):
+        normalized_text = _normalize(text)
+        if not any(needle in normalized_text for needle in needles):
             continue
 
         clickable = _clickable_lines(text)
@@ -714,7 +735,7 @@ def scan(root: pathlib.Path) -> ScanResult:
 
         for number, line in enumerate(text.split("\n"), start=1):
             normalized = _normalize(line)
-            occurrences = normalized.count(needle)
+            occurrences = sum(normalized.count(needle) for needle in needles)
             if not occurrences and number not in clickable:
                 continue
 

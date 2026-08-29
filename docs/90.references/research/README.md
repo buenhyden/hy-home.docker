@@ -14,7 +14,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 
 | Stable ID | Package | Status |
 | :--- | :--- | :--- |
-| [RES-0001](./0001-agentic-research-pack-refresh/README.md) | Agentic Engineering Research Pack | superseded |
+| RES-0001 | Agentic Engineering Research Pack | superseded, retiring — pre-deletion gate 4 admits no clickable link to it |
 | [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack | active |
 | [RES-0080](./0080-roadmap-v1/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
 | [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |

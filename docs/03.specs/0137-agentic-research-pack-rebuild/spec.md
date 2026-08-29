@@ -423,8 +423,20 @@ Route 3 requires an admitted row to be removed when the retirement completes.
 reviewed allowlist pass before deletion and again after deletion, and states
 that a post-deletion scan alone is insufficient. The scanner's scan target is
 itself a retiring-path literal: `scripts/validation/old_path_gate_contract.py`
-defines `SLUG = "2026-07-05-agentic-research-pack-refresh"` and derives
-`RETIRING_DIR` from it. Removing that literal when the retirement completes
+defines the scan target as a literal and derives its directory constants from it.
+
+**Corrected 2026-08-29.** This paragraph named a single literal,
+`SLUG = "2026-07-05-agentic-research-pack-refresh"`, because that was the whole of
+the scan target when the amendment was written. It is no longer. Commit `49522aa1`
+renamed the retiring pack to `docs/90.references/research/0001-agentic-research-pack-refresh`
+and the module was not updated with it, so for that whole window the gate scanned
+for a path naming nothing: it reported `failures=0` while a clickable link to the
+pack at its live path matched no pattern. The module now carries two literals —
+`SLUG`, the pack's live name, which fixes the directory the scan protects and
+excludes, and `RETIRED_SLUG`, the pre-rename name, which stays in the detected set
+because tracked text still carries it. This carve-out covers both, on the same
+terms and for the same reason: either one, removed at retirement completion, would
+make the mandated post-deletion scan impossible. Removing that literal when the retirement completes
 would make the mandated post-deletion scan impossible, so route 3's removal
 condition as written made another clause of this Spec unsatisfiable by
 construction, in the same way requirement 5 and requirement 6 of the

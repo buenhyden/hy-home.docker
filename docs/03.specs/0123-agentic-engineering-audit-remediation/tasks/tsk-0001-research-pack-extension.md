@@ -12,9 +12,8 @@ updated: 2026-08-11
 
 ## Overview
 
-This Task extended the then-canonical agentic research pack at
-`docs/90.references/research/0001-agentic-research-pack-refresh/` with
-three new Stage 90 reference leaves and revalidated the fifteen existing
+This Task extended the then-canonical agentic research pack RES-0001, since
+superseded by RES-0002, with three new Stage 90 reference leaves and revalidated the fifteen existing
 leaves against the repository state and official external sources current at
 the time of execution.
 
@@ -90,7 +89,6 @@ the predecessor drift. It narrowly extends the allowed set to
 `scripts/hardening/check-all-hardening.sh` image-tag expectations,
 `infra/tech-stack.versions.json`, and the two Stage 05 comparison guides.
 
-- `docs/90.references/research/0001-agentic-research-pack-refresh/**`
 - `docs/90.references/research/README.md`
 - `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
 - `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md` (handoff refresh only)

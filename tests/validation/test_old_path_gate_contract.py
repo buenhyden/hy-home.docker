@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "validation"))
 import old_path_gate_contract as contract  # noqa: E402
 
 SLUG = contract.SLUG
+RETIRED_SLUG = contract.RETIRED_SLUG
 ALLOWLIST_HEADER = (
     "### Old-path allowlist\n\n"
     "| Path | Anchor | Literal class | Reason | Review |\n"
@@ -756,7 +757,7 @@ class NativeMigrationEvidenceTests(unittest.TestCase):
         from scripts.lib.document_governance import archive
 
         approved = archive._approved_migration_document(ROOT)
-        approved["rows"] = [row for row in approved["rows"] if row["source_path"].startswith(f"{contract.RETIRING_DIR}/")]
+        approved["rows"] = [row for row in approved["rows"] if row["source_path"].startswith(f"{contract.RETIRED_DIR}/")]
         rows = [{**{key: row[key] for key in ("source_path", "target_path", "artifact_id", "action")},
                  "recovery_commit": approved["baseline_commit"]} for row in approved["rows"]]
         rows.extend({"source_path": path, "target_path": None, "artifact_id": None,
@@ -770,25 +771,25 @@ class NativeMigrationEvidenceTests(unittest.TestCase):
         with mock.patch.object(archive, "_approved_migration_document", return_value=approved), mock.patch.object(archive, "_read_regular", return_value=raw):
             bodies, original, classified = contract._migration_literal_evidence(ROOT)
         self.assertEqual(20, len(bodies))
-        self.assertEqual(20, original.count(SLUG))
-        self.assertNotIn(SLUG, classified)
+        self.assertEqual(20, original.count(RETIRED_SLUG))
+        self.assertNotIn(RETIRED_SLUG, classified)
 
     def test_exact_native_sources_are_proved_without_exempting_new_occurrences(self) -> None:
         bodies, original, classified = contract._migration_literal_evidence(ROOT)
         self.assertEqual(20, len(bodies))
-        self.assertEqual(20, original.count(SLUG))
-        self.assertNotIn(SLUG, classified)
+        self.assertEqual(20, original.count(RETIRED_SLUG))
+        self.assertNotIn(RETIRED_SLUG, classified)
         occurrences = 0
         for path, counts in bodies.items():
             text = (ROOT / path).read_text(encoding="utf-8")
-            occurrences += text.count(SLUG)
-            self.assertNotIn(SLUG, contract._unproved_source_text(text, counts))
+            occurrences += text.count(RETIRED_SLUG)
+            self.assertNotIn(RETIRED_SLUG, contract._unproved_source_text(text, counts))
         self.assertEqual(6, occurrences)  # Five finding lines; README:32 has two literals.
-        line = f"The canonical research owner is {SLUG}."
+        line = f"The canonical research owner is {RETIRED_SLUG}."
         proved = collections.Counter({line: 1})
-        text = f"{line}\n{line}\nCurrent owner: {SLUG}\n"
+        text = f"{line}\n{line}\nCurrent owner: {RETIRED_SLUG}\n"
         remaining = contract._unproved_source_text(text, proved)
-        self.assertEqual(2, remaining.count(SLUG))
+        self.assertEqual(2, remaining.count(RETIRED_SLUG))
         self.assertEqual(1, proved[line])
 
     def test_moved_source_and_ledger_exempt_only_verified_literal_occurrences(self) -> None:
@@ -809,22 +810,61 @@ class NativeMigrationEvidenceTests(unittest.TestCase):
             current.parent.mkdir(parents=True)
             original = (ROOT / target).read_text(encoding="utf-8")
             current.write_text(original, encoding="utf-8")
-            sibling = current.parent / "unproved.md"
-            sibling.write_text(f"Current canonical owner: {SLUG}\n", encoding="utf-8")
+            # Outside the retiring directory on purpose. Once SLUG names the pack's
+            # live path, everything under it is self-excluded from the scan, so an
+            # unproved occurrence placed beside the proved file would be skipped for
+            # that reason rather than reported for this test's reason.
+            sibling = root / "docs/unproved.md"
+            sibling.parent.mkdir(parents=True, exist_ok=True)
+            sibling.write_text(f"Current canonical owner: {RETIRED_SLUG}\n", encoding="utf-8")
             subtree = [target, sibling.relative_to(root).as_posix(), migration.relative_to(root).as_posix()]
             with mock.patch.object(contract, "tracked_files", return_value=subtree):
                 findings = contract.scan(root).findings
-                self.assertEqual([sibling.relative_to(root).as_posix()], [item.path for item in findings])
-                current.write_text(original + f"\nCurrent canonical owner: {SLUG}\n[link]({SLUG}/README.md)\n", encoding="utf-8")
+                # The ledger's twenty `target_path:` scalars name the pack's CURRENT
+                # location, so the source-evidence classification must not blank them:
+                # it proves source fields, never a current owner. They are reported
+                # here because this fixture's allowlist is empty. The sibling is the
+                # unproved occurrence this test is really about.
+                ledger_path = migration.relative_to(root).as_posix()
+                self.assertEqual(
+                    {sibling.relative_to(root).as_posix(), ledger_path},
+                    {item.path for item in findings},
+                )
+                self.assertEqual(
+                    20, sum(1 for item in findings if item.path == ledger_path)
+                )
+                # Everything under the pack is self-excluded once SLUG names it, so
+                # new occurrences written into a proved file are skipped by the
+                # directory rule before the source-evidence rule is consulted. The
+                # per-file proof is therefore redundant for the twenty pack leaves
+                # and load-bearing only for the ledger's own source scalars.
+                current.write_text(
+                    original + f"\nCurrent canonical owner: {RETIRED_SLUG}\n"
+                    f"[link]({RETIRED_SLUG}/README.md)\n",
+                    encoding="utf-8",
+                )
+                self.assertNotIn(
+                    target, {item.path for item in contract.scan(root).findings}
+                )
+                # The ledger is scanned. Its proved source scalars stay blanked, but
+                # a comment appended to a proved line changes that line, so the line
+                # is no longer proved and both it and a wholly new line are reported.
                 ledger = migration.read_text(encoding="utf-8")
-                source_row = next(line for line in ledger.splitlines() if "source_path:" in line and SLUG in line)
-                ledger = ledger.replace(source_row, source_row + f" # Current canonical owner: {SLUG}", 1)
-                migration.write_text(ledger + f"\nCurrent canonical owner: {SLUG}\n", encoding="utf-8")
+                source_row = next(line for line in ledger.splitlines() if "source_path:" in line and RETIRED_SLUG in line)
+                ledger = ledger.replace(source_row, source_row + f" # Current canonical owner: {RETIRED_SLUG}", 1)
+                migration.write_text(ledger + f"\nCurrent canonical owner: {RETIRED_SLUG}\n[l]({RETIRED_SLUG}/README.md)\n", encoding="utf-8")
                 findings = contract.scan(root).findings
-                self.assertEqual(5, len(findings))
-                self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(findings))
+                ledger_findings = [item for item in findings if item.path == ledger_path]
+                self.assertEqual(20 + 3, len(ledger_findings))
+                self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(ledger_findings))
+                # With the ledger gone the source-evidence proof is unavailable, so
+                # nothing is exempted. The scan must still run and must still report
+                # the occurrence outside the pack.
                 migration.unlink()
-                self.assertTrue(any(item.path == target for item in contract.scan(root).findings))
+                self.assertIn(
+                    sibling.relative_to(root).as_posix(),
+                    {item.path for item in contract.scan(root).findings},
+                )
 
     def test_native_proof_rejects_invalid_selection_missing_and_nonregular_git(self) -> None:
         from scripts.lib.document_governance import archive
@@ -860,9 +900,22 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     # recorded rather than smoothed.
     # Current owning Task retains three unreviewed rows and 39 reviewed rows;
     # the later route-2 approvals and removed taxonomy-fixture row are preserved.
+    # Refreshed 2026-08-29, after the scan target was corrected to the pack's live
+    # path and an independent allowlist seat judged the four rows that left
+    # unsettled. The set SHRANK by one and the two survivors now cover zero
+    # literals each, which is why gate 4 reads clean while they remain here.
+    # The seat settled the mig-0003 path-mapping row on route 1. It held the other
+    # three, and each hold was closed by removing the literal rather than by
+    # allowlisting it: the spec-0105 criteria-source contract cell and its Overview
+    # narrative now name RES-0002 and RES-0001 by identity, the spec-0123 Task
+    # dropped a write grant into the deletion-gated directory from its Allowed
+    # Paths, and the spec-0123 spec.md row was struck outright because it covered
+    # no literal at all. These two rows stay unsettled on purpose: both documents
+    # read `status: active`, and route 1 admits archived specifications and
+    # completed tasks, so neither can be settled until its owner legitimately
+    # closes. A row covering nothing blocks nothing.
     EXPECTED_UNREVIEWED = {
         "docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md",
-        "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md",
         "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
     }
 
@@ -876,7 +929,7 @@ class OldPathGateRepositoryTests(unittest.TestCase):
         }
         self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
         settled = sum(1 for group in rows.values() for row in group if row.settled)
-        self.assertEqual(39, settled)
+        self.assertEqual(40, settled)
 
     def test_no_live_row_declares_a_forbidden_class(self) -> None:
         rows = contract.read_allowlist(ROOT)
@@ -934,6 +987,9 @@ class OldPathGateRepositoryTests(unittest.TestCase):
             {row.literal_class for row in ledger},
         )
         total = sum(len(group) for group in rows.values())
+        # 42 since 2026-08-29: the mig-0003 path-mapping row was added and the
+        # zero-literal spec-0123 spec.md row was struck, so the count returns to 42
+        # by two opposite moves rather than by standing still.
         self.assertEqual(42, total)
         self.assertGreater(total, len(rows))
 
@@ -977,6 +1033,60 @@ class OldPathGateRepositoryTests(unittest.TestCase):
             if finding.code == "OLD-PATH-CLICKABLE-LINK"
         ]
         self.assertEqual([], clickable, f"clickable old-pack links: {clickable}")
+
+
+class RetiringDirectoryIdentityTests(unittest.TestCase):
+    """The scan target must name the pack that actually exists.
+
+    Gate 4 read `failures=0` for the whole window in which the retiring pack
+    had been renamed and this module had not: `RETIRING_DIR` named a path with
+    no files, so the self-exclusion excluded nothing and, far worse, a clickable
+    link to the pack at its live path matched no pattern. The gate went on
+    reporting a green absolute half while enforcing nothing over the directory
+    it exists to protect. Nothing in the suite failed, because every fixture
+    built its own tree from `contract.SLUG` and so moved with the constant.
+    These two tests are the ones that bind the constant to the repository.
+    """
+
+    def test_the_retiring_directory_exists_and_holds_tracked_files(self) -> None:
+        """A scan target that names nothing cannot be scanned."""
+        directory = ROOT / contract.RETIRING_DIR
+        self.assertTrue(
+            directory.is_dir(),
+            f"RETIRING_DIR does not exist: {contract.RETIRING_DIR}",
+        )
+        tracked = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files", contract.RETIRING_DIR],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.split()
+        self.assertNotEqual(
+            [], tracked, f"RETIRING_DIR holds no tracked file: {contract.RETIRING_DIR}"
+        )
+
+    def test_the_pre_rename_slug_is_still_a_reported_literal(self) -> None:
+        """Fixing forward must not drop the retired name from the scan.
+
+        The pack was renamed, not deleted, so both names reach it: the live one
+        because it is where the pack is, and the retired one because tracked text
+        still carries it and it is exactly the stale reference the gate exists to
+        find. Detecting only the live name would trade one blind spot for another.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / contract.TASK_PATH).parent.mkdir(parents=True)
+            (root / contract.TASK_PATH).write_text(ALLOWLIST_HEADER, encoding="utf-8")
+            (root / "docs").mkdir(exist_ok=True)
+            (root / "docs/note.md").write_text(
+                f"[a](../{contract.RETIRED_SLUG}/x.md)\n", encoding="utf-8"
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "add", "-A"], check=True, capture_output=True
+            )
+            codes = {finding.code for finding in contract.scan(root).findings}
+            self.assertIn("OLD-PATH-CLICKABLE-LINK", codes)
 
 
 if __name__ == "__main__":

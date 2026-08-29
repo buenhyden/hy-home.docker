@@ -16,7 +16,7 @@ This document defines the design contract for a Stage 90 reference-audit pack
 that assesses how much of the researched agentic engineering model is currently
 implemented in `hy-home.docker`.
 
-The audit pack used `docs/90.references/research/0001-agentic-research-pack-refresh/` as
+The audit pack used the then-canonical research pack RES-0001, since superseded by RES-0002, as
 its criteria source and repo-local evidence as its implementation source. It
 did not change active policy, runtime provider configuration, CI/CD behavior,
 or scripts.
@@ -63,7 +63,7 @@ or scripts.
 | Contract | Required Behavior |
 | --- | --- |
 | Stage boundary | Audit reports live under `docs/90.references/audits/` and do not replace policy, plans, runbooks, task evidence, or runtime truth. |
-| Criteria source | Implementation assessment criteria came from the source-backed research pack under `docs/90.references/research/0001-agentic-research-pack-refresh/`. |
+| Criteria source | Use [RES-0002](../../90.references/research/0002-agentic-engineering-research-pack/README.md) as the current research source. Implementation assessment criteria originally came from its superseded RES-0001 predecessor, which is historical evidence and not current authority. |
 | Evidence source | Implementation status must cite repo-local evidence such as Stage 00 governance, provider notes, runtime surfaces, scripts, CI workflow, templates, and HAFE docs. |
 | Gap handling | Missing or partial implementation is recorded as `Gap / Follow-up` or `Automation Candidate`, not fixed in this task. |
 | Report consistency | All audit reports use the shared status vocabulary and assessment sections defined here. |
