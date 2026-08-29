@@ -2261,19 +2261,19 @@ class LiveGate2ExpectedRedTests(unittest.TestCase):
             "current committed Task lacks the canonical manifest",
         )
 
-    def test_the_live_tree_still_carries_the_overwritten_destinations(self) -> None:
-        """The 2026-08-28 pack overwrite, held as a fact rather than a memory.
+    def test_every_gate2_destination_resolves(self) -> None:
+        """The 2026-08-28 pack overwrite, now repaired, held as a fact.
 
-        This test asserts a defect is present, which is unusual and deliberate.
-        `bbe8d9f3` wrote an independently authored draft over the successor pack
-        at the same path and removed the destinations 111 ledger rows name. That
-        is a live, unremediated regression, and a test that merely tolerated it
-        would let the next reader assume the red was always this shape.
+        This test previously asserted the defect: 148 unresolved anchors across
+        111 of the 150 rows, after `bbe8d9f3` wrote an independently authored
+        draft over the successor pack at the same path. It was written to fail
+        when the regression was repaired, so that whoever repaired it had to
+        come here and say so rather than let the number drift quietly.
 
-        It fails when the regression is repaired, which is the point: whoever
-        repairs it must come here, read why the number was what it was, and
-        replace it with the repaired count rather than discovering the drift
-        later from a mismatched digest.
+        Repaired 2026-08-29 by restoring the pack from `49522aa1` and merging
+        the draft's own sections on top, so both bodies survive. The assertion
+        is now the one that matters: every gate-2 destination resolves, and any
+        future overwrite turns this red again.
         """
 
         root = pathlib.Path(__file__).resolve().parents[2]
@@ -2283,18 +2283,7 @@ class LiveGate2ExpectedRedTests(unittest.TestCase):
             for finding in result.findings
             if finding.code.startswith("GATE2-DEST-")
         ]
-        self.assertTrue(
-            all(f.code == "GATE2-DEST-MISSING-ANCHOR" for f in destination),
-            "the overwrite removed headings, not whole files",
-        )
-        rows = {finding.where for finding in destination}
-        self.assertEqual(
-            (len(destination), len(rows)),
-            (148, 111),
-            "148 unresolved anchors across 111 of the 150 gate-2 rows; the 39 "
-            "that still resolve are the Carry rows, whose destination is the "
-            "owning Task and not the overwritten pack",
-        )
+        self.assertEqual(destination, [], "a gate-2 destination stopped resolving")
 
 
 class DestinationResolutionTests(unittest.TestCase):
