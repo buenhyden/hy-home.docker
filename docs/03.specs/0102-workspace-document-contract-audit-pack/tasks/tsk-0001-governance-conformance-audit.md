@@ -530,6 +530,7 @@ same wall.
 | 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **needs 5 operations runbooks that do not exist**; the disposition edit alone turns the gate red |
 | 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
 | 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
+| — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
@@ -791,6 +792,46 @@ six runtime scripts have **no** Operations Runbook at all. `git grep` finds
 Closing this means authoring five operations runbooks describing procedures —
 secrets generation, supply-chain verification, compose readiness — that must be
 written by someone who runs them, not inferred from the scripts.
+
+### Commit-SHA tracking: measured, and it is not excess (2026-08-30)
+
+The request named branch SHA tracking as complexity to reduce. Measured across
+`docs/`, `scripts/`, `tests/` and `.github/`: **4,421 citations of 595 distinct
+40-hex ids across 142 files**, and the concentration looks damning — four ids
+account for 2,244 of the citations, 51 percent.
+
+| Id | Citations |
+| -- | --------: |
+| `889d3868` | 889 |
+| `232effd9` | 804 |
+| `6f2703d8` | 288 |
+| `9917fcda` | 263 |
+
+**The concentration is a per-row provenance column, not repetition for its own
+sake.** `mig-0003` has 905 rows and 905 `recovery_commit` fields with 4 distinct
+values, 881 of them identical. `0137/tsk-0001-rebuild.md` cites `9917fcda` 262
+times, and **253 of those are cells in its old-claim migration ledger** — only
+3 are prose.
+
+**Compressing either would break verification, not tidy it.**
+`gate2_claim_review_contract.py:270` computes
+`subject_digest_v1 = canonical_digest(self.as_subject())`, and `as_subject()`
+is `dict(zip(SUBJECT_KEYS, self.values[:10]))` — the first ten columns,
+**including both 40-hex commit columns**. Those digests feed `ledger_digest` and
+`population_digest`, which gate 2 verifies against pinned values. A ledger-level
+default with per-row inheritance would change every subject digest in the
+population.
+
+The migration ledgers are worse candidates still: they are archived provenance
+under `docs/98.archive/`, and rewriting them for compactness would edit
+historical evidence — the same principle that kept `SPEC-0136`'s frontmatter and
+`mig-0001`/`mig-0002`'s schema untouched.
+
+**So the finding is a negative, and it is recorded as a result.** There is no
+SHA-tracking excess to remove. What was actually wrong with the pins was
+different and is already closed: 55 citations named objects that no longer
+resolve, and those are marked ephemeral in place under Action 6. Raw citation
+volume is a property of a normalised, digest-verified ledger, not a defect.
 
 ### Limitations
 
