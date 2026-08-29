@@ -293,9 +293,32 @@ statement that there is nothing to say is a template asking for content the
 document does not have. The remaining ten duplicate groups are legitimate
 shared cross-references and are not findings.
 
-**`low` — 16 profile-conformance findings remain (D2).** Down from 35 measured
-earlier the same day. Eleven of the residual entries are template-source
-placeholders, which the profile exempts by design.
+**`low` — 16 profile-conformance findings remain (D2). Root cause found
+2026-08-29; the fix is blocked on Stage 99.** These appear only in the
+validator's descriptive `report` mode. All three enforcing modes return
+`violations=0`: `check-active` (selected=457), `check-changed` (selected=51)
+and `check-contracts`.
+
+All 16 share one cause — the Stage 99 registry's path sets do not describe the
+tree:
+
+| Findings | Subject | Why |
+| -------: | ------- | --- |
+| 13 | `docs/05.operations/catalog/<domain>/README.md` | the `readme` profile's `path_pattern` is `docs/{stage}/README.md` plus six `additional_paths`; the per-domain READMEs match neither, so they report `missing-required-key, profile-id-mismatch` |
+| 1 | `docs/05.operations/incidents/README.md` | same, reported as `unsupported-profile` |
+| 2 | `docs/98.archive/migrations/0001-…`, `0002-…` | they carry the pre-`migration` archive schema (`status: archived`, `artifact_type: archive`, `archived_from`, `archived_commit`, `archived_blob`, `preservation_class`); the `migration` profile's `optional_frontmatter` is only `supersedes`/`superseded_by`, so every provenance key is `type-inappropriate-key` |
+
+The registered siblings prove the mechanism: `docs/05.operations/README.md` and
+`docs/05.operations/catalog/README.md` are both in `additional_paths` and both
+resolve cleanly with no findings.
+
+**This is not an in-rule correction, contrary to how Action 8 was first
+classified.** Two routes exist and both change the registry: extend the
+`readme` profile's path set, or add the archive provenance keys to the
+`migration` profile's optional list. Converting `mig-0001` and `mig-0002` to
+the current schema without the second change would mean deleting
+`archived_commit` and `archived_blob`, which are the only recovery evidence
+those records carry.
 
 **Two negatives recorded as results.** D7 found **no** old-path body duplicate
 and **no** redirect stub outside `docs/98.archive/tombstones/`, where a minimal
@@ -350,23 +373,33 @@ Detector outputs are reproducible from the decision rules in **Inputs** and are
 not committed as data; re-derive rather than cite. No rule, gate, fixture or
 document was changed by this Task, so no before/after gate delta applies.
 
-### An intermittent gate failure was observed and is not explained
+### An intermittent gate failure was observed and is still not reproduced
 
 Run 1 above failed. The same suite then passed standalone, the module passed
-alone, and a second full gate run passed. The failing assertion was that
-`__missing_generated_link__.md` appear in the validator's output; instead the
-output carried `scripts/manifest.yaml: generated-manifest-invalid: generated
-ownership cannot be established` together with
-`active-consumer-unreadable: ... [Errno 2] No such file or directory: 'lib'`
-and the same for `'validation'`. Those two messages mean a relative path was
-resolved against the wrong working directory. With generated ownership
-unestablished, `scripts/lib/document_governance/references.py` falls back to an
-empty `generated_paths`, the fixture's edited package is no longer recognised as
-generated, and the asserted finding is never emitted.
+alone, and every full gate run since has passed. The failing assertion was that
+`__missing_generated_link__.md` appear in the validator's output.
 
-That is a non-deterministic gate, which is the same defect class this Task
-audits: a control whose signal cannot be relied on. It is recorded here as
-observed and is **not** diagnosed. One observation is not a reproduction.
+**The first diagnosis offered here was wrong and is withdrawn.** It read
+`active-consumer-unreadable: ... [Errno 2] No such file or directory: 'lib'`
+and the same for `'validation'` as proof that a relative path had been resolved
+against the wrong working directory. It is not. `_open_anchored_regular`
+(`operations_catalog.py:527`) walks `relative.parts[:-1]` with `os.stat(part,
+dir_fd=…)`, and the test fixture copies only `scripts/manifest.yaml`,
+`docs/90.references`, `docs/99.templates/registry.json` and one archive file —
+so `scripts/lib` and `scripts/validation` genuinely do not exist under that
+root. Those two messages are expected fixture output in every run, passing ones
+included.
+
+What remains unexplained is the one message that is not expected:
+`scripts/manifest.yaml: generated-manifest-invalid`. `validate_current_references`
+emits it only when `generated_reference_owners` raises, and it then falls back
+to an empty `generated_paths`, so the fixture's edited package stops being
+recognised as generated and the asserted finding is never produced. That is a
+sufficient mechanism for the observed failure.
+
+It has not been reproduced. `generated_reference_owners` was run 15 times
+against a freshly built copy of the same fixture shape and returned 8 owners
+every time. One observation is not a reproduction, and the action stays open.
 
 ## Review Evidence
 
@@ -427,9 +460,9 @@ same wall.
 | 5 | ~~Correct the present-tense routing statements~~ | D1 | — | **closed 2026-08-29**; 6 corrected, not 4 |
 | 6 | ~~Replace the unrecoverable pins or mark them ephemeral~~ | D8 | — | **closed 2026-08-29**; 55 marked ephemeral, 66 confirmed correctly foreign; no durable replacement exists |
 | 7 | Review whether five required sections earn their place, or make them conditional | D6 | Stage 99 owner | protected surface; needs approval |
-| 8 | Close the 16 residual profile findings | D2 | `doc-writer` | in-rule |
-| 9 | Decide how Stage 90 admits a net-new package, or record that it does not | placement | Stage 99 owner | rule change; needs approval |
-| 10 | Reproduce and fix the intermittent `test_references` failure, or prove it cannot recur | D5 | `qa-engineer` | in-rule |
+| 8 | Close the 16 residual profile findings | D2 | Stage 99 owner | **re-classified**: not in-rule; needs the same Stage 99 write as Action 7 |
+| 9 | ~~Decide how Stage 90 admits a net-new package, or record that it does not~~ | placement | — | **closed 2026-08-29**; recorded that it does not, in `docs/90.references/audits/README.md` |
+| 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
 | 11 | Collapse the eight synchronised edit sites needed to wire one gate suite; three are verbatim duplicates | D5 | gate-contract owner | contract change; needs approval |
 | 12 | Decide whether four `docs/04.execution/` entries in live prefix allowlists should be dropped | D4 | gate-contract owner | code change; behaviour-neutral, so deliberately not taken here |
 

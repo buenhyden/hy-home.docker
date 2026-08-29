@@ -10,6 +10,21 @@ Point-in-time gap, implementation, and conformance assessments. Audit packages a
 
 The Stage 90 authority boundary and package lifecycle rules are defined by the [References index](../README.md) and Stage 99 Registry.
 
+**This category admits no net-new package, recorded 2026-08-29.**
+`scripts/lib/document_governance/references.py:763` derives the admitted Stage
+90 file set entirely from the Task 9 migration rows, and every such row
+describes a move from a real predecessor path. An audit with no predecessor to
+name therefore cannot be registered here: authoring one raises
+`package-path-invalid: unregistered`, and the identity it consumed from the
+Stage 99 Registry is burned whether or not the document survives, because
+`identity-history-regression` forbids reissuing it.
+
+A cross-stage audit that is not the successor of an existing package belongs in
+a Task under its governing Spec, where `task` is a `package-member` profile and
+so allocates no global identity. See
+[task-0102-0001](../../03.specs/0102-workspace-document-contract-audit-pack/tasks/tsk-0001-governance-conformance-audit.md).
+Changing this is a Stage 99 decision and has not been taken.
+
 ## Packages
 
 | Stable ID | Package | Status |
