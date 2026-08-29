@@ -360,7 +360,7 @@ all. That is an in-rule correction, as Action 8 originally said.
 | -------: | ------- | ----------- |
 | 13 | `docs/05.operations/catalog/<domain>/README.md` | **closed**: added `profile_id: operations-domain-readme`. Every required section was already present; only the frontmatter was missing. No `status`, because that profile's `lifecycle_id` is `null` |
 | 1 | `docs/05.operations/incidents/README.md` | **closed**: no profile claimed this path, so it is registered on `readme.additional_paths` and given `profile_id: readme` |
-| 2 | `docs/98.archive/migrations/0001-…`, `0002-…` | **open, deliberately** |
+| 2 | `docs/98.archive/migrations/0001-…`, `0002-…` | **closed 2026-08-30 as no-change**; see Action 15 — they are historical evidence under the contract of their time, and the Registry change already cleared their provenance keys |
 
 The registry did need one change, but a narrower one than claimed: the
 `migration` profile's `optional_frontmatter` was `supersedes`/`superseded_by`
@@ -527,10 +527,10 @@ same wall.
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
-| 16 | Repoint the 14 manifest rows whose `authority` is the superseded `SPEC-0136` | D3 | manifest owner | 14 of 84 rows; needs a live owner per script |
+| 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **needs 5 operations runbooks that do not exist**; the disposition edit alone turns the gate red |
 | 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
 | 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
-| 15 | Decide whether the gate should be able to pass `--transition-override-file` at all | D5 | gate-contract owner | contract change; needs approval |
+| 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
 
@@ -708,7 +708,36 @@ acceptable. Filed as Action 14.
 Even fixed, the mechanism stays unreachable from the gate, because
 `suite_registry.validate_execution_argv` pins `check-document-metadata.py` to
 exactly `("--mode", "check-changed")` and cannot pass
-`--transition-override-file`. That is Action 15.
+`--transition-override-file`.
+
+**Action 15 answered 2026-08-30: that pin is correct and must stay.** Its
+docstring states the rule — "Admit complete validation capabilities, never
+arbitrary CLI arguments" — and `--transition-override-file` is precisely an
+argument that *weakens* validation, since it authorises a transition that would
+otherwise fail. A gate that can be handed its own exemption on the command line
+is not a gate. The pin is doing its job.
+
+The consequence is real and is accepted: a reverse transition can be made
+locally with an override, but the resulting commit cannot pass CI while
+`check-changed` still selects it, because CI cannot be given the override. To
+close that, the override would have to become a **tracked artifact discovered
+by convention** rather than a CLI argument — no argv change, pin intact.
+
+**That is not built, and the reason is proportion.** The only thing asking for
+it is `mig-0001` and `mig-0002`: two archived migration records whose
+frontmatter predates the `migration` profile, reported in `report` mode only,
+flagged by no gate. Building a CI-honoured override mechanism to clear two
+report-mode findings would add exactly the kind of gate machinery this Task was
+asked to reduce.
+
+**So the two records stay as they are, and that is the disposition, not a
+deferral.** They carry `status: archived` with the pre-`migration` archive
+schema — `archived_from`, `archived_commit`, `archived_blob`,
+`preservation_class` — which is an accurate description of what they are:
+historical evidence written under the contract of their time. The Registry
+change made in Action 8 already stopped their provenance keys being reported as
+`type-inappropriate-key`. Rewriting the remainder would trade real recovery
+evidence for schema tidiness.
 
 ### Fourteen manifest rows are governed by a superseded specification (D3)
 
@@ -725,11 +754,43 @@ validation and readiness, secrets generation, the QA tool wrapper, and both
 supply-chain scripts. `SPEC-0136` was a broad convergence spec, which is why so
 many point at it, and no single live specification replaces it.
 
-Nothing enforces this — `check-script-manifest.py` validates that the authority
-document exists and semantically governs the script, not that it is live — so
-the gate stays green. Filed as Action 16 rather than fixed inside Action 13,
-because each row needs its own live owner and that is a larger piece of work
-than re-routing two scripts.
+**The control that would catch this is scoped away from them.**
+`_authority_findings` requires the authority to be an active typed Runbook, but
+it only inspects rows with `mutation: runtime` **and** `disposition: retain`.
+Measured: it reaches **2 of the 84 rows**. All fourteen `SPEC-0136` rows are
+excluded, including the six that are `mutation: runtime` — exactly the rows the
+check exists for.
+
+**Root cause, found 2026-08-30: a self-successor is being used as an
+exemption.** `disposition: retain` obliges a row to carry a domain-first
+Operations Runbook authority when it is `mutation: runtime`, a non-empty
+`tests` list, a non-empty `consumers` list, and `successor: null`. Any other
+disposition obliges only a **tracked successor path** — and a row satisfies
+that by naming *itself*.
+
+**22 of 84 rows do exactly that.** Only two of the 24 `rewrite` rows are real
+rewrites, both pointing at `check-document-links.py`. The other 22 declare that
+they will be rewritten into themselves, which is not a disposition; it is a
+no-cost exemption held open by pointing at oneself.
+
+What those 22 currently avoid owing:
+
+| Obligation | Rows that would fail it today |
+| ---------- | ----------------------------: |
+| a non-empty `tests` list | 5 |
+| a non-empty `consumers` list | 8 |
+| a domain-first Operations Runbook authority, being `mutation: runtime` | 6 |
+
+**Not corrected here, and the reason is not caution about the edit.** Setting
+those rows to `retain` is the accurate value and a one-line change each, but it
+turns the gate red until each row is given what it then owes — and five of the
+six runtime scripts have **no** Operations Runbook at all. `git grep` finds
+`validate-docker-compose.sh` named in eighteen runbooks and `gen-secrets.sh`,
+`seed-grype-db-cache.sh`, `verify-sample-service-supply-chain.sh`,
+`compose-core-readiness.lib.sh` and `run-compose-core-readiness.sh` in none.
+Closing this means authoring five operations runbooks describing procedures —
+secrets generation, supply-chain verification, compose readiness — that must be
+written by someone who runs them, not inferred from the scripts.
 
 ### Limitations
 
