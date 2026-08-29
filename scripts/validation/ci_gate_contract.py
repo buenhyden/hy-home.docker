@@ -64,58 +64,6 @@ def load_public_suite_registry(
     """Expose the immutable validator-suite registry to gate contracts."""
 
     return suite_registry.load(manifest_path)
-_INTERNAL_ROOT_SUITES = {
-    "docs-traceability": ("docs-traceability",),
-    "docs-implementation-alignment": (
-        "docs-implementation-alignment",
-        "docs-qa-gate-recommendations",
-    ),
-    "repo-contracts": (
-        "repo-metadata-base",
-        "repo-document-metadata",
-        "ci-gate-contract-regressions",
-        "ci-gate-runner-regressions",
-        "ci-gate-adapter-regressions",
-        "workflow-contract-regressions",
-        "repo-contracts-control-plane-regressions",
-        "ci-precommit-regressions",
-        # See the matching note on `_INTERNAL_ROOT_CHILDREN`: the mirrored
-        # document-governance library suites ran under no profile until now.
-        "document-governance-library-regressions",
-        # Added 2026-08-29. `check-quickwin-baseline.sh` and
-        # `check-template-security-baseline.sh` gated with no covering test at
-        # all, so nothing proved either could go red.
-        "compose-baseline-regressions",
-        "workflow-contract",
-        "operations-catalog-manifest",
-        "repo-contracts",
-    ),
-    "agent-output-eval-fixture-gate": (
-        "agent-output-eval-fixture-regressions",
-        "agent-output-eval-fixture-gate",
-    ),
-    "supply-chain-fixture-policy": (
-        "supply-chain-fixture-policy",
-        "supply-chain-deterministic-policy",
-        "supply-chain-summary-freshness",
-    ),
-    "dependency-vulnerability-audit": ("dependency-vulnerability-audit",),
-    "git-flow-contract": ("git-flow-contract",),
-    "compose-validation": ("compose-validation",),
-    "compose-all-profiles-validation": ("compose-all-profiles-validation",),
-    "infrastructure-hardening": ("infrastructure-hardening",),
-    "template-security-baseline": ("template-security-baseline",),
-    "quickwin-baseline": ("quickwin-baseline",),
-    "pre-commit": ("pre-commit",),
-    "frontend-quality": (
-        "frontend-lint",
-        "frontend-typecheck",
-        "frontend-build",
-        "frontend-quality",
-    ),
-    "storybook-coverage": ("storybook-coverage",),
-    "zizmor": ("zizmor",),
-}
 _INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.docs-implementation-alignment": (
@@ -203,6 +151,19 @@ _REQUIRED_JOB_ROOTS = {
 _REQUIRED_ROOT_CHILDREN = {
     root_gate_id: tuple(_INTERNAL_CI_ROOTS.values())
     for root_gate_id in _REQUIRED_JOB_ROOTS.values()
+}
+# Derived from `_INTERNAL_ROOT_CHILDREN` since 2026-08-29. It was a second
+# literal listing the same suites, so every new gate suite had to be written
+# into both tables by hand and could silently disagree. The invariant is pinned
+# by `PinDerivationTests` in `tests/validation/test_ci_gate_contract.py`; a root
+# that legitimately needs the two to differ has to change that test first.
+_INTERNAL_ROOT_SUITES = {
+    job_id: tuple(
+        gate_id.removeprefix("leaf.")
+        for gate_id in _INTERNAL_ROOT_CHILDREN[root_gate_id]
+        if gate_id.startswith("leaf.")
+    )
+    for job_id, root_gate_id in _INTERNAL_CI_ROOTS.items()
 }
 _ALL_CI_SUITES = tuple(
     suite

@@ -55,204 +55,66 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
 
 
-INTERNAL_CI_ROOTS = {
-    "docs-traceability": "ci.docs-traceability",
-    "docs-implementation-alignment": "ci.docs-implementation-alignment",
-    "repo-contracts": "ci.repo-contracts",
-    "agent-output-eval-fixture-gate": "ci.agent-output-eval-fixture-gate",
-    "supply-chain-fixture-policy": "ci.supply-chain-fixture-policy",
-    "dependency-vulnerability-audit": "ci.dependency-vulnerability-audit",
-    "git-flow-contract": "ci.git-flow-contract",
-    "compose-validation": "ci.compose-validation",
-    "compose-all-profiles-validation": "ci.compose-all-profiles-validation",
-    "infrastructure-hardening": "ci.infrastructure-hardening",
-    "template-security-baseline": "ci.template-security-baseline",
-    "quickwin-baseline": "ci.quickwin-baseline",
-    "pre-commit": "ci.pre-commit",
-    "frontend-quality": "ci.frontend-quality",
-    "storybook-coverage": "ci.storybook-coverage",
-    "zizmor": "ci.zizmor",
-}
-INTERNAL_ROOT_SUITES = {
-    "docs-traceability": ("docs-traceability",),
-    "docs-implementation-alignment": (
-        "docs-implementation-alignment",
-        "docs-qa-gate-recommendations",
-    ),
-    "repo-contracts": (
-        "repo-metadata-base",
-        "repo-document-metadata",
-        "ci-gate-contract-regressions",
-        "ci-gate-runner-regressions",
-        "ci-gate-adapter-regressions",
-        "workflow-contract-regressions",
-        "repo-contracts-control-plane-regressions",
-        "ci-precommit-regressions",
-        "document-governance-library-regressions",
-        "compose-baseline-regressions",
-        "workflow-contract",
-        "operations-catalog-manifest",
-        "repo-contracts",
-    ),
-    "agent-output-eval-fixture-gate": (
-        "agent-output-eval-fixture-regressions",
-        "agent-output-eval-fixture-gate",
-    ),
-    "supply-chain-fixture-policy": (
-        "supply-chain-fixture-policy",
-        "supply-chain-deterministic-policy",
-        "supply-chain-summary-freshness",
-    ),
-    "dependency-vulnerability-audit": ("dependency-vulnerability-audit",),
-    "git-flow-contract": ("git-flow-contract",),
-    "compose-validation": ("compose-validation",),
-    "compose-all-profiles-validation": ("compose-all-profiles-validation",),
-    "infrastructure-hardening": ("infrastructure-hardening",),
-    "template-security-baseline": ("template-security-baseline",),
-    "quickwin-baseline": ("quickwin-baseline",),
-    "pre-commit": ("pre-commit",),
-    "frontend-quality": (
-        "frontend-lint",
-        "frontend-typecheck",
-        "frontend-build",
-        "frontend-quality",
-    ),
-    "storybook-coverage": ("storybook-coverage",),
-    "zizmor": ("zizmor",),
-}
-INTERNAL_ROOT_CHILDREN = {
-    "ci.docs-traceability": ("leaf.docs-traceability",),
-    "ci.docs-implementation-alignment": (
-        "leaf.docs-implementation-alignment",
-        "leaf.docs-qa-gate-recommendations",
-    ),
-    "ci.repo-contracts": (
-        "leaf.repo-metadata-base",
-        "setup.repo-python-dependencies",
-        "leaf.repo-document-metadata",
-        "leaf.ci-gate-contract-regressions",
-        "leaf.ci-gate-runner-regressions",
-        "leaf.ci-gate-adapter-regressions",
-        "leaf.workflow-contract-regressions",
-        "leaf.repo-contracts-control-plane-regressions",
-        "leaf.ci-precommit-regressions",
-        "leaf.document-governance-library-regressions",
-        "leaf.compose-baseline-regressions",
-        "leaf.workflow-contract",
-        "leaf.operations-catalog-manifest",
-        "leaf.repo-contracts",
-    ),
-    "ci.agent-output-eval-fixture-gate": (
-        "leaf.agent-output-eval-fixture-regressions",
-        "leaf.agent-output-eval-fixture-gate",
-    ),
-    "ci.supply-chain-fixture-policy": (
-        "leaf.supply-chain-fixture-policy",
-        "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness",
-    ),
-    "ci.dependency-vulnerability-audit": (
-        "leaf.dependency-vulnerability-audit",
-    ),
-    "ci.git-flow-contract": ("leaf.git-flow-contract",),
-    "ci.compose-validation": (
-        "setup.compose-env",
-        "leaf.compose-validation",
-    ),
-    "ci.compose-all-profiles-validation": (
-        "setup.compose-env",
-        "leaf.compose-all-profiles-validation",
-    ),
-    "ci.infrastructure-hardening": (
-        "setup.compose-env",
-        "leaf.infrastructure-hardening",
-    ),
-    "ci.template-security-baseline": (
-        "setup.compose-env",
-        "leaf.template-security-baseline",
-    ),
-    "ci.quickwin-baseline": (
-        "setup.compose-env",
-        "leaf.quickwin-baseline",
-    ),
-    "ci.pre-commit": (
-        "setup.precommit-python-dependencies",
-        "leaf.pre-commit",
-    ),
-    "ci.frontend-quality": (
-        "setup.frontend-node-dependencies",
-        "leaf.frontend-lint",
-        "leaf.frontend-typecheck",
-        "leaf.frontend-build",
-        "leaf.frontend-quality",
-    ),
-    "ci.storybook-coverage": (
-        "setup.storybook-node-dependencies",
-        "setup.storybook-playwright",
-        "leaf.storybook-coverage",
-    ),
-    "ci.zizmor": ("leaf.zizmor",),
-}
-REQUIRED_JOB_ROOTS = {
-    "validation-changed": "ci.validation-changed",
-    "validation-full": "ci.validation-full",
-}
-REQUIRED_ROOT_CHILDREN = {
-    root_gate_id: tuple(INTERNAL_CI_ROOTS.values())
-    for root_gate_id in REQUIRED_JOB_ROOTS.values()
-}
-ALL_CI_SUITES = tuple(
-    suite
-    for internal_job in INTERNAL_CI_ROOTS
-    for suite in INTERNAL_ROOT_SUITES[internal_job]
-)
-REQUIRED_JOB_SUITES = {
-    job_id: ALL_CI_SUITES for job_id in REQUIRED_JOB_ROOTS
-}
-LOCAL_AGGREGATE_CHILDREN = {
-    "local.document-corpus-lifecycle": (
-        "leaf.local-document-corpus-lifecycle-tests",
-        "leaf.local-document-corpus-contract",
-        "leaf.local-document-corpus-promoted",
-        "leaf.document-governance-library-regressions",
-    ),
-    "local.target-surface": (
-        "leaf.local-target-surface-regressions",
-        "leaf.local-target-surface-contract",
-        "leaf.local-target-delta-regressions",
-        "leaf.local-target-delta-contract",
-    ),
-    "local.workflow-harness": (
-        "leaf.ci-gate-contract-regressions",
-        "leaf.ci-gate-runner-regressions",
-        "leaf.ci-gate-adapter-regressions",
-        "leaf.workflow-contract-regressions",
-        "leaf.repo-contracts-control-plane-regressions",
-        "leaf.ci-precommit-regressions",
-        "leaf.workflow-contract",
-    ),
-    "local.supply-chain": (
-        "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness",
-    ),
-    "local.generated-freshness": (
-        "leaf.local-security-readiness-freshness",
-        "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-freshness",
-        "leaf.local-script-manifest",
-        "leaf.operations-catalog-manifest",
-    ),
-    "local.compose-validation": ("leaf.compose-validation",),
-    "local.compose-all-profiles-validation": (
-        "leaf.compose-all-profiles-validation",
-    ),
-    "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
-    "local.template-security-baseline": (
-        "leaf.template-security-baseline",
-        "leaf.compose-baseline-regressions",
-    ),
-    "local.quickwin-baseline": ("leaf.quickwin-baseline",),
-}
+class PinDerivationTests(unittest.TestCase):
+    """The CI-root pins must not restate one another.
+
+    `_INTERNAL_ROOT_SUITES` names a suite key per internal CI job and
+    `_INTERNAL_ROOT_CHILDREN` names a gate id per internal CI root. For every
+    root the first is exactly the `leaf.`-prefixed members of the second with
+    the prefix removed, in order, so keeping both as literals meant every new
+    gate suite had to be written into both by hand and the two could silently
+    disagree. The module now derives the first from the second; this test pins
+    that derivation, and a root that legitimately needs them to differ has to
+    change this test first.
+    """
+
+    def test_root_suites_are_exactly_the_leaf_children_of_each_root(self) -> None:
+        for job_id, root_gate_id in contract._INTERNAL_CI_ROOTS.items():
+            with self.subTest(job=job_id):
+                children = contract._INTERNAL_ROOT_CHILDREN[root_gate_id]
+                self.assertEqual(
+                    tuple(
+                        gate_id.removeprefix("leaf.")
+                        for gate_id in children
+                        if gate_id.startswith("leaf.")
+                    ),
+                    contract._INTERNAL_ROOT_SUITES[job_id],
+                )
+
+    def test_every_internal_root_has_children(self) -> None:
+        self.assertEqual(
+            set(contract._INTERNAL_CI_ROOTS.values()),
+            set(contract._INTERNAL_ROOT_CHILDREN),
+        )
+
+    def test_the_derivation_tracks_a_change_rather_than_agreeing_once(self) -> None:
+        children = (*contract._INTERNAL_ROOT_CHILDREN["ci.zizmor"], "leaf.invented")
+        derived = tuple(
+            gate_id.removeprefix("leaf.")
+            for gate_id in children
+            if gate_id.startswith("leaf.")
+        )
+        self.assertEqual(("zizmor", "invented"), derived)
+        self.assertEqual(("zizmor",), contract._INTERNAL_ROOT_SUITES["zizmor"])
+
+
+# Aliased to the module under test since 2026-08-29. These six tables were
+# verbatim copies of `ci_gate_contract`'s private pins, and they exist only to
+# synthesise a conformant registry that the mutation tests below then break. A
+# copy therefore proved nothing the module did not already state, while every
+# new gate suite had to be written into both. Verification is unchanged: each
+# mutation test still breaks this fixture and asserts the contract rejects it,
+# and `PinDerivationTests` pins the one derivation the module now performs.
+INTERNAL_CI_ROOTS = contract._INTERNAL_CI_ROOTS
+INTERNAL_ROOT_SUITES = contract._INTERNAL_ROOT_SUITES
+INTERNAL_ROOT_CHILDREN = contract._INTERNAL_ROOT_CHILDREN
+REQUIRED_JOB_ROOTS = contract._REQUIRED_JOB_ROOTS
+REQUIRED_ROOT_CHILDREN = contract._REQUIRED_ROOT_CHILDREN
+ALL_CI_SUITES = contract._ALL_CI_SUITES
+REQUIRED_JOB_SUITES = contract._REQUIRED_JOB_SUITES
+LOCAL_AGGREGATE_CHILDREN = contract._LOCAL_AGGREGATE_CHILDREN
+
+
 LOCAL_SCRIPT_ROOTS = (
     "leaf.local-diff-hygiene",
     "leaf.local-shell-syntax",

@@ -172,17 +172,42 @@ it names.
 
 Gate after: `exit=0`, suites 10 to 11, the 17 tests visible in the run.
 
-**Wiring one test suite into the gate required eight synchronised edits.**
-`.github/workflow-contract.yml` (leaf, CI parent, local parent),
-`scripts/validation/ci_gate_contract.py` (`_INTERNAL_ROOT_SUITES`,
-`_INTERNAL_ROOT_CHILDREN`, `_LOCAL_AGGREGATE_CHILDREN`),
-`scripts/validation/ci_gate_runner.py` (`_INTERNAL_ADAPTER_CONTEXTS`),
-`scripts/manifest.yaml`, plus verbatim copies of three of those tables in
-`tests/validation/test_ci_gate_contract.py` and a node count in
-`tests/validation/test_github_workflow_contract.py`. Three of the eight are
-byte-level duplicates of each other. This is a concrete, measured instance of
-the gate complexity this Task was asked to examine, and it is filed as Action
-11.
+**Wiring one test suite into the gate required twelve synchronised edits.
+Reduced to eight on 2026-08-29.**
+
+| Site | Before | After |
+| ---- | ------ | ----- |
+| `.github/workflow-contract.yml` — leaf, CI parent, local parent | 3 | 3 |
+| `ci_gate_contract.py` — `_INTERNAL_ROOT_SUITES` | 1 | **0**, derived |
+| `ci_gate_contract.py` — `_INTERNAL_ROOT_CHILDREN`, `_LOCAL_AGGREGATE_CHILDREN` | 2 | 2 |
+| `ci_gate_runner.py` — `_INTERNAL_ADAPTER_CONTEXTS` | 1 | 1 |
+| `scripts/manifest.yaml` — `tests` | 1 | 1 |
+| `test_ci_gate_contract.py` — six copied tables | 3 | **0**, aliased |
+| `test_github_workflow_contract.py` — node count | 1 | 1 |
+| **Total** | **12** | **8** |
+
+`_INTERNAL_ROOT_SUITES` was a second literal listing the same suites as
+`_INTERNAL_ROOT_CHILDREN`. Measured across all 16 internal CI roots, the first
+is exactly the `leaf.`-prefixed members of the second with the prefix removed,
+in order, so it is now derived. `PinDerivationTests` pins that invariant,
+including a case proving the derivation tracks a change rather than agreeing
+once by coincidence; a root that legitimately needs the two to differ has to
+change that test first.
+
+`tests/validation/test_ci_gate_contract.py` restated six of the module's
+private pins verbatim. They are used only to synthesise a conformant registry
+that the mutation tests then break, never to cross-check the module, so a copy
+proved nothing the module did not already state. They are now aliases.
+Verification is unchanged: every mutation test still breaks the same fixture,
+which still builds 85 nodes and 2 job roots, and the module's test count is 10
+before and 13 after — the three added are the new derivation tests.
+
+Net: 250 deleted lines against 73 added.
+
+**One item on that list is not duplication and was kept.** The node count in
+`test_github_workflow_contract.py` is a deliberate tripwire on graph size:
+deriving it from the YAML it guards would make it vacuous. Naming it as
+duplication was wrong.
 
 **`high` — one gate's green state was unreachable by construction (D5).
 Fixed 2026-08-29.** `validate_gate2_contract` required a `reviewed_commit`
@@ -499,7 +524,7 @@ same wall.
 | 8 | ~~Close the 16 residual profile findings~~ | D2 | — | **14 closed 2026-08-29**; 2 remain, needing an authorised `archived -> completed` transition the gate's pinned argv cannot supply |
 | 9 | ~~Decide how Stage 90 admits a net-new package, or record that it does not~~ | placement | — | **closed 2026-08-29**; recorded that it does not, in `docs/90.references/audits/README.md` |
 | 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
-| 11 | Collapse the eight synchronised edit sites needed to wire one gate suite; three are verbatim duplicates | D5 | gate-contract owner | contract change; needs approval |
+| 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | Decide whether four `docs/04.execution/` entries in live prefix allowlists should be dropped | D4 | gate-contract owner | code change; behaviour-neutral, so deliberately not taken here |
 
 ### Limitations
