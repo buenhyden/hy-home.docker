@@ -528,7 +528,8 @@ same wall.
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
 | 16 | Repoint the 14 manifest rows whose `authority` is the superseded `SPEC-0136` | D3 | manifest owner | 14 of 84 rows; needs a live owner per script |
-| 14 | Clear the residual 30 in `test_document_metadata`, then gate-register it | D5 | `qa-engineer` | in-rule; 83 of 113 recovered. **Migration onto the canonical Registry is not the route** — `load_registry` validates identity lineage against real history, which no synthetic fixture has |
+| 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
+| 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
 | 15 | Decide whether the gate should be able to pass `--transition-override-file` at all | D5 | gate-contract owner | contract change; needs approval |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
@@ -631,13 +632,48 @@ so `docs/99.templates/support/document-metadata-profiles.yaml` exists only at
 commit `49406580` and no newer version of that contract exists. The contract
 moved to `registry.json` entirely.
 
-The remaining 30 split three ways, and each needs its own reading:
+**The remaining 30 are one finding, not thirty.** Read individually they look
+unrelated; read together every one is the same collision.
+`check-document-metadata.py` resolves frozen contracts and recovery blobs from
+**this repository's real Git history**, and `test_document_metadata.py`
+exercises it against synthetic fixture repositories that by construction have
+neither.
 
-| Kind | Example | Shape |
-| ---- | ------- | ----- |
-| Retired-contract mismatch | `test_lifecycle_namespace_readme_has_exact_nested_stage_index_route` expects `[]`, gets `['stage-index']` | the frozen profiles YAML carries a `stage-index` profile the current Registry does not |
-| Vacuity | `test_spec_0153_canonical_package_satisfies_registry_metadata` expects 0 findings, gets 16 | `38fc89c5` retired `SPEC-0153`, so the test measures something else now |
-| Count drift | `test_template_roles_require_exact_fields_and_unique_sources` expects 22, gets 23 | a pinned count that moved |
+| Cluster | Count | The frozen thing it collides with |
+| ------- | ----: | --------------------------------- |
+| `ReadmeProfileTests` | 6 | the profiles YAML at `49406580` carries a `stage-index` profile the Registry does not, and no profile for the five `tests/**/README.md` added since |
+| `ChangedBodyDeficitGitTests` | 5 | the fixture copies `mig-0003` in, and `load_current_operation_mappings` then demands recovery blobs the fixture repo has never held — `historical document recovery must resolve to a regular blob` |
+| `ProfileSchemaTests` | 7 | the target-surface manifest's 483 entries still name `docs/03.specs/133-…` unpadded and omit the renumbered wiki data packages; its promotion digest is pinned |
+| `MetadataValidationTests` | 6 | Registry-transition limits for `guide`, `policy`, `runbook` |
+| `Task2StableTaxonomyFixtures`, `Task5ChangedMetadataRegressionTests` | 3 | `38fc89c5` retired `SPEC-0153`, so `test_spec_0153_canonical_package_satisfies_registry_metadata` measures something else |
+| `ChangedModeRolloutTests` | 1 | the transition override, recorded separately below |
+
+The remedy is a design decision, not thirty small edits: either run these tests
+against a clone or worktree of the real repository so the objects resolve, or
+give the validator an explicit fixture mode that declares which frozen
+authorities are absent. Both are Action 14.
+
+**A whole classification subsystem is inert under the live contract.**
+`readme_profiles`, `matching_readme_profiles`, `classify_readme_profile`,
+`readme_frontmatter_consumer` and `SDLC_TAXONOMY_BOUNDED_README_INPUTS` are
+read at seven call sites in `metadata_validator.py` and branch on profile names
+such as `template-catalog`. `build_registry_profiles` emits no `readme_profiles`
+key at all, so under the canonical Registry every one of those lookups returns
+an empty mapping. Measured: **185 tracked READMEs, 185 with zero matches.**
+
+The legacy loader still requires it — `load_profiles` raises
+`readme_profiles must be a non-empty mapping` — so the subsystem is live only
+on the retired contract that only the tests use. Registry-era README
+classification is done instead by the `readme`, `operations-domain-readme` and
+`spec-package-readme` profiles, which is what Action 8 used.
+
+**Not removed here, and deliberately.** Deleting the six tests while leaving
+seven call sites of unreachable code would be worse than either extreme, and
+excising the subsystem means removing live validation branches from a
+7,000-line validator. That is its own unit of work, filed as Action 17, with a
+ready-made safety check: the subsystem is inert, so `--mode report`,
+`check-active` and `check-contracts` output must be byte-identical before and
+after.
 
 One more vacuity instance was found and removed rather than repointed:
 `test_shell_reads_the_registry_without_duplicate_template_schema_tables`
