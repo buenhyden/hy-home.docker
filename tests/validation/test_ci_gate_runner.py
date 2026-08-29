@@ -133,7 +133,15 @@ class PublicSuiteModelTests(unittest.TestCase):
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        self.assertEqual(34, len(actual))
+        # 35 since 2026-08-29. `gate2_claim_review_contract.py` was ported from
+        # `agentic-research-delta-revalidation`, whose whole document layout was
+        # dissolved by the governance migration. It is registered as a
+        # non-standalone validator: it owns the `document-contract` suite and CI
+        # does not invoke it, because the Gate 2 evidence sections it reads have
+        # never been authored, so it fails closed on a subject that does not yet
+        # exist. This count is the guard that makes adding a validator deliberate;
+        # it is raised here on purpose, not relaxed.
+        self.assertEqual(35, len(actual))
         self.assertEqual(
             dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
             actual,
@@ -676,7 +684,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
         manual_paths = tuple(
             item.path for item in suites.validators if not item.execution_contexts
         )
-        self.assertEqual(11, len(manual_paths))
+        # 12 since 2026-08-29: the ported gate-2 claim-review contract, which
+        # declares no execution context for the same reason.
+        self.assertEqual(12, len(manual_paths))
         forbidden_paths = (
             *manual_paths,
             pathlib.PurePosixPath("scripts/operations/rehearse-sample-service-delivery.sh"),

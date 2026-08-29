@@ -3743,6 +3743,62 @@ names a successor that is not in the corpus. `check-document-corpus-lifecycle.py
 not a Spec 137 gate and no disposition is taken here; it is recorded because the
 gating condition of another unit's Task turns on that identity.
 
+### Gate-2 claim-review contract ported, 2026-08-29
+
+The one part of `agentic-research-delta-revalidation` worth keeping is now on
+`main` at `scripts/validation/gate2_claim_review_contract.py`, with its suite at
+`tests/validation/test_gate2_claim_review_contract.py`. The branch could not be
+merged — every document path it names was dissolved by the governance migration —
+so this is a port, and the split is clean: the gate-2 half referenced none of the
+carry-owner helpers, and the carry-owner-only constants it did carry, including
+`SCOPES_DIR = "docs/00.agent-governance/scopes"` naming a deleted directory, were
+dropped rather than moved. A stale path constant is precisely what made gate 4
+read green for weeks, and one was not going to be planted while fixing the other.
+
+**What it enforces.** Whether a claim really lands on the surface it names is a
+reading and stays with a seat. What this holds is the evidence of that reading:
+which rows went to which seat, in which round, against which exact bytes, and
+what came back — as a closed schema with canonical JSON digests, git blob OIDs
+pinned to a bootstrap commit, and exact key sets that reject unknown fields
+rather than ignoring them.
+
+**It is red, and that is the correct state.** Measured on `main`:
+`ledger_records=253`, `population_records=150`, `settled=0`, `held=150`, and one
+finding — `current committed Task lacks the canonical manifest`. The three
+sections it reads (`Gate 2 review manifest`, its evidence envelope and its
+receipts) have never been authored, on this branch or on that one, so the
+contract has no subject and says so instead of passing over an empty set. Those
+counts reproduce the branch's own output exactly, which is the evidence that the
+port is faithful rather than merely green.
+
+**One behaviour changed, deliberately, and it is pinned.** The branch required a
+carried block to open with a bolded lead. Stage 00 afterwards required a retained
+historical quotation to be a contiguous blockquote opening with an exact sentence
+(`docs/00.agent-governance/policies/documentation-protocol.md:44`), and five
+carried blocks in this Task now use it, so the branch's rule rejected the corpus
+it was ported onto. Stage 00 outranks a Stage 03 module's assumption about how a
+block starts, so that exact wrapper is accepted when its quoted lead is itself
+bolded, and nothing else is. The widening is held in both directions: restoring
+the narrow rule fails the live-corpus test, and loosening it to accept any
+blockquote fails `test_nothing_else_becomes_a_carried_block` on four of its five
+cases.
+
+**Registration.** It is registered as a non-standalone validator owning the
+`document-contract` suite with no execution context, the same shape as
+`old_path_gate_contract.py`, which also has a `main()` and is also not invoked by
+CI. Registering it as a standalone validator was tried and reverted: that turns
+the full gate red, not because of anything this contract found, but because the
+suite plan then executes a check whose evidence has not been written. Two
+immutability pins had to be raised by one, `34` to `35` and `11` to `12`; those
+guards exist to make adding a validator deliberate, and both are raised with the
+reason recorded rather than relaxed.
+
+The follow-up this leaves is a documentation unit, not a code one: author the
+three Gate 2 evidence sections so the contract has a subject, then give it a
+`check-` entrypoint and a live execution context. Until then the 39 `Carry`
+verdicts recorded on 2026-08-29 are the human form of what this module will hold
+mechanically.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)

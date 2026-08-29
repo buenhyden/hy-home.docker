@@ -878,6 +878,20 @@ files:
   successor: scripts/validation/compose-core-readiness.lib.sh
   tests:
   - tests/validation/test_compose_core_readiness.py
+- path: scripts/validation/gate2_claim_review_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: []
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/generate-audit-implementation-matrix.sh
   kind: generator
   authority: .github/workflow-contract.yml

@@ -27,6 +27,7 @@ PYTHON_ENTRYPOINTS = (
     "scripts/validation/check-target-surface-delta-contract.py",
     "scripts/validation/ci_gate_contract.py",
     "scripts/validation/ci_gate_runner.py",
+    "scripts/validation/gate2_claim_review_contract.py",
     "scripts/validation/github_workflow_contract.py",
     "scripts/validation/old_path_gate_contract.py",
     "scripts/validation/run-ci-gate.py",
