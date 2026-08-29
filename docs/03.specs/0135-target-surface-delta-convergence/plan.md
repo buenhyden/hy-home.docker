@@ -320,6 +320,14 @@ SHAs. The pinned `pre-commit/action` manifest is composite and calls
 `actions/cache@v4` by mutable tag, so Task 4 removes that path rather than
 claiming its outer SHA makes the dependency graph immutable.
 
+### Object-id resolvability, recorded 2026-08-29
+
+Fourteen rows in this Plan pin blob ids for scripts that lived under `/tmp` and
+were never committed, so `git cat-file -e <id>^{}` cannot resolve them. They are
+ephemeral, not verifiable evidence. See the matching note in
+[Task 1](tasks/tsk-0001-delta-convergence.md) for the full classification.
+
+
 ## Goals and Non-goals
 
 ### Goals

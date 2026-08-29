@@ -36,6 +36,29 @@ unbounded command output, or inferred remote failure causes.
 - Primary roots `.github`, `archive`, `examples`, `infra`, `projects`,
   `scripts`, `secrets`, and `tests`
 
+### Object-id resolvability, recorded 2026-08-29
+
+Forty citation lines in this Task name a 40-hex object id that
+`git cat-file -e <id>^{}` cannot resolve in this repository. They are **not**
+verifiable evidence and must not be read as such.
+
+| Class | Lines | Why it does not resolve |
+| ----- | ----: | ----------------------- |
+| Commits on the isolated branch and worktree named in **Inputs** | 26 | `feat/135-target-surface-delta-convergence` and `.worktrees/target-surface-delta-convergence` no longer exist; their objects are unreachable |
+| Blob ids of build, render and publish scripts under `/tmp` | 14 | those files were never committed, so the blobs were never durable |
+
+The finding is not that pins were used. This corpus's pinning discipline is
+otherwise sound: of 5,236 commit citations, 99.2 percent either resolve or are
+correctly foreign — upstream action pins, upstream repository pins and
+deliberate placeholders. The defect is that ephemeral artifacts were pinned as
+if durable, and no durable replacement exists to substitute: the objects are
+gone.
+
+Recorded rather than removed. Deleting the ids would erase what this Task
+actually did; marking them ephemeral keeps the record and stops a reader
+treating an unresolvable id as verification.
+
+
 ## Goals and Non-goals
 
 The goal is to close TSDC-001 through TSDC-017 through six top-level tasks and

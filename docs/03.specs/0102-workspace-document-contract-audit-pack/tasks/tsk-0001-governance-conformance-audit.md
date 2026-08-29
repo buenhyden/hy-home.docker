@@ -251,16 +251,37 @@ table — the limitation this Task states for D9, now with a concrete instance.
 than preference: "`03.specs/` | English-only technical specifications and
 contracts".
 
-**`medium` — 44 commit pins present unrecoverable objects as evidence (D8).**
-Thirty-three of the forty-four sit in
-`docs/03.specs/0135-target-surface-delta-convergence/`, where a Task and a Plan
-record blob ids for build, render and publish scripts that lived under `/tmp`
-and were never committed. The ids are stated as verification evidence and
-resolve to nothing. Against 5,236 total citations this is a small proportion,
-and the corpus's pinning discipline is otherwise sound — 38 upstream action
-pins, 46 upstream repository pins and 19 deliberate placeholders all check out.
-The excess is not that pins are used; it is that ephemeral artifacts were
-pinned as if durable.
+**`medium` — commit pins present unrecoverable objects as evidence (D8).
+Marked ephemeral 2026-08-29.** Re-measured by citation line rather than by pin,
+`git cat-file -e <id>^{}` fails on **121** lines across 17 files. Classifying
+each by whether the pin is offered as *this repository's* evidence leaves **55**
+actionable:
+
+| Where | Lines | Class |
+| ----- | ----: | ----- |
+| `0135-…/tasks/tsk-0001-delta-convergence.md` | 26 | commits on the isolated branch and worktree named in its own **Inputs**, both since deleted |
+| `0135-…/tasks/tsk-0001-delta-convergence.md` | 14 | blob ids of `/tmp` build, render and publish scripts, never committed |
+| `0135-…/plan.md` | 14 | the same `/tmp` script blobs |
+| `0137-…/tasks/tsk-0004-canonical-research-refresh.md` | 1 | a draft blob that was never committed |
+
+The other **66** are correct as they stand and were not touched: upstream
+GitHub pins in the Stage 90 research packs (`ai-agent-catalogs.md`,
+`spec-driven-sdlc.md`, `security-governance.md`), each carrying its own
+`https://github.com/...` URL; the `actions/checkout` pin in
+`hookify.block-unpinned-gha-action.md`; the Diataxis and agency-agents upstream
+pins; and the git null OID used as a command placeholder in `0137/plan.md`.
+
+Against 5,236 commit citations the actionable share is about one percent, and
+the corpus's pinning discipline is otherwise sound. The defect is not that pins
+are used; it is that ephemeral artifacts were pinned as if durable.
+
+**No durable replacement exists**, so Action 6's first branch was unavailable:
+the objects are gone, and inventing a substitute would be fabricating evidence.
+Each affected document now carries an in-place statement of which ids do not
+resolve and why. The ids themselves are kept — deleting them would erase what
+the Task actually did — so the raw unresolvable count is deliberately unchanged
+at 64 Stage 03 lines. What changed is that a reader can no longer mistake one
+for verification.
 
 **`medium` — five required sections are filled with identical boilerplate (D6).**
 The same sentence appears in 26 architecture decisions ("The decision context
@@ -404,7 +425,7 @@ same wall.
 | 3 | ~~Give the two untested gates a failing-case test~~ | D5 | — | **closed 2026-08-29**; 17 tests, both gates, gate `exit=0` |
 | 4 | ~~Amend gate 2's P3 predicate~~ | D5 | — | **closed 2026-08-29**; predicate now uses `TERMINAL_VERDICT_RE`, satisfiable at 19 of 19 commits |
 | 5 | ~~Correct the present-tense routing statements~~ | D1 | — | **closed 2026-08-29**; 6 corrected, not 4 |
-| 6 | Replace the 44 unrecoverable pins with a durable reference or mark them as ephemeral | D8 | Stage 03 owner | contract change; needs approval |
+| 6 | ~~Replace the unrecoverable pins or mark them ephemeral~~ | D8 | — | **closed 2026-08-29**; 55 marked ephemeral, 66 confirmed correctly foreign; no durable replacement exists |
 | 7 | Review whether five required sections earn their place, or make them conditional | D6 | Stage 99 owner | protected surface; needs approval |
 | 8 | Close the 16 residual profile findings | D2 | `doc-writer` | in-rule |
 | 9 | Decide how Stage 90 admits a net-new package, or record that it does not | placement | Stage 99 owner | rule change; needs approval |
