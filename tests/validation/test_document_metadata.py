@@ -1247,6 +1247,13 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     staged = git(root, "add", ".")
     if staged.returncode != 0:
         raise RuntimeError(staged.stderr)
+    # Commit, not just stage. The validator reads Spec Packages from a Git
+    # snapshot, which needs a commit to resolve; staging alone leaves HEAD
+    # unborn and every test built on this fixture died on
+    # `cannot read Spec Package Git snapshot`.
+    committed = git(root, "commit", "-qm", "registry contract fixture")
+    if committed.returncode != 0:
+        raise RuntimeError(committed.stderr)
     return root / "docs/99.templates/registry.json"
 
 
@@ -6809,27 +6816,13 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertIn("template-instruction-in-target", result.stdout)
             self.assertIn("template-body-token-in-target", result.stdout)
 
-    def test_shell_reads_the_registry_without_duplicate_template_schema_tables(self) -> None:
-        text = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
-            encoding="utf-8"
-        )
-        self.assertGreaterEqual(
-            text.count("docs/99.templates/registry.json"),
-            5,
-        )
-        self.assertGreaterEqual(
-            text.count('for role in profiles["template_roles"].values()'),
-            2,
-        )
-        self.assertGreaterEqual(
-            text.count('for profile in registry["profiles"]'),
-            3,
-        )
-        self.assertNotIn("required_templates=(", text)
-        self.assertNotIn("heading_requirements:", text)
-        self.assertNotIn("operation_forbidden =", text)
-        self.assertNotIn("document-metadata-profiles.yaml", text)
-        self.assertNotIn('profiles["common"]["generated_outputs"]', text)
+    # Removed 2026-08-29: `test_shell_reads_the_registry_without_duplicate_template_schema_tables`
+    # asserted textual properties of `scripts/validation/check-repo-contracts.sh`,
+    # which `1c620dd0` deleted when it routed validation through the public
+    # suites. The subject was dissolved rather than renamed, so there is nothing
+    # to repoint the assertions at; the property it guarded — that the shell
+    # reads the Registry instead of duplicating template and schema tables —
+    # is now moot because no such shell exists.
 
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

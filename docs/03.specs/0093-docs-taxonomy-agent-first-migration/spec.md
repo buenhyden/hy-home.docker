@@ -31,7 +31,7 @@ This specification defines the migration of the `hy-home.docker` documentation t
 - **Docs Taxonomy Contract**: Active stage documents may live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. `docs/04.execution` was removed from this set on 2026-08-29: the stage no longer exists, and Plans and Tasks are co-located in their owning `docs/03.specs/{number:4}-{slug}/` package.
 - **Operations Contract**: Guide, Policy, and Runbook leaves share prefixless subject packages under `docs/05.operations/catalog/<domain>/<####-subject>/`; Incident packets remain the sibling `docs/05.operations/incidents/<year>/inc-####-<slug>/` topology.
 - **Agent Governance Contract**: Root shims stay thin, with detailed policy kept in `docs/00.agent-governance/` and the runtime mirror.
-- **Validation Contract**: `check-repo-contracts.sh` and `check-document-links.py --mode traceability` enforce the new taxonomy and runtime agent/function catalog.
+- **Validation Contract**: the registered public validation suites, run by `scripts/validation/run-ci-gate.py`, and `check-document-links.py --mode traceability` enforce the new taxonomy and runtime agent/function catalog. Corrected 2026-08-29: `check-repo-contracts.sh` was deleted by `1c620dd0` when validation was routed through the public suites.
 
 ## Core Design
 
@@ -79,7 +79,7 @@ docs/99.templates/
 bash -n scripts/**/*.sh .claude/hooks/*.sh
 python3 -m json.tool .claude/settings.json
 python3 -m json.tool .codex/hooks.json
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile full
 python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/knowledge/report-graphify-health.sh
