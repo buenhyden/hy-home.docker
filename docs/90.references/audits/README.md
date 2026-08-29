@@ -19,6 +19,17 @@ name therefore cannot be registered here: authoring one raises
 Stage 99 Registry is burned whether or not the document survives, because
 `identity-history-regression` forbids reissuing it.
 
+**Nor does it release a superseded one, recorded 2026-08-30.** The same
+derivation runs in both directions. `expected_packages` is the set of Task 9
+migration targets — 66 of them — and a package in that set whose README is
+absent raises `package-missing`. A package therefore cannot be retired by
+deleting it, regardless of its `status`.
+
+Measured: `RES-0001` is `status: superseded`, all 20 of its files have same-named counterparts in `RES-0002`, and all 20 are
+registered Task 9 rows. It is the corpus's only true duplicate package and it
+cannot be removed. Retiring a Stage 90 package means amending the frozen Task 9
+migration, which is a Stage 99 decision and has not been taken.
+
 A cross-stage audit that is not the successor of an existing package belongs in
 a Task under its governing Spec, where `task` is a `package-member` profile and
 so allocates no global identity. See

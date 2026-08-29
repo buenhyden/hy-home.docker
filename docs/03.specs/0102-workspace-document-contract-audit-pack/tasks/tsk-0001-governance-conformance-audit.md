@@ -530,7 +530,7 @@ same wall.
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
-| 18 | Decide whether Stage 90 should be able to release a superseded package | placement | Stage 99 owner | the mirror of Action 9; RES-0001 is 20 files that cannot be retired |
+| 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
