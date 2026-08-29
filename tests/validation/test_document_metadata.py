@@ -1098,12 +1098,22 @@ raise SystemExit(subprocess.run([{real_git!r}, *args], check=False).returncode)
     return {"PATH": f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}"}
 
 
-def init_git(root: pathlib.Path) -> None:
+def init_git(root: pathlib.Path, *, share_objects: bool = False) -> None:
     self_check = git(root, "init", "-q")
     if self_check.returncode != 0:
         raise RuntimeError(self_check.stderr)
     git(root, "config", "user.name", "Metadata Fixture")
     git(root, "config", "user.email", "metadata@example.invalid")
+    if share_objects:
+        # Some validator paths recover a frozen authority by reading a blob at a
+        # pinned commit of *this* repository. A fixture repository has no such
+        # object and the checker stops at `historical document recovery must
+        # resolve to a regular blob`. Borrowing the real object database costs
+        # nothing and copies nothing; the fixture keeps its own refs, index and
+        # worktree, so what the tests assert is unchanged.
+        alternates = root / ".git/objects/info/alternates"
+        alternates.parent.mkdir(parents=True, exist_ok=True)
+        alternates.write_text(f"{ROOT / '.git/objects'}\n", encoding="utf-8")
 
 
 def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
@@ -1251,9 +1261,17 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     # snapshot, which needs a commit to resolve; staging alone leaves HEAD
     # unborn and every test built on this fixture died on
     # `cannot read Spec Package Git snapshot`.
-    committed = git(root, "commit", "-qm", "registry contract fixture")
-    if committed.returncode != 0:
-        raise RuntimeError(committed.stderr)
+    #
+    # Only when something is actually staged. This helper serves two fixture
+    # shapes: an empty directory, where the copy is the first commit, and a
+    # clone of this repository, where the copy reproduces bytes that are
+    # already committed. An unconditional commit fails on the second with
+    # "nothing to commit", which git reports on stdout and leaves stderr
+    # empty, so the raise below carried no message.
+    if git(root, "diff", "--cached", "--quiet").returncode != 0:
+        committed = git(root, "commit", "-qm", "registry contract fixture")
+        if committed.returncode != 0:
+            raise RuntimeError(committed.stderr or committed.stdout)
     return root / "docs/99.templates/registry.json"
 
 
@@ -7707,7 +7725,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "## Related Documents",
         ) + "\n> Rules:\n"
         with directory:
-            init_git(root)
+            init_git(root, share_objects=True)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(
@@ -7781,7 +7799,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "updated": "2026-08-01",
         }
         with directory:
-            init_git(root)
+            init_git(root, share_objects=True)
             migration = root / (
                 "docs/98.archive/migrations/"
                 "mig-0003-workspace-governance-simplification.md"
@@ -7823,7 +7841,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "0001-common-optimizations-template-exceptions/policy.md"
         )
         with directory:
-            init_git(root)
+            init_git(root, share_objects=True)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
@@ -7859,7 +7877,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "parent_ids": [],
         }
         with directory:
-            init_git(root)
+            init_git(root, share_objects=True)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
@@ -7884,7 +7902,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
         )
         readme_relative = "docs/05.operations/catalog/00-workspace/README.md"
         with directory:
-            init_git(root)
+            init_git(root, share_objects=True)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True)
             shutil.copyfile(

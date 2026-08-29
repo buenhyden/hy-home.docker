@@ -526,7 +526,7 @@ same wall.
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
 | 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **14 closed 2026-08-30**, gate `exit=0`; 6 runtime rows still need the 5 missing runbooks, and 2 libraries need a first executable test |
-| 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
+| 14 | Decide, per assertion, whether its subject is the live corpus or the pinned one; then clear the residual 26 and gate-register the suite | D5 | suite owner | **decided 2026-08-30**: fixtures borrow the object database via `alternates`. 87 of 113 green; 22 of the residue are one shape, 2 need a descendant HEAD |
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
@@ -653,6 +653,70 @@ The remedy is a design decision, not thirty small edits: either run these tests
 against a clone or worktree of the real repository so the objects resolve, or
 give the validator an explicit fixture mode that declares which frozen
 authorities are absent. Both are Action 14.
+
+**30 to 26 on 2026-08-30, and the design decision is now made rather than
+deferred.** Two more mechanical defects were found and fixed, and the residue is
+measured rather than characterised.
+
+**The first was mine.** The commit added to `copy_registry_contract_fixture` on
+2026-08-29 was unconditional, and that helper serves two fixture shapes: an
+empty directory, where the copy is the first commit, and a clone of this
+repository, where the copy reproduces bytes that are already committed. On the
+second, `git commit` fails with "nothing to commit" — which git writes to
+*stdout*, leaving stderr empty, so `raise RuntimeError(committed.stderr)`
+carried no message at all. The commit is now conditional on staged content.
+
+**The second is the design decision itself: borrow the object database, do not
+clone it.** Several validator paths recover a frozen authority by reading a blob
+at a pinned commit of this repository, and a synthetic fixture has no such
+object, so the checker stopped at `historical document recovery must resolve to
+a regular blob`. Writing `.git/objects/info/alternates` into the fixture makes
+every historical object resolvable at zero copy cost, while the fixture keeps
+its own refs, index and worktree — so nothing the tests assert changes. Measured
+on a fixture: `git cat-file -t` on the pinned commit and `git show <commit>:<path>`
+on a file deleted from the working tree both succeed. `init_git` now takes
+`share_objects`, opted into by the five tests that need it; three of the five
+went green.
+
+**The other two proved the limit of that approach, which is worth stating
+exactly.** They advanced one layer and then failed on
+`git merge-base --is-ancestor <pinned commit> HEAD`. A fixture's HEAD is a fresh
+root commit, so no pinned commit of this repository can ever be its ancestor,
+no matter how many objects it borrows. Only a fixture whose history descends
+from this repository satisfies that — a clone, which is what
+`ChangedModeRolloutTests` already does. Converting these two means rewriting
+their fixtures *and* re-deriving their expected outcomes against a full corpus,
+which is authoring tests, not repairing them.
+
+**The residue is 26, and 22 of them are one shape.**
+
+| Mechanism | Count |
+| --------- | ----: |
+| a live universe or path checked against a frozen authority | 22 |
+| fixture HEAD cannot descend from the pinned commit | 2 |
+| unclassified | 2 |
+
+The 22 are not 22 defects. `test_every_tracked_readme_has_exactly_one_profile`
+enumerates READMEs with `git ls-files` **today** and classifies them with a
+profile set frozen at commit `49406580`, so every README added since breaks it:
+measured, the five unmatched paths are all under `tests/`, all added
+2026-08-28 — the day that profile set was frozen — and `tests` is named in
+`TARGET_SURFACE_SOURCE_ROOTS` as a source root, not a document root. The
+`KeyError` failures are the same shape against different frozen tables: a
+witness map and a migration row set that do not contain paths the live corpus
+now has.
+
+One of them is a live contradiction rather than drift, and is recorded here
+because it is not a test defect: `docs/03.specs/README.md` is listed in
+`SDLC_TAXONOMY_BOUNDED_README_INPUTS` — the live allowlist of READMEs that must
+match *no* profile, honoured by the validator at
+`metadata_validator.py:5616` — and the frozen `stage-index` glob claims it
+anyway. Two authorities disagree about one path.
+
+**Still not gate-registered, for the same reason as before.** Fixing the 22
+means deciding, per assertion, whether its subject is the corpus as it stands or
+the corpus as it was pinned. That is a contract decision for the suite's owner,
+not a fixture repair, and it is what remains of Action 14.
 
 **A whole classification subsystem is inert under the live contract.**
 `readme_profiles`, `matching_readme_profiles`, `classify_readme_profile`,
