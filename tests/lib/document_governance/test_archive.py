@@ -206,18 +206,18 @@ class ArchiveMinimizationTests(unittest.TestCase):
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         self.assertEqual(("README.md", "migrations", "tombstones"), inventory.root_entries)
         self.assertEqual(3, len(inventory.migrations))
-        self.assertEqual(38, len(inventory.tombstones))
+        self.assertEqual(42, len(inventory.tombstones))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertFalse((ROOT / "docs/98.archive/changes").exists())
 
-    def test_all_184_preservation_decisions_are_unique_and_reviewed(self) -> None:
+    def test_all_188_preservation_decisions_are_unique_and_reviewed(self) -> None:
         decisions = self.archive.load_task10_preservation_decisions(ROOT)
-        self.assertEqual(184, len(decisions))
+        self.assertEqual(188, len(decisions))
         self.assertEqual(
-            {"git-only": 146, "minimal-tombstone": 38},
+            {"git-only": 146, "minimal-tombstone": 42},
             dict(collections.Counter(item.disposition for item in decisions)),
         )
-        self.assertEqual(184, len({item.stable_path for item in decisions}))
+        self.assertEqual(188, len({item.stable_path for item in decisions}))
         self.assertTrue(all(item.reviewer_decision == "approved" for item in decisions))
         self.assertTrue(all(item.recovery.commit for item in decisions))
 
@@ -267,7 +267,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
 
     def test_task10_recovery_references_all_resolve_to_regular_blobs(self) -> None:
         rows = self.archive.load_task10_recovery_references(ROOT)
-        self.assertEqual(272, len(rows))
+        self.assertEqual(276, len(rows))
         self.assertEqual(14, sum(item.commit == TASK10_BASELINE for item in rows))
         self.assertEqual((), self.archive.validate_recovery_rows(rows, ROOT))
 

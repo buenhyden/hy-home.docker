@@ -615,7 +615,7 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
     def test_every_tombstone_has_exact_git_provenance(self) -> None:
         inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
         rows = tuple(item.recovery for item in inventory.tombstones)
-        self.assertEqual(38, len(rows))
+        self.assertEqual(42, len(rows))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
 
@@ -629,9 +629,9 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("migrations=3", result.stdout)
-        self.assertIn("tombstones=38", result.stdout)
-        self.assertIn("decisions=184", result.stdout)
-        self.assertIn("recovery_rows=272 violations=0", result.stdout)
+        self.assertIn("tombstones=42", result.stdout)
+        self.assertIn("decisions=188", result.stdout)
+        self.assertIn("recovery_rows=276 violations=0", result.stdout)
 
     def test_current_links_resolve_without_active_archive_consumers(self) -> None:
         result = subprocess.run(

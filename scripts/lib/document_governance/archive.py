@@ -785,6 +785,14 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         os.close(parent)
 
 
+# Frozen census of the Task 10 recovery surface: legacy change deletions plus one
+# row per archive tombstone. Advanced 272 -> 276 on 2026-08-29 when the four
+# tombstones 38fc89c5 never wrote were authored. The count and the message it
+# raises now read one constant; they were two literals, and only one of them was
+# advanced on the first attempt.
+TASK10_RECOVERY_REFERENCE_COUNT = 276
+
+
 def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReference, ...]:
     change_rows = [
         row for row in task10_rows(root)
@@ -795,8 +803,11 @@ def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReferen
     references = [recoveries[source] for source in sources]
     archive = load_archive(root / "docs/98.archive")
     references.extend(item.recovery for item in archive.tombstones)
-    if len(references) != 272:
-        raise ValueError("Task 10 must expose exactly 272 artifact recovery tuples")
+    if len(references) != TASK10_RECOVERY_REFERENCE_COUNT:
+        raise ValueError(
+            "Task 10 must expose exactly "
+            f"{TASK10_RECOVERY_REFERENCE_COUNT} artifact recovery tuples"
+        )
     return tuple(references)
 
 
