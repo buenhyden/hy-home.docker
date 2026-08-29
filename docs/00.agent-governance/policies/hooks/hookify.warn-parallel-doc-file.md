@@ -29,7 +29,7 @@ action: warn
 Edit the existing canonical file in place.
 
 ```bash
-# BLOCKED
+# WARNING: parallel replacement document file
 docs/03.specs/service-spec-new.md
 
 # ALLOWED

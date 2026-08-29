@@ -9,7 +9,7 @@ updated: '2026-08-23'
 observed_at: '2026-08-23'
 ---
 
-# Document Corpus Migration Summary
+# Document Corpus Migration Summary: Lifecycle Foundation
 
 - Wave: `foundation`
 - Baseline commit: `e00e1483e7ab797b354d7c3b22b6d5440e998c14`

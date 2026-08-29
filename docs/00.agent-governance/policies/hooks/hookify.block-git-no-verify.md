@@ -34,7 +34,7 @@ Global Claude Code policy and `docs/00.agent-governance/policies/git-workflow.md
 **Correct approach:**
 
 ```bash
-# BLOCKED
+# BLOCKED: git commit --no-verify
 git commit --no-verify -m "fix: something"
 git commit -n -m "fix: something"
 

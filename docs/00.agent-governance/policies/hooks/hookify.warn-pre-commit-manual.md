@@ -24,7 +24,7 @@ action: warn
 **Correct approach:**
 
 ```bash
-# BLOCKED: manual execution
+# WARNING: manual pre-commit execution
 pre-commit run --all-files
 pre-commit run --files myfile.py
 

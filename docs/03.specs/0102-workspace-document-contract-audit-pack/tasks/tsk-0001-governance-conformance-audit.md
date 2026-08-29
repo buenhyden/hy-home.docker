@@ -531,6 +531,8 @@ same wall.
 | 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
 | 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
+| — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
+| 18 | Decide whether Stage 90 should be able to release a superseded package | placement | Stage 99 owner | the mirror of Action 9; RES-0001 is 20 files that cannot be retired |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
@@ -832,6 +834,46 @@ SHA-tracking excess to remove. What was actually wrong with the pins was
 different and is already closed: 55 citations named objects that no longer
 resolve, and those are marked ephemeral in place under Action 6. Raw citation
 volume is a property of a normalised, digest-verified ledger, not a defect.
+
+### Duplicate-purpose documents: measured (2026-08-30)
+
+Across **598 tracked documents there are zero identical bodies**, which
+reproduces D7's earlier negative from a different direction. Comparing H1
+titles instead surfaces eight groups, and reading each one separates three
+outcomes.
+
+**Not duplication, by design.** `docs/00.agent-governance/roles/code-reviewer.md`
+and `docs/00.agent-governance/skills/code-reviewer.md` share a title because the
+H1 *is* the identity name and roles and skills are separate identity spaces; the
+role's `skill_ids` names the skill explicitly. The seventeen `{{title}}` H1s are
+template sources.
+
+**A real contradiction, fixed.** Nineteen hook policies live under
+`policies/hooks/`; twelve carry no H1 and seven do. Two of the seven declare
+`action: warn` in their own frontmatter while their heading announces
+`# BLOCKED` — `warn-parallel-doc-file` and `warn-pre-commit-manual`. A document
+whose heading contradicts its declared severity misreports the rule it exists
+to state. Both now say `WARNING`, and `block-git-no-verify`'s bare `# BLOCKED`
+now names its subject the way its five siblings do. Nothing parses these
+headings, so the change is editorial and safe.
+
+Two Stage 90 packages both titled `# Document Corpus Migration Summary`, for
+the Lifecycle Foundation and Target Surface Convergence migrations, are now
+distinguishable.
+
+**The one real duplicate package cannot be released.**
+The retiring research pack RES-0001 is
+`status: superseded` by RES-0002, and **all twenty of its files have a
+same-named counterpart** in the active pack — 6,949 lines against 8,767.
+Retiring it is what the constraint asks for and it is not possible: all twenty
+are registered rows in the frozen Task 9 migration, so deleting the package
+raises `package-missing`.
+
+**That completes the picture of Stage 90 begun in Action 9.** The topology is
+frozen in both directions — it admits no net-new package and releases no
+superseded one. A fully superseded twenty-file duplicate must be retained. Its
+`superseded` status does mark it as history rather than guidance, so no reader
+is misled, but the corpus cannot shed it.
 
 ### Limitations
 

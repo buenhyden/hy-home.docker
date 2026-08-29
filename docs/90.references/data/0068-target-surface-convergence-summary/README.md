@@ -9,7 +9,7 @@ updated: '2026-08-23'
 observed_at: '2026-08-23'
 ---
 
-# Document Corpus Migration Summary
+# Document Corpus Migration Summary: Target Surface Convergence
 
 - Wave: `target-surface-convergence`
 - Baseline commit: `32c40e11747bc0bd03789c24861d2e5d60c0e999`
