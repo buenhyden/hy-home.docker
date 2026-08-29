@@ -527,7 +527,7 @@ same wall.
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
 | 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **14 closed 2026-08-30**, gate `exit=0`; 6 runtime rows still need the 5 missing runbooks, and 2 libraries need a first executable test |
 | 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
-| 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
+| 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
 | 18 | Decide whether Stage 90 should be able to release a superseded package | placement | Stage 99 owner | the mirror of Action 9; RES-0001 is 20 files that cannot be retired |
@@ -675,6 +675,38 @@ excising the subsystem means removing live validation branches from a
 ready-made safety check: the subsystem is inert, so `--mode report`,
 `check-active` and `check-contracts` output must be byte-identical before and
 after.
+
+**Withdrawn 2026-08-30: the subsystem is not inert, and Action 17 is closed
+without an edit.** The measurement above is correct but was generalised from one
+of two envelopes. `metadata_validator` builds two, and only the first was
+measured:
+
+| Envelope | Built by | Carries `readme_profiles` | READMEs matched |
+| -------- | -------- | ------------------------- | --------------: |
+| Registry | `build_registry_profiles(registry)` | no | 0 of 185 |
+| Transition | `build_registry_transition_profiles(registry, legacy)` | yes, 17 profiles | **180 of 185** |
+
+The transition envelope is not a test construction. It is built at
+`scripts/validation/check-document-corpus-lifecycle.py:2036`, in the live
+Registry-first adapter that migration manifest inference requires, which loads
+the legacy YAML precisely so the two can be merged. So the seven call sites are
+reached with a populated mapping every time the migration path runs, and
+excising them would delete a live control over Stage 90 inference rather than
+remove dead code.
+
+The corrected reading of the same facts: README governance was not lost when the
+Registry replaced the YAML: it moved. The Registry governs READMEs through four
+of its own profiles — `readme`, `operations-domain-readme`,
+`operations-subject-readme`, `spec-package-readme` — which key on `path_pattern`
+(`docs/{stage}/README.md`) rather than the legacy `path_globs`. Both mechanisms
+are current; they serve different envelopes. `matching_readme_profiles` returning
+`[]` under the Registry envelope is the correct answer to a question about the
+legacy classification, not evidence of a missing one.
+
+The equivalence check offered above would have passed — output *is*
+byte-identical under the Registry envelope — and would have proved nothing,
+because it never exercises the envelope that populates the key. A safety check
+drawn from the same mistaken premise as the change it guards cannot catch it.
 
 One more vacuity instance was found and removed rather than repointed:
 `test_shell_reads_the_registry_without_duplicate_template_schema_tables`
