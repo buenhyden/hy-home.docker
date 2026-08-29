@@ -5,9 +5,11 @@ files:
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/README.md
+  consumers:
+  - scripts/validation/generate-security-automation-readiness.sh
+  - tests/validation/test_script_manifest.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_script_manifest.py
 - path: scripts/hardening/check-all-hardening.sh
@@ -45,8 +47,8 @@ files:
   mutation: check-write
   consumers:
   - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
-  disposition: rewrite
-  successor: scripts/hooks/post-tool-validate.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/knowledge/generate-llm-wiki.py
@@ -361,8 +363,8 @@ files:
   consumers:
   - scripts/operations/sync-provider-surfaces.sh
   - tests/validation/test_validator_entrypoints.py
-  disposition: rewrite
-  successor: scripts/operations/provider_surface_renderer.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_provider_native_surfaces.py
   - tests/validation/test_validator_entrypoints.py
@@ -385,8 +387,8 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - tests/validation/test_validator_entrypoints.py
-  disposition: rewrite
-  successor: scripts/operations/sync-provider-surfaces.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_provider_surface_renderer.py
   - tests/validation/test_validator_entrypoints.py
@@ -398,8 +400,8 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - .github/workflows/tech-stack-version-sync.yml
-  disposition: rewrite
-  successor: scripts/operations/sync-tech-stack-versions.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/use-qa-ci-tools.sh
@@ -409,8 +411,8 @@ files:
   mutation: none
   consumers:
   - scripts/hooks/post-tool-validate.sh
-  disposition: rewrite
-  successor: scripts/operations/use-qa-ci-tools.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/requirements-pre-commit.txt
@@ -541,8 +543,8 @@ files:
   consumers:
   - scripts/validation/generate-audit-implementation-matrix.sh
   - scripts/validation/report-audit-pack-coverage.sh
-  disposition: rewrite
-  successor: scripts/validation/audit_criterion_contract.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_audit_criterion_contract.py
 - path: scripts/validation/carry_owner_contract.py
@@ -732,8 +734,8 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md
-  disposition: rewrite
-  successor: scripts/validation/check-quickwin-baseline.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/check-script-manifest.py
@@ -759,10 +761,12 @@ files:
   authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/validation/check-storybook-contract.sh
-  tests: []
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_github_workflow_contract.py
 - path: scripts/validation/check-supply-chain-policy.py
   kind: validator
   public_suites:
@@ -823,8 +827,8 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - docs/05.operations/catalog/03-security/0016-vault/guide.md
-  disposition: rewrite
-  successor: scripts/validation/check-template-security-baseline.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/ci_gate_adapters.py
@@ -850,9 +854,12 @@ files:
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/validation/ci_gate_contract.py
+  consumers:
+  - scripts/validation/ci_gate_runner.py
+  - scripts/validation/github_workflow_contract.py
+  - scripts/validation/target_surface_delta_contract.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_ci_gate_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
@@ -862,9 +869,11 @@ files:
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/validation/ci_gate_runner.py
+  consumers:
+  - scripts/validation/target_surface_delta_contract.py
+  - tests/validation/test_ci_gate_runner.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_ci_gate_runner.py
   - tests/validation/test_target_surface_delta_contracts.py
@@ -937,9 +946,11 @@ files:
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/validation/github_workflow_contract.py
+  consumers:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
@@ -1029,9 +1040,11 @@ files:
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
-  consumers: []
-  disposition: rewrite
-  successor: scripts/validation/run-agent-output-eval-fixtures.sh
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - tests/validation/test_agent_output_eval_fixtures.py
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_agent_output_eval_fixtures.py
   - tests/validation/test_validator_entrypoints.py

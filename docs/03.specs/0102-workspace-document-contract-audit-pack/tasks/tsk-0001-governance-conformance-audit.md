@@ -340,8 +340,6 @@ are the newest and most substantial requirement documents, so the 22 are
 migration residue rather than proof the section is useless. Nothing was
 rewritten in the 51 existing documents — they keep the section and stay valid.
 
-
-
 **`low` — 16 profile-conformance findings; 14 closed 2026-08-29, 2 blocked
 by a control working correctly (D2).** These appear only in the validator's
 descriptive `report` mode. All three enforcing modes returned `violations=0`
@@ -488,7 +486,7 @@ findings.
 | `17cbe1f4` | Registry high-water retained at the burned identity after revert |
 | `2c4f24b2` | LLM Wiki index regeneration |
 | `0f432f98` | audit removed from the prohibited `docs/superpowers` path; one D1 correction at `docs/05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md:43` |
-| _this commit_ | audit filed as `task-0102-0001` |
+| *this commit* | audit filed as `task-0102-0001` |
 
 ## Rulings
 
@@ -527,7 +525,7 @@ same wall.
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
-| 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **needs 5 operations runbooks that do not exist**; the disposition edit alone turns the gate red |
+| 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **14 closed 2026-08-30**, gate `exit=0`; 6 runtime rows still need the 5 missing runbooks, and 2 libraries need a first executable test |
 | 14 | Decide how `test_document_metadata` gets real Git objects — a clone/worktree, or an explicit fixture mode — then clear the residual 30 and gate-register it | D5 | `qa-engineer` | **design decision**; 83 of 113 recovered mechanically, the rest is one collision |
 | 17 | Excise the inert `readme_profiles` subsystem, or restore it to the Registry | D4 | `rules-engineer` | 7 call sites, 185 of 185 READMEs match nothing; equivalence check available |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
@@ -794,6 +792,66 @@ six runtime scripts have **no** Operations Runbook at all. `git grep` finds
 Closing this means authoring five operations runbooks describing procedures —
 secrets generation, supply-chain verification, compose readiness — that must be
 written by someone who runs them, not inferred from the scripts.
+
+**Fourteen of the 22 corrected 2026-08-30; gate `exit=0`.** The blocker was
+never the whole set. `_authority_findings` fires only on
+`mutation == "runtime" and disposition == "retain"`, so the 16 non-runtime
+self-successor rows never reach the runbook requirement at all: setting them to
+`retain` obliges only `successor: null`, a non-empty `tests` list, and a
+non-empty `consumers` list. Eight already satisfied all three. Six more had a
+falsely empty field. Two cannot be satisfied.
+
+**The empty fields were false, not vacant.** Every one of the six rows carrying
+`consumers: []` has real consumers, and `check-storybook-contract.sh` carried
+`tests: []` while `tests/validation/test_github_workflow_contract.py:95`
+executes it directly. This is the exemption's actual cost: not a wrong
+disposition label, but six rows whose evidence lists were never obliged to be
+true and therefore were not.
+
+| Row | Was | Now |
+| --- | --- | --- |
+| `scripts/README.md` | `consumers: []` | 2 consumers |
+| `scripts/validation/ci_gate_contract.py` | `consumers: []` | 3 consumers |
+| `scripts/validation/ci_gate_runner.py` | `consumers: []` | 2 consumers |
+| `scripts/validation/github_workflow_contract.py` | `consumers: []` | 2 consumers |
+| `scripts/validation/run-agent-output-eval-fixtures.sh` | `consumers: []` | 2 consumers |
+| `scripts/validation/check-storybook-contract.sh` | `consumers: []`, `tests: []` | 1 consumer, 1 test |
+
+**A control rejected the first attempt, correctly.** `consumers-unproven`
+refused 10 of the citations drawn from `git grep`: a consumer must *prove*
+invocation, which for a `.py` consumer means an AST import of the exact module
+path. The rejected edges are real but unprovable in their present form —
+`run-ci-gate.py` does `from ci_gate_runner import main` on a bare module name,
+`check-storybook-contract.sh` and `generate-security-automation-readiness.sh`
+import through heredocs whose module paths carry no `.py` suffix, and
+`suite_registry.py` and `ci_gate_adapters.py` hold their targets as path string
+literals. The final lists cite only what the checker's own
+`_reference_proves_use` accepts.
+
+One consequence is worth naming: `github_workflow_contract.py` has **no
+provable non-test consumer**, though `check-github-workflow-contract.py`
+imports it. That is a defect in the consumer's import form, not in the manifest,
+and it is left unedited — changing a gate entrypoint's import mechanics is not
+this audit's scope.
+
+**Eight rows remain, in two classes.**
+
+| Class | Rows | Blocked on |
+| ----- | ---: | ---------- |
+| `mutation: runtime` | 6 | the five Operations Runbooks that do not exist |
+| library with no executable test | 2 | `scripts/lib/hardening-lib.sh`, `scripts/lib/document_governance/__init__.py` |
+
+Libraries are exempt from `consumers` but not from `tests`, and neither has one.
+The apparent test coverage of `hardening-lib.sh` is not coverage: every match in
+`tests/` for `check-all-hardening.sh` is a string marker inside a
+workflow-contract assertion, never an execution. `__init__.py` is a one-line
+docstring. Writing a test for either is honest work, but it is authoring
+evidence rather than recording it, so both stay `rewrite` until a test exists.
+
+**Observed in passing:** `check-storybook-contract.sh` declares
+`execution_contexts: [local, pull_request, push, workflow_dispatch]` and is
+named nowhere under `.github/`. It reaches CI only through
+`suite_registry.py`'s `repository-integrity` mapping. Not corrected; recorded.
 
 ### Commit-SHA tracking: measured, and it is not excess (2026-08-30)
 
