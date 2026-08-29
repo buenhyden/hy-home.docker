@@ -162,6 +162,18 @@ whether Task 10 as a whole has been separately closed.
 
 ### Re-verification at current HEAD (2026-08-14)
 
+**Counts re-measured 2026-08-29.** The reading rule below is unchanged and still
+correct: a literal `uses:` line scan undercounts, because a YAML anchor resolves
+to more references than the text shows. Its numbers have moved with the
+workflows and are recorded here rather than edited into the 2026-08-14 reading
+above, which stays as the observation it was. At this date the seven workflow
+files hold **15** literal `uses:` occurrences and **one** `*checkout` reference,
+resolving to **16**, not the 17-and-15-resolving-to-32 of the earlier reading;
+the `&checkout` anchor is declared at `ci-quality.yml:30`. What did not move:
+**8** distinct action identities, and **15 of 15** references pinned to a full
+40-character SHA with none unpinned, so the Poisoned Pipeline Execution finding
+below holds on its security property while its arithmetic is dated.
+
 This leaf's 2026-08-11 re-verification cited commit `5580931`. At today's HEAD
 `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` (no `.github/workflow-contract.yml`,
 `.github/workflows/**`, or readiness-generator change occurred between the two
