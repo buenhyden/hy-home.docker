@@ -45,7 +45,7 @@ and can be re-run as the corpus moves.
 | -- | -------- | ------------- |
 | D1 | Dangling path citation | a backticked repository path resolving to no tracked file or directory, classified by the citing document's own `profile_id` and `status` |
 | D2 | Profile conformance | findings reported by `check-document-metadata.py` |
-| D3 | Supersession lineage | `superseded_by` present, canonical scalar shape, target resolves to a live `artifact_id` |
+| D3 | Supersession lineage | `superseded_by` present, canonical scalar shape, target resolves to a live `artifact_id`. **Defective**: governance accepts verified retired lineage, so this rule over-reports |
 | D4 | Control with no subject | a rule bounding itself to a path (`limited to`, `scoped to`, `applies only to`) that does not exist |
 | D5 | Gate without reachable red | a registered validation entrypoint with no covering test, or none asserting a failing outcome |
 | D6 | Duplicated rule statement | a normalised sentence of 60+ characters appearing verbatim in two or more live governance documents |
@@ -65,7 +65,7 @@ how this corpus must be read.
 | -------- | --: | -------------------- | ---------: |
 | D1 | 1,809 | 1,420 historical by role; 266 closed execution records | **123** across 41 files |
 | D2 | 27 | 11 are template-source placeholders, exempt by profile | **16** |
-| D3 | 1 | — | **1** |
+| D3 | 1 | detector rule stricter than governance | **0** |
 | D4 | 1 | — | **1** |
 | D5 | 23 entrypoints | 21 covered with a red assertion | **2** |
 | D6 | 15 groups | 10 are shared cross-references | **5** |
@@ -88,21 +88,66 @@ than cited from here.
 
 ### 2026-08-29 — Findings
 
-**`blocker` — a live specification is superseded by a retired one (D3).**
-`docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md` declares
-`superseded_by: SPEC-0153`. That specification was deleted by `38fc89c5` and
-now exists only as `tombstone-0157`. A reader following the lineage forward
-arrives nowhere, and the successor cannot be consulted for the authority the
-predecessor handed to it.
+**~~`blocker`~~ withdrawn 2026-08-29 — no defect (D3).** The finding as first
+written said that `docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`
+declares `superseded_by: SPEC-0153`, that `38fc89c5` deleted that
+specification, and that a reader following the lineage forward arrives
+nowhere. The last clause is false and the grading was wrong.
 
-**`high` — a mandatory profile is bounded to a deleted directory (D4).**
+D3's decision rule required the target to resolve to a **live** `artifact_id`.
+Governance requires less: `scripts/lib/document_governance/metadata_validator.py:3251`
+accepts "current **or verified retired lineage**", and `SPEC-0153` is carried
+as an `artifact_id` in `docs/98.archive/migrations/0003-workspace-governance-simplification.md:41`.
+`python3 -m scripts.lib.document_governance.metadata_validator --mode check-active`
+returns `selected=457 violations=0`, and
+`python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-full`
+returns `violations=0`.
+
+`tombstone-0157` was already tracked at `3bb47ee9`, the commit this audit
+measured, so the reader does reach a record: `SPEC-0136` to `tombstone-0157`
+to `mig-0003`.
+
+A prior ruling in this corpus had already settled it and this audit failed to
+find it before grading. `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md:3944`
+states: "**The frontmatter is not the defect and must not be edited.**"
+`superseded_by` is mandatory while `status: superseded`, must be a same-type
+uppercase stable ID, cannot be repointed at `mig-0003`, and is factually true —
+SPEC-0153 did supersede SPEC-0136, then completed and was retired. That entry
+also identified the real gap as the missing tombstone, which this session
+authored as `tombstone-0154` through `tombstone-0157`.
+
+**No change is made to `SPEC-0136`.** D3 is a detector defect, not a corpus
+defect: its rule is stricter than the rule the repository enforces.
+
+**`low`, downgraded from `high`, resolved 2026-08-29 (D4).**
 `docs/90.references/data/0075-profile/README.md:28` scopes HADS to
-`docs/90.references/data/hads/`, which `49522aa1` removed on 2026-08-23. The
-same bound is restated by `REQ-0024-FR-0005`,
-`docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md:31`
-and `docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md:47`.
-The profile therefore applies to no document: it is a mandatory control over an
-empty set, and all four documents must move together.
+`docs/90.references/data/hads/`, which `49522aa1` removed on 2026-08-23.
+
+The finding first said all four documents must move together. Two facts
+measured while resolving it show that was wrong.
+
+**HADS was never enforced.** `git grep -l "hads\|HADS" -- scripts/ tests/
+.github/` returns nothing. No validator, test, or workflow has ever required a
+HADS block. The "mandatory profile" was prose, so its empty subject cost no
+enforcement.
+
+**Three of the four statements are prohibitions, not application scopes.**
+`REQ-0024-FR-0005` reads "Do not broaden the HADS mandatory profile beyond
+`docs/90.references/data/hads/`"; the ADR at `:31` and `:38` and the
+description at `:47` say the same. A prohibition whose bound is empty prohibits
+*more*, not less. All three remain sound and are deliberately left unedited —
+they record the boundary approved at decision time, and rewriting a decided ADR
+to chase a path rename would damage the record it exists to keep. Note that the
+ADR's "Mandatory HADS conversion" heading sits under **Options Considered** and
+was rejected, one of its stated reasons being "Existing validators and templates
+do not require HADS."
+
+Only `0075-profile/README.md:28` asserted an active application, and that one
+sentence carried the whole finding. The disposition is recorded there as two
+`[SPEC]` blocks: the profile is **not in force**, and its subject cannot be
+recreated as named, because Stage 90 package paths must match
+`{number:4}-{slug}` and be registered in the frozen Task 9 migration, which
+makes `docs/90.references/data/hads/` structurally unrepresentable.
 
 **`high` — two gates run in CI with nothing proving they can fail (D5).**
 `scripts/validation/check-quickwin-baseline.sh` (134 lines) and
@@ -256,7 +301,7 @@ deliberately does not claim:
 | Protected surfaces untouched | yes — `docs/99.templates/` unchanged; no `secrets/` path read |
 | Raw counts distinguished from actionable counts | yes — both columns retained, because the gap between them is a finding |
 | Detector defects disclosed | yes — two corrected in-flight, one error withdrawn |
-| Language | English, matching the uniformly English tracked corpus |
+| Language | English, matching Stages 03, 90, 98 and 99. Corrected: the corpus is not uniformly English — Stages 01 and 02 are written in Korean |
 
 Independent review is **not** claimed. A second seat has not read these
 findings.
@@ -296,8 +341,8 @@ same wall.
 
 | # | Action | Finding | Owner | Gate |
 | - | ------ | ------- | ----- | ---- |
-| 1 | Repoint or retire `SPEC-0136`'s supersession to a live successor | D3 | Stage 03 owner | rule or archive change; needs approval |
-| 2 | Rescope, retire, or re-subject the HADS profile across its four documents | D4 | HADS rollout owner | rule change; needs approval |
+| 1 | ~~Repoint or retire `SPEC-0136`'s supersession~~ | D3 | — | **closed 2026-08-29, no change; finding withdrawn** |
+| 2 | ~~Rescope, retire, or re-subject the HADS profile~~ | D4 | — | **closed 2026-08-29**; recorded as not in force in one document, three left unedited as sound prohibitions |
 | 3 | Give the two untested gates a failing-case test, or retire them | D5 | `qa-engineer` | in-rule |
 | 4 | Amend gate 2's P3 predicate to distinguish "no verdict this round" from "no verdict ever", or withdraw the gate | D5 | SPEC-0137 owner | contract change; needs approval |
 | 5 | Correct the 4 present-tense routing statements | D1 | per-document owner | two touch stated contracts; needs approval |

@@ -34,12 +34,32 @@ exists: `49522aa1` removed `docs/90.references/data/hads/` and its two files on
 mandatory profile therefore currently applies to no document at all, so the
 sentence above states a bound rather than an active control. The earlier
 sentence is kept as the record of the approved boundary and is not withdrawn.
-Whether the profile is rescoped, retired, or given a new subject directory is a
-governance decision that also moves `REQ-0024-FR-0005`,
-`docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md` and
-`docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
-all three of which bound the profile to the same removed path. Owner: the unit
-that next revises the HADS rollout.
+**[SPEC]**
+Disposition, 2026-08-29. The HADS mandatory profile is **not in force** and has
+never been enforced. No script, test, or workflow references HADS: `git grep -l
+HADS -- scripts/ tests/ .github/` returns nothing. Its subject directory also
+cannot be recreated as named, because Stage 90 package paths must match
+`{number:4}-{slug}` and be registered in the frozen Task 9 migration, which
+makes `docs/90.references/data/hads/` structurally unrepresentable under current
+rules.
+
+**[SPEC]**
+This document is retained as the approved profile definition. Any future HADS
+rollout requires a separate approval that names a representable subject path,
+per `REQ-0024-FR-0005` and
+`docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md:31`.
+
+**[NOTE]**
+`REQ-0024-FR-0005`,
+`docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md:31` and
+`docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md:47`
+are deliberately left unedited. Each states a prohibition — do not broaden the
+mandatory profile beyond that path — not an application scope. A prohibition
+whose bound is empty prohibits more, not less, so all three remain sound and
+now admit no subject at all. They name the boundary that was approved at
+decision time, which is the correct historical record. Only the sentence above
+in this document asserted an active application, and that is what this
+disposition settles.
 
 ## Purpose
 
