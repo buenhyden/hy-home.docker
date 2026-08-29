@@ -3858,6 +3858,62 @@ established for this draft", which is thinner than REQ-08's operations-evidence
 element. What this promotion establishes is that the drafted content is now the
 tracked pack; what it does not establish is that the pack is accepted.
 
+### The unexecuted mirrored suites are repaired, 2026-08-29
+
+The 2026-08-29 record above noted that `run-ci-gate.py --profile full` runs zero
+suites under `tests/lib/` although `scripts/manifest.yaml` registers fourteen, and
+that four of them failed when run directly. All fourteen now pass, 278 tests. The
+repairs were not cosmetic and one of them fixed a live production defect.
+
+**`--mode consumers` was broken in the shipped CLI, not only in its test.**
+`load_task8_migration` required `schema_version == 2` and exactly 903 rows. The
+governance simplification projected the executed ledger to the compact schema-3
+form, 905 rows carrying only source, target, artifact, action and recovery, so the
+loader rejected the live document and `check-operations-catalog.py --mode
+consumers` failed outright. CI never noticed because its profile runs `--mode
+complete`, which does not reach that function. The message it raised —
+`consumer inventory requires execution evidence` — was accurate about the compact
+document: `active_consumers` is not in it. But it is in the APPROVED document,
+which stays at schema 2 and is the reviewed authority, with 193 Task 8 rows and
+1,002 declared consumer entries. The loader now takes identity and consumer
+declarations from the approved rows and cross-checks every Task 8 route against
+the executed projection, which is the same split `migration_rows_for_task`
+already used. Fixing it also un-suppressed twenty tests: `test_operations_catalog`
+went from 13 executed with a `setUpClass` error to 33 passing.
+
+**A test that had stopped testing anything.**
+`test_task10_rows_reject_same_shape_semantic_mutations` had accumulated two
+independent breakages that cancelled into a green-looking failure. Three of its
+four mutation strings named schema-2 fields (`owner_task`, `row_id`) that the
+compact document does not contain, so `str.replace` returned the file unchanged
+and the test asserted that the ORIGINAL bytes were rejected. And its fixture root
+held only the ledger with no git repository, so `git cat-file --batch-check`
+failed before the digest comparison was reached — that environmental `ValueError`
+was what the assertion had been catching. The mutations are now expressed against
+the schema-3 row shape, the root is a shared clone so recovery commits resolve,
+and each mutation is paired with the guard it must trip rather than one shared
+message: two are caught by a structural rule before the digest, which is a
+stronger rejection than the test previously claimed. The same missing-git-root
+defect was repaired in `test_spec_packages`, which died in
+`_approved_migration_document` before reaching the lifecycle rule it exists to
+test.
+
+**Three stale pins repinned, none relaxed.** Two frozen `sha256` pins on the
+Migration and one spec-surface cardinality. The Migration hash moved because the
+ledger was legitimately projected to schema 3; that rewrite is authorised
+independently of the constant, which was verified rather than assumed by mutating
+one `target_path` and watching `archive._migration_document` reject it with
+`Migration 0003 compact selection differs from approved frozen digest`. The static
+pins are a second, cheaper tripwire over the same bytes, not the authority for
+them. The spec surface moved from 34 packages to 30 because `38fc89c5` retired the
+completed governance migration packages; every other surface invariant in that
+test still holds, so only the count changed.
+
+What remains unfixed here is the routing gap itself: the full gate still executes
+no `tests/lib/` suite, so these fourteen stay green only as long as someone runs
+them. That is a CI-profile change with its own owner, and it is the reason four
+suites could rot unnoticed in the first place.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)

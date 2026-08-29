@@ -303,9 +303,18 @@ class OperationsAuthorityTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
+        # Repinned 2026-08-29. The governance simplification projected this
+        # ledger from the reviewed schema-2 form to the compact schema-3 record
+        # of what executed, so the old digest pinned a file that no longer
+        # exists. The rewrite is authorized independently of this constant:
+        # `archive._migration_document` compares the compact selection against
+        # the approved frozen digest and rejects a single changed character,
+        # which was verified by mutating one `target_path` and watching it fail.
+        # This pin is a second, cheaper tripwire over the same bytes, not the
+        # authority for them.
         self.assertTrue(
             result.stdout.startswith(
-                "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
+                "0f895f395360a4b33456c7fb5a651f71efb22b566c7b74dd1aacd0884f9abb95"
             )
         )
 

@@ -822,15 +822,42 @@ def load_task8_migration(
         raise OperationsAuthorityError(
             "structural-authority-invalid", "current structure must use Migration 0003"
         )
-    from scripts.lib.document_governance.archive import _migration_document
+    from scripts.lib.document_governance.archive import (
+        _approved_migration_document,
+        _migration_document,
+    )
 
     try:
         ledger = _migration_document(root)
     except ValueError as error:
         raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
-    if ledger["schema_version"] != 2:
-        raise OperationsAuthorityError("structural-authority-invalid", "consumer inventory requires execution evidence")
-    raw_rows = ledger.get("rows")
+    # The executed ledger was projected to the compact schema-3 form, which keeps
+    # only source, target, action, artifact and recovery. `active_consumers`,
+    # `owner_task` and `row_id` live on the APPROVED document, which stays at
+    # schema 2 and is the reviewed authority; the compact document is the record
+    # of what executed. This function needs both, so it reads identity and
+    # consumer declarations from the approved rows and cross-checks them against
+    # the executed projection below, which is the same split
+    # `migration_rows_for_task` already uses. Reading only the executed document
+    # made `--mode consumers` fail outright once the projection landed, because
+    # the field the inventory is built from is not in it.
+    if ledger["schema_version"] not in {2, 3}:
+        raise OperationsAuthorityError(
+            "structural-authority-invalid", "unsupported migration schema"
+        )
+    if ledger["schema_version"] == 2:
+        source_document = ledger
+    else:
+        try:
+            source_document = _approved_migration_document(root)
+        except ValueError as error:
+            raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
+        if source_document.get("schema_version") != 2:
+            raise OperationsAuthorityError(
+                "structural-authority-invalid",
+                "approved migration must carry the reviewed schema-2 fields",
+            )
+    raw_rows = source_document.get("rows")
     if not isinstance(raw_rows, list) or len(raw_rows) != 903:
         raise OperationsAuthorityError("migration-bounds", "row bound exceeded")
     all_rows = tuple(_parse_row(value) for value in raw_rows)
@@ -877,6 +904,26 @@ def load_task8_migration(
             or row.target_path is not None
         ):
             raise OperationsAuthorityError("task8-row-invalid", row.row_id)
+    if ledger is not source_document:
+        # The approved document supplied identity and consumers; the executed
+        # document is what actually ran. They must agree on every Task 8 route,
+        # or the inventory would describe a migration that did not happen.
+        executed = {
+            row["source_path"]: row
+            for row in ledger["rows"]
+            if isinstance(row, Mapping)
+        }
+        for row in rows:
+            actual = executed.get(row.source_path.as_posix())
+            if actual is None:
+                raise OperationsAuthorityError(
+                    "task8-row-invalid", f"approved row is absent from the executed ledger: {row.row_id}"
+                )
+            target = row.target_path.as_posix() if row.target_path is not None else None
+            if actual.get("action") != row.action or actual.get("target_path") != target:
+                raise OperationsAuthorityError(
+                    "task8-row-invalid", f"executed route differs from the approved row: {row.row_id}"
+                )
     return Task8Migration(rows=rows, all_rows=all_rows)
 
 

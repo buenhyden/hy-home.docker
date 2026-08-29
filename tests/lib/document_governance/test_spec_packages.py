@@ -473,15 +473,25 @@ class SpecPackageTests(unittest.TestCase):
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            # A shared clone, not `git init`. The approved Migration is recovered
+            # from a specific historical commit, which a fresh repository does
+            # not contain, so this fixture died in `_approved_migration_document`
+            # with "historical document recovery must resolve to a regular blob"
+            # before it reached the lifecycle rule it exists to test. Cloning
+            # first also means the clone target is still empty, so the fixture
+            # files are written after it.
+            subprocess.run(
+                ("git", "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(root)),
+                check=True,
+            )
             stage = root / "docs/03.specs"
             _write_package(stage, plan=True)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-            migration.parent.mkdir(parents=True)
+            migration.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(
                 ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
                 migration,
             )
-            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             subprocess.run(["git", "add", "-A"], cwd=root, check=True)
             subprocess.run(
                 [
@@ -636,7 +646,11 @@ class SpecPackageTests(unittest.TestCase):
     def test_current_repository_has_exact_canonical_spec_surface(self) -> None:
         spec_packages = _spec_packages_module()
         packages = spec_packages.load_spec_packages(ROOT / "docs/03.specs")
-        self.assertEqual(34, len(packages))
+        # 30 since 2026-08-29. `38fc89c5` retired the completed governance
+        # migration packages, so the surface legitimately shrank; the pin lagged.
+        # Only the cardinality moved — every surface invariant asserted below
+        # still holds, which is why this is repinned rather than relaxed.
+        self.assertEqual(30, len(packages))
         self.assertTrue(all(not package.path.name.startswith("spec-") for package in packages))
         self.assertFalse((ROOT / "docs/04.execution").exists())
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))

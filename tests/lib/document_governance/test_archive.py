@@ -445,22 +445,67 @@ class ArchiveMinimizationTests(unittest.TestCase):
                     self.archive.task10_rows(root)
 
     def test_task10_rows_reject_same_shape_semantic_mutations(self) -> None:
+        """Repaired 2026-08-29; it had stopped testing anything.
+
+        Two independent breakages had accumulated. The ledger was projected to
+        the compact schema-3 form, so three of the four mutation strings —
+        `owner_task`, `row_id` — no longer occur in the file and `str.replace`
+        returned it unchanged; the test was feeding the ORIGINAL bytes and
+        asserting they were rejected. And the fixture root held only the ledger
+        with no git repository, so `git cat-file --batch-check` failed before the
+        digest comparison was ever reached, which is the `ValueError` the
+        assertion was actually catching. Together those meant the test would have
+        passed on a clean file and failed on nothing. The mutations below are
+        expressed against the schema-3 row shape, and the root is a shared clone
+        so the recovery commits resolve and the digest check is what answers.
+        """
+
         approved = self.archive._approved_migration_document(ROOT)
-        original = (
-            ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        ).read_text(encoding="utf-8")
+        ledger_relative = (
+            "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+        )
+        original = (ROOT / ledger_relative).read_text(encoding="utf-8")
+        row = (
+            "- source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md\n"
+            "  target_path: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md\n"
+            "  artifact_id: mig-0001\n"
+            "  action: rename\n"
+        )
+        self.assertEqual(1, original.count(row))
+        # Each mutation is paired with the guard it must trip. Asserting one
+        # shared message would have hidden which defence actually answered, and
+        # two of these are caught by a structural rule BEFORE the digest, which
+        # is a stronger rejection rather than a weaker one.
         mutations = (
-            original.replace("action: rename, owner_task: 10", "action: invented, owner_task: 10", 1),
-            original.replace("row_id: mig-0003-r0600,", "row_id: mig-0003-r0601,", 1),
-            original.replace(
-                "source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
-                "source_path: ../outside.md",
-                1,
+            # same shape, different executed semantics: a rename becomes a delete
+            (
+                original.replace(row, row.replace("action: rename", "action: delete"), 1),
+                "action and target disagree",
+            ),
+            # same shape, different destination: only the digest can see this
+            (
+                original.replace(row, row.replace("0001-sdlc", "0009-sdlc"), 1),
+                "frozen digest",
+            ),
+            # same shape, source escapes the repository
+            (
+                original.replace(
+                    "source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
+                    "source_path: ../outside.md",
+                    1,
+                ),
+                "path is invalid",
             ),
         )
-        for index, mutation in enumerate(mutations):
+        for index, (mutation, expected) in enumerate(mutations):
+            with self.subTest(index=index):
+                self.assertNotEqual(original, mutation, "mutation must change the file")
             with self.subTest(index=index), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
+                subprocess.run(
+                    ("git", "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(root)),
+                    check=True,
+                )
                 target = root / "docs/98.archive/migrations"
                 target.mkdir(parents=True)
                 (target / "0003-workspace-governance-simplification.md").write_text(
@@ -469,7 +514,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 )
                 with mock.patch.object(
                     self.archive, "_approved_migration_document", return_value=approved,
-                ), self.assertRaisesRegex(ValueError, "frozen digest"):
+                ), self.assertRaisesRegex(ValueError, expected):
                     self.archive.task10_rows(root)
 
     def test_archive_reads_reject_ancestor_symlink_special_file_and_swap(self) -> None:
@@ -537,7 +582,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
     def test_frozen_migration_is_byte_identical_at_prefixless_path(self) -> None:
         path = ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         self.assertEqual(
-            "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9",
+            "0f895f395360a4b33456c7fb5a651f71efb22b566c7b74dd1aacd0884f9abb95",
             self.archive.sha256_file(path),
         )
         self.assertFalse((ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md").exists())
