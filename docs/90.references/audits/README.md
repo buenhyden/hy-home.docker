@@ -52,7 +52,6 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 | [AUD-0036](./0036-harness-loop-audit/README.md) | Reference: Superseded Harness and Loop Audit Mapping | superseded |
 | [AUD-0037](./0037-implementation-overview/README.md) | Reference: Superseded 2026-07-07 Implementation Overview Mapping | superseded |
 | [AUD-0038](./0038-sdlc-qa-security-audit/README.md) | Reference: Superseded SDLC, QA, and Security Audit Mapping | superseded |
-| [AUD-0096](./0096-governance-conformance/README.md) | Governance Conformance Audit | active |
 
 ## Canonical Current Audit
 
