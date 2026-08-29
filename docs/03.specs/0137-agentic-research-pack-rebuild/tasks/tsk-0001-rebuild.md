@@ -3686,6 +3686,63 @@ pack's live path produces a failure, a clickable link to the retired name produc
 failure, and a bare literal of the live name produces a failure; removing each returns
 the gate to zero. That is the test the previous zero could not pass.
 
+### Branch and worktree disposition, 2026-08-29
+
+Three worktrees and their branches were measured against `main`. One is integrated
+and removed; two are not integrable as they stand, for different and specific
+reasons, and both are left in place rather than forced.
+
+`codex/workspace-governance-simplification` was **fully contained in `main`** — its
+tip `582ff6cb` was also the merge base — so the worktree and branch are removed.
+Nothing was lost and nothing was merged.
+
+`agentic-research-delta-revalidation` is **not a merge candidate, and merging it
+would do harm.** It branched at `d6cac43d` on 2026-08-20 and ran 57 commits while
+`main` took the governance migration. Every one of the 23 documentation paths it
+touches is absent from `main`, because they are pre-migration locations: its Plan
+and Task are `docs/04.execution/plans|tasks/2026-08-08-agentic-research-pack-rebuild.md`
+and its research leaves are `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`.
+A merge would recreate all 23 beside their migrated successors, which is exactly the
+parallel authority copy the bootstrap policy forbids. Its code is written for the
+same vanished world: `carry_owner_contract.py` there reads `SCOPES_DIR =
+"docs/00.agent-governance/scopes"`, a directory `main` deleted, and defaults its task
+path to `docs/04.execution/tasks/…`, while `main`'s version already reads
+`docs/00.agent-governance/roles/` and `docs/03.specs/0137-…/tasks/tsk-0001-rebuild.md`.
+
+It is not merely stale, and that must be recorded rather than assumed away. Its
+`carry_owner_contract.py` is 2209 lines against `main`'s 594, and the difference is
+not drift: it carries an entire gate-2 claim-review contract that `main` does not have
+— `validate_gate2_contract`, `Gate2Result`, canonical JSON digests, manifest and
+receipt validation, and a 2246-line `test_gate2_claim_review_contract.py`. That is a
+machine-checkable version of the gate-2 review this Task performed by hand with seats
+today. Discarding the branch would lose it. **The disposition is a port, not a merge**,
+and it is not performed here: the subsystem must be rebased onto the current document
+layout, and that is a unit of work with its own review, not a conflict resolution.
+
+`codex/0137-agentic-research-refresh` **forbids its own integration, in its own
+words.** It is on the current layout — 26 of its 27 paths exist on `main` — so it
+merges mechanically, and the attempt was made and aborted. It conflicts on 24 files,
+and the resolution is not a detail: across the 21 research leaves the HEAD side holds
+7,423 lines and the branch side 1,938, and 20 of the 21 branch-side leaves carry a
+`reference:agentic-engineering-research-draft:` identity rather than the reviewed
+`reference:agentic-engineering-research:`. Merging would replace reviewed research
+with drafts. Its own governing Task `tsk-0004-canonical-research-refresh.md` states
+the intent directly: author the draft "on the research branch only", with "final
+acceptance and integration … deferred until SPEC-0153 Task 9 has independently
+established and merged its Stage 90 structure into `main`", and adds that no
+"integration, or cleanup authority" is granted. Integrating it would breach the
+branch's own recorded authority boundary, so it is left intact.
+
+**A dangling supersession found while resolving that condition.**
+`docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md` declares
+`superseded_by: SPEC-0153`, and no tracked document declares `artifact_id: SPEC-0153`
+any more: the package was retired by `38fc89c5` and survives only as rows in
+`docs/98.archive/migrations/0003-workspace-governance-simplification.md`. So Spec 136
+names a successor that is not in the corpus. `check-document-corpus-lifecycle.py
+--mode check-full` reports `violations=0`, so no registered check reaches it. This is
+not a Spec 137 gate and no disposition is taken here; it is recorded because the
+gating condition of another unit's Task turns on that identity.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)
