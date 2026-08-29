@@ -224,20 +224,32 @@ all name old paths by role, and so does a completed Task. The distinction that
 makes this number small enough to act on is the citing document's own lifecycle
 status, not its path.
 
-Only **4** of the 123 are present-tense routing statements pointing at dead
-paths — the class that misdirects a reader rather than recording history:
+**6** of the 123 are present-tense routing statements pointing at dead paths —
+the class that misdirects a reader rather than recording history. All six were
+corrected on 2026-08-29. The figure was first reported as 4; a targeted sweep
+for routing verbs over all 1,084 `04.execution` citations found two more, in
+the taxonomy SSoT itself.
 
-| Location | Statement | Dead target |
-| -------- | --------- | ----------- |
-| `docs/03.specs/0008-workflow/spec.md:222` | canonical workflow agent behavior changes belong there | `docs/03.specs/008-workflow/agent-design.md` |
-| `docs/03.specs/0008-workflow/spec.md:223` | execution sequencing changes belong there | `docs/04.execution/plans/` |
-| `docs/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md:31` | Docs Taxonomy Contract lists it as an allowed active stage | `docs/04.execution` |
-| `docs/03.specs/0102-workspace-document-contract-audit-pack/spec.md:147` | "should create a Stage 04 task record"; audit outputs "should live under" a dated Stage 90 path | `docs/04.execution`, `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/` |
+| Location | Statement | Corrected to |
+| -------- | --------- | ------------ |
+| `0008-workflow/spec.md:222` | canonical workflow agent behavior changes belong in `docs/03.specs/008-workflow/agent-design.md` — unpadded and nonexistent | `docs/00.agent-governance/roles/workflow-supervisor.md` |
+| `0008-workflow/spec.md:223` | execution sequencing changes belong in `docs/04.execution/plans/` | the owning package's `plan.md` |
+| `0093-docs-taxonomy-agent-first-migration/spec.md:31` | Docs Taxonomy Contract lists `docs/04.execution` as an allowed active stage | stage removed from the set, with the reason stated |
+| `0102-…/spec.md:147` | "should create a Stage 04 task record"; audit outputs "should live under" a dated Stage 90 path | co-located Task, plus the note that Stage 90 admits no net-new package |
+| `docs/README.md:9` | the document flow includes `04.execution` | flow corrected; Plan and Task placement stated |
+| `docs/README.md:112` | leaf language rule scoped to `docs/04.execution/plans/**` and `tasks/**` | scoped to `docs/03.specs/**`, `plan.md` and `tasks/**` included |
 
 The fourth row is this Task's own governing specification, found while placing
-this Task. Stage 04 was removed from the taxonomy and the dated Stage 90 audit
-path was renumbered to `docs/90.references/audits/0001-readme` through
-`0011-template-application-gaps`.
+this Task. **The taxonomy SSoT contradicted itself.** `docs/README.md:9` put
+`04.execution` in the active flow while `:87` and `:88` in the same file already
+mapped `docs/05.plans/` to `docs/03.specs/{number:4}-{slug}/plan.md` and
+`docs/06.tasks/` to `.../tasks/`. D9 did not catch this because it matches
+definition-shaped lines and this is a prose flow sentence against a mapping
+table — the limitation this Task states for D9, now with a concrete instance.
+
+`docs/README.md:121` also settles this Task's language choice as policy rather
+than preference: "`03.specs/` | English-only technical specifications and
+contracts".
 
 **`medium` — 44 commit pins present unrecoverable objects as evidence (D8).**
 Thirty-three of the forty-four sit in
@@ -391,13 +403,14 @@ same wall.
 | 2 | ~~Rescope, retire, or re-subject the HADS profile~~ | D4 | — | **closed 2026-08-29**; recorded as not in force in one document, three left unedited as sound prohibitions |
 | 3 | ~~Give the two untested gates a failing-case test~~ | D5 | — | **closed 2026-08-29**; 17 tests, both gates, gate `exit=0` |
 | 4 | ~~Amend gate 2's P3 predicate~~ | D5 | — | **closed 2026-08-29**; predicate now uses `TERMINAL_VERDICT_RE`, satisfiable at 19 of 19 commits |
-| 5 | Correct the 4 present-tense routing statements | D1 | per-document owner | two touch stated contracts; needs approval |
+| 5 | ~~Correct the present-tense routing statements~~ | D1 | — | **closed 2026-08-29**; 6 corrected, not 4 |
 | 6 | Replace the 44 unrecoverable pins with a durable reference or mark them as ephemeral | D8 | Stage 03 owner | contract change; needs approval |
 | 7 | Review whether five required sections earn their place, or make them conditional | D6 | Stage 99 owner | protected surface; needs approval |
 | 8 | Close the 16 residual profile findings | D2 | `doc-writer` | in-rule |
 | 9 | Decide how Stage 90 admits a net-new package, or record that it does not | placement | Stage 99 owner | rule change; needs approval |
 | 10 | Reproduce and fix the intermittent `test_references` failure, or prove it cannot recur | D5 | `qa-engineer` | in-rule |
 | 11 | Collapse the eight synchronised edit sites needed to wire one gate suite; three are verbatim duplicates | D5 | gate-contract owner | contract change; needs approval |
+| 12 | Decide whether four `docs/04.execution/` entries in live prefix allowlists should be dropped | D4 | gate-contract owner | code change; behaviour-neutral, so deliberately not taken here |
 
 ### Limitations
 

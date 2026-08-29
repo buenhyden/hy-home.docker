@@ -219,8 +219,8 @@ This document defines the workflow cross-validation agent design that sequential
   - never store plaintext secrets in reports or memory
   - keep provider-specific behavior out of generic governance files
 - **Versioning Rule**:
-  - canonical workflow agent behavior changes belong in `docs/03.specs/008-workflow/agent-design.md`
-  - execution sequencing changes belong in `docs/04.execution/plans/`
+  - canonical workflow agent behavior changes belong in `docs/00.agent-governance/roles/workflow-supervisor.md`
+  - execution sequencing changes belong in the owning package's `docs/03.specs/{number:4}-{slug}/plan.md`
 
 ### Context & Memory Strategy
 

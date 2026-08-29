@@ -143,10 +143,16 @@ The audit pack has four workstreams:
 
 ## Data Modeling & Storage Strategy
 
-The implementation plan should create a Stage 04 task record before broad
-auditing starts. Detailed audit outputs should live under
-`docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/` unless the plan chooses a more
-specific Stage 90 path.
+Create a co-located Task under `docs/03.specs/0102-workspace-document-contract-audit-pack/tasks/`
+before broad auditing starts.
+
+Corrected 2026-08-29. This paragraph named a Stage 04 task record and a
+dated Stage 90 output path; Stage 04 was removed from the taxonomy and the
+dated package was renumbered to `docs/90.references/audits/0001-readme`
+through `0011-template-application-gaps`. Note also that Stage 90 now admits
+no net-new package: `scripts/lib/document_governance/references.py:763`
+derives the admitted file set from the frozen Task 9 migration rows, so an
+audit that has no predecessor to name belongs in a Task, not in Stage 90.
 
 Recommended records:
 
