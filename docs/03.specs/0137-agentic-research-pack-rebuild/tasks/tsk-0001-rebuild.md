@@ -4262,6 +4262,71 @@ written on 2026-08-19 by earlier units, so the reading is a fresh measurement
 rather than a self-assessment. It is still not a seat independent of this Task,
 and every verdict above records which of the two it is.
 
+### External evidence revalidated, and gate 2's contract found unsatisfiable, 2026-08-29
+
+**Every external evidence URL in the successor pack was fetched on 2026-08-29.**
+116 distinct URLs across roughly forty hosts, followed through redirects:
+
+| Result | Count | Reading |
+| ------ | ----: | ------- |
+| `200` reachable | 111 | source resolves |
+| `403` refused | 3 | all `www.iso.org`, exactly as this pack documents |
+| `404` absent | 2 | both `learn.chatgpt.com` skills pages |
+| of the above, redirected | 10 | reachable, but the cited path has moved |
+
+**The failures confirm the pack rather than contradict it.** The three `403`
+responses are `www.iso.org`, and `sdlc-document-roles.md` already records that
+the main standards host refuses automated retrieval and names the ISO-operated
+`committee.iso.org` catalog as the corroborating route. The two `404` responses
+are the candidate Codex skills pages, and
+`provider-implementation-comparison.md:257` already records that the Codex
+skills pattern has no confirming official source and names both pages. Two
+claims marked `UNVERIFIED` on documentary grounds are now `UNVERIFIED` on
+measured ones.
+
+**Ten citations point at paths that have moved.** None is broken; each redirects
+to a reorganized target -- the GitHub Actions documentation restructure accounts
+for six, and the Anthropic models overview, the RFC editor, a `.git` suffix and
+an SLSA provenance path account for the rest. Under this pack's own redirect
+rule a redirect does not revive the original path, so these are citation-freshness
+findings for whoever next revises the `Sources` tables, not evidence failures.
+
+**A caution about the method.** The first sweep reported eighteen `404`s. All
+eighteen were an artefact of the extraction, which had captured a trailing
+backtick from the surrounding Markdown; re-probed cleanly, sixteen return `200`
+and two are the genuine absences above. The number that mattered was wrong by a
+factor of nine in the direction of alarm, and the check that caught it was
+re-running the measurement rather than reading the output.
+
+**What conditions 2 and 5 still lack.** They require the evidence URLs to be
+enumerated in the Plan and the Spec and Plan corrected to the actual retrieval
+date before the first request. The retrieval happened and is recorded here; the
+Plan enumeration and the date corrections did not, so the conditions remain
+unmet. What this establishes is that the sources resolve, not that the contract
+is satisfied.
+
+**Gate 2's executable contract cannot be satisfied by this Task, for a reason
+that has nothing to do with the review.** `validate_gate2_contract` requires a
+`reviewed_commit` whose Task snapshot carries the canonical manifest and in which
+every gate-2 row's `Review verdict` normalizes to exactly `Not Run`. Measured
+across all eighteen commits that have ever touched this Task, the best any
+commit achieves is **zero of 150** rows matching that string: unreviewed rows in
+this corpus have always read `Not Run; <provenance>`, and the 76 rows under the
+Task 9 whole-pack verdict have carried a terminal verdict since before this
+contract existed. No such commit exists, none can be created without rewriting
+the record, and authoring the three evidence sections would therefore not turn
+the gate green -- it would move the failure from `lacks the canonical manifest`
+to `reviewed_commit is not a P3-shaped Task snapshot`.
+
+This is the same port defect the carried-block wrapper showed and was amended
+for: the branch this module came from used bare verdict cells, and the rule
+encodes that formatting as if it were the contract. Repairing it is not a
+formatting tweak, though. The predicate would have to distinguish "no verdict
+from this review round" from "no verdict ever", because a corpus with a
+legitimate prior verdict is exactly what this Task has. That is a change to what
+the gate asserts, so it is recorded here with its evidence and left for
+approval rather than taken.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)
