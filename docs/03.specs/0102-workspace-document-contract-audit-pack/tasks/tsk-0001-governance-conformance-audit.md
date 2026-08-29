@@ -526,7 +526,8 @@ same wall.
 | 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
-| 13 | Re-approve, retire, or re-route the two security scripts whose network-approval markers no longer exist | D4 | operator | **not mine to take**: writing the marker would manufacture a network-egress approval |
+| 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
+| 16 | Repoint the 14 manifest rows whose `authority` is the superseded `SPEC-0136` | D3 | manifest owner | 14 of 84 rows; needs a live owner per script |
 | 14 | Migrate `test_document_metadata` onto the canonical Registry, clear the residual 49, then gate-register it | D5 | `qa-engineer` | in-rule; 62 of 113 already recovered |
 | 15 | Decide whether the gate should be able to pass `--transition-override-file` at all | D5 | gate-contract owner | contract change; needs approval |
 
@@ -549,12 +550,33 @@ policy check.
 Both also declare `authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`,
 which is `status: superseded`.
 
-**Not fixed here, and deliberately.** Each marker is a written human approval
-for outbound network egress in a security tool — the Grype vulnerability
-database fetch and the OpenSSF Scorecard call. Writing either line into a
-document would manufacture that approval. The choice between re-approving the
-egress under a current document, retiring the scripts, and changing how they
-locate their approval belongs to the operator, and is filed as Action 13.
+**Resolved 2026-08-29 by re-routing, without granting anything.** Of the three
+options — re-approve, retire, re-route — only the third is mine to take. Each
+marker is a written human approval for outbound network egress, so writing one
+would manufacture that approval; and retiring two security tools on an
+ambiguous instruction is the one move that cannot be undone.
+
+`infra/supply-chain.network-approvals.md` is now the approval surface, and both
+scripts read it as `APPROVAL_DOC`. It sits beside the policy files the same
+scripts already read, under a path the current taxonomy admits, so a stage
+rename cannot carry it away again. It grants nothing: it records that no
+approval is on file and documents the exact line an operator must add.
+
+Behaviour is unchanged — both still fail closed — but the failure is now
+accurate. `seed-grype-db-cache.sh` reports `seed-network-approval-missing`
+rather than `seed-contract-surface-missing`, which named a missing contract
+surface when what was missing was the approval.
+
+**Their one covering test never exercised the approval path.**
+`test_grype_db_seed.py:93` asserts only that the harness *contains* the string
+`Grype DB network approval: confirmed`, which stayed green throughout the
+period both scripts were unrunnable. `NetworkApprovalSurfaceTests` now
+exercises it: that no marker is granted on the tracked surface, that
+`grep -Fqx` would match the documented form if one were added, and that neither
+script cites Stage 04 any more. Module: 12 tests to 16.
+
+Their manifest `authority` is still `SPEC-0136`, which is `superseded`. That is
+not specific to these two — see Action 16.
 
 ### A 263-test suite has been red and ungated, found 2026-08-29 (D5)
 
@@ -619,6 +641,27 @@ Even fixed, the mechanism stays unreachable from the gate, because
 `suite_registry.validate_execution_argv` pins `check-document-metadata.py` to
 exactly `("--mode", "check-changed")` and cannot pass
 `--transition-override-file`. That is Action 15.
+
+### Fourteen manifest rows are governed by a superseded specification (D3)
+
+`medium`, found 2026-08-29 while resolving Action 13. Fourteen of the 84 rows
+in `scripts/manifest.yaml` declare
+`authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`, and that
+specification is `status: superseded`. Its successor `SPEC-0153` is retired with
+`Replacement: none`, so the authority chain for those fourteen scripts
+terminates in an archived migration record.
+
+They are not one domain: `scripts/manifest.yaml` and `scripts/README.md`
+themselves, the gate contract and runner, the workflow contract, compose
+validation and readiness, secrets generation, the QA tool wrapper, and both
+supply-chain scripts. `SPEC-0136` was a broad convergence spec, which is why so
+many point at it, and no single live specification replaces it.
+
+Nothing enforces this — `check-script-manifest.py` validates that the authority
+document exists and semantically governs the script, not that it is live — so
+the gate stays green. Filed as Action 16 rather than fixed inside Action 13,
+because each row needs its own live owner and that is a larger piece of work
+than re-routing two scripts.
 
 ### Limitations
 

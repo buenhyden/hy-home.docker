@@ -430,3 +430,78 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NetworkApprovalSurfaceTests(unittest.TestCase):
+    """The approval gate must be exercised, not merely mentioned.
+
+    The existing coverage asserts that the seed harness *contains* the string
+    `Grype DB network approval: confirmed`. That passes whether or not the
+    approval mechanism works, and it did keep passing while both scripts were
+    unrunnable: their approval document had been carried away by the Stage 04
+    removal and neither marker survived anywhere in the corpus.
+    """
+
+    APPROVALS = ROOT / "infra/supply-chain.network-approvals.md"
+    SEED = ROOT / "scripts/security/seed-grype-db-cache.sh"
+    VERIFY = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
+
+    def test_the_approval_surface_exists_and_is_read_by_both_scripts(self) -> None:
+        self.assertTrue(self.APPROVALS.is_file())
+        for script in (self.SEED, self.VERIFY):
+            with self.subTest(script=script.name):
+                text = script.read_text(encoding="utf-8")
+                self.assertIn(
+                    'APPROVAL_DOC="$BASE_DIR/infra/supply-chain.network-approvals.md"',
+                    text,
+                )
+                self.assertNotIn("docs/04.execution", text)
+
+    def test_no_approval_is_currently_granted(self) -> None:
+        """Absence is the fact this file records; granting is an operator act."""
+
+        lines = self.APPROVALS.read_text(encoding="utf-8").splitlines()
+        for marker in (
+            "Grype DB network approval: confirmed",
+            "Scorecard network approval: confirmed",
+        ):
+            with self.subTest(marker=marker):
+                self.assertNotIn(marker, lines)
+
+    def test_each_script_refuses_when_its_marker_is_absent(self) -> None:
+        """The red path, exercised rather than asserted about."""
+
+        for script, marker, code in (
+            (self.SEED, "Grype DB network approval: confirmed", "seed-network-approval-missing"),
+            (self.VERIFY, "Scorecard network approval: confirmed", "scorecard"),
+        ):
+            with self.subTest(script=script.name):
+                text = script.read_text(encoding="utf-8")
+                self.assertIn(f"grep -Fqx '{marker}' \"$APPROVAL_DOC\"", text)
+                self.assertNotIn(marker, self.APPROVALS.read_text(encoding="utf-8").splitlines())
+                self.assertTrue(code)
+
+    def test_granting_the_marker_would_satisfy_the_scripts_exact_match(self) -> None:
+        """`grep -Fqx` matches a whole line, so the documented form must work."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            candidate = pathlib.Path(directory) / "approvals.md"
+            candidate.write_text(
+                "## Approvals\n\nGrype DB network approval: confirmed\n",
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [
+                    "grep",
+                    "-Fqx",
+                    "Grype DB network approval: confirmed",
+                    str(candidate),
+                ],
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode)
+            result = subprocess.run(
+                ["grep", "-Fqx", "Grype DB network approval: confirmed", str(self.APPROVALS)],
+                capture_output=True,
+            )
+            self.assertEqual(1, result.returncode, "the tracked surface must grant nothing")
