@@ -345,6 +345,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md) | Markdown reference |
+| [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/plan.md](../../../03.specs/0152-deleted-reference-leaf-disposition/plan.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/spec.md](../../../03.specs/0152-deleted-reference-leaf-disposition/spec.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md](../../../03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md) | Markdown reference |
