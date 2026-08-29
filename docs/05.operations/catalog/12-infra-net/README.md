@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 12 Infra Net
 
 > `infra_net` standardization and static-address operations grouped by stable subject and role.

@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 00 Workspace
 
 > Workspace-wide operational guidance, controls, and repeatable procedures.

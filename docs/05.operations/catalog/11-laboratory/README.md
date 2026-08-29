@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 11 Laboratory
 
 > Laboratory management and experimental-service operations grouped by stable subject and role.

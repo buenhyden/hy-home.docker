@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 10 Communication
 
 > Mail and communication operations grouped by stable subject and role.

@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 03 Security
 
 > Security operations documents grouped by the stable Vault subject.

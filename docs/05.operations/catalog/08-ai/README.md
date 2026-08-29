@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 08 AI
 
 > AI operations documents grouped by stable GPU recovery, Ollama, Open WebUI, hardening, and RAG subjects.

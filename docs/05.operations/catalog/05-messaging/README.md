@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 05 Messaging
 
 > Messaging operations documents grouped by stable Kafka, hardening, and RabbitMQ subjects.

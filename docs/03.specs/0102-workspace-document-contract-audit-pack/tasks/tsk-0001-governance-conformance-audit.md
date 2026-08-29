@@ -283,42 +283,78 @@ the Task actually did — so the raw unresolvable count is deliberately unchange
 at 64 Stage 03 lines. What changed is that a reader can no longer mistake one
 for verification.
 
-**`medium` — five required sections are filled with identical boilerplate (D6).**
-The same sentence appears in 26 architecture decisions ("The decision context
-above records the applicable drivers and evidence."), 25 requirements ("No
-separately numbered solution-independent external interface requirement was
-identified in the source package."), 24 decisions, 23 descriptions and 22
-requirements. A required section that two dozen documents can only fill with a
-statement that there is nothing to say is a template asking for content the
-document does not have. The remaining ten duplicate groups are legitimate
-shared cross-references and are not findings.
+**`medium` — two required sections have never once carried content (D6).
+Fixed 2026-08-29. The figure of five was wrong.** Counting each section against
+its own denominator, rather than counting repeated sentences, separates three
+distinct cases:
 
-**`low` — 16 profile-conformance findings remain (D2). Root cause found
-2026-08-29; the fix is blocked on Stage 99.** These appear only in the
-validator's descriptive `report` mode. All three enforcing modes return
-`violations=0`: `check-active` (selected=457), `check-changed` (selected=51)
-and `check-contracts`.
+| Section | Documents | Boilerplate | Real | Verdict |
+| ------- | --------: | ----------: | ---: | ------- |
+| `Interface Requirements` (REQ) | 25 | **25** | 0 | never used |
+| `Decision Drivers` (ADR) | 26 | **26** | 0 | never used |
+| `Non-functional Requirements` (REQ) | 25 | 22 | 3 | earns its place |
+| `Traceability` (ADR) | 26 | 24 | 2 | earns its place |
+| `Traceability` (AD) | 25 | 23 | 2 | earns its place |
+| `Stakeholders and Concerns` (AD) | 25 | 5 | **20** | earns its place |
+| `Quality Attributes` (AD) | 25 | **0** | 25 | fully used — not a finding |
 
-All 16 share one cause — the Stage 99 registry's path sets do not describe the
-tree:
+`Quality Attributes` and `Stakeholders and Concerns` were named as boilerplate
+and should not have been: D6 matched a framing sentence that *precedes* real
+content, not an empty section. `Quality Attributes` carries content in 25 of 25.
 
-| Findings | Subject | Why |
-| -------: | ------- | --- |
-| 13 | `docs/05.operations/catalog/<domain>/README.md` | the `readme` profile's `path_pattern` is `docs/{stage}/README.md` plus six `additional_paths`; the per-domain READMEs match neither, so they report `missing-required-key, profile-id-mismatch` |
-| 1 | `docs/05.operations/incidents/README.md` | same, reported as `unsupported-profile` |
-| 2 | `docs/98.archive/migrations/0001-…`, `0002-…` | they carry the pre-`migration` archive schema (`status: archived`, `artifact_type: archive`, `archived_from`, `archived_commit`, `archived_blob`, `preservation_class`); the `migration` profile's `optional_frontmatter` is only `supersedes`/`superseded_by`, so every provenance key is `type-inappropriate-key` |
+Two sections are genuinely dead. `Interface Requirements` has never once been
+filled in the entire corpus, and interfaces are already owned elsewhere — the
+`spec` profile requires `Interfaces and Data`, and `architecture-description`
+requires `Components` and `Data Flow`. `Decision Drivers` has never once been
+filled either, and the boilerplate sentence says why: "The decision context
+above records the applicable drivers and evidence" — `Context` owns it.
 
-The registered siblings prove the mechanism: `docs/05.operations/README.md` and
-`docs/05.operations/catalog/README.md` are both in `additional_paths` and both
-resolve cleanly with no findings.
+Both moved from `required_sections` to `optional_sections` in the Stage 99
+Registry. `Non-functional Requirements` was **kept required**: its 3 real users
+are the newest and most substantial requirement documents, so the 22 are
+migration residue rather than proof the section is useless. Nothing was
+rewritten in the 51 existing documents — they keep the section and stay valid.
 
-**This is not an in-rule correction, contrary to how Action 8 was first
-classified.** Two routes exist and both change the registry: extend the
-`readme` profile's path set, or add the archive provenance keys to the
-`migration` profile's optional list. Converting `mig-0001` and `mig-0002` to
-the current schema without the second change would mean deleting
-`archived_commit` and `archived_blob`, which are the only recovery evidence
-those records carry.
+
+
+**`low` — 16 profile-conformance findings; 14 closed 2026-08-29, 2 blocked
+by a control working correctly (D2).** These appear only in the validator's
+descriptive `report` mode. All three enforcing modes returned `violations=0`
+before and after.
+
+**The diagnosis offered here first was wrong and is withdrawn.** It claimed all
+16 shared one cause — that the Stage 99 registry's path sets do not describe the
+tree — and that none was an in-rule correction. Acting on it produced
+`configuration-error: profile-path-overlap`, which is what disproved it: the
+registry already carries a dedicated `operations-domain-readme` profile whose
+`path_pattern` is exactly `docs/05.operations/catalog/{domain}/README.md`. The
+13 domain READMEs were never unrouted; they simply carried no frontmatter at
+all. That is an in-rule correction, as Action 8 originally said.
+
+| Findings | Subject | Disposition |
+| -------: | ------- | ----------- |
+| 13 | `docs/05.operations/catalog/<domain>/README.md` | **closed**: added `profile_id: operations-domain-readme`. Every required section was already present; only the frontmatter was missing. No `status`, because that profile's `lifecycle_id` is `null` |
+| 1 | `docs/05.operations/incidents/README.md` | **closed**: no profile claimed this path, so it is registered on `readme.additional_paths` and given `profile_id: readme` |
+| 2 | `docs/98.archive/migrations/0001-…`, `0002-…` | **open, deliberately** |
+
+The registry did need one change, but a narrower one than claimed: the
+`migration` profile's `optional_frontmatter` was `supersedes`/`superseded_by`
+only, so the seven archive provenance keys those two records carry were each
+`type-inappropriate-key`. Those keys are now admitted, which cleared that code.
+
+**The last two cannot be closed through the gate, and the reason is a control
+behaving correctly.** `mig-0001` and `mig-0002` carry `status: archived`. The
+`migration` profile's `historical` lifecycle admits only `draft`, `completed`
+and `superseded`, so `archived` is not a legal status for them and the record
+cannot enter the profile without transitioning. Rewriting them to
+`status: completed` was attempted and reverted: it raised
+`invalid-transition: lifecycle transition requires explicit override:
+archived -> completed`, and the override is a `--transition-override-file`
+argument that the gate cannot supply, because `suite_registry.validate_execution_argv`
+pins `check-document-metadata.py` to exactly `("--mode", "check-changed")`.
+
+Closing these two therefore needs an authorised transition, not an edit. It was
+not routed around.
 
 **Two negatives recorded as results.** D7 found **no** old-path body duplicate
 and **no** redirect stub outside `docs/98.archive/tombstones/`, where a minimal
@@ -459,8 +495,8 @@ same wall.
 | 4 | ~~Amend gate 2's P3 predicate~~ | D5 | — | **closed 2026-08-29**; predicate now uses `TERMINAL_VERDICT_RE`, satisfiable at 19 of 19 commits |
 | 5 | ~~Correct the present-tense routing statements~~ | D1 | — | **closed 2026-08-29**; 6 corrected, not 4 |
 | 6 | ~~Replace the unrecoverable pins or mark them ephemeral~~ | D8 | — | **closed 2026-08-29**; 55 marked ephemeral, 66 confirmed correctly foreign; no durable replacement exists |
-| 7 | Review whether five required sections earn their place, or make them conditional | D6 | Stage 99 owner | protected surface; needs approval |
-| 8 | Close the 16 residual profile findings | D2 | Stage 99 owner | **re-classified**: not in-rule; needs the same Stage 99 write as Action 7 |
+| 7 | ~~Review whether five required sections earn their place~~ | D6 | — | **closed 2026-08-29**; 2 of the 5 moved to optional, 3 were not findings |
+| 8 | ~~Close the 16 residual profile findings~~ | D2 | — | **14 closed 2026-08-29**; 2 remain, needing an authorised `archived -> completed` transition the gate's pinned argv cannot supply |
 | 9 | ~~Decide how Stage 90 admits a net-new package, or record that it does not~~ | placement | — | **closed 2026-08-29**; recorded that it does not, in `docs/90.references/audits/README.md` |
 | 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
 | 11 | Collapse the eight synchronised edit sites needed to wire one gate suite; three are verbatim duplicates | D5 | gate-contract owner | contract change; needs approval |

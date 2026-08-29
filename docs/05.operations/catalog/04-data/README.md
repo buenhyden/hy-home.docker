@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 04 Data
 
 > Data operations documents grouped by stable analytics, storage, and database subjects.

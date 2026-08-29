@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 06 Observability
 
 > Observability operations documents grouped by stable service and retention subjects.

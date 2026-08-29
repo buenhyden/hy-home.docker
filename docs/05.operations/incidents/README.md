@@ -1,3 +1,8 @@
+---
+profile_id: readme
+status: active
+---
+
 <!-- README Target: docs/05.operations/incidents/README.md -->
 
 <!-- Target: docs/05.operations/incidents/README.md -->

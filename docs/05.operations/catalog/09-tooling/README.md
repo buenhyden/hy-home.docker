@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 09 Tooling
 
 > Tooling operations documents grouped by stable infrastructure, testing, registry, quality, synchronization, and IaC subjects.

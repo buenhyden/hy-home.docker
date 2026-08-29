@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 02 Auth
 
 > Authentication guidance, controls, and recovery procedures grouped by stable subject.

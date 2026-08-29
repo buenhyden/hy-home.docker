@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 07 Workflow
 
 > Workflow operations documents grouped by stable Airflow, n8n, and hardening subjects.

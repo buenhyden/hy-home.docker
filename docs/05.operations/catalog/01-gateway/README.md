@@ -1,3 +1,7 @@
+---
+profile_id: operations-domain-readme
+---
+
 # Operations — 01 Gateway
 
 > Gateway guidance, controls, and recovery procedures grouped by stable subject.
