@@ -429,6 +429,7 @@
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.document-governance-library-regressions",
+        "leaf.compose-baseline-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts"
@@ -1218,6 +1219,27 @@
       "suite_key": "quickwin-baseline"
     },
     {
+      "gate_id": "leaf.compose-baseline-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.validation.test_compose_baseline_gates",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "compose-baseline-regressions"
+    },
+    {
       "gate_id": "leaf.repo-contracts",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-script-manifest.py",
@@ -1565,7 +1587,8 @@
       ],
       "opaque": false,
       "children": [
-        "leaf.template-security-baseline"
+        "leaf.template-security-baseline",
+        "leaf.compose-baseline-regressions"
       ]
     },
     {

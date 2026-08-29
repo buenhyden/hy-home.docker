@@ -135,6 +135,7 @@ _INTERNAL_ADAPTER_CONTEXTS = {
             "test_document_corpus_lifecycle",
             "test_target_surface_contracts",
             "test_target_surface_delta_contracts",
+            "test_compose_baseline_gates",
         )
     },
     # One invocation covering the fourteen mirrored document-governance

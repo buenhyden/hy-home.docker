@@ -29,7 +29,7 @@ this evidence.
 - Tracked Markdown corpus of the eight stages named above: 596 files, roughly
   133,000 lines.
 - 84 scripts registered in `scripts/manifest.yaml`.
-- 144 leaves in `.github/workflow-contract.yml`.
+- 50 leaves across 85 gate nodes in `.github/workflow-contract.yml`. Corrected from "144 leaves", which counted nodes of every kind.
 - 48 test modules, roughly 57,800 lines.
 
 Out of scope: generated projections under `.claude/`, `.agents/` and
@@ -149,13 +149,40 @@ recreated as named, because Stage 90 package paths must match
 `{number:4}-{slug}` and be registered in the frozen Task 9 migration, which
 makes `docs/90.references/data/hads/` structurally unrepresentable.
 
-**`high` — two gates run in CI with nothing proving they can fail (D5).**
-`scripts/validation/check-quickwin-baseline.sh` (134 lines) and
-`scripts/validation/check-template-security-baseline.sh` (159 lines) are each
-registered in `.github/workflow-contract.yml` and have no covering test at all.
-The other 21 entrypoints all carry at least one test asserting a failing
-outcome. A gate whose red state nothing exercises is indistinguishable from a
-gate that cannot go red.
+**`high` — two gates ran in CI with nothing proving they could fail (D5).
+Fixed 2026-08-29.** `scripts/validation/check-quickwin-baseline.sh` (134 lines)
+and `scripts/validation/check-template-security-baseline.sh` (159 lines) were
+each registered in `.github/workflow-contract.yml` with `tests: []` in
+`scripts/manifest.yaml` and no covering test at all. The other 21 entrypoints
+all carry at least one test asserting a failing outcome.
+
+`tests/validation/test_compose_baseline_gates.py` now covers both, 17 tests.
+Each gate resolves its own root with `git rev-parse --show-toplevel` and reads
+its subject from `docker compose config --format json`, so the fixture is a
+disposable Git repository plus a `docker` shim on `PATH`. The tracked scripts
+are invoked directly rather than copied, so the tests cannot pass while the
+tracked file rots.
+
+Every control is proven to fail independently: `restart`, `healthcheck`,
+`no-new-privileges`, `cpus`, `mem_limit` and `secrets` for the first gate;
+template adoption, `no-new-privileges` and `cap_drop ALL` for the second. Both
+are also proven to fail closed on a missing exceptions registry (exit 2) and on
+an empty service set, and to honour a registered exception only for the service
+it names.
+
+Gate after: `exit=0`, suites 10 to 11, the 17 tests visible in the run.
+
+**Wiring one test suite into the gate required eight synchronised edits.**
+`.github/workflow-contract.yml` (leaf, CI parent, local parent),
+`scripts/validation/ci_gate_contract.py` (`_INTERNAL_ROOT_SUITES`,
+`_INTERNAL_ROOT_CHILDREN`, `_LOCAL_AGGREGATE_CHILDREN`),
+`scripts/validation/ci_gate_runner.py` (`_INTERNAL_ADAPTER_CONTEXTS`),
+`scripts/manifest.yaml`, plus verbatim copies of three of those tables in
+`tests/validation/test_ci_gate_contract.py` and a node count in
+`tests/validation/test_github_workflow_contract.py`. Three of the eight are
+byte-level duplicates of each other. This is a concrete, measured instance of
+the gate complexity this Task was asked to examine, and it is filed as Action
+11.
 
 **`high` — one gate's green state is unreachable by construction (D5).**
 `validate_gate2_contract` requires a `reviewed_commit` whose Task snapshot
@@ -343,7 +370,7 @@ same wall.
 | - | ------ | ------- | ----- | ---- |
 | 1 | ~~Repoint or retire `SPEC-0136`'s supersession~~ | D3 | — | **closed 2026-08-29, no change; finding withdrawn** |
 | 2 | ~~Rescope, retire, or re-subject the HADS profile~~ | D4 | — | **closed 2026-08-29**; recorded as not in force in one document, three left unedited as sound prohibitions |
-| 3 | Give the two untested gates a failing-case test, or retire them | D5 | `qa-engineer` | in-rule |
+| 3 | ~~Give the two untested gates a failing-case test~~ | D5 | — | **closed 2026-08-29**; 17 tests, both gates, gate `exit=0` |
 | 4 | Amend gate 2's P3 predicate to distinguish "no verdict this round" from "no verdict ever", or withdraw the gate | D5 | SPEC-0137 owner | contract change; needs approval |
 | 5 | Correct the 4 present-tense routing statements | D1 | per-document owner | two touch stated contracts; needs approval |
 | 6 | Replace the 44 unrecoverable pins with a durable reference or mark them as ephemeral | D8 | Stage 03 owner | contract change; needs approval |
@@ -351,6 +378,7 @@ same wall.
 | 8 | Close the 16 residual profile findings | D2 | `doc-writer` | in-rule |
 | 9 | Decide how Stage 90 admits a net-new package, or record that it does not | placement | Stage 99 owner | rule change; needs approval |
 | 10 | Reproduce and fix the intermittent `test_references` failure, or prove it cannot recur | D5 | `qa-engineer` | in-rule |
+| 11 | Collapse the eight synchronised edit sites needed to wire one gate suite; three are verbatim duplicates | D5 | gate-contract owner | contract change; needs approval |
 
 ### Limitations
 

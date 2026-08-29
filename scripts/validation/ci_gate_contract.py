@@ -82,6 +82,10 @@ _INTERNAL_ROOT_SUITES = {
         # See the matching note on `_INTERNAL_ROOT_CHILDREN`: the mirrored
         # document-governance library suites ran under no profile until now.
         "document-governance-library-regressions",
+        # Added 2026-08-29. `check-quickwin-baseline.sh` and
+        # `check-template-security-baseline.sh` gated with no covering test at
+        # all, so nothing proved either could go red.
+        "compose-baseline-regressions",
         "workflow-contract",
         "operations-catalog-manifest",
         "repo-contracts",
@@ -134,6 +138,9 @@ _INTERNAL_ROOT_CHILDREN = {
         # hand. This pin exists so a CI root cannot gain or lose a child
         # silently; it is amended here deliberately so that those 278 tests gate.
         "leaf.document-governance-library-regressions",
+        # Added 2026-08-29 alongside the suite name above, for the same reason:
+        # the two Compose baseline gates ran with no failing-case coverage.
+        "leaf.compose-baseline-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
@@ -245,6 +252,10 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
+        # Added 2026-08-29. Carries the failing-case suite for both Compose
+        # baseline gates into the local profiles; the CI side is pinned under
+        # `ci.repo-contracts`.
+        "leaf.compose-baseline-regressions",
     ),
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
 }

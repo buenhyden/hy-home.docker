@@ -89,6 +89,7 @@ INTERNAL_ROOT_SUITES = {
         "repo-contracts-control-plane-regressions",
         "ci-precommit-regressions",
         "document-governance-library-regressions",
+        "compose-baseline-regressions",
         "workflow-contract",
         "operations-catalog-manifest",
         "repo-contracts",
@@ -136,6 +137,7 @@ INTERNAL_ROOT_CHILDREN = {
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.document-governance-library-regressions",
+        "leaf.compose-baseline-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
@@ -247,6 +249,7 @@ LOCAL_AGGREGATE_CHILDREN = {
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
+        "leaf.compose-baseline-regressions",
     ),
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
 }
