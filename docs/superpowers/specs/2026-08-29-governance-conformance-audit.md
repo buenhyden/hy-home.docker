@@ -109,9 +109,16 @@ happened, so the reference stages are closed to net-new packages by
 construction. That is why this document sits outside `docs/90.references`
 rather than inside it, and why the audit it reports on has no Stage 90 identity.
 
-This finding cost the gate a red run and a revert, which is the intended
-behaviour of the control and is recorded rather than hidden: commit `18325ca9`
-added the package, the gate failed on it, and `7fdf2adb` reverted it whole.
+This finding cost the gate two red runs and a revert, which is the intended
+behaviour of the controls and is recorded rather than hidden: commit `18325ca9`
+added the package, the gate failed on it, and `7fdf2adb` reverted it whole. The
+revert then failed a second control, `identity-history-regression`: `AUD-0096`
+had been issued in repository history and an issued identity can never be
+reissued, so rolling the Registry back below it is itself a regression. The
+Registry therefore stands at `high_water: 96` with no `AUD-0096` document
+anywhere. That is correct — the identity is spent, not free — and it is the
+clearest demonstration in this audit that the identity controls are sound even
+where the package controls are closed.
 
 **`medium` — 123 live-authority documents cite paths that no longer exist (D1).**
 Concentrated in `docs/90.references/research/0002-…/sdlc-document-roles.md` (15),
