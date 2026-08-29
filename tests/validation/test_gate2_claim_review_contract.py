@@ -256,8 +256,18 @@ class CompleteDynamicFixtureTests(unittest.TestCase):
             ("git", "rev-parse", "HEAD"), cwd=self.root, check=True, text=True, capture_output=True
         ).stdout.strip()
         self.reviewed_commit = initial_commit
+        self._commit_p3_and_p5()
+
+    def _commit_p3_and_p5(self, p3_verdict: str = "Not Run") -> None:
+        """Lay down a P3 snapshot and the P5 evidence commit that reviews it.
+
+        `p3_verdict` is the pre-review contents of the `Review verdict` column
+        in the P3 snapshot. It is a parameter because the corpus writes
+        provenance beside the words rather than the bare token.
+        """
+
         self.bundle = self._build_bundle()
-        self._write_p3(self.bundle)
+        self._write_p3(self.bundle, review_verdict=p3_verdict)
         subprocess.run(("git", "add", self.task_path), cwd=self.root, check=True)
         subprocess.run(("git", "commit", "-qm", "p3 reviewed snapshot"), cwd=self.root, check=True)
         self.reviewed_commit = subprocess.run(
@@ -495,8 +505,10 @@ class CompleteDynamicFixtureTests(unittest.TestCase):
             receipt, omit="receipt_digest_v1"
         )
 
-    def _write_p3(self, bundle: dict[str, object]) -> None:
-        text = _ledger(_row()) + "### Gate 3 carried claims\n\n"
+    def _write_p3(
+        self, bundle: dict[str, object], review_verdict: str = "Not Run"
+    ) -> None:
+        text = _ledger(_row(review_verdict=review_verdict)) + "### Gate 3 carried claims\n\n"
         text += _block(contract.MANIFEST_HEADING, bundle["manifest"])
         (self.root / self.task_path).write_text(text, encoding="utf-8")
 
@@ -602,6 +614,41 @@ class CompleteDynamicFixtureTests(unittest.TestCase):
         self.assertEqual(
             (result.ledger_records, result.population_records, result.settled, result.held),
             (1, 1, 1, 0),
+        )
+
+    def test_p3_admits_a_pre_review_verdict_that_carries_provenance(self) -> None:
+        """`Not Run; <provenance>` is not a verdict, and P3 must admit it.
+
+        The predicate demanded the cell equal exactly `Not Run`. Across all 18
+        commits that have ever touched the real Task, the best any commit
+        achieved was 0 of 150 rows, so the gate could not pass however much
+        review was done. The contract's own definition of a terminal verdict
+        is `TERMINAL_VERDICT_RE`, and that is what P3 must exclude.
+        """
+
+        for verdict in (
+            "Not Run",
+            "Not Run; destination supplied 2026-08-19",
+            "Not Run; carried from gate 1",
+            "SATISFIED (prose, pre-contract)",
+        ):
+            with self.subTest(verdict=verdict):
+                self._commit_p3_and_p5(p3_verdict=verdict)
+                result = self._validate(self.bundle)
+                self.assertEqual(result.findings, ())
+
+    def test_p3_still_rejects_a_settled_terminal_marker(self) -> None:
+        """The guard the predicate exists for must keep firing."""
+
+        marker = (
+            "SETTLED {gate2-receipt=sha256:" + "0" * 64
+            + ";gate2-set-authority=sha256:" + "1" * 64 + "}"
+        )
+        self.assertIsNotNone(contract.TERMINAL_VERDICT_RE.fullmatch(marker))
+        self._commit_p3_and_p5(p3_verdict=marker)
+        self._assert_contract_detail(
+            self._validate(self.bundle),
+            "reviewed P3 snapshot has a terminal review verdict",
         )
 
     def test_dependency_consistent_ancestor_substitution_fails(self) -> None:

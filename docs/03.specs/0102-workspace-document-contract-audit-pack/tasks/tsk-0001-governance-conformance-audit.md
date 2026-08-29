@@ -184,16 +184,35 @@ byte-level duplicates of each other. This is a concrete, measured instance of
 the gate complexity this Task was asked to examine, and it is filed as Action
 11.
 
-**`high` — one gate's green state is unreachable by construction (D5).**
-`validate_gate2_contract` requires a `reviewed_commit` whose Task snapshot
-carries the canonical manifest and in which every gate-2 row's `Review verdict`
-normalises to exactly `Not Run`. Measured across all 18 commits that have ever
-touched that Task, the best any commit achieves is **0 of 150**. This corpus
-writes `Not Run; <provenance>`, and 76 rows have carried a prior verdict since
-before the contract existed. The gate cannot pass however much review is done,
-so it reports on itself rather than on the work. This is the clearest instance
-of excess in the corpus, and it is excess of the expensive kind: an
-unsatisfiable gate costs the full price of a control and returns no signal.
+**`high` — one gate's green state was unreachable by construction (D5).
+Fixed 2026-08-29.** `validate_gate2_contract` required a `reviewed_commit`
+whose Task snapshot carries the canonical manifest and in which every gate-2
+row's `Review verdict` normalises to exactly `Not Run`. Measured across all
+**19** commits that have ever touched that Task — corrected from 18 — the best
+any commit achieved was **0 of 150**. This corpus writes
+`Not Run; <provenance>`, and 76 rows have carried a prior verdict since before
+the contract existed. The gate could not pass however much review was done, so
+it reported on itself rather than on the work.
+
+The correct predicate was already in the file. `TERMINAL_VERDICT_RE` defines a
+terminal verdict as the digest-bound marker
+`SETTLED {gate2-receipt=…;gate2-set-authority=…}`, and the raise the predicate
+guards reads "reviewed P3 snapshot has a terminal review verdict". The check
+now tests for that marker instead of string-equality with `Not Run`, which is
+the contract's own definition rather than a new rule.
+
+Measured after, over the same 19 commits:
+
+| | before | after |
+| --- | --: | --: |
+| commits where P3 is satisfiable | 0 of 19 | **19 of 19** |
+| rows with a terminal marker at any commit | — | 0 of 150 |
+
+Two tests were written first and both failed before the change: one asserting
+that `Not Run`, `Not Run; destination supplied 2026-08-19`,
+`Not Run; carried from gate 1` and a pre-contract prose verdict are all
+admitted, and one asserting that a real `SETTLED` marker is still rejected. The
+guard the predicate exists for keeps firing. Module: 61 tests to 63, OK.
 
 **`medium` — 123 live-authority documents cite paths that no longer exist (D1).**
 Concentrated in `docs/90.references/research/0002-agentic-engineering-research-pack/sdlc-document-roles.md`
@@ -371,7 +390,7 @@ same wall.
 | 1 | ~~Repoint or retire `SPEC-0136`'s supersession~~ | D3 | — | **closed 2026-08-29, no change; finding withdrawn** |
 | 2 | ~~Rescope, retire, or re-subject the HADS profile~~ | D4 | — | **closed 2026-08-29**; recorded as not in force in one document, three left unedited as sound prohibitions |
 | 3 | ~~Give the two untested gates a failing-case test~~ | D5 | — | **closed 2026-08-29**; 17 tests, both gates, gate `exit=0` |
-| 4 | Amend gate 2's P3 predicate to distinguish "no verdict this round" from "no verdict ever", or withdraw the gate | D5 | SPEC-0137 owner | contract change; needs approval |
+| 4 | ~~Amend gate 2's P3 predicate~~ | D5 | — | **closed 2026-08-29**; predicate now uses `TERMINAL_VERDICT_RE`, satisfiable at 19 of 19 commits |
 | 5 | Correct the 4 present-tense routing statements | D1 | per-document owner | two touch stated contracts; needs approval |
 | 6 | Replace the 44 unrecoverable pins with a durable reference or mark them as ephemeral | D8 | Stage 03 owner | contract change; needs approval |
 | 7 | Review whether five required sections earn their place, or make them conditional | D6 | Stage 99 owner | protected surface; needs approval |

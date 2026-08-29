@@ -1833,8 +1833,16 @@ def validate_gate2_contract(
             raise Gate2ContractError("reviewed_commit predates the canonical manifest")
         if ENVELOPE_HEADING in reviewed_text or RECEIPTS_HEADING in reviewed_text:
             raise Gate2ContractError("reviewed_commit is not a P3-shaped Task snapshot")
+        # A terminal verdict is what `TERMINAL_VERDICT_RE` defines: a digest-bound
+        # SETTLED marker. This asked instead for the cell to equal exactly
+        # "Not Run", which no commit in the real Task has ever satisfied — the
+        # corpus writes `Not Run; <provenance>`, and rows carried prose verdicts
+        # from before this contract existed. Measured over all 18 commits that
+        # have touched that Task, the best any commit reached was 0 of 150, so
+        # the gate could not pass however much review was done. Corrected
+        # 2026-08-29 to the contract's own definition.
         if any(
-            normalize_cell(row.values[10]) != "Not Run"
+            TERMINAL_VERDICT_RE.fullmatch(normalize_cell(row.values[10]))
             for row in reviewed_rows
             if row.disposition in GATE2_DISPOSITIONS
         ):
