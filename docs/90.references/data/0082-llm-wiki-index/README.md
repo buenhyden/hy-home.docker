@@ -324,6 +324,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md](../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) | Markdown reference |
 | [docs/03.specs/0098-standardize-infra-net/spec.md](../../../03.specs/0098-standardize-infra-net/spec.md) | Markdown reference |
 | [docs/03.specs/0102-workspace-document-contract-audit-pack/spec.md](../../../03.specs/0102-workspace-document-contract-audit-pack/spec.md) | Markdown reference |
+| [docs/03.specs/0102-workspace-document-contract-audit-pack/tasks/tsk-0001-governance-conformance-audit.md](../../../03.specs/0102-workspace-document-contract-audit-pack/tasks/tsk-0001-governance-conformance-audit.md) | Markdown reference |
 | [docs/03.specs/0103-document-restructure-audit-contract-archive/spec.md](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md) | Markdown reference |
 | [docs/03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md](../../../03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md) | Markdown reference |
 | [docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md) | Markdown reference |
