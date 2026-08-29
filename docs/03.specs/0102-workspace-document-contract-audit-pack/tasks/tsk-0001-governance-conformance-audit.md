@@ -527,6 +527,8 @@ same wall.
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | Re-approve, retire, or re-route the two security scripts whose network-approval markers no longer exist | D4 | operator | **not mine to take**: writing the marker would manufacture a network-egress approval |
+| 14 | Migrate `test_document_metadata` onto the canonical Registry, clear the residual 49, then gate-register it | D5 | `qa-engineer` | in-rule; 62 of 113 already recovered |
+| 15 | Decide whether the gate should be able to pass `--transition-override-file` at all | D5 | gate-contract owner | contract change; needs approval |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
 
@@ -553,6 +555,70 @@ database fetch and the OpenSSF Scorecard call. Writing either line into a
 document would manufacture that approval. The choice between re-approving the
 egress under a current document, retiring the scripts, and changing how they
 locate their approval belongs to the operator, and is filed as Action 13.
+
+### A 263-test suite has been red and ungated, found 2026-08-29 (D5)
+
+`blocker`. `tests/validation/test_document_metadata.py` covers
+`check-document-metadata.py`, the most-invoked validator in this corpus. At
+`f3a634d0` it ran **263 tests with 105 failures and 8 errors** — 43 percent
+failing — while the full gate stayed at `exit=0`. It is registered in neither
+`.github/workflow-contract.yml` nor `ci_gate_runner.py`, so no profile has ever
+executed it.
+
+This is the same class as the fourteen `tests/lib/document_governance` suites
+that `ci_gate_contract.py` records as having "ran under no profile until
+2026-08-29", and it is larger.
+
+**One line of harness explains most of it.** The module set
+`PROFILES = HistoricalDocument(ROOT, "49406580…", "docs/99.templates/support/document-metadata-profiles.yaml")`
+and `run_checker` passed `str(profiles)` on the command line. `HistoricalDocument`
+is a recovery handle, not a path: `str()` yields a dataclass repr whose
+`.suffix` is `.yaml')`, so `--profiles` named no file and every test reaching
+profile loading died on it. The blob itself resolves and is 50,688 bytes.
+
+Materialising it to a real file once per process recovers **62 of the 113**:
+
+| | failures | errors |
+| --- | --: | --: |
+| before | 105 | 8 |
+| after the harness fix | **43** | **6** |
+
+**The residue is a contract mismatch, not a harness bug.** That profiles
+document is from the retired taxonomy: it cannot express
+`docs/03.specs/{number:4}-{slug}/tasks/tsk-{number:4}-{slug}.md`, inferring the
+`spec` profile for it and reporting `artifact-type-mismatch`. The module
+therefore validates today's validator against yesterday's contract. Migrating
+it onto `docs/99.templates/registry.json` is blocked in turn by
+`allocation bootstrap lacks approved lineage`, which `load_registry` raises for
+any synthetic fixture root.
+
+**The suite is deliberately still not gate-registered.** Registering 49 red
+tests would break the gate. The order has to be fix, then register.
+
+### The transition-override mechanism is unsatisfiable, found 2026-08-29 (D5)
+
+`high`. This is the second unsatisfiable control in the corpus, after gate 2's
+P3, and it is why Action 8's last two findings cannot be closed.
+`load_transition_overrides` fails on two independent grounds:
+
+| Ground | Detail |
+| ------ | ------ |
+| Evidence path | `metadata_validator.py:6140` requires `evidence_task` to start with `docs/03.specs/spec-` and be named `task.md`. **Zero** files named `task.md` exist in this repository and no `docs/03.specs/spec-*` directory does; the Registry emits `docs/03.specs/{number:4}-{slug}/tasks/tsk-{number:4}-{slug}.md` |
+| Status vocabulary | it reads `common.allowed_statuses`, but `build_registry_profiles` emits a `common` of `frontmatter_order` and `typed_keys` only, so under the canonical Registry the set is empty and every row is rejected as an unknown lifecycle status |
+
+Its one covering test passes only because the fixture invents the retired path
+shape — a fixture keeping a dead contract alive, which is the fixture excess
+this Task was asked to examine.
+
+Both product fixes were written, measured to work, and then **reverted**: they
+cannot be landed with a passing test until the module is migrated off the
+retired profiles document, and landing a product change on a red test is not
+acceptable. Filed as Action 14.
+
+Even fixed, the mechanism stays unreachable from the gate, because
+`suite_registry.validate_execution_argv` pins `check-document-metadata.py` to
+exactly `("--mode", "check-changed")` and cannot pass
+`--transition-override-file`. That is Action 15.
 
 ### Limitations
 

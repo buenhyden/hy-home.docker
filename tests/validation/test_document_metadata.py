@@ -275,13 +275,37 @@ SPEC_TARGET_BODY = body_with_headings(
 )
 
 
+def _materialised_profiles() -> pathlib.Path:
+    """Write the historical profiles blob to a real file, once per process.
+
+    `PROFILES` is a `HistoricalDocument`, which is a recovery handle, not a
+    path. Passing `str(...)` on it handed the checker a dataclass repr whose
+    `.suffix` is `.yaml')`, so `--profiles` named no file and every test that
+    reached profile loading failed on it. Corrected 2026-08-29.
+    """
+
+    global _PROFILES_FILE
+    if _PROFILES_FILE is None:
+        handle = tempfile.NamedTemporaryFile(  # noqa: SIM115 - lives for the process
+            "w", suffix=".yaml", delete=False, encoding="utf-8"
+        )
+        with handle:
+            handle.write(PROFILES.read_text())
+        _PROFILES_FILE = pathlib.Path(handle.name)
+    return _PROFILES_FILE
+
+
+_PROFILES_FILE: pathlib.Path | None = None
+
+
 def run_checker(
     root: pathlib.Path,
     mode: str = "report",
     *extra: str,
     env: dict[str, str] | None = None,
-    profiles: pathlib.Path = PROFILES,
+    profiles: pathlib.Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    resolved_profiles = _materialised_profiles() if profiles is None else profiles
     return subprocess.run(
         [
             sys.executable,
@@ -289,7 +313,7 @@ def run_checker(
             "--root",
             str(root),
             "--profiles",
-            str(profiles),
+            str(resolved_profiles),
             "--mode",
             mode,
             *extra,
