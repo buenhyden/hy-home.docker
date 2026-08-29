@@ -27,6 +27,20 @@ This document records the approved reference profile and validator boundaries fo
 **[NOTE]**
 HADS is not a format for rewriting the entire documentation system at once. In this repository, it first operates as a mandatory profile limited to `docs/90.references/data/hads/`.
 
+**[NOTE]**
+Scope correction, 2026-08-29. The bounding directory named above no longer
+exists: `49522aa1` removed `docs/90.references/data/hads/` and its two files on
+2026-08-23, and this document is the surviving half of that package. The
+mandatory profile therefore currently applies to no document at all, so the
+sentence above states a bound rather than an active control. The earlier
+sentence is kept as the record of the approved boundary and is not withdrawn.
+Whether the profile is rescoped, retired, or given a new subject directory is a
+governance decision that also moves `REQ-0024-FR-0005`,
+`docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md` and
+`docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
+all three of which bound the profile to the same removed path. Owner: the unit
+that next revises the HADS rollout.
+
 ## Purpose
 
 **[SPEC]**
