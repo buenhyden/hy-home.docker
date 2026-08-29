@@ -40,7 +40,7 @@ updated: 2026-08-11
 ### Step-by-step Instructions
 
 1. **IP 대역 확인**:
-   - `docs/03.specs/098-standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)** 섹션에서 서비스 그룹에 맞는 IP 가용 범위를 확인한다.
+   - `docs/03.specs/0098-standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)** 섹션에서 서비스 그룹에 맞는 IP 가용 범위를 확인한다.
 2. **Compose 파일 수정**:
    - `services:` 하위의 대상 서비스에서 `networks:` 섹션을 다음과 같이 딕셔너리 형태로 수정한다.
 

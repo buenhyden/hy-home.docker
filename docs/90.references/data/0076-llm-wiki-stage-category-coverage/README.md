@@ -40,8 +40,8 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `923`
-- Source buckets: `17`
+- Safe tracked source paths: `922`
+- Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
 
@@ -61,7 +61,6 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `docs/98.archive` | 4 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md)<br>[docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) |
 | `docs/99.templates` | 28 | [docs/99.templates/README.md](../../../99.templates/README.md)<br>[docs/99.templates/contracts/document-profile.schema.json](../../../99.templates/contracts/document-profile.schema.json)<br>[docs/99.templates/contracts/frontmatter.schema.json](../../../99.templates/contracts/frontmatter.schema.json) |
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
-| `docs/superpowers` | 1 | [docs/superpowers/specs/2026-08-29-governance-conformance-audit.md](../../../superpowers/specs/2026-08-29-governance-conformance-audit.md) |
 | `infra` | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | `root` | 7 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | `scripts` | 39 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
@@ -82,14 +81,14 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Scripts and validators | 39 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | GitHub workflow surface | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
-| Other tracked source | 5 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md)<br>[docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) |
+| Other tracked source | 4 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md)<br>[docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) |
 
 ## Path Role Coverage
 
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 77 |
-| Markdown reference | 483 |
+| Markdown reference | 482 |
 | YAML config | 110 |
 | folder index | 169 |
 | script | 53 |
