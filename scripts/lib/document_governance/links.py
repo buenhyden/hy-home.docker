@@ -26,7 +26,6 @@ _ACTIVE_STAGE_PREFIXES = (
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
-    "docs/04.execution/",
     "docs/05.operations/",
 )
 _ROOT_PREFIXES = (

@@ -455,3 +455,65 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ActiveStageScopeTests(unittest.TestCase):
+    """Active scan scopes must not name a stage the tree does not have.
+
+    A prefix that matches nothing is not a control. It reads as a statement
+    that the stage is live, and it survives every rename because nothing ever
+    fails on it. `docs/04.execution` sat in five such sets after the stage was
+    removed from the taxonomy.
+
+    This does not cover sets whose purpose is to reject or to read history —
+    `FORBIDDEN_EVIDENCE_PREFIXES`, the Task 5 migration pathspecs, the
+    legacy-exception literals and the `git ls-tree` scope for historical
+    commits all name the removed stage deliberately.
+    """
+
+    def active_scopes(self) -> tuple[tuple[str, tuple[str, ...]], ...]:
+        from scripts.lib.document_governance import links, metadata_validator
+
+        return (
+            ("links._ACTIVE_STAGE_PREFIXES", links._ACTIVE_STAGE_PREFIXES),
+            (
+                "metadata_validator.TARGET_MARKDOWN_PREFIXES",
+                metadata_validator.TARGET_MARKDOWN_PREFIXES,
+            ),
+        )
+
+    def test_every_active_stage_prefix_names_a_directory_that_exists(self) -> None:
+        for name, prefixes in self.active_scopes():
+            for prefix in prefixes:
+                with self.subTest(scope=name, prefix=prefix):
+                    self.assertTrue(
+                        (ROOT / prefix.rstrip("/")).is_dir(),
+                        f"{name} names {prefix}, which is not a directory",
+                    )
+
+    def test_the_removed_execution_stage_is_absent_from_active_scopes(self) -> None:
+        for name, prefixes in self.active_scopes():
+            with self.subTest(scope=name):
+                self.assertNotIn("docs/04.execution/", prefixes)
+
+    def test_rejecting_and_historical_scopes_still_name_the_removed_stage(self) -> None:
+        """The opposite sets must keep it; removing it there would be a defect."""
+
+        for relative, marker in (
+            (
+                "scripts/validation/check-script-manifest.py",
+                'FORBIDDEN_EVIDENCE_PREFIXES = (\n    "docs/04.execution/",',
+            ),
+            (
+                "scripts/lib/document_governance/spec_packages.py",
+                '"04.execution",',
+            ),
+            (
+                "scripts/validation/check-document-corpus-lifecycle.py",
+                'not (root / "docs/04.execution").exists()',
+            ),
+        ):
+            with self.subTest(path=relative):
+                self.assertIn(
+                    marker, (ROOT / relative).read_text(encoding="utf-8")
+                )

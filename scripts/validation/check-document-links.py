@@ -26,7 +26,6 @@ DOC_ROOTS = (
     pathlib.Path("docs/01.requirements"),
     pathlib.Path("docs/02.architecture"),
     pathlib.Path("docs/03.specs"),
-    pathlib.Path("docs/04.execution"),
     pathlib.Path("docs/05.operations"),
 )
 SUPPORT_DOCS = (

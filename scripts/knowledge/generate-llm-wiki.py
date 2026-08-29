@@ -414,7 +414,7 @@ def classify(path_text: str) -> str:
         return "Runtime surfaces"
     if path_text.startswith("docs/05.operations/"):
         return "Operations docs"
-    if path_text.startswith(("docs/01.requirements/", "docs/02.architecture/", "docs/03.specs/", "docs/04.execution/")):
+    if path_text.startswith(("docs/01.requirements/", "docs/02.architecture/", "docs/03.specs/")):
         return "Active stage docs"
     if path_text.startswith(("docs/90.references/", "docs/99.templates/")) or path_text == "docs/README.md":
         return "Reference and template docs"

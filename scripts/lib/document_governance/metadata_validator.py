@@ -847,7 +847,6 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
-    "docs/04.execution/",
     "docs/05.operations/",
     "docs/90.references/",
     "docs/98.archive/",

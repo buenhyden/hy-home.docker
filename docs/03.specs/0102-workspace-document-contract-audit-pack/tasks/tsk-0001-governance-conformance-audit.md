@@ -46,7 +46,7 @@ and can be re-run as the corpus moves.
 | D1 | Dangling path citation | a backticked repository path resolving to no tracked file or directory, classified by the citing document's own `profile_id` and `status` |
 | D2 | Profile conformance | findings reported by `check-document-metadata.py` |
 | D3 | Supersession lineage | `superseded_by` present, canonical scalar shape, target resolves to a live `artifact_id`. **Defective**: governance accepts verified retired lineage, so this rule over-reports |
-| D4 | Control with no subject | a rule bounding itself to a path (`limited to`, `scoped to`, `applies only to`) that does not exist |
+| D4 | Control with no subject | a rule bounding itself to a path (`limited to`, `scoped to`, `applies only to`) that does not exist. **Under-scoped**: it read prose only, and missed both the code-side prefix sets and the two scripts that require a removed file |
 | D5 | Gate without reachable red | a registered validation entrypoint with no covering test, or none asserting a failing outcome |
 | D6 | Duplicated rule statement | a normalised sentence of 60+ characters appearing verbatim in two or more live governance documents |
 | D7 | Old-path duplicate or redirect stub | a body that is only a pointer, or two paths carrying byte-identical bodies |
@@ -66,7 +66,7 @@ how this corpus must be read.
 | D1 | 1,809 | 1,420 historical by role; 266 closed execution records | **123** across 41 files |
 | D2 | 27 | 11 are template-source placeholders, exempt by profile | **16** |
 | D3 | 1 | detector rule stricter than governance | **0** |
-| D4 | 1 | — | **1** |
+| D4 | 1 | detector read prose only | **3** after re-running over code |
 | D5 | 23 entrypoints | 21 covered with a red assertion | **2** |
 | D6 | 15 groups | 10 are shared cross-references | **5** |
 | D7 | 28 stubs, 37 duplicate groups | all stubs are tombstones; all duplicates are generated projections | **0** |
@@ -525,7 +525,34 @@ same wall.
 | 9 | ~~Decide how Stage 90 admits a net-new package, or record that it does not~~ | placement | — | **closed 2026-08-29**; recorded that it does not, in `docs/90.references/audits/README.md` |
 | 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
-| 12 | Decide whether four `docs/04.execution/` entries in live prefix allowlists should be dropped | D4 | gate-contract owner | code change; behaviour-neutral, so deliberately not taken here |
+| 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
+| 13 | Re-approve, retire, or re-route the two security scripts whose network-approval markers no longer exist | D4 | operator | **not mine to take**: writing the marker would manufacture a network-egress approval |
+
+### Two operator scripts are unrunnable, found 2026-08-29 (D4)
+
+`blocker` for the capability, not for the gate. Neither script is
+gate-registered — both are `kind: operations` in `scripts/manifest.yaml` — so
+CI is unaffected and both fail closed. The capability is simply gone.
+
+| Script | Requires | Enforced at |
+| ------ | -------- | ----------- |
+| `scripts/security/seed-grype-db-cache.sh` | `docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md` to exist and to contain the exact line `Grype DB network approval: confirmed` | `:142` exits `EXIT_POLICY` `seed-contract-surface-missing`; `:143` exits `seed-network-approval-missing` |
+| `scripts/security/verify-sample-service-supply-chain.sh` | `docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md` and the line `Scorecard network approval: confirmed` | `:122` `policy-task-or-cosign-config-boundary-missing`; `:762` for the Scorecard marker |
+
+`65e994f3` moved those task documents out of Stage 04, and `9ef889b5` removed
+the last copy of either approval marker. `git grep` finds neither string
+anywhere in the tracked corpus. Both scripts therefore stop at their first
+policy check.
+
+Both also declare `authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`,
+which is `status: superseded`.
+
+**Not fixed here, and deliberately.** Each marker is a written human approval
+for outbound network egress in a security tool — the Grype vulnerability
+database fetch and the OpenSSF Scorecard call. Writing either line into a
+document would manufacture that approval. The choice between re-approving the
+egress under a current document, retiring the scripts, and changing how they
+locate their approval belongs to the operator, and is filed as Action 13.
 
 ### Limitations
 
