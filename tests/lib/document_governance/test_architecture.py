@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import importlib.util
+import os
 import pathlib
 import subprocess
 import sys
@@ -11,6 +12,23 @@ import unittest
 from unittest import mock
 
 from scripts.lib.document_governance.frontmatter import read_frontmatter_values
+
+
+def _child_env() -> dict[str, str]:
+    """Environment for a CLI this test spawns itself.
+
+    The CI gate exports `HYHOME_CI_GATE_ROOT` pointing at its sealed
+    `/proc/self/fd/N` root. A child started here is not a gate invocation, and
+    the CLIs reject that root as invalid and exit 1 instead of the status the
+    test asserts. The variable is therefore dropped for children this test owns.
+    It surfaced on 2026-08-29, the first time these suites were executed by a
+    gate at all; standalone runs never set it.
+    """
+
+    environment = dict(os.environ)
+    environment.pop("HYHOME_CI_GATE_ROOT", None)
+    return environment
+
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -449,6 +467,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
                 text=True,
                 capture_output=True,
                 check=False,
+                env=_child_env(),
             )
 
         self.assertEqual(2, result.returncode, result.stdout + result.stderr)
