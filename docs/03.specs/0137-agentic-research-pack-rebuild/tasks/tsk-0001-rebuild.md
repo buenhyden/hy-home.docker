@@ -3953,6 +3953,47 @@ than adding prose. No registered check requires them, so this is not a blocked
 gate; it is a hole in the retirement's own evidence and belongs to the unit that
 performed it.
 
+### The mirrored suites now gate, 2026-08-29
+
+The previous entry closed by naming the routing gap as unfixed: the fourteen
+`tests/lib/document_governance` suites passed, but only because someone ran them
+by hand. They are now executed by `run-ci-gate.py`, measured — 14 modules, all
+278 tests, inside the gate, `exit=0`.
+
+**The root cause was a closed grammar, not a missing wire.**
+`ci_gate_adapters.py` admitted test modules matching
+`tests\.validation\.[A-Za-z0-9_.]+` and nothing else, so a
+`tests.lib.document_governance.*` module was rejected before any routing
+decision was reached. No amount of gate wiring could have run them. The pattern
+now names two roots explicitly rather than widening to a wildcard, and the second
+is bounded to that one package.
+
+**Six pinned surfaces had to be amended, which is the design working.** A new
+leaf gate `leaf.document-governance-library-regressions` in
+`.github/workflow-contract.yml`; `_INTERNAL_ROOT_CHILDREN` and
+`_INTERNAL_ROOT_SUITES` for `ci.repo-contracts`; `_LOCAL_AGGREGATE_CHILDREN` for
+`local.document-corpus-lifecycle`; an exact-argv entry in
+`_INTERNAL_ADAPTER_CONTEXTS` naming all fourteen modules literally; and the two
+test mirrors of those constants plus a node count of 83 to 84. Each is an
+immutability guard that exists so a gate cannot appear or vanish silently, and
+each was raised deliberately with its reason recorded rather than relaxed.
+
+Two routing rules bit and both were right. The gate must route through exactly
+one public suite, so the direct `document-contract` root was withdrawn and the
+single route is `document-lifecycle` by way of the local aggregate; and the
+adapter verifies its own file against the tracked git object, so the gate cannot
+pass on an uncommitted entrypoint.
+
+**Running them under the gate immediately found four latent test defects that
+standalone runs could never surface.** `test_architecture` and `test_registry`
+spawn their own CLI subprocesses, which inherited the gate's
+`HYHOME_CI_GATE_ROOT` — a sealed `/proc/self/fd/N` path. The child is not a gate
+invocation, so the CLI rejected that root and exited 1 where the test asserted 2
+or 0. Four assertions were reading `FAIL: invalid HYHOME_CI_GATE_ROOT` as the
+behaviour under test. The variable is now dropped for children those tests own.
+This is the point of routing them: the first execution under a gate found
+defects that 278 green standalone tests had hidden.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)
