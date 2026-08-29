@@ -1025,6 +1025,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |
+| [docs/superpowers/specs/2026-08-29-governance-conformance-audit.md](../../../superpowers/specs/2026-08-29-governance-conformance-audit.md) | Markdown reference |
 
 ## Refresh
 
