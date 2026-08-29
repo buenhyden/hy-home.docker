@@ -243,7 +243,9 @@ class CompleteDynamicFixtureTests(unittest.TestCase):
         subprocess.run(("git", "init", "-q"), cwd=self.root, check=True)
         subprocess.run(("git", "config", "user.email", "gate2@example.invalid"), cwd=self.root, check=True)
         subprocess.run(("git", "config", "user.name", "Gate2 Fixture"), cwd=self.root, check=True)
-        (self.root / "destination.md").write_text("# Destination\n\nclaim\n", encoding="utf-8")
+        (self.root / "destination.md").write_text(
+            "# Destination\n\n## anchor-a\n\nclaim\n", encoding="utf-8"
+        )
         self.task_path = "task.md"
         (self.root / self.task_path).write_text(
             _ledger(_row()) + "### Gate 3 carried claims\n\n", encoding="utf-8"
@@ -1164,7 +1166,13 @@ class CompleteDynamicFixtureTests(unittest.TestCase):
                 mutant = copy.deepcopy(self.bundle)
                 mutant[section][key] = value
                 self._assert_contract_detail(self._validate(mutant), expected)
-        (self.root / "destination.md").write_text("changed\n", encoding="utf-8")
+        # The anchor is preserved so this case isolates one variable: the
+        # destination's bytes changed since review. Dropping the anchor too
+        # would add a destination-resolution finding and stop the assertion
+        # below from being about byte drift at all.
+        (self.root / "destination.md").write_text(
+            "changed\n\n## anchor-a\n", encoding="utf-8"
+        )
         self._assert_contract_detail(
             self._validate(self.bundle), "destination bytes changed since review"
         )
@@ -1330,7 +1338,9 @@ class MultiRecordAssignmentFixtureTests(unittest.TestCase):
                 )
                 + " complete shared block.\n\n"
             )
-            (root / "destination.md").write_text("# Destination\n", encoding="utf-8")
+            (root / "destination.md").write_text(
+                "# Destination\n\n## anchor-a\n", encoding="utf-8"
+            )
             (root / "task.md").write_text(
                 ledger + carry + _block(contract.MANIFEST_HEADING, manifest), encoding="utf-8"
             )
@@ -1454,14 +1464,20 @@ class CommittedTwoBatchGate2FixtureTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        (self.root / "destination.md").write_text(
-            "# Destination\n\nRetain and corrected claims.\n", encoding="utf-8"
-        )
         self.row_specs: list[tuple[str, str]] = [
             *( (f"claim-{index:03d}", "Retain") for index in range(1, 23) ),
             ("claim-023", "Correct"),
             *( (f"claim-{index:03d}", "Carry") for index in range(24, 27) ),
         ]
+        # Every anchor the fixture's own rows name has to exist in the
+        # destination, or the destination-resolution check reports the fixture
+        # rather than the behaviour under test.
+        (self.root / "destination.md").write_text(
+            "# Destination\n\n## anchor-a\n\n"
+            + "".join(f"## anchor-{claim}\n\n" for claim, _ in self.row_specs)
+            + "Retain and corrected claims.\n",
+            encoding="utf-8",
+        )
         self.rows_not_run = self._rows()
         parsed = contract.parse_ledger_text(_ledger(*self.rows_not_run))
         records = []
@@ -2239,12 +2255,149 @@ class LiveGate2ExpectedRedTests(unittest.TestCase):
         )
         self.assertEqual((result.ledger_records, result.population_records), (253, 150))
         self.assertEqual((result.settled, result.held), (0, 150))
-        self.assertEqual(len(result.findings), 1)
-        self.assertEqual(result.findings[0].code, "GATE2-CONTRACT")
+        self.assertEqual(result.findings[-1].code, "GATE2-CONTRACT")
         self.assertEqual(
-            result.findings[0].detail,
+            result.findings[-1].detail,
             "current committed Task lacks the canonical manifest",
         )
+
+    def test_the_live_tree_still_carries_the_overwritten_destinations(self) -> None:
+        """The 2026-08-28 pack overwrite, held as a fact rather than a memory.
+
+        This test asserts a defect is present, which is unusual and deliberate.
+        `bbe8d9f3` wrote an independently authored draft over the successor pack
+        at the same path and removed the destinations 111 ledger rows name. That
+        is a live, unremediated regression, and a test that merely tolerated it
+        would let the next reader assume the red was always this shape.
+
+        It fails when the regression is repaired, which is the point: whoever
+        repairs it must come here, read why the number was what it was, and
+        replace it with the repaired count rather than discovering the drift
+        later from a mismatched digest.
+        """
+
+        root = pathlib.Path(__file__).resolve().parents[2]
+        result = contract.validate_gate2_contract(root, contract.TASK_PATH)
+        destination = [
+            finding
+            for finding in result.findings
+            if finding.code.startswith("GATE2-DEST-")
+        ]
+        self.assertTrue(
+            all(f.code == "GATE2-DEST-MISSING-ANCHOR" for f in destination),
+            "the overwrite removed headings, not whole files",
+        )
+        rows = {finding.where for finding in destination}
+        self.assertEqual(
+            (len(destination), len(rows)),
+            (148, 111),
+            "148 unresolved anchors across 111 of the 150 gate-2 rows; the 39 "
+            "that still resolve are the Carry rows, whose destination is the "
+            "owning Task and not the overwritten pack",
+        )
+
+
+class DestinationResolutionTests(unittest.TestCase):
+    """`resolve_destinations` is the machine-checkable half of gate 2.
+
+    Whether a destination is the *right* one for a claim is a reading and stays
+    with a seat. Whether it exists at all is not, and nothing checked it: the
+    destination column is prose in a table cell, so the link checker has no link
+    to follow, and this contract stopped at the absent manifest before reaching
+    a destination. Six days of a 111-row regression went unreported that way.
+    """
+
+    def _row(self, new_path: str, new_anchor: str) -> contract.LedgerRow:
+        values = ["" for _ in contract.LEDGER_HEADERS]
+        values[5] = "Retain"
+        values[7] = new_path
+        values[8] = new_anchor
+        return contract.LedgerRow(line_number=1, values=tuple(values))
+
+    def test_a_resolving_destination_produces_no_finding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / "leaf.md").write_text("## Present heading\n", encoding="utf-8")
+            row = self._row("`leaf.md`", "`Present heading`")
+            self.assertEqual(contract.resolve_destinations(root, [row]), ())
+
+    def test_an_absent_anchor_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / "leaf.md").write_text("## Present heading\n", encoding="utf-8")
+            row = self._row("`leaf.md`", "`Absent heading`")
+            findings = contract.resolve_destinations(root, [row])
+            self.assertEqual([f.code for f in findings], ["GATE2-DEST-MISSING-ANCHOR"])
+
+    def test_an_absent_file_is_reported_once_not_per_anchor(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            row = self._row("`gone.md`", "`One` and `Two`")
+            findings = contract.resolve_destinations(pathlib.Path(tmp), [row])
+            self.assertEqual([f.code for f in findings], ["GATE2-DEST-MISSING-FILE"])
+
+    def test_a_cell_naming_no_file_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            row = self._row("the owning Task", "`Anything`")
+            findings = contract.resolve_destinations(pathlib.Path(tmp), [row])
+            self.assertEqual([f.code for f in findings], ["GATE2-DEST-UNNAMED"])
+
+    def test_every_anchor_of_a_multi_anchor_cell_is_checked(self) -> None:
+        """One resolving anchor must not vouch for its neighbours."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            (root / "leaf.md").write_text("## Present\n", encoding="utf-8")
+            row = self._row("`leaf.md`", "`Present`; `Absent`")
+            findings = contract.resolve_destinations(root, [row])
+            self.assertEqual(len(findings), 1)
+            self.assertIn("Absent", findings[0].detail)
+
+
+class DestinationExtractionFidelityTests(unittest.TestCase):
+    """The extraction is validated in the direction that can produce a false red.
+
+    A path-and-anchor scraper that under-matches would report absent
+    destinations that are really present, and the whole 111-row finding would be
+    a parsing artefact. It is not: replayed against the pack at `49522aa1`,
+    where the migration destinations were authored, the identical extraction
+    resolves every one of the 150 gate-2 rows. So a token it cannot find at HEAD
+    is an absent destination and not a token it cannot parse.
+    """
+
+    PACK = "docs/90.references/research/0002-agentic-engineering-research-pack"
+    AUTHORED = "49522aa1"
+
+    def test_all_150_destinations_resolve_against_the_authored_pack(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        listing = subprocess.run(
+            ["git", "-C", str(root), "ls-tree", "-r", "--name-only",
+             self.AUTHORED, "--", self.PACK],
+            capture_output=True, text=True, check=False,
+        )
+        if listing.returncode != 0 or not listing.stdout.strip():
+            self.skipTest(f"commit {self.AUTHORED} is unavailable in this clone")
+        with tempfile.TemporaryDirectory() as tmp:
+            replay = pathlib.Path(tmp)
+            (replay / self.PACK).mkdir(parents=True)
+            for relative in listing.stdout.split():
+                blob = subprocess.run(
+                    ["git", "-C", str(root), "show", f"{self.AUTHORED}:{relative}"],
+                    capture_output=True, text=True, check=True,
+                )
+                (replay / relative).write_text(blob.stdout, encoding="utf-8")
+            # The 39 Carry rows destine to the owning Task itself, so the replay
+            # root needs today's Task beside the authored pack. Only the pack is
+            # rolled back; the ledger under test stays the current one.
+            task_text = (root / contract.TASK_PATH).read_text(encoding="utf-8")
+            (replay / contract.TASK_PATH).parent.mkdir(parents=True, exist_ok=True)
+            (replay / contract.TASK_PATH).write_text(task_text, encoding="utf-8")
+            rows = [
+                row
+                for row in contract.parse_ledger_text(task_text)
+                if row.disposition in contract.GATE2_DISPOSITIONS
+            ]
+            self.assertEqual(len(rows), 150)
+            self.assertEqual(contract.resolve_destinations(replay, rows), ())
 
 
 class CarriedBlockWrapperTests(unittest.TestCase):

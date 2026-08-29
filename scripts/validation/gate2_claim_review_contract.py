@@ -7,9 +7,14 @@ Ported to the migrated document layout on 2026-08-29 from
 and every document path it names was dissolved, so the branch could not be
 merged; this module is the part of it worth keeping, rebased rather than lost.
 
-What it is for. Gate 2 quantifies over the retained, corrected, superseded and
-carried claims in the owning Task's `Old-claim migration ledger`, and asks that
-each resolve to a reviewed destination. Whether a claim really lands on the
+What it is for. Gate 2 quantifies over the retained, corrected and carried
+claims in the owning Task's `Old-claim migration ledger`, and asks that each
+resolve to a reviewed destination. `Supersede` is deliberately outside it:
+`Migration contract` defines that disposition as replacement by a named new
+claim, which is a different control, and `spec.md` scopes gate 2 to the other
+three. This sentence said "superseded" until 2026-08-29 while
+`GATE2_DISPOSITIONS` below never included it -- prose and constant disagreed for
+the whole life of the module, and the constant was the correct one. Whether a claim really lands on the
 surface it names is a reading, and stays with a review seat. What a machine can
 hold is the *evidence* of that reading: which rows were assigned to which seat,
 in which round, against which exact bytes, and what verdict came back. This
@@ -84,6 +89,8 @@ SUBJECT_KEYS = (
 )
 DISPOSITIONS = frozenset(("Retain", "Supersede", "Correct", "Carry", "Omit"))
 GATE2_DISPOSITIONS = frozenset(("Retain", "Correct", "Carry"))
+DESTINATION_PATH_RE = re.compile(r"`([^`]+\.md)`")
+DESTINATION_ANCHOR_RE = re.compile(r"`([^`]+)`")
 MANIFEST_HEADING = "### Gate 2 review manifest"
 ENVELOPE_HEADING = "### Gate 2 review evidence envelope"
 RECEIPTS_HEADING = "### Gate 2 review receipts"
@@ -1656,6 +1663,106 @@ def _validate_receipts(
     return settled, held
 
 
+def _destination_paths(cell: str) -> list[str]:
+    """Every destination file a `New path` cell names.
+
+    The live ledger backticks its paths, and a cell routinely wraps two of them
+    in prose, so backticked `.md` tokens are the primary reading. A cell that is
+    nothing but a bare path is still a named destination, though, and reading it
+    only through backticks would report a formatting choice as a missing
+    destination.
+    """
+
+    backticked = DESTINATION_PATH_RE.findall(cell)
+    if backticked:
+        return backticked
+    bare = cell.strip()
+    return [bare] if bare.endswith(".md") and " " not in bare else []
+
+
+def _destination_anchors(cell: str) -> list[str]:
+    """Every anchor a `New anchor` cell names, read the same way."""
+
+    backticked = DESTINATION_ANCHOR_RE.findall(cell)
+    if backticked:
+        return backticked
+    bare = cell.strip()
+    return [bare] if bare else []
+
+
+def resolve_destinations(
+    root: pathlib.Path, population: list[LedgerRow], task_path: str = TASK_PATH
+) -> tuple[Finding, ...]:
+    """Resolve every gate-2 row's `New path` and `New anchor` against the tree.
+
+    This is the part of gate 2 a machine can settle without a review seat. A
+    destination that does not exist cannot be the reviewed destination of
+    anything, so a row naming one is unsatisfiable no matter what a seat later
+    writes about it.
+
+    It runs BEFORE the manifest gate on purpose. The manifest has never been
+    authored, so a check placed after it would never execute -- and that is not
+    hypothetical. Between `bbe8d9f3` (2026-08-28) and `95142c3a` (2026-08-29) an
+    independently authored draft pack was written over the successor pack at the
+    same path, cutting it from 7,473 lines to 1,880 and removing 111 of the 150
+    destinations this ledger names. Nothing reported it for six days: the
+    destination column is prose in a table cell, so the link checker has no link
+    to follow, and this contract stopped at "lacks the canonical manifest"
+    before it ever read a destination. The same vacuity the gate-4 scanner and
+    `--mode consumers` each showed -- the check exists, the subject does not.
+
+    Extraction is validated in the passing direction: this exact path and anchor
+    extraction resolves 150 of 150 rows against the pack at `49522aa1`, where
+    the destinations were authored. A token it cannot find is therefore an
+    absent destination, not a parsing artifact.
+    """
+
+    findings: list[Finding] = []
+    bodies: dict[str, str | None] = {}
+    for row in population:
+        where = f"{task_path}:{row.line_number}"
+        subject = row.as_subject()
+        paths = _destination_paths(subject["new_path"])
+        if not paths:
+            findings.append(
+                Finding(
+                    "GATE2-DEST-UNNAMED",
+                    where,
+                    f"row names no resolvable destination file: {subject['new_path']!r}",
+                )
+            )
+            continue
+        anchors = _destination_anchors(subject["new_anchor"])
+        for relative in paths:
+            if relative not in bodies:
+                candidate = root / relative
+                bodies[relative] = (
+                    candidate.read_text(encoding="utf-8", errors="strict")
+                    if candidate.is_file()
+                    else None
+                )
+            body = bodies[relative]
+            if body is None:
+                findings.append(
+                    Finding(
+                        "GATE2-DEST-MISSING-FILE",
+                        where,
+                        f"destination file does not exist: {relative}",
+                    )
+                )
+                continue
+            for anchor in anchors:
+                if anchor not in body:
+                    findings.append(
+                        Finding(
+                            "GATE2-DEST-MISSING-ANCHOR",
+                            where,
+                            f"destination {relative} does not contain anchor {anchor!r}",
+                        )
+                    )
+    return tuple(findings)
+
+
 def validate_gate2_contract(
     root: pathlib.Path,
     task_path: str,
@@ -1685,6 +1792,7 @@ def validate_gate2_contract(
         finding = Finding(code, task_path, str(error))
         return _gate2_result(task_path, 0, 0, 0, 0, (finding,))
     population = [row for row in rows if row.disposition in GATE2_DISPOSITIONS]
+    destination_findings = resolve_destinations(root, population, task_path)
     try:
         if manifest is None or pinned_manifest is None:
             raise Gate2ContractError("current committed Task lacks the canonical manifest")
@@ -1764,6 +1872,10 @@ def validate_gate2_contract(
             raise Gate2ContractError("Gate 2 requires settled == population and held == 0")
         if git.probe_head("head-probe-pre-success") != git.pinned_head:
             raise Gate2ContractError("HEAD moved before success", code="GATE2_HEAD_DRIFT")
+        if destination_findings:
+            raise Gate2ContractError(
+                f"{len(destination_findings)} gate-2 destinations do not resolve"
+            )
         success = _gate2_result(
             task_path, len(rows), len(population), settled, held, ()
         )
@@ -1786,7 +1898,7 @@ def validate_gate2_contract(
             len(population),
             0,
             len(population),
-            (Finding(code, task_path, str(error)),),
+            destination_findings + (Finding(code, task_path, str(error)),),
         )
 
 
