@@ -215,7 +215,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
         self.assertEqual(2, len(ci.jobs))
-        self.assertEqual(83, len(contract.gate_registry.nodes))
+        # 84 since 2026-08-29: leaf.document-governance-library-regressions,
+        # which runs the fourteen mirrored tests/lib/document_governance suites
+        # that no profile executed until then.
+        self.assertEqual(84, len(contract.gate_registry.nodes))
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,

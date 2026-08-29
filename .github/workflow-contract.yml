@@ -428,6 +428,7 @@
         "leaf.workflow-contract-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
+        "leaf.document-governance-library-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts"
@@ -601,6 +602,40 @@
       ],
       "opaque": true,
       "suite_key": "ci-precommit-regressions"
+    },
+    {
+      "gate_id": "leaf.document-governance-library-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.document_governance.test_architecture",
+        "tests.lib.document_governance.test_archive",
+        "tests.lib.document_governance.test_identity_history",
+        "tests.lib.document_governance.test_links",
+        "tests.lib.document_governance.test_metadata_validator",
+        "tests.lib.document_governance.test_operations_catalog",
+        "tests.lib.document_governance.test_operations_taxonomy",
+        "tests.lib.document_governance.test_provenance_policy",
+        "tests.lib.document_governance.test_references",
+        "tests.lib.document_governance.test_registry",
+        "tests.lib.document_governance.test_requirements",
+        "tests.lib.document_governance.test_spec_packages",
+        "tests.lib.document_governance.test_suite_registry",
+        "tests.lib.document_governance.test_taxonomy",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 15,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "document-governance-library-regressions"
     },
     {
       "gate_id": "leaf.compose-all-profiles-validation",
@@ -1444,7 +1479,8 @@
       "children": [
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-corpus-contract",
-        "leaf.local-document-corpus-promoted"
+        "leaf.local-document-corpus-promoted",
+        "leaf.document-governance-library-regressions"
       ]
     },
     {

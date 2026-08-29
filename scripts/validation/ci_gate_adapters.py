@@ -33,7 +33,15 @@ _REQUIREMENT_PATHS = {
 }
 _NPM_PREFIX = ("--prefix", "projects/storybook/nextjs")
 _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
-_UNITTEST_MODULE = re.compile(r"tests\.validation\.[A-Za-z0-9_.]+\Z")
+# Two test roots, both named explicitly rather than by a wildcard. Admitting
+# only `tests.validation.` is why the fourteen mirrored
+# `tests/lib/document_governance/` suites that `scripts/manifest.yaml`
+# registers could be executed by no gate at all: the grammar rejected them
+# before any routing decision was reached, and four of them had rotted
+# unnoticed by 2026-08-29. The second root is bounded to that one package.
+_UNITTEST_MODULE = re.compile(
+    r"(?:tests\.validation|tests\.lib\.document_governance)\.[A-Za-z0-9_.]+\Z"
+)
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _GIT_OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _SECRET_ENV_SHAPE = re.compile(

@@ -88,6 +88,7 @@ INTERNAL_ROOT_SUITES = {
         "workflow-contract-regressions",
         "repo-contracts-control-plane-regressions",
         "ci-precommit-regressions",
+        "document-governance-library-regressions",
         "workflow-contract",
         "operations-catalog-manifest",
         "repo-contracts",
@@ -134,6 +135,7 @@ INTERNAL_ROOT_CHILDREN = {
         "leaf.workflow-contract-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
+        "leaf.document-governance-library-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
@@ -210,6 +212,7 @@ LOCAL_AGGREGATE_CHILDREN = {
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
+        "leaf.document-governance-library-regressions",
     ),
     "local.target-surface": (
         "leaf.local-target-surface-regressions",

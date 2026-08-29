@@ -137,6 +137,28 @@ _INTERNAL_ADAPTER_CONTEXTS = {
             "test_target_surface_delta_contracts",
         )
     },
+    # One invocation covering the fourteen mirrored document-governance
+    # library suites. Every module is named literally here, so the admission
+    # is exact in the same way the per-module entries above are; they ran
+    # under no profile until 2026-08-29 and four had rotted unnoticed.
+    (
+        "run-unittest",
+        "tests.lib.document_governance.test_architecture",
+        "tests.lib.document_governance.test_archive",
+        "tests.lib.document_governance.test_identity_history",
+        "tests.lib.document_governance.test_links",
+        "tests.lib.document_governance.test_metadata_validator",
+        "tests.lib.document_governance.test_operations_catalog",
+        "tests.lib.document_governance.test_operations_taxonomy",
+        "tests.lib.document_governance.test_provenance_policy",
+        "tests.lib.document_governance.test_references",
+        "tests.lib.document_governance.test_registry",
+        "tests.lib.document_governance.test_requirements",
+        "tests.lib.document_governance.test_spec_packages",
+        "tests.lib.document_governance.test_suite_registry",
+        "tests.lib.document_governance.test_taxonomy",
+        "-v",
+    ): _ALL_EXECUTION_CONTEXTS,
     ("run-agent-output-eval",): _ALL_EXECUTION_CONTEXTS,
     ("check-diff-hygiene",): _ALL_EXECUTION_CONTEXTS,
     ("check-shell-syntax",): _ALL_EXECUTION_CONTEXTS,

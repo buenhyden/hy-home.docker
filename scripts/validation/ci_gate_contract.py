@@ -79,6 +79,9 @@ _INTERNAL_ROOT_SUITES = {
         "workflow-contract-regressions",
         "repo-contracts-control-plane-regressions",
         "ci-precommit-regressions",
+        # See the matching note on `_INTERNAL_ROOT_CHILDREN`: the mirrored
+        # document-governance library suites ran under no profile until now.
+        "document-governance-library-regressions",
         "workflow-contract",
         "operations-catalog-manifest",
         "repo-contracts",
@@ -125,6 +128,12 @@ _INTERNAL_ROOT_CHILDREN = {
         "leaf.workflow-contract-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
+        # Added 2026-08-29. The fourteen mirrored `tests/lib/document_governance`
+        # suites that `scripts/manifest.yaml` registers were executed by no
+        # profile, and four of them had rotted unnoticed until they were run by
+        # hand. This pin exists so a CI root cannot gain or lose a child
+        # silently; it is amended here deliberately so that those 278 tests gate.
+        "leaf.document-governance-library-regressions",
         "leaf.workflow-contract",
         "leaf.operations-catalog-manifest",
         "leaf.repo-contracts",
@@ -201,6 +210,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
+        "leaf.document-governance-library-regressions",
     ),
     "local.target-surface": (
         "leaf.local-target-surface-regressions",
