@@ -3914,6 +3914,45 @@ no `tests/lib/` suite, so these fourteen stay green only as long as someone runs
 them. That is a CI-profile change with its own owner, and it is the reason four
 suites could rot unnoticed in the first place.
 
+### The dangling supersession, root cause found 2026-08-29
+
+The 2026-08-29 record above noted that `docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md`
+declares `superseded_by: SPEC-0153` while no tracked document declares that
+identity. That is correct but under-specified, and the cause is not where it
+looked.
+
+**The frontmatter is not the defect and must not be edited.** `superseded_by` is
+required whenever `status` is `superseded`, and it must be a same-type uppercase
+stable ID, so it can be neither removed nor repointed at the archive record, whose
+identity is `mig-0003`. It is also factually true: SPEC-0153 did supersede
+SPEC-0136, then completed and was retired. Nothing enforces that the value
+resolves — `check-document-corpus-lifecycle --mode check-full` returns
+`violations=0` — so this is an observation about the corpus, not a rule violation.
+
+**The migration ledger is coherent, which was worth checking rather than
+assuming.** Across all 546 `rename` rows exactly five name a target absent from
+the tree, and all five belong to the packages `38fc89c5` retired —
+`0153-workspace-governance-simplification` spec and plan, and the `0090`, `0091`
+and `0092` specifications. Every one of the five also carries its own `delete`
+row, so the ledger records rename-then-delete and recovery stays available at
+`889d3868`.
+
+**What is actually missing is the tombstone.** The corpus keeps a tombstone for a
+retired Stage 03 specification — there are 28 of them under
+`docs/98.archive/tombstones/03.specs/` — and `38fc89c5` created none for the four
+packages it retired. That is why the identity resolves to nothing anywhere a
+reader would look. Note that a tombstone would not make `SPEC-0153` resolve as an
+`artifact_id` either, because a tombstone declares its own identity
+(`tombstone-0104`, not `SPEC-0104`); what it restores is the discoverable record,
+not the pointer.
+
+Not fixed here, and deliberately. Authoring four archive tombstones allocates
+`tombstone-####` identities from the Stage 99 registry, which tracks
+`high_water` and `next_number`, so it mutates a governed identity surface rather
+than adding prose. No registered check requires them, so this is not a blocked
+gate; it is a hole in the retirement's own evidence and belongs to the unit that
+performed it.
+
 ## Related Documents
 
 - [Spec 137](../spec.md)
