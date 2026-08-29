@@ -528,7 +528,7 @@ same wall.
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
 | 16 | Repoint the 14 manifest rows whose `authority` is the superseded `SPEC-0136` | D3 | manifest owner | 14 of 84 rows; needs a live owner per script |
-| 14 | Migrate `test_document_metadata` onto the canonical Registry, clear the residual 49, then gate-register it | D5 | `qa-engineer` | in-rule; 62 of 113 already recovered |
+| 14 | Clear the residual 30 in `test_document_metadata`, then gate-register it | D5 | `qa-engineer` | in-rule; 83 of 113 recovered. **Migration onto the canonical Registry is not the route** — `load_registry` validates identity lineage against real history, which no synthetic fixture has |
 | 15 | Decide whether the gate should be able to pass `--transition-override-file` at all | D5 | gate-contract owner | contract change; needs approval |
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
@@ -605,14 +605,46 @@ Materialising it to a real file once per process recovers **62 of the 113**:
 | before | 105 | 8 |
 | after the harness fix | **43** | **6** |
 
-**The residue is a contract mismatch, not a harness bug.** That profiles
-document is from the retired taxonomy: it cannot express
-`docs/03.specs/{number:4}-{slug}/tasks/tsk-{number:4}-{slug}.md`, inferring the
-`spec` profile for it and reporting `artifact-type-mismatch`. The module
-therefore validates today's validator against yesterday's contract. Migrating
-it onto `docs/99.templates/registry.json` is blocked in turn by
-`allocation bootstrap lacks approved lineage`, which `load_registry` raises for
-any synthetic fixture root.
+**A second fixture omission accounted for 19 more.**
+`copy_registry_contract_fixture` staged its files with `git add` and never
+committed, leaving `HEAD` unborn, so the validator's Spec Package snapshot read
+failed with `cannot read Spec Package Git snapshot`. Committing the fixture
+takes `RepositoryContractIntegrationTests` from 20 failing to green.
+
+| Stage | failures + errors |
+| ----- | ----------------: |
+| before this session | **113** |
+| after materialising the profiles blob | 49 |
+| after committing the registry contract fixture | **30** |
+
+**Why the module cannot simply be migrated onto the canonical Registry.** The
+first diagnosis said the blocker was `allocation bootstrap lacks approved
+lineage`, which is right but understated the reason. That error comes from
+`identity_history.py:478`: `load_registry` validates identity-allocation
+lineage against **this repository's real history** — `_approved_migration_document`,
+`merge-base` against real commits, and the prior Registry blob. A synthetic
+fixture repository can never satisfy it, so the module's use of a frozen
+profiles snapshot was a deliberate workaround, not simply rot.
+
+Nor can that snapshot be re-frozen: `docs/99.templates/support/` was deleted,
+so `docs/99.templates/support/document-metadata-profiles.yaml` exists only at
+commit `49406580` and no newer version of that contract exists. The contract
+moved to `registry.json` entirely.
+
+The remaining 30 split three ways, and each needs its own reading:
+
+| Kind | Example | Shape |
+| ---- | ------- | ----- |
+| Retired-contract mismatch | `test_lifecycle_namespace_readme_has_exact_nested_stage_index_route` expects `[]`, gets `['stage-index']` | the frozen profiles YAML carries a `stage-index` profile the current Registry does not |
+| Vacuity | `test_spec_0153_canonical_package_satisfies_registry_metadata` expects 0 findings, gets 16 | `38fc89c5` retired `SPEC-0153`, so the test measures something else now |
+| Count drift | `test_template_roles_require_exact_fields_and_unique_sources` expects 22, gets 23 | a pinned count that moved |
+
+One more vacuity instance was found and removed rather than repointed:
+`test_shell_reads_the_registry_without_duplicate_template_schema_tables`
+asserted textual properties of `scripts/validation/check-repo-contracts.sh`,
+which `1c620dd0` deleted when validation moved to the public suites. That
+deletion had also left two present-tense citations in the active `SPEC-0093` —
+its stated Validation Contract and a runnable command block — both corrected.
 
 **The suite is deliberately still not gate-registered.** Registering 49 red
 tests would break the gate. The order has to be fix, then register.
