@@ -72,7 +72,7 @@ graph TD
 
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
-Refer to `docs/03.specs/002-auth/spec.md` for detailed OIDC claims and realm structures.
+Refer to `docs/03.specs/0002-auth/spec.md` for detailed OIDC claims and realm structures.
 
 ## AI Agent Architecture
 

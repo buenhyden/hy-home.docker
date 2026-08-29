@@ -8,8 +8,7 @@ parent_ids:
 created: '2026-07-07'
 updated: '2026-08-23'
 observed_at: '2026-07-07'
-superseded_by:
-- AUD-0030
+superseded_by: AUD-0030
 ---
 
 # Reference: Superseded SDLC, QA, and Security Audit Mapping

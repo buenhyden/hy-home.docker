@@ -1,18 +1,18 @@
 ---
 profile_id: tombstone
 status: completed
-artifact_id: tombstone-0132
+artifact_id: tombstone-0154
 artifact_type: tombstone
 parent_ids: [mig-0003]
 created: 2026-08-29
 updated: 2026-08-29
 ---
 
-# Workspace Documentation Consistency 2026-05 Technical Specification Tombstone
+# Workspace Audit 2026-05 Technical Specification Tombstone
 
 ## Retired Path
 
-`docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md`
+`docs/03.specs/0090-workspace-audit-2026-05/spec.md`
 
 ## Replacement
 

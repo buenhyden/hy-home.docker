@@ -49,7 +49,7 @@ updated: 2026-08-11
 
 ### Steps
 
-1. **IP 선정**: `docs/03.specs/098-standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)**에서 비어있는 영역을 선택함.
+1. **IP 선정**: `docs/03.specs/0098-standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)**에서 비어있는 영역을 선택함.
 2. **Compose 파일 수정**:
 
    ```yaml

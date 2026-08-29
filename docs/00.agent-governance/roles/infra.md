@@ -60,7 +60,7 @@ only; it does not require starting, stopping, rebuilding, or recreating services
 
 ## 4. Operational Procedures
 
-- **Scalability**: For database scaling, refer to `infra/04-data/postgresql-cluster/` (Patroni/ETCD).
+- **Scalability**: For database scaling, refer to `infra/04-data/relational/postgresql-cluster/` (Patroni/ETCD).
 - **Secrets**: Rotate secrets using repository scripts and mounted secret files.
 
 ## 5. Maintenance & Safety

@@ -8,6 +8,8 @@ parent_ids:
 created: 2026-08-28
 updated: 2026-08-28
 observed_at: 2026-08-28
+supersedes:
+  - RES-0001
 ---
 
 # Agentic Engineering Research Pack

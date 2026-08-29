@@ -7,8 +7,7 @@ parent_ids: []
 created: '2026-08-23'
 updated: '2026-08-23'
 observed_at: '2026-08-23'
-superseded_by:
-- RES-0002
+superseded_by: RES-0002
 ---
 
 # Agentic Engineering Research Pack

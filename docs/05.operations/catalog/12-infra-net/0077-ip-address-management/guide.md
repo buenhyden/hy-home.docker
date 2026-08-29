@@ -35,7 +35,7 @@ updated: 2026-08-11
 
 - `hy-home.docker` 프로젝트 루트 디렉터리에 대한 쓰기 권한.
 - Docker Compose v2.0 이상.
-- `docs/03.specs/098-standardize-infra-net/spec.md`의 authoritative IP mapping table.
+- `docs/03.specs/0098-standardize-infra-net/spec.md`의 authoritative IP mapping table.
 
 ### Step-by-step Instructions
 

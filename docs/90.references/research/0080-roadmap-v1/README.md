@@ -7,8 +7,7 @@ parent_ids: []
 created: '2026-08-23'
 updated: '2026-08-23'
 observed_at: '2026-08-23'
-superseded_by:
-- RES-0081
+superseded_by: RES-0081
 ---
 
 # Reference: CS, CE & SE Self-Learning Roadmap (v1)

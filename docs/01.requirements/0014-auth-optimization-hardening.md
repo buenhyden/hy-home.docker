@@ -53,7 +53,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Acceptance Criteria
 
 - **REQ-0014-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 02-auth`와 `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 모두 성공한다.
-- **REQ-0014-FR-0002**: `docs/04.execution/plans`, `docs/05.operations`, `docs/05.operations` 추적성 검증이 성공한다.
+- **REQ-0014-FR-0002**: `docs/03.specs/####-<slug>/plan.md`, `docs/05.operations` 추적성 검증이 성공한다.
 - **REQ-0014-FR-0003**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
 
 ## Constraints

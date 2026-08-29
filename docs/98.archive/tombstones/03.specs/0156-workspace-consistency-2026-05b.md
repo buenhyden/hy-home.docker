@@ -1,7 +1,7 @@
 ---
 profile_id: tombstone
 status: completed
-artifact_id: tombstone-0133
+artifact_id: tombstone-0156
 artifact_type: tombstone
 parent_ids: [mig-0003]
 created: 2026-08-29

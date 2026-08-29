@@ -8,8 +8,7 @@ parent_ids:
 created: '2026-07-07'
 updated: '2026-08-23'
 observed_at: '2026-07-07'
-superseded_by:
-- AUD-0026
+superseded_by: AUD-0026
 ---
 
 # Reference: Superseded 2026-07-07 Implementation Overview Mapping

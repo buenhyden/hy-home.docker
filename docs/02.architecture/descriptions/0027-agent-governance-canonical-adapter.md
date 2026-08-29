@@ -74,7 +74,7 @@ The architecture has four layers.
 | Requirement and decision layer | Defines why agent governance exists and which architecture decision is accepted. | `docs/01.requirements/`, `docs/02.architecture/` |
 | Canonical governance layer | Owns active policies, roles, skills, workflows, and provider registry. | `docs/00.agent-governance/` |
 | Provider adapter layer | Exposes Stage 00 catalog in provider-specific formats and hook/skill mechanics. | `.claude/`, `.codex/`, `.agents/` |
-| Evidence and validation layer | Records execution evidence and validates drift. | `docs/04.execution/`, `scripts/validation/`, `scripts/operations/`, `scripts/knowledge/` |
+| Evidence and validation layer | Records execution evidence and validates drift. | `docs/03.specs/####-<slug>/tasks/`, `scripts/validation/`, `scripts/operations/`, `scripts/knowledge/` |
 
 The Stage 00 canonical adapter model is the architecture boundary between policy and runtime mechanics. Policy changes belong in Stage 00 and must be reflected downstream. Adapter files may adapt syntax and execution mechanics, but they must not introduce separate governance.
 
