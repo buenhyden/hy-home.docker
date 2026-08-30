@@ -530,6 +530,7 @@ same wall.
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
+| 19 | Execute independent gate leaves concurrently instead of in sequence | performance | gate owner | measured: 12 leaves, 628s in sequence, longest ~190s; `check-write` leaves need explicit ordering |
 | 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
@@ -1128,6 +1129,53 @@ frozen in both directions — it admits no net-new package and releases no
 superseded one. A fully superseded twenty-file duplicate must be retained. Its
 `superseded` status does mark it as history rather than guidance, so no reader
 is misled, but the corpus cannot shed it.
+
+### The registered suite's hook cost: measured, and neither split nor excluded (2026-08-30)
+
+Registering `leaf.local-document-metadata-tests` made the pre-commit hook
+noticeably slower, and the question was whether to split the suite across
+several leaves or take it out of the hook. Both were measured before deciding.
+
+| Measurement | Result |
+| ----------- | ------ |
+| `--profile changed`, clean tree | 27.35s, and the suite is **not** selected |
+| `--profile changed`, one `tests/` file modified | **627.83s**, and it is selected |
+| a `docs/` file modified | also selects it |
+| the suite alone | 261 tests, ~190s |
+| the runner's execution model | **sequential** — `for invocation in plan:`, no pool anywhere in `ci_gate_runner.py` or `ci_gate_adapters.py` |
+
+**Splitting yields nothing, and that is a measurement, not a preference.** The
+runner executes leaves one after another, so three leaves of 60s cost exactly
+what one leaf of 190s costs. The only Thread in the gate code drains a child's
+streams; it does not run leaves in parallel.
+
+**Excluding it buys 30% and pays for it with a control.** The suite is 190s of
+the 628s; the other 438s is eleven peer suites in the same aggregate —
+`test_document_corpus_lifecycle` alone is 153 tests. Taking the newest leaf out
+would leave a seven-minute hook and single out the one suite whose registration
+was the point of Action 14. That suite ran under **no profile at all** while it
+was red; the 190s is not new work, it is the price of a control that was not
+running. Moving it to pre-push only would partially undo the fix.
+
+**Nor is there a cheap win inside the suite.** One test,
+`test_reverse_transition_without_override_is_blocked`, is 100s of the total.
+Profiled: 101 of its 105s is **two `check-document-metadata.py` runs**, not
+fixture setup — the clone is 1.2s, and every git call together is 2.2s.
+Measured across clone modes, `--no-hardlinks` costs 1.41s against 1.23s for
+hardlinks and 0.96s for `--shared`, so the fixture is not the cost. Those two
+runs are the checker doing real work over a real corpus, which is what makes
+the test worth having.
+
+**Decision: keep the suite whole, in the profile its peers use, and in the
+hook.** Recorded here so it is settled rather than re-argued.
+
+**The lever that would actually pay is the runner's execution model.** Twelve
+independent leaf processes run in sequence for 628s; the longest is ~190s.
+Executing independent leaves concurrently would cut the wall clock roughly
+threefold and remove nothing. It is not taken here: it changes how a
+gate entrypoint executes, some leaves are `check-write` generators that would
+need an explicit ordering or exclusion, and that is a design with its own
+review, not a change to slip into this audit.
 
 ### Limitations
 
