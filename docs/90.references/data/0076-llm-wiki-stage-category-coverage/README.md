@@ -40,7 +40,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `923`
+- Safe tracked source paths: `922`
 - Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -52,7 +52,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `.claude` | 47 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | `.codex` | 16 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
-| `docs/00.agent-governance` | 86 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md)<br>[docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) |
+| `docs/00.agent-governance` | 85 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md)<br>[docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) |
 | `docs/01.requirements` | 26 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | `docs/02.architecture` | 54 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
 | `docs/03.specs` | 46 | [docs/03.specs/0001-gateway/spec.md](../../../03.specs/0001-gateway/spec.md)<br>[docs/03.specs/0002-auth/spec.md](../../../03.specs/0002-auth/spec.md)<br>[docs/03.specs/0003-security/spec.md](../../../03.specs/0003-security/spec.md) |
@@ -72,7 +72,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: | --- |
 | Root entrypoints | 7 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | LLM Wiki reference | 1 | [docs/90.references/data/0083-repository-map/README.md](../0083-repository-map/README.md) |
-| Agent governance | 86 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md)<br>[docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) |
+| Agent governance | 85 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md)<br>[docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) |
 | Runtime surfaces | 63 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | Active stage docs | 126 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | Operations docs | 208 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
@@ -88,7 +88,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 77 |
-| Markdown reference | 483 |
+| Markdown reference | 482 |
 | YAML config | 110 |
 | folder index | 169 |
 | script | 53 |

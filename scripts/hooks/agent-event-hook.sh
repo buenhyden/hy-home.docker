@@ -234,6 +234,55 @@ if not tool_name or tool_name in edit_tools:
                 )
             break
 
+# Evaluate the Stage 00 hook rules. Their frontmatter is the machine part and
+# their body is the message; before this they were enforced by nothing.
+denials = []
+try:
+    rules_module = project / "scripts" / "hooks" / "hook_rules.py"
+    sys.path.insert(0, str(rules_module.parent))
+    import hook_rules
+
+    command = tool_input.get("command")
+    command = command if isinstance(command, str) else ""
+    project_prefix = str(project) + "/"
+
+    def _short(value):
+        return value[len(project_prefix):] if value.startswith(project_prefix) else value
+
+    replacement = ""
+    for key in ("content", "new_string", "new_text"):
+        value = tool_input.get(key)
+        if isinstance(value, str):
+            replacement = value
+            break
+    edits = [(_short(path), replacement) for path in paths]
+    nested = tool_input.get("edits")
+    if isinstance(nested, list):
+        for edit in nested:
+            if not isinstance(edit, dict):
+                continue
+            target = edit.get("file_path") or edit.get("path")
+            text = edit.get("new_string") or edit.get("new_text")
+            if isinstance(target, str) and isinstance(text, str):
+                edits.append((_short(target), text))
+
+    warnings, blocks = hook_rules.evaluate(
+        hook_rules.load_rules(project), command=command, edits=tuple(edits)
+    )
+    system_messages.extend(rule.message for rule in warnings)
+    denials.extend(blocks)
+except Exception:
+    # A defect in rule evaluation must not break every tool call.
+    denials = []
+
+if denials:
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": "\n\n".join(rule.message for rule in denials),
+    }}))
+    sys.exit(0)
+
 if not system_messages and not additional_context:
     sys.exit(0)
 

@@ -530,7 +530,7 @@ same wall.
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
-| 20 | Decide which of the sixteen unenforced repository hook rules should come on, and by which route | D5 | governance owner | measured: 0 loaders, 2 of 19 patterns implemented, 3 duplicated by active user-scope rules |
+| 20 | ~~Decide which of the sixteen unenforced repository hook rules should come on~~ | D5 | — | **closed 2026-08-30**; the dispatcher now reads the rule files themselves, 16 enforced, 1 removed as per-edit noise, 2 stop rules left to their existing gates |
 | 19 | Execute independent gate leaves concurrently instead of in sequence | performance | gate owner | **measured 1.84x** on the two heaviest suites (356.5s to 193.7s, both green); an earlier 3-way probe reporting 1.26x and a failure was invalid — its module list named `test_specs` for `test_spec_packages`. `check-write` leaves still need explicit ordering |
 | 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
@@ -1269,6 +1269,56 @@ on work that is not blocked today. That changes what the repository refuses, and
 which sixteen controls should come on is the owner's decision, not an inference
 from the files. The third route, deleting the three duplicates and marking the
 rest unwired, makes the declaration honest without adding enforcement.
+
+**Closed 2026-08-30 by making the rule files their own enforcement.** The route
+taken is neither of the two obvious ones. Projecting the rules into `.claude/`
+would have made enforcement depend on one operator's plugin installation —
+teammates without it would get nothing — and re-implementing each rule in shell
+would have duplicated in code what the frontmatter already states. Instead
+`scripts/hooks/hook_rules.py` reads the rule files, so the files that state the
+rules are the files that run them, and `agent-event-hook.sh` — which
+`.claude/settings.json` already wires for every agent in this repository —
+evaluates them at `PreToolUse`.
+
+| Before | After |
+| ------ | ----- |
+| 0 loaders | the shared dispatcher, on every tool call |
+| 2 of 19 patterns implemented | 17 of 19 evaluated; the 2 stop rules stay in the dispatcher's own gates |
+| `enabled: true` asserted nothing | `warn` reaches `systemMessage`, `block` returns `permissionDecision: deny` |
+
+**The two `stop` rules are deliberately excluded, and finding out why was the
+close call of this change.** Both carry `pattern: .*`, and
+`require-logical-commits-before-stop` pairs that with `action: block` — wiring
+them generically would have denied **every stop**. Their real conditions are
+contextual, not regex-shaped, and already live in `template_stop_gate` and
+`logical_commit_stop_gate`. The evaluator refuses `event: stop` outright and a
+test holds that line.
+
+**Measured before enabling, against the twenty files this session actually
+changed: 0 of the 6 blocking rules fire.** They are narrow enough to leave real
+work alone. The warnings fired 25 times, and 15 of those were one rule.
+
+**`warn-post-edit-style-automation` was removed rather than enabled.** Its
+message is a fixed description of what the PostToolUse hook already does,
+identical on every edit, and its path condition `\.(md|sh|ya?ml|json)$` matched
+**15 of 20** — three edits in four. Its actionable half already exists as
+`task-checklists.md` "Inspect `git diff --check`, status, and the exact
+task-owned diff"; its descriptive half had no other live home, so it moved into
+`agentic.md` Execution Rules. That leaves sixteen rules enforced and one
+document telling the truth, instead of seventeen rules of which one is noise.
+
+**Verified end to end, not only in the module.** Fifteen tests in
+`tests/validation/test_hook_rules.py` cover the tracked rules (every one parses,
+every one carries a message, bash rules fire on their subject and stay silent
+otherwise, and a two-condition file rule needs both halves), the shapes the
+evaluator must refuse (disabled, `stop`, unknown operator, unknown field,
+invalid regex), and three real `PreToolUse` payloads through the dispatcher
+itself. Registered as `leaf.local-hook-rule-tests`; the readiness snapshot moved
+from 67 to 68 reachable typed gates.
+
+The evaluator fails open by construction: any exception while loading or
+evaluating leaves `denials` empty, because a defect in rule handling must not
+break every tool call.
 
 **One filename disagrees with its own rule, and cannot be corrected by renaming
 today.** `hookify.warn-governance-memory-edit.md` declares

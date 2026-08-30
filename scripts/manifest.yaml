@@ -40,6 +40,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/hooks/hook_rules.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/hooks/agent-event-hook.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_hook_rules.py
 - path: scripts/hooks/post-tool-validate.sh
   kind: hook
   authority: docs/99.templates/registry.json

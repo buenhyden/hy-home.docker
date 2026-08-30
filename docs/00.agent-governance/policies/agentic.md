@@ -17,6 +17,10 @@ selection and permission mappings live in `providers/registry.yaml`.
 - Record commands, results, recovery, skipped checks, and blockers in the Task.
 - Generated `.agents/`, `.claude/`, and `.codex/` files are adapters and never
   own policy, role intent, or procedure content.
+- The shared PostToolUse hook normalizes changed Markdown, shell, YAML, and JSON
+  text, runs `shfmt`, `shellcheck`, and `yamllint` on changed files where those
+  tools are available, and runs `git diff --check` before repository validators.
+  Inspect the resulting diff before committing.
 
 ## Delegation Contract
 

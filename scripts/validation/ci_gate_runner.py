@@ -134,6 +134,7 @@ _INTERNAL_ADAPTER_CONTEXTS = {
             "test_agent_governance_ci_routing",
             "test_document_corpus_lifecycle",
             "test_document_metadata",
+            "test_hook_rules",
             "test_target_surface_contracts",
             "test_target_surface_delta_contracts",
             "test_compose_baseline_gates",
