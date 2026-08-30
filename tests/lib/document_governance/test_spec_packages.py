@@ -652,7 +652,7 @@ class SpecPackageTests(unittest.TestCase):
         # governance migration packages. Only the cardinality moves — every
         # surface invariant asserted below still holds, which is why this is
         # repinned rather than relaxed.
-        self.assertEqual(33, len(packages))
+        self.assertEqual(34, len(packages))
         self.assertTrue(all(not package.path.name.startswith("spec-") for package in packages))
         self.assertFalse((ROOT / "docs/04.execution").exists())
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))

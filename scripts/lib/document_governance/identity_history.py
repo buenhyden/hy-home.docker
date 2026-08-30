@@ -18,7 +18,16 @@ from scripts.lib.document_governance.registry import DocumentRegistry, RegistryF
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
-MAX_GIT_OUTPUT_BYTES = 16 * 1024 * 1024
+# Raised from 16 MiB on 2026-08-30. The scan reads the full patch history of a
+# stage directory and greps it for identifiers, so its cost grows with every
+# commit and never shrinks. Measured at this commit: docs/03.specs is 17.4 MB
+# and docs/90.references is 20.6 MB of patch text, both already past the old
+# bound. Deleting a 2.4 MB document is what pushed docs/03.specs over, which is
+# the perverse part: cleaning the corpus makes the scan more expensive.
+#
+# Raising the bound buys time and fixes nothing. The scan should ask Git for
+# identifiers rather than read every diff. SPEC-0157 owns that change.
+MAX_GIT_OUTPUT_BYTES = 64 * 1024 * 1024
 MAX_GIT_SCAN_SECONDS = 45
 MAX_IDENTITY_SOURCE_BYTES = 4 * 1024 * 1024
 IDENTITY_SOURCE_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml"})
