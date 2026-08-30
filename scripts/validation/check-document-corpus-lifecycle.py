@@ -207,14 +207,6 @@ class MigrationManifestDocument:
     entries: tuple[MigrationManifestRow, ...]
 
 
-@dataclasses.dataclass(frozen=True, order=True)
-class DuplicateCandidate:
-    left_path: pathlib.PurePosixPath
-    right_path: pathlib.PurePosixPath
-    artifact_type: str
-    signals: tuple[str, ...]
-
-
 MANIFEST_TOP_LEVEL_FIELDS = (
     "schema_version",
     "wave",
@@ -1856,36 +1848,8 @@ def _load_repo_migration_manifest(
     return _load_migration_manifest_text(source)
 
 
-def _load_candidate_migration_manifest(
-    root: pathlib.Path,
-    relative_path: str,
-) -> MigrationManifestDocument:
-    """Load a safe in-root candidate without requiring prior Git staging."""
-
-    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=False)
-    if payload is None:
-        raise ProfileError("candidate manifest must be a regular in-root file")
-    try:
-        source = payload.decode("utf-8")
-    except UnicodeDecodeError as error:
-        raise ProfileError("candidate manifest must be UTF-8") from error
-    return _load_migration_manifest_text(source)
 
 
-def _repo_manifest_path(root: pathlib.Path, path: pathlib.Path) -> str:
-    """Return a safe repository-relative manifest path without resolving links."""
-
-    resolved_root = root.resolve()
-    if any(part == ".." for part in path.parts):
-        raise ProfileError("manifest path must not traverse parent directories")
-    candidate = path if path.is_absolute() else resolved_root / path
-    try:
-        relative = candidate.relative_to(resolved_root).as_posix()
-    except ValueError as error:
-        raise ProfileError("manifest path must remain inside the repository") from error
-    if not _safe_path(relative):
-        raise ProfileError("manifest path must be repository-safe")
-    return relative
 
 
 def _repo_manifest_matches(
@@ -1897,15 +1861,6 @@ def _repo_manifest_matches(
     return payload == expected.replace("\r\n", "\n").encode("utf-8")
 
 
-def _candidate_manifest_matches(
-    root: pathlib.Path,
-    relative_path: str,
-    expected: str,
-) -> bool:
-    """Compare canonical bytes for a safe candidate before it is staged."""
-
-    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=False)
-    return payload == expected.replace("\r\n", "\n").encode("utf-8")
 
 
 def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
@@ -2309,26 +2264,6 @@ def generate_manifest_skeleton(
     )
 
 
-def archive_records_for_wave(
-    records: collections.abc.Sequence[Record],
-    document: MigrationManifestDocument,
-) -> tuple[Record, ...]:
-    """Focus archive validation on rows whose resulting semantic type is archive."""
-
-    selected_paths = {
-        (row.target_path or row.source_path).as_posix()
-        for row in document.entries
-        if (
-            row.artifact_type_after == "archive"
-            if document.schema_version == 2
-            else row.artifact_type == "archive"
-        )
-    }
-    return tuple(
-        record
-        for record in records
-        if record.path.as_posix() in selected_paths and record.artifact_type == "archive"
-    )
 
 
 def _profile_required_fields(
@@ -4398,28 +4333,6 @@ def _changed_record_paths(root: pathlib.Path, base_ref: str) -> set[str]:
     return _changed_path_sets(root, base_ref)[1]
 
 
-def _added_record_paths(root: pathlib.Path, base_ref: str) -> frozenset[pathlib.PurePosixPath]:
-    baseline = _verified_commit(root, base_ref)
-    if baseline is None:
-        raise ProfileError("base_ref must resolve to a commit")
-    paths: set[str] = set()
-    commands = (
-        ["diff", "--name-only", "-z", "--diff-filter=A", baseline, "--", "*.md"],
-        ["ls-files", "-z", "--others", "--exclude-standard", "--", "*.md"],
-    )
-    for command in commands:
-        result = _run_git(root, command, text=False)
-        if result.returncode != 0:
-            raise ProfileError("cannot determine added Markdown paths")
-        try:
-            paths.update(
-                token.decode("utf-8")
-                for token in result.stdout.split(b"\0")
-                if token
-            )
-        except UnicodeDecodeError as error:
-            raise ProfileError("added Markdown paths are not UTF-8") from error
-    return frozenset(pathlib.PurePosixPath(path) for path in paths if _safe_path(path))
 
 
 def _partition_plan_findings(
@@ -4539,179 +4452,12 @@ def _partition_plan_findings(
     return []
 
 
-def _apply_partition_approvals(
-    records: collections.abc.Sequence[Record],
-    documents: collections.abc.Sequence[MigrationManifestDocument],
-    *,
-    root: pathlib.Path,
-    profiles: dict[str, object],
-) -> tuple[Record, ...]:
-    approvals: dict[str, tuple[str, dict[str, str]]] = {}
-    for document in documents:
-        for row in document.entries:
-            if row.partition_plan is None or _partition_plan_findings(
-                root, profiles, row
-            ):
-                continue
-            target = row.target_path or row.source_path
-            approvals[target.as_posix()] = (
-                row.partition_plan.as_posix(),
-                {"specification": "pass", "quality": "pass"},
-            )
-    return tuple(
-        dataclasses.replace(
-            record,
-            metadata={
-                **record.metadata,
-                "partition_plan": approvals[record.path.as_posix()][0],
-                "review_verdict": approvals[record.path.as_posix()][1],
-            },
-        )
-        if record.path.as_posix() in approvals
-        else record
-        for record in records
-    )
 
 
-def _record_body_bytes(root: pathlib.Path, record: Record) -> bytes | None:
-    """Return snapshot bytes, or perform one bounded no-follow library read."""
-
-    relative = record.path.as_posix()
-    if (
-        _CORPUS_SNAPSHOT_ROOT == root.resolve()
-        and relative in _CORPUS_SNAPSHOT_BYTES
-    ):
-        return _CORPUS_SNAPSHOT_BYTES[relative]
-    return _read_regular_repo_bytes(root, relative, require_tracked=False)
 
 
-def _resolved_markdown_links(root: pathlib.Path, record: Record) -> set[str]:
-    payload = _record_body_bytes(root, record)
-    if payload is None:
-        return set()
-    try:
-        text = payload.decode("utf-8")
-    except UnicodeDecodeError:
-        return set()
-    links: set[str] = set()
-    for match in MARKDOWN_LINK.finditer(text):
-        raw = match.group(1).split("#", 1)[0]
-        if not raw or "://" in raw or raw.startswith(("mailto:", "#")):
-            continue
-        if raw.startswith("/"):
-            candidate = pathlib.PurePosixPath(raw.lstrip("/"))
-        else:
-            candidate = pathlib.PurePosixPath(record.path.parent.as_posix(), raw)
-        normalized_parts: list[str] = []
-        for part in candidate.parts:
-            if part == ".":
-                continue
-            if part == "..":
-                if normalized_parts:
-                    normalized_parts.pop()
-                continue
-            normalized_parts.append(part)
-        normalized = pathlib.PurePosixPath(*normalized_parts).as_posix()
-        if _safe_path(normalized):
-            links.add(normalized)
-    return links
 
 
-def collect_impacted_records(
-    root: pathlib.Path,
-    records: collections.abc.Sequence[Record],
-    profiles: dict[str, object],
-    contract: dict[str, object],
-    documents: collections.abc.Sequence[MigrationManifestDocument],
-    *,
-    base_ref: str,
-) -> tuple[Record, ...]:
-    """Select changed records and direct semantic dependents only."""
-
-    del contract
-    by_path = {record.path.as_posix(): record for record in records}
-    by_id = {
-        artifact_id: record.path.as_posix()
-        for record in records
-        if isinstance((artifact_id := record.metadata.get("artifact_id")), str)
-    }
-    baseline_commit = _verified_commit(root, base_ref)
-    if baseline_commit is None:
-        raise ProfileError("base_ref must resolve to a commit")
-    current_changed_paths, trigger_paths = _changed_path_sets(root, base_ref)
-    selected = current_changed_paths & set(by_path)
-    historical_ids: set[str] = set()
-    historical_relation_ids: set[str] = set()
-    for changed_path in sorted(trigger_paths):
-        shown = _run_git(root, ["show", f"{baseline_commit}:{changed_path}"], text=False)
-        if shown.returncode != 0:
-            continue
-        try:
-            prior_text = shown.stdout.decode("utf-8")
-            prior = metadata._record_from_text(
-                pathlib.Path(changed_path),
-                prior_text,
-                profiles=profiles,
-            )
-        except UnicodeError:
-            continue
-        prior_id = prior.metadata.get("artifact_id")
-        if isinstance(prior_id, str):
-            historical_ids.add(prior_id)
-        prior_parents = prior.metadata.get("parent_ids")
-        if isinstance(prior_parents, list):
-            historical_relation_ids.update(
-                item for item in prior_parents if isinstance(item, str)
-            )
-        prior_supersedes = prior.metadata.get("supersedes")
-        if isinstance(prior_supersedes, str):
-            historical_relation_ids.add(prior_supersedes)
-    selected_ids = historical_ids | {
-        record.metadata.get("artifact_id")
-        for path in selected
-        if (record := by_path.get(path)) is not None
-        and isinstance(record.metadata.get("artifact_id"), str)
-    }
-    additions: set[str] = set()
-    additions.update(
-        by_id[artifact_id]
-        for artifact_id in historical_relation_ids
-        if artifact_id in by_id
-    )
-    for path, record in by_path.items():
-        parent_ids = record.metadata.get("parent_ids")
-        supersedes = record.metadata.get("supersedes")
-        relations = set(parent_ids) if isinstance(parent_ids, list) else set()
-        if isinstance(supersedes, str):
-            relations.add(supersedes)
-        if relations & selected_ids:
-            additions.add(path)
-        if path in selected:
-            additions.update(by_id[item] for item in relations if item in by_id)
-        if _resolved_markdown_links(root, record) & trigger_paths:
-            additions.add(path)
-    for document in documents:
-        for row in document.entries:
-            source = row.source_path.as_posix()
-            target = _safe_path_text(row.target_path)
-            replacement = row.canonical_replacement
-            replacement_path = (
-                replacement
-                if isinstance(replacement, str) and replacement in by_path
-                else by_id.get(replacement or "")
-            )
-            participants = {source}
-            if target:
-                participants.add(target)
-            if replacement_path:
-                participants.add(replacement_path)
-            consumers = {item.as_posix() for item in row.active_consumers}
-            if participants & trigger_paths:
-                additions.update(consumers | participants)
-            if consumers & selected:
-                additions.update(participants)
-    selected.update(additions & set(by_path))
-    return tuple(by_path[path] for path in sorted(selected))
 
 
 def _safe_archive_value(record: Record, key: str) -> str | None:
@@ -4840,596 +4586,38 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
     return sorted(set(findings))
 
 
-def _approved_partition(record: Record) -> bool:
-    partition = record.metadata.get("partition_plan")
-    reviews = record.metadata.get("review_verdict")
-    return (
-        isinstance(partition, str)
-        and _safe_path(partition)
-        and metadata.infer_artifact_type(
-            pathlib.Path(partition),
-            metadata.build_registry_profiles(metadata.load_registry(DEFAULT_PROFILES)),
-        ) == "plan"
-        and isinstance(reviews, dict)
-        and reviews.get("specification") == "pass"
-        and reviews.get("quality") == "pass"
-    )
 
 
-def validate_directory_budgets(
-    records: collections.abc.Sequence[Record],
-    *,
-    added_paths: frozenset[pathlib.PurePosixPath],
-    warning_at: int,
-    block_new_leaf_at: int,
-    enforce_all: bool,
-) -> list[Finding]:
-    """Count only immediate document leaves and block additions at the hard limit."""
-
-    counted = {
-        record.path.as_posix(): record
-        for record in records
-        if record.path.suffix == ".md"
-        and record.path.name != "README.md"
-        and record.artifact_type not in {"generated", "repo-support", "unsupported"}
-    }
-    by_directory: dict[str, list[Record]] = collections.defaultdict(list)
-    for record in counted.values():
-        by_directory[record.path.parent.as_posix()].append(record)
-    added = {path.as_posix() for path in added_paths}
-    findings: list[Finding] = []
-    for directory, members in sorted(by_directory.items()):
-        count = len(members)
-        if count >= warning_at:
-            findings.append(
-                _finding(
-                    directory,
-                    "directory-budget-warning",
-                    f"immediate leaf count={count} warning_at={warning_at}",
-                    "warning",
-                )
-            )
-        blocking_members = (
-            members
-            if enforce_all
-            else [record for record in members if record.path.as_posix() in added]
-        )
-        if count >= block_new_leaf_at and any(
-            not _approved_partition(record) for record in blocking_members
-        ):
-            findings.append(
-                _finding(
-                    directory,
-                    "directory-budget-blocked",
-                    f"immediate leaf count={count} block_new_leaf_at={block_new_leaf_at}",
-                )
-            )
-    return sorted(set(findings))
 
 
-def _normalized_title(text: str) -> str | None:
-    title = next(
-        (line[2:].strip() for line in text.splitlines() if line.startswith("# ")),
-        None,
-    )
-    if not title:
-        return None
-    normalized = "".join(
-        character
-        for character in unicodedata.normalize("NFKC", title).casefold()
-        if character.isalnum()
-    )
-    return normalized or None
 
 
-def find_duplicate_candidates(
-    root: pathlib.Path,
-    records: collections.abc.Sequence[Record],
-) -> tuple[DuplicateCandidate, ...]:
-    """Return same-type candidate signals without any disposition."""
-
-    inspections: dict[str, tuple[bytes, str | None]] = {}
-    for record in records:
-        content = _record_body_bytes(root, record)
-        if content is None:
-            continue
-        try:
-            text = content.decode("utf-8")
-        except UnicodeError:
-            continue
-        inspections[record.path.as_posix()] = (content, _normalized_title(text))
-    candidates: list[DuplicateCandidate] = []
-    ordered = sorted(records, key=lambda item: item.path.as_posix())
-    for index, left in enumerate(ordered):
-        left_inspection = inspections.get(left.path.as_posix())
-        if left_inspection is None:
-            continue
-        for right in ordered[index + 1 :]:
-            if left.artifact_type != right.artifact_type:
-                continue
-            right_inspection = inspections.get(right.path.as_posix())
-            if right_inspection is None:
-                continue
-            signals: list[str] = []
-            if left_inspection[0] == right_inspection[0]:
-                signals.append("exact-content")
-            if left_inspection[1] and left_inspection[1] == right_inspection[1]:
-                signals.append("normalized-title")
-            if signals:
-                candidates.append(
-                    DuplicateCandidate(
-                        pathlib.PurePosixPath(left.path.as_posix()),
-                        pathlib.PurePosixPath(right.path.as_posix()),
-                        left.artifact_type,
-                        tuple(sorted(signals)),
-                    )
-                )
-    return tuple(sorted(candidates))
 
 
-def render_archive_ledger(records: collections.abc.Sequence[Record]) -> str:
-    """Render safe tombstone metadata only; never archive body bytes."""
-
-    lines = [
-        "# Generated Archive Ledger",
-        "",
-        "| Tombstone | Archived From | Disposition | Preservation | Commit | Blob |",
-        "| --- | --- | --- | --- | --- | --- |",
-    ]
-    for record in sorted(records, key=lambda item: item.path.as_posix()):
-        if record.artifact_type != "archive":
-            continue
-        values = [
-            record.path.as_posix(),
-            _safe_archive_value(record, "archived_from") or "",
-            _safe_archive_value(record, "archive_disposition") or "",
-            _safe_archive_value(record, "preservation_class") or "",
-            _safe_archive_value(record, "archived_commit") or "",
-            _safe_archive_value(record, "archived_blob") or "",
-        ]
-        lines.append("| " + " | ".join(_escape_markdown_cell(value) for value in values) + " |")
-    return "\n".join(lines) + "\n"
 
 
-def render_snapshot_manifest(records: collections.abc.Sequence[Record]) -> str:
-    """Render safe immutable-snapshot identities only."""
-
-    lines = [
-        "# Generated Snapshot Manifest",
-        "",
-        "| Tombstone | Snapshot | SHA-256 | Archived Blob |",
-        "| --- | --- | --- | --- |",
-    ]
-    for record in sorted(records, key=lambda item: item.path.as_posix()):
-        if (
-            record.artifact_type != "archive"
-            or record.metadata.get("preservation_class") != "immutable-snapshot"
-        ):
-            continue
-        values = [
-            record.path.as_posix(),
-            _safe_archive_value(record, "snapshot_path") or "",
-            _safe_archive_value(record, "content_sha256") or "",
-            _safe_archive_value(record, "archived_blob") or "",
-        ]
-        lines.append("| " + " | ".join(_escape_markdown_cell(value) for value in values) + " |")
-    return "\n".join(lines) + "\n"
 
 
-def _escape_markdown_cell(value: object) -> str:
-    """Escape deterministic generated-table content without admitting row injection."""
-
-    text = str(value)
-    text = "".join(" " if ord(character) < 32 or ord(character) == 127 else character for character in text)
-    return text.replace("|", "\\|")
 
 
-def _exception_failure_code(
-    document: object,
-    known_codes: frozenset[str],
-    today: datetime.date,
-) -> str:
-    """Map a canonical validation failure to a stable, value-free code."""
-
-    if not isinstance(document, dict) or set(document) != {"schema_version", "exceptions"}:
-        return "exception-schema-invalid"
-    entries = document.get("exceptions")
-    if type(document.get("schema_version")) is not int or document.get("schema_version") != 1:
-        return "exception-schema-invalid"
-    if not isinstance(entries, list):
-        return "exception-schema-invalid"
-    expected_fields = set(metadata.EXPECTED_EXCEPTION_SCHEMA["entry_fields"])
-    ordering: list[tuple[str, tuple[str, ...]]] = []
-    for entry in entries:
-        if not isinstance(entry, dict):
-            return "exception-schema-invalid"
-        missing = expected_fields - set(entry)
-        for field, code in (
-            ("owner", "exception-owner-required"),
-            ("reason", "exception-reason-required"),
-            ("exit_condition", "exception-exit-condition-required"),
-        ):
-            if field in missing:
-                return code
-        if missing or set(entry) - expected_fields:
-            return "exception-schema-invalid"
-        finding_code = entry.get("finding_code")
-        if isinstance(finding_code, str) and finding_code in SAFETY_FINDING_CODES:
-            return "exception-safety-code-forbidden"
-        if not isinstance(finding_code, str) or finding_code not in known_codes:
-            return "exception-code-unknown"
-        scopes = entry.get("scope_paths")
-        if not (
-            isinstance(scopes, list)
-            and bool(scopes)
-            and all(
-                isinstance(scope, str)
-                and _safe_path(scope)
-                and scope.casefold() not in {"*", "**", ".", "all", "global"}
-                for scope in scopes
-            )
-            and scopes == sorted(scopes)
-            and len(scopes) == len(set(scopes))
-        ):
-            return "exception-scope-invalid"
-        for field, code in (
-            ("owner", "exception-owner-required"),
-            ("reason", "exception-reason-required"),
-            ("exit_condition", "exception-exit-condition-required"),
-        ):
-            value = entry.get(field)
-            if not isinstance(value, str) or not value.strip():
-                return code
-        approved = entry.get("approved_at")
-        expires = entry.get("expires_on")
-        try:
-            approved_date = (
-                datetime.date.fromisoformat(approved)
-                if isinstance(approved, str)
-                else None
-            )
-            expiry_date = (
-                datetime.date.fromisoformat(expires)
-                if isinstance(expires, str)
-                else None
-            )
-        except ValueError:
-            approved_date = expiry_date = None
-        if approved_date is None or approved_date > today:
-            return "exception-approval-invalid"
-        if expiry_date is None or expiry_date <= today:
-            return "exception-expired"
-        if expiry_date <= approved_date:
-            return "exception-expiry-invalid"
-        evidence = entry.get("evidence")
-        if not (
-            isinstance(evidence, list)
-            and bool(evidence)
-            and all(isinstance(value, str) and _safe_path(value) for value in evidence)
-            and evidence == sorted(evidence)
-            and len(evidence) == len(set(evidence))
-        ):
-            return "exception-evidence-invalid"
-        ordering.append((finding_code, tuple(scopes)))
-    if ordering != sorted(ordering) or len(ordering) != len(set(ordering)):
-        return "exception-order-invalid"
-    return "exception-static-invalid"
 
 
-def _load_exception_document(path: pathlib.Path) -> object:
-    try:
-        return metadata._safe_load_unique(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
-        raise ProfileError("exception document cannot be loaded safely") from error
 
 
-def validate_exceptions(
-    path: pathlib.Path,
-    *,
-    known_codes: frozenset[str],
-    today: datetime.date,
-) -> list[Finding]:
-    """Delegate bounded exception semantics to the canonical static validator."""
-
-    label = path.name or "exceptions"
-    try:
-        loaded = _load_exception_document(path)
-    except ProfileError:
-        return [
-            _finding(
-                label,
-                "exception-schema-invalid",
-                "exception document cannot be parsed safely",
-            )
-        ]
-    try:
-        metadata.validate_static_exception_document(
-            loaded,
-            {"exception_schema": metadata.EXPECTED_EXCEPTION_SCHEMA},
-            known_codes - SAFETY_FINDING_CODES,
-            today,
-        )
-    except ProfileError:
-        code = _exception_failure_code(loaded, known_codes, today)
-        return [
-            _finding(
-                label,
-                code,
-                "exception document violates the canonical bounded contract",
-            )
-        ]
-    return []
 
 
-def _review_findings(
-    records: collections.abc.Sequence[Record],
-    contract: dict[str, object],
-    *,
-    today: datetime.date,
-) -> list[Finding]:
-    signals = contract.get("review_signals")
-    if not isinstance(signals, dict):
-        return [_finding("contract", "contract-review-signals-invalid", "review signals are unavailable")]
-    findings: list[Finding] = []
-    for record in records:
-        status = record.metadata.get("status")
-        threshold: int | None = None
-        if status == "draft":
-            threshold = signals.get("draft_days")  # type: ignore[assignment]
-        elif status == "active":
-            threshold = signals.get("active_days")  # type: ignore[assignment]
-        elif status == "completed" and record.artifact_type in {"plan", "task"}:
-            threshold = signals.get("completed_execution_days")  # type: ignore[assignment]
-        if not isinstance(threshold, int):
-            continue
-        reviewed_at = record.metadata.get("reviewed_at")
-        if not isinstance(reviewed_at, (str, datetime.date)):
-            findings.append(
-                _finding(
-                    record.path,
-                    "review-age-unavailable",
-                    "review age is unavailable because no real review evidence exists",
-                    "warning",
-                )
-            )
-            continue
-        try:
-            reviewed = (
-                reviewed_at
-                if isinstance(reviewed_at, datetime.date)
-                else datetime.date.fromisoformat(reviewed_at)
-            )
-        except ValueError:
-            continue
-        if (today - reviewed).days >= threshold:
-            findings.append(
-                _finding(
-                    record.path,
-                    "review-due",
-                    f"review evidence age reached configured threshold={threshold}",
-                    "warning",
-                )
-            )
-    return sorted(set(findings))
 
 
-def _render_summary(document: MigrationManifestDocument) -> str:
-    counts = collections.Counter(row.disposition for row in document.entries)
-    lines = [
-        "# Document Corpus Migration Summary",
-        "",
-        f"- Wave: `{document.wave}`",
-        f"- Baseline commit: `{document.baseline_commit}`",
-        f"- Enforcement: `{document.enforcement}`",
-        f"- Entries: {len(document.entries)}",
-        "",
-        "## Dispositions",
-        "",
-    ]
-    lines.extend(f"- `{name}`: {count}" for name, count in sorted(counts.items()))
-    lines.extend(
-        [
-            "",
-            "## Reviewed Paths",
-            "",
-            "| Source | Target | Disposition | Specification | Quality |",
-            "| --- | --- | --- | --- | --- |",
-        ]
-    )
-    for row in sorted(document.entries, key=lambda item: item.source_path.as_posix()):
-        lines.append(
-            "| "
-            + " | ".join(
-                _escape_markdown_cell(value)
-                for value in (
-                    row.source_path.as_posix(),
-                    _safe_path_text(row.target_path) or "",
-                    row.disposition,
-                    row.review_verdict.specification,
-                    row.review_verdict.quality,
-                )
-            )
-            + " |"
-        )
-    return "\n".join(lines) + "\n"
 
 
-def _output_path_components(path: pathlib.Path) -> tuple[tuple[str, ...], str]:
-    """Return absolute parent components and a final name without resolving links."""
-
-    if not path.is_absolute() or len(path.parts) < 2:
-        raise _CorpusSafetyError("output", "output-path-unsafe")
-    components = tuple(path.parts[1:])
-    if any(part in {"", ".", ".."} for part in components):
-        raise _CorpusSafetyError("output", "output-path-unsafe")
-    return components[:-1], components[-1]
 
 
-def _open_output_parent_descriptor(
-    path: pathlib.Path,
-    *,
-    create: bool,
-) -> tuple[int | None, str]:
-    """Hold an absolute output parent through a component-wise no-follow chain."""
-
-    parent_parts, final_name = _output_path_components(path)
-    directory_flags = (
-        os.O_RDONLY
-        | getattr(os, "O_DIRECTORY", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
-    )
-    descriptor: int | None = None
-    try:
-        descriptor = os.open(path.anchor, directory_flags)
-        for part in parent_parts:
-            try:
-                child = os.open(part, directory_flags, dir_fd=descriptor)
-            except FileNotFoundError:
-                if not create:
-                    return None, final_name
-                try:
-                    os.mkdir(part, mode=0o755, dir_fd=descriptor)
-                except FileExistsError:
-                    pass
-                try:
-                    child = os.open(part, directory_flags, dir_fd=descriptor)
-                except OSError as error:
-                    raise _CorpusSafetyError(
-                        "output", "output-path-unsafe"
-                    ) from error
-            except OSError as error:
-                raise _CorpusSafetyError("output", "output-path-unsafe") from error
-            os.close(descriptor)
-            descriptor = child
-        held = descriptor
-        descriptor = None
-        return held, final_name
-    except _CorpusSafetyError:
-        raise
-    except OSError as error:
-        raise _CorpusSafetyError("output", "output-path-unsafe") from error
-    finally:
-        if descriptor is not None:
-            os.close(descriptor)
 
 
-def _require_regular_output_entry(parent_descriptor: int, name: str) -> bool:
-    """Return existence while rejecting a symlink or any non-regular entry."""
-
-    try:
-        details = os.stat(
-            name,
-            dir_fd=parent_descriptor,
-            follow_symlinks=False,
-        )
-    except FileNotFoundError:
-        return False
-    except OSError as error:
-        raise _CorpusSafetyError("output", "output-path-unsafe") from error
-    if not stat.S_ISREG(details.st_mode):
-        raise _CorpusSafetyError("output", "output-path-unsafe")
-    return True
 
 
-def _write_output(path: pathlib.Path, content: str) -> None:
-    """Publish deterministic bytes atomically through a held no-follow parent."""
-
-    _assert_safe_generated_output(content)
-    payload = content.encode("utf-8")
-    parent_descriptor, final_name = _open_output_parent_descriptor(path, create=True)
-    if parent_descriptor is None:
-        raise _CorpusSafetyError("output", "output-path-unsafe")
-    temporary_name: str | None = None
-    temporary_descriptor: int | None = None
-    try:
-        _require_regular_output_entry(parent_descriptor, final_name)
-        for _ in range(16):
-            candidate = (
-                f".lifecycle-output-{os.getpid()}-{secrets.token_hex(8)}.tmp"
-            )
-            try:
-                temporary_descriptor = os.open(
-                    candidate,
-                    os.O_WRONLY
-                    | os.O_CREAT
-                    | os.O_EXCL
-                    | getattr(os, "O_NOFOLLOW", 0),
-                    0o666,
-                    dir_fd=parent_descriptor,
-                )
-            except FileExistsError:
-                continue
-            temporary_name = candidate
-            break
-        if temporary_descriptor is None or temporary_name is None:
-            raise _CorpusSafetyError("output", "output-path-unsafe")
-        view = memoryview(payload)
-        while view:
-            written = os.write(temporary_descriptor, view)
-            if written <= 0:
-                raise OSError("short output write")
-            view = view[written:]
-        os.fsync(temporary_descriptor)
-        os.close(temporary_descriptor)
-        temporary_descriptor = None
-
-        # Reject a final link/non-regular swap observed before publication.
-        # A later swap is still safe because replace(2) replaces the directory
-        # entry itself and never follows it to a victim.
-        _require_regular_output_entry(parent_descriptor, final_name)
-        os.replace(
-            temporary_name,
-            final_name,
-            src_dir_fd=parent_descriptor,
-            dst_dir_fd=parent_descriptor,
-        )
-        temporary_name = None
-        os.fsync(parent_descriptor)
-    finally:
-        if temporary_descriptor is not None:
-            os.close(temporary_descriptor)
-        if temporary_name is not None:
-            try:
-                os.unlink(temporary_name, dir_fd=parent_descriptor)
-            except FileNotFoundError:
-                pass
-        os.close(parent_descriptor)
 
 
-def _check_output(path: pathlib.Path, content: str) -> bool:
-    """Compare canonical bytes from one held regular no-follow descriptor."""
-
-    _assert_safe_generated_output(content)
-    parent_descriptor, final_name = _open_output_parent_descriptor(path, create=False)
-    if parent_descriptor is None:
-        return False
-    descriptor: int | None = None
-    try:
-        if not _require_regular_output_entry(parent_descriptor, final_name):
-            return False
-        try:
-            descriptor = os.open(
-                final_name,
-                os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
-                dir_fd=parent_descriptor,
-            )
-        except FileNotFoundError:
-            return False
-        except OSError as error:
-            raise _CorpusSafetyError("output", "output-path-unsafe") from error
-        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
-            raise _CorpusSafetyError("output", "output-path-unsafe")
-        chunks: list[bytes] = []
-        while True:
-            chunk = os.read(descriptor, 1024 * 1024)
-            if not chunk:
-                break
-            chunks.append(chunk)
-        return b"".join(chunks) == content.encode("utf-8")
-    finally:
-        if descriptor is not None:
-            os.close(descriptor)
-        os.close(parent_descriptor)
 
 
 def _rooted(root: pathlib.Path, path: pathlib.Path) -> pathlib.Path:
@@ -5658,67 +4846,8 @@ def _safe_corpus_snapshot(
     return tuple(records), payloads
 
 
-def _collect_records(
-    root: pathlib.Path,
-    profiles: dict[str, object],
-    *,
-    include_untracked: bool = False,
-    allow_worktree_deletions: bool = False,
-) -> tuple[Record, ...]:
-    global _CORPUS_SNAPSHOT_ROOT, _CORPUS_SNAPSHOT_BYTES
-    _CORPUS_SNAPSHOT_ROOT = None
-    _CORPUS_SNAPSHOT_BYTES = {}
-    records, payloads = _safe_corpus_snapshot(
-        root,
-        profiles,
-        include_untracked=include_untracked,
-        allow_worktree_deletions=allow_worktree_deletions,
-    )
-    _CORPUS_SNAPSHOT_ROOT = root.resolve()
-    _CORPUS_SNAPSHOT_BYTES = payloads
-    return records
 
 
-def _introduced_metadata_findings(
-    root: pathlib.Path,
-    records: collections.abc.Sequence[Record],
-    impacted: collections.abc.Sequence[Record],
-    profiles: dict[str, object],
-    *,
-    base_ref: str,
-) -> list[Finding]:
-    baseline = _verified_commit(root, base_ref)
-    if baseline is None:
-        raise ProfileError("base_ref must resolve to a commit")
-    base_records = tuple(metadata.collect_records_at_ref(root, profiles, baseline))
-    base_by_path = {record.path.as_posix(): record for record in base_records}
-    base_manifest = metadata.build_manifest(base_records)
-    current_manifest = metadata.build_manifest(records)
-    introduced: list[Finding] = []
-    for record in impacted:
-        prior = base_by_path.get(record.path.as_posix())
-        previous_status = (
-            prior.metadata.get("status")
-            if prior is not None and isinstance(prior.metadata.get("status"), str)
-            else None
-        )
-        current_record = dataclasses.replace(record, previous_status=previous_status)
-        current_findings = metadata.validate_record(current_record, profiles, current_manifest)
-        prior_keys = (
-            {
-                (finding.code, finding.message, finding.severity)
-                for finding in metadata.validate_record(prior, profiles, base_manifest)
-            }
-            if prior is not None
-            else set()
-        )
-        introduced.extend(
-            finding
-            for finding in current_findings
-            if finding.severity == "error"
-            and (finding.code, finding.message, finding.severity) not in prior_keys
-        )
-    return sorted(set(introduced))
 
 
 def _load_declared_manifests(
@@ -5862,32 +4991,6 @@ def _spec_package_lifecycle_findings(
     return findings
 
 
-def _full_findings(
-    root: pathlib.Path,
-    profiles: dict[str, object],
-    contract: dict[str, object],
-) -> tuple[tuple[Record, ...], list[Finding]]:
-    records = _collect_records(root, profiles)
-    manifest = metadata.build_manifest(records)
-    findings: list[Finding] = []
-    findings.extend(_spec_package_lifecycle_findings(root, profiles))
-    for record in records:
-        findings.extend(metadata.validate_record(record, profiles, manifest))
-        findings.extend(validate_archive_provenance(root, record))
-    budgets = contract.get("directory_budgets")
-    if not isinstance(budgets, dict):
-        raise ProfileError("directory budget contract is invalid")
-    findings.extend(
-        validate_directory_budgets(
-            records,
-            added_paths=frozenset(),
-            warning_at=int(budgets["warning_at"]),
-            block_new_leaf_at=int(budgets["block_new_leaf_at"]),
-            enforce_all=False,
-        )
-    )
-    findings.extend(_review_findings(records, contract, today=datetime.date.today()))
-    return records, sorted(set(findings))
 
 
 def _is_safety_finding(finding: Finding) -> bool:
@@ -5909,9 +5012,6 @@ def _safe_diagnostic_path(value: object) -> str:
     return path
 
 
-def _assert_safe_generated_output(content: str) -> None:
-    if _diagnostic_payload_is_sensitive(content):
-        raise _CorpusSafetyError("output", "diagnostic-redaction-unsafe")
 
 
 def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:

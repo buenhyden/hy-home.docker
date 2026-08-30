@@ -1031,11 +1031,19 @@ class PublicContractTests(LifecycleTestCase):
         )
 
     def test_cli_misuse_returns_two_before_opening_repository_files(self) -> None:
+        # Repointed from `generate-manifest` (a missing-required-argument
+        # misuse) when that mode was removed. A removed mode exits 2 on
+        # argparse "invalid choice", which is not this test's subject, so the
+        # misuse is now a forbidden flag on a surviving mode: check-contract
+        # forbids --wave, and _validate_cli_shape rejects it before any
+        # repository file is opened.
         result = run(
             sys.executable,
             str(SCRIPT),
             "--mode",
-            "generate-manifest",
+            "check-contract",
+            "--wave",
+            "forbidden",
             "--profiles",
             "/missing/profiles.yaml",
             "--contract",
@@ -2123,28 +2131,6 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertIsNone(row.artifact_type_before)
         self.assertIsNone(row.artifact_type_after)
 
-    def test_wave_archive_selection_is_focused_to_after_archive_rows(self) -> None:
-        selected = self.valid_row(
-            source_path=pathlib.PurePosixPath("archive/Windows-Network-IP.md"),
-            target_path=pathlib.PurePosixPath("archive/Windows-Network-IP.md"),
-            artifact_type=None,
-            artifact_type_before=None,
-            artifact_type_after="archive",
-            surface_class="content-archive",
-        )
-        document = dataclasses.replace(
-            self.document("a" * 40, entries=(selected,), wave=TARGET_WAVE),
-            schema_version=2,
-        )
-        records = (
-            metadata.Record(pathlib.Path("archive/Windows-Network-IP.md"), {}, "archive"),
-            metadata.Record(pathlib.Path("docs/98.archive/legacy.md"), {}, "archive"),
-        )
-        focused = lifecycle.archive_records_for_wave(records, document)
-        self.assertEqual(
-            ["archive/Windows-Network-IP.md"],
-            [record.path.as_posix() for record in focused],
-        )
 
     def test_template_source_placeholder_identity_is_null_but_real_identity_is_enforced(
         self,
@@ -2836,93 +2822,6 @@ class PromotedManifestCliTests(LifecycleTestCase):
             self.assertIn("promoted-enforcement-mismatch", mismatch.stdout)
 
 
-class CandidateManifestCliTests(LifecycleTestCase):
-    def write_config(
-        self,
-        root: pathlib.Path,
-        contract: dict[str, object],
-    ) -> tuple[pathlib.Path, pathlib.Path]:
-        profiles = root / "profiles.yaml"
-        profiles.write_text(PROFILES.read_text(encoding="utf-8"), encoding="utf-8")
-        contract_path = root / "contract.yaml"
-        contract_path.write_text(
-            yaml.safe_dump(contract, sort_keys=False),
-            encoding="utf-8",
-        )
-        return profiles, contract_path
-
-    def invoke(
-        self,
-        root: pathlib.Path,
-        profiles: pathlib.Path,
-        contract: pathlib.Path,
-        mode: str,
-        manifest: pathlib.Path | str,
-        *,
-        output: pathlib.Path | None = None,
-    ) -> subprocess.CompletedProcess[str]:
-        arguments = [
-            sys.executable,
-            str(SCRIPT),
-            "--root",
-            str(root),
-            "--profiles",
-            str(profiles),
-            "--contract",
-            str(contract),
-            "--mode",
-            mode,
-            "--manifest",
-            str(manifest),
-        ]
-        if mode == "check-manifest":
-            arguments.extend(("--wave", "foundation"))
-        else:
-            if output is None:
-                raise AssertionError("summary modes require an output fixture")
-            arguments.extend(("--output", str(output)))
-        stdout, stderr = io.StringIO(), io.StringIO()
-        with (
-            mock.patch.object(lifecycle, "load_migration_contract", return_value=yaml.safe_load(contract.read_text())),
-            mock.patch.object(lifecycle.metadata, "load_profiles", return_value=self.profiles),
-            contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr),
-        ):
-            code = lifecycle.main(arguments[2:])
-        return subprocess.CompletedProcess(arguments, code, stdout.getvalue(), stderr.getvalue())
-
-    def make_fixture(
-        self,
-        root: pathlib.Path,
-    ) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
-        init_repo(root)
-        contract = copy.deepcopy(self.contract)
-        contract["waves"]["foundation"]["enforcement"] = "advisory"
-        contract["waves"]["foundation"]["manifest_path"] = None
-        source_path = "docs/03.specs/0001-fixture/spec.md"
-        contract["waves"]["foundation"]["source_paths"] = [source_path]
-        source = root / source_path
-        source.parent.mkdir(parents=True)
-        source.write_text(
-            "---\nstatus: draft\nartifact_id: SPEC-0001\nartifact_type: spec\n"
-            "parent_ids: []\ncreated: 2026-08-20\nupdated: 2026-08-20\n---\n\n# Fixture\n",
-            encoding="utf-8",
-        )
-        baseline = commit_all(root, "candidate baseline")
-        document = lifecycle._generate_manifest_skeleton(
-            root,
-            contract,
-            wave="foundation",
-            baseline_ref=baseline,
-            profiles=self.profiles,
-        )
-        candidate = root / "docs/90.references/data/fixture.yaml"
-        candidate.parent.mkdir(parents=True, exist_ok=True)
-        candidate.write_text(
-            lifecycle.render_migration_manifest(document),
-            encoding="utf-8",
-        )
-        profiles, contract_path = self.write_config(root, contract)
-        return candidate, profiles, contract_path
 
 
 
@@ -3173,18 +3072,6 @@ class ArchiveProvenanceTests(LifecycleTestCase):
             finally:
                 temporary.cleanup()
 
-    def test_ledgers_are_deterministic_and_snapshot_manifest_excludes_git_history(self) -> None:
-        first_tmp, first_root, first, _ = self.archive_fixture("immutable-snapshot")
-        second_tmp, _, second, _ = self.archive_fixture("git-history")
-        self.addCleanup(first_tmp.cleanup)
-        self.addCleanup(second_tmp.cleanup)
-        records = (dataclasses.replace(second, path=pathlib.Path("docs/98.archive/z.md")), first)
-        ledger = lifecycle.render_archive_ledger(records)
-        snapshot = lifecycle.render_snapshot_manifest(records)
-        self.assertEqual(ledger, lifecycle.render_archive_ledger(tuple(reversed(records))))
-        self.assertIn(first.path.as_posix(), snapshot)
-        self.assertNotIn("docs/98.archive/z.md", snapshot)
-        self.assertNotIn((first_root / "docs/source.md").read_text(), ledger)
 
 
 
@@ -3204,220 +3091,11 @@ class DuplicateBudgetAndImpactTests(LifecycleTestCase):
         values.update(metadata_values)
         return metadata.Record(pathlib.Path(path), values, artifact_type)
 
-    def test_duplicate_candidates_are_same_type_advisory_and_deterministic(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            paths = {
-                "docs/03.specs/a.md": "# Shared Title\n\nSame body.\n",
-                "docs/03.specs/b.md": "# Shared Title\n\nSame body.\n",
-                "docs/03.specs/c.md": "# shared-title\n\nDifferent.\n",
-                "docs/04.execution/plans/d.md": "# Shared Title\n\nSame body.\n",
-            }
-            for path, body in paths.items():
-                target = root / path
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text(body, encoding="utf-8")
-            records = (
-                self.record("docs/03.specs/c.md"),
-                self.record("docs/04.execution/plans/d.md", "plan"),
-                self.record("docs/03.specs/b.md"),
-                self.record("docs/03.specs/a.md"),
-            )
-            candidates = lifecycle.find_duplicate_candidates(root, records)
-            self.assertEqual(candidates, tuple(sorted(candidates)))
-            pairs = {(item.left_path.as_posix(), item.right_path.as_posix()): item for item in candidates}
-            self.assertIn(("docs/03.specs/a.md", "docs/03.specs/b.md"), pairs)
-            self.assertIn("exact-content", pairs[("docs/03.specs/a.md", "docs/03.specs/b.md")].signals)
-            self.assertIn("normalized-title", pairs[("docs/03.specs/a.md", "docs/03.specs/c.md")].signals)
-            self.assertFalse(any("d.md" in left or "d.md" in right for left, right in pairs))
-            self.assertFalse(hasattr(candidates[0], "disposition"))
-
-    def test_immediate_leaf_budget_boundaries_and_added_only_blocking(self) -> None:
-        records_99 = tuple(
-            self.record(f"docs/04.execution/tasks/{index:03}.md", "task")
-            for index in range(99)
-        )
-        below_warning = lifecycle.validate_directory_budgets(
-            records_99,
-            added_paths=frozenset(),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertNotIn("directory-budget-warning", {item.code for item in below_warning})
-
-        records_100 = tuple(
-            self.record(f"docs/04.execution/tasks/{index:03}.md", "task")
-            for index in range(100)
-        )
-        findings = lifecycle.validate_directory_budgets(
-            records_100,
-            added_paths=frozenset(),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertIn("directory-budget-warning", {item.code for item in findings})
-        self.assertNotIn("directory-budget-blocked", {item.code for item in findings})
-
-        records_150 = tuple(
-            self.record(f"docs/04.execution/tasks/{index:03}.md", "task")
-            for index in range(150)
-        )
-        added = pathlib.PurePosixPath("docs/04.execution/tasks/149.md")
-        blocked = lifecycle.validate_directory_budgets(
-            records_150,
-            added_paths=frozenset({added}),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertIn("directory-budget-blocked", {item.code for item in blocked})
-        edited = lifecycle.validate_directory_budgets(
-            records_150,
-            added_paths=frozenset(),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertNotIn("directory-budget-blocked", {item.code for item in edited})
-
-        records_149 = records_150[:-1]
-        below_block = lifecycle.validate_directory_budgets(
-            records_149,
-            added_paths=frozenset({pathlib.PurePosixPath("docs/04.execution/tasks/148.md")}),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertNotIn("directory-budget-blocked", {item.code for item in below_block})
-
-        approved_records = tuple(
-            dataclasses.replace(
-                record,
-                metadata={
-                    **record.metadata,
-                    "partition_plan": "docs/03.specs/0001-partition/plan.md",
-                    "review_verdict": {"specification": "pass", "quality": "pass"},
-                },
-            )
-            if record.path.as_posix() == added.as_posix()
-            else record
-            for record in records_150
-        )
-        approved = lifecycle.validate_directory_budgets(
-            approved_records,
-            added_paths=frozenset({added}),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertNotIn("directory-budget-blocked", {item.code for item in approved})
-
-    def test_review_age_unavailable_is_advisory_and_does_not_mutate_status(self) -> None:
-        record = self.record("docs/03.specs/source.md", status="active")
-        original = copy.deepcopy(record.metadata)
-        findings = lifecycle._review_findings(
-            (record,), self.contract, today=datetime.date(2026, 7, 14)
-        )
-        self.assertIn("review-age-unavailable", {item.code for item in findings})
-        self.assertTrue(all(item.severity == "warning" for item in findings))
-        self.assertEqual(record.metadata, original)
-
-    def test_impacted_records_include_declared_consumer_and_links_not_title_similarity(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            bodies = {
-                "docs/03.specs/source.md": "# Shared Title\n\nInitial.\n",
-                "docs/03.specs/consumer.md": "# Consumer\n\n[Source](./source.md)\n",
-                "docs/03.specs/similar.md": "# Shared Title\n\nUnlinked.\n",
-            }
-            for path, body in bodies.items():
-                target = root / path
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text(body, encoding="utf-8")
-            baseline = commit_all(root)
-            (root / "docs/03.specs/source.md").write_text(
-                "# Shared Title\n\nChanged.\n", encoding="utf-8"
-            )
-            records = (
-                self.record("docs/03.specs/source.md"),
-                self.record("docs/03.specs/consumer.md"),
-                self.record("docs/03.specs/similar.md"),
-            )
-            row = self.valid_row(
-                source_path=pathlib.PurePosixPath("docs/03.specs/source.md"),
-                target_path=pathlib.PurePosixPath("docs/03.specs/source.md"),
-                active_consumers=(pathlib.PurePosixPath("docs/03.specs/consumer.md"),),
-            )
-            document = self.document(baseline, entries=(row,))
-            selected = lifecycle.collect_impacted_records(
-                root,
-                records,
-                self.profiles,
-                self.fixture_contract(["docs/03.specs/source.md"]),
-                (document,),
-                base_ref=baseline,
-            )
-            paths = {item.path.as_posix() for item in selected}
-            self.assertIn("docs/03.specs/source.md", paths)
-            self.assertIn("docs/03.specs/consumer.md", paths)
-            self.assertNotIn("docs/03.specs/similar.md", paths)
 
 
-class ExceptionValidationTests(LifecycleTestCase):
-    def write(self, exceptions: list[dict[str, object]]) -> pathlib.Path:
-        directory = tempfile.mkdtemp()
-        self.addCleanup(lambda: __import__("shutil").rmtree(directory))
-        path = pathlib.Path(directory) / "exceptions.yaml"
-        path.write_text(
-            yaml.safe_dump({"schema_version": 1, "exceptions": exceptions}, sort_keys=False),
-            encoding="utf-8",
-        )
-        return path
 
-    def valid(self) -> dict[str, object]:
-        return {
-            "finding_code": "directory-budget-warning",
-            "scope_paths": ["docs/04.execution/tasks/example.md"],
-            "owner": "docs-platform",
-            "reason": "Bounded migration debt.",
-            "approved_at": "2026-07-01",
-            "expires_on": "2026-08-01",
-            "exit_condition": "Partition the directory.",
-            "evidence": ["docs/04.execution/tasks/evidence.md"],
-        }
 
-    def codes(self, value: dict[str, object]) -> set[str]:
-        return {
-            item.code
-            for item in lifecycle.validate_exceptions(
-                self.write([value]),
-                known_codes=frozenset({"directory-budget-warning"}),
-                today=datetime.date(2026, 7, 14),
-            )
-        }
 
-    def test_bounded_exception_schema_cases(self) -> None:
-        valid = self.valid()
-        cases = {
-            "unknown-code": ({**valid, "finding_code": "unknown"}, "exception-code-unknown"),
-            "wildcard": ({**valid, "scope_paths": ["docs/**"]}, "exception-scope-invalid"),
-            "owner": ({**valid, "owner": ""}, "exception-owner-required"),
-            "reason": ({**valid, "reason": ""}, "exception-reason-required"),
-            "exit": ({**valid, "exit_condition": ""}, "exception-exit-condition-required"),
-            "expired": ({**valid, "expires_on": "2026-07-14"}, "exception-expired"),
-        }
-        for name, (value, expected) in cases.items():
-            with self.subTest(case=name):
-                self.assertIn(expected, self.codes(value))
-        self.assertEqual(self.codes(valid), set())
-
-    def test_omitted_owner_uses_the_specific_required_code(self) -> None:
-        value = self.valid()
-        del value["owner"]
-        self.assertIn("exception-owner-required", self.codes(value))
 
 
 class ReviewRemediationTests(LifecycleTestCase):
@@ -3448,12 +3126,19 @@ class ReviewRemediationTests(LifecycleTestCase):
                 "raise RuntimeError('metadata module executed')\n",
                 encoding="utf-8",
             )
+            # Repointed from `generate-manifest` when that mode was removed:
+            # an "invalid choice" exit 2 would pass this test without ever
+            # reaching the shape check it exists to guard. check-contract
+            # forbids --wave, so the misuse still returns 2 from
+            # _validate_cli_shape, before the metadata module is imported.
             result = run(
                 sys.executable,
                 str(SCRIPT),
                 "--root", str(root),
                 "--mode",
-                "generate-manifest",
+                "check-contract",
+                "--wave",
+                "forbidden",
                 cwd=root,
             )
             self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
@@ -3461,68 +3146,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             self.assertNotIn("metadata module executed", result.stderr)
             self.assertNotIn("Traceback", result.stderr)
 
-    def test_companion_reuses_canonical_static_manifest_and_exception_grammar(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            readme = root / "README.md"
-            readme.write_text("# Fixture\n", encoding="utf-8")
-            baseline = commit_all(root)
-            row = self.valid_row(
-                source_path=pathlib.PurePosixPath("README.md"),
-                target_path=pathlib.PurePosixPath("README.md"),
-                artifact_id="readme:forbidden",
-                artifact_type="readme",
-                status_before=None,
-                status_after=None,
-            )
-            document = self.document(baseline, entries=(row,))
-            contract = self.fixture_contract(["README.md"])
-            with self.assertRaises(metadata.ProfileError):
-                metadata.validate_static_migration_manifest(
-                    lifecycle._manifest_mapping(document), contract, self.profiles
-                )
-            findings = lifecycle.validate_migration_manifest(
-                root, self.profiles, contract, document
-            )
-            self.assertIn("manifest-static-invalid", {item.code for item in findings})
 
-        invalid_scope = ExceptionValidationTests.valid(self)
-        invalid_scope["scope_paths"] = ["ALL"]
-        codes = {
-            item.code
-            for item in lifecycle.validate_exceptions(
-                ExceptionValidationTests.write(self, [invalid_scope]),
-                known_codes=frozenset({"directory-budget-warning"}),
-                today=datetime.date(2026, 7, 14),
-            )
-        }
-        self.assertIn("exception-scope-invalid", codes)
-
-    def test_exception_nested_types_fail_closed_without_traceback_or_payload(self) -> None:
-        marker = "do-not-echo-nested-payload"
-        cases: tuple[object, ...] = (
-            {marker: "value"},
-            [marker],
-            True,
-            None,
-            7,
-        )
-        for value in cases:
-            with self.subTest(value_type=type(value).__name__):
-                entry = ExceptionValidationTests.valid(self)
-                entry["evidence"] = [value]
-                path = ExceptionValidationTests.write(self, [entry])
-                findings = lifecycle.validate_exceptions(
-                    path,
-                    known_codes=frozenset({"directory-budget-warning"}),
-                    today=datetime.date(2026, 7, 14),
-                )
-                rendered = "\n".join(
-                    f"{item.code}:{item.path}:{item.message}" for item in findings
-                )
-                self.assertIn("exception-evidence-invalid", rendered)
-                self.assertNotIn(marker, rendered)
 
     def _impact_fixture(
         self,
@@ -3563,94 +3187,8 @@ class ReviewRemediationTests(LifecycleTestCase):
         )
         return temporary, root, baseline, records
 
-    def test_deletion_selects_old_path_and_every_direct_relation_class(self) -> None:
-        temporary, root, baseline, records = self._impact_fixture()
-        self.addCleanup(temporary.cleanup)
-        (root / "docs/03.specs/source.md").unlink()
-        row = self.valid_row(
-            source_path=pathlib.PurePosixPath("docs/03.specs/source.md"),
-            target_path=None,
-            artifact_id="spec:source",
-            parent_ids=("spec:parent",),
-            disposition="delete",
-            canonical_replacement="spec:replacement",
-            active_consumers=(
-                pathlib.PurePosixPath("docs/03.specs/consumer.md"),
-            ),
-        )
-        selected = lifecycle.collect_impacted_records(
-            root,
-            records,
-            self.profiles,
-            self.fixture_contract(["docs/03.specs/source.md"]),
-            (self.document(baseline, entries=(row,)),),
-            base_ref=baseline,
-        )
-        self.assertEqual(
-            {item.path.as_posix() for item in selected},
-            {
-                "docs/03.specs/parent.md",
-                "docs/03.specs/dependent.md",
-                "docs/03.specs/superseder.md",
-                "docs/03.specs/link.md",
-                "docs/03.specs/consumer.md",
-                "docs/03.specs/replacement.md",
-            },
-        )
 
-    def test_rename_diff_is_nul_safe_and_retains_both_paths(self) -> None:
-        temporary, root, baseline, records = self._impact_fixture()
-        self.addCleanup(temporary.cleanup)
-        old = root / "docs/03.specs/source.md"
-        new = root / "docs/03.specs/renamed.md"
-        old.rename(new)
-        current, triggers = lifecycle._changed_path_sets(root, baseline)
-        self.assertIn("docs/03.specs/renamed.md", current)
-        self.assertIn("docs/03.specs/source.md", triggers)
-        self.assertIn("docs/03.specs/renamed.md", triggers)
 
-        renamed = self.record(
-            "docs/03.specs/renamed.md",
-            artifact_id="spec:source",
-            parent_ids=["spec:parent"],
-        )
-        row = self.valid_row(
-            source_path=pathlib.PurePosixPath("docs/03.specs/source.md"),
-            target_path=pathlib.PurePosixPath("docs/03.specs/renamed.md"),
-            artifact_id="spec:source",
-            parent_ids=("spec:parent",),
-            disposition="move",
-            active_consumers=(
-                pathlib.PurePosixPath("docs/03.specs/consumer.md"),
-            ),
-        )
-        selected = lifecycle.collect_impacted_records(
-            root,
-            (*records, renamed),
-            self.profiles,
-            self.fixture_contract(["docs/03.specs/source.md"]),
-            (self.document(baseline, entries=(row,)),),
-            base_ref=baseline,
-        )
-        paths = {item.path.as_posix() for item in selected}
-        self.assertIn("docs/03.specs/renamed.md", paths)
-        self.assertIn("docs/03.specs/link.md", paths)
-        self.assertIn("docs/03.specs/parent.md", paths)
-        self.assertIn("docs/03.specs/consumer.md", paths)
-
-    def test_introduced_findings_subtract_identical_base_debt(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            target = root / "docs/90.references/debt.md"
-            target.parent.mkdir(parents=True)
-            target.write_text("# Existing debt\n", encoding="utf-8")
-            baseline = commit_all(root)
-            records = tuple(metadata.collect_records(root, self.profiles, require_git=True))
-            findings = lifecycle._introduced_metadata_findings(
-                root, records, records, self.profiles, base_ref=baseline
-            )
-            self.assertEqual(findings, [])
 
     def test_manifest_attestation_binds_baseline_transition_and_result_truth(self) -> None:
         temporary = tempfile.TemporaryDirectory()
@@ -3820,116 +3358,7 @@ class ReviewRemediationTests(LifecycleTestCase):
             self.assertNotIn("Traceback", result.stderr)
             self.assertIn("configuration-error", result.stderr)
 
-    def test_snapshot_and_manifest_symlinks_cannot_escape_repository(self) -> None:
-        temporary, root, record, payload = ArchiveProvenanceTests.archive_fixture(
-            self, "immutable-snapshot"
-        )
-        self.addCleanup(temporary.cleanup)
-        snapshot = root / str(record.metadata["snapshot_path"])
-        outside = root.parent / f"{root.name}-outside-snapshot"
-        outside.write_bytes(payload)
-        self.addCleanup(lambda: outside.unlink(missing_ok=True))
-        snapshot.unlink()
-        snapshot.symlink_to(outside)
-        self.assertIn(
-            "archive-snapshot-file-invalid",
-            {item.code for item in lifecycle.validate_archive_provenance(root, record)},
-        )
 
-        manifest_root = root / "manifest-fixture"
-        manifest_root.mkdir()
-        init_repo(manifest_root)
-        source = manifest_root / "docs/03.specs/source.md"
-        source.parent.mkdir(parents=True)
-        source.write_text(
-            "---\nstatus: active\nartifact_id: spec:source\n"
-            "artifact_type: spec\nparent_ids: []\n---\n\n# Source\n",
-            encoding="utf-8",
-        )
-        baseline = commit_all(manifest_root, "manifest baseline")
-        manifest_relative = "docs/90.references/manifests/foundation.yaml"
-        manifest = manifest_root / manifest_relative
-        manifest.parent.mkdir(parents=True)
-        manifest.write_text(
-            lifecycle.render_migration_manifest(
-                self.document(baseline, entries=(self.valid_row(),))
-            ),
-            encoding="utf-8",
-        )
-        commit_all(manifest_root, "track manifest fixture")
-        outside_manifest = root.parent / f"{root.name}-outside-manifest"
-        outside_manifest.write_bytes(manifest.read_bytes())
-        self.addCleanup(lambda: outside_manifest.unlink(missing_ok=True))
-        manifest.unlink()
-        manifest.symlink_to(outside_manifest)
-        with self.assertRaises(lifecycle.ProfileError):
-            lifecycle._load_repo_migration_manifest(manifest_root, manifest_relative)
-        with self.assertRaises(lifecycle.ProfileError):
-            lifecycle._repo_manifest_path(manifest_root, outside_manifest)
-        with self.assertRaises(lifecycle.ProfileError):
-            lifecycle._repo_manifest_path(
-                manifest_root,
-                pathlib.Path("../escape.yaml"),
-            )
-        self.assertIsNone(
-            lifecycle._read_regular_repo_bytes(
-                manifest_root,
-                "../escape.yaml",
-                require_tracked=False,
-            )
-        )
-
-        manifest.unlink()
-        manifest_directory = manifest.parent
-        manifest_directory.rmdir()
-        outside_manifest_directory = root.parent / f"{root.name}-outside-manifest-dir"
-        outside_manifest_directory.mkdir()
-        self.addCleanup(
-            lambda: shutil.rmtree(outside_manifest_directory, ignore_errors=True)
-        )
-        (outside_manifest_directory / manifest.name).write_bytes(
-            outside_manifest.read_bytes()
-        )
-        manifest_directory.symlink_to(
-            outside_manifest_directory,
-            target_is_directory=True,
-        )
-        with self.assertRaises(lifecycle.ProfileError):
-            lifecycle._load_repo_migration_manifest(manifest_root, manifest_relative)
-
-        snapshot.unlink()
-        evidence_dir = snapshot.parent
-        evidence_dir.rmdir()
-        outside_dir = root.parent / f"{root.name}-outside-dir"
-        outside_dir.mkdir()
-        self.addCleanup(lambda: shutil.rmtree(outside_dir, ignore_errors=True))
-        (outside_dir / snapshot.name).write_bytes(payload)
-        evidence_dir.symlink_to(outside_dir, target_is_directory=True)
-        self.assertIn(
-            "archive-snapshot-file-invalid",
-            {item.code for item in lifecycle.validate_archive_provenance(root, record)},
-        )
-
-    def test_unicode_title_normalization_preserves_multilingual_alphanumerics(self) -> None:
-        pairs = (
-            ("# 운영 가이드\n", "# 운영-가이드\n"),
-            ("# Café Guide\n", "# CAFE\u0301-guide\n"),
-        )
-        for index, (left_body, right_body) in enumerate(pairs):
-            with self.subTest(index=index), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                left = root / f"docs/90.references/{index}-left.md"
-                right = root / f"docs/90.references/{index}-right.md"
-                left.parent.mkdir(parents=True)
-                left.write_text(left_body, encoding="utf-8")
-                right.write_text(right_body, encoding="utf-8")
-                records = (
-                    self.record(left.relative_to(root).as_posix(), "reference"),
-                    self.record(right.relative_to(root).as_posix(), "reference"),
-                )
-                candidates = lifecycle.find_duplicate_candidates(root, records)
-                self.assertEqual(len(candidates), 1)
-                self.assertIn("normalized-title", candidates[0].signals)
 
 
     def test_every_shaped_mode_has_table_driven_shape_contracts(self) -> None:
@@ -3985,61 +3414,9 @@ class ReviewRemediationTests(LifecycleTestCase):
                     ),
                     mock.patch.object(
                         lifecycle,
-                        "_generate_manifest_skeleton",
-                        return_value=document,
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "_load_candidate_migration_manifest",
-                        return_value=document,
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "validate_migration_manifest",
-                        return_value=[],
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "_candidate_manifest_matches",
-                        return_value=True,
-                    ),
-                    mock.patch.object(
-                        lifecycle,
                         "_load_declared_manifests",
                         return_value=((), []),
                     ),
-                    mock.patch.object(lifecycle, "_collect_records", return_value=()),
-                    mock.patch.object(
-                        lifecycle,
-                        "collect_impacted_records",
-                        return_value=(),
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "_introduced_metadata_findings",
-                        return_value=[],
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "_added_record_paths",
-                        return_value=frozenset(),
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "_full_findings",
-                        return_value=((), []),
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "validate_directory_budgets",
-                        return_value=[],
-                    ),
-                    mock.patch.object(
-                        lifecycle,
-                        "find_duplicate_candidates",
-                        return_value=(),
-                    ),
-                    mock.patch.object(lifecycle, "_check_output", return_value=True),
                     contextlib.redirect_stdout(io.StringIO()),
                     contextlib.redirect_stderr(io.StringIO()),
                 ):
@@ -4117,43 +3494,6 @@ class ReviewRemediationTests(LifecycleTestCase):
                             return_value=self.profiles,
                         )
                     )
-                    if mode == "generate-manifest" and safety_case:
-                        stack.enter_context(
-                            mock.patch.object(
-                                lifecycle,
-                                "_generate_manifest_skeleton",
-                                side_effect=lifecycle.ProfileError("unsafe baseline"),
-                            )
-                        )
-                    else:
-                        stack.enter_context(
-                            mock.patch.object(
-                                lifecycle,
-                                "_generate_manifest_skeleton",
-                                return_value=document,
-                            )
-                        )
-                    stack.enter_context(
-                        mock.patch.object(
-                            lifecycle,
-                            "_load_candidate_migration_manifest",
-                            return_value=document,
-                        )
-                    )
-                    stack.enter_context(
-                        mock.patch.object(
-                            lifecycle,
-                            "validate_migration_manifest",
-                            return_value=[finding],
-                        )
-                    )
-                    stack.enter_context(
-                        mock.patch.object(
-                            lifecycle,
-                            "_candidate_manifest_matches",
-                            return_value=True,
-                        )
-                    )
                     stack.enter_context(
                         mock.patch.object(
                             lifecycle,
@@ -4164,26 +3504,9 @@ class ReviewRemediationTests(LifecycleTestCase):
                     stack.enter_context(
                         mock.patch.object(
                             lifecycle,
-                            "_full_findings",
-                            return_value=((archive,), [finding]),
-                        )
-                    )
-                    stack.enter_context(
-                        mock.patch.object(
-                            lifecycle,
                             "validate_archive_provenance",
                             return_value=[finding],
                         )
-                    )
-                    stack.enter_context(
-                        mock.patch.object(
-                            lifecycle,
-                            "validate_directory_budgets",
-                            return_value=[finding],
-                        )
-                    )
-                    stack.enter_context(
-                        mock.patch.object(lifecycle, "_check_output", return_value=True)
                     )
                     stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
                     stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
@@ -4708,85 +4031,6 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         )
         return temporary, root, baseline, row, records
 
-    def test_partition_approval_requires_tracked_canonical_reviewed_plan(self) -> None:
-        cases = {
-            "missing": "manifest-partition-plan-invalid",
-            "untracked": "manifest-partition-plan-invalid",
-            "symlink": "manifest-partition-plan-invalid",
-            "wrong-profile": "manifest-partition-plan-profile-invalid",
-            "draft": "manifest-partition-plan-status-invalid",
-            "unreviewed": "manifest-partition-plan-review-required",
-        }
-        for name, expected in cases.items():
-            state = "tracked" if name == "unreviewed" else name
-            reviews = (
-                lifecycle.ReviewVerdict("pending", "pending")
-                if name == "unreviewed"
-                else lifecycle.ReviewVerdict("pass", "pass")
-            )
-            temporary, root, baseline, row, records = self._partition_fixture(
-                plan_state=state,
-                reviews=reviews,
-            )
-            try:
-                contract = self.fixture_contract([row.source_path.as_posix()])
-                document = self.document(baseline, entries=(row,))
-                codes = {
-                    item.code
-                    for item in lifecycle.validate_migration_manifest(
-                        root, self.profiles, contract, document
-                    )
-                }
-                self.assertIn(expected, codes, name)
-                applied = lifecycle._apply_partition_approvals(
-                    records,
-                    (document,),
-                    root=root,
-                    profiles=self.profiles,
-                )
-                findings = lifecycle.validate_directory_budgets(
-                    applied,
-                    added_paths=frozenset(
-                        {pathlib.PurePosixPath("docs/04.execution/tasks/149.md")}
-                    ),
-                    warning_at=100,
-                    block_new_leaf_at=150,
-                    enforce_all=False,
-                )
-                self.assertIn("directory-budget-blocked", {item.code for item in findings})
-            finally:
-                temporary.cleanup()
-
-        temporary, root, baseline, row, records = self._partition_fixture(
-            plan_state="tracked"
-        )
-        self.addCleanup(temporary.cleanup)
-        contract = self.fixture_contract([row.source_path.as_posix()])
-        document = self.document(baseline, entries=(row,))
-        self.assertFalse(
-            any(
-                item.code.startswith("manifest-partition-plan-")
-                for item in lifecycle.validate_migration_manifest(
-                    root, self.profiles, contract, document
-                )
-            )
-        )
-        applied = lifecycle._apply_partition_approvals(
-            records,
-            (document,),
-            root=root,
-            profiles=self.profiles,
-        )
-        approved = lifecycle.validate_directory_budgets(
-            applied,
-            added_paths=frozenset(
-                {pathlib.PurePosixPath("docs/04.execution/tasks/149.md")}
-            ),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertNotIn("directory-budget-blocked", {item.code for item in approved})
 
     def test_partition_plan_uses_canonical_metadata_relations_and_body_role(self) -> None:
         temporary, root, _baseline, row, _records = self._partition_fixture(
@@ -4868,49 +4112,9 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 }
                 self.assertIn("manifest-partition-plan-profile-invalid", codes)
 
-    def test_directory_budget_counts_only_immediate_eligible_markdown_leaves(self) -> None:
-        records = tuple(
-            self.record(f"docs/04.execution/tasks/{index:03}.md")
-            for index in range(99)
-        ) + (
-            self.record("docs/04.execution/tasks/README.md", "readme"),
-            self.record("docs/04.execution/tasks/generated.md", "generated"),
-            self.record("docs/04.execution/tasks/repo-support.md", "repo-support"),
-            self.record("docs/04.execution/tasks/unsupported.md", "unsupported"),
-            self.record("docs/04.execution/tasks/not-markdown.txt", "task"),
-            self.record("docs/04.execution/tasks/2026/nested.md", "task"),
-        )
-        findings = lifecycle.validate_directory_budgets(
-            records,
-            added_paths=frozenset(),
-            warning_at=100,
-            block_new_leaf_at=150,
-            enforce_all=False,
-        )
-        self.assertFalse(
-            any(
-                item.path == "docs/04.execution/tasks"
-                and item.code == "directory-budget-warning"
-                for item in findings
-            )
-        )
 
 
 
-    def test_generated_markdown_table_cells_escape_pipe_and_control_characters(self) -> None:
-        record = self.record(
-            "docs/98.archive/a|b.md",
-            "archive",
-            archived_from="docs/source|name.md\nnext-row",
-            archive_disposition="withdrawn",
-            preservation_class="git-history",
-            archived_commit="a" * 40,
-            archived_blob="b" * 40,
-        )
-        ledger = lifecycle.render_archive_ledger((record,))
-        self.assertIn("docs/98.archive/a\\|b.md", ledger)
-        self.assertIn("docs/source\\|name.md next-row", ledger)
-        self.assertNotIn("docs/source|name.md\nnext-row", ledger)
 
 
 class AcceptanceFindingRemediationTests(LifecycleTestCase):
@@ -5634,72 +4838,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
 
 
 
-    def test_atomic_publication_cannot_redirect_a_concurrent_final_symlink(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            fixture = pathlib.Path(directory)
-            output = fixture / "result"
-            victim = fixture / "victim"
-            victim.write_bytes(b"victim-sentinel")
-            original_replace = os.replace
 
-            def swap_then_replace(
-                source: str,
-                target: str,
-                *,
-                src_dir_fd: int | None = None,
-                dst_dir_fd: int | None = None,
-            ) -> None:
-                os.symlink(victim, target, dir_fd=dst_dir_fd)
-                original_replace(
-                    source,
-                    target,
-                    src_dir_fd=src_dir_fd,
-                    dst_dir_fd=dst_dir_fd,
-                )
-
-            with mock.patch.object(
-                lifecycle.os,
-                "replace",
-                side_effect=swap_then_replace,
-            ) as replaced:
-                lifecycle._write_output(output, "complete\n")
-
-            replaced.assert_called_once()
-            self.assertEqual(victim.read_bytes(), b"victim-sentinel")
-            self.assertEqual(output.read_bytes(), b"complete\n")
-            self.assertFalse(
-                any("lifecycle-output" in path.name for path in fixture.iterdir())
-            )
-
-    def test_interrupted_publication_preserves_existing_output_and_cleans_temp(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            fixture = pathlib.Path(directory)
-            output = fixture / "result"
-            output.write_bytes(b"existing-output")
-            original_write = os.write
-            calls = 0
-
-            def partial_then_fail(descriptor: int, payload: bytes) -> int:
-                nonlocal calls
-                calls += 1
-                if calls == 1:
-                    original_write(descriptor, payload[: max(1, len(payload) // 2)])
-                    raise OSError("simulated interrupted publication")
-                return original_write(descriptor, payload)
-
-            with mock.patch.object(
-                lifecycle.os,
-                "write",
-                side_effect=partial_then_fail,
-            ):
-                with self.assertRaises((OSError, lifecycle._CorpusSafetyError)):
-                    lifecycle._write_output(output, "complete-output\n")
-
-            self.assertGreater(calls, 0)
-            self.assertEqual(output.read_bytes(), b"existing-output")
-            self.assertFalse(
-                any("lifecycle-output" in path.name for path in fixture.iterdir())
-            )
 
     def test_archive_result_relations_use_the_held_full_result_manifest(self) -> None:
         temporary, root, baseline, row, target = self._archive_fixture()

@@ -279,11 +279,12 @@ Task 4 inventory field and normalizes YAML/configuration defects without raw
 tracebacks or unsafe metadata values.
 
 `scripts/validation/check-document-corpus-lifecycle.py` is the focused lifecycle
-companion. Repository contracts always run `--mode check-contract` and
-`--mode check-promoted`, then run `--mode check-impacted` only with a verified
-explicit comparison commit or a resolvable local `HEAD~1`. The scheduled/manual
-workflow keeps full-corpus debt advisory through `--mode report-full`; parser,
-contract, Git, path, redaction, and internal safety failures still fail closed.
+companion. It exposes exactly four modes, each reachable from a registered
+gate: `--mode check-public`, `--mode check-contract`, `--mode check-promoted`,
+and `--mode check-recovery`, which re-proves that every tombstone's
+`commit:path` resolves to a regular Git blob. Any other `--mode` value is an
+argparse error. Parser, contract, Git, path, redaction, and internal safety
+failures still fail closed.
 Run its focused inventory with
 `python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v`.
 The executable test inventory is
