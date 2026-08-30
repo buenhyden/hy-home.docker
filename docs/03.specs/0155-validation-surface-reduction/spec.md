@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: draft
+status: active
 artifact_id: SPEC-0155
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
@@ -26,45 +26,65 @@ retires and show that no registered profile depends on it.
 
 **Measured inputs.**
 
-| Cluster | Lines |
-| :--- | ---: |
+| Cluster                                                                                                                    |  Lines |
+| :------------------------------------------------------------------------------------------------------------------------- | -----: |
 | SPEC-0137 gates: `agentic-research-gate9-evidence`, `gate2_claim_review_contract`, `carry_owner_contract`, and their tests | 13,032 |
-| Document corpus lifecycle: `check-document-corpus-lifecycle.py` and its tests | 13,378 |
-| Gate framework: `ci_gate_contract`, `ci_gate_runner`, `ci_gate_adapters`, `run-ci-gate`, and their tests | 10,116 |
-| Document metadata validation and its tests | 9,271 |
-| Target surface contracts and their tests | 2,617 |
-| Git provenance, identity history, provenance policy, and their tests | 2,126 |
-| Old-path gate and its tests | 1,958 |
-| Agentic audit semantic freshness | 938 |
-| `scripts/**/*.py` total | 50,640 |
-| `tests/**/*.py` total | 58,553 |
+| Document corpus lifecycle: `check-document-corpus-lifecycle.py` and its tests                                              | 13,378 |
+| Gate framework: `ci_gate_contract`, `ci_gate_runner`, `ci_gate_adapters`, `run-ci-gate`, and their tests                   | 10,116 |
+| Document metadata validation and its tests                                                                                 |  9,271 |
+| Target surface contracts and their tests                                                                                   |  2,617 |
+| Git provenance, identity history, provenance policy, and their tests                                                       |  2,126 |
+| Old-path gate and its tests                                                                                                |  1,958 |
+| Agentic audit semantic freshness                                                                                           |    938 |
+| `scripts/**/*.py` total                                                                                                    | 50,640 |
+| `tests/**/*.py` total                                                                                                      | 58,553 |
 
 **SPEC-0137 gate observations.**
 
-| Fact | Value |
-| :--- | :--- |
-| Validators registered in `run-ci-gate.py --profile full` | 22 |
-| `agentic-research-gate9-evidence.py` present in that set | no |
-| `gate2_claim_review_contract.py` present in that set | no |
-| Present in `--profile changed` | no |
-| Non-test, non-manifest references outside SPEC-0137 documents | none |
-| SPEC-0137 Task states | 3 `cancelled`, 1 `active` |
-| Ledger that gate 2 quantifies over | lives in `tsk-0001-rebuild.md`, `cancelled` |
-| Old research pack the gates protect | `docs/90.references/research/0002-agentic-engineering-research-pack/` still present |
+| Fact                                                          | Value                                                                               |
+| :------------------------------------------------------------ | :---------------------------------------------------------------------------------- |
+| Validators registered in `run-ci-gate.py --profile full`      | 22                                                                                  |
+| `agentic-research-gate9-evidence.py` present in that set      | no                                                                                  |
+| `gate2_claim_review_contract.py` present in that set          | no                                                                                  |
+| Present in `--profile changed`                                | no                                                                                  |
+| Non-test, non-manifest references outside SPEC-0137 documents | none                                                                                |
+| SPEC-0137 Task states                                         | 3 `cancelled`, 1 `active`                                                           |
+| Ledger that gate 2 quantifies over                            | lives in `tsk-0001-rebuild.md`, `cancelled`                                         |
+| Old research pack the gates protect                           | `docs/90.references/research/0002-agentic-engineering-research-pack/` still present |
 
 **SHA tracking observations.**
 
-| Fact | Value |
-| :--- | :--- |
-| Provenance library size | 1,499 lines across three modules |
-| Documents carrying `archived_commit` and `archived_blob` | 2 |
-| Status of those two documents | invalid `archived`, corrected by SPEC-0154 |
-| Design already superseded | `target_surface_delta_contract.py` validates the surface "without branch/SHA snapshots" |
-| Normative document pinning a commit literal | `docs/98.archive/README.md` |
-| Full-gate test failing on a bounded Git identity scan | `test_reverse_transition_without_override_is_blocked` |
-| Blobs the identity scan reads per run | 498 markdown files, 11.07 MiB |
-| Metadata advisory state guarded by a `ProfileError` | `metadata_validator.py` |
-| `docs/04.execution` literals pinned inside a validator | `metadata_validator.py` `planned_partitions` |
+| Fact                                                     | Value                                                                                   |
+| :------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| Provenance library size                                  | 1,499 lines across three modules                                                        |
+| Documents carrying `archived_commit` and `archived_blob` | 2                                                                                       |
+| Status of those two documents                            | invalid `archived`, corrected by SPEC-0154                                              |
+| Design already superseded                                | `target_surface_delta_contract.py` validates the surface "without branch/SHA snapshots" |
+| Normative document pinning a commit literal              | `docs/98.archive/README.md`                                                             |
+| Full-gate test failing on a bounded Git identity scan    | `test_reverse_transition_without_override_is_blocked`                                   |
+| Blobs the identity scan reads per run                    | 498 markdown files, 11.07 MiB                                                           |
+| Metadata advisory state guarded by a `ProfileError`      | `metadata_validator.py`                                                                 |
+| `docs/04.execution` literals pinned inside a validator   | `metadata_validator.py` `planned_partitions`                                            |
+
+**Routed in from SPEC-0154, measured.**
+
+| Fact                                                   | Value                                                                                        |
+| :----------------------------------------------------- | :------------------------------------------------------------------------------------------- |
+| Blocking violations SPEC-0154 closes with              | 4                                                                                            |
+| `governance-policy` `required_sections`                | `["Related Documents"]`                                                                      |
+| `governance-policy` `optional_sections`                | `[]`                                                                                         |
+| Documents carrying the profile                         | 16                                                                                           |
+| Distinct H2 headings across them                       | 51                                                                                           |
+| Consequence                                            | every H2 except `Related Documents` is unregistered in all 16                                |
+| Why the corpus passes                                  | only headings a change introduces are counted, so the profile blocks edits and not the state |
+| Emission site                                          | `metadata_validator.py:2442`, reading `registry.profiles`                                    |
+| Registering the 13 changed headings drops the count to | 0, measured and reverted                                                                     |
+| Transition override requires `evidence_task` prefix    | `docs/03.specs/spec-`                                                                        |
+| Transition override requires `evidence_task` basename  | `task.md`                                                                                    |
+| Directories matching `docs/03.specs/spec-*`            | 0                                                                                            |
+| Files named `task.md` under `docs/03.specs/`           | 0, against 15 named `tsk-*.md`                                                               |
+| Consequence                                            | no path in this repository can satisfy the override, so the mechanism is unreachable         |
+| Dead links behind `DEFERRED_PREFIXES` in the link gate | 158                                                                                          |
 
 **In scope.** `scripts/validation/`, `scripts/lib/document_governance/`,
 `tests/`, `scripts/manifest.yaml`, the generated evidence snapshots under
@@ -165,13 +185,66 @@ Task.
 Merge the three summary and detail pairs that publish the same measurement, and
 add `generated_by` to every snapshot a generator writes.
 
-| Pair | Action |
-| :--- | :--- |
-| `0066-foundation-summary` and `0067-foundation` | merge into one snapshot |
+| Pair                                                                            | Action                  |
+| :------------------------------------------------------------------------------ | :---------------------- |
+| `0066-foundation-summary` and `0067-foundation`                                 | merge into one snapshot |
 | `0068-target-surface-convergence-summary` and `0069-target-surface-convergence` | merge into one snapshot |
-| `0073-target-surface-delta-manifest` and `0074-target-surface-delta-summary` | merge into one snapshot |
+| `0073-target-surface-delta-manifest` and `0074-target-surface-delta-summary`    | merge into one snapshot |
 
-### 7. Gate framework
+### 7. The `governance-policy` heading contract
+
+The profile declares one required section and no optional sections, so all 16 of
+its documents are already in violation of their own contract. The gate does not
+say so because it counts only headings a change introduces. The effect is a
+contract that permits any existing document and rejects any edit to one.
+
+Two dispositions are available and one must be chosen from evidence, not from
+convenience.
+
+1. **Declare the profile free-form.** Stage 00 policies differ from each other
+   by design; `documentation-protocol.md` is a routing table and
+   `quality-standards.md` is a numbered rubric. If no shared vocabulary is
+   defensible, the profile registers no heading contract beyond `Related
+Documents` and the validator stops treating an unregistered heading as a
+   finding for it. This requires the validator change SPEC-0154 attempted and
+   withdrew, placed on the path that `metadata_validator.py:2442` actually
+   consults.
+2. **Give the profile a real contract.** Extract the shared vocabulary across
+   the 16 documents, register it, and conform the outliers.
+
+Registering only the headings of the two documents SPEC-0154 changed is
+prohibited: it whitelists one change and leaves 38 headings unregistered.
+Whichever disposition is chosen, the acceptance measurement is the same, that
+the blocking mode reports zero `body-heading-forbidden` findings for every
+document of the profile and not only for the recently changed ones.
+
+### 8. The unreachable transition override
+
+`load_transition_overrides` at `metadata_validator.py:6135` accepts an
+`evidence_task` only when it starts with `docs/03.specs/spec-` and is named
+`task.md`. The taxonomy migration replaced both forms. The repository holds no
+path that can satisfy the contract, so the only sanctioned way to record an
+approved lifecycle exception cannot be used by any document.
+
+Correct the path contract to the co-located Task form,
+`docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md`, with a test that fails
+against the old form. Then record the two `archived -> completed` migration
+transitions through the repaired mechanism, with approval and reason, rather
+than by relaxing the lifecycle.
+
+The two Stage 98 migration documents record a correction from an invalid status
+rather than an ordinary lifecycle step, which is exactly the case the override
+exists to carry. Their evidence is
+`docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0003-lifecycle-completion.md`.
+
+### 9. Research-pack link exemption
+
+`check-document-links.py` carries `DEFERRED_PREFIXES` naming the two agentic
+research packs, behind which 158 dead links sit. The exemption states SPEC-0155
+as its owner and its removal condition. Once step 1 records the SPEC-0137
+disposition, delete the exemption and repair or delink what it was hiding.
+
+### 10. Gate framework
 
 The framework is not retired. Its 10,116 lines are reviewed only for nodes left
 without an implementation after steps 1 and 2, and for test files that assert
@@ -179,47 +252,65 @@ the removed nodes. No orchestration redesign is in scope.
 
 ## Interfaces and Data
 
-| Interface | Change |
-| :--- | :--- |
-| `scripts/manifest.yaml` | entries removed for retired modules |
-| `scripts/lib/document_governance/suite_registry.py` | suite bindings removed |
-| `scripts/validation/ci_gate_contract.py` | `carry_owner_contract` node removed |
-| `scripts/lib/document_governance/` | three provenance modules collapse to one |
-| `docs/90.references/data/` | three snapshot pairs merge; `generated_by` added |
-| `docs/98.archive/README.md` | commit literal replaced by a tuple-based procedure |
-| `scripts/lib/document_governance/metadata_validator.py` | advisory guard removed; `planned_partitions` Stage 04 literals replaced |
+| Interface                                               | Change                                                                                                                                                                                                 |
+| :------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/manifest.yaml`                                 | entries removed for retired modules                                                                                                                                                                    |
+| `scripts/lib/document_governance/suite_registry.py`     | suite bindings removed                                                                                                                                                                                 |
+| `scripts/validation/ci_gate_contract.py`                | `carry_owner_contract` node removed                                                                                                                                                                    |
+| `scripts/lib/document_governance/`                      | three provenance modules collapse to one                                                                                                                                                               |
+| `docs/90.references/data/`                              | three snapshot pairs merge; `generated_by` added                                                                                                                                                       |
+| `docs/98.archive/README.md`                             | commit literal replaced by a tuple-based procedure                                                                                                                                                     |
+| `scripts/lib/document_governance/metadata_validator.py` | advisory guard removed; `planned_partitions` Stage 04 literals replaced; `load_transition_overrides` path contract corrected to the co-located Task form; `governance-policy` heading handling settled |
+| `docs/99.templates/registry.json`                       | `governance-policy` sections settled under the step 7 disposition                                                                                                                                      |
+| `scripts/validation/check-document-links.py`            | `DEFERRED_PREFIXES` removed                                                                                                                                                                            |
 
 ## Failure Modes and Guardrails
 
-| Failure mode | Guardrail |
-| :--- | :--- |
+| Failure mode                                                 | Guardrail                                                                                                  |
+| :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
 | A removal drops a guarantee that a live document still needs | Every removal names its guarantee and the document set it covered; removal without that record is rejected |
-| A gate node loses its implementation | `check-script-manifest.py` and the gate contract tests run after each removal |
-| SPEC-0137 is retired while `tsk-0004` still has work | Disposition is decided from Task evidence first and recorded before any module is deleted |
-| Snapshot merge loses a measurement | The merged snapshot is regenerated and diffed against both sources before the sources are removed |
-| Reduction is measured by line count rather than by guarantee | The Task records retired guarantees, not only deleted lines |
+| A gate node loses its implementation                         | `check-script-manifest.py` and the gate contract tests run after each removal                              |
+| SPEC-0137 is retired while `tsk-0004` still has work         | Disposition is decided from Task evidence first and recorded before any module is deleted                  |
+| Snapshot merge loses a measurement                           | The merged snapshot is regenerated and diffed against both sources before the sources are removed          |
+| Reduction is measured by line count rather than by guarantee | The Task records retired guarantees, not only deleted lines                                                |
+| A registry or validator change is described before it is measured | Every such change records the failing count before and after in the same Task row; a commit message may not claim an effect no measurement showed |
+| The heading contract is closed by whitelisting only the changed headings | Acceptance item 12 measures all 16 documents of the profile, not the changed set |
+| The override is closed by relaxing the lifecycle instead of repairing the mechanism | Acceptance item 13 requires a test that fails against the old path form |
+| Verification uses the advisory inventory instead of the blocking mode | Acceptance item 11 names `--mode check-changed` explicitly |
 
 ## Acceptance Contract
 
 1. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0, including `test_reverse_transition_without_override_is_blocked`.
 2. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0.
 3. `python3 scripts/validation/check-script-manifest.py` exits 0 with no entry naming a removed module.
-4. `python3 -m pytest tests` passes with no test referencing a removed module.
+4. `python3 -m unittest discover -s tests` passes with no test referencing a removed module. This repository has no `pytest` installed; `unittest` is its runner.
 5. `grep -rn "f259c139" docs` returns no match.
 6. `grep -rn "04.execution" scripts` returns no match.
 7. `python3 scripts/validation/check-document-metadata.py` runs its full inventory in blocking mode and exits 0.
 8. Every file under `docs/90.references/data/` that a generator writes carries `generated_by`.
 9. The Task records, for each retired module, the guarantee retired and the evidence that no live document depends on it.
 10. Measured `scripts` plus `tests` line count is recorded before and after.
+11. `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <merge-base>`
+    reports zero violations. This is the blocking condition CI enforces and the
+    condition SPEC-0154 closed without meeting.
+12. The blocking mode reports zero `body-heading-forbidden` findings for all 16
+    `governance-policy` documents, not only for recently changed ones, under
+    whichever disposition step 7 selects.
+13. A transition override whose `evidence_task` is a co-located
+    `tasks/tsk-####-<slug>.md` path is accepted, proven by a test that fails
+    against the `docs/03.specs/spec-*/task.md` form, and the two Stage 98
+    migration transitions are recorded through it.
+14. `DEFERRED_PREFIXES` is absent from `check-document-links.py` and
+    `--mode all` still exits 0.
 
 ## Traceability
 
-| Upstream | Relation |
-| :--- | :--- |
-| REQ-0024 | Agent governance standardization bounds which controls must survive |
-| REQ-0025 | Operational readiness closure is the need that a proportionate gate set serves |
+| Upstream  | Relation                                                                       |
+| :-------- | :----------------------------------------------------------------------------- |
+| REQ-0024  | Agent governance standardization bounds which controls must survive            |
+| REQ-0025  | Operational readiness closure is the need that a proportionate gate set serves |
 | SPEC-0154 | Supplies the corrected lifecycle vocabulary used for the SPEC-0137 disposition |
-| SPEC-0137 | Subject of the disposition decision in step 1 |
+| SPEC-0137 | Subject of the disposition decision in step 1                                  |
 
 ## Related Documents
 

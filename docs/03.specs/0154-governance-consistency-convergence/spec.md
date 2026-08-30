@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: draft
+status: active
 artifact_id: SPEC-0154
 artifact_type: spec
 parent_ids: [REQ-0024, ADR-0027, ADR-0029]
@@ -35,24 +35,24 @@ authority surface; it does not add a validator, a fixture, or a gate node.
 **Measured inputs.** Every figure is re-derivable at the commands in
 `## Acceptance Contract`.
 
-| Fact                                            | Value               |
-| :---------------------------------------------- | :------------------ |
-| Registered full-profile validators              | 22                  |
-| Documents read by the link gate                 | 342 of 680          |
-| Dead relative links                             | 817 across 93 files |
-| Dead links inside Stage 90                      | 798                 |
-| Stage 90 audit packs with `status: active`      | 32 of 38            |
-| Spec Packages with `status: active`             | 28 of 30            |
-| Active Spec Packages with zero Tasks            | 21                  |
-| `roles/` documents carrying `agent_id`          | 14                  |
-| `roles/` documents without `agent_id`           | 8                   |
-| Stage 98 migrations with an invalid status      | 2 of 3              |
-| Renderer outputs missing from `generated_roots` | 5                   |
-| Metadata full-inventory enforcement state | advisory, guarded by a `ProfileError` |
-| Records with metadata findings | 13 of 595 |
-| Profiles registering a `Related Documents` section | 8 of 24 |
-| Documents carrying that section in practice | 499 of 599 |
-| Stage roots outside the link gate | `00`, `90`, `98` |
+| Fact                                               | Value                                 |
+| :------------------------------------------------- | :------------------------------------ |
+| Registered full-profile validators                 | 22                                    |
+| Documents read by the link gate                    | 342 of 680                            |
+| Dead relative links                                | 817 across 93 files                   |
+| Dead links inside Stage 90                         | 798                                   |
+| Stage 90 audit packs with `status: active`         | 32 of 38                              |
+| Spec Packages with `status: active`                | 28 of 30                              |
+| Active Spec Packages with zero Tasks               | 21                                    |
+| `roles/` documents carrying `agent_id`             | 14                                    |
+| `roles/` documents without `agent_id`              | 8                                     |
+| Stage 98 migrations with an invalid status         | 2 of 3                                |
+| Renderer outputs missing from `generated_roots`    | 5                                     |
+| Metadata full-inventory enforcement state          | advisory, guarded by a `ProfileError` |
+| Records with metadata findings                     | 13 of 595                             |
+| Profiles registering a `Related Documents` section | 8 of 24                               |
+| Documents carrying that section in practice        | 499 of 599                            |
+| Stage roots outside the link gate                  | `00`, `90`, `98`                      |
 
 **In scope.** `docs/00.agent-governance/`, `docs/99.templates/registry.json`,
 `docs/00.agent-governance/providers/registry.yaml`, `docs/README.md`,
@@ -111,16 +111,16 @@ earlier reading of these files was wrong: six of the eight carry normative
 content that no other document states, so none of them can be deleted as
 boilerplate.
 
-| Document | Unique normative content | Destination |
-| :--- | :--- | :--- |
-| `roles/qa.md` | coverage floor and applicability, the local-versus-remote execution boundary, the CI-only pre-commit contract, anti-duplication, the change-type verification matrix, generated-artifact freshness, local QA/CI orchestration | `policies/quality-standards.md` |
-| `roles/infra.md` | `infra_net` and exposure rule, volume naming convention, `no-new-privileges` and Docker Secrets requirement, container-build review criteria, Compose review criteria, approved runtime mutation protocol, `docker system prune` consent rule | `policies/environment-constraints.md` |
-| `roles/security.md` | identity and secrets constraints, container and network hardening criteria, approved secrets work protocol | `policies/environment-constraints.md` and `policies/quality-standards.md` section 2 |
-| `roles/ops.md` | mandatory postmortem for SEV1 and SEV2 | `policies/quality-standards.md` |
-| `roles/docs.md` | `doc-writer` edit permission, read-only default for other roles, `rules-engineer` review for policy change | `policies/approval-boundaries.md` |
-| `roles/agentic.md` | none; duplicates `policies/agentic.md`, `bootstrap.md`, and `task-checklists.md`, and its blanket language rule conflicts with the role-based routing in `documentation-protocol.md` | delete |
-| `roles/architecture.md` | none applicable; asserts gRPC service-to-service calls, a Gateway REST/GraphQL split, Saga and Event Sourcing patterns, quarterly reviews, and Backend/Frontend/Mobile layers that this repository does not have, and names a stale stage range | delete |
-| `roles/common.md` | none applicable; `camelCase`, `PascalCase`, and JSDoc conventions for a repository whose code is Python, Bash, YAML, and Markdown; its pre-commit prohibition is already stated in `policies/workflows.md` and `roles/qa.md` | delete |
+| Document                | Unique normative content                                                                                                                                                                                                                        | Destination                                                                         |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| `roles/qa.md`           | coverage floor and applicability, the local-versus-remote execution boundary, the CI-only pre-commit contract, anti-duplication, the change-type verification matrix, generated-artifact freshness, local QA/CI orchestration                   | `policies/quality-standards.md`                                                     |
+| `roles/infra.md`        | `infra_net` and exposure rule, volume naming convention, `no-new-privileges` and Docker Secrets requirement, container-build review criteria, Compose review criteria, approved runtime mutation protocol, `docker system prune` consent rule   | `policies/environment-constraints.md`                                               |
+| `roles/security.md`     | identity and secrets constraints, container and network hardening criteria, approved secrets work protocol                                                                                                                                      | `policies/environment-constraints.md` and `policies/quality-standards.md` section 2 |
+| `roles/ops.md`          | mandatory postmortem for SEV1 and SEV2                                                                                                                                                                                                          | `policies/quality-standards.md`                                                     |
+| `roles/docs.md`         | `doc-writer` edit permission, read-only default for other roles, `rules-engineer` review for policy change                                                                                                                                      | `policies/approval-boundaries.md`                                                   |
+| `roles/agentic.md`      | none; duplicates `policies/agentic.md`, `bootstrap.md`, and `task-checklists.md`, and its blanket language rule conflicts with the role-based routing in `documentation-protocol.md`                                                            | delete                                                                              |
+| `roles/architecture.md` | none applicable; asserts gRPC service-to-service calls, a Gateway REST/GraphQL split, Saga and Event Sourcing patterns, quarterly reviews, and Backend/Frontend/Mobile layers that this repository does not have, and names a stale stage range | delete                                                                              |
+| `roles/common.md`       | none applicable; `camelCase`, `PascalCase`, and JSDoc conventions for a repository whose code is Python, Bash, YAML, and Markdown; its pre-commit prohibition is already stated in `policies/workflows.md` and `roles/qa.md`                    | delete                                                                              |
 
 Claims that no runbook or script supports are removed rather than moved, and
 each removal is named in the Task. `roles/ops.md` asserts verified daily
@@ -256,12 +256,12 @@ SPEC-0155 for the same reason.
 | `docs/99.templates/registry.json` `lifecycles`                       | add `spec-package`                                                       |
 | `docs/99.templates/registry.json` `transitions`                      | `spec` maps to `spec-package`                                            |
 | `docs/99.templates/registry.json` `profiles[governance-role]`        | seven fields move to `required_frontmatter`                              |
-| `docs/99.templates/registry.json` `profiles[*].optional_sections` | `Related Documents` added to 16 content profiles |
-| `docs/00.agent-governance/providers/registry.yaml` `generated_roots` | 2 directory entries added |
-| `scripts/validation/agent_governance_contract.py:33` | `EXPECTED_GENERATED_ROOTS` extended to match |
+| `docs/99.templates/registry.json` `profiles[*].optional_sections`    | `Related Documents` added to 16 content profiles                         |
+| `docs/00.agent-governance/providers/registry.yaml` `generated_roots` | 2 directory entries added                                                |
+| `scripts/validation/agent_governance_contract.py:33`                 | `EXPECTED_GENERATED_ROOTS` extended to match                             |
 | Spec frontmatter                                                     | `completed` becomes a valid `status`; `superseded_by` used on retirement |
 | `scripts/validation/check-document-links.py`                         | selection scope widened, `superseded` exempted                           |
-| `check-document-links.py` `DOC_ROOTS` and `SUPPORT_DOCS` | replaced by full tracked-corpus selection |
+| `check-document-links.py` `DOC_ROOTS` and `SUPPORT_DOCS`             | replaced by full tracked-corpus selection                                |
 
 No frontmatter field is added or removed. No new identity space is issued.
 
@@ -278,16 +278,32 @@ No frontmatter field is added or removed. No new identity space is issued.
 
 ## Acceptance Contract
 
+This Spec Package closes at reduced scope. Items 5 and 11 are unmet and are
+transferred to SPEC-0155 by owner decision, with their mechanisms measured and
+recorded in [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md). The branch
+does not pass `run-ci-gate.py --profile full` or the blocking metadata mode at
+closure. Items 1 to 4 and 6 to 10 are met.
+
 1. `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` exits 0.
-2. `python3 scripts/validation/check-document-metadata.py` exits 0 and reports zero `invalid-status` records.
+2. `python3 scripts/validation/check-document-metadata.py` exits 0 and reports zero `invalid-status` records. This is the advisory inventory and is not the condition CI enforces; item 11 is.
 3. `python3 scripts/validation/check-document-links.py --mode all` reads the full tracked Markdown corpus and reports zero failures.
 4. `bash scripts/operations/sync-provider-surfaces.sh` followed by `git diff --exit-code` produces no diff.
-5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0.
+5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0. **Unmet.** One
+   registered test fails on `configuration-error: bounded Git identity scan failed`,
+   which reproduces at the branch point and is therefore not caused by this Spec
+   Package. Routed to SPEC-0155.
 6. No `active` document instructs the reader to use `Stage 04` or `docs/04.execution`. Factual records of paths that existed then, inside execution ledgers, evidence tables, and observation inventories, are not violations and are not rewritten.
 7. `policies/standards.md` no longer requires traceability across artifact types the Stage 99 registry does not define. The prohibition in `policies/documentation-protocol.md` keeps naming them, which is its purpose.
 8. Every file under `docs/00.agent-governance/roles/` carries `agent_id`.
 9. Every profile that can carry a `Related Documents` section registers it.
 10. Command, result, rollback, and skipped checks for each step are recorded in the owning Task.
+11. `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <merge-base>`
+    reports zero violations. This is the blocking condition CI enforces.
+    **Unmet, four violations.** Two `body-heading-forbidden` findings against the
+    `governance-policy` heading contract and two unreachable `archived -> completed`
+    transition overrides. Both mechanisms are measured and recorded in
+    [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md); both are routed to
+    SPEC-0155, which owns the validator surface they live in.
 
 ## Traceability
 
