@@ -899,7 +899,13 @@ satisfies item 8; Task 8 satisfies items 4 and 10.
    commit. Regenerating before staging produces a snapshot that the freshness
    gate rejects on the very next run.
 
-8. **The old content yields.** Where a retired gate, predicate, or literal
+8. **A unittest verdict is read from its summary, never from `tail -1`.**
+   A module under test prints to stdout, so the last line of a run is often the
+   checker's own output rather than `OK` or `FAILED`. Read the `Ran N tests`
+   line and the verdict beneath it. Task 4 recorded a failing module as passing
+   for exactly this reason.
+
+9. **The old content yields.** Where a retired gate, predicate, or literal
    conflicts with the current corpus, the gate is retired rather than the
    corpus reshaped to satisfy it.
 

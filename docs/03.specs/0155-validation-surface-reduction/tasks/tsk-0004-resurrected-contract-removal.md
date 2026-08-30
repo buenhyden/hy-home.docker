@@ -84,6 +84,29 @@ rows its wave modes iterate. What was removed is the assertion that an absent
 file has one exact 384-line shape. The registered mode, `check-public`, does not
 reach the read at all; it returns first.
 
+**Deviation, this Task's first evidence table was wrong.** It recorded
+`tests.validation.test_document_corpus_lifecycle` as `OK`. That reading came
+from `tail -1` of the run, which showed the checker's own stdout line
+`public document lifecycle: violations=0`, not the unittest verdict. The module
+was reporting `FAILED (failures=3, errors=16)`. The full gate caught it on the
+next run. Four defects were behind it, all mine and all from this Task:
+
+| Defect | Cause | Repair |
+| :--- | :--- | :--- |
+| 16 errors | `metadata.promoted_single_hop_transition_valid` and its helper were removed while the checker still called them | Relocated both to the checker, their sole consumer |
+| Same | The relocated helper referenced `metadata.TARGET_SURFACE_COMPLETION_PATH`, which `metadata_contract` never re-exported | Defined the constant locally, and corrected the route I had typed as `133-` to the real `0133-` |
+| 2 failures | The narrowed contract reader raised nothing for malformed YAML, so a bad contract surfaced as `internal-error` instead of `configuration-error` | Catch `OSError`, `UnicodeError`, and `yaml.YAMLError` and raise `ProfileError` **without echoing the payload**, plus check the three mappings the modes consume |
+| 1 failure | One `load_profiles(profiles_path, contract_path)` call site was missed | Dropped the removed argument |
+
+The third is the one worth naming: narrowing the shape assertion also removed a
+guarantee the tests held, that a malformed contract fails cleanly and never
+echoes its content. Removing dead policy must not remove live safety, and the
+redaction test is what caught the difference.
+
+**Verification order ruling.** A unittest verdict is read from the `Ran N` and
+`OK`/`FAILED` lines, never from `tail -1`, because a module under test can print
+to stdout after the summary.
+
 **Rollback.** `git revert` of the Task 4 commit.
 
 **Skipped checks.** None.
@@ -108,7 +131,7 @@ reach the read at all; it returns first.
 | `python3 -m unittest tests.validation.test_document_metadata`                                           | **249 OK**                                        |
 | `python3 -m unittest tests.lib.document_governance.test_registry`                                       | **48 OK**                                         |
 | `python3 -m unittest tests.lib.document_governance.test_metadata_validator`                             | **OK**                                            |
-| `python3 -m unittest tests.validation.test_document_corpus_lifecycle`                                   | **OK**                                            |
+| `python3 -m unittest tests.validation.test_document_corpus_lifecycle` | **153 OK**, after the four repairs recorded above |
 | `run-ci-gate.py --profile full`                                                                         | pending, requires the change to be tracked        |
 
 ## Review Evidence
