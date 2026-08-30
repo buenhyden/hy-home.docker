@@ -530,6 +530,7 @@ same wall.
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
+| 20 | Decide which of the sixteen unenforced repository hook rules should come on, and by which route | D5 | governance owner | measured: 0 loaders, 2 of 19 patterns implemented, 3 duplicated by active user-scope rules |
 | 19 | Execute independent gate leaves concurrently instead of in sequence | performance | gate owner | **measured 1.84x** on the two heaviest suites (356.5s to 193.7s, both green); an earlier 3-way probe reporting 1.26x and a failure was invalid — its module list named `test_specs` for `test_spec_packages`. `check-write` leaves still need explicit ordering |
 | 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
@@ -1228,6 +1229,72 @@ No Stage 98 tombstone was written, and that is the rule rather than an omission:
 the tombstone profile admits `01.requirements`, `02.architecture`, `03.specs`,
 and `05.operations`, and Stage 00 is not among them. `bootstrap.md` names Git
 history as the recovery mechanism.
+
+### Nineteen hook rules declare themselves enabled, and most are enforced by neither path (2026-08-30)
+
+`high`, and it is the same vacuity class as `jit-markers.md` in a stronger form:
+these files assert that they are on.
+
+The nineteen files under `policies/hooks/` are not documentation. Their
+frontmatter is the machine part — `name`, `enabled: true`, `event`, `pattern`,
+`action` — and the body is the message a rule shows when it fires, which is why
+each one opens with `markdownlint-disable MD041` instead of a heading.
+
+| Measurement | Result |
+| ----------- | ------ |
+| repository references to the rule files | **0** across `scripts/`, `.claude/`, `.codex/`, `.agents/` — nothing matches `hookify` or `policies/hooks` |
+| rule files at the hookify runtime location | **0** — this repository's `.claude/` holds no `hookify.*` file, while the operator's user scope holds nineteen as `~/.claude/hookify.<name>.local.md` |
+| rule patterns present in the shared implementation | **2 of 19** |
+| substance checks in `scripts/hooks/agent-event-hook.sh` (717 lines) | `checkout -b` 0, `switch -c` 0, `no-verify` 0, `push …main` 0 |
+| what the implementation does cover | `template_stop_gate` and `logical_commit_stop_gate`, which is exactly the two rules whose patterns matched |
+
+`.claude/settings.json` wires seven hooks, one per Claude event, and all seven
+delegate to `agent-event-hook.sh`. That is the whole runtime. A rule declaring
+`enabled: true` is not reached by it unless the shell implements the same check
+independently, and seventeen do not.
+
+**Three of the nineteen are already covered by an active user-scope rule** —
+`block-direct-main-push` by `block-push-to-main`, `warn-force-push` by
+`warn-git-force-push`, `warn-hook-parity-edit` by `warn-hook-file-edit`. The
+other sixteen are repository-specific: branch naming, Conventional Commit shape,
+`--no-verify`, unpinned GitHub Actions, secrets in `run:` blocks, plaintext
+secrets in Compose, absolute file links, Korean in Stage 00, parallel doc files,
+stage-doc edits. Those are the controls this repository wrote for itself, and
+nothing enforces them.
+
+**Not resolved here, and the reason is intent rather than permission.** Two of
+the three routes — projecting the rules into `.claude/` so hookify loads them,
+or implementing them in `agent-event-hook.sh` — would start blocking and warning
+on work that is not blocked today. That changes what the repository refuses, and
+which sixteen controls should come on is the owner's decision, not an inference
+from the files. The third route, deleting the three duplicates and marking the
+rest unwired, makes the declaration honest without adding enforcement.
+
+**One filename disagrees with its own rule, and cannot be corrected by renaming
+today.** `hookify.warn-governance-memory-edit.md` declares
+`name: warn-stage00-root-edit`, and the rule guards
+`docs/00.agent-governance/(README|sdlc).md` — Stage 00's root documents, which is
+what the declared name says and the filename does not. Its message claims a
+"six-entry Stage 00 inventory"; measured, Stage 00 holds exactly six top-level
+entries, so the message is accurate and the filename is the stale part.
+
+The rename was attempted and reverted. The frozen `mig-0003` row naming the old
+path raised nothing — unlike Stage 90's `expected_packages`, a migration row
+records a move that happened and does not require its target to keep that name.
+What blocked it was the body contract: a renamed file has no baseline, so its
+whole body counts as a deficit, and the gate returned `body-h1-count` and
+`body-heading-forbidden`.
+
+That is the more useful finding. `body-h1-count` compares against a baseline
+rather than an absolute, and these files cannot satisfy it on their own terms:
+**eleven of the nineteen carry no H1 at all and seven carry two to four**, because
+a hook rule body is a message printed to an agent, not a document. Only
+`warn-force-push` has exactly one. The corpus passes because every file is
+grandfathered against its existing baseline — the `governance-hook-policy`
+profile's body contract admits no new or renamed member. Giving the file an H1 to
+satisfy the contract would put a stray heading in the printed message and would
+differ from the eleven that have none; loosening a Stage 99 body contract to
+correct one filename is out of proportion. Both belong with Action 20.
 
 ### Limitations
 
