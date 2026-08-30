@@ -45,7 +45,7 @@ Reject unbounded, duplicate, unowned, or untestable capabilities; defer them wit
 
 ## Related Documents
 
-- [Agentic scope](agentic.md)
+- [Agentic policy](../policies/agentic.md)
 - [Agent catalog contract](../providers/registry.yaml)
 - [Agent and function catalog](../README.md)
 - [Subagent protocol](../policies/agentic.md)

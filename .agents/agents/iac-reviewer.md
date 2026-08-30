@@ -40,7 +40,7 @@ If runtime behavior is required to decide, mark it as post-change revalidation f
 
 ## Related Documents
 
-- [Infrastructure scope](../../docs/00.agent-governance/roles/infra.md)
+- [Environment constraints](../../docs/00.agent-governance/policies/environment-constraints.md)
 - [Infrastructure cross-validation](../../docs/00.agent-governance/skills/infra-cross-validate.md)
 - [Drift detector](../../docs/00.agent-governance/roles/drift-detector.md)
 - [Security auditor](../../docs/00.agent-governance/roles/security-auditor.md)

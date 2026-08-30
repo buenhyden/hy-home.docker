@@ -70,7 +70,7 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - README.md
-  - docs/00.agent-governance/roles/qa.md
+  - docs/00.agent-governance/policies/quality-standards.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md

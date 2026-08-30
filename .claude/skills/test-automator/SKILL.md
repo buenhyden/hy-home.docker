@@ -39,4 +39,4 @@ If the failure cannot be reproduced or the fixture is nondeterministic, stop and
 
 - [QA engineer](../../../docs/00.agent-governance/roles/qa-engineer.md)
 - [E2E testing](../../../docs/00.agent-governance/skills/e2e-testing.md)
-- [QA scope](../../../docs/00.agent-governance/roles/qa.md)
+- [QA scope](../../../docs/00.agent-governance/policies/quality-standards.md)

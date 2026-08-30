@@ -47,7 +47,7 @@ Stop when required credentials, remote authority, or runtime promotion evidence 
 
 ## Related Documents
 
-- [Operations scope](ops.md)
+- [Quality standards](../policies/quality-standards.md)
 - [CI/CD patterns](../skills/ci-cd-patterns.md)
 - [Deployment pipeline design](../skills/deployment-pipeline-design.md)
 - [Subagent protocol](../policies/agentic.md)

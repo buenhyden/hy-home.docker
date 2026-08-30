@@ -40,7 +40,7 @@ Stop unsafe or unverifiable actions, preserve metadata rather than sensitive pay
 
 ## Related Documents
 
-- [Operations scope](../../docs/00.agent-governance/roles/ops.md)
+- [Quality standards](../../docs/00.agent-governance/policies/quality-standards.md)
 - [Incident response function](../../docs/00.agent-governance/skills/incident-response.md)
 - [Security auditor](../../docs/00.agent-governance/roles/security-auditor.md)
 - [Subagent protocol](../../docs/00.agent-governance/policies/agentic.md)

@@ -40,5 +40,5 @@ Exclude unsafe or unverifiable paths, record the omission, and stop if provenanc
 ## Related Documents
 
 - [Documentation writer](../roles/doc-writer.md)
-- [Documentation scope](../roles/docs.md)
+- [Documentation scope](../policies/documentation-protocol.md)
 - [Environment constraints](../policies/environment-constraints.md)

@@ -47,7 +47,7 @@ If the review package is incomplete or policy conflicts with the approved plan, 
 
 ## Related Documents
 
-- [Common scope](common.md)
+- [Quality standards](../policies/quality-standards.md)
 - [Code review dimensions](../skills/code-review-dimensions.md)
 - [Code reviewer function](../skills/code-reviewer.md)
 - [Subagent protocol](../policies/agentic.md)

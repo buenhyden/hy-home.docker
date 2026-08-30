@@ -47,7 +47,7 @@ After one narrower retry or unresolved policy conflict, stop and escalate. Never
 
 ## Related Documents
 
-- [Agentic scope](agentic.md)
+- [Agentic policy](../policies/agentic.md)
 - [Execution planning](../skills/execution-plan-agent.md)
 - [Task breakdown](../skills/task-breakdown-agent.md)
 - [Subagent protocol](../policies/agentic.md)

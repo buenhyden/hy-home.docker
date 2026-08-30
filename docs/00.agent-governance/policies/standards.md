@@ -9,8 +9,6 @@ Shared standards for instruction design, token efficiency, and execution quality
 
 ## 1. Token Optimization and Lazy Loading
 
-- Keep `AGENTS.md` and `CLAUDE.md` as thin entry shims.
-- Keep detailed governance only in `docs/00.agent-governance/`.
 - Use only the canonical order in
   `policies/bootstrap.md#canonical-load-order`.
 - Avoid duplicated instructions across root shims and rule files.
@@ -26,8 +24,8 @@ Shared standards for instruction design, token efficiency, and execution quality
 
 - Treat `docs/01` to `docs/99` as project SSoT.
 - Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
-- Keep reciprocal traceability across PRD, SRS, Interface Requirement,
-  Architecture Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
+- Keep reciprocal traceability across Requirement Package, Architecture
+  Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
 
 ## 4. Execution Discipline
 

@@ -39,4 +39,4 @@ Return ambiguous or conflicting requirements to Stage 01 with concrete questions
 
 - [Rules engineer](../../../docs/00.agent-governance/roles/rules-engineer.md)
 - [ADR writing](../../../docs/00.agent-governance/skills/adr-writing.md)
-- [Architecture scope](../../../docs/00.agent-governance/roles/architecture.md)
+- [Architecture scope](../../../docs/00.agent-governance/policies/stage-authoring-matrix.md)

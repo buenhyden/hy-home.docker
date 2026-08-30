@@ -45,7 +45,7 @@ When runtime access or freshness is unavailable, return `needs_revalidation` and
 
 ## Related Documents
 
-- [Infrastructure scope](infra.md)
+- [Environment constraints](../policies/environment-constraints.md)
 - [Infrastructure cross-validation](../skills/infra-cross-validate.md)
 - [IaC reviewer](iac-reviewer.md)
 - [Subagent protocol](../policies/agentic.md)

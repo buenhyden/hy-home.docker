@@ -652,7 +652,7 @@ substituted another model.
 
 - [Agent governance overview](../../00.agent-governance/README.md)
 - [Agentic rules](../../00.agent-governance/policies/agentic.md)
-- [Agentic scope](../../00.agent-governance/roles/agentic.md)
+- [Agentic policy](../../00.agent-governance/policies/agentic.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
 - [Task checklists](../../00.agent-governance/policies/task-checklists.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

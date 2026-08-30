@@ -39,4 +39,4 @@ Mark unverifiable requirements explicitly and request the missing artifact; do n
 
 - [Code reviewer](../../../docs/00.agent-governance/roles/code-reviewer.md)
 - [Code reviewer function](../../../docs/00.agent-governance/skills/code-reviewer.md)
-- [Common scope](../../../docs/00.agent-governance/roles/common.md)
+- [Common scope](../../../docs/00.agent-governance/policies/quality-standards.md)

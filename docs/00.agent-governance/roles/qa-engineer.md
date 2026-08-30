@@ -48,7 +48,7 @@ Stop when failures are nondeterministic, environment-only, or outside approved s
 
 ## Related Documents
 
-- [QA scope](qa.md)
+- [Quality standards](../policies/quality-standards.md)
 - [E2E testing](../skills/e2e-testing.md)
 - [Style validation](../skills/style-validation.md)
 - [Test automation](../skills/test-automator.md)

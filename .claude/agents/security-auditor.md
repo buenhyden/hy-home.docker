@@ -50,7 +50,7 @@ Stop on sensitive payload exposure or missing authorization; redact evidence and
 
 ## Related Documents
 
-- [Security scope](../../docs/00.agent-governance/roles/security.md)
+- [Quality standards](../../docs/00.agent-governance/policies/quality-standards.md)
 - [Container threat modeling](../../docs/00.agent-governance/skills/container-threat-modeling.md)
 - [Security audit function](../../docs/00.agent-governance/skills/security-audit.md)
 - [Approval boundaries](../../docs/00.agent-governance/policies/approval-boundaries.md)

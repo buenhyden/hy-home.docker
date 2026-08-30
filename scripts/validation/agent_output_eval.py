@@ -487,7 +487,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/providers/registry.yaml",
             "docs/00.agent-governance/policies/agentic.md",
-            "docs/00.agent-governance/roles/common.md",
+            "docs/00.agent-governance/policies/approval-boundaries.md",
         ),
         (
             Criterion(

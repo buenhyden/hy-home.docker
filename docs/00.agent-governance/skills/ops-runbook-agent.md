@@ -42,5 +42,5 @@ Do not publish commands that are unimplemented, destructive without approval, or
 ## Related Documents
 
 - [Documentation writer](../roles/doc-writer.md)
-- [Operations scope](../roles/ops.md)
+- [Operations scope](../policies/quality-standards.md)
 - [Documentation protocol](../policies/documentation-protocol.md)

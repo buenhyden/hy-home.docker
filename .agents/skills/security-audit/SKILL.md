@@ -39,4 +39,4 @@ Stop and redact on accidental sensitive-data exposure; escalate Critical risk or
 
 - [Security auditor](../../../docs/00.agent-governance/roles/security-auditor.md)
 - [Container threat modeling](../../../docs/00.agent-governance/skills/container-threat-modeling.md)
-- [Security scope](../../../docs/00.agent-governance/roles/security.md)
+- [Security scope](../../../docs/00.agent-governance/policies/quality-standards.md)

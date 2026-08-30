@@ -263,7 +263,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 - [`docs/README.md`](./docs/README.md)
 - [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md)
-- [`docs/00.agent-governance/roles/docs.md`](./docs/00.agent-governance/roles/docs.md)
+- [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)
 - [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)
 - [`docs/00.agent-governance/policies/github-governance.md`](./docs/00.agent-governance/policies/github-governance.md)
 - [`docs/00.agent-governance/policies/git-workflow.md`](./docs/00.agent-governance/policies/git-workflow.md)

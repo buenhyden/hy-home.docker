@@ -39,4 +39,4 @@ Stop on invalid rendered configuration, missing authority, or unexpected runtime
 
 - [Infrastructure implementer](../../../docs/00.agent-governance/roles/infra-implementer.md)
 - [Compose stack function](../../../docs/00.agent-governance/skills/compose-stack-agent.md)
-- [Infrastructure scope](../../../docs/00.agent-governance/roles/infra.md)
+- [Infrastructure scope](../../../docs/00.agent-governance/policies/environment-constraints.md)

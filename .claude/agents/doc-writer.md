@@ -54,7 +54,7 @@ Stop when ownership, source truth, language boundary, or archive provenance is a
 
 ## Related Documents
 
-- [Documentation scope](../../docs/00.agent-governance/roles/docs.md)
+- [Documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)
 - [ADR writing](../../docs/00.agent-governance/skills/adr-writing.md)
 - [Knowledge map](../../docs/00.agent-governance/skills/knowledge-map-agent.md)
 - [Operations runbook authoring](../../docs/00.agent-governance/skills/ops-runbook-agent.md)

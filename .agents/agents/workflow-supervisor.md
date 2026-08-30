@@ -40,7 +40,7 @@ After one narrower retry or unresolved policy conflict, stop and escalate. Never
 
 ## Related Documents
 
-- [Agentic scope](../../docs/00.agent-governance/roles/agentic.md)
+- [Agentic policy](../../docs/00.agent-governance/policies/agentic.md)
 - [Execution planning](../../docs/00.agent-governance/skills/execution-plan-agent.md)
 - [Task breakdown](../../docs/00.agent-governance/skills/task-breakdown-agent.md)
 - [Subagent protocol](../../docs/00.agent-governance/policies/agentic.md)
