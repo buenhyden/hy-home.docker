@@ -155,6 +155,17 @@ def load_manifest_document(path: Path) -> object:
         return (value.st_dev, value.st_ino, value.st_mode, value.st_size,
                 value.st_mtime_ns, value.st_ctime_ns)
 
+    def ancestor_snapshot(value: os.stat_result) -> tuple[int, ...]:
+        # Identity, not content. What an ancestor must not do mid-read is
+        # become a *different* directory, which changes its device and inode.
+        # A directory's mtime and ctime also move whenever any entry is created
+        # or removed inside it, and this walk reaches every ancestor up to the
+        # filesystem root — including the operator's home directory, where
+        # unrelated processes write constantly. Comparing those made the read
+        # fail for reasons that have nothing to do with this file: measured,
+        # 191 of 306 reads failed while nothing touched the manifest at all.
+        return (value.st_dev, value.st_ino, value.st_mode)
+
     descriptors: list[int] = []
     try:
         absolute = path.absolute()
@@ -192,9 +203,11 @@ def load_manifest_document(path: Path) -> object:
         ) != snapshot(before):
             raise ValueError("file changed during read")
         for ancestor, name, child, expected in ancestors:
-            if snapshot(os.fstat(child)) != snapshot(expected) or snapshot(
+            if ancestor_snapshot(os.fstat(child)) != ancestor_snapshot(
+                expected
+            ) or ancestor_snapshot(
                 os.stat(name, dir_fd=ancestor, follow_symlinks=False)
-            ) != snapshot(expected):
+            ) != ancestor_snapshot(expected):
                 raise ValueError("ancestor changed during read")
         source = raw.decode("utf-8")
         depth = 0
