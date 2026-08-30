@@ -1346,6 +1346,41 @@ satisfy the contract would put a stray heading in the printed message and would
 differ from the eleven that have none; loosening a Stage 99 body contract to
 correct one filename is out of proportion. Both belong with Action 20.
 
+### What is left, and what is already known about it (2026-08-30)
+
+Two rows stay open. Neither is blocked on analysis — the analysis is here, so
+whoever takes them does not repeat it.
+
+**Action 19 — concurrent leaf execution.** Worth doing: measured **1.84x** on
+the two heaviest suites, 356.5s to 193.7s, both green. An earlier 3-way probe
+reporting 1.26x and a failure was invalid; its module list named `test_specs`
+for `test_spec_packages`, so one suite died on import in 0.06s. The distribution
+that sets the ceiling: of a 628s `--profile changed` run over a `tests/` change,
+three leaves are 555s — 236.8s for the fourteen mirrored library suites in one
+invocation, 186.9s for the metadata suite, 131.2s for corpus lifecycle — and the
+remaining four sum to 16.4s.
+
+What the implementation has to respect, all of it verified rather than assumed:
+
+| Constraint | Evidence |
+| ---------- | -------- |
+| execution is a plain `for invocation in plan:` loop; no pool anywhere in `ci_gate_runner.py` or `ci_gate_adapters.py` | the only `threading.Thread` drains a child's streams |
+| two contract properties are asserted on the executor path | `test_fake_executor_receives_each_leaf_once_in_order` and `test_nonzero_fake_child_is_propagated_and_stops_plan`, which asserts `seen == ["leaf.first"]` |
+| a faithful change cannot keep the executor path sequential while parallelising the real one | that divergence is the defect class this audit exists to find |
+| per-child machinery is already independent | `_ProcessLifecycle` is constructed per call and holds no shared state |
+| output redirection is cheap | `start_process` is a plain `subprocess.Popen`; it takes `stdout`/`stderr` today |
+| concurrent children must not interleave their output | buffer per leaf, replay in plan order |
+| `check-write` leaves need an explicit barrier | they mutate the tree; read-only leaves do not |
+
+**Action 16 — six runtime rows and one package initialiser.** The six need the
+five Operations Runbooks that do not exist, and those must be written by someone
+who runs the procedures. The seventh is not a manifest defect at all:
+`tests-unproven` resolves a target to a module path and looks for that import,
+and nothing imports `scripts.lib.document_governance.__init__` by that name —
+a package initialiser runs when the package is imported, which the proof rule
+has no way to express. Closing it means teaching the rule that shape, which is a
+change to the checker rather than to the row.
+
 ### Limitations
 
 The detectors measure form, not meaning. D6 and D9 find textual repetition and
