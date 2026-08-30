@@ -128,7 +128,7 @@ script.
 | Agent Output Eval Fixture Runner       | [run-agent-output-eval-fixtures.sh](./validation/run-agent-output-eval-fixtures.sh)         | List, check, and locally score advisory agent-output eval fixtures without model calls, CI gates, or runtime mutation                                                                                           |
 | Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence, explicit allowed path prefixes, and a value-free first-failure diagnostic       |
 | Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths                            |
-| Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
+| Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 03.specs plans ↔ 05.operations                                                                                                                                                    |
 | Local QA Gate Runner                   | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Delegate changed, full, or explain requests to the public runner without owning validator composition                                                                                                                     |
 | Supply-chain Fixture Policy             | [check-supply-chain-policy.py](./validation/check-supply-chain-policy.py)                    | Deterministically validate local pins, subject, exception, SBOM, provenance, signature, and advisory Scorecard fixtures without network access                                                                    |
 | Grype DB Cache Seed Harness              | [seed-grype-db-cache.sh](./security/seed-grype-db-cache.sh)                                  | Task7-owned approved-network seed-only entrypoint; publishes a validated private cache generation while the supply-chain advisory remains offline                                                                 |
@@ -307,7 +307,7 @@ Run its focused suite with
 `scripts/validation/run-agent-precommit-all-files.sh` is the only approved
 agent entrypoint for `pre-commit run --all-files`. Use it only at the approved
 final QA gate, from an initially clean linked worktree, with one tracked
-`docs/04.execution/tasks/` path and one or more narrow repository-relative
+`docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` path and one or more narrow repository-relative
 `--allow-prefix` values. Direct all-files execution is prohibited. The wrapper
 captures hook output in ephemeral files, reports only the command, prefixes,
 hook exit, a value-free first-failure result, and before/after/newly changed
@@ -422,7 +422,7 @@ bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --che
 
 # Approved final QA only; prefixes must match the task's reviewed scope
 bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/04.execution/tasks/YYYY-MM-DD-feature.md \
+  --task docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-example.md \
   --allow-prefix docs/ \
   --allow-prefix scripts/
 

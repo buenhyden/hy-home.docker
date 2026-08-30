@@ -36,10 +36,13 @@
 
 ```text
 tests/
-├── validation/
-│   ├── test_audit_criterion_contract.py
-│   └── test_document_metadata.py
-└── README.md  # This file
+├── README.md  # This file
+├── fixtures/          # 검증기 입력 fixture
+├── lib/               # scripts/lib/ 모듈과 1:1 대응
+├── validation/        # scripts/validation/ 진입점 테스트
+├── docs/              # 문서 지향 command contract
+├── qa/                # 집계 QA adapter
+└── setup/             # bounded setup adapter
 ```
 
 ## How to Work in This Area
@@ -50,9 +53,13 @@ tests/
 4. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
 문서 메타데이터 검증 테스트는
-`python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`로
-실행합니다. 이 테스트는 advisory inventory와 profile semantics를 검증하며,
-Task 8 승인 전에는 changed/new blocking gate를 활성화하지 않습니다.
+`PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata`로
+실행합니다. 이 테스트는 advisory inventory와 profile semantics를 함께 검증합니다.
+
+changed/new blocking gate는 활성 상태입니다. `check-document-metadata.py
+--mode check-changed --base-ref "$(git merge-base main HEAD)"`가 CI가 강제하는
+차단 조건이며, base ref는 고정하지 않고 계산합니다. 인자 없이 실행하면 차단하지
+않는 advisory inventory를 출력합니다.
 
 ## Related Documents
 

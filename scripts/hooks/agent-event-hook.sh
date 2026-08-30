@@ -631,10 +631,10 @@ FUNCTIONS = [
     {
         "label": "execution-plan-agent",
         "path": "docs/00.agent-governance/skills/execution-plan-agent.md",
-        "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
+        "desc": "Stage 03 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
-            "execution plan", "spec to plan", "stage 03", "stage 04",
-            "03.specs", "04.execution", "plan template", "implementation plan",
+            "execution plan", "spec to plan", "stage 03",
+            "03.specs", "plan template", "implementation plan",
         ],
     },
     {
