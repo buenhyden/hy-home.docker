@@ -115,7 +115,7 @@ baseline remains a later migration concern.
 
 | Criterion ID | External criterion | Workspace evidence | Implementation state | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SDLC-01 | Preserve an end-to-end intent → requirement → architecture → technical contract → plan → evidence → operations/release flow with feedback to the earliest owner. | [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md), `spec-driven SDLC research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf), and active stage indexes define the flow. | Implemented | 2 documented and broadly applied | Retain | Stage 00 documentation protocol and stage owners | Existing traceability/alignment checks should remain; typed parent automation is covered separately. | Review matrix and run traceability/alignment commands. | High: direct tracked contracts; semantic transition coverage remains separate. |
+| SDLC-01 | Preserve an end-to-end intent → requirement → architecture → technical contract → plan → evidence → operations/release flow with feedback to the earliest owner. | [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md), `spec-driven SDLC research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf), and active stage indexes define the flow. | Implemented | 2 documented and broadly applied | Retain | Stage 00 documentation protocol and stage owners | Existing traceability/alignment checks should remain; typed parent automation is covered separately. | Review matrix and run traceability/alignment commands. | High: direct tracked contracts; semantic transition coverage remains separate. |
 | SDLC-02 | PRD owns problem, users, scope, requirements, and measurable success criteria. | 24 correctly named Stage 01 leaves use the PRD template/profile. | Implemented | 3 automated/enforced for naming and changed-template shape | Retain | Stage 01 requirements | Keep changed-document template enforcement; do not require a PRD when the approved Spec records a justified N/A. | Filename scan plus repository contracts. | High. |
 | SDLC-03 | ARD owns architecture boundaries, concerns, and quality attributes when enduring architecture requirements exist. | 24 correctly named ARDs and the Stage 02 requirements index/template exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture requirements | Retain type-aware parent semantics for migrated/changed documents; avoid manufacturing ARDs for audit-only work. | Filename/template scan, metadata checker, and repository contracts. | High for structure; Medium for necessity decisions. |
 | SDLC-04 | ADR records one significant decision, alternatives, rationale, and consequences. | 24 correctly named ADRs and an ADR template/index exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture decisions | Keep ADR conditional on a real trade-off; semantic decision supersession remains human-reviewed. | Filename/template scan and repository contracts. | High for structure; Medium for current decision validity. |
@@ -180,12 +180,12 @@ active until promotion and final closure reviews pass.
 - `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - source-backed role and trigger criteria
 - `Spec-driven SDLC` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf) - transition, gate, and feedback criteria
 - `Document metadata and lifecycle` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - numbering, parent, transition, README, and release criteria
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md) - active stage ownership and done criteria
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - naming, template, status, and routing contracts
-- [Lifecycle status](../../99.templates/README.md) - current status meanings and supersession rule
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - active stage ownership and done criteria
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - naming, template, status, and routing contracts
+- [Lifecycle status](../../../99.templates/README.md) - current status meanings and supersession rule
 - [Release management runbook](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) - release readiness procedure
-- [2026-07-03 frontmatter inventory](ref-0005-frontmatter-inventory.md) - dated 930-file evidence
-- [2026-07-04 frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md) - dated 948-file evidence
+- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated 930-file evidence
+- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated 948-file evidence
 
 ## Maintenance
 
@@ -195,10 +195,10 @@ active until promotion and final closure reviews pass.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Frontmatter, template, and README audit](ref-0024-frontmatter-template-readme-implementation.md)
-- [SDLC quality and formatting summary](ref-0030-sdlc-quality-formatting-implementation.md)
-- [Implementation overview](ref-0026-implementation-overview.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Frontmatter, template, and README audit](../0024-frontmatter-template-readme-implementation/README.md)
+- [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
 - [Spec 123](../../03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective

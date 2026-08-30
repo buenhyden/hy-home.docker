@@ -345,7 +345,7 @@ explicit, reviewed profile-change path.
 ## Sources
 
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - repo-local Model Policy, tier mapping, reasoning-effort policy, and change protocol
-- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - vendor feature and boundary SSOT relevant to model configuration
+- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - vendor feature and boundary SSOT relevant to model configuration
 - [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh) - enforces name/model/scope parity across provider adapters
 - [Provider model landscape](./provider-model-landscape.md) - 145-row structural catalog, 142-row exact-cutoff-qualified subset, dated exact-ID remediation evidence, lifecycle normalization, official sources, and task-fit inference
 - [Choosing a Claude model](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model) - provider capability/speed/effort guidance

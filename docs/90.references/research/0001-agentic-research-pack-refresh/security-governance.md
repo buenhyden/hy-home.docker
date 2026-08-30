@@ -324,9 +324,9 @@ moved to Implemented, because none covers a released artifact.
 - [Docker Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) - service-granted secret file delivery
 - [Docker Compose trust model](https://docs.docker.com/compose/trust-model/) - trusted-input and host-affecting execution boundary
 - [Security disclosure](../../../../.github/SECURITY.md) - vulnerability reporting and disclosure expectations
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected surfaces and unconditional secret-read ban
+- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md) - protected surfaces and unconditional secret-read ban
 - [Security scope](../../../00.agent-governance/scopes/security.md) - security controls and conflicting approved-secret-work protocol
-- [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow and remote-action control owner
+- [GitHub governance](../../../00.agent-governance/policies/github-governance.md) - workflow and remote-action control owner
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - dependency, Compose, hardening, baseline, pre-commit, and zizmor jobs
 - [Pre-commit config](../../../../.pre-commit-config.yaml) - gitleaks and local hook definitions
 - [Security readiness snapshot](../../data/0078-security-automation-readiness/README.md) - generated tracked-control/gap census

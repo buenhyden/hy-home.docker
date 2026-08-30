@@ -248,8 +248,8 @@ approved change, and each needs its own Stage 03 or Stage 04 authorization.
 
 ## Sources
 
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - repo-local lifecycle owners and evidence
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - template, traceability, and routing contracts
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - repo-local lifecycle owners and evidence
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - template, traceability, and routing contracts
 - [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - current SDD phase flow; HTTP 200 on 2026-08-07
 - [GitHub spec-driven guide](https://github.com/github/spec-kit/blob/main/spec-driven.md) - `specs/[branch-name]/` layout, `spec.md`/`plan.md`/`tasks.md`, and `memory/constitution.md`; read from the `main` raw source on 2026-08-07
 - [Birgitta Böckeler, Understanding Spec-Driven-Development: Kiro, spec-kit, and Tessl](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) - dated 2025-10-15; source of the spec-first / spec-anchored / spec-as-source levels and of the Kiro spec-deletion finding; HTTP 200 on 2026-08-07
@@ -284,5 +284,5 @@ approved change, and each needs its own Stage 03 or Stage 04 authorization.
 - [SDLC and operations document-type roles](./sdlc-document-roles.md)
 - [document metadata and lifecycle criteria](./document-metadata-lifecycle.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
-- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)

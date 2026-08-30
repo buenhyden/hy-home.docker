@@ -343,8 +343,8 @@ entitlement gaps are not promoted.
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
 - [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)
 - [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 
 ## Question
 

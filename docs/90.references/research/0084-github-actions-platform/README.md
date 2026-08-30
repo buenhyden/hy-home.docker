@@ -625,8 +625,8 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - [Actions limits](https://docs.github.com/en/actions/reference/limits) - run, job, queue, matrix, re-run, and API-rate limits; six further limits in the table below it are cited to their own pages
 - [zizmor audits](https://docs.zizmor.sh/audits/) - third-party audit rule catalog
 - [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
-- [Tracked workflows](../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
-- [Typed workflow contract](../../../.github/workflow-contract.yml) - registry that factors gate definitions
+- [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
+- [Typed workflow contract](../../../../.github/workflow-contract.yml) - registry that factors gate definitions
 
 ## Maintenance
 
@@ -641,7 +641,7 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - `quality, CI, CD, QA, and formatting` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf)
 - `security governance` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf)
 - `verification and validation` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `verification-validation` leaf)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
+- [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
 
 ## Question
 

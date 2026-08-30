@@ -341,8 +341,8 @@ specification should be written against that accurate boundary.
 - [MemGPT paper](https://arxiv.org/abs/2310.08560)
 - [Generative Agents paper](https://arxiv.org/abs/2304.03442)
 - [Governance memory README](../../../00.agent-governance/memory/README.md)
-- [Agentic rule](../../../00.agent-governance/rules/agentic.md)
-- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md)
+- [Agentic rule](../../../00.agent-governance/policies/agentic.md)
+- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)
 
 ## Source Retrieval Boundary
 

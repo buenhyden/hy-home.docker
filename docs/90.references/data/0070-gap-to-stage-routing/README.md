@@ -96,7 +96,7 @@ be recorded as a Stage 04 task or audit gap before editing.
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - canonical gap-to-stage routing table.
 - [Task checklists](../../../00.agent-governance/policies/task-checklists.md) - pre-task and gap routing checklist.
 - [Gap routing recommender](../../../../scripts/validation/recommend-gap-routing.sh) - local advisory classifier.
-- [Automation candidates](../../audits/ref-0021-automation-candidates.md) - `AEA-AUTO-004` implementation context.
+- [Automation candidates](../../audits/0021-automation-candidates/README.md) - `AEA-AUTO-004` implementation context.
 
 ## Maintenance
 
@@ -110,7 +110,7 @@ be recorded as a Stage 04 task or audit gap before editing.
 - [governance data index](README.md)
 - [reference data index](../README.md)
 - [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
-- [automation candidates](../../audits/ref-0021-automation-candidates.md)
+- [automation candidates](../../audits/0021-automation-candidates/README.md)
 
 ## Schema
 

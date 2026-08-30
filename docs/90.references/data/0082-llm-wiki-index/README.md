@@ -174,7 +174,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/adr-writing/SKILL.md](../../../../.claude/skills/adr-writing/SKILL.md) | Markdown reference |
 | [.claude/skills/ci-cd-patterns/SKILL.md](../../../../.claude/skills/ci-cd-patterns/SKILL.md) | Markdown reference |
 | [.claude/skills/code-review-dimensions/SKILL.md](../../../../.claude/skills/code-review-dimensions/SKILL.md) | Markdown reference |
-| [.claude/skills/code-reviewer/SKILL.md](../../../../.claude/skills/code-reviewer/SKILL.md) | Markdown reference |
+| [.claude/skills/code-reviewer/SKILL.md](../../../../../../.local/share/pnpm/store/v11/links/@codeharbor/agent-playbook/0.3.1/e36f2db7166318b66d0dccad4d40b8105a1aea14b742585df7151278ea1d283e/node_modules/@codeharbor/agent-playbook/skills/code-reviewer/SKILL.md) | Markdown reference |
 | [.claude/skills/compose-stack-agent/SKILL.md](../../../../.claude/skills/compose-stack-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/container-threat-modeling/SKILL.md](../../../../.claude/skills/container-threat-modeling/SKILL.md) | Markdown reference |
 | [.claude/skills/deployment-pipeline-design/SKILL.md](../../../../.claude/skills/deployment-pipeline-design/SKILL.md) | Markdown reference |
@@ -192,7 +192,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/security-audit/SKILL.md](../../../../.claude/skills/security-audit/SKILL.md) | Markdown reference |
 | [.claude/skills/style-validation/SKILL.md](../../../../.claude/skills/style-validation/SKILL.md) | Markdown reference |
 | [.claude/skills/task-breakdown-agent/SKILL.md](../../../../.claude/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
-| [.claude/skills/test-automator/SKILL.md](../../../../.claude/skills/test-automator/SKILL.md) | Markdown reference |
+| [.claude/skills/test-automator/SKILL.md](../../../../../../.local/share/pnpm/store/v11/links/@codeharbor/agent-playbook/0.3.1/e36f2db7166318b66d0dccad4d40b8105a1aea14b742585df7151278ea1d283e/node_modules/@codeharbor/agent-playbook/skills/test-automator/SKILL.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/SKILL.md](../../../../.claude/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
 | [.codex/README.md](../../../../.codex/README.md) | folder index |
 | [.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml) | source path |

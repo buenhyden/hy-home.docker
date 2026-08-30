@@ -366,6 +366,6 @@ The tracked evidence used is:
 - [documentation architecture](./documentation-architecture.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
 - [security governance](./security-governance.md)
-- [persona protocol](../../../00.agent-governance/rules/persona.md)
-- [bootstrap rule](../../../00.agent-governance/rules/bootstrap.md)
+- [persona protocol](../../../00.agent-governance/policies/persona.md)
+- [bootstrap rule](../../../00.agent-governance/policies/bootstrap.md)
 - [agent catalog contract](../../../00.agent-governance/contracts/agent-catalog.yaml)

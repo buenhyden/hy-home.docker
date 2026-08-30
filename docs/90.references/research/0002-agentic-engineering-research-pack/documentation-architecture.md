@@ -41,8 +41,8 @@ recommendation as policy.
 ## Repository Role
 
 This Stage 90 reference is advisory analysis. The
-[stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md),
-[documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md),
+[stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md),
+[documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md),
 [metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml),
 and mapped templates remain authoritative. Reader mode can refine content
 inside an approved artifact; it cannot select a stage, authorize a mutation,
@@ -161,7 +161,7 @@ This workspace's README chain and `## Related Documents` contract are its own
 navigation layer, structurally distinct from Diataxis's reference mode and
 worth re-deriving directly rather than assumed. Two blocking rules govern it,
 re-read directly this revision from
-[`documentation-protocol.md`](../../../00.agent-governance/rules/documentation-protocol.md):
+[`documentation-protocol.md`](../../../00.agent-governance/policies/documentation-protocol.md):
 
 - **R2 — README Sync:** "Any folder-level change (file added, moved, removed,
   or content-modified) -> the parent `README.md` MUST be updated to reflect
@@ -274,8 +274,8 @@ and, where it matters more, what it does not.
 | [Diataxis rendered site, 2026-08-14 re-attempt](https://diataxis.fr/)                                                                        | 2026-08-14                | External mutable                  | Verified live: HTTP success; four-mode statement and compass reference read directly and cross-checked against the pinned source below.          |
 | [Diataxis how-to-use page, 2026-08-14](https://diataxis.fr/how-to-use-diataxis/)                                                             | 2026-08-14                | External mutable                  | Verified live: incremental-adoption and no-empty-structures guidance read directly, matching the pinned `how-to-use-diataxis.rst` paraphrase.    |
 | [Diataxis upstream source](https://github.com/evildmp/diataxis-documentation-framework/tree/957c09ca40b4a1edc23874f713e01937d50d54d5/source) | 2026-08-08                | External fixed at pinned revision | Verified through GitHub API/raw source; `index.rst`, `map.rst`, four mode files, and `how-to-use-diataxis.rst` read directly.                    |
-| [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
-| [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
+| [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
+| [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
 | [README profile contract](../../../99.templates/support/readme-profile-contract.md)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
 | [SDLC document roles](./sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
 | [Metadata lifecycle](./document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |

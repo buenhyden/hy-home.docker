@@ -300,7 +300,7 @@ and none authorizes a bulk corpus rewrite, which DML-14 reserves.
 - [Spec 129](../../../98.archive/03.specs/129-document-contract-canonicalization/spec.md) - canonical families, README profiles, parent serialization, Release, and staged foundation scope
 - [Frontmatter contract](../../../99.templates/README.md) - current workspace metadata ownership and exceptions
 - [Lifecycle status](../../../99.templates/README.md) - current status meanings
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - current numbering, templates, and routing
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - current numbering, templates, and routing
 - [Document metadata profiles](../../../99.templates/registry.json) - sole machine-readable profile and serialization owner; freshness rows at lines 553, 562, 580-582, 590-591, 599, and 608, and the reference/audit heading contracts at 403-416
 - [Changed-document metadata checker](../../../../scripts/validation/check-document-metadata.py) - `TARGET_TEMPLATE_LITERALS` at line 823 and its source-side and target-side scans at lines 2233, 2252, and 2313
 - [README profile contract](../../../99.templates/README.md) - human README selection and consumer boundary

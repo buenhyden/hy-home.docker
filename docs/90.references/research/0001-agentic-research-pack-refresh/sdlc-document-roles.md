@@ -327,8 +327,8 @@ Each item is an investigation prompt with a named owner. None is approved work.
 
 ## Sources
 
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage purpose, timing, owner, inputs, outputs, and templates
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - type-to-template and gap-routing contracts
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - stage purpose, timing, owner, inputs, outputs, and templates
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - type-to-template and gap-routing contracts
 - [SDLC templates](../../../99.templates/templates/sdlc/README.md) - PRD through Task template intent
 - [Supporting contract templates](../../../99.templates/templates/spec-contracts/README.md) - API, agent, data, service, and test roles
 - [Operations templates](../../../99.templates/templates/operations/README.md) - Guide through Postmortem roles
@@ -375,5 +375,5 @@ Each item is an investigation prompt with a named owner. None is approved work.
 - [spec-driven development and SDLC](./spec-driven-sdlc.md)
 - [document metadata and lifecycle criteria](./document-metadata-lifecycle.md)
 - [release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md)
-- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)

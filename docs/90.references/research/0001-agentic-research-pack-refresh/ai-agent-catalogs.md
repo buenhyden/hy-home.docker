@@ -331,7 +331,7 @@ re-derived from the tracked tree on 2026-08-07.
 - [Gemini CLI v0.38.1 subagent announcement](https://github.com/google-gemini/gemini-cli/discussions/25562)
 - [Agent catalog](../../../00.agent-governance/agents/README.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)
+- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 - [upstream `main` at revalidation](https://github.com/msitarzewski/agency-agents/tree/ebe9c99acb5c96f9468de368d8bead775387d1a7) - the mutable head observed 2026-08-07, carrying 270 generated agents and the unchanged `230+` README figure
 - [upstream 269-to-270 commit](https://github.com/msitarzewski/agency-agents/commit/c89557f78509868c6d4cc08e5cbc79bc8625fe1c) - dated 2026-07-30, the commit whose message records the count change
 - [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh)

@@ -1,11 +1,11 @@
 ---
 profile_id: audit
-status: active
+status: retired
 artifact_id: AUD-0015
 artifact_type: audit
 parent_ids: []
 created: '2026-07-04'
-updated: '2026-08-23'
+updated: '2026-08-30'
 observed_at: '2026-07-04'
 ---
 

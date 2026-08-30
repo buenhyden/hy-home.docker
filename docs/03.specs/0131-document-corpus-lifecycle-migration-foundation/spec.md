@@ -1,12 +1,13 @@
 ---
 profile_id: spec
-status: active
+status: superseded
 artifact_id: SPEC-0131
 artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-08-08
-updated: 2026-08-11
+updated: 2026-08-30
+superseded_by: SPEC-0136
 ---
 # Document Corpus Lifecycle Migration Foundation Technical Specification
 

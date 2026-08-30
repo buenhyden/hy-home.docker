@@ -240,8 +240,8 @@ proposal. Each is an investigation prompt with a named owner.
 - [Diataxis site](https://diataxis.fr/) - **UNVERIFIED.** Re-requested 2026-08-07; returns HTTP 429 with `cf-mitigated: challenge` from Cloudflare and serves no content to automated clients. See `## Source Retrieval Boundary`
 - [Diataxis upstream source repository](https://github.com/evildmp/diataxis-documentation-framework) - the canonical source that builds the site; head re-confirmed 2026-08-07 at `957c09ca40b4a1edc23874f713e01937d50d54d5`, and all quoted text read from `source/` at that commit
 - [Divio documentation system](https://docs.divio.com/documentation-system/) - HTTP 200 on 2026-08-07; corroborates the four type names independently but does not state the two axes
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Template index](../../../99.templates/templates/README.md)
 - [External source rationale](../../../99.templates/README.md)
 
@@ -324,4 +324,4 @@ paths would be stale.
 - [document metadata lifecycle](./document-metadata-lifecycle.md)
 - [LLM-WIKI system](./llm-wiki-system.md)
 - [workspace baseline](./workspace-baseline.md)
-- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)

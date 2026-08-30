@@ -324,8 +324,8 @@ external frameworks do not become adopted policy through Stage 90.
 - [Root README](../../../../README.md) - purpose, structure, lifecycle, and quality gates
 - [Documentation hub](../../../README.md) - stage routing and document contracts
 - [Agent governance hub](../../../00.agent-governance/README.md) - governance coverage and provider adapters
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage owners, templates, and done criteria
-- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - template and evidence boundaries
+- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - stage owners, templates, and done criteria
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - template and evidence boundaries
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - tracked harness surfaces
 - [Scripts README](../../../../scripts/README.md) - canonical automation entry points
 - [Infra README](../../../../infra/README.md) - Compose inventory and runtime boundary

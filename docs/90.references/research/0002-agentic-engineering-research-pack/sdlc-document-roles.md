@@ -72,7 +72,7 @@ exactly six role templates (`prd`, `ard`, `adr`, `spec`, `plan`,
 (`guide`, `incident`, `policy`, `postmortem`, `release`,
 `runbook.template.md`, alongside its own `README.md`). The split is not this
 leaf's invention; it is the directory boundary the templates already carry.
-The [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md),
+The [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md),
 re-read directly this revision, assigns the first family to Stages 01-04 and
 the second to Stage 05: PRD to Stage 01, ARD/ADR to Stage 02, Spec to Stage
 03, and Plan/Task to Stage 04 execution — each triggered by a discovery,
@@ -287,8 +287,8 @@ and, where it matters more, what it does not.
 | [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)                                              | 2026-08-08 | Workspace tracked            | Canonical human role and handoff owner.                                                                    |
 | [Template selection](../../../99.templates/support/template-selection.md)                                                      | 2026-08-08 | Workspace tracked            | Canonical role-to-path/template mapping.                                                                   |
 | [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 total profiles versus this leaf's 12 human roles.                                    |
-| [Task template](../../../99.templates/templates/sdlc/task.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming Verification/Review/Commit-Ledger/Deferred sections absent from the Plan template.  |
-| [Plan template](../../../99.templates/templates/sdlc/plan.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming "Verification Plan" (prospective) versus Task's "Verification Evidence" (observed). |
+| [Task template](../../../99.templates/templates/specs/task.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming Verification/Review/Commit-Ledger/Deferred sections absent from the Plan template.  |
+| [Plan template](../../../99.templates/templates/specs/plan.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming "Verification Plan" (prospective) versus Task's "Verification Evidence" (observed). |
 | [Spec-contracts templates](../../../99.templates/templates/spec-contracts/)                                                    | 2026-08-14 | Workspace tracked            | Directory listing confirming eight registered focused-contract template files.                             |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
 

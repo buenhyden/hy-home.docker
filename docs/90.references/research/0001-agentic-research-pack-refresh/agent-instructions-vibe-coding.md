@@ -192,8 +192,8 @@ be used in this workspace, and each names the file that actually decides.
 - [Anthropic agent eval guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) - multi-turn tool/state evaluation and lifecycle feedback
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - reviewed action ownership and prevention learning
 - [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/8ef49232e02431f7ca4792b487e5a85a7939ff3a) - immutable upstream catalog tree supporting the reference-only intake and pin/review boundary
-- [Agent-first rule](../../../00.agent-governance/rules/agentic.md) - current workspace authority, evidence, and lifecycle behavior
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - current protected actions and escalation boundary
+- [Agent-first rule](../../../00.agent-governance/policies/agentic.md) - current workspace authority, evidence, and lifecycle behavior
+- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md) - current protected actions and escalation boundary
 - [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved instruction/vibe and task-evidence constraints
 
 ## Maintenance

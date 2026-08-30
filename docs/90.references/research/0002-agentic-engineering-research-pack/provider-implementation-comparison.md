@@ -302,7 +302,7 @@ stable revision identifier; every vendor row is external mutable.
 | G-AGENT | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
 | WS-CATALOG | [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
 | WS-PROVIDER | [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
-| WS-MATRIX | [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
+| WS-MATRIX | [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
 | WS-ADAPTER | [`providers/agents-md.md`](../../../00.agent-governance/providers/agents-md.md) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
 | WS-CLAUDE | [Claude provider notes](../../../00.agent-governance/providers/claude.md) | Tracked mutable; stale uniform-high effort sentence identified. |
 | WS-CODEX | [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Tracked mutable; stale `SessionEnd` limitation identified. |

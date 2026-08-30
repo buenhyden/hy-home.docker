@@ -166,12 +166,12 @@ recovery, and deployment remain unobserved runtime work.
 ## Sources
 
 - `Docker Compose infrastructure research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) - source-backed structural/runtime evidence ladder.
-- [Compose profile/service coverage](../data/docker/ref-0059-compose-profile-service-coverage.md) - generated tracked topology.
-- [Tech-stack version provenance](../data/docker/ref-0061-tech-stack-version-provenance.md) - generated declaration provenance and drift evidence.
-- [Infrastructure README](../../../infra/README.md) - repository topology and validation routing.
-- [Compose validator](../../../scripts/validation/validate-docker-compose.sh) - static render gate.
-- [Hardening validator](../../../scripts/hardening/check-all-hardening.sh) - tier hardening gate.
-- [Operations index](../../05.operations/README.md) - guide, policy, and runbook routing.
+- [Compose profile/service coverage](../../data/0059-compose-profile-service-coverage/README.md) - generated tracked topology.
+- [Tech-stack version provenance](../../data/0061-tech-stack-version-provenance/README.md) - generated declaration provenance and drift evidence.
+- [Infrastructure README](../../../../infra/README.md) - repository topology and validation routing.
+- [Compose validator](../../../../scripts/validation/validate-docker-compose.sh) - static render gate.
+- [Hardening validator](../../../../scripts/hardening/check-all-hardening.sh) - tier hardening gate.
+- [Operations index](../../../05.operations/README.md) - guide, policy, and runbook routing.
 
 ## Maintenance
 
@@ -183,11 +183,11 @@ recovery, and deployment remain unobserved runtime work.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Implementation overview](ref-0026-implementation-overview.md)
-- [SDLC quality and CI audit](ref-0030-sdlc-quality-formatting-implementation.md)
-- [Security framework maturity](ref-0031-security-framework-maturity.md)
-- [Automation candidates](ref-0021-automation-candidates.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+- [SDLC quality and CI audit](../0030-sdlc-quality-formatting-implementation/README.md)
+- [Security framework maturity](../0031-security-framework-maturity/README.md)
+- [Automation candidates](../0021-automation-candidates/README.md)
 
 ## Objective
 

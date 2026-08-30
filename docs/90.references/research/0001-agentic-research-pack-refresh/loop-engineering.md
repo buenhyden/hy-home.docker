@@ -266,10 +266,10 @@ supply vocabulary for observation and feedback; neither supplies authority.
 - [GitHub Actions workflow syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions)
 - [Provider model contract](../../../00.agent-governance/contracts/provider-models.yaml) - the four typed `harness_loops` and the seven `semantic_events` with their `runtime_depth` values
 - [Shared hook dispatcher](../../../../scripts/hooks/agent-event-hook.sh) - the seven-arm event `case` and the provider-specific Stop payloads
-- [Agentic rule](../../../00.agent-governance/rules/agentic.md)
-- [Task checklists](../../../00.agent-governance/rules/task-checklists.md)
+- [Agentic rule](../../../00.agent-governance/policies/agentic.md)
+- [Task checklists](../../../00.agent-governance/policies/task-checklists.md)
 - [QA scope](../../../00.agent-governance/scopes/qa.md)
-- [GitHub governance](../../../00.agent-governance/rules/github-governance.md)
+- [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
 
 All external provider pages in this list were re-fetched on 2026-08-07 and are
 recorded above as observed at that retrieval. Every workspace claim, including
@@ -289,4 +289,4 @@ from the tracked tree on the same date.
 - [harness engineering](./harness-engineering.md)
 - [workspace baseline](./workspace-baseline.md)
 - [provider implementation comparison](./provider-implementation-comparison.md)
-- [agentic rule](../../../00.agent-governance/rules/agentic.md)
+- [agentic rule](../../../00.agent-governance/policies/agentic.md)

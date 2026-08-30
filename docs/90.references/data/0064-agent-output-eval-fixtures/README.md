@@ -287,7 +287,7 @@ authoritative.
 - `Loop engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) - repo-local eval-loop gap.
 - `Harness engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) - fixture and eval-harness background.
 - [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - provider parity source of truth.
-- [Automation candidates](../../audits/ref-0021-automation-candidates.md) - `AEA-AUTO-003` implementation context.
+- [Automation candidates](../../audits/0021-automation-candidates/README.md) - `AEA-AUTO-003` implementation context.
 - [agent-output eval runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) - local advisory fixture runner.
 
 ## Maintenance

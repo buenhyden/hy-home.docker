@@ -105,18 +105,18 @@ than current evidence. No remote setting was changed.
 
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
-| Spec-driven development | Partially Implemented | [SDLC and document-contract audit](ref-0029-sdlc-document-contracts-implementation.md), [Stage 03 README](../../03.specs/README.md) | Stage roles, numbering, templates, tasks, broad traceability, and typed direct-parent/transition checks are implemented for the migrated active chain and changed/new documents. Historical lifecycle reconstruction and release execution records remain incomplete. |
-| Execution planning | Implemented | [Stage 04 plans README](../../03.specs/README.md), audit pack plan | Plans define WBS, verification, risk, and completion criteria. |
-| Task evidence | Implemented | [Stage 04 tasks README](../../03.specs/README.md), audit pack task | Task files record evidence, status, deviation, and validation results. |
-| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](ref-0024-frontmatter-template-readme-implementation.md), [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
+| Spec-driven development | Partially Implemented | [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, broad traceability, and typed direct-parent/transition checks are implemented for the migrated active chain and changed/new documents. Historical lifecycle reconstruction and release execution records remain incomplete. |
+| Execution planning | Implemented | [Stage 04 plans README](../../../03.specs/README.md), audit pack plan | Plans define WBS, verification, risk, and completion criteria. |
+| Task evidence | Implemented | [Stage 04 tasks README](../../../03.specs/README.md), audit pack task | Task files record evidence, status, deviation, and validation results. |
+| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md), [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
 | CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines 16 docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, supply-chain-fixture, and workflow-security jobs. The latest public remote observation saw 15 jobs in a failed run; tracked definitions do not prove current remote success or enforcement. |
-| Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
+| Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
 | Linting | Partially Implemented | `.github/workflows/ci-quality.yml`, pre-commit, frontend lint, shell syntax checks | Frontend and hook/script surfaces have checks; all repo languages do not have a single universal lint gate. |
 | Syntax checks | Implemented | `python -m json.tool` examples in HAFE policy, `bash -n`, repo contracts, CI | JSON/YAML/workflow/script/document syntax checks are represented through scripts and CI. |
-| Docker Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [infra README](../../../infra/README.md) | Default and all-profile validation are in CI; local validation script exists. |
+| Docker Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [infra README](../../../../infra/README.md) | Default and all-profile validation are in CI; local validation script exists. |
 | Infrastructure hardening | Implemented | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml` | Hardening baseline is a CI gate and local script. |
-| Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
+| Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
 | CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, [release runbook](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; current authenticated remote environment state is unknown. |
 
 ## Findings
@@ -142,11 +142,11 @@ than current evidence. No remote setting was changed.
 | Gap | Status | Follow-up Direction |
 | --- | --- | --- |
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
-| Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Retain the implemented registry/checker/contract foundation and use the [frontmatter/template/README audit](ref-0024-frontmatter-template-readme-implementation.md) to bound later corpus migration. |
+| Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Retain the implemented registry/checker/contract foundation and use the [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md) to bound later corpus migration. |
 | Actual Release record | Not Implemented | Keep the implemented Release profile/template/index, changelog communication, and release runbook distinct; create a record only from an actual event. |
 | Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the eleven fixtures, sixteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Route deployment/release engineering through the separately approval-gated draft Spec 127 chain; keep it separate from validation CI. |
-| Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](ref-0031-security-framework-maturity.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
+| Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](../0031-security-framework-maturity/README.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 
 ## Automation Impact
 
@@ -170,11 +170,11 @@ runtime cost before adding new gates.
 - `Quality CI formatting research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf) - QA/CI/formatting criteria.
 - `Docker Compose infrastructure research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) - Compose/infrastructure validation criteria.
 - `Security governance research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) - security criteria.
-- [Stage 03 README](../../03.specs/README.md) - spec stage contract.
-- [Stage 04 plans README](../../03.specs/README.md) - plan stage contract.
-- [Stage 04 tasks README](../../03.specs/README.md) - task evidence contract.
-- [scripts README](../../../scripts/README.md) - local validation and QA scripts.
-- [CI quality workflow](../../../.github/workflows/ci-quality.yml) - remote CI/CD gates.
+- [Stage 03 README](../../../03.specs/README.md) - spec stage contract.
+- [Stage 04 plans README](../../../03.specs/README.md) - plan stage contract.
+- [Stage 04 tasks README](../../../03.specs/README.md) - task evidence contract.
+- [scripts README](../../../../scripts/README.md) - local validation and QA scripts.
+- [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - remote CI/CD gates.
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - external CI syntax criteria.
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use) - external workflow security criteria.
 - [pre-commit](https://pre-commit.com/) - external pre-commit criteria.
@@ -193,13 +193,13 @@ runtime cost before adding new gates.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Implementation overview](ref-0026-implementation-overview.md)
-- [SDLC and document-contract implementation audit](ref-0029-sdlc-document-contracts-implementation.md)
-- [Frontmatter, template, and README implementation audit](ref-0024-frontmatter-template-readme-implementation.md)
-- [Automation candidates](ref-0021-automation-candidates.md)
-- [Security framework maturity coverage](ref-0031-security-framework-maturity.md)
-- [Workspace rules/environment audit](ref-0032-workspace-rules-environment-implementation.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+- [SDLC and document-contract implementation audit](../0029-sdlc-document-contracts-implementation/README.md)
+- [Frontmatter, template, and README implementation audit](../0024-frontmatter-template-readme-implementation/README.md)
+- [Automation candidates](../0021-automation-candidates/README.md)
+- [Security framework maturity coverage](../0031-security-framework-maturity/README.md)
+- [Workspace rules/environment audit](../0032-workspace-rules-environment-implementation/README.md)
 
 ## Objective
 
