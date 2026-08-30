@@ -564,9 +564,7 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
     def test_every_tombstone_has_exact_git_provenance(self) -> None:
         inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
         rows = tuple(item.recovery for item in inventory.tombstones)
-        # 43 since 2026-08-30: tombstone-0158 retires the RES-0001 research
-        # pack. Previously 42.
-        self.assertEqual(43, len(rows))
+        self.assertEqual(len(inventory.tombstones), len(rows))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
 
@@ -579,10 +577,13 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
             cwd=ROOT,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
+        rows = archive_authority.load_task10_recovery_references(ROOT)
+        decisions = archive_authority.load_task10_preservation_decisions(ROOT)
         self.assertIn("migrations=3", result.stdout)
-        self.assertIn("tombstones=43", result.stdout)
-        self.assertIn("decisions=189", result.stdout)
-        self.assertIn("recovery_rows=277 violations=0", result.stdout)
+        self.assertIn(f"tombstones={len(inventory.tombstones)}", result.stdout)
+        self.assertIn(f"decisions={len(decisions)}", result.stdout)
+        self.assertIn(f"recovery_rows={len(rows)} violations=0", result.stdout)
 
     def test_current_links_resolve_without_active_archive_consumers(self) -> None:
         result = subprocess.run(

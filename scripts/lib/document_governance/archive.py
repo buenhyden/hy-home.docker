@@ -785,16 +785,20 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         os.close(parent)
 
 
-# Frozen census of the Task 10 recovery surface: legacy change deletions plus one
-# row per archive tombstone. Advanced 276 -> 277 on 2026-08-30 for tombstone-0158,
-# which retires the RES-0001 research pack. Advanced 272 -> 276 on 2026-08-29 when
-# the four tombstones 38fc89c5 never wrote were authored. The count and the
-# message it raises now read one constant; they were two literals, and only one
-# of them was advanced on the first attempt.
-#
-# This pin breaks on every legitimate tombstone, which is the cost of freezing a
-# census in code rather than deriving it. SPEC-0155 records the pattern.
-TASK10_RECOVERY_REFERENCE_COUNT = 277
+def _expected_recovery_reference_count(root: pathlib.Path) -> int:
+    """Legacy change deletions plus one row per tombstone, counted from both.
+
+    This replaced a frozen literal that every legitimate tombstone broke, along
+    with three test literals that moved with it. SPEC-0155 records the pattern.
+    """
+
+    change_rows = sum(
+        1
+        for row in task10_rows(root)
+        if row.get("action") == "delete"
+        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
+    )
+    return change_rows + len(load_archive(root / "docs/98.archive").tombstones)
 
 
 def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReference, ...]:
@@ -807,10 +811,10 @@ def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReferen
     references = [recoveries[source] for source in sources]
     archive = load_archive(root / "docs/98.archive")
     references.extend(item.recovery for item in archive.tombstones)
-    if len(references) != TASK10_RECOVERY_REFERENCE_COUNT:
+    expected = _expected_recovery_reference_count(root)
+    if len(references) != expected:
         raise ValueError(
-            "Task 10 must expose exactly "
-            f"{TASK10_RECOVERY_REFERENCE_COUNT} artifact recovery tuples"
+            f"Task 10 must expose exactly {expected} artifact recovery tuples"
         )
     return tuple(references)
 

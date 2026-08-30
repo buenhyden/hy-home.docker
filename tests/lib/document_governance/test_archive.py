@@ -4,6 +4,7 @@ import collections
 import copy
 import os
 import pathlib
+import re
 import subprocess
 import tempfile
 import unittest
@@ -202,11 +203,48 @@ class ArchiveMinimizationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.archive = archive_api()
 
+    def test_no_census_literal_pins_archive_content(self) -> None:
+        """A count that describes repository content is computed from it.
+
+        Authoring one tombstone during SPEC-0157's design broke eleven
+        hand-maintained counts, one of them encoded in a test's name. Each had
+        to be found and advanced by hand, and finding them was the expensive
+        part.
+        """
+
+        sources = (
+            pathlib.Path("scripts/lib/document_governance/archive.py"),
+            pathlib.Path("tests/lib/document_governance/test_archive.py"),
+            pathlib.Path("tests/validation/test_document_corpus_lifecycle.py"),
+        )
+        offenders = []
+        for source in sources:
+            text = (ROOT / source).read_text(encoding="utf-8")
+            for pattern in (
+                r"tombstones\s*=\s*\d+",
+                r"recovery_rows\s*=\s*\d+",
+                r"decisions\s*=\s*\d+",
+                r"TASK10_RECOVERY_REFERENCE_COUNT\s*=\s*\d+",
+                r"assertEqual\(\s*\d+\s*,\s*len\(inventory\.tombstones\)\)",
+                r"(?:load_task10_recovery_references\(ROOT\)"
+                r"|item\.recovery for item in inventory\.tombstones)"
+                r"[\s\S]{0,240}?assertEqual\(\s*\d+\s*,\s*len\(rows\)\)",
+            ):
+                offenders.extend(
+                    f"{source}:{match}" for match in re.findall(pattern, text)
+                )
+        self.assertEqual([], offenders)
+
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         self.assertEqual(("README.md", "migrations", "tombstones"), inventory.root_entries)
         self.assertEqual(3, len(inventory.migrations))
-        self.assertEqual(43, len(inventory.tombstones))
+        tombstone_files = [
+            path
+            for path in (ROOT / "docs/98.archive/tombstones").rglob("*.md")
+            if path.name.upper() != "README.MD"
+        ]
+        self.assertEqual(len(tombstone_files), len(inventory.tombstones))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertFalse((ROOT / "docs/98.archive/changes").exists())
 
@@ -278,7 +316,12 @@ class ArchiveMinimizationTests(unittest.TestCase):
 
     def test_task10_recovery_references_all_resolve_to_regular_blobs(self) -> None:
         rows = self.archive.load_task10_recovery_references(ROOT)
-        self.assertEqual(277, len(rows))
+        self.assertEqual(len(rows), len(set(rows)))
+        inventory = self.archive.load_archive(ROOT / "docs/98.archive")
+        original_paths = {row.original_path for row in rows}
+        self.assertTrue(
+            all(item.retired_path in original_paths for item in inventory.tombstones)
+        )
         self.assertEqual(14, sum(item.commit == TASK10_BASELINE for item in rows))
         self.assertEqual((), self.archive.validate_recovery_rows(rows, ROOT))
 
