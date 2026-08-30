@@ -86,6 +86,24 @@ demonstrated that intermediate commits are invisible to the check by passing
 through `draft`, `active`, and `completed` in three commits and still reporting
 `draft -> completed`.
 
+**The repair rule subsumes a SHA-pinned escape hatch.** The full gate then
+failed on `test_native_migration_compaction_requires_both_exact_provenance_states`.
+`_native_migration_compaction_witness` is a second mechanism for the same
+`archived -> completed` problem, hard-coded to one document path, one
+`artifact_id`, one frozen SHA256, and one schema version, and its only effect in
+`validate_record` is suppressing `invalid-transition` for that single document.
+The general repair rule makes that suppression unnecessary, so the assertions
+that observed it were rewritten to state the current rule. The witness's own
+exactness, that any near miss fails to bind, is still asserted directly and is
+unchanged. Removing the module belongs to the provenance narrowing in plan Task
+5, not here.
+
+Writing that expectation exposed a wrong assumption of mine: I predicted that a
+near miss with `status: active` would pass the repair path. It does not, because
+the `historical` lifecycle defines only `draft`, `completed`, and `superseded`.
+The rule correctly rejects a move that lands on a status the lifecycle never
+defined, and the test now says so.
+
 **Rollback.** `git revert` of the Task 2 commit. The four changes are
 independent: the `free_form_sections` declaration with its schema property, the
 `execution` lifecycle transition, the repair path in the validator, and the
