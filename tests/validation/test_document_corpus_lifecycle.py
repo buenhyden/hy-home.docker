@@ -564,7 +564,6 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
     def test_every_tombstone_has_exact_git_provenance(self) -> None:
         inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
         rows = tuple(item.recovery for item in inventory.tombstones)
-        self.assertEqual(len(inventory.tombstones), len(rows))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
 

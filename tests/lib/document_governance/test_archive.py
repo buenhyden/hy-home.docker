@@ -317,11 +317,18 @@ class ArchiveMinimizationTests(unittest.TestCase):
     def test_task10_recovery_references_all_resolve_to_regular_blobs(self) -> None:
         rows = self.archive.load_task10_recovery_references(ROOT)
         self.assertEqual(len(rows), len(set(rows)))
-        inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         original_paths = {row.original_path for row in rows}
-        self.assertTrue(
-            all(item.retired_path in original_paths for item in inventory.tombstones)
-        )
+        retired_paths_on_disk = set()
+        for tombstone_file in (ROOT / "docs/98.archive/tombstones").rglob("*.md"):
+            if tombstone_file.name.upper() == "README.MD":
+                continue
+            match = re.search(
+                r"(?ms)^## Retired Path\s*$\n\s*`([^`]+)`",
+                tombstone_file.read_text(encoding="utf-8"),
+            )
+            self.assertIsNotNone(match, tombstone_file)
+            retired_paths_on_disk.add(pathlib.PurePosixPath(match.group(1)))
+        self.assertTrue(retired_paths_on_disk.issubset(original_paths))
         self.assertEqual(14, sum(item.commit == TASK10_BASELINE for item in rows))
         self.assertEqual((), self.archive.validate_recovery_rows(rows, ROOT))
 
