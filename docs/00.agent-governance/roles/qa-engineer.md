@@ -10,7 +10,7 @@ permission_profile: workspace-write
 skill_ids:
 - e2e-testing
 - style-validation
-- test-automator
+- test-authoring
 ---
 
 # qa-engineer
@@ -48,7 +48,7 @@ Stop when failures are nondeterministic, environment-only, or outside approved s
 
 ## Related Documents
 
-- [QA scope](qa.md)
+- [Quality standards](../policies/quality-standards.md)
 - [E2E testing](../skills/e2e-testing.md)
 - [Style validation](../skills/style-validation.md)
-- [Test automation](../skills/test-automator.md)
+- [Test authoring](../skills/test-authoring.md)

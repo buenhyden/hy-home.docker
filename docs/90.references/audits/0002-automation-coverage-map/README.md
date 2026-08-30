@@ -22,7 +22,7 @@ corpus documents.
 ## Evidence Snapshot Boundary
 
 - **Evidence as of**: 2026-07-03
-- **Current implementation route**: [canonical agentic implementation audit](ref-0019-readme.md)
+- **Current implementation route**: [canonical agentic implementation audit](../0019-readme/README.md)
 - **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
 
 ## Purpose
@@ -195,23 +195,23 @@ not a validator specification, and not a replacement for `.github/workflows/`,
 
 ## Sources
 
-- [CI quality workflow](../../../.github/workflows/ci-quality.yml) - Main QA, formatting, frontend, coverage, and workflow-security jobs.
-- [Release changelog workflow](../../../.github/workflows/generate-changelog.yml) - Tag-time changelog gate.
-- [Greeting workflow](../../../.github/workflows/greetings.yml) - First interaction automation.
-- [Pull request labeler workflow](../../../.github/workflows/pr-labeler.yml) - PR triage automation.
-- [Stale workflow](../../../.github/workflows/stale.yml) - Scheduled stale issue and PR automation.
-- [Tech-stack version sync workflow](../../../.github/workflows/tech-stack-version-sync.yml) - Read-only image registry drift gate.
-- [Main protection proposal](../../../.github/rulesets/main-protection.md) - Local branch protection evidence and required-check proposal.
-- [Dependabot configuration](../../../.github/dependabot.yml) - Dependency update automation.
-- [Pre-commit configuration](../../../.pre-commit-config.yaml) - Formatting, linting, secret scanning, and local project hooks.
-- [Gitleaks configuration](../../../.gitleaks.toml) - Secret-scanning defaults.
-- [Scripts README](../../../scripts/README.md) - Canonical script inventory and lifecycle rules.
-- [Repository contract validator](../../../scripts/validation/check-repo-contracts.sh) - Repository, workflow, script, LLM Wiki, provider, and infra contract gate.
-- [Local QA gate runner](../../../scripts/validation/run-local-qa-gates.sh) - Local/CI/remote responsibility split.
-- [LLM Wiki index generator](../../../scripts/knowledge/generate-llm-wiki-index.sh) - Generated index write/check behavior.
-- [Provider surface sync](../../../scripts/operations/sync-provider-surfaces.sh) - Provider adapter verify/write behavior.
-- [Tech-stack version sync](../../../scripts/operations/sync-tech-stack-versions.sh) - Curated registry sync and check behavior.
-- [Secret generation utility](../../../scripts/operations/gen-secrets.sh) - Manual secret-safe modes and value-reading boundary.
+- [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - Main QA, formatting, frontend, coverage, and workflow-security jobs.
+- [Release changelog workflow](../../../../.github/workflows/generate-changelog.yml) - Tag-time changelog gate.
+- [Greeting workflow](../../../../.github/workflows/greetings.yml) - First interaction automation.
+- [Pull request labeler workflow](../../../../.github/workflows/pr-labeler.yml) - PR triage automation.
+- [Stale workflow](../../../../.github/workflows/stale.yml) - Scheduled stale issue and PR automation.
+- [Tech-stack version sync workflow](../../../../.github/workflows/tech-stack-version-sync.yml) - Read-only image registry drift gate.
+- [Main protection proposal](../../../../.github/rulesets/main-protection.md) - Local branch protection evidence and required-check proposal.
+- [Dependabot configuration](../../../../.github/dependabot.yml) - Dependency update automation.
+- [Pre-commit configuration](../../../../.pre-commit-config.yaml) - Formatting, linting, secret scanning, and local project hooks.
+- [Gitleaks configuration](../../../../.gitleaks.toml) - Secret-scanning defaults.
+- [Scripts README](../../../../scripts/README.md) - Canonical script inventory and lifecycle rules.
+- Repository contract validator (retired path: `scripts/validation/check-repo-contracts.sh`) - Repository, workflow, script, LLM Wiki, provider, and infra contract gate.
+- [Local QA gate runner](../../../../scripts/validation/run-local-qa-gates.sh) - Local/CI/remote responsibility split.
+- LLM Wiki index generator (retired path: `scripts/knowledge/generate-llm-wiki-index.sh`) - Generated index write/check behavior.
+- [Provider surface sync](../../../../scripts/operations/sync-provider-surfaces.sh) - Provider adapter verify/write behavior.
+- [Tech-stack version sync](../../../../scripts/operations/sync-tech-stack-versions.sh) - Curated registry sync and check behavior.
+- [Secret generation utility](../../../../scripts/operations/gen-secrets.sh) - Manual secret-safe modes and value-reading boundary.
 
 ## Maintenance
 
@@ -226,12 +226,12 @@ not a validator specification, and not a replacement for `.github/workflows/`,
 
 ## Related Documents
 
-- [Document contract audit references](ref-0001-readme.md)
-- [Contract governance map](ref-0004-contract-governance-map.md)
-- [Template application gaps](ref-0011-template-application-gaps.md)
-- [Frontmatter inventory](ref-0005-frontmatter-inventory.md)
-- [Section profile inventory](ref-0010-section-profile-inventory.md)
-- [README profile inventory](ref-0009-readme-profile-inventory.md)
+- [Document contract audit references](../0001-readme/README.md)
+- [Contract governance map](../0004-contract-governance-map/README.md)
+- [Template application gaps](../0011-template-application-gaps/README.md)
+- [Frontmatter inventory](../0005-frontmatter-inventory/README.md)
+- [Section profile inventory](../0010-section-profile-inventory/README.md)
+- [README profile inventory](../0009-readme-profile-inventory/README.md)
 - Workspace document contract audit pack task
 
 ## Objective

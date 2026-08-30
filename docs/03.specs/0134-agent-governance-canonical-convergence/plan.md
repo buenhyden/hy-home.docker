@@ -1131,7 +1131,7 @@ Every task must produce:
 - [Agent governance overview](../../00.agent-governance/README.md)
 - [Subagent protocol](../../00.agent-governance/policies/agentic.md)
 - [GitHub governance](../../00.agent-governance/policies/github-governance.md)
-- [Quality scope](../../00.agent-governance/roles/qa.md)
+- [Quality standards](../../00.agent-governance/policies/quality-standards.md)
 - `Canonical research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
 - [Canonical audit](../../90.references/audits/0019-readme/README.md)
 - [Document metadata profiles](../../99.templates/registry.json)

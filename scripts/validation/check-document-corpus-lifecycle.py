@@ -1582,10 +1582,141 @@ def _as_path_tuple(value: object, label: str) -> tuple[pathlib.PurePosixPath, ..
     return tuple(pathlib.PurePosixPath(item) for item in values)
 
 
-def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
-    """Load the contract through the canonical metadata validator."""
 
-    return metadata.load_migration_contract(path)
+@dataclasses.dataclass(frozen=True)
+class PromotedTransitionWitness:
+    """One migration-wave promotion record, read only by the modes below.
+
+    This lived in `metadata_validator` and was consumed there by a loader that
+    returned `{}` on every route the CLI takes, because the profiles the CLI
+    builds always carry `_registry`. It is defined here, in its only remaining
+    consumer, rather than charged to every profile load in the repository.
+    """
+
+    wave: str
+    baseline_commit: str
+    promotion_evidence_valid: bool
+    enforcement: str
+    path: pathlib.Path
+    target_path: pathlib.Path
+    artifact_id: str
+    artifact_type: str
+    parent_ids: tuple[str, ...]
+    status_before: str
+    status_after: str
+    disposition: str
+    specification_review: str
+    quality_review: str
+
+
+TARGET_SURFACE_PROMOTION_EVIDENCE = {
+    "review_base_commit": "32c40e11747bc0bd03789c24861d2e5d60c0e999",
+    "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
+    "specification_review": "pass-c0-i0-m0",
+    "quality_review": "approved-c0-i0-m0",
+    "controlled_wrapper": "pass",
+}
+
+
+_TARGET_SURFACE_COMPLETION_PATH = (
+    "docs/03.specs/0133-target-surface-contract-convergence/spec.md"
+)
+_TARGET_SURFACE_COMPLETION_ARTIFACT_ID = "spec:133-target-surface-contract-convergence"
+_TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE = "spec"
+_TARGET_SURFACE_COMPLETION_PARENT_IDS = (
+    "spec:131-document-corpus-lifecycle-migration-foundation",
+)
+
+
+def _promoted_transition_witness_context_valid(
+    witness: PromotedTransitionWitness,
+    record: "metadata.Record",
+) -> bool:
+    """Bind the promoted witness to one exact canonical typed artifact."""
+
+    path = record.path.as_posix()
+    artifact_id = record.metadata.get("artifact_id")
+    artifact_type = record.metadata.get("artifact_type")
+    parent_ids = record.metadata.get("parent_ids")
+    return bool(
+        witness.wave == "target-surface-convergence"
+        and witness.baseline_commit == TARGET_SURFACE_PROMOTION_EVIDENCE["review_base_commit"]
+        and witness.promotion_evidence_valid
+        and witness.enforcement == "blocking"
+        and witness.path == _TARGET_SURFACE_COMPLETION_PATH
+        and witness.target_path == witness.path
+        and path == witness.path
+        and witness.artifact_id == _TARGET_SURFACE_COMPLETION_ARTIFACT_ID
+        and witness.artifact_type == _TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE
+        and witness.parent_ids == _TARGET_SURFACE_COMPLETION_PARENT_IDS
+        and witness.disposition == "preserve"
+        and witness.specification_review == "pass"
+        and witness.quality_review == "pass"
+        and witness.status_before == "draft"
+        and witness.status_after == "active"
+        and record.previous_status == witness.status_before
+        and artifact_id == witness.artifact_id
+        and artifact_type == witness.artifact_type
+        and isinstance(parent_ids, list)
+        and all(isinstance(parent, str) for parent in parent_ids)
+        and tuple(sorted(parent_ids)) == witness.parent_ids
+    )
+
+
+def promoted_single_hop_transition_valid(
+    witness: PromotedTransitionWitness,
+    record: "metadata.Record",
+    profiles: collections.abc.Mapping[str, object],
+) -> bool:
+    """Admit only Spec 133's evidenced draft->active->one-next-hop chain."""
+
+    current_status = record.metadata.get("status")
+    if not _promoted_transition_witness_context_valid(witness, record) or not isinstance(
+        current_status, str
+    ):
+        return False
+    common = profiles.get("common")
+    transitions = (
+        common.get("transitions")
+        if isinstance(common, collections.abc.Mapping)
+        else None
+    )
+    if not isinstance(transitions, collections.abc.Mapping):
+        return False
+    first_targets = transitions.get(witness.status_before)
+    next_targets = transitions.get(witness.status_after)
+    return (
+        isinstance(first_targets, list)
+        and first_targets == ["active"]
+        and isinstance(next_targets, list)
+        and "completed" in next_targets
+        and current_status == "completed"
+    )
+
+def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
+    """Read the completed migration's contract for its data, not its shape.
+
+    The file this resolves is absent from the working tree; it is recovered
+    from a pinned commit. The 384-line shape assertion that used to guard it
+    required a deleted Spec Package's eight named waves to be present in a
+    deleted YAML, which is policy about a migration that finished. The modes
+    below still read its rows, so the data is loaded and the frozen shape is
+    not enforced.
+    """
+
+    try:
+        loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        # Never echo the payload. A malformed contract is a configuration
+        # error, and its content may carry anything.
+        raise ProfileError("migration contract is unreadable") from error
+    if not isinstance(loaded, dict):
+        raise ProfileError("migration contract must be a mapping")
+    for key in ("waves", "manifest", "archive"):
+        value = loaded.get(key)
+        if value is not None and not isinstance(value, dict):
+            raise ProfileError(f"migration contract {key} must be a mapping")
+    return loaded
 
 
 def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
@@ -2033,7 +2164,7 @@ def _manifest_profiles(
     if profiles is not None and isinstance(profiles.get("profiles"), dict):
         return profiles
     registry = metadata.load_registry(DEFAULT_PROFILES)
-    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES, HISTORICAL_CONTRACT)
+    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES)
     if not isinstance(legacy, dict):
         raise ProfileError("legacy migration profiles require a mapping envelope")
     return metadata.build_registry_transition_profiles(registry, legacy)
@@ -3110,13 +3241,13 @@ def _surface_result_state_findings(
         )
     waves = contract.get("waves")
     wave = waves.get(document.wave) if isinstance(waves, dict) else None
-    promoted_witness = metadata.PromotedTransitionWitness(
+    promoted_witness = PromotedTransitionWitness(
         wave=document.wave,
         baseline_commit=document.baseline_commit,
         promotion_evidence_valid=(
             isinstance(wave, dict)
             and wave.get("promotion_evidence")
-            == metadata.TARGET_SURFACE_PROMOTION_EVIDENCE
+            == TARGET_SURFACE_PROMOTION_EVIDENCE
         ),
         enforcement=document.enforcement,
         path=source,
@@ -3130,7 +3261,7 @@ def _surface_result_state_findings(
         specification_review=row.review_verdict.specification,
         quality_review=row.review_verdict.quality,
     )
-    promoted_hop_valid = metadata.promoted_single_hop_transition_valid(
+    promoted_hop_valid = promoted_single_hop_transition_valid(
         promoted_witness,
         dataclasses.replace(target_record, previous_status=row.status_before),
         profiles,
@@ -5990,13 +6121,10 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             # bounded translation input until Task 3 moves the corpus records.
             profiles = metadata.build_registry_transition_profiles(
                 registry,
-                metadata.load_profiles(
-                    LEGACY_MIGRATION_PROFILES,
-                    contract_path,
-                ),
+                metadata.load_profiles(LEGACY_MIGRATION_PROFILES),
             )
         else:
-            profiles = metadata.load_profiles(profiles_path, contract_path)
+            profiles = metadata.load_profiles(profiles_path)
         manifest_argument = args.manifest
         output_argument = args.output
         if args.wave is not None:

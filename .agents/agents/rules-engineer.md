@@ -40,7 +40,7 @@ Escalate unresolved authority or plan conflicts to `workflow-supervisor`; never 
 
 ## Related Documents
 
-- [Agentic scope](../../docs/00.agent-governance/roles/agentic.md)
+- [Agentic policy](../../docs/00.agent-governance/policies/agentic.md)
 - [Policy gate function](../../docs/00.agent-governance/skills/policy-gate-agent.md)
 - [Requirements-to-design function](../../docs/00.agent-governance/skills/requirements-to-design-agent.md)
 - [Agent governance artifacts contract](../../docs/99.templates/registry.json)

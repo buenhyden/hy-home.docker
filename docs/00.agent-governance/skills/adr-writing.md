@@ -40,5 +40,5 @@ If the choice, authority, or alternatives are not decision-ready, return a decis
 ## Related Documents
 
 - [Documentation protocol](../policies/documentation-protocol.md)
-- [Documentation scope](../roles/docs.md)
+- [Documentation scope](../policies/documentation-protocol.md)
 - [Agent catalog](../README.md)

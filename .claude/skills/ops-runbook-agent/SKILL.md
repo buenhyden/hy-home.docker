@@ -40,5 +40,5 @@ Do not publish commands that are unimplemented, destructive without approval, or
 ## Related Documents
 
 - [Documentation writer](../../../docs/00.agent-governance/roles/doc-writer.md)
-- [Operations scope](../../../docs/00.agent-governance/roles/ops.md)
+- [Operations scope](../../../docs/00.agent-governance/policies/quality-standards.md)
 - [Documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)

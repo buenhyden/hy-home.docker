@@ -56,7 +56,7 @@ Disable or revert the affected adapter when it blocks legitimate work, loops rec
 
 ## Related Documents
 
-- [Agentic scope](../../docs/00.agent-governance/roles/agentic.md)
+- [Agentic policy](../../docs/00.agent-governance/policies/agentic.md)
 - [Provider capability matrix](../../docs/00.agent-governance/policies/provider-capability-matrix.md)
 - [Subagent protocol](../../docs/00.agent-governance/policies/agentic.md)
 - [Agent catalog contract](../../docs/00.agent-governance/providers/registry.yaml)

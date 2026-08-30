@@ -54,7 +54,7 @@ Revert or stop on invalid Compose output, unexpected runtime impact, missing sec
 
 ## Related Documents
 
-- [Infrastructure scope](../../docs/00.agent-governance/roles/infra.md)
+- [Environment constraints](../../docs/00.agent-governance/policies/environment-constraints.md)
 - [Compose stack function](../../docs/00.agent-governance/skills/compose-stack-agent.md)
 - [Docker Compose patterns](../../docs/00.agent-governance/skills/docker-compose-patterns.md)
 - [Infrastructure validation](../../docs/00.agent-governance/skills/infra-validate.md)

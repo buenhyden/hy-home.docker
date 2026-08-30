@@ -40,7 +40,7 @@ Stop when required credentials, remote authority, or runtime promotion evidence 
 
 ## Related Documents
 
-- [Operations scope](../../docs/00.agent-governance/roles/ops.md)
+- [Quality standards](../../docs/00.agent-governance/policies/quality-standards.md)
 - [CI/CD patterns](../../docs/00.agent-governance/skills/ci-cd-patterns.md)
 - [Deployment pipeline design](../../docs/00.agent-governance/skills/deployment-pipeline-design.md)
 - [Subagent protocol](../../docs/00.agent-governance/policies/agentic.md)

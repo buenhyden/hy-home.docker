@@ -39,4 +39,4 @@ Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration i
 
 - [Evaluation engineer](../../../docs/00.agent-governance/roles/eval-engineer.md)
 - [Agent catalog contract](../../../docs/00.agent-governance/providers/registry.yaml)
-- [Agentic scope](../../../docs/00.agent-governance/roles/agentic.md)
+- [Agentic scope](../../../docs/00.agent-governance/policies/agentic.md)

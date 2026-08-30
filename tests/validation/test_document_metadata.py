@@ -75,10 +75,6 @@ RETIRING_APPROVED_MIGRATION_PATHS = frozenset(
 )
 PRESERVED_MIGRATION_SENTINELS = frozenset(
     {
-        "docs/03.specs/123-agentic-engineering-audit-remediation/README.md",
-        "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
-        "docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md",
-        "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
     }
 )
 PRESERVED_AUDIT_MIGRATION_PATHS = frozenset(
@@ -100,40 +96,16 @@ PRESERVED_AUDIT_MIGRATION_PATHS = frozenset(
 )
 PRESERVED_RESEARCH_MIGRATION_PATHS = frozenset(
     {
-        "docs/90.references/research/ref-0039-readme.md",
-        "docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md",
-        "docs/90.references/research/ref-0041-agent-model-selection.md",
-        "docs/90.references/research/ref-0042-ai-agent-catalogs.md",
-        "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
-        "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
-        "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
-        "docs/90.references/research/ref-0047-harness-engineering.md",
-        "docs/90.references/research/ref-0049-loop-engineering.md",
-        "docs/90.references/research/ref-0051-provider-implementation-comparison.md",
-        "docs/90.references/research/ref-0052-provider-model-landscape.md",
-        "docs/90.references/research/ref-0053-quality-ci-formatting.md",
-        "docs/90.references/research/ref-0055-sdlc-document-roles.md",
-        "docs/90.references/research/ref-0056-security-governance.md",
-        "docs/90.references/research/ref-0057-spec-driven-sdlc.md",
-        "docs/90.references/research/ref-0058-workspace-baseline.md",
     }
 )
 PRESERVED_TEMPLATE_MIGRATION_PATHS = frozenset(
     {
-        "docs/99.templates/templates/common/archive.template.md",
         "docs/99.templates/templates/common/readme.template.md",
-        "docs/99.templates/templates/common/reference.template.md",
         "docs/99.templates/templates/operations/guide.template.md",
         "docs/99.templates/templates/operations/incident.template.md",
         "docs/99.templates/templates/operations/policy.template.md",
         "docs/99.templates/templates/operations/postmortem.template.md",
         "docs/99.templates/templates/operations/runbook.template.md",
-        "docs/99.templates/templates/sdlc/adr.template.md",
-        "docs/99.templates/templates/sdlc/ard.template.md",
-        "docs/99.templates/templates/sdlc/plan.template.md",
-        "docs/99.templates/templates/sdlc/prd.template.md",
-        "docs/99.templates/templates/sdlc/spec.template.md",
-        "docs/99.templates/templates/sdlc/task.template.md",
     }
 )
 PRESERVED_APPROVED_MIGRATION_PATHS = (
@@ -1116,6 +1088,12 @@ def init_git(
     self_check = git(root, "init", "-q")
     if self_check.returncode != 0:
         raise RuntimeError(self_check.stderr)
+    # Do not inherit the operator's hooks. `core.hooksPath` is a global setting
+    # on developer machines, so a fixture commit would run the operator's
+    # pre-commit hook against a tree the fixture does not own, and its findings
+    # would surface as a fixture construction error. Same class of leak as the
+    # `init.defaultBranch` defense below.
+    git(root, "config", "core.hooksPath", "")
     git(root, "config", "user.name", "Metadata Fixture")
     git(root, "config", "user.email", "metadata@example.invalid")
     # Name the branch, do not inherit it. The checker's base inference tries a
@@ -1123,9 +1101,17 @@ def init_git(
     # `init.defaultBranch` in the operator's global config — which the gate
     # does not have, because it runs with its own `HOME`. Without this the
     # suite passed locally and fell back to `working-tree-only` under the gate.
-    named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
-    if named.returncode != 0:
-        raise RuntimeError(named.stderr)
+    if git(root, "rev-parse", "--verify", "-q", "HEAD").returncode == 0:
+        # A fixture built on a clone already carries the ancestry the checker
+        # reads. Renaming keeps it; repointing HEAD at an unborn branch would
+        # discard it and make every pinned predecessor unreachable.
+        renamed = git(root, "branch", "-M", "main")
+        if renamed.returncode != 0:
+            raise RuntimeError(renamed.stderr)
+    else:
+        named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
+        if named.returncode != 0:
+            raise RuntimeError(named.stderr)
     if share_objects:
         # Some validator paths recover a frozen authority by reading a blob at a
         # pinned commit of *this* repository. A fixture repository has no such
@@ -1432,6 +1418,22 @@ class ProfileSchemaTests(unittest.TestCase):
             ],
         }
 
+    def test_every_approved_migration_path_still_resolves(self) -> None:
+        """The allowlist may not accumulate paths that no longer exist.
+
+        It held 47 entries of which 28 had been deleted by earlier migrations,
+        including four Stage 04 routes and sixteen `ref-00xx` research files.
+        A hand-maintained pin drifts silently; this invariant does not.
+        """
+
+        root = pathlib.Path(__file__).resolve().parents[2]
+        missing = sorted(
+            path
+            for path in metadata.APPROVED_MIGRATION_PATHS
+            if not (root / path).exists()
+        )
+        self.assertEqual([], missing)
+
     def test_retiring_pack_exceptions_are_removed_without_baseline_drift(self) -> None:
         current_paths = metadata.APPROVED_MIGRATION_PATHS
         pre_route_paths = (
@@ -1493,7 +1495,12 @@ class ProfileSchemaTests(unittest.TestCase):
             if row["source_path"].startswith(PINNED_RESEARCH_PACK_PREFIX)
         ]
         self.assertEqual("target-surface-convergence", manifest["wave"])
-        self.assertEqual(metadata.TARGET_SURFACE_BASELINE, manifest["baseline_commit"])
+        # The literal, not a validator constant. This pins a historical
+        # manifest's own content; the validator no longer carries the commit
+        # because nothing in current policy resolves against it.
+        self.assertEqual(
+            "32c40e11747bc0bd03789c24861d2e5d60c0e999", manifest["baseline_commit"]
+        )
         self.assertEqual(
             PINNED_TARGET_SURFACE_RESEARCH_PATHS,
             frozenset(row["source_path"] for row in pinned_rows),
@@ -1791,113 +1798,7 @@ class ProfileSchemaTests(unittest.TestCase):
 
         self.mutate_and_load(add_unknown_condition)
 
-    def test_corpus_migration_human_owner_matches_machine_contract(self) -> None:
-        self.assertTrue(
-            CORPUS_MIGRATION_HUMAN_CONTRACT.read_bytes(),
-            "canonical corpus migration human owner is missing",
-        )
-        text = CORPUS_MIGRATION_HUMAN_CONTRACT.read_text(encoding="utf-8")
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
 
-        expected_sequences = (
-            contract["manifest"]["dispositions"],
-            contract["manifest_schema"]["top_level_fields"],
-            contract["manifest_schema"]["evidence_fields"],
-            contract["manifest_schema"]["review_verdict_fields"],
-            contract["manifest_schema"]["review_verdict_values"],
-        )
-        for values in expected_sequences:
-            literal = ", ".join(f"`{value}`" for value in values)
-            with self.subTest(literal=literal):
-                self.assertIn(literal, text)
-        v1_fields = text.split("Schema version 1 entries use", 1)[1].split(
-            "Schema version 2 entries instead use", 1
-        )[0]
-        v2_fields = text.split("Schema version 2 entries instead use", 1)[1].split(
-            "The evidence object uses", 1
-        )[0].split("Version 2 does not carry", 1)[0]
-        for schema_name, paragraph in (
-            ("manifest_schema", v1_fields),
-            ("manifest_schema_v2", v2_fields),
-        ):
-            for field_name in contract[schema_name]["entry_fields"]:
-                with self.subTest(schema=schema_name, field=field_name):
-                    self.assertIn(f"`{field_name}`", paragraph)
-        self.assertNotIn("`artifact_type_before`", v1_fields)
-        self.assertNotIn("`artifact_type_after`", v1_fields)
-        self.assertNotIn("`surface_class`", v1_fields)
-        self.assertNotRegex(v2_fields, r"`artifact_type`(?=[,.;\s])")
-        for schema_name in ("manifest_schema", "manifest_schema_v2"):
-            self.assertIn(f"`{schema_name}`", text)
-        for disposition, condition in contract["disposition_conditions"].items():
-            with self.subTest(disposition=disposition):
-                self.assertIn(f"`{disposition}` -> `{condition}`", text)
-        self.assertIn(
-            "document-corpus-migration-contract.yaml",
-            text,
-        )
-
-    def test_archive_retention_human_owner_matches_machine_contract(self) -> None:
-        self.assertTrue(
-            ARCHIVE_RETENTION_HUMAN_CONTRACT.read_bytes(),
-            "canonical archive and retention human owner is missing",
-        )
-        text = ARCHIVE_RETENTION_HUMAN_CONTRACT.read_text(encoding="utf-8")
-        normalized = " ".join(text.split())
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = metadata.load_profiles(PROFILES)
-        archive_profiles = profiles["archive_profiles"]
-
-        for values in (
-            contract["archive"]["dispositions"],
-            contract["archive"]["preservation_classes"],
-        ):
-            literal = ", ".join(f"`{value}`" for value in values)
-            with self.subTest(literal=literal):
-                self.assertIn(literal, text)
-        for profile_name, profile in archive_profiles.items():
-            section = text.split(f"### `{profile_name}`", 1)[1]
-            section = section.split("\n### `", 1)[0].split("\n## ", 1)[0]
-            for field_group in ("required", "forbidden"):
-                literal = ", ".join(f"`{value}`" for value in profile[field_group])
-                with self.subTest(profile=profile_name, field_group=field_group):
-                    self.assertIn(literal, section)
-            optional = profile["optional"]
-            optional_literal = (
-                ", ".join(f"`{value}`" for value in optional)
-                if optional
-                else "none"
-            )
-            with self.subTest(profile=profile_name, field_group="optional"):
-                self.assertIn(f"Optional: {optional_literal}.", section)
-        self.assertNotIn("The archive profile requires", text)
-        self.assertNotIn("It permits", text)
-        self.assertIn(
-            "`current_replacement` is required for `superseded`, `duplicate`, and "
-            "`conflict`; forbidden for `withdrawn`; and optional for "
-            "`evidence-preserve`.",
-            normalized,
-        )
-        self.assertIn(
-            "`snapshot_path`, `content_sha256`, and `snapshot_reason` are required "
-            "for `immutable-snapshot` and forbidden for `git-history`.",
-            normalized,
-        )
-        for key, value in contract["directory_budgets"].items():
-            self.assertIn(f"`{key}: {value}`", text)
-        for key, value in contract["review_signals"].items():
-            self.assertIn(f"`{key}: {value}`", text)
-        # These two authorities disagree on `planned_partitions`, and already
-        # did at the pinned commit: the human sentence prefixes the package
-        # directory with `spec-`, the machine contract does not, and the
-        # machine shape is the one this repository realised
-        # (`docs/03.specs/0102-.../tasks/tsk-0001-...md`). Both documents are
-        # frozen, so the divergence is pinned here rather than asserted away.
-        for source, target in contract["planned_partitions"].items():
-            self.assertIn(f"`{source}`", text)
-            self.assertNotIn(f"`{source}` -> `{target}`", text)
-        self.assertIn("document-metadata-profiles.yaml", text)
-        self.assertIn("document-corpus-migration-contract.yaml", text)
 
     def test_archive_template_uses_canonical_profile_order_and_sections(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -1953,161 +1854,7 @@ class ProfileSchemaTests(unittest.TestCase):
         )
         self.assertNotIn("N/A", ARCHIVE_TEMPLATE.read_text(encoding="utf-8"))
 
-    def test_migration_contract_has_exact_nonoverlapping_ownership(self) -> None:
-        self.assertTrue(MIGRATION_CONTRACT.read_bytes(), "migration contract is missing")
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
-        self.assertEqual(
-            [
-                "migrate",
-                "preserve",
-                "move",
-                "merge",
-                "archive",
-                "delete",
-                "regenerate",
-                "exempt",
-            ],
-            contract["manifest"]["dispositions"],
-        )
-        self.assertEqual(
-            ["superseded", "duplicate", "conflict", "withdrawn", "evidence-preserve"],
-            contract["archive"]["dispositions"],
-        )
-        self.assertEqual(
-            ["git-history", "immutable-snapshot"],
-            contract["archive"]["preservation_classes"],
-        )
-        self.assertEqual(
-            {"warning_at": 100, "block_new_leaf_at": 150},
-            contract["directory_budgets"],
-        )
-        self.assertEqual(
-            {"draft_days": 30, "active_days": 90, "completed_execution_days": 180},
-            contract["review_signals"],
-        )
-        self.assertEqual(
-            {
-                "schema_version",
-                "manifest",
-                "archive",
-                "directory_budgets",
-                "review_signals",
-                "manifest_schema",
-                "manifest_schema_v2",
-                "exception_schema",
-                "disposition_conditions",
-                "replacement_requirements",
-                "snapshot_admission",
-                "safe_diagnostics",
-                "waves",
-                "planned_partitions",
-            },
-            set(contract),
-        )
-        self.assertEqual(
-            {"schema_version"},
-            set(contract) & set(profiles),
-        )
-        self.assertEqual(
-            {
-                "docs/04.execution/plans": "docs/03.specs/####-<capability>/plan.md",
-                "docs/04.execution/tasks": (
-                    "docs/03.specs/####-<capability>/tasks/tsk-####-<slug>.md"
-                ),
-            },
-            contract["planned_partitions"],
-        )
 
-        mutations = []
-        duplicate = MIGRATION_CONTRACT.read_text(encoding="utf-8") + "\nschema_version: 1\n"
-        mutations.append(duplicate)
-        for mutate in (
-            lambda values: values["manifest"]["dispositions"].append("unknown"),
-            lambda values: values["directory_budgets"].__setitem__("warning_at", 0),
-            lambda values: values["directory_budgets"].__setitem__("warning_at", 150),
-            lambda values: values["waves"]["wave-d-archive-provenance"].__setitem__(
-                "enforcement", "blocking"
-            ),
-            lambda values: values.__setitem__("profiles", {}),
-            lambda values: values["waves"]["foundation"]["source_paths"].append(
-                "/absolute.md"
-            ),
-            lambda values: values["waves"]["foundation"]["declared_outputs"].append(
-                "docs/../unsafe.md"
-            ),
-            lambda values: values["planned_partitions"].__setitem__(
-                "docs/04.execution/plans",
-                "docs/04.execution/plans/<plan>.md",
-            ),
-        ):
-            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
-            mutate(values)
-            mutations.append(yaml.safe_dump(values, sort_keys=False))
-        for source in mutations:
-            with self.subTest(source=source[-80:]):
-                with tempfile.TemporaryDirectory() as directory:
-                    target = pathlib.Path(directory) / "migration.yaml"
-                    target.write_text(source, encoding="utf-8")
-                    with self.assertRaises(metadata.ProfileError):
-                        metadata.load_migration_contract(target)
-
-    def test_target_surface_wave_requires_exact_promotion_evidence_for_blocking(self) -> None:
-        expected = {
-            "review_base_commit": "32c40e11747bc0bd03789c24861d2e5d60c0e999",
-            "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
-            "specification_review": "pass-c0-i0-m0",
-            "quality_review": "approved-c0-i0-m0",
-            "controlled_wrapper": "pass",
-        }
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        wave = contract["waves"]["target-surface-convergence"]
-        self.assertEqual("blocking", wave["enforcement"])
-        self.assertEqual(expected, wave["promotion_evidence"])
-
-        pre_promotion = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
-        pre_promotion_wave = pre_promotion["waves"]["target-surface-convergence"]
-        pre_promotion_wave["enforcement"] = "advisory"
-        pre_promotion_wave["promotion_evidence"] = None
-        with tempfile.TemporaryDirectory() as directory:
-            target = pathlib.Path(directory) / "migration.yaml"
-            target.write_text(
-                yaml.safe_dump(pre_promotion, sort_keys=False), encoding="utf-8"
-            )
-            loaded = metadata.load_migration_contract(target)
-            self.assertEqual(
-                "advisory",
-                loaded["waves"]["target-surface-convergence"]["enforcement"],
-            )
-
-        for field, replacement in (
-            ("review_base_commit", "0" * 40),
-            ("review_head_commit", "f" * 40),
-            ("specification_review", "pending"),
-            ("quality_review", "changes-required"),
-            ("controlled_wrapper", "not-run"),
-        ):
-            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
-            values["waves"]["target-surface-convergence"]["promotion_evidence"][
-                field
-            ] = replacement
-            with self.subTest(field=field):
-                with tempfile.TemporaryDirectory() as directory:
-                    target = pathlib.Path(directory) / "migration.yaml"
-                    target.write_text(
-                        yaml.safe_dump(values, sort_keys=False),
-                        encoding="utf-8",
-                    )
-                    with self.assertRaises(metadata.ProfileError):
-                        metadata.load_migration_contract(target)
-
-        missing = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
-        missing["waves"]["target-surface-convergence"]["promotion_evidence"] = None
-        with tempfile.TemporaryDirectory() as directory:
-            target = pathlib.Path(directory) / "migration.yaml"
-            target.write_text(yaml.safe_dump(missing, sort_keys=False), encoding="utf-8")
-            with self.assertRaises(metadata.ProfileError):
-                metadata.load_migration_contract(target)
 
     def test_target_surface_promotion_changes_only_approved_fields(self) -> None:
         manifest = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text(encoding="utf-8"))
@@ -2155,571 +1902,14 @@ class ProfileSchemaTests(unittest.TestCase):
             target_promotion_invariant_digest(TARGET_SURFACE_MANIFEST),
         )
 
-    def test_promoted_witness_allows_only_the_exact_next_status_hop(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        witnesses = metadata.load_promoted_transition_witnesses(
-            ROOT,
-            profiles,
-            metadata.TARGET_SURFACE_BASELINE,
-        )
-        path = metadata.TARGET_SURFACE_COMPLETION_PATH
 
-        # The loader cannot produce this witness, and has not been able to
-        # since the four-digit identity normalisation. It looks the frozen
-        # manifest up by `TARGET_SURFACE_COMPLETION_PATH`, the live `0133-`
-        # path, while the manifest is keyed by the pre-migration `133-` one.
-        # A successful lookup would not help either: the context rule requires
-        # `witness.target_path == witness.path`, and the manifest's target is
-        # the `133-` path while the witness path is set to the `0133-`
-        # constant. Two independent grounds, and one constant serving two eras.
-        self.assertEqual({}, witnesses)
 
-        # The context rule is still worth exercising, so build the witness the
-        # loader would yield if the two eras named one path. Every value below
-        # is the frozen manifest row's own, read at `889d3868`.
-        witness = metadata.PromotedTransitionWitness(
-            wave="target-surface-convergence",
-            baseline_commit=metadata.TARGET_SURFACE_BASELINE,
-            promotion_evidence_valid=True,
-            enforcement="blocking",
-            path=path,
-            target_path=path,
-            artifact_id=metadata.TARGET_SURFACE_COMPLETION_ARTIFACT_ID,
-            artifact_type=metadata.TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE,
-            parent_ids=metadata.TARGET_SURFACE_COMPLETION_PARENT_IDS,
-            status_before="draft",
-            status_after="active",
-            disposition="preserve",
-            specification_review="pass",
-            quality_review="pass",
-        )
-        witnesses = {path: witness}
-        record = metadata.Record(
-            pathlib.Path(path),
-            {
-                "status": "completed",
-                "artifact_id": witness.artifact_id,
-                "artifact_type": witness.artifact_type,
-                "parent_ids": list(witness.parent_ids),
-            },
-            "spec",
-            previous_status="draft",
-        )
-        findings = metadata.validate_record(
-            record,
-            profiles,
-            metadata.build_manifest((record,)),
-            promoted_transition_witnesses=witnesses,
-        )
-        self.assertNotIn("invalid-transition", {item.code for item in findings})
 
-        invalid_witnesses = {
-            "missing": {},
-            "advisory": {
-                path: dataclasses.replace(witness, enforcement="advisory")
-            },
-            "pending-review": {
-                path: dataclasses.replace(witness, specification_review="pending")
-            },
-            "wrong-path": {
-                path: dataclasses.replace(witness, path="docs/03.specs/other/spec.md")
-            },
-            "wrong-id": {
-                path: dataclasses.replace(witness, artifact_id="spec:other")
-            },
-            "wrong-type": {
-                path: dataclasses.replace(witness, artifact_type="reference")
-            },
-            "wrong-parents": {
-                path: dataclasses.replace(witness, parent_ids=())
-            },
-            "wrong-baseline": {
-                path: dataclasses.replace(witness, baseline_commit="0" * 40)
-            },
-            "skipped-first-hop": {
-                path: dataclasses.replace(witness, status_after="completed")
-            },
-        }
-        for name, candidate_witnesses in invalid_witnesses.items():
-            with self.subTest(case=name):
-                findings = metadata.validate_record(
-                    record,
-                    profiles,
-                    metadata.build_manifest((record,)),
-                    promoted_transition_witnesses=candidate_witnesses,
-                )
-                self.assertIn("invalid-transition", {item.code for item in findings})
 
-        coordinated_mutations = {
-            "id": (
-                dataclasses.replace(witness, artifact_id="spec:coordinated"),
-                {**record.metadata, "artifact_id": "spec:coordinated"},
-            ),
-            "type": (
-                dataclasses.replace(witness, artifact_type="reference"),
-                {**record.metadata, "artifact_type": "reference"},
-            ),
-            "parents": (
-                dataclasses.replace(witness, parent_ids=("spec:coordinated",)),
-                {**record.metadata, "parent_ids": ["spec:coordinated"]},
-            ),
-        }
-        for name, (candidate_witness, candidate_metadata) in coordinated_mutations.items():
-            with self.subTest(coordinated_mutation=name):
-                candidate = dataclasses.replace(record, metadata=candidate_metadata)
-                findings = metadata.validate_record(
-                    candidate,
-                    profiles,
-                    metadata.build_manifest((candidate,)),
-                    promoted_transition_witnesses={path: candidate_witness},
-                )
-                self.assertIn("invalid-transition", {item.code for item in findings})
 
-        for terminal_status in ("archived", "superseded"):
-            with self.subTest(terminal_status=terminal_status):
-                terminal = dataclasses.replace(
-                    record,
-                    metadata={**record.metadata, "status": terminal_status},
-                )
-                terminal_findings = metadata.validate_record(
-                    terminal,
-                    profiles,
-                    metadata.build_manifest((terminal,)),
-                    promoted_transition_witnesses=witnesses,
-                )
-                self.assertIn(
-                    "invalid-transition", {item.code for item in terminal_findings}
-                )
 
-        reverted = dataclasses.replace(
-            record,
-            metadata={**record.metadata, "status": "draft"},
-        )
-        reverted_findings = metadata.validate_record(
-            reverted,
-            profiles,
-            metadata.build_manifest((reverted,)),
-            promoted_transition_witnesses=witnesses,
-        )
-        self.assertIn(
-            "invalid-transition", {item.code for item in reverted_findings}
-        )
 
-    def test_promoted_witness_parse_diagnostic_is_value_free(self) -> None:
-        profiles = metadata.load_profiles(PROFILES)
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        sentinel = "TOKEN-DO-NOT-PRINT"
-        with (
-            mock.patch.object(
-                metadata._validator,
-                "load_migration_contract",
-                return_value=contract,
-            ),
-            mock.patch.object(
-                metadata._validator,
-                "_safe_load_unique",
-                side_effect=yaml.YAMLError(sentinel),
-            ),
-            self.assertRaises(metadata.ProfileError) as raised,
-        ):
-            metadata.load_promoted_transition_witnesses(
-                ROOT,
-                profiles,
-                metadata.TARGET_SURFACE_BASELINE,
-            )
-        self.assertEqual("cannot load promoted transition witness", str(raised.exception))
-        self.assertNotIn(sentinel, str(raised.exception))
 
-    def test_migration_contract_declares_manifest_static_semantics(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        schema = contract["manifest_schema"]
-        self.assertEqual(
-            {
-                "schema_version",
-                "wave",
-                "baseline_commit",
-                "generated_by",
-                "enforcement",
-                "entries",
-                "source_path",
-                "target_path",
-                "artifact_id",
-                "artifact_type",
-                "status_before",
-                "status_after",
-                "parent_ids",
-                "disposition",
-                "canonical_replacement",
-                "active_consumers",
-                "partition_plan",
-                "preservation_class",
-                "evidence",
-                "review_verdict",
-                "evidence.commands",
-                "evidence.sources",
-                "evidence.repository_paths",
-                "evidence.consumer_scan",
-                "evidence.rollback",
-                "review_verdict.specification",
-                "review_verdict.quality",
-            },
-            set(schema["field_contracts"]),
-        )
-        self.assertEqual(
-            {
-                "entries": "source_path",
-                "parent_ids": "lexicographic",
-                "active_consumers": "lexicographic",
-                "evidence.commands": "lexicographic",
-                "evidence.sources": "lexicographic",
-                "evidence.repository_paths": "lexicographic",
-                "evidence.consumer_scan": "lexicographic",
-                "evidence.rollback": "lexicographic",
-            },
-            schema["deterministic_order"],
-        )
-        self.assertEqual(
-            {
-                "dispositions": ["merge", "archive", "delete"],
-                "active_consumers_required": True,
-                "empty_consumers_require": "evidence.consumer_scan",
-                "non_empty_evidence": [
-                    "commands",
-                    "sources",
-                    "repository_paths",
-                    "consumer_scan",
-                    "rollback",
-                ],
-                "preservation_class_required": True,
-                "replacement_semantics": "replacement_requirements",
-                "required_review": {"specification": "pass", "quality": "pass"},
-            },
-            schema["destructive_execution"],
-        )
-
-        self.assertEqual(
-            {
-                "artifact_id": {
-                    "type": "string",
-                    "nullable": True,
-                    "domain": "canonical-metadata-artifact-id",
-                    "null_condition": "selected-profile-does-not-require-artifact-id",
-                },
-                "status_before": {
-                    "type": "string",
-                    "nullable": True,
-                    "domain": "registered-lifecycle-status",
-                    "null_condition": "selected-profile-does-not-require-status",
-                },
-                "status_after": {
-                    "type": "string",
-                    "nullable": True,
-                    "domain": "registered-lifecycle-status",
-                    "null_condition": "selected-profile-does-not-require-status",
-                },
-            },
-            {
-                field: schema["field_contracts"][field]
-                for field in ("artifact_id", "status_before", "status_after")
-            },
-        )
-        for mutate in (
-            lambda values: values["manifest_schema"]["field_contracts"][
-                "baseline_commit"
-            ].__setitem__("domain", "string"),
-            lambda values: values["manifest_schema"]["field_contracts"][
-                "target_path"
-            ].__setitem__("nullable", False),
-            lambda values: values["manifest_schema"]["deterministic_order"].pop(
-                "active_consumers"
-            ),
-            lambda values: values["manifest_schema"]["destructive_execution"][
-                "non_empty_evidence"
-            ].remove("consumer_scan"),
-            lambda values: values["manifest_schema"]["destructive_execution"][
-                "required_review"
-            ].__setitem__("quality", "pending"),
-        ):
-            with self.subTest(mutate=mutate):
-                self.mutate_migration_contract_and_load(mutate)
-
-    def test_archive_replacement_is_deferred_to_validated_target_disposition(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        self.assertEqual(
-            {
-                "required_for": ["merge"],
-                "optional_for": ["archive", "delete"],
-                "forbidden_for": [
-                    "migrate",
-                    "preserve",
-                    "move",
-                    "regenerate",
-                    "exempt",
-                ],
-            },
-            contract["replacement_requirements"],
-        )
-        manifest = self.valid_static_manifest()
-        entry = manifest["entries"][0]
-        entry.update(
-            {
-                "target_path": "docs/98.archive/source.md",
-                "disposition": "archive",
-                "canonical_replacement": None,
-            }
-        )
-        metadata.validate_static_migration_manifest(
-            manifest,
-            contract,
-            metadata.load_profiles(PROFILES, MIGRATION_CONTRACT),
-        )
-
-    def test_static_manifest_allows_actual_profile_identity_exception(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = metadata.load_profiles(PROFILES)
-        valid = self.valid_static_manifest()
-        declared_exception = copy.deepcopy(valid)
-        declared_exception["entries"][0].update(
-            {
-                "source_path": "README.md",
-                "target_path": "README.md",
-                "artifact_id": None,
-                "artifact_type": "readme",
-                "status_before": None,
-                "status_after": None,
-                "parent_ids": [],
-                "disposition": "exempt",
-                "preservation_class": None,
-            }
-        )
-        metadata.validate_static_migration_manifest(declared_exception, contract, profiles)
-
-    def test_static_manifest_exempt_cannot_override_required_identity(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = metadata.load_profiles(PROFILES)
-        for field in ("artifact_id", "status_before", "status_after"):
-            with self.subTest(field=field):
-                typed_exempt = self.valid_static_manifest()
-                typed_exempt["entries"][0].update(
-                    {
-                        "target_path": "docs/source.md",
-                        "disposition": "exempt",
-                        "preservation_class": None,
-                        field: None,
-                    }
-                )
-                with self.assertRaises(metadata.ProfileError):
-                    metadata.validate_static_migration_manifest(
-                        typed_exempt,
-                        contract,
-                        profiles,
-                    )
-
-    def test_static_manifest_uses_canonical_artifact_id_validation(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = metadata.load_profiles(PROFILES)
-        canonical_id = "reference:Source"
-        record = metadata.Record(
-            pathlib.Path("docs/source.md"),
-            {
-                "status": "active",
-                "artifact_id": canonical_id,
-                "artifact_type": "reference",
-                "parent_ids": [],
-            },
-            "reference",
-            frontmatter_present=True,
-        )
-        self.assertNotIn(
-            "invalid-artifact-id",
-            {finding.code for finding in metadata.validate_record(record, profiles, {})},
-        )
-        manifest = self.valid_static_manifest()
-        manifest["entries"][0]["artifact_id"] = canonical_id
-        metadata.validate_static_migration_manifest(manifest, contract, profiles)
-
-    def test_static_manifest_validation_fails_closed(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        profiles = metadata.load_profiles(PROFILES)
-        valid = self.valid_static_manifest()
-        metadata.validate_static_migration_manifest(valid, contract, profiles)
-        canonical_partition = copy.deepcopy(valid)
-        canonical_partition["entries"][0]["partition_plan"] = (
-            "docs/03.specs/0001-example/plan.md"
-        )
-        metadata.validate_static_migration_manifest(
-            canonical_partition,
-            contract,
-            profiles,
-        )
-
-        mutations = {
-            "schema-type": lambda value: value.__setitem__("schema_version", True),
-            "empty-wave": lambda value: value.__setitem__("wave", ""),
-            "object-domain": lambda value: value.__setitem__("baseline_commit", "A" * 40),
-            "enforcement-domain": lambda value: value.__setitem__("enforcement", "enforced"),
-            "unsafe-source-path": lambda value: value["entries"][0].__setitem__(
-                "source_path", "../source.md"
-            ),
-            "unsafe-target-path": lambda value: value["entries"][0].__setitem__(
-                "target_path", "/tmp/source.md"
-            ),
-            "artifact-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
-                "artifact_id", None
-            ),
-            "artifact-type-domain": lambda value: value["entries"][0].__setitem__(
-                "artifact_type", "unknown"
-            ),
-            "artifact-type-shape": lambda value: value["entries"][0].__setitem__(
-                "artifact_type", []
-            ),
-            "disposition-shape": lambda value: value["entries"][0].__setitem__(
-                "disposition", []
-            ),
-            "status-domain": lambda value: value["entries"][0].__setitem__(
-                "status_after", "retired"
-            ),
-            "status-shape": lambda value: value["entries"][0].__setitem__(
-                "status_after", []
-            ),
-            "status-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
-                "status_before", None
-            ),
-            "partition-plan-path": lambda value: value["entries"][0].__setitem__(
-                "partition_plan", "docs/04.execution/plans/retired.md"
-            ),
-            "unordered-parent-list": lambda value: value["entries"][0].__setitem__(
-                "parent_ids", ["spec:z", "spec:a"]
-            ),
-            "unordered-consumer-list": lambda value: value["entries"][0].__setitem__(
-                "active_consumers", ["docs/z.md", "docs/a.md"]
-            ),
-            "unordered-evidence-list": lambda value: value["entries"][0]["evidence"].__setitem__(
-                "commands", ["z command", "a command"]
-            ),
-            "unordered-entries": lambda value: value["entries"].insert(
-                0,
-                {
-                    **copy.deepcopy(value["entries"][0]),
-                    "source_path": "docs/z-source.md",
-                },
-            ),
-            "delete-target": lambda value: value["entries"][0].__setitem__(
-                "target_path", "docs/source.md"
-            ),
-            "consumer-enumeration": lambda value: value["entries"][0].__setitem__(
-                "active_consumers", None
-            ),
-            "consumer-scan-proof": lambda value: value["entries"][0]["evidence"].__setitem__(
-                "consumer_scan", []
-            ),
-            "destructive-evidence": lambda value: value["entries"][0]["evidence"].__setitem__(
-                "commands", []
-            ),
-            "destructive-preservation": lambda value: value["entries"][0].__setitem__(
-                "preservation_class", None
-            ),
-            "preservation-shape": lambda value: value["entries"][0].__setitem__(
-                "preservation_class", []
-            ),
-            "destructive-review": lambda value: value["entries"][0]["review_verdict"].__setitem__(
-                "quality", "pending"
-            ),
-            "review-shape": lambda value: value["entries"][0]["review_verdict"].__setitem__(
-                "quality", []
-            ),
-            "merge-replacement": lambda value: (
-                value["entries"][0].__setitem__("disposition", "merge"),
-                value["entries"][0].__setitem__("target_path", "docs/merged/source.md"),
-            ),
-        }
-        for name, mutate in mutations.items():
-            with self.subTest(name=name):
-                candidate = copy.deepcopy(valid)
-                mutate(candidate)
-                with self.assertRaises(metadata.ProfileError):
-                    metadata.validate_static_migration_manifest(candidate, contract, profiles)
-
-    def test_bounded_exception_contract_rejects_unbounded_entries(self) -> None:
-        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
-        schema = contract["exception_schema"]
-        self.assertEqual(
-            {
-                "finding_code_source": "validator-known-finding-codes",
-                "require_non_empty_scope_paths": True,
-                "forbid_wildcards": True,
-                "forbid_global_scopes": ["*", "**", ".", "all", "global"],
-                "require_non_empty_text": ["owner", "reason", "exit_condition"],
-                "approval": "approved_at-not-future",
-                "expiry": "expires_on-after-validation-date",
-                "require_non_empty_safe_evidence_paths": True,
-            },
-            schema["bounded_semantics"],
-        )
-        for mutate in (
-            lambda values: values["exception_schema"]["field_contracts"][
-                "finding_code"
-            ].__setitem__("domain", "string"),
-            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
-                "forbid_wildcards", False
-            ),
-            lambda values: values["exception_schema"]["bounded_semantics"][
-                "require_non_empty_text"
-            ].remove("owner"),
-            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
-                "expiry", "permanent"
-            ),
-        ):
-            with self.subTest(contract_mutation=mutate):
-                self.mutate_migration_contract_and_load(mutate)
-        valid = self.valid_static_exception_document()
-        validation_date = dt.date(2026, 7, 14)
-        metadata.validate_static_exception_document(
-            valid,
-            contract,
-            {"known-finding"},
-            validation_date,
-        )
-
-        mutations = {
-            "wildcard": lambda value: value["exceptions"][0].__setitem__(
-                "scope_paths", ["docs/*"]
-            ),
-            "global": lambda value: value["exceptions"][0].__setitem__(
-                "scope_paths", ["global"]
-            ),
-            "ownerless": lambda value: value["exceptions"][0].__setitem__("owner", ""),
-            "reasonless": lambda value: value["exceptions"][0].__setitem__("reason", ""),
-            "permanent": lambda value: value["exceptions"][0].__setitem__(
-                "expires_on", "permanent"
-            ),
-            "expired": lambda value: value["exceptions"][0].__setitem__(
-                "expires_on", "2026-07-13"
-            ),
-            "unknown-code": lambda value: value["exceptions"][0].__setitem__(
-                "finding_code", "unknown-finding"
-            ),
-            "empty-exit": lambda value: value["exceptions"][0].__setitem__(
-                "exit_condition", ""
-            ),
-            "unsafe-evidence": lambda value: value["exceptions"][0].__setitem__(
-                "evidence", ["/tmp/evidence.md"]
-            ),
-            "unapproved": lambda value: value["exceptions"][0].__setitem__(
-                "approved_at", "2026-07-15"
-            ),
-        }
-        for name, mutate in mutations.items():
-            with self.subTest(name=name):
-                candidate = copy.deepcopy(valid)
-                mutate(candidate)
-                with self.assertRaises(metadata.ProfileError):
-                    metadata.validate_static_exception_document(
-                        candidate,
-                        contract,
-                        {"known-finding"},
-                        validation_date,
-                    )
 
     def test_document_families_require_known_unique_profiles(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -8585,7 +7775,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertIn("selected=1 violations=1", result.stdout)
             self.assertIn(f"metadata base: source=explicit ref={base}", result.stderr)
 
-    def test_scoped_transition_override_requires_complete_colocated_task_evidence(self) -> None:
+    def test_scoped_transition_override_rejects_the_retired_task_evidence_shape(self) -> None:
         directory, root = self.new_repo()
         with directory:
             parent = root / "docs/03.specs/spec-0124-parent/spec.md"
@@ -8598,6 +7788,8 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "parent_ids": ["spec-0124"],
                 },
             )
+            # The retired shape, which is the only Task form this harness's
+            # resurrected profiles can express. The loader now rejects it.
             task = root / "docs/03.specs/spec-0124-parent/task.md"
             values = {
                 "status": "completed",
@@ -8629,6 +7821,13 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            # This class runs the checker against a profile blob resurrected
+            # from a pinned commit, and that blob knows only the retired
+            # `spec-####-<slug>/task.md` shape, so it cannot express a valid
+            # co-located Task. What it can still prove is the rejection half of
+            # the contract. Acceptance is proven against the live registry in
+            # `TransitionOverrideEvidencePathTests`, and migrating this harness
+            # off the resurrected profiles belongs to SPEC-0157.
             result = run_checker(
                 root,
                 "check-changed",
@@ -8637,8 +7836,8 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 "--transition-override-file",
                 str(override),
             )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertIn("transition_overrides=1", result.stdout)
+            self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+            self.assertIn("evidence_task must be an existing co-located Task", result.stderr)
 
     def test_environment_base_is_used_before_local_candidates(self) -> None:
         directory, root = self.new_repo()
@@ -9230,6 +8429,64 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertIn("dated-path-identity", result.stdout)
             self.assertIn("artifact-id-invalid", result.stdout)
             self.assertIn("path-id-mismatch", result.stdout)
+
+
+class TransitionOverrideEvidencePathTests(unittest.TestCase):
+    """The override's evidence path must name a Task form this repository has.
+
+    `load_transition_overrides` required `docs/03.specs/spec-<slug>/task.md`.
+    This repository has zero documents in that form and fifteen in the
+    co-located `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` form, so
+    every override was rejected while the error text said the evidence "must be
+    an existing co-located Task". SPEC-0155 acceptance item 13 owns the
+    correction.
+    """
+
+    def _override_file(self, root: pathlib.Path, evidence: str) -> pathlib.Path:
+        override = root / "override.yaml"
+        override.write_text(
+            "transition_overrides:\n"
+            "- path: docs/03.specs/0001-fixture/spec.md\n"
+            "  previous_status: completed\n"
+            "  new_status: active\n"
+            f"  evidence_task: {evidence}\n"
+            "  approval: reviewer\n"
+            "  reason: corrects a mis-recorded status\n",
+            encoding="utf-8",
+        )
+        return override
+
+    def _tree(self, root: pathlib.Path, evidence: str) -> None:
+        target = root / "docs/03.specs/0001-fixture/spec.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("# Fixture\n", encoding="utf-8")
+        witness = root / evidence
+        witness.parent.mkdir(parents=True, exist_ok=True)
+        witness.write_text("# Task\n", encoding="utf-8")
+
+    def test_co_located_task_evidence_is_accepted(self) -> None:
+        evidence = "docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md"
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, evidence)
+            overrides = metadata.load_transition_overrides(
+                self._override_file(root, evidence),
+                root,
+                metadata.build_registry_profiles(metadata.load_registry(REGISTRY)),
+            )
+        self.assertEqual(1, len(overrides))
+
+    def test_the_retired_spec_slash_task_form_is_rejected(self) -> None:
+        evidence = "docs/03.specs/spec-0001-fixture/task.md"
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, evidence)
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_transition_overrides(
+                    self._override_file(root, evidence),
+                    root,
+                    metadata.build_registry_profiles(metadata.load_registry(REGISTRY)),
+                )
 
 
 if __name__ == "__main__":

@@ -115,12 +115,6 @@ LEGACY_TRANSITION_PROFILES = (
     )
 )
 DEFAULT_AGENT_GOVERNANCE_REGISTRY = ROOT / "docs/99.templates/registry.json"
-DEFAULT_MIGRATION_CONTRACT = (
-    HistoricalDocument(
-        ROOT, "494065806794980080b081439298d7b534d10803",
-        "docs/99.templates/support/document-corpus-migration-contract.yaml",
-    )
-)
 OPERATIONS_CATALOG_DOMAINS = frozenset(
     {
         "00-workspace",
@@ -441,36 +435,8 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
         },
     },
 }
-TARGET_SURFACE_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
 TARGET_SURFACE_COMPLETION_PATH = (
     "docs/03.specs/0133-target-surface-contract-convergence/spec.md"
-)
-TARGET_SURFACE_COMPLETION_ARTIFACT_ID = (
-    "spec:133-target-surface-contract-convergence"
-)
-TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE = "spec"
-TARGET_SURFACE_COMPLETION_PARENT_IDS = (
-    "spec:131-document-corpus-lifecycle-migration-foundation",
-)
-TARGET_SURFACE_PROMOTION_EVIDENCE = {
-    "review_base_commit": TARGET_SURFACE_BASELINE,
-    "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
-    "specification_review": "pass-c0-i0-m0",
-    "quality_review": "approved-c0-i0-m0",
-    "controlled_wrapper": "pass",
-}
-SDLC_TAXONOMY_BASELINE = "e3e7615da41b4a40aa6ef9a7a7d57dd081b4e192"
-SDLC_TAXONOMY_MANIFEST_PATH = (
-    "docs/99.templates/support/document-corpus-migration-contract.yaml"
-)
-SDLC_TAXONOMY_SOURCE_ROOTS = (
-    "archive",
-    "docs/01.requirements",
-    "docs/02.architecture",
-    "docs/03.specs",
-    "docs/05.operations",
-    "docs/90.references",
-    "docs/98.archive",
 )
 SDLC_TAXONOMY_EVIDENCE_PATHS = (
     "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
@@ -554,16 +520,6 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/99.templates/templates/README.md",
     "docs/99.templates/templates/common/README.md",
     "docs/99.templates/templates/common/archive.template.md",
-)
-TARGET_SURFACE_DECLARED_OUTPUTS = (
-    "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
-    "docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md",
-    "docs/90.references/data/0068-target-surface-convergence-summary/README.md",
-    "docs/90.references/data/0069-target-surface-convergence/data.yaml",
-    "docs/99.templates/templates/common/content-archive.template.md",
-    "scripts/validation/check-target-surface-contract.py",
-    "scripts/validation/target_surface_contract.py",
-    "tests/validation/test_target_surface_contracts.py",
 )
 EXPECTED_EXCEPTION_SCHEMA = {
     "top_level_fields": ["schema_version", "exceptions"],
@@ -857,53 +813,25 @@ MIGRATION_TYPED_KEYS = frozenset(
 )
 APPROVED_MIGRATION_PATHS = frozenset(
     {
-        "docs/03.specs/123-agentic-engineering-audit-remediation/README.md",
-        "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
-        "docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md",
-        "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
-        "docs/90.references/research/ref-0039-readme.md",
-        "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
-        "docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md",
-        "docs/90.references/research/ref-0058-workspace-baseline.md",
-        "docs/90.references/research/ref-0047-harness-engineering.md",
-        "docs/90.references/research/ref-0049-loop-engineering.md",
-        "docs/90.references/research/ref-0051-provider-implementation-comparison.md",
-        "docs/90.references/research/ref-0052-provider-model-landscape.md",
-        "docs/90.references/research/ref-0041-agent-model-selection.md",
-        "docs/90.references/research/ref-0042-ai-agent-catalogs.md",
-        "docs/90.references/research/ref-0057-spec-driven-sdlc.md",
-        "docs/90.references/research/ref-0055-sdlc-document-roles.md",
-        "docs/90.references/research/ref-0053-quality-ci-formatting.md",
-        "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
-        "docs/90.references/research/ref-0056-security-governance.md",
-        "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
         "docs/90.references/audits/0019-readme/README.md",
-        "docs/90.references/audits/0026-implementation-overview/README.md",
-        "docs/90.references/audits/0025-harness-engineering-implementation/README.md",
-        "docs/90.references/audits/0027-loop-engineering-implementation/README.md",
-        "docs/90.references/audits/0028-provider-harness-loop-implementation/README.md",
-        "docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md",
-        "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
-        "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
-        "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
+        "docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md",
         "docs/90.references/audits/0021-automation-candidates/README.md",
         "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
+        "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
+        "docs/90.references/audits/0025-harness-engineering-implementation/README.md",
+        "docs/90.references/audits/0026-implementation-overview/README.md",
+        "docs/90.references/audits/0027-loop-engineering-implementation/README.md",
+        "docs/90.references/audits/0028-provider-harness-loop-implementation/README.md",
+        "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
+        "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
         "docs/90.references/audits/0031-security-framework-maturity/README.md",
-        "docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md",
-        "docs/99.templates/templates/sdlc/prd.template.md",
-        "docs/99.templates/templates/sdlc/ard.template.md",
-        "docs/99.templates/templates/sdlc/adr.template.md",
-        "docs/99.templates/templates/sdlc/spec.template.md",
-        "docs/99.templates/templates/sdlc/plan.template.md",
-        "docs/99.templates/templates/sdlc/task.template.md",
-        "docs/99.templates/templates/operations/guide.template.md",
-        "docs/99.templates/templates/operations/policy.template.md",
-        "docs/99.templates/templates/operations/runbook.template.md",
-        "docs/99.templates/templates/operations/incident.template.md",
-        "docs/99.templates/templates/operations/postmortem.template.md",
-        "docs/99.templates/templates/common/reference.template.md",
+        "docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md",
         "docs/99.templates/templates/common/readme.template.md",
-        "docs/99.templates/templates/common/archive.template.md",
+        "docs/99.templates/templates/operations/guide.template.md",
+        "docs/99.templates/templates/operations/incident.template.md",
+        "docs/99.templates/templates/operations/policy.template.md",
+        "docs/99.templates/templates/operations/postmortem.template.md",
+        "docs/99.templates/templates/operations/runbook.template.md",
     }
 )
 LEGACY_EXCEPTION_CODES = frozenset(
@@ -1019,24 +947,6 @@ class TransitionOverride:
     reason: str
 
 
-@dataclasses.dataclass(frozen=True)
-class PromotedTransitionWitness:
-    """Immutable promotion-time identity and first-hop lifecycle attestation."""
-
-    wave: str
-    baseline_commit: str
-    promotion_evidence_valid: bool
-    enforcement: str
-    path: str
-    target_path: str | None
-    artifact_id: str | None
-    artifact_type: str | None
-    parent_ids: tuple[str, ...]
-    status_before: str | None
-    status_after: str | None
-    disposition: str
-    specification_review: str
-    quality_review: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -2435,14 +2345,20 @@ def validate_body_contract(
                         f"profile {record.artifact_type} is missing required heading: {heading}",
                     )
                 )
-            for heading in sorted(set(h2) - required - optional):
-                findings.append(
-                    _finding(
-                        record,
-                        "body-heading-forbidden",
-                        f"profile {record.artifact_type} contains unregistered heading: {heading}",
+            # A profile whose documents share no heading vocabulary declares
+            # itself free-form rather than registering a union nothing follows.
+            # Without this, an unregistered heading is a violation only when a
+            # change introduces it, so the profile passes its own corpus and
+            # rejects every edit to it.
+            if not profile.get("free_form_sections"):
+                for heading in sorted(set(h2) - required - optional):
+                    findings.append(
+                        _finding(
+                            record,
+                            "body-heading-forbidden",
+                            f"profile {record.artifact_type} contains unregistered heading: {heading}",
+                        )
                     )
-                )
             return sorted(set(findings))
 
     source_roles = _source_roles_for_path(record.path, profiles)
@@ -2768,7 +2684,6 @@ def validate_record(
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
     transition_overrides: Mapping[tuple[str, str, str], TransitionOverride] | None = None,
-    promoted_transition_witnesses: Mapping[str, PromotedTransitionWitness] | None = None,
     migration_compaction_witness: Record | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
@@ -2978,35 +2893,23 @@ def validate_record(
                 _finding(record, "archived-outside-stage-98", "archived status is reserved for archive tombstones")
             )
     previous_status = record.previous_status
-    promoted_witness = (promoted_transition_witnesses or {}).get(
-        record.path.as_posix()
-    )
-    promoted_context_valid = (
-        promoted_witness is not None
-        and _promoted_transition_witness_context_valid(promoted_witness, record)
-    )
-    promoted_reversion = (
-        promoted_context_valid
-        and status == previous_status == promoted_witness.status_before
-    )
-    if isinstance(status, str) and previous_status and (
-        status != previous_status or promoted_reversion
-    ):
+    if isinstance(status, str) and previous_status and status != previous_status:
         transitions = raw_profile.get("transitions", common.get("transitions", {}))
         allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
-        override_key = (record.path.as_posix(), previous_status, status)
-        promoted_hop_valid = (
-            promoted_witness is not None
-            and promoted_single_hop_transition_valid(
-                promoted_witness,
-                record,
-                profiles,
-            )
+        # A previous status the lifecycle never defined is not a state this
+        # document can transition out of, so moving to a defined status repairs
+        # it rather than transitioning. Demanding an override for a repair
+        # makes an invalid status cheaper to keep than to correct, and the
+        # override is not reachable in this repository anyway.
+        defined_statuses = set(transitions) if isinstance(transitions, dict) else set()
+        repairs_undefined_previous = bool(defined_statuses) and (
+            previous_status not in defined_statuses and status in defined_statuses
         )
+        override_key = (record.path.as_posix(), previous_status, status)
         if (
-            (status not in allowed_next or promoted_reversion)
+            status not in allowed_next
+            and not repairs_undefined_previous
             and override_key not in (transition_overrides or {})
-            and not promoted_hop_valid
             and record != migration_compaction_witness
         ):
             findings.append(
@@ -3523,388 +3426,6 @@ def _canonical_partition_plan_path(value: object) -> bool:
     )
 
 
-def load_migration_contract(
-    path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
-) -> dict[str, object]:
-    """Load and exact-key-check the document corpus migration contract."""
-
-    try:
-        loaded = _safe_load_unique(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
-        raise ProfileError(f"cannot load migration contract YAML: {error}") from error
-    if not isinstance(loaded, dict):
-        raise ProfileError("migration contract must be a mapping")
-    expected_top_level = {
-        "schema_version",
-        "manifest",
-        "archive",
-        "directory_budgets",
-        "review_signals",
-        "manifest_schema",
-        "manifest_schema_v2",
-        "exception_schema",
-        "disposition_conditions",
-        "replacement_requirements",
-        "snapshot_admission",
-        "safe_diagnostics",
-        "waves",
-        "planned_partitions",
-    }
-    if set(loaded) != expected_top_level:
-        raise ProfileError("migration contract must define the exact top-level fields")
-    schema_version = loaded.get("schema_version")
-    if type(schema_version) is not int or schema_version != 1:
-        raise ProfileError("migration contract schema_version must be the integer 1")
-
-    manifest = loaded.get("manifest")
-    if not isinstance(manifest, dict) or set(manifest) != {"dispositions"}:
-        raise ProfileError("manifest must define only dispositions")
-    _exact_string_list(
-        manifest.get("dispositions"),
-        EXPECTED_MANIFEST_DISPOSITIONS,
-        "manifest.dispositions",
-    )
-
-    archive = loaded.get("archive")
-    if not isinstance(archive, dict) or set(archive) != {
-        "dispositions",
-        "preservation_classes",
-    }:
-        raise ProfileError(
-            "archive must define only dispositions and preservation_classes"
-        )
-    _exact_string_list(
-        archive.get("dispositions"),
-        EXPECTED_ARCHIVE_DISPOSITIONS,
-        "archive.dispositions",
-    )
-    _exact_string_list(
-        archive.get("preservation_classes"),
-        EXPECTED_PRESERVATION_CLASSES,
-        "archive.preservation_classes",
-    )
-
-    budgets = loaded.get("directory_budgets")
-    if not isinstance(budgets, dict) or set(budgets) != {
-        "warning_at",
-        "block_new_leaf_at",
-    }:
-        raise ProfileError("directory_budgets must define the exact thresholds")
-    warning_at = budgets.get("warning_at")
-    block_at = budgets.get("block_new_leaf_at")
-    if (
-        type(warning_at) is not int
-        or type(block_at) is not int
-        or warning_at <= 0
-        or block_at <= 0
-        or warning_at >= block_at
-    ):
-        raise ProfileError(
-            "directory budgets must be positive and warning_at must be below block_new_leaf_at"
-        )
-    if (warning_at, block_at) != (100, 150):
-        raise ProfileError("directory budgets must define the canonical 100/150 thresholds")
-
-    review_signals = loaded.get("review_signals")
-    if (
-        not isinstance(review_signals, dict)
-        or review_signals
-        != {
-            "draft_days": 30,
-            "active_days": 90,
-            "completed_execution_days": 180,
-        }
-        or any(type(value) is not int or value <= 0 for value in review_signals.values())
-    ):
-        raise ProfileError("review_signals must define the exact canonical positive day thresholds")
-
-    manifest_schema = loaded.get("manifest_schema")
-    if manifest_schema != EXPECTED_MANIFEST_SCHEMA:
-        raise ProfileError("manifest_schema must define the exact canonical manifest shape")
-    manifest_schema_v2 = loaded.get("manifest_schema_v2")
-    if manifest_schema_v2 != EXPECTED_MANIFEST_SCHEMA_V2:
-        raise ProfileError("manifest_schema_v2 must define the exact canonical surface manifest shape")
-
-    exception_schema = loaded.get("exception_schema")
-    if exception_schema != EXPECTED_EXCEPTION_SCHEMA:
-        raise ProfileError("exception_schema must define the exact bounded exception shape")
-
-    if loaded.get("disposition_conditions") != {
-        "migrate": "source-equals-target",
-        "preserve": "source-equals-target",
-        "move": "target-distinct",
-        "merge": "target-distinct",
-        "archive": "target-distinct",
-        "delete": "target-null",
-        "regenerate": "source-equals-target",
-        "exempt": "source-equals-target",
-    }:
-        raise ProfileError("disposition_conditions must define every canonical disposition")
-    if loaded.get("replacement_requirements") != {
-        "required_for": ["merge"],
-        "optional_for": ["archive", "delete"],
-        "forbidden_for": ["migrate", "preserve", "move", "regenerate", "exempt"],
-    }:
-        raise ProfileError("replacement_requirements must partition every canonical disposition")
-    if loaded.get("snapshot_admission") != {
-        "allowed_archive_dispositions": list(EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS),
-        "required_preservation_class": "immutable-snapshot",
-        "required_fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
-        "required_checks": ["confidentiality-scan", "content-sha256"],
-        "path_prefix": "docs/98.archive/evidence/",
-        "path_suffix": ".md.snapshot",
-        "forbidden_payload_classes": [
-            "secret",
-            "credential",
-            "token",
-            "private-key",
-            "auth-file",
-            "shell-history",
-            "raw-log",
-        ],
-    }:
-        raise ProfileError("snapshot_admission must define the exact safe snapshot conditions")
-    if loaded.get("safe_diagnostics") != {
-        "allowed": [
-            "finding-code",
-            "bounded-path",
-            "safe-metadata",
-            "count",
-            "git-object-id",
-        ],
-        "forbidden": [
-            "body-payload",
-            "snapshot-bytes",
-            "secret-value",
-            "credential",
-            "token",
-            "private-key",
-            "auth-file",
-            "shell-history",
-            "raw-log",
-            "diagnostic-payload",
-        ],
-    }:
-        raise ProfileError("safe_diagnostics must define the exact redaction boundary")
-
-    waves = loaded.get("waves")
-    expected_wave_names = (
-        "foundation",
-        "target-surface-convergence",
-        "sdlc-taxonomy-convergence",
-        "wave-a-active-sdlc",
-        "wave-b-operations",
-        "wave-c-historical-evidence",
-        "wave-d-archive-provenance",
-        "wave-e-references-final-gates",
-    )
-    if not isinstance(waves, dict) or tuple(waves) != expected_wave_names:
-        raise ProfileError("waves must define the exact ordered migration lifecycle")
-    foundation_sources = (
-        "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
-        "docs/00.agent-governance/policies/documentation-protocol.md",
-        "docs/00.agent-governance/policies/github-governance.md",
-        "docs/00.agent-governance/policies/stage-authoring-matrix.md",
-        "docs/00.agent-governance/policies/task-checklists.md",
-        "docs/03.specs/README.md",
-        "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md",
-        "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
-        "docs/90.references/README.md",
-        "docs/90.references/data/README.md",
-        "docs/98.archive/README.md",
-        "docs/99.templates/support/README.md",
-        "docs/99.templates/support/common-document-contract.md",
-        "docs/99.templates/support/external-source-rationale.md",
-        "docs/99.templates/support/frontmatter-contract.md",
-        "docs/99.templates/support/lifecycle-status.md",
-        "docs/99.templates/support/sdlc-document-contract.md",
-        "docs/99.templates/support/template-contract.md",
-        "docs/99.templates/support/template-governance.md",
-        "docs/99.templates/support/template-selection.md",
-        "docs/99.templates/templates/common/README.md",
-        "docs/99.templates/templates/common/archive.template.md",
-    )
-    foundation_outputs = (
-        ".github/workflows/document-corpus-lifecycle.yml",
-        "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
-        "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
-        "docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
-        "docs/90.references/data/0066-foundation-summary/README.md",
-        "docs/90.references/data/0067-foundation/data.yaml",
-        "docs/99.templates/support/archive-retention-contract.md",
-        "docs/99.templates/support/corpus-migration-contract.md",
-        "docs/99.templates/support/document-corpus-migration-contract.yaml",
-        "scripts/validation/check-document-corpus-lifecycle.py",
-        "tests/validation/test_document_corpus_lifecycle.py",
-    )
-    wave_keys = {
-        "enforcement",
-        "manifest_path",
-        "scope_state",
-        "source_paths",
-        "declared_outputs",
-    }
-    foundation = waves["foundation"]
-    if not isinstance(foundation, dict) or set(foundation) != wave_keys:
-        raise ProfileError("Foundation wave must define the exact wave fields")
-    if foundation.get("enforcement") not in {"advisory", "blocking"}:
-        raise ProfileError("Foundation enforcement must be advisory or blocking")
-    manifest_path = foundation.get("manifest_path")
-    if manifest_path is not None and (
-        not _safe_contract_path(manifest_path)
-        or not isinstance(manifest_path, str)
-        or not re.fullmatch(
-            r"docs/90\.references/data/[0-9]{4}-[a-z0-9][a-z0-9-]*/data\.yaml",
-            manifest_path,
-        )
-    ):
-        raise ProfileError("Foundation manifest_path must be null or a registered Data package YAML path")
-    if foundation.get("scope_state") != "approved":
-        raise ProfileError("Foundation scope_state must be approved")
-    _exact_string_list(
-        foundation.get("source_paths"),
-        foundation_sources,
-        "waves.foundation.source_paths",
-    )
-    _exact_string_list(
-        foundation.get("declared_outputs"),
-        foundation_outputs,
-        "waves.foundation.declared_outputs",
-    )
-    for path_value in [*foundation_sources, *foundation_outputs]:
-        if not _safe_contract_path(path_value):
-            raise ProfileError("Foundation paths must be normalized traversal-free repository paths")
-    target_wave = waves["target-surface-convergence"]
-    target_wave_keys = {
-        "baseline_commit",
-        "enforcement",
-        "manifest_path",
-        "summary_path",
-        "scope_state",
-        "promotion_evidence",
-        "source_roots",
-        "direct_source_paths",
-        "declared_outputs",
-    }
-    if not isinstance(target_wave, dict) or set(target_wave) != target_wave_keys:
-        raise ProfileError("target-surface-convergence must define the exact v2 wave fields")
-    if target_wave.get("baseline_commit") != TARGET_SURFACE_BASELINE:
-        raise ProfileError("target-surface-convergence must pin the approved baseline commit")
-    if target_wave.get("scope_state") != "approved":
-        raise ProfileError("target-surface-convergence scope must remain approved")
-    target_enforcement = target_wave.get("enforcement")
-    promotion_evidence = target_wave.get("promotion_evidence")
-    if target_enforcement == "advisory":
-        if promotion_evidence is not None:
-            raise ProfileError(
-                "advisory target-surface-convergence must not claim promotion evidence"
-            )
-    elif target_enforcement == "blocking":
-        if promotion_evidence != TARGET_SURFACE_PROMOTION_EVIDENCE:
-            raise ProfileError(
-                "blocking target-surface-convergence requires exact approved promotion evidence"
-            )
-    else:
-        raise ProfileError(
-            "target-surface-convergence enforcement must be advisory or blocking"
-        )
-    if target_wave.get("manifest_path") != (
-        "docs/90.references/data/0069-target-surface-convergence/data.yaml"
-    ):
-        raise ProfileError("target-surface-convergence manifest_path must be exact")
-    if target_wave.get("summary_path") != (
-        "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
-    ):
-        raise ProfileError("target-surface-convergence summary_path must be exact")
-    _exact_string_list(
-        target_wave.get("source_roots"),
-        TARGET_SURFACE_SOURCE_ROOTS,
-        "waves.target-surface-convergence.source_roots",
-    )
-    _exact_string_list(
-        target_wave.get("direct_source_paths"),
-        TARGET_SURFACE_DIRECT_SOURCE_PATHS,
-        "waves.target-surface-convergence.direct_source_paths",
-    )
-    _exact_string_list(
-        target_wave.get("declared_outputs"),
-        TARGET_SURFACE_DECLARED_OUTPUTS,
-        "waves.target-surface-convergence.declared_outputs",
-    )
-    for path_value in (
-        *TARGET_SURFACE_SOURCE_ROOTS,
-        *TARGET_SURFACE_DIRECT_SOURCE_PATHS,
-        *TARGET_SURFACE_DECLARED_OUTPUTS,
-        target_wave["manifest_path"],
-        target_wave["summary_path"],
-    ):
-        if not _safe_contract_path(path_value):
-            raise ProfileError("target-surface-convergence paths must be canonical repository paths")
-
-    taxonomy_wave = waves["sdlc-taxonomy-convergence"]
-    taxonomy_wave_keys = {
-        "baseline_commit",
-        "enforcement",
-        "manifest_path",
-        "scope_state",
-        "source_roots",
-        "evidence_paths",
-        "declared_outputs",
-    }
-    if not isinstance(taxonomy_wave, dict) or set(taxonomy_wave) != taxonomy_wave_keys:
-        raise ProfileError("sdlc-taxonomy-convergence must define the exact bounded phase fields")
-    if taxonomy_wave.get("baseline_commit") != SDLC_TAXONOMY_BASELINE:
-        raise ProfileError("sdlc-taxonomy-convergence must pin the approved starting commit")
-    if taxonomy_wave.get("enforcement") != "advisory":
-        raise ProfileError("sdlc-taxonomy-convergence remains advisory until corpus migration")
-    if taxonomy_wave.get("manifest_path") != SDLC_TAXONOMY_MANIFEST_PATH:
-        raise ProfileError("sdlc-taxonomy-convergence manifest_path must name the machine registry")
-    if taxonomy_wave.get("scope_state") != "approved":
-        raise ProfileError("sdlc-taxonomy-convergence scope must remain approved")
-    _exact_string_list(
-        taxonomy_wave.get("source_roots"),
-        SDLC_TAXONOMY_SOURCE_ROOTS,
-        "waves.sdlc-taxonomy-convergence.source_roots",
-    )
-    _exact_string_list(
-        taxonomy_wave.get("evidence_paths"),
-        SDLC_TAXONOMY_EVIDENCE_PATHS,
-        "waves.sdlc-taxonomy-convergence.evidence_paths",
-    )
-    _exact_string_list(
-        taxonomy_wave.get("declared_outputs"),
-        (),
-        "waves.sdlc-taxonomy-convergence.declared_outputs",
-    )
-    for path_value in (
-        *SDLC_TAXONOMY_SOURCE_ROOTS,
-        *SDLC_TAXONOMY_EVIDENCE_PATHS,
-        SDLC_TAXONOMY_MANIFEST_PATH,
-    ):
-        if not _safe_contract_path(path_value):
-            raise ProfileError("sdlc-taxonomy-convergence paths must be canonical repository paths")
-
-    for wave_name in expected_wave_names[3:]:
-        wave = waves[wave_name]
-        if not isinstance(wave, dict) or set(wave) != wave_keys:
-            raise ProfileError(f"{wave_name} must define the exact wave fields")
-        if wave != {
-            "enforcement": "advisory",
-            "manifest_path": None,
-            "scope_state": "unapproved",
-            "source_paths": [],
-            "declared_outputs": [],
-        }:
-            raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
-
-    if loaded.get("planned_partitions") != {
-        "docs/04.execution/plans": "docs/03.specs/####-<capability>/plan.md",
-        "docs/04.execution/tasks": (
-            "docs/03.specs/####-<capability>/tasks/tsk-####-<slug>.md"
-        ),
-    }:
-        raise ProfileError("planned_partitions must define the canonical stable target routes")
-    return loaded
 
 
 def _require_exact_mapping(
@@ -4389,173 +3910,14 @@ def validate_static_exception_document(
         raise ProfileError("exceptions must be uniquely ordered by finding_code and scope_paths")
 
 
-def _promoted_transition_witness_context_valid(
-    witness: PromotedTransitionWitness,
-    record: Record,
-) -> bool:
-    """Bind the promoted witness to one exact canonical typed artifact."""
-
-    path = record.path.as_posix()
-    artifact_id = record.metadata.get("artifact_id")
-    artifact_type = record.metadata.get("artifact_type")
-    parent_ids = record.metadata.get("parent_ids")
-    return bool(
-        witness.wave == "target-surface-convergence"
-        and witness.baseline_commit == TARGET_SURFACE_BASELINE
-        and witness.promotion_evidence_valid
-        and witness.enforcement == "blocking"
-        and witness.path == TARGET_SURFACE_COMPLETION_PATH
-        and witness.target_path == witness.path
-        and path == witness.path
-        and witness.artifact_id == TARGET_SURFACE_COMPLETION_ARTIFACT_ID
-        and witness.artifact_type == TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE
-        and witness.parent_ids == TARGET_SURFACE_COMPLETION_PARENT_IDS
-        and witness.disposition == "preserve"
-        and witness.specification_review == "pass"
-        and witness.quality_review == "pass"
-        and witness.status_before == "draft"
-        and witness.status_after == "active"
-        and record.previous_status == witness.status_before
-        and artifact_id == witness.artifact_id
-        and artifact_type == witness.artifact_type
-        and isinstance(parent_ids, list)
-        and all(isinstance(parent, str) for parent in parent_ids)
-        and tuple(sorted(parent_ids)) == witness.parent_ids
-    )
 
 
-def promoted_single_hop_transition_valid(
-    witness: PromotedTransitionWitness,
-    record: Record,
-    profiles: Mapping[str, object],
-) -> bool:
-    """Admit only Spec 133's evidenced draft->active->one-next-hop chain."""
-
-    current_status = record.metadata.get("status")
-    if not _promoted_transition_witness_context_valid(witness, record) or not isinstance(
-        current_status, str
-    ):
-        return False
-    common = profiles.get("common")
-    transitions = common.get("transitions") if isinstance(common, Mapping) else None
-    if not isinstance(transitions, Mapping):
-        return False
-    first_targets = transitions.get(witness.status_before)
-    next_targets = transitions.get(witness.status_after)
-    return (
-        isinstance(first_targets, list)
-        and first_targets == ["active"]
-        and isinstance(next_targets, list)
-        and "completed" in next_targets
-        and current_status == "completed"
-    )
 
 
-def load_promoted_transition_witnesses(
-    root: pathlib.Path,
-    profiles: Mapping[str, object],
-    comparison_base: str | None,
-) -> dict[str, PromotedTransitionWitness]:
-    """Load the exact promoted target witness only for its immutable baseline."""
-
-    if comparison_base != TARGET_SURFACE_BASELINE or "_registry" in profiles:
-        return {}
-    # This witness belongs to the predecessor lifecycle, never current policy.
-    recovery_commit = "494065806794980080b081439298d7b534d10803"
-    contract_path = HistoricalDocument(
-        root, recovery_commit,
-        "docs/99.templates/support/document-corpus-migration-contract.yaml",
-    )
-    contract = load_migration_contract(contract_path)
-    waves = contract.get("waves")
-    wave = (
-        waves.get("target-surface-convergence")
-        if isinstance(waves, Mapping)
-        else None
-    )
-    if not isinstance(wave, Mapping):
-        return {}
-    manifest_path = wave.get("manifest_path")
-    if not isinstance(manifest_path, str) or not _safe_contract_path(manifest_path):
-        return {}
-    absolute_manifest = HistoricalDocument(
-        root, "889d3868ecd0913cddac79a718584a54a8453525",
-        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml",
-    )
-    try:
-        document = _safe_load_unique(absolute_manifest.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
-        raise ProfileError("cannot load promoted transition witness") from error
-    validate_static_migration_manifest(document, contract, profiles)
-    if not isinstance(document, Mapping):
-        return {}
-    if not (
-        document.get("wave") == "target-surface-convergence"
-        and document.get("baseline_commit") == TARGET_SURFACE_BASELINE
-        and document.get("enforcement") == "blocking"
-        and wave.get("baseline_commit") == TARGET_SURFACE_BASELINE
-        and wave.get("enforcement") == "blocking"
-        and wave.get("promotion_evidence") == TARGET_SURFACE_PROMOTION_EVIDENCE
-    ):
-        return {}
-    entries = document.get("entries")
-    if not isinstance(entries, list):
-        return {}
-    matching = [
-        row
-        for row in entries
-        if isinstance(row, Mapping)
-        and row.get("source_path") == TARGET_SURFACE_COMPLETION_PATH
-    ]
-    if len(matching) != 1:
-        return {}
-    row = matching[0]
-    review = row.get("review_verdict")
-    parents = row.get("parent_ids")
-    if not (
-        isinstance(review, Mapping)
-        and isinstance(parents, list)
-        and all(isinstance(parent, str) for parent in parents)
-    ):
-        return {}
-    witness = PromotedTransitionWitness(
-        wave="target-surface-convergence",
-        baseline_commit=TARGET_SURFACE_BASELINE,
-        promotion_evidence_valid=True,
-        enforcement="blocking",
-        path=TARGET_SURFACE_COMPLETION_PATH,
-        target_path=row.get("target_path")
-        if isinstance(row.get("target_path"), str)
-        else None,
-        artifact_id=row.get("artifact_id")
-        if isinstance(row.get("artifact_id"), str)
-        else None,
-        artifact_type=row.get("artifact_type_after")
-        if isinstance(row.get("artifact_type_after"), str)
-        else None,
-        parent_ids=tuple(sorted(parents)),
-        status_before=row.get("status_before")
-        if isinstance(row.get("status_before"), str)
-        else None,
-        status_after=row.get("status_after")
-        if isinstance(row.get("status_after"), str)
-        else None,
-        disposition=row.get("disposition")
-        if isinstance(row.get("disposition"), str)
-        else "",
-        specification_review=review.get("specification")
-        if isinstance(review.get("specification"), str)
-        else "",
-        quality_review=review.get("quality")
-        if isinstance(review.get("quality"), str)
-        else "",
-    )
-    return {witness.path: witness}
 
 
 def _load_legacy_profiles(
     path: pathlib.Path = DEFAULT_PROFILES,
-    migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
 ) -> dict[str, object]:
     """Load and structurally validate the typed metadata profile contract."""
 
@@ -4991,13 +4353,11 @@ def _load_legacy_profiles(
             heading_sets.append(set(headings))
         if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
             raise ProfileError(f"template role {role_name} heading contracts must not overlap")
-    load_migration_contract(migration_contract_path)
     return loaded
 
 
 def load_profiles(
     path: pathlib.Path = DEFAULT_PROFILES,
-    migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
 ) -> Mapping[str, Mapping[str, object]] | dict[str, object]:
     """Return the Registry profile map; accept legacy YAML only as transition input."""
 
@@ -5006,7 +4366,7 @@ def load_profiles(
             return load_registry(path).profiles
         except RegistryError as error:
             raise ProfileError(str(error)) from error
-    return _load_legacy_profiles(path, migration_contract_path)
+    return _load_legacy_profiles(path)
 
 
 def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
@@ -6099,6 +5459,12 @@ def collect_records(
     return records
 
 
+CO_LOCATED_TASK_PATH = re.compile(
+    r"docs/03\.specs/[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+    r"/tasks/tsk-[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?\.md"
+)
+
+
 def load_transition_overrides(
     path: pathlib.Path,
     root: pathlib.Path,
@@ -6116,7 +5482,18 @@ def load_transition_overrides(
     if not isinstance(rows, list) or not rows:
         raise ProfileError("transition_overrides must be a non-empty list")
     common, _ = _profile_mapping(profiles)
+    # `allowed_statuses` is a legacy-profile field. Registry-built profiles, the
+    # ones the CLI uses, do not carry it, so reading only that key left the set
+    # empty and rejected every override as "an unknown lifecycle status". The
+    # registry's lifecycles are where statuses live now.
+    registry = profiles.get("_registry")
     allowed_statuses = set(common.get("allowed_statuses", []))
+    if isinstance(registry, DocumentRegistry):
+        allowed_statuses |= {
+            status
+            for statuses in registry.lifecycles.values()
+            for status in statuses
+        }
     expected_keys = {
         "path",
         "previous_status",
@@ -6135,10 +5512,14 @@ def load_transition_overrides(
         evidence = _normalized_target_path(row["evidence_task"])
         if target is None or not (root / target).is_file():
             raise ProfileError(f"transition override row {index} target path is not an existing canonical document")
+        # The co-located Task form Stage 03 actually uses. The retired
+        # `docs/03.specs/spec-<slug>/task.md` shape has zero documents in this
+        # repository against fifteen in this one, so requiring it made every
+        # override unsatisfiable while the message below already named the
+        # correct form.
         if (
             evidence is None
-            or not evidence.as_posix().startswith("docs/03.specs/spec-")
-            or evidence.name != "task.md"
+            or not CO_LOCATED_TASK_PATH.fullmatch(evidence.as_posix())
             or not (root / evidence).is_file()
         ):
             raise ProfileError(
@@ -7155,7 +6536,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     verified_task8_move_targets: set[str] = set()
     verified_task10_move_targets: set[str] = set()
     task8_release_deletion_at_base = False
-    promoted_transition_witnesses: dict[str, PromotedTransitionWitness] = {}
     if args.mode == "check-changed":
         try:
             task8_operations_move_sources = _task8_operations_move_sources(root)
@@ -7165,12 +6545,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     if base.merge_base:
         try:
             base_records = collect_records_at_ref(root, profiles, base.merge_base)
-            if args.mode == "check-changed":
-                promoted_transition_witnesses = load_promoted_transition_witnesses(
-                    root,
-                    profiles,
-                    base.merge_base,
-                )
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -7239,7 +6613,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             profiles,
             manifest,
             transition_overrides=transition_overrides,
-            promoted_transition_witnesses=promoted_transition_witnesses,
             migration_compaction_witness=(
                 _native_migration_compaction_witness(root, record, base.merge_base)
                 if args.mode == "check-changed" else None

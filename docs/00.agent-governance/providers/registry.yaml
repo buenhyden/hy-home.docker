@@ -246,4 +246,4 @@ agent_output_eval:
     AOE-ADAPTER-001: 0.50
     AOE-MODEL-001: 0.50
     AOE-LOOP-001: 0.50
-generated_roots: [.agents/agents, .agents/skills, .claude/agents, .claude/skills, .codex/agents]
+generated_roots: [.agents/agents, .agents/rules, .agents/skills, .agents/workflows, .claude/agents, .claude/skills, .codex/agents]

@@ -138,7 +138,8 @@ surfaces. No agent may choose `Discard` without the owner's recorded decision.
 - [Implementation plan](./plan.md)
 - [Task evidence](./tasks/tsk-0001-reference-disposition.md)
 - [SDLC taxonomy convergence](../0136-sdlc-taxonomy-convergence/spec.md)
-- [Agentic research pack rebuild Task](../0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md)
+- Agentic research pack rebuild Task, removed 2026-08-30 with Gate 4; it was at
+  `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md`
 
 ## Behavior Contract
 

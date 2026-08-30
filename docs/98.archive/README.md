@@ -44,11 +44,13 @@ frontmatter에 유지합니다. 날짜는 파일명에 넣지 않습니다.
    source/target mapping으로 찾습니다.
 2. Tombstone은 `Retired Path`, `Replacement` 또는 `none`, `Reason`, `status`,
    `Recovery Commit`만을 복구 근거로 사용합니다.
-3. 완료된 change packet 본문은 이 디렉터리에 복제하지 않습니다. Task 10
-   검증기는 삭제 전 frontmatter에 있던 recovery tuple을
-   `f259c139fb7da166609029cdd3657de87e639f6b:<former-stage-98-path>`에서 읽습니다.
-   기존 tuple이 없었던 controller-reviewed 항목만 같은 commit과 해당 former
-   path를 직접 사용합니다.
+3. 완료된 change packet 본문은 이 디렉터리에 복제하지 않습니다. 각 packet의
+   recovery tuple은 삭제 직전 frontmatter의 `archived_commit`과 `archived_from`
+   이며, 이 값들은 문서마다 다릅니다. 이 README는 어느 commit도 절차로 고정하지
+   않습니다. 조회 지점 하나가 필요한 legacy change packet에 한해
+   `scripts/lib/document_governance/archive.py`의 `TASK10_BASELINE_COMMIT`이
+   그 값을 소유하며, tuple이 없었던 controller-reviewed 항목만 같은 commit을
+   직접 사용합니다.
 4. `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-recovery`
    로 모든 `commit:path`가 regular Git blob인지 다시 증명합니다.
 

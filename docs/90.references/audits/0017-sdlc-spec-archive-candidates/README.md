@@ -1,11 +1,11 @@
 ---
 profile_id: audit
-status: active
+status: retired
 artifact_id: AUD-0017
 artifact_type: audit
 parent_ids: []
 created: '2026-07-04'
-updated: '2026-08-23'
+updated: '2026-08-30'
 observed_at: '2026-07-04'
 ---
 
@@ -161,7 +161,7 @@ Current Stage 03 status count after the 2026-07-05 lifecycle cleanup:
 
 ## Sources
 
-- [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
+- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
 - [Stage 03 README](../../03.specs/README.md) - Supplies current Stage 03 routing.
 - [Archive template](../../99.templates/templates/archive/tombstone.template.md) - Defines tombstone shape for future archive moves.
 - [Historical evidence preservation](ref-0008-historical-evidence-preservation.md) - Supplies preservation rules for completed evidence.

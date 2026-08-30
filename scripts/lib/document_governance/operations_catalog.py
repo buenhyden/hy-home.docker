@@ -104,7 +104,7 @@ _OPERATIONS_PROFILE_CONTRACT = {
             "membership_authority": "operations-migration-manifest",
         },
         "required_sections": ("Purpose", "Audience", "Prerequisites", "Usage", "Troubleshooting", "Verification", "Traceability"),
-        "optional_sections": ("Examples",),
+        "optional_sections": ("Examples", "Related Documents"),
         "exceptions": (),
     },
     "policy": {
@@ -122,7 +122,7 @@ _OPERATIONS_PROFILE_CONTRACT = {
             "membership_authority": "operations-migration-manifest",
         },
         "required_sections": ("Purpose", "Scope", "Policy Statements", "Enforcement", "Exceptions", "Verification", "Traceability"),
-        "optional_sections": ("Definitions",),
+        "optional_sections": ("Definitions", "Related Documents"),
         "exceptions": (),
     },
     "runbook": {
@@ -140,7 +140,7 @@ _OPERATIONS_PROFILE_CONTRACT = {
             "membership_authority": "operations-migration-manifest",
         },
         "required_sections": ("Purpose", "Trigger", "Prerequisites", "Procedure", "Verification", "Rollback", "Escalation", "Traceability"),
-        "optional_sections": ("Automation",),
+        "optional_sections": ("Automation", "Related Documents"),
         "exceptions": (),
     },
     "incident": {
@@ -155,7 +155,7 @@ _OPERATIONS_PROFILE_CONTRACT = {
         "lifecycle_id": "incident",
         "traceability": {"allowed_parent_profiles": ("runbook",)},
         "required_sections": ("Summary", "Impact", "Coordination", "Timeline", "Mitigation", "Current Status", "Corrective Actions", "Traceability"),
-        "optional_sections": ("Communications",),
+        "optional_sections": ("Communications", "Related Documents"),
         "exceptions": ({"kind": "year-directory"},),
     },
     "postmortem": {
@@ -170,7 +170,7 @@ _OPERATIONS_PROFILE_CONTRACT = {
         "lifecycle_id": "point-in-time",
         "traceability": {"allowed_parent_profiles": ("incident",)},
         "required_sections": ("Summary", "Impact", "Timeline", "Root Cause", "Contributing Factors", "Detection and Response", "Corrective Actions", "Learning", "Traceability"),
-        "optional_sections": ("Follow-up Review",),
+        "optional_sections": ("Follow-up Review", "Related Documents"),
         "exceptions": ({"kind": "year-directory"},),
     },
 }

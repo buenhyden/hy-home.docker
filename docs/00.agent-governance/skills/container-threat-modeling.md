@@ -41,4 +41,4 @@ Record unknown boundaries and stop any claim of completeness when configuration 
 
 - [Security auditor](../roles/security-auditor.md)
 - [Security audit](security-audit.md)
-- [Security scope](../roles/security.md)
+- [Security scope](../policies/quality-standards.md)

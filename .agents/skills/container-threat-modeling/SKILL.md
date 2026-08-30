@@ -39,4 +39,4 @@ Record unknown boundaries and stop any claim of completeness when configuration 
 
 - [Security auditor](../../../docs/00.agent-governance/roles/security-auditor.md)
 - [Security audit](../../../docs/00.agent-governance/skills/security-audit.md)
-- [Security scope](../../../docs/00.agent-governance/roles/security.md)
+- [Security scope](../../../docs/00.agent-governance/policies/quality-standards.md)

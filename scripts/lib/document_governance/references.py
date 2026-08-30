@@ -154,6 +154,53 @@ def load_task9_migration(root: pathlib.Path) -> Task9Migration:
     return Task9Migration(rows)
 
 
+def _is_retired(
+    path: pathlib.PurePosixPath,
+    retired: frozenset[pathlib.PurePosixPath],
+) -> bool:
+    """A tombstone retires a path, and everything beneath it when it is a pack.
+
+    A pack is retired as a directory, so its twenty leaves are covered by the
+    one tombstone rather than twenty. Matching is on whole path components, so
+    a tombstone for `.../0001-pack` never covers `.../0001-pack-notes`.
+    """
+
+    if path in retired:
+        return True
+    return any(record in path.parents for record in retired)
+
+
+def tombstoned_paths(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
+    """Paths Stage 98 records as retired, so a missing target is accounted for.
+
+    The frozen Task 9 ledger records what the migration did. A rename it
+    performed stays a rename; a later deletion of the renamed document is a
+    separate event, and the tombstone is the record the archive keeps of it.
+    Without this the ledger would have to be rewritten to call a rename a
+    deletion, which would falsify the history it exists to preserve.
+    """
+
+    from scripts.lib.document_governance.archive import load_archive
+
+    try:
+        inventory = load_archive(root / "docs/98.archive")
+    except (OSError, ValueError):
+        # Stage 98 is validated by its own gate. A reader that cannot resolve
+        # it grants no exemption here, so every target is judged as present-or-
+        # missing exactly as it was before.
+        return frozenset()
+    retired: set[pathlib.PurePosixPath] = set()
+    for record in inventory.tombstones:
+        retired.add(record.retired_path)
+        if record.retired_path.name == "README.md":
+            # A recovery tuple must resolve to a regular blob, so a pack is
+            # tombstoned through the README that carries its identity rather
+            # than through its directory, which resolves to a tree. Retiring
+            # that README retires the package it names.
+            retired.add(record.retired_path.parent)
+    return frozenset(retired)
+
+
 @dataclasses.dataclass(frozen=True)
 class _LoadBudget:
     entries: int = 0
@@ -769,6 +816,9 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     observed_packages = {item.relative_package for item in corpus.packages}
     observed_directories = {item.relative_package for item in corpus.packages}
     for relative in sorted(expected_packages - observed_packages):
+        package = pathlib.PurePosixPath("docs/90.references") / relative
+        if _is_retired(package, tombstoned_paths(root)):
+            continue
         findings.append(_finding("package-missing", f"docs/90.references/{relative}", "missing README"))
     for relative in sorted(observed_packages - expected_packages):
         findings.append(_finding("redirect-document-present", f"docs/90.references/{relative}/README.md", "unregistered package"))
@@ -828,6 +878,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
                 _finding("generated-data-link-missing", document.path, target)
             )
 
+    retired = tombstoned_paths(root)
     for row in migration.rows:
         source = root / row.source_path
         if source.exists() or source.is_symlink():
@@ -836,7 +887,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
             relative_target = row.target_path.relative_to(
                 pathlib.PurePosixPath("docs/90.references")
             )
-            if relative_target not in corpus.files:
+            if relative_target not in corpus.files and not _is_retired(row.target_path, retired):
                 findings.append(_finding("migration-target-missing", row.target_path, row.source_path.as_posix()))
 
     findings.extend(validate_active_reference_consumers(root))

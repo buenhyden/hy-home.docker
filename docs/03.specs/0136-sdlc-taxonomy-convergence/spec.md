@@ -6,6 +6,8 @@ artifact_type: spec
 parent_ids:
   - SPEC-0131
   - SPEC-0134
+supersedes:
+  - SPEC-0131
 superseded_by: SPEC-0153
 created: 2026-08-07
 updated: 2026-08-21

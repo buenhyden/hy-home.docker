@@ -818,5 +818,93 @@ class DocumentLinksCliTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
 
 
+def load_links_cli():
+    spec = importlib.util.spec_from_file_location("task10_document_links", CLI)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("link validator unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+class LinkSelectionScopeTests(unittest.TestCase):
+    """The gate must read the corpus it is supposed to protect."""
+
+    def _tree(self, root: pathlib.Path, *relatives: str) -> None:
+        for relative in relatives:
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("# x\n", encoding="utf-8")
+
+    def test_selection_covers_every_tracked_documentation_root(self) -> None:
+        module = load_links_cli()
+        expected = (
+            "docs/00.agent-governance/policies/x.md",
+            "docs/01.requirements/0001-a.md",
+            "docs/02.architecture/decisions/0001-a.md",
+            "docs/03.specs/0001-a/spec.md",
+            "docs/05.operations/catalog/00-workspace/0001-a/guide.md",
+            "docs/90.references/audits/0001-a/README.md",
+            "docs/98.archive/migrations/0001-a.md",
+            "docs/99.templates/README.md",
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, *expected)
+            selected = {
+                path.relative_to(root).as_posix() for path in module._paths(root)
+            }
+            for relative in expected:
+                self.assertIn(relative, selected)
+
+    def test_selection_skips_superseded_and_retired_documents(self) -> None:
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            for name, status in (("a", "superseded"), ("b", "retired"), ("c", "active")):
+                target = root / f"docs/90.references/audits/0001-{name}/README.md"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    f"---\nstatus: {status}\n---\n\n# {name}\n", encoding="utf-8"
+                )
+            selected = {
+                path.relative_to(root).as_posix() for path in module._paths(root)
+            }
+            self.assertNotIn("docs/90.references/audits/0001-a/README.md", selected)
+            self.assertNotIn("docs/90.references/audits/0001-b/README.md", selected)
+            self.assertIn("docs/90.references/audits/0001-c/README.md", selected)
+
+    def test_selection_has_no_path_exemption(self) -> None:
+        """Nothing is skipped for where it lives, only for what it claims.
+
+        The two agentic research packs were exempted by path while SPEC-0137's
+        disposition was undecided. That Spec Package is now `completed` and the
+        exemption is gone: a research document is read like any other, and a
+        superseded one is skipped by its own status, not by its directory.
+        """
+
+        module = load_links_cli()
+        self.assertFalse(hasattr(module, "DEFERRED_PREFIXES"))
+        self.assertFalse(hasattr(module, "_deferred"))
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(
+                root,
+                "docs/90.references/research/0001-agentic-research-pack-refresh/x.md",
+                "docs/90.references/research/0002-agentic-engineering-research-pack/x.md",
+                "docs/90.references/research/0084-github-actions-platform/README.md",
+            )
+            selected = {
+                path.relative_to(root).as_posix() for path in module._paths(root)
+            }
+            for relative in (
+                "docs/90.references/research/0001-agentic-research-pack-refresh/x.md",
+                "docs/90.references/research/0002-agentic-engineering-research-pack/x.md",
+                "docs/90.references/research/0084-github-actions-platform/README.md",
+            ):
+                self.assertIn(relative, selected)
+
+
 if __name__ == "__main__":
     unittest.main()

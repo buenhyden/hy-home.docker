@@ -786,11 +786,15 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
 
 
 # Frozen census of the Task 10 recovery surface: legacy change deletions plus one
-# row per archive tombstone. Advanced 272 -> 276 on 2026-08-29 when the four
-# tombstones 38fc89c5 never wrote were authored. The count and the message it
-# raises now read one constant; they were two literals, and only one of them was
-# advanced on the first attempt.
-TASK10_RECOVERY_REFERENCE_COUNT = 276
+# row per archive tombstone. Advanced 276 -> 277 on 2026-08-30 for tombstone-0158,
+# which retires the RES-0001 research pack. Advanced 272 -> 276 on 2026-08-29 when
+# the four tombstones 38fc89c5 never wrote were authored. The count and the
+# message it raises now read one constant; they were two literals, and only one
+# of them was advanced on the first attempt.
+#
+# This pin breaks on every legitimate tombstone, which is the cost of freezing a
+# census in code rather than deriving it. SPEC-0155 records the pattern.
+TASK10_RECOVERY_REFERENCE_COUNT = 277
 
 
 def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReference, ...]:

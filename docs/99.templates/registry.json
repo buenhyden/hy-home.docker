@@ -11,7 +11,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["supersedes", "superseded_by"],
       "required_sections": ["Problem and Goals", "Stakeholders and User Needs", "Functional Requirements", "Non-functional Requirements", "Constraints", "Acceptance Criteria", "Traceability"],
-      "optional_sections": ["Assumptions", "Interface Requirements", "Risks"],
+      "optional_sections": ["Assumptions", "Interface Requirements", "Risks", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": [], "internal_id_spaces": ["FR", "NFR", "IF"]},
       "exceptions": []
@@ -26,7 +26,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["supersedes", "superseded_by"],
       "required_sections": ["Context and Stakeholders", "System Boundaries", "Components", "Data Flow", "Deployment View", "Quality Attributes", "Traceability"],
-      "optional_sections": ["Risks", "Evolution"],
+      "optional_sections": ["Risks", "Evolution", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["requirements-package"]},
       "exceptions": []
@@ -41,7 +41,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["supersedes", "superseded_by"],
       "required_sections": ["Context", "Options Considered", "Decision", "Consequences", "Traceability"],
-      "optional_sections": ["Compliance", "Decision Drivers", "Follow-up"],
+      "optional_sections": ["Compliance", "Decision Drivers", "Follow-up", "Related Documents"],
       "lifecycle_id": "adr",
       "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description"]},
       "exceptions": [{"kind": "retain-superseded-in-place"}]
@@ -56,8 +56,8 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["supersedes", "superseded_by", "reviewed_at", "next_review_at"],
       "required_sections": ["Overview", "Boundaries and Inputs", "Behavior Contract", "Technical Approach", "Interfaces and Data", "Failure Modes and Guardrails", "Acceptance Contract", "Traceability"],
-      "optional_sections": ["Open Questions", "Operational Impact"],
-      "lifecycle_id": "living",
+      "optional_sections": ["Open Questions", "Operational Impact", "Related Documents"],
+      "lifecycle_id": "spec-package",
       "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"]},
       "exceptions": []
     },
@@ -134,7 +134,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["completed_at"],
       "required_sections": ["Objective", "Dependencies", "Execution Sequence", "Risk and Rollback", "Verification"],
-      "optional_sections": ["Rulings"],
+      "optional_sections": ["Rulings", "Related Documents"],
       "lifecycle_id": "execution",
       "traceability": {"allowed_parent_profiles": ["spec"]},
       "exceptions": [{"kind": "transient-after-completion"}]
@@ -149,7 +149,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["completed_at"],
       "required_sections": ["Objective", "Inputs", "Work Log", "Verification Evidence", "Review Evidence", "Commit Ledger"],
-      "optional_sections": ["Rulings", "Deferred Items"],
+      "optional_sections": ["Rulings", "Deferred Items", "Related Documents"],
       "lifecycle_id": "execution",
       "traceability": {"allowed_parent_profiles": ["spec", "plan", "task"]},
       "exceptions": [{"kind": "transient-after-completion"}]
@@ -194,7 +194,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["reviewed_at", "next_review_at", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Audience", "Prerequisites", "Usage", "Troubleshooting", "Verification", "Traceability"],
-      "optional_sections": ["Examples"],
+      "optional_sections": ["Examples", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["spec", "policy", "runbook"], "membership_authority": "operations-migration-manifest"},
       "exceptions": []
@@ -209,7 +209,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["reviewed_at", "next_review_at", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Scope", "Policy Statements", "Enforcement", "Exceptions", "Verification", "Traceability"],
-      "optional_sections": ["Definitions"],
+      "optional_sections": ["Definitions", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"], "membership_authority": "operations-migration-manifest"},
       "exceptions": []
@@ -224,7 +224,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["reviewed_at", "next_review_at", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Trigger", "Prerequisites", "Procedure", "Verification", "Rollback", "Escalation", "Traceability"],
-      "optional_sections": ["Automation"],
+      "optional_sections": ["Automation", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["spec", "guide", "policy", "task"], "membership_authority": "operations-migration-manifest"},
       "exceptions": []
@@ -239,7 +239,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "occurred_at"],
       "optional_frontmatter": ["resolved_at"],
       "required_sections": ["Summary", "Impact", "Coordination", "Timeline", "Mitigation", "Current Status", "Corrective Actions", "Traceability"],
-      "optional_sections": ["Communications"],
+      "optional_sections": ["Communications", "Related Documents"],
       "lifecycle_id": "incident",
       "traceability": {"allowed_parent_profiles": ["runbook"]},
       "exceptions": [{"kind": "year-directory"}]
@@ -254,7 +254,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "reviewed_at"],
       "optional_frontmatter": ["supersedes", "superseded_by"],
       "required_sections": ["Summary", "Impact", "Timeline", "Root Cause", "Contributing Factors", "Detection and Response", "Corrective Actions", "Learning", "Traceability"],
-      "optional_sections": ["Follow-up Review"],
+      "optional_sections": ["Follow-up Review", "Related Documents"],
       "lifecycle_id": "point-in-time",
       "traceability": {"allowed_parent_profiles": ["incident"]},
       "exceptions": [{"kind": "year-directory"}]
@@ -269,7 +269,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "observed_at"],
       "optional_frontmatter": ["reviewed_at", "next_review_at", "supersedes", "superseded_by"],
       "required_sections": ["Question", "Scope", "Method", "Findings", "Sources", "Implications", "Traceability"],
-      "optional_sections": ["Limitations"],
+      "optional_sections": ["Limitations", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec", "research"]},
       "exceptions": []
@@ -284,7 +284,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "observed_at"],
       "optional_frontmatter": ["generated_by", "reviewed_at", "supersedes", "superseded_by"],
       "required_sections": ["Objective", "Scope", "Criteria", "Evidence", "Findings", "Conformance", "Actions", "Traceability"],
-      "optional_sections": ["Limitations"],
+      "optional_sections": ["Limitations", "Related Documents"],
       "lifecycle_id": "point-in-time",
       "traceability": {"allowed_parent_profiles": ["spec", "task", "research", "audit"]},
       "exceptions": []
@@ -299,7 +299,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "observed_at"],
       "optional_frontmatter": ["generated_by", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Schema", "Provenance", "Inventory", "Refresh", "Consumers", "Traceability"],
-      "optional_sections": ["Limitations"],
+      "optional_sections": ["Limitations", "Related Documents"],
       "lifecycle_id": "living",
       "traceability": {"allowed_parent_profiles": ["research", "audit", "spec", "task"]},
       "exceptions": []
@@ -314,7 +314,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["archive_disposition", "archive_reason", "archived_at", "archived_blob", "archived_commit", "archived_from", "preservation_class", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Authority Change", "Path Mapping", "Recovery", "Approval", "Traceability"],
-      "optional_sections": ["Execution Evidence"],
+      "optional_sections": ["Execution Evidence", "Related Documents"],
       "lifecycle_id": "historical",
       "traceability": {"allowed_parent_profiles": ["spec", "adr", "migration"]},
       "exceptions": []
@@ -329,7 +329,7 @@
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["supersedes", "superseded_by"],
       "required_sections": ["Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability"],
-      "optional_sections": [],
+      "optional_sections": ["Related Documents"],
       "lifecycle_id": "historical",
       "traceability": {"allowed_parent_profiles": ["migration"]},
       "exceptions": []
@@ -374,6 +374,7 @@
       "template_id": null,
       "required_frontmatter": ["profile_id", "layer"],
       "optional_frontmatter": ["status", "runtime"],
+      "free_form_sections": true,
       "required_sections": ["Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
@@ -402,9 +403,9 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["profile_id", "layer"],
-      "optional_frontmatter": ["agent_id", "scope", "tier", "status", "work_profile", "permission_profile", "skill_ids"],
-      "required_sections": ["Related Documents"],
+      "required_frontmatter": ["profile_id", "layer", "agent_id", "scope", "tier", "status", "work_profile", "permission_profile", "skill_ids"],
+      "optional_frontmatter": [],
+      "required_sections": ["Purpose", "Use When", "Inputs", "Outputs", "Permissions", "Success Criteria", "Failure and Escalation", "Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -419,7 +420,7 @@
       "template_id": null,
       "required_frontmatter": ["profile_id", "layer", "function_id", "scope", "status", "owner_agent"],
       "optional_frontmatter": [],
-      "required_sections": ["Related Documents"],
+      "required_sections": ["Preconditions", "Inputs", "Procedure", "Outputs", "Gates", "Failure Handling", "Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -563,7 +564,7 @@
     },
     "execution": {
       "statuses": ["draft", "active", "blocked", "completed", "cancelled"],
-      "transitions": {"draft": ["active", "cancelled"], "active": ["blocked", "completed", "cancelled"], "blocked": ["active", "cancelled"], "completed": [], "cancelled": []}
+      "transitions": {"draft": ["active", "completed", "cancelled"], "active": ["blocked", "completed", "cancelled"], "blocked": ["active", "cancelled"], "completed": [], "cancelled": []}
     },
     "incident": {
       "statuses": ["open", "mitigated", "closed"],
@@ -576,6 +577,10 @@
     "historical": {
       "statuses": ["draft", "completed", "superseded"],
       "transitions": {"draft": ["completed"], "completed": ["superseded"], "superseded": []}
+    },
+    "spec-package": {
+      "statuses": ["draft", "active", "completed", "superseded", "retired"],
+      "transitions": {"draft": ["active", "retired"], "active": ["completed", "superseded", "retired"], "completed": [], "superseded": [], "retired": []}
     }
   },
   "identity_spaces": {
@@ -658,20 +663,20 @@
     }},
     "architecture-description": {"prefix": "AD-", "width": 4, "high_water": 29, "next_number": 30, "child_spaces": {}},
     "adr": {"prefix": "ADR-", "width": 4, "high_water": 29, "next_number": 30, "child_spaces": {}},
-    "spec": {"prefix": "SPEC-", "width": 4, "high_water": 156, "next_number": 157, "child_spaces": {}},
+    "spec": {"prefix": "SPEC-", "width": 4, "high_water": 157, "next_number": 158, "child_spaces": {}},
     "operations-subject": {"prefix": "OPS-", "width": 4, "high_water": 77, "next_number": 78, "child_spaces": {}},
     "incident": {"prefix": "inc-", "width": 4, "high_water": 1, "next_number": 2, "child_spaces": {}},
     "research": {"prefix": "RES-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
     "audit": {"prefix": "AUD-", "width": 4, "high_water": 96, "next_number": 97, "child_spaces": {}},
     "data": {"prefix": "DATA-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
     "migration": {"prefix": "mig-", "width": 4, "high_water": 3, "next_number": 4, "child_spaces": {}},
-    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 157, "next_number": 158, "child_spaces": {}}
+    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 158, "next_number": 159, "child_spaces": {}}
   },
   "transitions": {
     "requirements-package": "living",
     "architecture-description": "living",
     "adr": "adr",
-    "spec": "living",
+    "spec": "spec-package",
     "plan": "execution",
     "task": "execution",
     "operations-subject-readme": "living",

@@ -116,9 +116,9 @@ introduced here.
 
 - `Harness research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf)
 - `Provider comparison research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
-- [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
+- Harness implementation map (retired path: `00.agent-governance/harness-implementation-map.md`)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
+- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 
 ## Maintenance
 
@@ -128,10 +128,10 @@ introduced here.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Loop implementation audit](ref-0027-loop-engineering-implementation.md)
-- [Provider implementation audit](ref-0028-provider-harness-loop-implementation.md)
-- [Agent instruction/catalog/model audit](ref-0020-agent-instructions-catalog-vibe-models.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Loop implementation audit](../0027-loop-engineering-implementation/README.md)
+- [Provider implementation audit](../0028-provider-harness-loop-implementation/README.md)
+- [Agent instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md)
 
 ## Objective
 

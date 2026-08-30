@@ -39,17 +39,16 @@
 docs/
 ├── 00.agent-governance/        # AI Agent 실행 정책, provider 계약, scope, rule, runtime catalog
 ├── 01.requirements/            # 제품/시스템 요구사항
-├── 02.architecture/            # 아키텍처 요구사항과 결정 기록
-│   ├── requirements/
+├── 02.architecture/            # 아키텍처 설명과 결정 기록
+│   ├── descriptions/
 │   └── decisions/
-├── 03.specs/                   # 컴포넌트/기능별 상세 설계 명세
-├── 04.execution/               # 실행 계획과 작업 증거
-│   ├── plans/
-│   └── tasks/
+├── 03.specs/                   # Spec Package: spec, plan, tasks 동거
+│   └── ####-<slug>/
+│       ├── spec.md
+│       ├── plan.md
+│       └── tasks/
 ├── 05.operations/              # 운영 가이드, 정책, 런북, 사고 기록
-│   ├── guides/
-│   ├── policies/
-│   ├── runbooks/
+│   ├── catalog/
 │   └── incidents/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
 ├── 98.archive/                 # manifest-first validated tombstone result with full typed provenance and preservation
@@ -65,34 +64,19 @@ docs/
 | describe architecture | `02.architecture/descriptions/` |
 | record an architecture decision | `02.architecture/decisions/` |
 | write a technical specification | `03.specs/` |
-| plan implementation work | `04.execution/plans/` |
-| record task evidence | `04.execution/tasks/` |
-| operate or configure a service | `05.operations/guides/` |
-| define operational controls | `05.operations/policies/` |
-| execute recovery or repeatable procedures | `05.operations/runbooks/` |
+| plan implementation work | `03.specs/####-<slug>/plan.md` |
+| record task evidence | `03.specs/####-<slug>/tasks/` |
+| operate or configure a service | `05.operations/catalog/` |
+| define operational controls | `05.operations/catalog/` |
+| execute recovery or repeatable procedures | `05.operations/catalog/` |
 | record incidents or postmortems | `05.operations/incidents/YYYY/INC-###-<title>/` |
 | provide LLM-facing repository navigation | `90.references/data/0082-llm-wiki-index/` |
 | inspect a manifest-first validated tombstone result | `98.archive/` |
 
 ## Migration Map
 
-이전 stage 이름은 다음 canonical 경로로 이관되었습니다.
-
-| Old Path | New Path |
-| --- | --- |
-| `docs/01.prd/` | `docs/01.requirements/` |
-| `docs/02.ard/` | `docs/02.architecture/descriptions/` |
-| `docs/03.adr/` | `docs/02.architecture/decisions/` |
-| `docs/04.specs/` | `docs/03.specs/` |
-| `docs/05.plans/` | `docs/03.specs/####-<slug>/plan.md` |
-| `docs/06.tasks/` | `docs/03.specs/####-<slug>/tasks/` |
-| `docs/07.guides/` | `docs/05.operations/catalog/` |
-| `docs/07.operations/` | `docs/05.operations/catalog/` |
-| `docs/08.operations/` | `docs/05.operations/catalog/` |
-| `docs/09.runbooks/` | `docs/05.operations/catalog/` |
-| `docs/10.incidents/` | `docs/05.operations/incidents/` |
-
-이 표는 과거 경로 해석을 돕기 위한 compatibility note입니다. 새 active artifact는 반드시 새 경로에 작성합니다.
+이전 stage 경로의 이관 매핑은 [Stage 98 migrations](98.archive/migrations/)가
+단일 권위입니다. 이 README는 매핑 사본을 두지 않습니다.
 
 ## How to Work in This Area
 
@@ -119,11 +103,9 @@ docs/
 | `01.requirements/` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
 | `02.architecture/` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
 | `03.specs/` | English-only technical specifications and contracts |
-| `04.execution/plans/` | English-only implementation plans |
-| `04.execution/tasks/` | English-only task evidence |
-| `05.operations/guides/` | 한국어 usage guidance, commands/paths/service names 원문 보존 |
-| `05.operations/policies/` | 한국어 operational controls, control/evidence identifiers 원문 보존 |
-| `05.operations/runbooks/` | 한국어 procedures, commands/expected outputs/escalation evidence 원문 보존 |
+| `03.specs/####-<slug>/plan.md` | English-only implementation plans |
+| `03.specs/####-<slug>/tasks/` | English-only task evidence |
+| `05.operations/catalog/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
 | `98.archive/` | manifest-approved 간결한 tombstone; full typed provenance and preservation, disposition-conditional relation, identifier 원문 보존 |
@@ -169,8 +151,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 | Evidence | Current State |
 | --- | --- |
 | Spec | [03.specs/0095-infra-secrets-docs-refresh/spec.md](03.specs/0095-infra-secrets-docs-refresh/spec.md) |
-| Plan | 04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md |
-| Task evidence | 04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md |
+| Plan and Task evidence | co-located in the owning Spec Package |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
 ## Current LLM Wiki Evidence
@@ -178,11 +159,10 @@ python3 scripts/validation/check-document-links.py --mode traceability
 | Evidence | Current State |
 | --- | --- |
 | Spec | [03.specs/0096-llm-wiki-agent-first-completion/spec.md](03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
-| Plan | 04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md |
-| Task evidence | 04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md |
-| Repository map | [90.references/data/0082-llm-wiki-index/repository-map.md](90.references/data/0083-repository-map/README.md) |
+| Plan and Task evidence | co-located in the owning Spec Package |
+| Repository map | [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md) |
 | Generated index | [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md) |
-| Operations guide | [05.operations/guides/00-workspace/llm-wiki-maintenance.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
+| Operations guide | [05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
 
 ## Related Documents
 
@@ -190,11 +170,10 @@ python3 scripts/validation/check-document-links.py --mode traceability
 - [01.requirements/README.md](01.requirements/README.md)
 - [02.architecture/README.md](02.architecture/README.md)
 - [03.specs/README.md](03.specs/README.md)
-- [04.execution/README.md](03.specs/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md)
-- [90.references/data/0082-llm-wiki-index/repository-map.md](90.references/data/0083-repository-map/README.md)
+- [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md)
 - [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md)
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)

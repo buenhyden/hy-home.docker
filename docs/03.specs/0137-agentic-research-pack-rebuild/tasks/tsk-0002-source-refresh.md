@@ -433,7 +433,7 @@ Task 10b, Task 11, and Task 12 ownership.
 ## Related Documents
 
 - [Spec 137](../spec.md)
-- [Rebuild Task](./tsk-0001-rebuild.md)
+- Rebuild Task, removed 2026-08-30 with Gate 4; it was at `./tsk-0001-rebuild.md`
 - [Execution task index](../../README.md)
 - [Canonical research pack](../../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Research category router](../../../90.references/research/README.md)

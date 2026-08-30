@@ -1,12 +1,12 @@
 ---
 profile_id: plan
-status: active
+status: cancelled
 artifact_id: plan-0137
 artifact_type: plan
 parent_ids:
   - SPEC-0137
 created: 2026-08-08
-updated: 2026-08-22
+updated: 2026-08-30
 ---
 
 # Agentic Engineering Research Pack Rebuild Implementation Plan
@@ -5203,7 +5203,8 @@ pack are forbidden.
 ## Related Documents
 
 - [Spec 137](./spec.md)
-- [Execution Tasks index](./tasks/tsk-0001-rebuild.md)
+- Execution Tasks index, removed 2026-08-30 with Gate 4; it was at
+  `./tasks/tsk-0001-rebuild.md`
 - [Research references](../../90.references/research/README.md)
 - [New canonical pack](../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Reference template](../../99.templates/templates/references/research.template.md)

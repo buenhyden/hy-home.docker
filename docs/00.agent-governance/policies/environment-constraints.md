@@ -9,7 +9,6 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 
 ## 1. Hard Constraints
 
-- Root instruction files stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
 - Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
 - `_workspace` is an ignored repo-support staging surface, not an active stage.
@@ -29,7 +28,56 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
   fixture content; never load diagnostics dumps, local logs, auth files,
   credentials, tokens, secret values, or shell history as evaluation input.
 
-## 2. Verification
+## 2. Infrastructure Constraints
+
+- **Networking**: all inter-service traffic MUST use `infra_net`. Direct
+  external exposure is PROHIBITED except via authorized gateways.
+- **Storage**: use named volumes following the `[Service]-[Data]-[Volume]`
+  convention.
+- **Security**: `no-new-privileges: true` is mandatory for all containers. Use
+  Docker Secrets for production credentials.
+- **Container build review**: for Dockerfile or image-build changes, review
+  multi-stage builds, pinned base image tags or digests, `.dockerignore`
+  hygiene, non-root users, health checks, layer ordering, and secret-free image
+  layers. These are manual review expectations unless a repository validator
+  already enforces the specific rule.
+- **Compose review**: for Compose changes, review profile behavior, service
+  health checks, restart policy, named volumes, resource limits where supported,
+  network segmentation, and localhost-only port binding where external exposure
+  is not intended.
+- **Pruning**: `docker system prune` requires explicit user consent. Never run
+  it without one.
+
+### 2.1 Approved Runtime Mutation Protocol
+
+When the user approves live runtime or Docker mutation, the agent still needs a
+concrete target before changing service state. The co-located Task evidence must
+record:
+
+- target service or Compose file,
+- intended runtime action and approval source,
+- pre-check command and result,
+- rollback or recovery command,
+- post-check command and result,
+- reason any live mutation was skipped.
+
+Approval without a concrete runtime target authorizes planning and validation
+only; it does not require starting, stopping, rebuilding, or recreating services.
+
+### 2.2 Approved Secrets Work Protocol
+
+When the user approves secrets work, agents may inspect repository-local secret
+metadata needed for the task, but secret values remain non-output data.
+Permitted evidence includes counts, IDs, file paths, key names, registry
+metadata, rotation status, and command success/failure. Prohibited evidence
+includes plaintext values, private keys, token-bearing logs, shell history, and
+full secret file bodies.
+
+Secret value reads, writes, or rotations require a concrete target and task
+evidence that records the redaction boundary, validation command, and rollback
+or recovery path. Do not commit, print, summarize, or quote secret values.
+
+## 3. Verification
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode traceability` and link/stale-reference checks for edited files.
@@ -51,7 +99,7 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
   failure is value-free and requires an explicit validator review rather than
   a caller override.
 
-## 3. Graphify
+## 4. Graphify
 
 This project has a graphify knowledge graph at `graphify-out/`.
 

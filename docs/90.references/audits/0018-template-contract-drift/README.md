@@ -1,11 +1,11 @@
 ---
 profile_id: audit
-status: active
+status: retired
 artifact_id: AUD-0018
 artifact_type: audit
 parent_ids: []
 created: '2026-07-04'
-updated: '2026-08-23'
+updated: '2026-08-30'
 observed_at: '2026-07-04'
 ---
 
@@ -98,7 +98,7 @@ move, remove, archive, or relink target documents.
 
 ## Sources
 
-- [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
+- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
 - [Template contract](../../99.templates/README.md) - Defines template-source and target-document boundaries.
 - [Frontmatter contract](../../99.templates/README.md) - Defines lifecycle and archive frontmatter ownership.
 - [Template governance](../../99.templates/README.md) - Owns template-system governance rules.

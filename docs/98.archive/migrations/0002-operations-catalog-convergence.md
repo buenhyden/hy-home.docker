@@ -1,8 +1,11 @@
 ---
-status: archived
+profile_id: migration
+status: completed
 artifact_id: mig-0002
-artifact_type: archive
-parent_ids: []
+artifact_type: migration
+parent_ids: [SPEC-0136]
+created: 2026-08-13
+updated: 2026-08-30
 archived_from: docs/05.operations/README.md
 archived_at: 2026-08-13T00:00:00+09:00
 archive_reason: evidence-preserve
@@ -9617,7 +9620,7 @@ provenance objects, and semantic dispositions above remain unchanged.
 
 ## Related Documents
 
-- [Specification](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)
-- [Implementation plan](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md)
-- [Task evidence](../../03.specs/spec-0136-sdlc-taxonomy-convergence/task.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
+- [Implementation plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
+- [Task evidence](../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

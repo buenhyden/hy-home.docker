@@ -1,8 +1,11 @@
 ---
-status: archived
+profile_id: migration
+status: completed
 artifact_id: mig-0001
-artifact_type: archive
-parent_ids: []
+artifact_type: migration
+parent_ids: [SPEC-0136]
+created: 2026-08-10
+updated: 2026-08-30
 archived_from: docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md
 archived_at: 2026-08-10T00:00:00+09:00
 archive_reason: evidence-preserve
@@ -5649,6 +5652,6 @@ records:
 
 ## Related Documents
 
-- [Approved specification](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)
-- [Approved plan](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md)
-- [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Approved specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
+- [Approved plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
+- Archive retention contract (retired path: `99.templates/support/archive-retention-contract.md`)

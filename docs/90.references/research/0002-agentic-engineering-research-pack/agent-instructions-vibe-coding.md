@@ -275,10 +275,10 @@ do not establish that this repository loaded either file in a live session.
 | [Claude settings](https://code.claude.com/docs/en/settings) | 2026-08-14 | External mutable | New: exact 5-level settings-scope precedence, permission-merge-across-scopes rule. |
 | [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | 2026-08-14 | External mutable | Re-verified: global/project discovery order, `AGENTS.override.md`, 32 KiB `project_doc_max_bytes` default, "read and prepended, not transcluded." |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) | 2026-08-08 | External mutable | HTTP 200; instruction replacement and configuration boundary. |
-| [Stage 00 bootstrap](../../../00.agent-governance/rules/bootstrap.md) | 2026-08-14 | Workspace tracked | Re-read: canonical loading sequence and evidence boundary. |
-| [Provider-neutral notes](../../../00.agent-governance/providers/agents-md.md) | 2026-08-14 | Workspace tracked | Re-read: exact 6-level precedence list (§4) and Canonical Adapter Model (§5) with the five adapter rules. |
-| [Task checklists](../../../00.agent-governance/rules/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
-| [Environment constraints](../../../00.agent-governance/rules/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
+| [Stage 00 bootstrap](../../../00.agent-governance/policies/bootstrap.md) | 2026-08-14 | Workspace tracked | Re-read: canonical loading sequence and evidence boundary. |
+| Provider-neutral notes (retired path: `../../../00.agent-governance/providers/agents-md.md`) | 2026-08-14 | Workspace tracked | Re-read: exact 6-level precedence list (§4) and Canonical Adapter Model (§5) with the five adapter rules. |
+| [Task checklists](../../../00.agent-governance/policies/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
+| [Environment constraints](../../../00.agent-governance/policies/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
 | Root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) | 2026-08-14 | Workspace tracked | Read directly: exact line counts and `@`-import vs. prose-instruction loading mechanism per file. |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; corroborated against tracked sources and not used as current proof. |
 
@@ -308,4 +308,4 @@ tracked file.
 - [Harness engineering](./harness-engineering.md)
 - [Loop engineering](./loop-engineering.md)
 - [Scope application matrix](./scope-application-matrix.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import pathlib
+import re
 import sys
 
 
@@ -22,31 +23,46 @@ from scripts.lib.document_governance.links import (  # noqa: E402
 )
 
 
-DOC_ROOTS = (
-    pathlib.Path("docs/01.requirements"),
-    pathlib.Path("docs/02.architecture"),
-    pathlib.Path("docs/03.specs"),
-    pathlib.Path("docs/05.operations"),
-)
+DOC_ROOT = pathlib.Path("docs")
 SUPPORT_DOCS = (
     pathlib.Path("README.md"),
-    pathlib.Path("docs/README.md"),
-    pathlib.Path("docs/00.agent-governance/policies/documentation-protocol.md"),
-    pathlib.Path("docs/00.agent-governance/policies/stage-authoring-matrix.md"),
-    pathlib.Path("docs/00.agent-governance/roles/qa.md"),
-    pathlib.Path("docs/00.agent-governance/policies/github-governance.md"),
-    pathlib.Path("docs/99.templates/README.md"),
     pathlib.Path("scripts/README.md"),
 )
+# A document whose status records a past observation is not a current route.
+# Its links are evidence of what resolved when it was written.
+NON_ROUTING_STATUSES = frozenset({"superseded", "retired"})
+_STATUS = re.compile(r"^status:\s*(\S+)\s*$", re.MULTILINE)
+
+
+def _routing_status(path: pathlib.Path) -> bool:
+    """True when the document claims to be a current route."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    if not text.startswith("---"):
+        return True
+    end = text.find("\n---", 3)
+    if end == -1:
+        return True
+    match = _STATUS.search(text[3:end])
+    return match is None or match.group(1) not in NON_ROUTING_STATUSES
 
 
 def _paths(root: pathlib.Path) -> list[pathlib.Path]:
     paths: set[pathlib.Path] = set()
-    for relative in DOC_ROOTS:
-        stage = root / relative
-        if stage.is_dir():
-            paths.update(path for path in stage.rglob("*.md") if path.is_file())
-    paths.update(root / relative for relative in SUPPORT_DOCS if (root / relative).is_file())
+    stage = root / DOC_ROOT
+    if stage.is_dir():
+        paths.update(
+            path
+            for path in stage.rglob("*.md")
+            if path.is_file() and _routing_status(path)
+        )
+    paths.update(
+        root / relative
+        for relative in SUPPORT_DOCS
+        if (root / relative).is_file() and _routing_status(root / relative)
+    )
     return sorted(paths)
 
 

@@ -102,7 +102,7 @@ updated: 2026-08-14
 
 ### AI Agent Controls
 
-- **Model / Prompt Change Process**: `doc-writer` imports `docs/00.agent-governance/roles/docs.md`; model changes follow the Stage 00 provider adapter change protocol.
+- **Model / Prompt Change Process**: `doc-writer` follows `docs/00.agent-governance/policies/documentation-protocol.md`; model changes follow the Stage 00 provider adapter change protocol.
 - **Eval / Guardrail Threshold**: stale index, unsafe path inclusion, or forbidden wording is a blocking validation failure.
 - **Log / Trace Retention**: record final verification in the Task owning the current maintenance work; do not paste raw secret-adjacent logs.
 - **Safety Incident Thresholds**: suspected secret exposure or public-scope drift requires immediate stop and user escalation.

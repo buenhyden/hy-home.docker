@@ -171,12 +171,12 @@ unrelated historical findings remain advisory.
 
 - `Document metadata and lifecycle criteria` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - DML-01 through DML-14
 - `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - artifact-type boundaries
-- [Frontmatter contract](../../99.templates/README.md) - current key/profile and README/generated rules
-- [Lifecycle status](../../99.templates/README.md) - current status vocabulary and replacement requirement
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - target-stage status, template, and numbering rules
-- [Reference template](../../99.templates/templates/references/research.template.md) - active report profile
-- [2026-07-03 frontmatter inventory](ref-0005-frontmatter-inventory.md) - dated syntax baseline
-- [2026-07-04 frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md) - dated profile baseline
+- [Frontmatter contract](../../../99.templates/README.md) - current key/profile and README/generated rules
+- [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
+- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - target-stage status, template, and numbering rules
+- [Reference template](../../../99.templates/templates/references/research.template.md) - active report profile
+- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated syntax baseline
+- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated profile baseline
 
 ## Maintenance
 
@@ -186,11 +186,11 @@ unrelated historical findings remain advisory.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [SDLC and document-contract audit](ref-0029-sdlc-document-contracts-implementation.md)
-- [SDLC quality and formatting summary](ref-0030-sdlc-quality-formatting-implementation.md)
-- [Implementation overview](ref-0026-implementation-overview.md)
-- [Spec 123](../../03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md)
+- [Audit pack README](../0019-readme/README.md)
+- [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md)
+- [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective
 

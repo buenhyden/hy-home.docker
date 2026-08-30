@@ -57,7 +57,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         )
         witness = metadata._native_migration_compaction_witness(ROOT, record, base)
         self.assertEqual(record, witness)
-        self.assertIn("invalid-transition", {
+        # `archived` is not a status any lifecycle defines, so moving to a
+        # defined status is a repair and no longer needs this witness to
+        # suppress `invalid-transition`. The witness stays exercised below for
+        # the provenance binding it verifies; its transition role is subsumed
+        # and its removal belongs to the provenance narrowing in SPEC-0155.
+        self.assertNotIn("invalid-transition", {
             finding.code for finding in metadata.validate_record(record, profiles, {})
         })
         self.assertNotIn("invalid-transition", {
@@ -73,12 +78,29 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         ):
             with self.subTest(changed=changed):
                 other = dataclasses.replace(record, **changed)
+                # The witness is exact: any near miss fails to bind. This is
+                # the property under test, and it is unchanged.
                 self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, other, base))
-                self.assertIn("invalid-transition", {
+                codes = {
                     finding.code for finding in metadata.validate_record(
                         other, profiles, {}, migration_compaction_witness=witness
                     )
-                })
+                }
+                # Whether a near miss also reports `invalid-transition` now
+                # depends on its statuses, not on the witness. The `historical`
+                # lifecycle defines draft, completed, and superseded. Leaving
+                # `archived`, which it does not define, for `completed`, which
+                # it does, is a repair. Leaving `superseded` for `completed` is
+                # a forbidden move between two defined statuses, and moving to
+                # `active` lands on a status this lifecycle never defined.
+                repair = (
+                    other.previous_status == "archived"
+                    and other.metadata.get("status") == "completed"
+                )
+                if repair:
+                    self.assertNotIn("invalid-transition", codes)
+                else:
+                    self.assertIn("invalid-transition", codes)
         for invalid_base in (None, "0" * 40):
             with self.subTest(base=invalid_base):
                 self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, invalid_base))

@@ -1,6 +1,6 @@
 ---
 profile_id: plan
-status: draft
+status: completed
 artifact_id: plan-0154
 artifact_type: plan
 parent_ids: [SPEC-0154]
@@ -31,8 +31,8 @@ edit, a Stage 99 registry edit, or a selection constant.
   The only approved all-files path is
   `bash scripts/validation/run-agent-precommit-all-files.sh`.
 - `.agents/`, `.claude/`, and `.codex/` are generated. Never hand-edit them;
-  regenerate with `bash scripts/operations/sync-provider-surfaces.sh`.
-- Documentation-only work has no red-green cycle. `roles/qa.md` states that TDD
+  regenerate with `bash scripts/operations/sync-provider-surfaces.sh --write`.
+- Documentation-only work has no red-green cycle. `policies/quality-standards.md` states that TDD
   is N/A for governance-only work and that the Task still needs
   repository-contract, traceability, diff hygiene, and manual evidence. Each
   Task below therefore captures validator output before and after the change.
@@ -219,7 +219,7 @@ In `roles/code-reviewer.md`, change the `skill_ids` entry `code-reviewer` to
 
 ```bash
 git rm -r .agents/skills/code-reviewer .agents/skills/test-automator .claude/skills/code-reviewer .claude/skills/test-automator
-bash scripts/operations/sync-provider-surfaces.sh
+bash scripts/operations/sync-provider-surfaces.sh --write
 git status --porcelain
 ```
 
@@ -230,7 +230,7 @@ Expected: the two new skill directories appear under `.agents/skills/` and
 
 ```bash
 python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all; echo "exit=$?"
-bash scripts/operations/sync-provider-surfaces.sh && git diff --exit-code; echo "exit=$?"
+bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code; echo "exit=$?"
 grep -rn "code-reviewer\b" docs/00.agent-governance/skills .claude/skills .agents/skills
 ```
 
@@ -281,7 +281,7 @@ Then set `transitions.spec` to `"spec-package"` and
 
 ```bash
 python3 scripts/validation/check-document-metadata.py; echo "exit=$?"
-python3 -m pytest tests/lib/document_governance/test_registry.py -q; echo "exit=$?"
+python3 -m unittest tests.lib.document_governance.test_registry -v 2>&1 | tail -3; echo "exit=$?"
 ```
 
 Expected: both exit 0. If the registry test pins the lifecycle set, extend that
@@ -311,7 +311,8 @@ In `docs/00.agent-governance/providers/registry.yaml`, extend the
 
 ```bash
 python3 scripts/validation/check-document-metadata.py 2>&1 | grep -c invalid-status
-bash scripts/operations/sync-provider-surfaces.sh && git diff --exit-code; echo "exit=$?"
+bash scripts/operations/sync-provider-surfaces.sh --write; echo "write exit=$?"
+bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code; echo "check exit=$?"
 python3 scripts/validation/run-ci-gate.py --profile full; echo "exit=$?"
 ```
 
@@ -511,7 +512,7 @@ class LinkSelectionScopeTests(unittest.TestCase):
 - [ ] **Step 2: Run it and confirm it fails**
 
 ```bash
-python3 -m pytest tests/lib/document_governance/test_links.py -k LinkSelectionScope -q
+python3 -m unittest tests.lib.document_governance.test_links.LinkSelectionScopeTests -v 2>&1 | tail -5
 ```
 
 Expected: both tests FAIL. `test_selection_covers_every_tracked_markdown_root`
@@ -530,7 +531,7 @@ frontmatter carries `status: superseded`.
 - [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
-python3 -m pytest tests/lib/document_governance/test_links.py -q
+python3 -m unittest tests.lib.document_governance.test_links -v 2>&1 | tail -3
 ```
 
 Expected: PASS.
@@ -580,8 +581,8 @@ Run at the end of Task 5, in this order.
 python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
 python3 scripts/validation/check-document-metadata.py
 python3 scripts/validation/check-document-links.py --mode all
-bash scripts/operations/sync-provider-surfaces.sh && git diff --exit-code
-python3 -m pytest tests/lib/document_governance -q
+bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code
+python3 -m unittest discover -s tests/lib/document_governance -t . -v 2>&1 | tail -3
 python3 scripts/validation/run-ci-gate.py --profile full
 python3 scripts/validation/run-ci-gate.py --profile changed
 ```
@@ -609,7 +610,10 @@ and no missing `agent_id`.
    separate commit after the move lands.
 3. **Unverified claims are deleted, not relocated.** A claim with no registered
    check and no runbook is not policy. Each deletion is named in the Task.
-4. **The link gate widens last.** It is the measurement of the other four Tasks,
+4. **`sync-provider-surfaces.sh` defaults to `--check`.** Regeneration requires
+   an explicit `--write`; the bare call reports drift and exits 1 without
+   writing. Corrected after Task 1 execution proved it.
+5. **The link gate widens last.** It is the measurement of the other four Tasks,
    so it changes only after they are done.
 
 ## Related Documents

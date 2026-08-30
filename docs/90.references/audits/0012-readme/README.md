@@ -31,7 +31,7 @@ infrastructure, or secret material.
 ## Purpose
 
 - **Evidence as of**: 2026-07-04
-- **Current implementation route**: [canonical agentic implementation audit](ref-0019-readme.md)
+- **Current implementation route**: [canonical agentic implementation audit](../0019-readme/README.md)
 - **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
 
 ## Repository Role
@@ -85,19 +85,19 @@ This README is for:
 
 ## Sources
 
-- [Template contract drift](ref-0018-template-contract-drift.md)
-- [Frontmatter profile inventory](ref-0014-frontmatter-profile-inventory.md)
-- [SDLC spec archive candidates](ref-0017-sdlc-spec-archive-candidates.md)
-- [Operations bucket restructure](ref-0015-operations-bucket-restructure.md)
-- [CI, QA, and formatting contract](ref-0013-ci-qa-formatting-contract.md)
-- [Restructure gap register](ref-0016-restructure-gap-register.md)
+- [Template contract drift](../0018-template-contract-drift/README.md)
+- [Frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md)
+- [SDLC spec archive candidates](../0017-sdlc-spec-archive-candidates/README.md)
+- [Operations bucket restructure](../0015-operations-bucket-restructure/README.md)
+- [CI, QA, and formatting contract](../0013-ci-qa-formatting-contract/README.md)
+- [Restructure gap register](../0016-restructure-gap-register/README.md)
 
 ### Dated Evidence Boundary
 
 This pack preserves the 2026-07-04 repo-wide 948-Markdown snapshot and its
 unique restructure/archive decisions. That count is not current corpus truth.
 Current document-contract counts and implementation status route to the
-[canonical agentic implementation audit](ref-0019-readme.md).
+[canonical agentic implementation audit](../0019-readme/README.md).
 
 ## Maintenance
 
@@ -111,12 +111,12 @@ Current document-contract counts and implementation status route to the
 ## Related Documents
 
 - [Audit references](README.md)
-- [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md)
+- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md)
 - Document restructure implementation plan
 - Document restructure task evidence
-- [Template contract](../../99.templates/README.md)
-- [Frontmatter contract](../../99.templates/README.md)
-- [Template governance](../../99.templates/README.md)
+- [Template contract](../../../99.templates/README.md)
+- [Frontmatter contract](../../../99.templates/README.md)
+- [Template governance](../../../99.templates/README.md)
 
 ## Objective
 

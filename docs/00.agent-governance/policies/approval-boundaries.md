@@ -33,6 +33,13 @@ It never expands through delegation or provider handoff.
 - Rerun all affected gates after a concurrency incident before reporting
   completion.
 
+**Documentation Write Permission**
+
+- `doc-writer` may edit approved documentation.
+- All other roles are read-only unless their Task explicitly includes a
+  documentation update.
+- Policy changes require `rules-engineer` review.
+
 **Protected Surfaces**
 
 | Surface | Required evidence | Recovery |

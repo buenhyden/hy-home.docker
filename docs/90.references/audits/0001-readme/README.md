@@ -23,7 +23,7 @@ without replacing that task evidence.
 ## Purpose
 
 - **Evidence as of**: 2026-07-03
-- **Current implementation route**: [canonical agentic implementation audit](ref-0019-readme.md)
+- **Current implementation route**: [canonical agentic implementation audit](../0019-readme/README.md)
 - **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
 
 ## Repository Role
@@ -94,7 +94,7 @@ This README is for:
 This pack preserves the 2026-07-03 repo-wide 930-Markdown snapshot and its
 unique contract evidence. That count is not current corpus truth. Current
 document-contract counts and implementation status route to the
-[canonical agentic implementation audit](ref-0019-readme.md).
+[canonical agentic implementation audit](../0019-readme/README.md).
 
 ## Maintenance
 
@@ -107,11 +107,11 @@ document-contract counts and implementation status route to the
 ## Related Documents
 
 - [Audit references](README.md)
-- [Workspace document contract audit pack spec](../../03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md)
+- [Workspace document contract audit pack spec](../../../03.specs/0102-workspace-document-contract-audit-pack/spec.md)
 - Workspace document contract audit pack plan
 - Workspace document contract audit pack task
-- [Template contract](../../99.templates/README.md)
-- [Frontmatter contract](../../99.templates/README.md)
+- [Template contract](../../../99.templates/README.md)
+- [Frontmatter contract](../../../99.templates/README.md)
 
 ## Objective
 

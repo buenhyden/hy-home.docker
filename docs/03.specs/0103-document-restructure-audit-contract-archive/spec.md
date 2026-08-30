@@ -1,12 +1,12 @@
 ---
 profile_id: spec
-status: active
+status: retired
 artifact_id: SPEC-0103
 artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-30
 ---
 # Document Restructure Audit, Contract, and Archive Technical Specification
 

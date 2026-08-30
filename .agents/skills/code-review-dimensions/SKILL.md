@@ -38,5 +38,5 @@ Mark unverifiable requirements explicitly and request the missing artifact; do n
 ## Related Documents
 
 - [Code reviewer](../../../docs/00.agent-governance/roles/code-reviewer.md)
-- [Code reviewer function](../../../docs/00.agent-governance/skills/code-reviewer.md)
-- [Common scope](../../../docs/00.agent-governance/roles/common.md)
+- [Change review execution](../../../docs/00.agent-governance/skills/change-review-execution.md)
+- [Common scope](../../../docs/00.agent-governance/policies/quality-standards.md)

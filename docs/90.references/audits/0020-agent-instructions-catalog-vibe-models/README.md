@@ -172,9 +172,9 @@ nothing.
 - `Pinned catalog research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf)
 - `Model-selection research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-model-selection` leaf)
 - `Provider landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
-- [Agent catalog](../../00.agent-governance/agents/README.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
+- Agent catalog (retired path: `00.agent-governance/agents/README.md`)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
+- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 
 ## Maintenance
 
@@ -184,10 +184,10 @@ nothing.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Harness audit](ref-0025-harness-engineering-implementation.md)
-- [Loop audit](ref-0027-loop-engineering-implementation.md)
-- [Provider audit](ref-0028-provider-harness-loop-implementation.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Harness audit](../0025-harness-engineering-implementation/README.md)
+- [Loop audit](../0027-loop-engineering-implementation/README.md)
+- [Provider audit](../0028-provider-harness-loop-implementation/README.md)
 
 ## Objective
 

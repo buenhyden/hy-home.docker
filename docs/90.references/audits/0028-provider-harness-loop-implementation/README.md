@@ -131,11 +131,11 @@ discovery.
 
 - `Provider comparison research and official evidence ledger` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
 - `Provider model landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
-- [Claude notes](../../00.agent-governance/providers/claude.md)
-- [Codex notes](../../00.agent-governance/providers/codex.md)
-- [Gemini notes](../../00.agent-governance/providers/gemini.md)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
+- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)
+- [Claude notes](../../../00.agent-governance/providers/claude.md)
+- [Codex notes](../../../00.agent-governance/providers/codex.md)
+- Gemini notes (retired path: `00.agent-governance/providers/gemini.md`)
 
 ## Maintenance
 
@@ -145,10 +145,10 @@ discovery.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Harness audit](ref-0025-harness-engineering-implementation.md)
-- [Loop audit](ref-0027-loop-engineering-implementation.md)
-- [Agent instruction/catalog/model audit](ref-0020-agent-instructions-catalog-vibe-models.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Harness audit](../0025-harness-engineering-implementation/README.md)
+- [Loop audit](../0027-loop-engineering-implementation/README.md)
+- [Agent instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md)
 
 ## Objective
 

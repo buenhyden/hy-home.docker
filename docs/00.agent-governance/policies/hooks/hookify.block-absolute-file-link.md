@@ -31,11 +31,11 @@ action: block
 
 ```markdown
 <!-- BLOCKED: absolute file URL -->
-[document link](file:///home/hy/projects/hy-home.docker/docs/01.requirements/prd.md)
+[document link](file:///home/hy/projects/hy-home.docker/docs/01.requirements/0001-gateway.md)
 
 <!-- ALLOWED: relative link -->
-[document link](../01.requirements/prd.md)
-[document link](../../docs/01.requirements/prd.md)
+[document link](../../../01.requirements/0001-gateway.md)
+[document link](../../../01.requirements/0001-gateway.md)
 ```
 
 Calculate relative paths from the current file location.

@@ -104,33 +104,25 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/providers/claude.md](../../../00.agent-governance/providers/claude.md) | Markdown reference |
 | [docs/00.agent-governance/providers/codex.md](../../../00.agent-governance/providers/codex.md) | Markdown reference |
 | [docs/00.agent-governance/providers/registry.yaml](../../../00.agent-governance/providers/registry.yaml) | YAML config |
-| [docs/00.agent-governance/roles/agentic.md](../../../00.agent-governance/roles/agentic.md) | Markdown reference |
-| [docs/00.agent-governance/roles/architecture.md](../../../00.agent-governance/roles/architecture.md) | Markdown reference |
 | [docs/00.agent-governance/roles/ci-cd-engineer.md](../../../00.agent-governance/roles/ci-cd-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/roles/code-reviewer.md](../../../00.agent-governance/roles/code-reviewer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/common.md](../../../00.agent-governance/roles/common.md) | Markdown reference |
 | [docs/00.agent-governance/roles/doc-writer.md](../../../00.agent-governance/roles/doc-writer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/docs.md](../../../00.agent-governance/roles/docs.md) | Markdown reference |
 | [docs/00.agent-governance/roles/drift-detector.md](../../../00.agent-governance/roles/drift-detector.md) | Markdown reference |
 | [docs/00.agent-governance/roles/eval-engineer.md](../../../00.agent-governance/roles/eval-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/roles/hook-developer.md](../../../00.agent-governance/roles/hook-developer.md) | Markdown reference |
 | [docs/00.agent-governance/roles/iac-reviewer.md](../../../00.agent-governance/roles/iac-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/roles/incident-responder.md](../../../00.agent-governance/roles/incident-responder.md) | Markdown reference |
 | [docs/00.agent-governance/roles/infra-implementer.md](../../../00.agent-governance/roles/infra-implementer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/infra.md](../../../00.agent-governance/roles/infra.md) | Markdown reference |
-| [docs/00.agent-governance/roles/ops.md](../../../00.agent-governance/roles/ops.md) | Markdown reference |
 | [docs/00.agent-governance/roles/qa-engineer.md](../../../00.agent-governance/roles/qa-engineer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/qa.md](../../../00.agent-governance/roles/qa.md) | Markdown reference |
 | [docs/00.agent-governance/roles/rules-engineer.md](../../../00.agent-governance/roles/rules-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/roles/security-auditor.md](../../../00.agent-governance/roles/security-auditor.md) | Markdown reference |
-| [docs/00.agent-governance/roles/security.md](../../../00.agent-governance/roles/security.md) | Markdown reference |
 | [docs/00.agent-governance/roles/skill-creator.md](../../../00.agent-governance/roles/skill-creator.md) | Markdown reference |
 | [docs/00.agent-governance/roles/workflow-supervisor.md](../../../00.agent-governance/roles/workflow-supervisor.md) | Markdown reference |
 | [docs/00.agent-governance/sdlc.md](../../../00.agent-governance/sdlc.md) | Markdown reference |
 | [docs/00.agent-governance/skills/adr-writing.md](../../../00.agent-governance/skills/adr-writing.md) | Markdown reference |
+| [docs/00.agent-governance/skills/change-review-execution.md](../../../00.agent-governance/skills/change-review-execution.md) | Markdown reference |
 | [docs/00.agent-governance/skills/ci-cd-patterns.md](../../../00.agent-governance/skills/ci-cd-patterns.md) | Markdown reference |
 | [docs/00.agent-governance/skills/code-review-dimensions.md](../../../00.agent-governance/skills/code-review-dimensions.md) | Markdown reference |
-| [docs/00.agent-governance/skills/code-reviewer.md](../../../00.agent-governance/skills/code-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/skills/compose-stack-agent.md](../../../00.agent-governance/skills/compose-stack-agent.md) | Markdown reference |
 | [docs/00.agent-governance/skills/container-threat-modeling.md](../../../00.agent-governance/skills/container-threat-modeling.md) | Markdown reference |
 | [docs/00.agent-governance/skills/deployment-pipeline-design.md](../../../00.agent-governance/skills/deployment-pipeline-design.md) | Markdown reference |
@@ -148,7 +140,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/skills/security-audit.md](../../../00.agent-governance/skills/security-audit.md) | Markdown reference |
 | [docs/00.agent-governance/skills/style-validation.md](../../../00.agent-governance/skills/style-validation.md) | Markdown reference |
 | [docs/00.agent-governance/skills/task-breakdown-agent.md](../../../00.agent-governance/skills/task-breakdown-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/test-automator.md](../../../00.agent-governance/skills/test-automator.md) | Markdown reference |
+| [docs/00.agent-governance/skills/test-authoring.md](../../../00.agent-governance/skills/test-authoring.md) | Markdown reference |
 | [docs/00.agent-governance/skills/workspace-audit-revalidation.md](../../../00.agent-governance/skills/workspace-audit-revalidation.md) | Markdown reference |
 
 ### Runtime surfaces
@@ -180,9 +172,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/output-styles/hy-home.md](../../../../.claude/output-styles/hy-home.md) | Markdown reference |
 | [.claude/settings.json](../../../../.claude/settings.json) | JSON registry |
 | [.claude/skills/adr-writing/SKILL.md](../../../../.claude/skills/adr-writing/SKILL.md) | Markdown reference |
+| [.claude/skills/change-review-execution/SKILL.md](../../../../.claude/skills/change-review-execution/SKILL.md) | Markdown reference |
 | [.claude/skills/ci-cd-patterns/SKILL.md](../../../../.claude/skills/ci-cd-patterns/SKILL.md) | Markdown reference |
 | [.claude/skills/code-review-dimensions/SKILL.md](../../../../.claude/skills/code-review-dimensions/SKILL.md) | Markdown reference |
-| [.claude/skills/code-reviewer/SKILL.md](../../../../.claude/skills/code-reviewer/SKILL.md) | Markdown reference |
 | [.claude/skills/compose-stack-agent/SKILL.md](../../../../.claude/skills/compose-stack-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/container-threat-modeling/SKILL.md](../../../../.claude/skills/container-threat-modeling/SKILL.md) | Markdown reference |
 | [.claude/skills/deployment-pipeline-design/SKILL.md](../../../../.claude/skills/deployment-pipeline-design/SKILL.md) | Markdown reference |
@@ -200,7 +192,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/security-audit/SKILL.md](../../../../.claude/skills/security-audit/SKILL.md) | Markdown reference |
 | [.claude/skills/style-validation/SKILL.md](../../../../.claude/skills/style-validation/SKILL.md) | Markdown reference |
 | [.claude/skills/task-breakdown-agent/SKILL.md](../../../../.claude/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
-| [.claude/skills/test-automator/SKILL.md](../../../../.claude/skills/test-automator/SKILL.md) | Markdown reference |
+| [.claude/skills/test-authoring/SKILL.md](../../../../.claude/skills/test-authoring/SKILL.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/SKILL.md](../../../../.claude/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
 | [.codex/README.md](../../../../.codex/README.md) | folder index |
 | [.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml) | source path |
@@ -341,13 +333,32 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md](../../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/plan.md](../../../03.specs/0137-agentic-research-pack-rebuild/plan.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/spec.md](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md) | Markdown reference |
-| [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/plan.md](../../../03.specs/0152-deleted-reference-leaf-disposition/plan.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/spec.md](../../../03.specs/0152-deleted-reference-leaf-disposition/spec.md) | Markdown reference |
 | [docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md](../../../03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/plan.md](../../../03.specs/0154-governance-consistency-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/spec.md](../../../03.specs/0154-governance-consistency-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0001-stage-00-canonical-repair.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0001-stage-00-canonical-repair.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0002-role-skill-canonicalization.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0002-role-skill-canonicalization.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0003-lifecycle-completion.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0003-lifecycle-completion.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0004-retired-taxonomy-removal.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0004-retired-taxonomy-removal.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0005-gate-scope-correction.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0005-gate-scope-correction.md) | Markdown reference |
+| [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0006-blocking-gate-reconciliation.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0006-blocking-gate-reconciliation.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/plan.md](../../../03.specs/0155-validation-surface-reduction/plan.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/spec.md](../../../03.specs/0155-validation-surface-reduction/spec.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0001-full-gate-restoration.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0001-full-gate-restoration.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0002-blocking-mode-closure.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0002-blocking-mode-closure.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0003-spec-0137-disposition.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0003-spec-0137-disposition.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0004-resurrected-contract-removal.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0004-resurrected-contract-removal.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0005-gate4-and-retiring-pack-removal.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0005-gate4-and-retiring-pack-removal.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0006-stage-04-literal-closure.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0006-stage-04-literal-closure.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md) | Markdown reference |
+| [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0157-script-surface-ownership-convergence/spec.md](../../../03.specs/0157-script-surface-ownership-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

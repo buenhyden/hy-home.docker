@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: active
+status: completed
 artifact_id: SPEC-0137
 artifact_type: spec
 parent_ids:
@@ -38,6 +38,32 @@ Old-pack deletion authority remains conditional on every pre-deletion gate
 below.
 
 ## Overview
+
+**Disposition, 2026-08-30.** This Spec Package is `completed` on its deliverable
+and not on its plan. All four of its Tasks are `cancelled`. Tasks 1 to 3 were
+cancelled during execution. Task 4 deferred final acceptance until "SPEC-0153
+Task 9 has independently established and merged its Stage 90 structure into
+`main`"; SPEC-0153 was deleted, recorded by
+`docs/98.archive/migrations/0003-workspace-governance-simplification.md`, so
+that condition can never be met and the Task is cancelled with it. Its working
+branch `codex/0137-agentic-research-refresh` no longer exists.
+
+What the Spec promised nevertheless arrived. The 21-file pack is present at
+`docs/90.references/research/0002-agentic-engineering-research-pack/` carrying
+`RES-0002` with `status: active`. The old pack it was to replace is still
+present and is not deleted here; the deletion this Spec staged is not part of
+the disposition.
+
+The three gate modules this Spec built to guard that deletion are retired with
+it, 13,504 lines including their tests:
+`scripts/validation/agentic-research-gate9-evidence.py`,
+`scripts/validation/gate2_claim_review_contract.py`, and
+`scripts/validation/carry_owner_contract.py`. None was invoked by
+`run-ci-gate.py` in any profile, and none had a consumer outside its own tests,
+its `scripts/manifest.yaml` row, and its `suite_registry.py` binding. The
+passages below that describe those modules as live machinery record what was
+built, not what the repository now runs. Retired under SPEC-0155 plan Task 3.
+
 
 This specification defines a documentation-only rebuild of the workspace's
 agentic engineering research pack. The work creates a new, source-backed pack

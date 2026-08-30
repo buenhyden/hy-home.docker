@@ -119,12 +119,12 @@ separate.
 ## Sources
 
 - `Workspace baseline research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf)
-- [Stage 00 governance hub](../../00.agent-governance/README.md)
-- [Agentic rule](../../00.agent-governance/rules/agentic.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [`_workspace` contract](../../../_workspace/README.md)
-- [`_workspace` repo-support contract](../../../_workspace/repo-support/README.md)
+- [Stage 00 governance hub](../../../00.agent-governance/README.md)
+- [Agentic rule](../../../00.agent-governance/policies/agentic.md)
+- [Task checklists](../../../00.agent-governance/policies/task-checklists.md)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
+- [`_workspace` contract](../../../../_workspace/README.md)
+- [`_workspace` repo-support contract](../../../../_workspace/repo-support/README.md)
 
 ## Maintenance
 
@@ -134,10 +134,10 @@ separate.
 
 ## Related Documents
 
-- [Audit pack README](ref-0019-readme.md)
-- [Implementation overview](ref-0026-implementation-overview.md)
-- [Provider audit](ref-0028-provider-harness-loop-implementation.md)
-- [Agent instruction/catalog/model audit](ref-0020-agent-instructions-catalog-vibe-models.md)
+- [Audit pack README](../0019-readme/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+- [Provider audit](../0028-provider-harness-loop-implementation/README.md)
+- [Agent instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md)
 
 ## Objective
 

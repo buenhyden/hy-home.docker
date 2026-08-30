@@ -98,20 +98,20 @@ This README is for:
 
 ## Sources
 
-- [Implementation overview](ref-0026-implementation-overview.md)
-- [Harness engineering implementation](ref-0025-harness-engineering-implementation.md)
-- [Loop engineering implementation](ref-0027-loop-engineering-implementation.md)
-- [Provider harness and loop implementation](ref-0028-provider-harness-loop-implementation.md)
-- [Workspace rules and environment implementation](ref-0032-workspace-rules-environment-implementation.md)
-- [Agent instructions, catalog, vibe coding, and model routing](ref-0020-agent-instructions-catalog-vibe-models.md)
-- [Automation candidates](ref-0021-automation-candidates.md)
-- [SDLC and document-contract implementation](ref-0029-sdlc-document-contracts-implementation.md)
-- [Frontmatter, template, and README implementation](ref-0024-frontmatter-template-readme-implementation.md)
-- [Generated frontmatter semantic inventory](ref-0023-frontmatter-semantic-inventory.md)
-- [SDLC quality formatting implementation](ref-0030-sdlc-quality-formatting-implementation.md)
-- [Compose, infrastructure, and operations readiness](ref-0022-compose-infrastructure-operations-readiness.md)
-- [Security framework maturity coverage](ref-0031-security-framework-maturity.md)
-- [Generated audit implementation matrix](../data/governance/ref-0065-audit-implementation-matrix.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+- [Harness engineering implementation](../0025-harness-engineering-implementation/README.md)
+- [Loop engineering implementation](../0027-loop-engineering-implementation/README.md)
+- [Provider harness and loop implementation](../0028-provider-harness-loop-implementation/README.md)
+- [Workspace rules and environment implementation](../0032-workspace-rules-environment-implementation/README.md)
+- [Agent instructions, catalog, vibe coding, and model routing](../0020-agent-instructions-catalog-vibe-models/README.md)
+- [Automation candidates](../0021-automation-candidates/README.md)
+- [SDLC and document-contract implementation](../0029-sdlc-document-contracts-implementation/README.md)
+- [Frontmatter, template, and README implementation](../0024-frontmatter-template-readme-implementation/README.md)
+- [Generated frontmatter semantic inventory](../0023-frontmatter-semantic-inventory/README.md)
+- [SDLC quality formatting implementation](../0030-sdlc-quality-formatting-implementation/README.md)
+- [Compose, infrastructure, and operations readiness](../0022-compose-infrastructure-operations-readiness/README.md)
+- [Security framework maturity coverage](../0031-security-framework-maturity/README.md)
+- [Generated audit implementation matrix](../../data/0065-audit-implementation-matrix/README.md)
 
 ### Current Canonical Cardinality
 
@@ -194,7 +194,7 @@ scope whenever comparing counts.
 
 - [Audit references](README.md)
 - `Agentic engineering research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Audit pack spec](../../03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md)
+- [Audit pack spec](../../../03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md)
 - Audit pack plan
 - Audit pack task evidence
 

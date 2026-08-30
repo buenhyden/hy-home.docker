@@ -40,5 +40,5 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
 ## Related Documents
 
 - [Incident responder](../../../docs/00.agent-governance/roles/incident-responder.md)
-- [Operations scope](../../../docs/00.agent-governance/roles/ops.md)
+- [Operations scope](../../../docs/00.agent-governance/policies/quality-standards.md)
 - [Approval boundaries](../../../docs/00.agent-governance/policies/approval-boundaries.md)

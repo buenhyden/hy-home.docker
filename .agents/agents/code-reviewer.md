@@ -40,7 +40,7 @@ If the review package is incomplete or policy conflicts with the approved plan, 
 
 ## Related Documents
 
-- [Common scope](../../docs/00.agent-governance/roles/common.md)
+- [Quality standards](../../docs/00.agent-governance/policies/quality-standards.md)
 - [Code review dimensions](../../docs/00.agent-governance/skills/code-review-dimensions.md)
-- [Code reviewer function](../../docs/00.agent-governance/skills/code-reviewer.md)
+- [Change review execution](../../docs/00.agent-governance/skills/change-review-execution.md)
 - [Subagent protocol](../../docs/00.agent-governance/policies/agentic.md)

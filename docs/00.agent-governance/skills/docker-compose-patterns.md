@@ -41,4 +41,4 @@ Escalate to architecture design when no Compose-native pattern meets the require
 
 - [Infrastructure implementer](../roles/infra-implementer.md)
 - [Compose stack function](compose-stack-agent.md)
-- [Infrastructure scope](../roles/infra.md)
+- [Infrastructure scope](../policies/environment-constraints.md)

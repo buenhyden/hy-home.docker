@@ -142,7 +142,7 @@ approval rules.
 | --- | --- |
 | Surface | implementation and independent review delegation |
 | Input Scenario | A planned unit requires a fresh implementer and distinct reviewer identities. |
-| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/policies/agentic.md`, `docs/00.agent-governance/roles/common.md` |
+| Required Context | `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/policies/agentic.md`, `docs/00.agent-governance/policies/approval-boundaries.md` |
 | Expected Output | Separates implementation from review and records Critical/Important closure independently. |
 | Scoring Criteria | Reviewer inequality, registered roles, bounded review loop, evidence, and escalation. |
 | Block Conditions | The same agent implements and independently approves its own work. |
@@ -157,7 +157,7 @@ approval rules.
 | --- | --- |
 | Surface | Co-located Task evidence and closure summary |
 | Input Scenario | An implementation unit is ready to record checks, skips, rollback, and commit identity. |
-| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md` |
+| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0004-retired-taxonomy-removal.md` |
 | Expected Output | Records value-free command/result evidence and explicit skipped-check rationale without raw logs or secrets. |
 | Scoring Criteria | Closure evidence, protected boundaries, validation results, rollback, and usability. |
 | Block Conditions | Raw secret, credential, token, shell-history, or raw-log payload is copied into evidence. |
@@ -287,7 +287,7 @@ authoritative.
 - `Loop engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf) - repo-local eval-loop gap.
 - `Harness engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) - fixture and eval-harness background.
 - [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - provider parity source of truth.
-- [Automation candidates](../../audits/ref-0021-automation-candidates.md) - `AEA-AUTO-003` implementation context.
+- [Automation candidates](../../audits/0021-automation-candidates/README.md) - `AEA-AUTO-003` implementation context.
 - [agent-output eval runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) - local advisory fixture runner.
 
 ## Maintenance
