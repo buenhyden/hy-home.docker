@@ -5459,6 +5459,12 @@ def collect_records(
     return records
 
 
+CO_LOCATED_TASK_PATH = re.compile(
+    r"docs/03\.specs/[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+    r"/tasks/tsk-[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?\.md"
+)
+
+
 def load_transition_overrides(
     path: pathlib.Path,
     root: pathlib.Path,
@@ -5476,7 +5482,18 @@ def load_transition_overrides(
     if not isinstance(rows, list) or not rows:
         raise ProfileError("transition_overrides must be a non-empty list")
     common, _ = _profile_mapping(profiles)
+    # `allowed_statuses` is a legacy-profile field. Registry-built profiles, the
+    # ones the CLI uses, do not carry it, so reading only that key left the set
+    # empty and rejected every override as "an unknown lifecycle status". The
+    # registry's lifecycles are where statuses live now.
+    registry = profiles.get("_registry")
     allowed_statuses = set(common.get("allowed_statuses", []))
+    if isinstance(registry, DocumentRegistry):
+        allowed_statuses |= {
+            status
+            for statuses in registry.lifecycles.values()
+            for status in statuses
+        }
     expected_keys = {
         "path",
         "previous_status",
@@ -5495,10 +5512,14 @@ def load_transition_overrides(
         evidence = _normalized_target_path(row["evidence_task"])
         if target is None or not (root / target).is_file():
             raise ProfileError(f"transition override row {index} target path is not an existing canonical document")
+        # The co-located Task form Stage 03 actually uses. The retired
+        # `docs/03.specs/spec-<slug>/task.md` shape has zero documents in this
+        # repository against fifteen in this one, so requiring it made every
+        # override unsatisfiable while the message below already named the
+        # correct form.
         if (
             evidence is None
-            or not evidence.as_posix().startswith("docs/03.specs/spec-")
-            or evidence.name != "task.md"
+            or not CO_LOCATED_TASK_PATH.fullmatch(evidence.as_posix())
             or not (root / evidence).is_file()
         ):
             raise ProfileError(

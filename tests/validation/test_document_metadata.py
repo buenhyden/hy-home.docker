@@ -7775,7 +7775,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertIn("selected=1 violations=1", result.stdout)
             self.assertIn(f"metadata base: source=explicit ref={base}", result.stderr)
 
-    def test_scoped_transition_override_requires_complete_colocated_task_evidence(self) -> None:
+    def test_scoped_transition_override_rejects_the_retired_task_evidence_shape(self) -> None:
         directory, root = self.new_repo()
         with directory:
             parent = root / "docs/03.specs/spec-0124-parent/spec.md"
@@ -7788,6 +7788,8 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "parent_ids": ["spec-0124"],
                 },
             )
+            # The retired shape, which is the only Task form this harness's
+            # resurrected profiles can express. The loader now rejects it.
             task = root / "docs/03.specs/spec-0124-parent/task.md"
             values = {
                 "status": "completed",
@@ -7819,6 +7821,13 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            # This class runs the checker against a profile blob resurrected
+            # from a pinned commit, and that blob knows only the retired
+            # `spec-####-<slug>/task.md` shape, so it cannot express a valid
+            # co-located Task. What it can still prove is the rejection half of
+            # the contract. Acceptance is proven against the live registry in
+            # `TransitionOverrideEvidencePathTests`, and migrating this harness
+            # off the resurrected profiles belongs to SPEC-0157.
             result = run_checker(
                 root,
                 "check-changed",
@@ -7827,8 +7836,8 @@ class ChangedModeRolloutTests(unittest.TestCase):
                 "--transition-override-file",
                 str(override),
             )
-            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertIn("transition_overrides=1", result.stdout)
+            self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+            self.assertIn("evidence_task must be an existing co-located Task", result.stderr)
 
     def test_environment_base_is_used_before_local_candidates(self) -> None:
         directory, root = self.new_repo()
@@ -8420,6 +8429,64 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertIn("dated-path-identity", result.stdout)
             self.assertIn("artifact-id-invalid", result.stdout)
             self.assertIn("path-id-mismatch", result.stdout)
+
+
+class TransitionOverrideEvidencePathTests(unittest.TestCase):
+    """The override's evidence path must name a Task form this repository has.
+
+    `load_transition_overrides` required `docs/03.specs/spec-<slug>/task.md`.
+    This repository has zero documents in that form and fifteen in the
+    co-located `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` form, so
+    every override was rejected while the error text said the evidence "must be
+    an existing co-located Task". SPEC-0155 acceptance item 13 owns the
+    correction.
+    """
+
+    def _override_file(self, root: pathlib.Path, evidence: str) -> pathlib.Path:
+        override = root / "override.yaml"
+        override.write_text(
+            "transition_overrides:\n"
+            "- path: docs/03.specs/0001-fixture/spec.md\n"
+            "  previous_status: completed\n"
+            "  new_status: active\n"
+            f"  evidence_task: {evidence}\n"
+            "  approval: reviewer\n"
+            "  reason: corrects a mis-recorded status\n",
+            encoding="utf-8",
+        )
+        return override
+
+    def _tree(self, root: pathlib.Path, evidence: str) -> None:
+        target = root / "docs/03.specs/0001-fixture/spec.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("# Fixture\n", encoding="utf-8")
+        witness = root / evidence
+        witness.parent.mkdir(parents=True, exist_ok=True)
+        witness.write_text("# Task\n", encoding="utf-8")
+
+    def test_co_located_task_evidence_is_accepted(self) -> None:
+        evidence = "docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md"
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, evidence)
+            overrides = metadata.load_transition_overrides(
+                self._override_file(root, evidence),
+                root,
+                metadata.build_registry_profiles(metadata.load_registry(REGISTRY)),
+            )
+        self.assertEqual(1, len(overrides))
+
+    def test_the_retired_spec_slash_task_form_is_rejected(self) -> None:
+        evidence = "docs/03.specs/spec-0001-fixture/task.md"
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, evidence)
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_transition_overrides(
+                    self._override_file(root, evidence),
+                    root,
+                    metadata.build_registry_profiles(metadata.load_registry(REGISTRY)),
+                )
 
 
 if __name__ == "__main__":
