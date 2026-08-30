@@ -2435,14 +2435,21 @@ def validate_body_contract(
                         f"profile {record.artifact_type} is missing required heading: {heading}",
                     )
                 )
-            for heading in sorted(set(h2) - required - optional):
-                findings.append(
-                    _finding(
-                        record,
-                        "body-heading-forbidden",
-                        f"profile {record.artifact_type} contains unregistered heading: {heading}",
+            # A profile whose body is prose contracts only its required
+            # headings. Enumerating the rest would pin wording, not structure.
+            free_form = any(
+                isinstance(item, dict) and item.get("kind") == "free-form-sections"
+                for item in profile.get("exceptions", ())
+            )
+            if not free_form:
+                for heading in sorted(set(h2) - required - optional):
+                    findings.append(
+                        _finding(
+                            record,
+                            "body-heading-forbidden",
+                            f"profile {record.artifact_type} contains unregistered heading: {heading}",
+                        )
                     )
-                )
             return sorted(set(findings))
 
     source_roles = _source_roles_for_path(record.path, profiles)

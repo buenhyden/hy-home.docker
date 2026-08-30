@@ -378,7 +378,7 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [{"kind": "free-form-sections"}]
     },
     {
       "profile_id": "governance-hook-policy",
@@ -393,7 +393,7 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [{"kind": "free-form-sections"}]
     },
     {
       "profile_id": "governance-role",
@@ -404,7 +404,7 @@
       "template_id": null,
       "required_frontmatter": ["profile_id", "layer", "agent_id", "scope", "tier", "status", "work_profile", "permission_profile", "skill_ids"],
       "optional_frontmatter": [],
-      "required_sections": ["Related Documents"],
+      "required_sections": ["Purpose", "Use When", "Inputs", "Outputs", "Permissions", "Success Criteria", "Failure and Escalation", "Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -419,7 +419,7 @@
       "template_id": null,
       "required_frontmatter": ["profile_id", "layer", "function_id", "scope", "status", "owner_agent"],
       "optional_frontmatter": [],
-      "required_sections": ["Related Documents"],
+      "required_sections": ["Preconditions", "Inputs", "Procedure", "Outputs", "Gates", "Failure Handling", "Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
