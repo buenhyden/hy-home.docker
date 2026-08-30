@@ -1,8 +1,11 @@
 ---
-status: archived
+profile_id: migration
+status: completed
 artifact_id: mig-0002
-artifact_type: archive
-parent_ids: []
+artifact_type: migration
+parent_ids: [SPEC-0136]
+created: 2026-08-13
+updated: 2026-08-30
 archived_from: docs/05.operations/README.md
 archived_at: 2026-08-13T00:00:00+09:00
 archive_reason: evidence-preserve

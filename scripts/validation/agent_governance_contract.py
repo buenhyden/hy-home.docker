@@ -32,7 +32,9 @@ GOVERNANCE_PROFILES = {
 }
 EXPECTED_GENERATED_ROOTS = (
     ".agents/agents",
+    ".agents/rules",
     ".agents/skills",
+    ".agents/workflows",
     ".claude/agents",
     ".claude/skills",
     ".codex/agents",
