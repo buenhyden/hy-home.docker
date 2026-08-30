@@ -136,6 +136,15 @@ Plan rulings 1 to 5 apply. Four execution rulings were made.
   `tests/validation/test_agent_governance_contract.py` pins. Routed to
   SPEC-0155 with the metadata validator, which does not check that a
   `superseded_by` target exists.
+- `run-ci-gate.py --profile full` exits 1 on exactly one test,
+  `tests.validation.test_document_metadata.ChangedModeRolloutTests.test_reverse_transition_without_override_is_blocked`,
+  with `configuration-error: bounded Git identity scan failed`. Every targeted
+  gate passes and the 153-test suite is OK. The same test also fails standalone
+  at the branch point `e2ef015e`, so it is not a clean regression, but the full
+  gate did pass on `main` at session start. Two hypotheses were measured and
+  both rejected: the 45-second scan deadline (0.9 s projected across 498 blobs
+  at 1.7 ms per spawn) and the 16 MiB shared output cap (11.07 MiB used, base
+  10.98 MiB). Routed to SPEC-0155, which owns `identity_history.py`.
 - 164 dead links inside `retired` documents and 54 inside `superseded` ones are
   left as observations of the state those documents recorded. Task 5 exempts
   `superseded` from the link gate; whether `retired` needs the same exemption is

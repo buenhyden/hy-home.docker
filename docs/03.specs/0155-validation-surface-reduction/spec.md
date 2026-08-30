@@ -61,6 +61,8 @@ retires and show that no registered profile depends on it.
 | Status of those two documents | invalid `archived`, corrected by SPEC-0154 |
 | Design already superseded | `target_surface_delta_contract.py` validates the surface "without branch/SHA snapshots" |
 | Normative document pinning a commit literal | `docs/98.archive/README.md` |
+| Full-gate test failing on a bounded Git identity scan | `test_reverse_transition_without_override_is_blocked` |
+| Blobs the identity scan reads per run | 498 markdown files, 11.07 MiB |
 | Metadata advisory state guarded by a `ProfileError` | `metadata_validator.py` |
 | `docs/04.execution` literals pinned inside a validator | `metadata_validator.py` `planned_partitions` |
 
@@ -121,7 +123,21 @@ retire the manifest-reconciliation predicates whose inputs no longer exist.
 Each retained invariant is listed in the Task with the document it protects.
 Each retired predicate is listed with the migration that made it vacuous.
 
-### 3. Provenance narrowing
+### 3. Bounded Git identity scan
+
+`run-ci-gate.py --profile full` fails on
+`tests.validation.test_document_metadata.ChangedModeRolloutTests.test_reverse_transition_without_override_is_blocked`
+with `configuration-error: bounded Git identity scan failed`. SPEC-0154
+measured and rejected the two obvious causes: the 45-second deadline is not
+reached, and the 16 MiB shared output cap is not exhausted. The failure also
+reproduces standalone before SPEC-0154's first commit.
+
+Find the actual bound the scan exhausts, then decide whether the bound or the
+scan is wrong. `identity_history.py` spawns one `git cat-file` per document and
+shares a single byte budget across the run; whether that design is needed at all
+is part of the narrowing below.
+
+### 4. Provenance narrowing
 
 Collapse `git_provenance.py`, `identity_history.py`, and `provenance_policy.py`
 into a single module that resolves `archived_commit:path` tuples to a Git blob
@@ -129,7 +145,7 @@ and validates nothing else. Remove the commit literal from
 `docs/98.archive/README.md` and state the recovery procedure in terms of the
 frontmatter tuple the tombstone itself carries.
 
-### 4. Taxonomy-wave enforcement and Stage 04 literals
+### 5. Taxonomy-wave enforcement and Stage 04 literals
 
 `metadata_validator.py` raises
 `ProfileError("sdlc-taxonomy-convergence remains advisory until corpus
@@ -144,7 +160,7 @@ replace the Stage 04 partition literals with the co-located Spec Package paths
 that replaced them. Record the completion judgement and its evidence in the
 Task.
 
-### 5. Generated evidence deduplication
+### 6. Generated evidence deduplication
 
 Merge the three summary and detail pairs that publish the same measurement, and
 add `generated_by` to every snapshot a generator writes.
@@ -155,7 +171,7 @@ add `generated_by` to every snapshot a generator writes.
 | `0068-target-surface-convergence-summary` and `0069-target-surface-convergence` | merge into one snapshot |
 | `0073-target-surface-delta-manifest` and `0074-target-surface-delta-summary` | merge into one snapshot |
 
-### 6. Gate framework
+### 7. Gate framework
 
 The framework is not retired. Its 10,116 lines are reviewed only for nodes left
 without an implementation after steps 1 and 2, and for test files that assert
@@ -185,7 +201,7 @@ the removed nodes. No orchestration redesign is in scope.
 
 ## Acceptance Contract
 
-1. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0.
+1. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0, including `test_reverse_transition_without_override_is_blocked`.
 2. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0.
 3. `python3 scripts/validation/check-script-manifest.py` exits 0 with no entry naming a removed module.
 4. `python3 -m pytest tests` passes with no test referencing a removed module.
