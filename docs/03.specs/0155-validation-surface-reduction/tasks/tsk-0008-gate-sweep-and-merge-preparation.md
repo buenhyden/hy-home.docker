@@ -54,7 +54,30 @@ predates Task 2's measurement of the endpoint rule and cannot be followed
 without an override that is itself unreachable. The plan is wrong here and the
 rule is right.
 
-**Four acceptance items are not met, measured.**
+**Four acceptance items were assessed as unmet; measurement changed three of
+them.** The first assessment is kept below because the corrections are the
+point. Items 5 and 13 were then worked to completion, item 7 was found already
+met, and item 6 remains corrected rather than satisfied.
+
+| Item | First assessment | After measurement |
+| :--- | :--- | :--- |
+| 5 | Not met, routed to SPEC-0157 | **Met in the sense the plan intended.** `f259c139` is load-bearing: it is the lookup point for 220 deleted change packets' own `archived_commit` values, 27 distinct commits, and the recovery commit itself for the 14 that carried no tuple. Removing it from code would delete the recovery record for 234 documents. The normative pin was removed from `docs/98.archive/README.md`, which is what the plan required; Stage 98 now holds no commit literal. |
+| 6 | Item is wrong as written | Unchanged. Nine of ten occurrences are absence assertions and pinned history reads. |
+| 7 | Not met, still advisory | **Already met, and the first assessment was wrong.** `--mode check-active` selects 421 documents in blocking mode and reports zero violations, and `ci_gate_runner.py:570` runs it for the local, push-initial, and workflow-dispatch contexts. The claim that it was advisory came from reading a rendered documentation string instead of measuring the modes. |
+| 13 | Not met, routed to SPEC-0157 | **Met.** The mechanism was unsatisfiable twice: `evidence_task` required `docs/03.specs/spec-<slug>/task.md`, a shape with zero instances here against fifteen in the co-located form, and `allowed_statuses` is a legacy-profile key that registry-built profiles do not carry, so the set was empty and every status was "unknown". Both are corrected against tests written RED first. |
+
+**What item 13's repair exposed.** `test_document_metadata.py`, at 8,426 lines
+the largest test file in the repository, runs the checker against a profile blob
+resurrected from a pinned commit through `HistoricalDocument`. That blob knows
+only the retired `spec-####-<slug>/task.md` taxonomy. This is the same
+pinned-commit pattern SPEC-0155 Task 4 removed from `load_profiles`, still
+present in the test harness, and it is why the override's path contract named a
+retired shape: the validator was matching the harness rather than the corpus.
+The affected case now proves the rejection half against its own harness, and
+acceptance is proven against the live registry. Migrating the harness is
+SPEC-0157's.
+
+**The first assessment, kept as written.**
 
 | Item | Requirement | Measured | Disposition |
 | :--- | :--- | :--- | :--- |

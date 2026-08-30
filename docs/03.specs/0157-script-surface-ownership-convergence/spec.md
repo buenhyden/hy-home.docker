@@ -198,9 +198,10 @@ measured, not assumed:
 
 | SPEC-0155 item | State at its close | Where it lands here |
 | :--- | :--- | :--- |
-| 5, no `f259c139` in `docs/` | One normative pin in `docs/98.archive/README.md`, paired with `TASK10_BASELINE_COMMIT` in `archive.py` | Acceptance 7 and 8 |
-| 7, full inventory blocking | Advisory, reporting zero findings; the guard it named was already gone | Behavior Contract, decided with the mode reduction |
-| 13, transition override wiring | Unreachable: no gate node or workflow passes `--transition-override-file` | Retired or wired, with the reason recorded |
+| 5, no `f259c139` in `docs/` | Closed. The normative pin is gone from Stage 98; the constant stays in `archive.py` because it is the lookup point for 234 documents' recovery records | Only as data for the reduction, never as a deletion target |
+| 7, full inventory blocking | Closed. `--mode check-active` already blocks 421 documents at zero violations | Nothing inherited |
+| 13, transition override wiring | Path contract and status set corrected; still unreachable, since no gate passes `--transition-override-file` | Retired or wired, with the reason recorded |
+| Test harness on resurrected profiles | `test_document_metadata.py` runs the checker against a profile blob read from a pinned commit, knowing only the retired taxonomy | The fixture work in Acceptance 9 and the monolith split |
 
 SPEC-0155 acceptance item 6 was corrected rather than inherited: it demanded that
 `docs/04.execution` not appear in `scripts/`, and nine of its ten occurrences are
