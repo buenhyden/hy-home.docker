@@ -48,10 +48,11 @@ authority surface; it does not add a validator, a fixture, or a gate node.
 | `roles/` documents without `agent_id`           | 8                   |
 | Stage 98 migrations with an invalid status      | 2 of 3              |
 | Renderer outputs missing from `generated_roots` | 5                   |
-| Metadata full-inventory enforcement state | advisory |
+| Metadata full-inventory enforcement state | advisory, guarded by a `ProfileError` |
 | Records with metadata findings | 13 of 595 |
 | Profiles registering a `Related Documents` section | 8 of 24 |
 | Documents carrying that section in practice | 499 of 599 |
+| Stage roots outside the link gate | `00`, `90`, `98` |
 
 **In scope.** `docs/00.agent-governance/`, `docs/99.templates/registry.json`,
 `docs/00.agent-governance/providers/registry.yaml`, `docs/README.md`,
@@ -60,7 +61,9 @@ residue inside active Stage 03 Specs, the generated provider projections under
 `.agents/`, `.claude/`, and `.codex/`, and the selection scope of
 `scripts/validation/check-document-links.py`.
 
-**Out of scope.** Validator and test volume reduction (SPEC-0155), the Compose
+**Out of scope.** Validator internals, including the taxonomy-wave enforcement
+state and the `docs/04.execution` literals pinned inside
+`metadata_validator.py`, and validator and test volume reduction (SPEC-0155); the Compose
 enablement model and `infra/` domain alignment (SPEC-0156), and every runtime
 asset under `infra/`, `projects/`, `examples/`, and `secrets/`.
 
@@ -93,20 +96,44 @@ asset under `infra/`, `projects/`, `examples/`, and `secrets/`.
 Delete the contradicting statement rather than reconcile it, per the workspace
 rule that prior content yields to current authority.
 
-| Change                                                                                                                                            | Location                                                     |
-| :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------- |
-| Drop `PRD, SRS, Interface Requirement` and name only registry-defined profiles                                                                    | `policies/standards.md`                                      |
-| Move the QA verification matrix, generated-artifact freshness rule, and local QA/CI orchestration into the quality policy, then delete the source | `roles/qa.md` to `policies/quality-standards.md`             |
-| Move the approved runtime mutation protocol into the environment policy, then delete the source                                                   | `roles/infra.md` to `policies/environment-constraints.md`    |
-| Move the approved secrets work protocol into the environment policy, then delete the source                                                       | `roles/security.md` to `policies/environment-constraints.md` |
-| Delete outright; no unique normative content                                                                                                      | `roles/{common,agentic,architecture,docs,ops}.md`            |
-| Delete every `File Ownership SSOT` table and every `Subagent Bridge` `@import` block                                                              | the eight layer documents                                    |
-| Keep one statement of the thin-root-shim rule                                                                                                     | `policies/bootstrap.md` only                                 |
+Two removals apply to all eight layer documents without triage:
 
-The `File Ownership SSOT` tables are the source of the permission contradiction:
-they assign `docs/03.specs/` and `.pre-commit-config.yaml` ownership to
-`code-reviewer`, whose canonical role is read-only. The `@import` blocks describe
-a mechanism that neither provider implements.
+- Every `File Ownership SSOT` table. These are the source of the permission
+  contradiction: `roles/common.md` assigns `docs/03.specs/` and
+  `.pre-commit-config.yaml` ownership to `code-reviewer`, whose canonical role
+  is read-only, and `roles/security.md` lists the same hardening script twice
+  in two rows.
+- Every `Subagent Bridge` block. They instruct an `@import` of a role document
+  into an agent preamble, a mechanism neither provider implements.
+
+The remaining content is triaged section by section. A full read shows the
+earlier reading of these files was wrong: six of the eight carry normative
+content that no other document states, so none of them can be deleted as
+boilerplate.
+
+| Document | Unique normative content | Destination |
+| :--- | :--- | :--- |
+| `roles/qa.md` | coverage floor and applicability, the local-versus-remote execution boundary, the CI-only pre-commit contract, anti-duplication, the change-type verification matrix, generated-artifact freshness, local QA/CI orchestration | `policies/quality-standards.md` |
+| `roles/infra.md` | `infra_net` and exposure rule, volume naming convention, `no-new-privileges` and Docker Secrets requirement, container-build review criteria, Compose review criteria, approved runtime mutation protocol, `docker system prune` consent rule | `policies/environment-constraints.md` |
+| `roles/security.md` | identity and secrets constraints, container and network hardening criteria, approved secrets work protocol | `policies/environment-constraints.md` and `policies/quality-standards.md` section 2 |
+| `roles/ops.md` | mandatory postmortem for SEV1 and SEV2 | `policies/quality-standards.md` |
+| `roles/docs.md` | `doc-writer` edit permission, read-only default for other roles, `rules-engineer` review for policy change | `policies/approval-boundaries.md` |
+| `roles/agentic.md` | none; duplicates `policies/agentic.md`, `bootstrap.md`, and `task-checklists.md`, and its blanket language rule conflicts with the role-based routing in `documentation-protocol.md` | delete |
+| `roles/architecture.md` | none applicable; asserts gRPC service-to-service calls, a Gateway REST/GraphQL split, Saga and Event Sourcing patterns, quarterly reviews, and Backend/Frontend/Mobile layers that this repository does not have, and names a stale stage range | delete |
+| `roles/common.md` | none applicable; `camelCase`, `PascalCase`, and JSDoc conventions for a repository whose code is Python, Bash, YAML, and Markdown; its pre-commit prohibition is already stated in `policies/workflows.md` and `roles/qa.md` | delete |
+
+Claims that no runbook or script supports are removed rather than moved, and
+each removal is named in the Task. `roles/ops.md` asserts verified daily
+off-site backups and periodic disaster-recovery drills; `roles/infra.md` asserts
+a gateway `LATENCY_SLO < 200ms` and automated backup tags. None of these has a
+registered check or an operations runbook, so each is deleted as an unverified
+claim, not relocated as policy.
+
+Finally, keep one statement of the thin-root-shim rule in
+`policies/bootstrap.md` and remove its restatements from `policies/standards.md`
+and `policies/environment-constraints.md`, and drop
+`PRD, SRS, Interface Requirement` from `policies/standards.md` in favour of
+profile names the Stage 99 registry defines.
 
 ### 2. Role and skill canonicalization
 
@@ -183,18 +210,30 @@ repaired.
 
 ### 5. Gate scope correction
 
-Widen the document selection in `scripts/validation/check-document-links.py` to
-the full tracked Markdown corpus and exempt `superseded` documents, whose links
-record an observation rather than a current route.
+`scripts/validation/check-document-links.py` selects documents from a
+`DOC_ROOTS` tuple naming only `docs/01.requirements`, `docs/02.architecture`,
+`docs/03.specs`, and `docs/05.operations`, plus eight hand-listed `SUPPORT_DOCS`
+paths. `docs/00.agent-governance`, `docs/90.references`, and `docs/98.archive`
+are outside it, which is why 798 of the 817 dead links are invisible to the
+gate. Replace the tuple and the hand-listed support paths with the full tracked
+Markdown corpus, and exempt `superseded` documents, whose links record an
+observation rather than a current route.
 
-Once workstreams 1 through 4 leave the corpus clean, change the enforcement
-state of the `check-document-metadata.py` full inventory from advisory to
-blocking. Advisory mode is what allowed two invalid statuses to persist while
-being reported on every run; with the corpus clean there is nothing left to
-grandfather, and a new violation must fail rather than accumulate.
+`SUPPORT_DOCS` names `docs/00.agent-governance/roles/qa.md`, which workstream 1
+removes, so this change must land after workstream 1 or the gate breaks.
 
-Both changes are selection and enforcement settings on existing validators.
-Neither adds a gate node, a fixture, or a test file.
+The advisory-to-blocking flip for the metadata full inventory is **not** in this
+Spec. `scripts/lib/document_governance/metadata_validator.py` raises
+`ProfileError("sdlc-taxonomy-convergence remains advisory until corpus
+migration")` when the wave is not advisory, and pins a baseline commit beside
+it. Flipping it requires the corpus-migration completion judgement that
+SPEC-0155 owns. This Spec leaves the corpus with zero `invalid-status` records
+so that SPEC-0155 can flip it without grandfathering anything.
+
+The same module pins `planned_partitions` to `docs/04.execution/plans` and
+`docs/04.execution/tasks`, so the retired Stage 04 survives inside a validator
+as well as inside documents. That literal is recorded here and routed to
+SPEC-0155 for the same reason.
 
 ## Interfaces and Data
 
@@ -207,7 +246,7 @@ Neither adds a gate node, a fixture, or a test file.
 | `docs/00.agent-governance/providers/registry.yaml` `generated_roots` | five entries added                                                       |
 | Spec frontmatter                                                     | `completed` becomes a valid `status`; `superseded_by` used on retirement |
 | `scripts/validation/check-document-links.py`                         | selection scope widened, `superseded` exempted                           |
-| `check-document-metadata.py` enforcement state | full inventory moves from advisory to blocking |
+| `check-document-links.py` `DOC_ROOTS` and `SUPPORT_DOCS` | replaced by full tracked-corpus selection |
 
 No frontmatter field is added or removed. No new identity space is issued.
 
@@ -225,7 +264,7 @@ No frontmatter field is added or removed. No new identity space is issued.
 ## Acceptance Contract
 
 1. `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` exits 0.
-2. `python3 scripts/validation/check-document-metadata.py` exits 0, reports zero `invalid-status` records, and runs its full inventory in blocking mode.
+2. `python3 scripts/validation/check-document-metadata.py` exits 0 and reports zero `invalid-status` records.
 3. `python3 scripts/validation/check-document-links.py --mode all` reads the full tracked Markdown corpus and reports zero failures.
 4. `bash scripts/operations/sync-provider-surfaces.sh` followed by `git diff --exit-code` produces no diff.
 5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0.

@@ -61,6 +61,8 @@ retires and show that no registered profile depends on it.
 | Status of those two documents | invalid `archived`, corrected by SPEC-0154 |
 | Design already superseded | `target_surface_delta_contract.py` validates the surface "without branch/SHA snapshots" |
 | Normative document pinning a commit literal | `docs/98.archive/README.md` |
+| Metadata advisory state guarded by a `ProfileError` | `metadata_validator.py` |
+| `docs/04.execution` literals pinned inside a validator | `metadata_validator.py` `planned_partitions` |
 
 **In scope.** `scripts/validation/`, `scripts/lib/document_governance/`,
 `tests/`, `scripts/manifest.yaml`, the generated evidence snapshots under
@@ -127,7 +129,22 @@ and validates nothing else. Remove the commit literal from
 `docs/98.archive/README.md` and state the recovery procedure in terms of the
 frontmatter tuple the tombstone itself carries.
 
-### 4. Generated evidence deduplication
+### 4. Taxonomy-wave enforcement and Stage 04 literals
+
+`metadata_validator.py` raises
+`ProfileError("sdlc-taxonomy-convergence remains advisory until corpus
+migration")` and pins `planned_partitions` to `docs/04.execution/plans` and
+`docs/04.execution/tasks`. Both are corpus-migration artefacts, which is why
+SPEC-0154 routes them here rather than editing a guarded invariant from a
+documentation change.
+
+Once SPEC-0154 leaves the corpus with zero `invalid-status` records, decide the
+migration complete, remove the advisory guard so the full inventory blocks, and
+replace the Stage 04 partition literals with the co-located Spec Package paths
+that replaced them. Record the completion judgement and its evidence in the
+Task.
+
+### 5. Generated evidence deduplication
 
 Merge the three summary and detail pairs that publish the same measurement, and
 add `generated_by` to every snapshot a generator writes.
@@ -138,7 +155,7 @@ add `generated_by` to every snapshot a generator writes.
 | `0068-target-surface-convergence-summary` and `0069-target-surface-convergence` | merge into one snapshot |
 | `0073-target-surface-delta-manifest` and `0074-target-surface-delta-summary` | merge into one snapshot |
 
-### 5. Gate framework
+### 6. Gate framework
 
 The framework is not retired. Its 10,116 lines are reviewed only for nodes left
 without an implementation after steps 1 and 2, and for test files that assert
@@ -154,6 +171,7 @@ the removed nodes. No orchestration redesign is in scope.
 | `scripts/lib/document_governance/` | three provenance modules collapse to one |
 | `docs/90.references/data/` | three snapshot pairs merge; `generated_by` added |
 | `docs/98.archive/README.md` | commit literal replaced by a tuple-based procedure |
+| `scripts/lib/document_governance/metadata_validator.py` | advisory guard removed; `planned_partitions` Stage 04 literals replaced |
 
 ## Failure Modes and Guardrails
 
@@ -172,9 +190,11 @@ the removed nodes. No orchestration redesign is in scope.
 3. `python3 scripts/validation/check-script-manifest.py` exits 0 with no entry naming a removed module.
 4. `python3 -m pytest tests` passes with no test referencing a removed module.
 5. `grep -rn "f259c139" docs` returns no match.
-6. Every file under `docs/90.references/data/` that a generator writes carries `generated_by`.
-7. The Task records, for each retired module, the guarantee retired and the evidence that no live document depends on it.
-8. Measured `scripts` plus `tests` line count is recorded before and after.
+6. `grep -rn "04.execution" scripts` returns no match.
+7. `python3 scripts/validation/check-document-metadata.py` runs its full inventory in blocking mode and exits 0.
+8. Every file under `docs/90.references/data/` that a generator writes carries `generated_by`.
+9. The Task records, for each retired module, the guarantee retired and the evidence that no live document depends on it.
+10. Measured `scripts` plus `tests` line count is recorded before and after.
 
 ## Traceability
 
