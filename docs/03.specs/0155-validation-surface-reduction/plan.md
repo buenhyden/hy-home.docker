@@ -891,7 +891,15 @@ satisfies item 8; Task 8 satisfies items 4 and 10.
 6. **A gate node is removed before its module.** A profile pointing at an
    absent implementation fails in a way that hides whatever came next, which is
    the failure mode Task 1 spends three defects untangling.
-7. **The old content yields.** Where a retired gate, predicate, or literal
+7. **Generated snapshots are regenerated after staging, never before.**
+   `generate-llm-wiki.py` reads the files Git tracks, so a document written but
+   not yet staged is absent from the index it writes, and the same document is
+   present the moment it is committed. Every Task ends
+   `git add -A`, then `generate-llm-wiki.py --write`, then `git add -A`, then
+   commit. Regenerating before staging produces a snapshot that the freshness
+   gate rejects on the very next run.
+
+8. **The old content yields.** Where a retired gate, predicate, or literal
    conflicts with the current corpus, the gate is retired rather than the
    corpus reshaped to satisfy it.
 
