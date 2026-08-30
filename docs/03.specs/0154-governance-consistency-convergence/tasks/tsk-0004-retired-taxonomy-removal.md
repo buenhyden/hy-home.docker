@@ -115,7 +115,13 @@ Plan rulings 1 to 5 apply. Four execution rulings were made.
 3. **A target that is gone is delinked, not repointed.** The label survives and
    the retired path is stated inline, so the record keeps what was referenced
    without asserting a live route.
-4. **The research packs are out of scope.** `research/0001-*` and `0002-*` are
+4. **Stage 98 navigation was corrected; Stage 98 history was not.** The Task
+   stated that Stage 98 does not change. Two `Related Documents` routes in
+   `migrations/0001` and `0002` were repointed from
+   `03.specs/spec-0136-.../spec.md` to `03.specs/0136-.../spec.md`. That is the
+   same document at its current path, and the migration ledgers' `records:`
+   blocks are untouched. Recorded because the statement and the diff differ.
+5. **The research packs are out of scope.** `research/0001-*` and `0002-*` are
    the subject of SPEC-0137's undecided deletion, which SPEC-0155 owns. Editing
    their links here would prejudge that disposition.
 

@@ -51,7 +51,7 @@ _EXPECTED_PROFILES = {
         "docs/03.specs/{number:4}-{slug}/spec.md",
         "SPEC-{number:4}",
         "direct",
-        "living",
+        "spec-package",
     ),
     "plan": (
         "docs/03.specs/{package_number:4}-{slug}/plan.md",
