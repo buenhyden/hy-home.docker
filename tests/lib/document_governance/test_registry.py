@@ -33,6 +33,7 @@ from scripts.lib.document_governance.metadata_validator import (
     validate_body_contract,
     validate_record,
 )
+from scripts.lib.document_governance import metadata_validator
 from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
@@ -1330,3 +1331,54 @@ class InvalidPreviousStatusTests(unittest.TestCase):
 
     def test_repair_must_land_on_a_defined_status(self) -> None:
         self.assertIn("invalid-transition", self._codes("archived", "archived-too"))
+
+
+class ResurrectedMigrationContractTests(unittest.TestCase):
+    """A completed migration's contract is not resurrected on every load.
+
+    `DEFAULT_MIGRATION_CONTRACT` was a `HistoricalDocument`, not a path: every
+    `load_profiles()` read `docs/99.templates/support/document-corpus-migration-contract.yaml`
+    out of the pinned commit `49406580` and validated its 384-line shape,
+    including eight named migration waves whose source document, SPEC-0153, was
+    deleted. The file is absent from the working tree. The only caller that
+    consumed the result, `load_promoted_transition_witnesses`, returned `{}` on
+    every CLI route because the profiles the CLI builds always carry
+    `_registry`; the other caller discarded the value.
+    """
+
+    def test_the_migration_contract_loader_is_gone(self) -> None:
+        for name in (
+            "load_migration_contract",
+            "DEFAULT_MIGRATION_CONTRACT",
+            "SDLC_TAXONOMY_BASELINE",
+            "SDLC_TAXONOMY_MANIFEST_PATH",
+            "SDLC_TAXONOMY_SOURCE_ROOTS",
+            "load_promoted_transition_witnesses",
+            "PromotedTransitionWitness",
+        ):
+            with self.subTest(name=name):
+                self.assertFalse(
+                    hasattr(metadata_validator, name),
+                    f"{name} still resurrects a completed migration's contract",
+                )
+
+    def test_no_stage_04_route_is_pinned_in_the_validator(self) -> None:
+        source = pathlib.Path(
+            metadata_validator.__file__
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("docs/04.execution", source)
+
+    def test_profiles_still_load_without_the_resurrected_contract(self) -> None:
+        """`load_profiles()` no longer takes a contract path and still works.
+
+        It used to accept `migration_contract_path` and call the loader purely
+        for its side effect, discarding the result, so every profile load in
+        the repository paid for a Git read of a deleted file.
+        """
+
+        import inspect
+
+        signature = inspect.signature(metadata_validator.load_profiles)
+        self.assertNotIn("migration_contract_path", signature.parameters)
+        profiles = metadata_validator.load_profiles()
+        self.assertIn("governance-policy", profiles)

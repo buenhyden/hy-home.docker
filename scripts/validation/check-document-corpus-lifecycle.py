@@ -1582,10 +1582,56 @@ def _as_path_tuple(value: object, label: str) -> tuple[pathlib.PurePosixPath, ..
     return tuple(pathlib.PurePosixPath(item) for item in values)
 
 
-def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
-    """Load the contract through the canonical metadata validator."""
 
-    return metadata.load_migration_contract(path)
+@dataclasses.dataclass(frozen=True)
+class PromotedTransitionWitness:
+    """One migration-wave promotion record, read only by the modes below.
+
+    This lived in `metadata_validator` and was consumed there by a loader that
+    returned `{}` on every route the CLI takes, because the profiles the CLI
+    builds always carry `_registry`. It is defined here, in its only remaining
+    consumer, rather than charged to every profile load in the repository.
+    """
+
+    wave: str
+    baseline_commit: str
+    promotion_evidence_valid: bool
+    enforcement: str
+    path: pathlib.Path
+    target_path: pathlib.Path
+    artifact_id: str
+    artifact_type: str
+    parent_ids: tuple[str, ...]
+    status_before: str
+    status_after: str
+    disposition: str
+    specification_review: str
+    quality_review: str
+
+
+TARGET_SURFACE_PROMOTION_EVIDENCE = {
+    "review_base_commit": "32c40e11747bc0bd03789c24861d2e5d60c0e999",
+    "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
+    "specification_review": "pass-c0-i0-m0",
+    "quality_review": "approved-c0-i0-m0",
+    "controlled_wrapper": "pass",
+}
+
+def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
+    """Read the completed migration's contract for its data, not its shape.
+
+    The file this resolves is absent from the working tree; it is recovered
+    from a pinned commit. The 384-line shape assertion that used to guard it
+    required a deleted Spec Package's eight named waves to be present in a
+    deleted YAML, which is policy about a migration that finished. The modes
+    below still read its rows, so the data is loaded and the frozen shape is
+    not enforced.
+    """
+
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise ProfileError("migration contract must be a mapping")
+    return loaded
 
 
 def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
@@ -2033,7 +2079,7 @@ def _manifest_profiles(
     if profiles is not None and isinstance(profiles.get("profiles"), dict):
         return profiles
     registry = metadata.load_registry(DEFAULT_PROFILES)
-    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES, HISTORICAL_CONTRACT)
+    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES)
     if not isinstance(legacy, dict):
         raise ProfileError("legacy migration profiles require a mapping envelope")
     return metadata.build_registry_transition_profiles(registry, legacy)
@@ -3110,13 +3156,13 @@ def _surface_result_state_findings(
         )
     waves = contract.get("waves")
     wave = waves.get(document.wave) if isinstance(waves, dict) else None
-    promoted_witness = metadata.PromotedTransitionWitness(
+    promoted_witness = PromotedTransitionWitness(
         wave=document.wave,
         baseline_commit=document.baseline_commit,
         promotion_evidence_valid=(
             isinstance(wave, dict)
             and wave.get("promotion_evidence")
-            == metadata.TARGET_SURFACE_PROMOTION_EVIDENCE
+            == TARGET_SURFACE_PROMOTION_EVIDENCE
         ),
         enforcement=document.enforcement,
         path=source,
@@ -5990,10 +6036,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             # bounded translation input until Task 3 moves the corpus records.
             profiles = metadata.build_registry_transition_profiles(
                 registry,
-                metadata.load_profiles(
-                    LEGACY_MIGRATION_PROFILES,
-                    contract_path,
-                ),
+                metadata.load_profiles(LEGACY_MIGRATION_PROFILES),
             )
         else:
             profiles = metadata.load_profiles(profiles_path, contract_path)
