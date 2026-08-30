@@ -378,7 +378,7 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": [{"kind": "free-form-sections"}]
+      "exceptions": []
     },
     {
       "profile_id": "governance-hook-policy",
@@ -393,7 +393,7 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": [{"kind": "free-form-sections"}]
+      "exceptions": []
     },
     {
       "profile_id": "governance-role",
