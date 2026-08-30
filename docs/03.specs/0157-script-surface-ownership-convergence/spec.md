@@ -197,8 +197,11 @@ that is both smaller and covered.
 4. Test modules on disk and test modules run by `--profile full` are the same set.
 5. The eight currently failing unregistered modules each pass or are removed with a recorded reason.
 6. `check-document-corpus-lifecycle.py` exposes exactly four modes, all registered.
-7. `provenance_policy.py`, `TASK10_BASELINE_COMMIT`, and `APPROVED_BASELINE_RECOVERY_PATHS` no longer exist.
-8. `docs/98.archive/README.md` states the recovery procedure without pinning a commit.
+7. `provenance_policy.py` no longer exists. `TASK10_BASELINE_COMMIT` and
+   `APPROVED_BASELINE_RECOVERY_PATHS` stay: SPEC-0155 measured that commit as the
+   lookup point for 234 deleted documents' recovery records, so removing it would
+   delete a live guarantee rather than dead SHA tracking.
+8. `docs/98.archive/README.md` states the recovery procedure without pinning a commit. Closed by SPEC-0155; this item guards against regression.
 9. Adding one tombstone changes no count literal in `scripts/` or `tests/`, and no test name contains a count.
 10. The identity scan's cost does not grow with repository history, and `MAX_GIT_OUTPUT_BYTES` is not a stopgap.
 11. No test module resurrects a deleted document from a pinned commit; `HistoricalDocument` has no caller under `tests/`.

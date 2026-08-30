@@ -358,6 +358,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md) | Markdown reference |
 | [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0157-script-surface-ownership-convergence/plan.md](../../../03.specs/0157-script-surface-ownership-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0157-script-surface-ownership-convergence/spec.md](../../../03.specs/0157-script-surface-ownership-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
