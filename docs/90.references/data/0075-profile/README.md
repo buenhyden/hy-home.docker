@@ -148,7 +148,7 @@ disposition settles.
 - **HADS Category README**: [README.md](README.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/policies/documentation-protocol.md)
 - **Template Catalog**: [../../99.templates/README.md](../../../99.templates/README.md)
-- **Repo Contract Checker**: [../../../scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh)
+- **Repo Contract Checker**: ../../../scripts/validation/check-repo-contracts.sh (retired path: `scripts/validation/check-repo-contracts.sh`)
 
 ## Schema
 

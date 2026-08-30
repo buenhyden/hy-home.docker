@@ -150,7 +150,7 @@ Post-batch path evidence:
 
 ## Sources
 
-- [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Defines operations bucket restructure scope.
+- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md) - Defines operations bucket restructure scope.
 - [Operations guide template](../../99.templates/templates/operations/guide.template.md) - Defines guide role.
 - [Operations policy template](../../99.templates/templates/operations/policy.template.md) - Defines policy role.
 - [Operations runbook template](../../99.templates/templates/operations/runbook.template.md) - Defines runbook role.

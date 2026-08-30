@@ -106,7 +106,7 @@ requirements.
 
 - `Loop research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf)
 - [Agent-output fixtures](../../data/0064-agent-output-eval-fixtures/README.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
 - [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 - Task evidence
 

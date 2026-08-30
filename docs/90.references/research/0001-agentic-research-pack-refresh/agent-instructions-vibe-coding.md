@@ -194,7 +194,7 @@ be used in this workspace, and each names the file that actually decides.
 - [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/8ef49232e02431f7ca4792b487e5a85a7939ff3a) - immutable upstream catalog tree supporting the reference-only intake and pin/review boundary
 - [Agent-first rule](../../../00.agent-governance/policies/agentic.md) - current workspace authority, evidence, and lifecycle behavior
 - [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md) - current protected actions and escalation boundary
-- [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved instruction/vibe and task-evidence constraints
+- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md) - approved instruction/vibe and task-evidence constraints
 
 ## Maintenance
 

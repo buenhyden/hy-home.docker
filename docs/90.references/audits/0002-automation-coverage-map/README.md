@@ -206,9 +206,9 @@ not a validator specification, and not a replacement for `.github/workflows/`,
 - [Pre-commit configuration](../../../../.pre-commit-config.yaml) - Formatting, linting, secret scanning, and local project hooks.
 - [Gitleaks configuration](../../../../.gitleaks.toml) - Secret-scanning defaults.
 - [Scripts README](../../../../scripts/README.md) - Canonical script inventory and lifecycle rules.
-- [Repository contract validator](../../../scripts/validation/check-repo-contracts.sh) - Repository, workflow, script, LLM Wiki, provider, and infra contract gate.
+- Repository contract validator (retired path: `scripts/validation/check-repo-contracts.sh`) - Repository, workflow, script, LLM Wiki, provider, and infra contract gate.
 - [Local QA gate runner](../../../../scripts/validation/run-local-qa-gates.sh) - Local/CI/remote responsibility split.
-- [LLM Wiki index generator](../../../scripts/knowledge/generate-llm-wiki-index.sh) - Generated index write/check behavior.
+- LLM Wiki index generator (retired path: `scripts/knowledge/generate-llm-wiki-index.sh`) - Generated index write/check behavior.
 - [Provider surface sync](../../../../scripts/operations/sync-provider-surfaces.sh) - Provider adapter verify/write behavior.
 - [Tech-stack version sync](../../../../scripts/operations/sync-tech-stack-versions.sh) - Curated registry sync and check behavior.
 - [Secret generation utility](../../../../scripts/operations/gen-secrets.sh) - Manual secret-safe modes and value-reading boundary.

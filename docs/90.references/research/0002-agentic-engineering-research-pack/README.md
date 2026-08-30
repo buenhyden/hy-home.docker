@@ -338,7 +338,7 @@ entitlement gaps are not promoted.
 ## Related Documents
 
 - [Research references](../README.md)
-- [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
+- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
 - [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
 - [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)

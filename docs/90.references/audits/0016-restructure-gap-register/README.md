@@ -157,7 +157,7 @@ corpus.
 ## Related Documents
 
 - [Document restructure audit references](ref-0012-readme.md)
-- [Document restructure design spec](../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md)
+- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md)
 - Document restructure implementation plan
 - Document restructure task evidence
 

@@ -564,7 +564,7 @@ below so a topic-first reader encounters all fourteen scopes.
 
 | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)                                | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access.                                                                                                                                       |
+| [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)                                | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access.                                                                                                                                       |
 | [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
 | [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
 | [Provider-model contract](../../../00.agent-governance/contracts/provider-models.yaml)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
@@ -617,7 +617,7 @@ unit.
 
 - [Scope application matrix](./scope-application-matrix.md)
 - [Verification and validation](./verification-validation.md)
-- [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
+- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
 - [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
 - [Agent governance hub](../../../00.agent-governance/README.md)

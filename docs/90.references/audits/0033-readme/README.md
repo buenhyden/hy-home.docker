@@ -91,7 +91,7 @@ roadmap, or Implemented/Partial labels as current evidence.
 
 - [Canonical implementation audit](ref-0019-readme.md)
 - [Audit references](README.md)
-- [Spec 123](../../03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md)
+- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective
 

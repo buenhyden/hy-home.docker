@@ -375,4 +375,4 @@ above. None is authorized by this reference; each needs its own approved task.
 - [workspace baseline](./workspace-baseline.md)
 - [security governance](./security-governance.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
-- [HAFE spec](../../../03.specs/094-harness-agent-first-engineering/spec.md)
+- [HAFE spec](../../../03.specs/0094-harness-agent-first-engineering/spec.md)

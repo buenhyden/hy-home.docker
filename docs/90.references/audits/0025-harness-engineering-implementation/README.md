@@ -116,8 +116,8 @@ introduced here.
 
 - `Harness research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf)
 - `Provider comparison research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
-- [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- Harness implementation map (retired path: `00.agent-governance/harness-implementation-map.md`)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
 - [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 
 ## Maintenance

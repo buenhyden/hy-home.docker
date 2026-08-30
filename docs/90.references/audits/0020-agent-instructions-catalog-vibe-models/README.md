@@ -172,8 +172,8 @@ nothing.
 - `Pinned catalog research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `ai-agent-catalogs` leaf)
 - `Model-selection research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `agent-model-selection` leaf)
 - `Provider landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
-- [Agent catalog](../../00.agent-governance/agents/README.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- Agent catalog (retired path: `00.agent-governance/agents/README.md`)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
 - [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
 
 ## Maintenance

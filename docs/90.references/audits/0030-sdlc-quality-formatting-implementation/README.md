@@ -117,7 +117,7 @@ than current evidence. No remote setting was changed.
 | Docker Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [infra README](../../../../infra/README.md) | Default and all-profile validation are in CI; local validation script exists. |
 | Infrastructure hardening | Implemented | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml` | Hardening baseline is a CI gate and local script. |
 | Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
-| CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, [release runbook](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; current authenticated remote environment state is unknown. |
+| CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, release runbook (retired path: `05.operations/00-workspace/ops-0009-release-management/runbook.md`) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; current authenticated remote environment state is unknown. |
 
 ## Findings
 

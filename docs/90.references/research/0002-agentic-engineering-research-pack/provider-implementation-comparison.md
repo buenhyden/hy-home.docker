@@ -337,5 +337,5 @@ provider limitations.
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
-- [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
+- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)

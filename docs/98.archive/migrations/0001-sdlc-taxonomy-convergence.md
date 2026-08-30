@@ -5652,6 +5652,6 @@ records:
 
 ## Related Documents
 
-- [Approved specification](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)
-- [Approved plan](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md)
+- [Approved specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
+- [Approved plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)

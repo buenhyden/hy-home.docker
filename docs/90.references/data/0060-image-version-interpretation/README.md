@@ -60,7 +60,7 @@ This reference provides stable context for interpreting Docker image drift, floa
 - [Docker reference category](README.md) - Docker reference category role and working rules
 - [tech stack versions](../../../../infra/tech-stack.versions.json) - tracked registry for important Docker images
 - [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json) - tracked floating tag exception registry
-- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - repository contract validation for Docker image/tag policy and version drift
+- repo contract checker (retired path: `scripts/validation/check-repo-contracts.sh`) - repository contract validation for Docker image/tag policy and version drift
 
 ## Maintenance
 

@@ -122,7 +122,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/skills/adr-writing.md](../../../00.agent-governance/skills/adr-writing.md) | Markdown reference |
 | [docs/00.agent-governance/skills/ci-cd-patterns.md](../../../00.agent-governance/skills/ci-cd-patterns.md) | Markdown reference |
 | [docs/00.agent-governance/skills/code-review-dimensions.md](../../../00.agent-governance/skills/code-review-dimensions.md) | Markdown reference |
-| [docs/00.agent-governance/skills/code-reviewer.md](../../../00.agent-governance/skills/code-reviewer.md) | Markdown reference |
+| docs/00.agent-governance/skills/code-reviewer.md (retired path: `00.agent-governance/skills/code-reviewer.md`) | Markdown reference |
 | [docs/00.agent-governance/skills/compose-stack-agent.md](../../../00.agent-governance/skills/compose-stack-agent.md) | Markdown reference |
 | [docs/00.agent-governance/skills/container-threat-modeling.md](../../../00.agent-governance/skills/container-threat-modeling.md) | Markdown reference |
 | [docs/00.agent-governance/skills/deployment-pipeline-design.md](../../../00.agent-governance/skills/deployment-pipeline-design.md) | Markdown reference |
@@ -140,7 +140,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/skills/security-audit.md](../../../00.agent-governance/skills/security-audit.md) | Markdown reference |
 | [docs/00.agent-governance/skills/style-validation.md](../../../00.agent-governance/skills/style-validation.md) | Markdown reference |
 | [docs/00.agent-governance/skills/task-breakdown-agent.md](../../../00.agent-governance/skills/task-breakdown-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/test-automator.md](../../../00.agent-governance/skills/test-automator.md) | Markdown reference |
+| docs/00.agent-governance/skills/test-automator.md (retired path: `00.agent-governance/skills/test-automator.md`) | Markdown reference |
 | [docs/00.agent-governance/skills/workspace-audit-revalidation.md](../../../00.agent-governance/skills/workspace-audit-revalidation.md) | Markdown reference |
 
 ### Runtime surfaces

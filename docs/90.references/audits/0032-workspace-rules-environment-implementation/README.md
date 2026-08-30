@@ -122,7 +122,7 @@ separate.
 - [Stage 00 governance hub](../../../00.agent-governance/README.md)
 - [Agentic rule](../../../00.agent-governance/policies/agentic.md)
 - [Task checklists](../../../00.agent-governance/policies/task-checklists.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
 - [`_workspace` contract](../../../../_workspace/README.md)
 - [`_workspace` repo-support contract](../../../../_workspace/repo-support/README.md)
 

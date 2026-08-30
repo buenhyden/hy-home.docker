@@ -516,5 +516,5 @@ maintainers with Infra/DevOps, Entry, Security, and Operations review.
 - [Automation pipeline and workflow](./automation-pipeline-workflow.md)
 - [Quality, CI, and formatting](./quality-ci-formatting.md)
 - [Data index](../../data/README.md)
-- [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
+- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
