@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -1137,3 +1138,195 @@ class DocumentRegistryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FreeFormProfileTests(unittest.TestCase):
+    """A profile with no shared heading vocabulary declares itself free-form.
+
+    `governance-policy` spans 16 documents with 51 distinct H2 headings, of
+    which only `Related Documents` appears in more than one. Registering the
+    other 50 would state a contract nothing shares; leaving them unregistered
+    makes every edit to any of those documents a violation while the corpus
+    itself passes, because only headings a change introduces are counted.
+    """
+
+    def _adapted(self):
+        return build_registry_transition_profiles(
+            load_registry(),
+            {
+                "common": {"typed_keys": [], "frontmatter_order": []},
+                "profiles": {},
+                "template_roles": {},
+                "document_families": {"sdlc": []},
+            },
+        )
+
+    def _codes(self, profile_id: str, path: str, headings: tuple[str, ...]):
+        record = Record(
+            path=pathlib.Path(path),
+            metadata={"profile_id": profile_id, "status": "active"},
+            artifact_type=profile_id,
+        )
+        body = "# Title\n\n" + "".join(f"## {h}\n\ncontent\n\n" for h in headings)
+        return {
+            finding.code
+            for finding in validate_body_contract(
+                record, body, self._adapted(), True
+            )
+        }
+
+    def test_free_form_profile_permits_an_unregistered_heading(self) -> None:
+        codes = self._codes(
+            "governance-policy",
+            "docs/00.agent-governance/policies/quality-standards.md",
+            ("Anything At All", "Related Documents"),
+        )
+        self.assertNotIn("body-heading-forbidden", codes)
+
+    def test_free_form_profile_still_requires_related_documents(self) -> None:
+        codes = self._codes(
+            "governance-policy",
+            "docs/00.agent-governance/policies/quality-standards.md",
+            ("Anything At All",),
+        )
+        self.assertIn("body-heading-missing", codes)
+
+    def test_a_contracted_profile_still_rejects_an_unregistered_heading(self) -> None:
+        codes = self._codes(
+            "governance-role",
+            "docs/00.agent-governance/roles/qa-engineer.md",
+            (
+                "Purpose",
+                "Use When",
+                "Inputs",
+                "Outputs",
+                "Permissions",
+                "Success Criteria",
+                "Failure and Escalation",
+                "Related Documents",
+                "Anything At All",
+            ),
+        )
+        self.assertIn("body-heading-forbidden", codes)
+
+    def test_every_governance_policy_document_satisfies_its_own_contract(self) -> None:
+        policies = sorted(
+            path
+            for path in (ROOT / "docs/00.agent-governance").rglob("*.md")
+            if re.search(
+                r"^profile_id:\s*governance-policy\s*$",
+                path.read_text(encoding="utf-8"),
+                re.M,
+            )
+        )
+        self.assertGreaterEqual(len(policies), 16)
+        adapted = self._adapted()
+        offenders: list[str] = []
+        for path in policies:
+            record = Record(
+                path=path.relative_to(ROOT),
+                metadata={"profile_id": "governance-policy", "status": "active"},
+                artifact_type="governance-policy",
+            )
+            findings = validate_body_contract(
+                record, path.read_text(encoding="utf-8"), adapted, True
+            )
+            offenders.extend(
+                f"{path.relative_to(ROOT)}: {finding.message}"
+                for finding in findings
+                if finding.code == "body-heading-forbidden"
+            )
+        self.assertEqual([], offenders)
+
+
+class ExecutionLifecycleTests(unittest.TestCase):
+    """A Task drafted and finished inside one change is the normal case.
+
+    `check-changed` compares the status at the merge base with the status at
+    HEAD. It does not walk the commits between them, so an intermediate
+    `active` commit is invisible to it: SPEC-0154's own spec.md passed through
+    draft, active, and completed in three commits and still reported
+    `draft -> completed`. Requiring `active` at the change boundary therefore
+    does not record that work was tracked; it forbids completing any document
+    that was drafted before the merge base, which is every Task an agent
+    writes and finishes in one branch.
+    """
+
+    def _transitions(self, profile_id: str) -> dict[str, list[str]]:
+        registry = load_registry()
+        return {
+            key: list(value)
+            for key, value in dict(registry.transitions[profile_id]).items()
+        }
+
+    def test_execution_lifecycle_completes_from_draft(self) -> None:
+        for profile_id in ("task", "plan"):
+            with self.subTest(profile_id=profile_id):
+                self.assertIn("completed", self._transitions(profile_id)["draft"])
+
+    def test_execution_lifecycle_keeps_active_reachable(self) -> None:
+        transitions = self._transitions("task")
+        self.assertIn("active", transitions["draft"])
+        self.assertIn("completed", transitions["active"])
+
+    def test_execution_lifecycle_still_refuses_to_reopen(self) -> None:
+        self.assertEqual([], self._transitions("task")["completed"])
+
+    def test_spec_package_lifecycle_stays_strict(self) -> None:
+        # A Spec Package is reviewed as `active` before it can complete. Only
+        # the Task lifecycle relaxes, because only a Task is routinely drafted
+        # and finished inside one change.
+        self.assertNotIn("completed", self._transitions("spec")["draft"])
+
+
+class InvalidPreviousStatusTests(unittest.TestCase):
+    """A status the lifecycle never defined is repaired, not transitioned.
+
+    `docs/98.archive/migrations/0001` and `0002` carried `archived`, which is
+    not a member of any lifecycle in the registry. The transition check reads
+    `transitions[previous_status]`, finds nothing, and demands an override for
+    every move out of that state. The override is unreachable twice over: its
+    `evidence_task` contract matches no path in this repository, and no gate
+    or workflow passes an override file at all. The effect is that an invalid
+    status is cheaper to keep than to correct.
+    """
+
+    def _profiles(self):
+        return build_registry_transition_profiles(
+            load_registry(),
+            {
+                "common": {"typed_keys": [], "frontmatter_order": []},
+                "profiles": {},
+                "template_roles": {},
+                "document_families": {"sdlc": []},
+            },
+        )
+
+    def _codes(self, previous_status: str, status: str) -> set[str]:
+        record = Record(
+            path=pathlib.Path("docs/98.archive/migrations/0001-fixture.md"),
+            metadata={
+                "profile_id": "migration",
+                "status": status,
+                "artifact_id": "MIG-0001",
+                "artifact_type": "migration",
+                "parent_ids": ["SPEC-0136"],
+                "created": "2026-08-29",
+                "updated": "2026-08-30",
+            },
+            artifact_type="migration",
+            previous_status=previous_status,
+        )
+        return {
+            finding.code
+            for finding in validate_record(record, self._profiles(), {})
+        }
+
+    def test_repair_from_an_undefined_status_is_not_a_transition(self) -> None:
+        self.assertNotIn("invalid-transition", self._codes("archived", "completed"))
+
+    def test_move_between_defined_statuses_still_follows_the_lifecycle(self) -> None:
+        self.assertIn("invalid-transition", self._codes("superseded", "completed"))
+
+    def test_repair_must_land_on_a_defined_status(self) -> None:
+        self.assertIn("invalid-transition", self._codes("archived", "archived-too"))

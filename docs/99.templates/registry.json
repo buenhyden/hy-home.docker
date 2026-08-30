@@ -374,6 +374,7 @@
       "template_id": null,
       "required_frontmatter": ["profile_id", "layer"],
       "optional_frontmatter": ["status", "runtime"],
+      "free_form_sections": true,
       "required_sections": ["Related Documents"],
       "optional_sections": [],
       "lifecycle_id": "living",
@@ -563,7 +564,7 @@
     },
     "execution": {
       "statuses": ["draft", "active", "blocked", "completed", "cancelled"],
-      "transitions": {"draft": ["active", "cancelled"], "active": ["blocked", "completed", "cancelled"], "blocked": ["active", "cancelled"], "completed": [], "cancelled": []}
+      "transitions": {"draft": ["active", "completed", "cancelled"], "active": ["blocked", "completed", "cancelled"], "blocked": ["active", "cancelled"], "completed": [], "cancelled": []}
     },
     "incident": {
       "statuses": ["open", "mitigated", "closed"],

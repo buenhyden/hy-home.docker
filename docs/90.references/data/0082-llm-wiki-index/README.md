@@ -350,6 +350,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0006-blocking-gate-reconciliation.md](../../../03.specs/0154-governance-consistency-convergence/tasks/tsk-0006-blocking-gate-reconciliation.md) | Markdown reference |
 | [docs/03.specs/0155-validation-surface-reduction/plan.md](../../../03.specs/0155-validation-surface-reduction/plan.md) | Markdown reference |
 | [docs/03.specs/0155-validation-surface-reduction/spec.md](../../../03.specs/0155-validation-surface-reduction/spec.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0001-full-gate-restoration.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0001-full-gate-restoration.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 

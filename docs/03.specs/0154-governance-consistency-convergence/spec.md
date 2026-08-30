@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: completed
+status: active
 artifact_id: SPEC-0154
 artifact_type: spec
 parent_ids: [REQ-0024, ADR-0027, ADR-0029]
@@ -278,11 +278,29 @@ No frontmatter field is added or removed. No new identity space is issued.
 
 ## Acceptance Contract
 
-This Spec Package closes at reduced scope. Items 5 and 11 are unmet and are
-transferred to SPEC-0155 by owner decision, with their mechanisms measured and
-recorded in [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md). The branch
-does not pass `run-ci-gate.py --profile full` or the blocking metadata mode at
-closure. Items 1 to 4 and 6 to 10 are met.
+This Spec Package closes at reduced scope. Items 5 and 11 were unmet at closure
+and transferred to SPEC-0155 by owner decision, with their mechanisms measured
+and recorded in [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md). Items
+1 to 4 and 6 to 10 are met.
+
+**Status, and why it is `active` rather than `completed`.** The `spec` profile
+follows the `spec-package` lifecycle, which requires `draft -> active ->
+completed`. `check-document-metadata.py --mode check-changed` compares the
+status at the merge base with the status at HEAD and does not walk the commits
+between them, so a Spec Package that was `draft` at the merge base cannot reach
+`completed` inside the same change no matter how many intermediate commits it
+passes through. This is the intended behavior for a Spec Package: it is reviewed
+as `active` in one change and completed in a later one. SPEC-0154 was drafted on
+`main` at `9407ba9c`, so it is `active` here and completes after this branch
+merges. An earlier revision of this document set it to `completed` in this
+branch; that was withdrawn rather than carried through the override mechanism,
+which is unreachable in this repository.
+
+The `execution` lifecycle was relaxed to permit `draft -> completed`, because a
+Task is routinely drafted and finished inside one change and the intermediate
+`active` is not observable at the change boundary. That reasoning does not
+extend to a Spec Package and the `spec` profile stays strict, asserted by
+`ExecutionLifecycleTests.test_spec_package_lifecycle_stays_strict`.
 
 1. `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` exits 0.
 2. `python3 scripts/validation/check-document-metadata.py` exits 0 and reports zero `invalid-status` records. This is the advisory inventory and is not the condition CI enforces; item 11 is.

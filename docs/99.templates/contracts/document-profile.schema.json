@@ -80,6 +80,7 @@
         "optional_frontmatter": {"$ref": "#/$defs/stringList"},
         "required_sections": {"$ref": "#/$defs/stringList"},
         "optional_sections": {"$ref": "#/$defs/stringList"},
+        "free_form_sections": {"type": "boolean"},
         "lifecycle_id": {"type": ["string", "null"]},
         "media_type": {"type": "string", "minLength": 1},
         "traceability": {"$ref": "#/$defs/traceability"},

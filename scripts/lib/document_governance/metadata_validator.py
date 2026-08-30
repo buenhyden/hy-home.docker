@@ -2435,14 +2435,20 @@ def validate_body_contract(
                         f"profile {record.artifact_type} is missing required heading: {heading}",
                     )
                 )
-            for heading in sorted(set(h2) - required - optional):
-                findings.append(
-                    _finding(
-                        record,
-                        "body-heading-forbidden",
-                        f"profile {record.artifact_type} contains unregistered heading: {heading}",
+            # A profile whose documents share no heading vocabulary declares
+            # itself free-form rather than registering a union nothing follows.
+            # Without this, an unregistered heading is a violation only when a
+            # change introduces it, so the profile passes its own corpus and
+            # rejects every edit to it.
+            if not profile.get("free_form_sections"):
+                for heading in sorted(set(h2) - required - optional):
+                    findings.append(
+                        _finding(
+                            record,
+                            "body-heading-forbidden",
+                            f"profile {record.artifact_type} contains unregistered heading: {heading}",
+                        )
                     )
-                )
             return sorted(set(findings))
 
     source_roles = _source_roles_for_path(record.path, profiles)
@@ -2994,6 +3000,15 @@ def validate_record(
     ):
         transitions = raw_profile.get("transitions", common.get("transitions", {}))
         allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
+        # A previous status the lifecycle never defined is not a state this
+        # document can transition out of, so moving to a defined status repairs
+        # it rather than transitioning. Demanding an override for a repair
+        # makes an invalid status cheaper to keep than to correct, and the
+        # override is not reachable in this repository anyway.
+        defined_statuses = set(transitions) if isinstance(transitions, dict) else set()
+        repairs_undefined_previous = bool(defined_statuses) and (
+            previous_status not in defined_statuses and status in defined_statuses
+        )
         override_key = (record.path.as_posix(), previous_status, status)
         promoted_hop_valid = (
             promoted_witness is not None
@@ -3005,6 +3020,7 @@ def validate_record(
         )
         if (
             (status not in allowed_next or promoted_reversion)
+            and not repairs_undefined_previous
             and override_key not in (transition_overrides or {})
             and not promoted_hop_valid
             and record != migration_compaction_witness
