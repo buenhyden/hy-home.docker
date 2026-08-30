@@ -1,6 +1,6 @@
 ---
 profile_id: plan
-status: active
+status: completed
 artifact_id: plan-0155
 artifact_type: plan
 parent_ids: [SPEC-0155]
@@ -908,6 +908,18 @@ satisfies item 8; Task 8 satisfies items 4 and 10.
 9. **The old content yields.** Where a retired gate, predicate, or literal
    conflicts with the current corpus, the gate is retired rather than the
    corpus reshaped to satisfy it.
+
+10. **Absence is never inferred from a passing run or a truncated search.** A
+    check that reports nothing passed; it was not skipped, and Task 8 asserted
+    the opposite about generator freshness from a green log. A `grep` piped
+    through `head` proves nothing about what it did not print, and Task 5 read
+    one as proof of absence and deleted a file that was still in use. Both were
+    caught by the gate rather than by review.
+
+11. **Generated outputs are regenerated after the last document is authored.**
+    The full gate verifies freshness, so a Task that writes its own record after
+    regenerating leaves the gate red. This is ruling 7's ordering applied to the
+    Task's own evidence file, which is the case that kept being missed.
 
 ## Related Documents
 

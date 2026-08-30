@@ -354,7 +354,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0003-spec-0137-disposition.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0003-spec-0137-disposition.md) | Markdown reference |
 | [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0004-resurrected-contract-removal.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0004-resurrected-contract-removal.md) | Markdown reference |
 | [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0005-gate4-and-retiring-pack-removal.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0005-gate4-and-retiring-pack-removal.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0006-stage-04-literal-closure.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0006-stage-04-literal-closure.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0007-generated-evidence-verification.md) | Markdown reference |
+| [docs/03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md](../../../03.specs/0155-validation-surface-reduction/tasks/tsk-0008-gate-sweep-and-merge-preparation.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0157-script-surface-ownership-convergence/spec.md](../../../03.specs/0157-script-surface-ownership-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

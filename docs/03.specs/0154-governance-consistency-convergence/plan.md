@@ -1,6 +1,6 @@
 ---
 profile_id: plan
-status: draft
+status: completed
 artifact_id: plan-0154
 artifact_type: plan
 parent_ids: [SPEC-0154]

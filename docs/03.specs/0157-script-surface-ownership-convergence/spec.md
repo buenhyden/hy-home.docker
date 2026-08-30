@@ -193,6 +193,20 @@ that is both smaller and covered.
 | REQ-0024 Agent governance standardization | The ownership rule, gate registration for every module, and the provider surfaces left generated and untouched |
 | REQ-0025 Operational readiness closure | Four of the nineteen unregistered modules are this requirement's verification surface: `test_supply_chain_policy` (4 errors), `test_compose_core_readiness` (1 error), `test_sample_service_delivery_rehearsal` (5 failures, 2 errors), and `test_postgres_logical_upgrade_rehearsal` (passing but unrun). Registering and repairing them restores evidence REQ-0025 currently claims without running |
 
+Inherited from SPEC-0155, which closed with these three items open and
+measured, not assumed:
+
+| SPEC-0155 item | State at its close | Where it lands here |
+| :--- | :--- | :--- |
+| 5, no `f259c139` in `docs/` | One normative pin in `docs/98.archive/README.md`, paired with `TASK10_BASELINE_COMMIT` in `archive.py` | Acceptance 7 and 8 |
+| 7, full inventory blocking | Advisory, reporting zero findings; the guard it named was already gone | Behavior Contract, decided with the mode reduction |
+| 13, transition override wiring | Unreachable: no gate node or workflow passes `--transition-override-file` | Retired or wired, with the reason recorded |
+
+SPEC-0155 acceptance item 6 was corrected rather than inherited: it demanded that
+`docs/04.execution` not appear in `scripts/`, and nine of its ten occurrences are
+absence assertions and pinned history reads that enforce the removal the item
+checks.
+
 Predecessor: SPEC-0155 reduced the validation surface's content. This Spec
 Package converges its structure. The two are sequential, not overlapping:
 SPEC-0155 removed what no gate reached inside the existing layout; SPEC-0157
