@@ -670,7 +670,7 @@
     "audit": {"prefix": "AUD-", "width": 4, "high_water": 96, "next_number": 97, "child_spaces": {}},
     "data": {"prefix": "DATA-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
     "migration": {"prefix": "mig-", "width": 4, "high_water": 3, "next_number": 4, "child_spaces": {}},
-    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 157, "next_number": 158, "child_spaces": {}}
+    "tombstone": {"prefix": "tombstone-", "width": 4, "high_water": 158, "next_number": 159, "child_spaces": {}}
   },
   "transitions": {
     "requirements-package": "living",

@@ -18,7 +18,6 @@ PYTHON_ENTRYPOINTS = (
     "scripts/validation/check-document-corpus-lifecycle.py",
     "scripts/validation/check-document-metadata.py",
     "scripts/validation/check-github-workflow-contract.py",
-    "scripts/validation/check-old-path-gate.py",
     "scripts/validation/check-operations-catalog.py",
     "scripts/validation/check-supply-chain-policy.py",
     "scripts/validation/check-target-surface-contract.py",
@@ -26,7 +25,6 @@ PYTHON_ENTRYPOINTS = (
     "scripts/validation/ci_gate_contract.py",
     "scripts/validation/ci_gate_runner.py",
     "scripts/validation/github_workflow_contract.py",
-    "scripts/validation/old_path_gate_contract.py",
     "scripts/validation/run-ci-gate.py",
     "scripts/validation/target_surface_contract.py",
 )

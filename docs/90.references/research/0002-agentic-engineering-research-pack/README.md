@@ -6,10 +6,8 @@ artifact_type: research
 parent_ids:
   - SPEC-0137
 created: 2026-08-28
-updated: 2026-08-28
+updated: 2026-08-30
 observed_at: 2026-08-28
-supersedes:
-  - RES-0001
 ---
 
 # Agentic Engineering Research Pack

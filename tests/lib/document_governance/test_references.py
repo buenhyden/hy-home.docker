@@ -137,6 +137,31 @@ class ReferencePackageTests(unittest.TestCase):
         self.assertEqual(11, sum(row.action == "delete" for row in migration.rows))
         self.assertEqual(set(), self.finding_codes())
 
+    def test_migration_target_retired_by_a_tombstone_is_not_missing(self) -> None:
+        """A renamed target may later be deleted; the tombstone is that record.
+
+        The frozen ledger records what the migration did, and a rename it
+        performed stays a rename forever. Deletion is a separate later event,
+        and Stage 98 already owns it. Reading the ledger as a permanence
+        guarantee forced a completed migration to be rewritten every time a
+        document it moved was retired, which falsifies the record it exists to
+        keep.
+        """
+
+        retired = "docs/90.references/research/0001-agentic-research-pack-refresh"
+        tombstoned = self.references.tombstoned_paths(ROOT)
+        self.assertIn(pathlib.PurePosixPath(retired), tombstoned)
+        self.assertNotIn(
+            pathlib.PurePosixPath("docs/90.references/research/0002-agentic-engineering-research-pack"),
+            tombstoned,
+        )
+
+    def test_a_target_missing_without_a_tombstone_is_still_reported(self) -> None:
+        """The rule narrows to retired paths; an unrecorded loss still fails."""
+
+        with mock.patch.object(self.references, "tombstoned_paths", return_value=frozenset()):
+            self.assertIn("migration-target-missing", self.finding_codes())
+
     def test_reference_roots_and_package_paths_are_exact(self) -> None:
         corpus = self.references.load_reference_packages(ROOT / "docs/90.references")
         self.assertEqual(("audits", "data", "research"), corpus.category_names)

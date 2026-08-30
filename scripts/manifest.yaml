@@ -671,20 +671,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/check-old-path-gate.py
-  kind: validator
-  public_suites:
-  - document-lifecycle
-  execution_contexts: [local, pull_request, push, workflow_dispatch]
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-operations-catalog.py
   kind: validator
   public_suites:
@@ -939,20 +925,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_grype_db_seed.py
-- path: scripts/validation/old_path_gate_contract.py
-  kind: validator
-  public_suites:
-  - document-lifecycle
-  execution_contexts: []
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/rehearse-postgres-logical-upgrade.sh
   kind: validator
   public_suites:

@@ -33,7 +33,7 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             ".codex/config.toml": "codex\n",
             ".github/workflow.yml": "workflow\n",
             "README.md": "root\n",
-            "docs/04.execution/plan.md": "plan\n",
+            "docs/03.specs/0001-fixture/plan.md": "plan\n",
             "docs/98.archive/README.md": "archive index\n",
             "docs/98.archive/migrations/0001-map.md": "migration\n",
             "docs/98.archive/tombstones/03.specs/0001-old.md": "tombstone\n",
@@ -131,13 +131,17 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             candidates = generator.collect_candidates(root)
             selected = {candidate.path: candidate.category for candidate in candidates}
             # Canonical 4b44cfd8 wrapper allowlist: .sh but not .py; only
-            # .github/.claude/.codex hidden surfaces; docs/04 remains active.
+            # .github/.claude/.codex hidden surfaces. The stage assertion moved
+            # off `docs/04.execution/` when Stage 04 was removed on 2026-08-29:
+            # the generator stopped classifying it, but this fixture kept
+            # writing it, so the test asserted a stage the taxonomy no longer
+            # has. No gate runs this module, which is why it went unnoticed.
             self.assertNotIn("scripts/tool.py", selected)
             self.assertIn("scripts/knowledge/generate-llm-wiki.py", selected)
             self.assertNotIn(".agents/agent.md", selected)
             self.assertEqual("Runtime surfaces", selected[".claude/agent.md"])
             self.assertEqual("Runtime surfaces", selected[".codex/config.toml"])
-            self.assertEqual("Active stage docs", selected["docs/04.execution/plan.md"])
+            self.assertEqual("Active stage docs", selected["docs/03.specs/0001-fixture/plan.md"])
             index = generator.render_index(candidates)
             coverage = generator.render_coverage(candidates)
             self.assertIn("data/0076-llm-wiki-stage-category-coverage/README.md", index)
@@ -152,7 +156,13 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             for candidate in generator.collect_candidates(ROOT)
             if candidate.category == "Scripts and validators"
         }
-        self.assertEqual(43, len(script_paths))
+        # 39 as measured on 2026-08-30. The set is every `.sh` under
+        # `scripts/` plus this generator and five non-script companions; the
+        # two `.py` validators Gate 4 took with it were never members, so this
+        # drift predates SPEC-0155 and had gone uncaught because no registered
+        # gate runs this module. Repinning without registering would let it
+        # drift again; SPEC-0155 Task 8 owns the registration.
+        self.assertEqual(39, len(script_paths))
         self.assertIn(generator.GENERATOR_PATH, script_paths)
         self.assertNotIn("scripts/knowledge/generate-llm-wiki-index.sh", script_paths)
         self.assertNotIn("scripts/knowledge/generate-llm-wiki-coverage.sh", script_paths)

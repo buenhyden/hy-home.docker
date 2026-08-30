@@ -49,14 +49,6 @@ RETIRED_GENERATOR_WRAPPERS = frozenset(
     }
 )
 SAFE_SUFFIXES = frozenset({".conf", ".env", ".graphql", ".json", ".md", ".proto", ".sh", ".toml", ".txt", ".yaml", ".yml"})
-# Deletion-invariance for the Spec 137 retirement. The retiring research pack is
-# excluded by exact trailing-slash prefix so this generated navigation surface
-# carries no reference to it either before or after deletion. Ported on
-# 2026-08-19 from scripts/knowledge/generate-llm-wiki-index.sh, which owned this
-# property while it was the canonical generator. Measured before the port: a
-# regeneration without it injects 20 clickable retiring-pack links into the
-# index and gate 4's hard clickable_links=0 fails.
-RETIRING_PACK_PREFIX = "docs/90.references/research/0001-agentic-research-pack-refresh/"
 ARCHIVE_NONCURRENT_PREFIXES = (
     "docs/98.archive/changes/",
     "docs/98.archive/tombstones/",
@@ -68,7 +60,6 @@ EXCLUDED_PREFIXES = (
     "projects/storybook/nextjs/.next/",
     "projects/storybook/nextjs/node_modules/",
     "volumes/",
-    RETIRING_PACK_PREFIX,
     *ARCHIVE_NONCURRENT_PREFIXES,
 )
 EXCLUDED_PARTS = frozenset({".cache", ".next", "coverage", "dist", "node_modules", "vendor"})

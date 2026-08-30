@@ -333,7 +333,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md](../../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/plan.md](../../../03.specs/0137-agentic-research-pack-rebuild/plan.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/spec.md](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md) | Markdown reference |
-| [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0002-source-refresh.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0003-deepening.md) | Markdown reference |
 | [docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md](../../../03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0004-canonical-research-refresh.md) | Markdown reference |

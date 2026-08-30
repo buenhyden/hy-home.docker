@@ -923,7 +923,8 @@ strengthens the claim-migration evidence that gate consumes but does not open it
 
 - [Spec 137](../spec.md)
 - [Rebuild Plan](../plan.md)
-- [Rebuild Task holding the deletion gate](./tsk-0001-rebuild.md)
+- Rebuild Task that held the deletion gate, removed 2026-08-30 with Gate 4; it
+  was at `./tsk-0001-rebuild.md`
 - [Source refresh Task](./tsk-0002-source-refresh.md)
 - [Canonical research pack](../../../90.references/research/0002-agentic-engineering-research-pack/README.md)
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)

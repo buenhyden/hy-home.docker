@@ -133,17 +133,21 @@ class PublicSuiteModelTests(unittest.TestCase):
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        # 32 since 2026-08-30. The three SPEC-0137 gate modules were retired
-        # with that Spec Package: `agentic-research-gate9-evidence.py`,
-        # `gate2_claim_review_contract.py`, and `carry_owner_contract.py`,
-        # 13,504 lines with their tests. The note this replaces already recorded
-        # why the second one could never run, that the Gate 2 evidence sections
-        # it reads had never been authored so it failed closed on a subject that
-        # did not exist, and raised the count rather than removing the module.
-        # Previously 35 since 2026-08-29. This count is the guard that makes
-        # adding a validator deliberate; lowering it records a removal that the
-        # owning Spec Package has dispositioned.
-        self.assertEqual(32, len(actual))
+        # 30 since 2026-08-30. Gate 4, the old-path gate, was retired with the
+        # rest of SPEC-0137: `check-old-path-gate.py` and its
+        # `old_path_gate_contract.py` module. Its allowlist lived in that Spec
+        # Package's `tsk-0001-rebuild.md`, a cancelled Task, and the pack it
+        # guarded, RES-0001, is deleted, so the gate had no subject left.
+        # Previously 32, when the three other SPEC-0137 gate modules went:
+        # `agentic-research-gate9-evidence.py`, `gate2_claim_review_contract.py`,
+        # and `carry_owner_contract.py`, 13,504 lines with their tests. The note
+        # that one replaced already recorded why the second could never run, that
+        # the Gate 2 evidence sections it reads had never been authored so it
+        # failed closed on a subject that did not exist, and raised the count
+        # rather than removing the module. Previously 35 since 2026-08-29. This
+        # count is the guard that makes adding a validator deliberate; lowering
+        # it records a removal that the owning Spec Package has dispositioned.
+        self.assertEqual(30, len(actual))
         self.assertEqual(
             dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
             actual,
@@ -686,11 +690,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
         manual_paths = tuple(
             item.path for item in suites.validators if not item.execution_contexts
         )
-        # 10 since 2026-08-30: the three SPEC-0137 gate modules were retired
-        # with that Spec Package. Two of them, the gate-9 evidence helper and
-        # the ported gate-2 claim-review contract, were among the validators
-        # that declare no execution context. Previously 12 since 2026-08-29.
-        self.assertEqual(10, len(manual_paths))
+        # 9 since 2026-08-30: `old_path_gate_contract.py` declared no execution
+        # context and went with the rest of Gate 4. Previously 10, when the
+        # three other SPEC-0137 gate modules were retired; two of those, the
+        # gate-9 evidence helper and the ported gate-2 claim-review contract,
+        # were also context-free. Previously 12 since 2026-08-29.
+        self.assertEqual(9, len(manual_paths))
         forbidden_paths = (
             *manual_paths,
             pathlib.PurePosixPath("scripts/operations/rehearse-sample-service-delivery.sh"),
