@@ -157,7 +157,7 @@ approval rules.
 | --- | --- |
 | Surface | Co-located Task evidence and closure summary |
 | Input Scenario | An implementation unit is ready to record checks, skips, rollback, and commit identity. |
-| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md` |
+| Required Context | `docs/00.agent-governance/policies/postflight-checklist.md`, `docs/00.agent-governance/policies/task-checklists.md`, `docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0004-retired-taxonomy-removal.md` |
 | Expected Output | Records value-free command/result evidence and explicit skipped-check rationale without raw logs or secrets. |
 | Scoring Criteria | Closure evidence, protected boundaries, validation results, rollback, and usability. |
 | Block Conditions | Raw secret, credential, token, shell-history, or raw-log payload is copied into evidence. |
