@@ -132,7 +132,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_archive.py
-  - tests/lib/document_governance/test_provenance_policy.py
 - path: scripts/lib/document_governance/frontmatter.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -220,17 +219,6 @@ files:
   tests:
   - tests/lib/document_governance/test_operations_catalog.py
   - tests/lib/document_governance/test_operations_taxonomy.py
-- path: scripts/lib/document_governance/provenance_policy.py
-  kind: library
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/check-document-corpus-lifecycle.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/lib/document_governance/test_provenance_policy.py
 - path: scripts/lib/document_governance/references.py
   kind: library
   authority: docs/99.templates/registry.json

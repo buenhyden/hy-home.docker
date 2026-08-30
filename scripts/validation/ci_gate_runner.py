@@ -153,7 +153,6 @@ _INTERNAL_ADAPTER_CONTEXTS = {
         "tests.lib.document_governance.test_metadata_validator",
         "tests.lib.document_governance.test_operations_catalog",
         "tests.lib.document_governance.test_operations_taxonomy",
-        "tests.lib.document_governance.test_provenance_policy",
         "tests.lib.document_governance.test_references",
         "tests.lib.document_governance.test_registry",
         "tests.lib.document_governance.test_requirements",

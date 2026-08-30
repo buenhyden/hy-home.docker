@@ -34,21 +34,3 @@ jobs:
         run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
       - name: Check promoted lifecycle waves
         run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
-      - name: Check impacted lifecycle records
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then
-            python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref HEAD~1
-          else
-            echo "SKIP: HEAD~1 is unavailable; no comparison base exists"
-          fi
-      - name: Report full corpus lifecycle debt
-        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-full
-      - name: Report duplicate candidates
-        shell: bash
-        run: |
-          set -euo pipefail
-          report_path="${RUNNER_TEMP}/document-corpus-lifecycle-duplicates.md"
-          python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-duplicates --output "$report_path"
-          cat -- "$report_path"

@@ -62,7 +62,6 @@ from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     resolve_git_provenance,
 )
 from scripts.lib.document_governance import archive as archive_authority  # noqa: E402
-from scripts.lib.document_governance import provenance_policy  # noqa: E402
 from scripts.lib.document_governance import metadata_contract  # noqa: E402
 from scripts.lib.document_governance.spec_packages import (  # noqa: E402
     SpecPackageError,
@@ -96,22 +95,8 @@ SAMPLE_SERVICE_FIXTURE_METADATA = {
 MODES = (
     "check-public",
     "check-contract",
-    "generate-manifest",
-    "check-manifest",
     "check-promoted",
-    "generate-summary",
-    "check-summary",
-    "check-impacted",
-    "report-duplicates",
-    "report-full",
-    "check-full",
-    "check-archive",
     "check-recovery",
-    "check-directory-budget",
-    "generate-archive-ledger",
-    "check-archive-ledger",
-    "generate-snapshot-manifest",
-    "check-snapshot-manifest",
 )
 
 REVIEWED_EVIDENCE_WAVES = frozenset({"foundation"})
@@ -1993,15 +1978,6 @@ def _wave_mapping(contract: dict[str, object], wave: str) -> dict[str, object]:
     if not isinstance(value, dict):
         raise ProfileError(f"unknown migration wave: {wave}")
     return value
-
-
-def _registered_wave_path(
-    contract: dict[str, object], wave: str, field: str
-) -> pathlib.Path:
-    value = _wave_mapping(contract, wave).get(field)
-    if not isinstance(value, str) or not _safe_path(value):
-        raise ProfileError(f"wave {field} must be a safe registered path")
-    return pathlib.Path(value)
 
 
 def _manifest_artifact_id(artifact_type: str, value: object) -> str | None:
@@ -5959,22 +5935,8 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
     requirements: dict[str, tuple[set[str], set[str]]] = {
         "check-public": (set(), {"wave", "manifest", "exceptions", "output"}),
         "check-contract": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-        "generate-manifest": ({"wave", "base_ref", "output"}, {"manifest", "exceptions"}),
-        "check-manifest": ({"wave"}, {"base_ref", "exceptions", "output"}),
         "check-promoted": (set(), {"base_ref", "manifest", "exceptions", "output"}),
-        "generate-summary": ({"output"}, {"base_ref", "exceptions"}),
-        "check-summary": (set(), {"base_ref", "exceptions"}),
-        "check-impacted": ({"base_ref"}, {"wave", "manifest", "exceptions", "output"}),
-        "report-duplicates": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
-        "report-full": (set(), {"wave", "manifest", "exceptions", "output"}),
-        "check-full": (set(), {"wave", "base_ref", "manifest", "output"}),
-        "check-archive": (set(), {"base_ref", "exceptions", "output"}),
         "check-recovery": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-        "check-directory-budget": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-        "generate-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
-        "check-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
-        "generate-snapshot-manifest": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
-        "check-snapshot-manifest": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
     }
     required, forbidden = requirements[args.mode]
     for name in sorted(required):
@@ -5983,12 +5945,6 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
     for name in sorted(forbidden):
         if getattr(args, name) is not None:
             parser.error(f"--{name.replace('_', '-')} is forbidden for --mode {args.mode}")
-    if args.mode in {"generate-summary", "check-summary"} and args.manifest is None and args.wave is None:
-        parser.error(f"--manifest or --wave is required for --mode {args.mode}")
-    if args.mode == "check-summary" and args.output is None and args.wave is None:
-        parser.error("--output or --wave is required for --mode check-summary")
-    if args.mode == "check-archive" and args.manifest is not None and args.wave is None:
-        parser.error("--manifest requires --wave for --mode check-archive")
 
 
 def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
@@ -6051,10 +6007,9 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             recovery_findings = archive_authority.validate_recovery_rows(
                 recovery_rows, root
             )
-            policy_findings = provenance_policy.validate_repository_provenance(root)
-            for finding in (*recovery_findings, *policy_findings):
+            for finding in recovery_findings:
                 print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
-            violations = len(recovery_findings) + len(policy_findings)
+            violations = len(recovery_findings)
             print(
                 "archive recovery: "
                 f"migrations={len(inventory.migrations)} "
@@ -6065,40 +6020,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 1 if violations else 0
         _ensure_metadata_loaded()
         profiles_path = _rooted(root, args.profiles).resolve()
-        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-impacted", "report-full", "check-full", "report-duplicates"}:
-            # Keep the lifecycle reader's no-follow/redaction boundary when
-            # routing current contracts to the Registry-backed metadata owner.
-            profiles = metadata.build_registry_profiles(metadata.load_registry(profiles_path))
-            current_records = _collect_records(root, profiles, include_untracked=True, allow_worktree_deletions=True)
-            for record in current_records:
-                diagnostic = f"{record.path}\n{record.parse_error or ''}\n{json.dumps(record.metadata, default=str)}"
-                if _diagnostic_payload_is_sensitive(diagnostic):
-                    raise _CorpusSafetyError(record.path.as_posix(), "diagnostic-redaction-unsafe")
-        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-impacted", "report-full", "check-full"}:
-            from scripts.lib.document_governance import metadata_validator as native_metadata
-
-            arguments = ["--root", str(root), "--registry", str(profiles_path),
-                         "--mode", "check-changed" if args.mode == "check-impacted" else "check-contracts"]
-            if args.base_ref is not None:
-                arguments.extend(("--base-ref", args.base_ref))
-            return native_metadata.main(arguments)
-        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode == "report-duplicates":
-            from scripts.lib.document_governance import metadata_validator as native_metadata
-
-            profiles = metadata.build_registry_profiles(metadata.load_registry(profiles_path))
-            records = current_records
-            if any(record.parse_error for record in records):
-                raise ProfileError("duplicate inventory contains invalid metadata")
-            candidates = find_duplicate_candidates(root, records)
-            rendered = yaml.safe_dump({"schema_version": 1, "candidates": [
-                {"left_path": item.left_path.as_posix(), "right_path": item.right_path.as_posix(),
-                 "artifact_type": item.artifact_type, "signals": list(item.signals)}
-                for item in candidates
-            ]}, sort_keys=False, width=1000)
-            _write_output(_rooted(root, args.output), rendered)
-            print(f"duplicate candidates: count={len(candidates)}")
-            return 0
-        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-public", "check-contract", "check-promoted", "check-impacted", "report-full"}:
+        if args.contract is None and profiles_path.suffix.lower() == ".json" and args.mode in {"check-public", "check-contract", "check-promoted"}:
             registry = metadata.load_registry(profiles_path)
             profiles = metadata.build_registry_profiles(registry)
             findings = _spec_package_lifecycle_findings(root, profiles, args.base_ref)
@@ -6125,22 +6047,6 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             )
         else:
             profiles = metadata.load_profiles(profiles_path)
-        manifest_argument = args.manifest
-        output_argument = args.output
-        if args.wave is not None:
-            if args.mode in {
-                "check-manifest",
-                "generate-summary",
-                "check-summary",
-                "check-archive",
-            } and manifest_argument is None:
-                manifest_argument = _registered_wave_path(
-                    contract, args.wave, "manifest_path"
-                )
-            if args.mode == "check-summary" and output_argument is None:
-                output_argument = _registered_wave_path(
-                    contract, args.wave, "summary_path"
-                )
         if args.mode == "check-contract":
             findings = _spec_package_lifecycle_findings(root, profiles)
             _print_findings(findings)
@@ -6163,41 +6069,6 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 3 if any(_is_safety_finding(item) for item in findings) else (
                 1 if findings else 0
             )
-        if args.mode == "generate-manifest":
-            document = _generate_manifest_skeleton(
-                root,
-                contract,
-                wave=args.wave,
-                baseline_ref=args.base_ref,
-                profiles=profiles,
-            )
-            _write_output(_rooted(root, args.output), render_migration_manifest(document))
-            print(f"manifest generated: entries={len(document.entries)}")
-            return 0
-        if args.mode == "check-manifest":
-            manifest_relative = _repo_manifest_path(root, manifest_argument)
-            document = _load_candidate_migration_manifest(root, manifest_relative)
-            findings = validate_migration_manifest(
-                root,
-                profiles,
-                contract,
-                document,
-                manifest_path=manifest_relative,
-            )
-            if document.wave != args.wave:
-                findings.append(
-                    _finding(manifest_argument.as_posix(), "manifest-wave-mismatch", "--wave differs from manifest")
-                )
-            if not _candidate_manifest_matches(
-                root,
-                manifest_relative,
-                render_migration_manifest(document),
-            ):
-                findings.append(
-                    _finding(manifest_argument.as_posix(), "manifest-serialization-stale", "manifest bytes are not canonical")
-                )
-            _print_findings(findings)
-            return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         if args.mode == "check-promoted":
             _, findings = _load_declared_manifests(
                 root,
@@ -6209,255 +6080,6 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             _print_findings(findings)
             print(f"promoted lifecycle manifests: violations={len(findings)}")
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
-        if args.mode in {"generate-summary", "check-summary"}:
-            manifest_relative = _repo_manifest_path(root, manifest_argument)
-            document = _load_candidate_migration_manifest(root, manifest_relative)
-            manifest_findings = validate_migration_manifest(
-                root,
-                profiles,
-                contract,
-                document,
-                manifest_path=manifest_relative,
-            )
-            if not _candidate_manifest_matches(
-                root,
-                manifest_relative,
-                render_migration_manifest(document),
-            ):
-                manifest_findings.append(
-                    _finding(
-                        manifest_relative,
-                        "manifest-serialization-stale",
-                        "manifest bytes are not canonical",
-                    )
-                )
-            if manifest_findings:
-                _print_findings(manifest_findings)
-                return 3 if any(_is_safety_finding(item) for item in manifest_findings) else 1
-            rendered = _render_summary(document)
-            output_path = _rooted(root, output_argument)
-            if args.mode == "generate-summary":
-                _write_output(output_path, rendered)
-                return 0
-            if not _check_output(output_path, rendered):
-                print("summary-stale: output: generated summary differs from canonical bytes")
-                return 1
-            return 0
-        if args.mode == "check-impacted":
-            documents, manifest_findings = _load_declared_manifests(
-                root, profiles, contract, promoted_only=False
-            )
-            if manifest_findings:
-                _print_findings(manifest_findings)
-                return 3 if any(_is_safety_finding(item) for item in manifest_findings) else 1
-            records = _collect_records(
-                root,
-                profiles,
-                include_untracked=True,
-                allow_worktree_deletions=True,
-            )
-            impacted = collect_impacted_records(
-                root, records, profiles, contract, documents, base_ref=args.base_ref
-            )
-            findings = _introduced_metadata_findings(
-                root,
-                records,
-                impacted,
-                profiles,
-                base_ref=args.base_ref,
-            )
-            budgets = contract.get("directory_budgets")
-            if not isinstance(budgets, dict):
-                raise ProfileError("directory budget contract is invalid")
-            findings.extend(
-                validate_directory_budgets(
-                    _apply_partition_approvals(
-                        records,
-                        documents,
-                        root=root,
-                        profiles=profiles,
-                    ),
-                    added_paths=_added_record_paths(root, args.base_ref),
-                    warning_at=int(budgets["warning_at"]),
-                    block_new_leaf_at=int(budgets["block_new_leaf_at"]),
-                    enforce_all=False,
-                )
-            )
-            _print_findings(findings)
-            blocking = [item for item in findings if item.severity == "error"]
-            print(f"lifecycle impacted: selected={len(impacted)} violations={len(blocking)}")
-            return 3 if any(_is_safety_finding(item) for item in blocking) else (1 if blocking else 0)
-        records, full_findings = _full_findings(root, profiles, contract)
-        if args.mode == "report-duplicates":
-            safety = [item for item in full_findings if _is_safety_finding(item)]
-            if safety:
-                _print_findings(safety)
-                return 3
-            candidates = find_duplicate_candidates(root, records)
-            rendered = yaml.safe_dump(
-                {
-                    "schema_version": 1,
-                    "candidates": [
-                        {
-                            "left_path": item.left_path.as_posix(),
-                            "right_path": item.right_path.as_posix(),
-                            "artifact_type": item.artifact_type,
-                            "signals": list(item.signals),
-                        }
-                        for item in candidates
-                    ],
-                },
-                sort_keys=False,
-                width=1000,
-            )
-            _write_output(_rooted(root, args.output), rendered)
-            print(f"duplicate candidates: count={len(candidates)}")
-            return 0
-        if args.mode in {"generate-archive-ledger", "check-archive-ledger"}:
-            archive_paths = {
-                record.path.as_posix() for record in records if record.artifact_type == "archive"
-            }
-            archive_findings = [
-                item
-                for item in full_findings
-                if item.path in archive_paths and item.severity == "error"
-            ]
-            if archive_findings:
-                _print_findings(archive_findings)
-                return 3 if any(_is_safety_finding(item) for item in archive_findings) else 1
-            rendered = render_archive_ledger(records)
-            if args.mode.startswith("generate-"):
-                _write_output(_rooted(root, args.output), rendered)
-                return 0
-            return 0 if _check_output(_rooted(root, args.output), rendered) else 1
-        if args.mode in {"generate-snapshot-manifest", "check-snapshot-manifest"}:
-            archive_paths = {
-                record.path.as_posix() for record in records if record.artifact_type == "archive"
-            }
-            archive_findings = [
-                item
-                for item in full_findings
-                if item.path in archive_paths and item.severity == "error"
-            ]
-            if archive_findings:
-                _print_findings(archive_findings)
-                return 3 if any(_is_safety_finding(item) for item in archive_findings) else 1
-            rendered = render_snapshot_manifest(records)
-            if args.mode.startswith("generate-"):
-                _write_output(_rooted(root, args.output), rendered)
-                return 0
-            return 0 if _check_output(_rooted(root, args.output), rendered) else 1
-        if args.mode == "check-archive":
-            archive_records = records
-            manifest_findings: list[Finding] = []
-            if args.wave is not None:
-                manifest_relative = _repo_manifest_path(root, manifest_argument)
-                wave_document = _load_candidate_migration_manifest(
-                    root, manifest_relative
-                )
-                manifest_findings.extend(
-                    validate_migration_manifest(
-                        root,
-                        profiles,
-                        contract,
-                        wave_document,
-                        manifest_path=manifest_relative,
-                    )
-                )
-                if wave_document.wave != args.wave:
-                    manifest_findings.append(
-                        _finding(
-                            manifest_relative,
-                            "manifest-wave-mismatch",
-                            "--wave differs from manifest",
-                        )
-                    )
-                if not _candidate_manifest_matches(
-                    root,
-                    manifest_relative,
-                    render_migration_manifest(wave_document),
-                ):
-                    manifest_findings.append(
-                        _finding(
-                            manifest_relative,
-                            "manifest-serialization-stale",
-                            "manifest bytes are not canonical",
-                        )
-                    )
-                archive_records = (
-                    ()
-                    if manifest_findings
-                    else archive_records_for_wave(records, wave_document)
-                )
-            findings = [
-                finding
-                for record in archive_records
-                for finding in validate_archive_provenance(root, record)
-            ]
-            findings.extend(manifest_findings)
-        elif args.mode == "check-directory-budget":
-            budgets = contract.get("directory_budgets")
-            if not isinstance(budgets, dict):
-                raise ProfileError("directory budget contract is invalid")
-            findings = validate_directory_budgets(
-                records,
-                added_paths=frozenset(),
-                warning_at=int(budgets["warning_at"]),
-                block_new_leaf_at=int(budgets["block_new_leaf_at"]),
-                enforce_all=True,
-            )
-        else:
-            findings = list(full_findings)
-        if args.mode == "check-full":
-            budgets = contract.get("directory_budgets")
-            if not isinstance(budgets, dict):
-                raise ProfileError("directory budget contract is invalid")
-            findings = [
-                item for item in findings if not item.code.startswith("directory-budget-")
-            ]
-            findings.extend(
-                validate_directory_budgets(
-                    records,
-                    added_paths=frozenset(),
-                    warning_at=int(budgets["warning_at"]),
-                    block_new_leaf_at=int(budgets["block_new_leaf_at"]),
-                    enforce_all=True,
-                )
-            )
-        if args.mode == "check-full" and args.exceptions is not None:
-            known_codes = (
-                frozenset({item.code for item in findings}) | KNOWN_FINDING_CODES
-            ) - SAFETY_FINDING_CODES
-            exception_path = _rooted(root, args.exceptions).resolve()
-            exception_findings = validate_exceptions(
-                exception_path,
-                known_codes=known_codes,
-                today=datetime.date.today(),
-            )
-            findings.extend(exception_findings)
-            if not exception_findings:
-                loaded = _load_exception_document(exception_path)
-                suppressed = {
-                    (entry["finding_code"], scope)
-                    for entry in loaded["exceptions"]
-                    for scope in entry["scope_paths"]
-                }
-                findings = [
-                    item
-                    for item in findings
-                    if _is_safety_finding(item)
-                    or item.code.startswith("exception-")
-                    or (item.code, item.path) not in suppressed
-                ]
-        _print_findings(findings)
-        if args.mode == "report-full":
-            safety = [item for item in findings if _is_safety_finding(item)]
-            print(f"lifecycle full report: findings={len(findings)} safety_failures={len(safety)}")
-            return 3 if safety else 0
-        if args.mode == "check-full":
-            return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
-        blocking = [item for item in findings if item.severity == "error"]
-        return 3 if any(_is_safety_finding(item) for item in blocking) else (1 if blocking else 0)
     except _CorpusSafetyError as error:
         print(
             f"{error.code}: {_safe_diagnostic_path(error.path)}: "

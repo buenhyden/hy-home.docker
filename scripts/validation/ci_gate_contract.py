@@ -180,6 +180,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
+        "leaf.local-document-corpus-recovery",
         "leaf.document-governance-library-regressions",
     ),
     "local.target-surface": (

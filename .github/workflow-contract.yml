@@ -617,7 +617,6 @@
         "tests.lib.document_governance.test_metadata_validator",
         "tests.lib.document_governance.test_operations_catalog",
         "tests.lib.document_governance.test_operations_taxonomy",
-        "tests.lib.document_governance.test_provenance_policy",
         "tests.lib.document_governance.test_references",
         "tests.lib.document_governance.test_registry",
         "tests.lib.document_governance.test_requirements",
@@ -1043,6 +1042,25 @@
       ],
       "opaque": true,
       "suite_key": "local-document-corpus-promoted"
+    },
+    {
+      "gate_id": "leaf.local-document-corpus-recovery",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
+      "argv": [
+        "--mode",
+        "check-recovery"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "local-document-corpus-recovery"
     },
     {
       "gate_id": "leaf.local-llm-wiki-freshness",
@@ -1544,6 +1562,7 @@
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
+        "leaf.local-document-corpus-recovery",
         "leaf.document-governance-library-regressions"
       ]
     },

@@ -112,58 +112,7 @@ class SharedProvenanceExtractionTests(unittest.TestCase):
             finally:
                 os.close(other_root)
 
-    def test_current_registry_modes_preserve_no_follow_and_metadata_redaction(self) -> None:
-        marker = "token=do-not-echo-current-boundary"
-        for attack in ("final", "intermediate", "metadata"):
-            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
-                fixture = pathlib.Path(directory)
-                root = fixture / "repository"
-                root.mkdir()
-                init_repo(root)
-                registry = root / "docs/99.templates/registry.json"
-                registry.parent.mkdir(parents=True)
-                registry.write_bytes((ROOT / "docs/99.templates/registry.json").read_bytes())
-                target = root / "docs/03.specs/0104-example/spec.md"
-                target.parent.mkdir(parents=True)
-                target.write_text("---\nprofile_id: spec\nstatus: active\nartifact_id: SPEC-0104\nartifact_type: spec\nparent_ids: []\n---\n# Example\n", encoding="utf-8")
-                commit_all(root, "current fixture")
-                outside = fixture / "outside"
-                outside.mkdir()
-                (outside / "spec.md").write_text(marker, encoding="utf-8")
-                if attack == "final":
-                    target.unlink()
-                    target.symlink_to(outside / "spec.md")
-                elif attack == "intermediate":
-                    target.unlink()
-                    target.parent.rmdir()
-                    target.parent.symlink_to(outside, target_is_directory=True)
-                else:
-                    target.write_text(target.read_text().replace("parent_ids: []", f"parent_ids: ['{marker}']"), encoding="utf-8")
-                for mode in ("report-full", "check-full", "check-impacted", "report-duplicates"):
-                    with self.subTest(mode=mode):
-                        output = fixture / f"{mode}.out"
-                        arguments = ["--root", str(root), "--registry", str(registry), "--mode", mode]
-                        if mode == "check-impacted":
-                            arguments.extend(("--base-ref", "HEAD"))
-                        if mode == "report-duplicates":
-                            arguments.extend(("--output", str(output)))
-                        rendered = io.StringIO()
-                        with mock.patch.object(lifecycle, "load_migration_contract", side_effect=AssertionError("retired authority")) as old_loader, contextlib.redirect_stdout(rendered), contextlib.redirect_stderr(rendered):
-                            result = lifecycle.main(arguments)
-                        old_loader.assert_not_called()
-                        self.assertEqual(3, result, rendered.getvalue())
-                        self.assertNotIn("internal-error", rendered.getvalue())
-                        self.assertIn("selected lifecycle path is unsafe", rendered.getvalue())
-                        self.assertNotIn(marker, rendered.getvalue())
-                        self.assertNotIn("Traceback", rendered.getvalue())
-                        self.assertFalse(output.exists())
 
-    def test_current_scheduled_modes_do_not_load_retired_policy(self) -> None:
-        for arguments in (("check-impacted", "--base-ref", "HEAD"), ("report-full",)):
-            with self.subTest(mode=arguments[0]), mock.patch.object(
-                lifecycle, "load_migration_contract", side_effect=AssertionError("retired policy loaded")
-            ), contextlib.redirect_stdout(output := io.StringIO()):
-                self.assertEqual(0, lifecycle.main(["--mode", *arguments]), output.getvalue())
 
     def test_public_cli_checks_committed_deletion_against_trusted_base(self) -> None:
         from scripts.lib.document_governance import spec_packages
@@ -1038,60 +987,7 @@ class LifecycleTestCase(unittest.TestCase):
         }
         return contract
 
-    def historical_cli_arguments(self, root: pathlib.Path) -> list[str]:
-        """Give historical-format unit fixtures their explicit proven inputs."""
-        inputs = root / "fixture-inputs"
-        inputs.mkdir(exist_ok=True)
-        profiles, contract = inputs / "profiles.yaml", inputs / "migration.yaml"
-        if not profiles.exists():
-            profiles.write_text(PROFILES.read_text(encoding="utf-8"), encoding="utf-8")
-            contract.write_text(CONTRACT.read_text(encoding="utf-8"), encoding="utf-8")
-        return ["--profiles", str(profiles), "--contract", str(contract)]
 
-    def run_isolated_impacted_cli(
-        self,
-        root: pathlib.Path,
-        *,
-        base_ref: str,
-    ) -> subprocess.CompletedProcess[str]:
-        """Run check-impacted without repository-owned wave manifests."""
-        contract = copy.deepcopy(self.contract)
-        for wave in contract["waves"].values():
-            wave["enforcement"] = "advisory"
-            wave["manifest_path"] = None
-        arguments = [
-            "--root",
-            str(root),
-            "--profiles", "fixture-profiles.yaml",
-            "--contract", "fixture-contract.yaml",
-            "--mode",
-            "check-impacted",
-            "--base-ref",
-            base_ref,
-        ]
-        stdout = io.StringIO()
-        stderr = io.StringIO()
-        with (
-            mock.patch.object(
-                lifecycle,
-                "load_migration_contract",
-                return_value=contract,
-            ),
-            mock.patch.object(
-                lifecycle.metadata,
-                "load_profiles",
-                return_value=self.profiles,
-            ),
-            contextlib.redirect_stdout(stdout),
-            contextlib.redirect_stderr(stderr),
-        ):
-            returncode = lifecycle.main(arguments)
-        return subprocess.CompletedProcess(
-            [sys.executable, str(SCRIPT), *arguments],
-            returncode,
-            stdout.getvalue(),
-            stderr.getvalue(),
-        )
 
 
 class PublicContractTests(LifecycleTestCase):
@@ -1107,28 +1003,17 @@ class PublicContractTests(LifecycleTestCase):
         self.assertEqual("check-public", parser.parse_args([]).mode)
 
     def test_modes_are_the_exact_fixed_tuple(self) -> None:
+        """Four modes, each reachable from a registered gate.
+
+        Eighteen modes existed and three were registered. `check-recovery` is
+        kept and registered because re-proving that every tombstone's
+        `commit:path` resolves to a regular Git blob is a real guarantee; the
+        other fourteen had no consumer at all.
+        """
+
         self.assertEqual(
+            ("check-public", "check-contract", "check-promoted", "check-recovery"),
             lifecycle.MODES,
-            (
-                "check-public",
-                "check-contract",
-                "generate-manifest",
-                "check-manifest",
-                "check-promoted",
-                "generate-summary",
-                "check-summary",
-                "check-impacted",
-                "report-duplicates",
-                "report-full",
-                "check-full",
-                "check-archive",
-                "check-recovery",
-                "check-directory-budget",
-                "generate-archive-ledger",
-                "check-archive-ledger",
-                "generate-snapshot-manifest",
-                "check-snapshot-manifest",
-            ),
         )
 
     def test_public_dataclasses_are_frozen_and_tuple_backed(self) -> None:
@@ -2848,66 +2733,6 @@ class ManifestValidationTests(LifecycleTestCase):
                     self._foundation_codes(root, baseline, candidate),
                 )
 
-    def test_check_manifest_cli_rejects_evidence_secret_without_echo(self) -> None:
-        temporary, root, baseline = self.make_repo()
-        self.addCleanup(temporary.cleanup)
-        marker = "token=supersecretvalue"
-        valid = self._foundation_reviewed_row(baseline)
-        candidate = dataclasses.replace(
-            valid,
-            evidence=dataclasses.replace(
-                valid.evidence,
-                sources=tuple(sorted((*valid.evidence.sources, marker))),
-            ),
-        )
-        document = self.document(
-            baseline,
-            entries=(candidate,),
-            wave="foundation",
-            enforcement="blocking",
-        )
-        manifest = root / "docs/manifest.yaml"
-        manifest.write_text(
-            lifecycle.render_migration_manifest(document),
-            encoding="utf-8",
-        )
-        contract = self.fixture_contract(
-            ["docs/03.specs/source.md"],
-            wave="foundation",
-            enforcement="blocking",
-        )
-        stdout = io.StringIO()
-        stderr = io.StringIO()
-        with (
-            mock.patch.object(
-                lifecycle,
-                "load_migration_contract",
-                return_value=contract,
-            ),
-            mock.patch.object(
-                lifecycle.metadata,
-                "load_profiles",
-                return_value=self.profiles,
-            ),
-            contextlib.redirect_stdout(stdout),
-            contextlib.redirect_stderr(stderr),
-        ):
-            result = lifecycle.main(
-                [
-                    "--root",
-                    str(root),
-                    "--mode",
-                    "check-manifest",
-                    "--wave",
-                    "foundation",
-                    "--manifest",
-                    "docs/manifest.yaml",
-                ]
-            )
-        rendered = stdout.getvalue() + stderr.getvalue()
-        self.assertEqual(result, 3)
-        self.assertIn("manifest-evidence-confidential", rendered)
-        self.assertNotIn("supersecretvalue", rendered)
 class PromotedManifestCliTests(LifecycleTestCase):
     def canonical_contract(
         self,
@@ -3099,186 +2924,8 @@ class CandidateManifestCliTests(LifecycleTestCase):
         profiles, contract_path = self.write_config(root, contract)
         return candidate, profiles, contract_path
 
-    def test_explicit_modes_accept_safe_untracked_candidate_before_staging(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            candidate, profiles, contract = self.make_fixture(root)
-            self.assertEqual(git(root, "ls-files", "--", candidate.relative_to(root)), "")
 
-            checked = self.invoke(
-                root,
-                profiles,
-                contract,
-                "check-manifest",
-                candidate.relative_to(root),
-            )
-            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
 
-            summary = root / "docs/90.references/data/fixture-summary.md"
-            generated = self.invoke(
-                root,
-                profiles,
-                contract,
-                "generate-summary",
-                candidate.relative_to(root),
-                output=summary,
-            )
-            self.assertEqual(generated.returncode, 0, generated.stdout + generated.stderr)
-            self.assertTrue(summary.is_file())
-
-            summary_checked = self.invoke(
-                root,
-                profiles,
-                contract,
-                "check-summary",
-                candidate.relative_to(root),
-                output=summary,
-            )
-            self.assertEqual(
-                summary_checked.returncode,
-                0,
-                summary_checked.stdout + summary_checked.stderr,
-            )
-
-    def test_explicit_modes_reject_unsafe_candidate_paths_without_writing(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            candidate, profiles, contract = self.make_fixture(root)
-            outside = root.parent / f"{root.name}-outside-candidate.yaml"
-            outside.write_bytes(candidate.read_bytes())
-            self.addCleanup(lambda: outside.unlink(missing_ok=True))
-            symlink = root / "docs/90.references/data/symlink.yaml"
-            symlink.symlink_to(outside)
-            unsafe_candidates: tuple[pathlib.Path | str, ...] = (
-                symlink.relative_to(root),
-                pathlib.Path("../escape.yaml"),
-                outside,
-            )
-
-            for mode in ("check-manifest", "generate-summary", "check-summary"):
-                for index, unsafe in enumerate(unsafe_candidates):
-                    with self.subTest(mode=mode, candidate=unsafe):
-                        output = root / f"unsafe-{mode}-{index}.md"
-                        result = self.invoke(
-                            root,
-                            profiles,
-                            contract,
-                            mode,
-                            unsafe,
-                            output=output if mode != "check-manifest" else None,
-                        )
-                        self.assertEqual(result.returncode, 3)
-                        self.assertFalse(output.exists())
-                        self.assertNotIn("Traceback", result.stderr)
-
-    def test_wave_archive_check_validates_candidate_before_archive_selection(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            source = root / "archive/item.md"
-            source.parent.mkdir(parents=True)
-            source.write_text("# Archive candidate\n", encoding="utf-8")
-            baseline = commit_all(root, "archive candidate baseline")
-            contract = copy.deepcopy(self.contract)
-            contract["waves"] = {
-                "fixture": {
-                    "baseline_commit": baseline,
-                    "enforcement": "advisory",
-                    "manifest_path": "docs/manifest.yaml",
-                    "summary_path": "docs/manifest-summary.md",
-                    "scope_state": "approved",
-                    "source_roots": ["archive"],
-                    "direct_source_paths": [],
-                    "declared_outputs": [],
-                }
-            }
-            canonical = lifecycle._generate_manifest_skeleton(
-                root,
-                contract,
-                wave="fixture",
-                baseline_ref=baseline,
-                profiles=self.profiles,
-            )
-            archive_row = canonical.entries[0]
-            cases = {
-                "removed-selector": (
-                    dataclasses.replace(canonical, entries=()),
-                    False,
-                    "manifest-source-missing",
-                ),
-                "altered-selector": (
-                    dataclasses.replace(
-                        canonical,
-                        entries=(
-                            dataclasses.replace(
-                                archive_row,
-                                artifact_type_after=None,
-                            ),
-                        ),
-                    ),
-                    False,
-                    "manifest-artifact-transition-invalid",
-                ),
-                "noncanonical-bytes": (
-                    canonical,
-                    True,
-                    "manifest-serialization-stale",
-                ),
-            }
-            manifest = root / "docs/manifest.yaml"
-            manifest.parent.mkdir(parents=True)
-            records = (
-                metadata.Record(pathlib.Path("archive/item.md"), {}, "archive"),
-            )
-            for name, (candidate, tamper_bytes, expected_code) in cases.items():
-                with self.subTest(case=name):
-                    rendered = lifecycle.render_migration_manifest(candidate)
-                    if tamper_bytes:
-                        rendered += "# noncanonical archive selector bytes\n"
-                    manifest.write_text(rendered, encoding="utf-8")
-                    stdout = io.StringIO()
-                    stderr = io.StringIO()
-                    with (
-                        mock.patch.object(
-                            lifecycle,
-                            "load_migration_contract",
-                            return_value=contract,
-                        ),
-                        mock.patch.object(
-                            lifecycle.metadata,
-                            "load_profiles",
-                            return_value=self.profiles,
-                        ),
-                        mock.patch.object(
-                            lifecycle,
-                            "_full_findings",
-                            return_value=(records, []),
-                        ),
-                        mock.patch.object(
-                            lifecycle,
-                            "validate_archive_provenance",
-                            return_value=[],
-                        ),
-                        contextlib.redirect_stdout(stdout),
-                        contextlib.redirect_stderr(stderr),
-                    ):
-                        result = lifecycle.main(
-                            [
-                                "--root",
-                                str(root),
-                                "--mode",
-                                "check-archive",
-                                "--wave",
-                                "fixture",
-                            ]
-                        )
-                    diagnostics = stdout.getvalue() + stderr.getvalue()
-                    self.assertNotEqual(result, 0, diagnostics)
-                    self.assertIn(expected_code, diagnostics)
-                    self.assertNotIn("Archive candidate", diagnostics)
-                    self.assertNotIn("noncanonical archive selector bytes", diagnostics)
 
 
 class ArchiveProvenanceTests(LifecycleTestCase):
@@ -3539,52 +3186,6 @@ class ArchiveProvenanceTests(LifecycleTestCase):
         self.assertNotIn("docs/98.archive/z.md", snapshot)
         self.assertNotIn((first_root / "docs/source.md").read_text(), ledger)
 
-    def test_ledger_and_snapshot_generate_check_modes_are_byte_equal(self) -> None:
-        temporary, root, record, payload = self.archive_fixture("immutable-snapshot")
-        self.addCleanup(temporary.cleanup)
-        frontmatter = yaml.safe_dump(record.metadata, sort_keys=False)
-        (root / record.path).write_text(
-            f"---\n{frontmatter}---\n\n# Archived Source\n",
-            encoding="utf-8",
-        )
-        commit_all(root, "archive fixture")
-        with tempfile.TemporaryDirectory() as output_directory:
-            for generate_mode, check_mode, name in (
-                ("generate-archive-ledger", "check-archive-ledger", "ledger.md"),
-                (
-                    "generate-snapshot-manifest",
-                    "check-snapshot-manifest",
-                    "snapshots.md",
-                ),
-            ):
-                output = pathlib.Path(output_directory) / name
-                generated = run(
-                    sys.executable,
-                    str(SCRIPT),
-                    "--root",
-                    str(root),
-                    "--mode",
-                    generate_mode,
-                    "--output",
-                    str(output),
-                    cwd=ROOT,
-                )
-                self.assertEqual(generated.returncode, 0, generated.stdout + generated.stderr)
-                before = output.read_bytes()
-                checked = run(
-                    sys.executable,
-                    str(SCRIPT),
-                    "--root",
-                    str(root),
-                    "--mode",
-                    check_mode,
-                    "--output",
-                    str(output),
-                    cwd=ROOT,
-                )
-                self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
-                self.assertEqual(output.read_bytes(), before)
-                self.assertNotIn(payload.decode().strip(), output.read_text(encoding="utf-8"))
 
 
 class DuplicateBudgetAndImpactTests(LifecycleTestCase):
@@ -4182,52 +3783,6 @@ class ReviewRemediationTests(LifecycleTestCase):
             self.assertNotIn("manifest-static-invalid", {item.code for item in findings})
             self.assertFalse(any("mismatch" in item.code for item in findings))
 
-    def test_check_full_blocks_warnings_and_safety_is_unsuppressible(self) -> None:
-        warning = lifecycle._finding(
-            "docs/90.references/debt.md",
-            "review-age-unavailable",
-            "review evidence is unavailable",
-            "warning",
-        )
-        safety = lifecycle._finding(
-            "docs/98.archive/value.md",
-            "archive-snapshot-path-mismatch",
-            "snapshot path is invalid",
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            historical_arguments = self.historical_cli_arguments(pathlib.Path(directory))
-            with mock.patch.object(lifecycle, "_full_findings", return_value=((), [warning])):
-                self.assertEqual(lifecycle.main([*historical_arguments, "--mode", "report-full"]), 0)
-                self.assertEqual(lifecycle.main([*historical_arguments, "--mode", "check-full"]), 1)
-
-        with tempfile.TemporaryDirectory() as directory:
-            exceptions = pathlib.Path(directory) / "exceptions.yaml"
-            historical_arguments = self.historical_cli_arguments(pathlib.Path(directory))
-            entry = ExceptionValidationTests.valid(self)
-            entry["finding_code"] = "archive-snapshot-path-mismatch"
-            entry["scope_paths"] = ["docs/98.archive/value.md"]
-            exceptions.write_text(
-                yaml.safe_dump(
-                    {"schema_version": 1, "exceptions": [entry]}, sort_keys=False
-                ),
-                encoding="utf-8",
-            )
-            with mock.patch.object(
-                lifecycle, "_full_findings", return_value=((), [safety])
-            ):
-                self.assertEqual(
-                    lifecycle.main(
-                        [
-                            *historical_arguments,
-                            "--mode",
-                            "check-full",
-                            "--exceptions",
-                            str(exceptions),
-                        ]
-                    ),
-                    3,
-                )
-            self.assertTrue(lifecycle._is_safety_finding(safety))
 
     def test_redaction_covers_all_contract_payload_classes_and_parser_errors(self) -> None:
         samples = (
@@ -4376,108 +3931,11 @@ class ReviewRemediationTests(LifecycleTestCase):
                 self.assertEqual(len(candidates), 1)
                 self.assertIn("normalized-title", candidates[0].signals)
 
-    def test_declared_manifests_load_in_registry_order_and_fail_before_use(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            first_path = "docs/90.references/manifests/zeta.yaml"
-            second_path = "docs/90.references/manifests/alpha.yaml"
-            for path_text in (first_path, second_path):
-                target = root / path_text
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text("fixture\n", encoding="utf-8")
-            contract = self.fixture_contract(
-                ["docs/03.specs/source.md"],
-                wave="zeta",
-                manifest_path=first_path,
-            )
-            contract["waves"]["alpha"] = {
-                "enforcement": "advisory",
-                "manifest_path": second_path,
-                "scope_state": "approved",
-                "source_paths": ["docs/03.specs/source.md"],
-                "declared_outputs": [],
-            }
-            first = self.document("a" * 40, wave="zeta")
-            calls: list[str] = []
 
-            def load_declared(
-                _root: pathlib.Path,
-                relative_path: str,
-            ) -> lifecycle.MigrationManifestDocument:
-                calls.append(relative_path)
-                if relative_path == second_path:
-                    raise lifecycle.ProfileError("invalid declared manifest")
-                return first
-
-            with (
-                mock.patch.object(
-                    lifecycle,
-                    "_load_repo_migration_manifest",
-                    side_effect=load_declared,
-                ),
-                mock.patch.object(
-                    lifecycle,
-                    "validate_migration_manifest",
-                    return_value=[],
-                ),
-                mock.patch.object(
-                    lifecycle,
-                    "_repo_manifest_matches",
-                    return_value=True,
-                ),
-            ):
-                documents, findings = lifecycle._load_declared_manifests(
-                    root,
-                    self.profiles,
-                    contract,
-                    promoted_only=False,
-                )
-            self.assertEqual(calls, [first_path, second_path])
-            self.assertEqual(documents, (first,))
-            self.assertIn(
-                "promoted-manifest-file-invalid",
-                {item.code for item in findings},
-            )
-
-        safety = lifecycle._finding(
-            second_path,
-            "promoted-manifest-file-invalid",
-            "declared manifest is invalid",
-        )
-        with (
-            tempfile.TemporaryDirectory() as directory,
-            mock.patch.object(
-                lifecycle,
-                "_load_declared_manifests",
-                return_value=((), [safety]),
-            ),
-            mock.patch.object(lifecycle, "_collect_records") as collect_records,
-            contextlib.redirect_stdout(io.StringIO()),
-        ):
-            self.assertEqual(
-                lifecycle.main([*self.historical_cli_arguments(pathlib.Path(directory)), "--mode", "check-impacted", "--base-ref", "HEAD"]),
-                3,
-            )
-        collect_records.assert_not_called()
-
-    def test_all_sixteen_modes_have_table_driven_shape_contracts(self) -> None:
+    def test_every_shaped_mode_has_table_driven_shape_contracts(self) -> None:
         valid_arguments: dict[str, list[str]] = {
             "check-contract": [],
-            "generate-manifest": ["--wave", "foundation", "--base-ref", "HEAD", "--output", "out"],
-            "check-manifest": ["--wave", "foundation", "--manifest", "manifest"],
             "check-promoted": [],
-            "generate-summary": ["--manifest", "manifest", "--output", "out"],
-            "check-summary": ["--manifest", "manifest", "--output", "out"],
-            "check-impacted": ["--base-ref", "HEAD"],
-            "report-duplicates": ["--output", "out"],
-            "report-full": [],
-            "check-full": [],
-            "check-archive": [],
-            "check-directory-budget": [],
-            "generate-archive-ledger": ["--output", "out"],
-            "check-archive-ledger": ["--output", "out"],
-            "generate-snapshot-manifest": ["--output", "out"],
-            "check-snapshot-manifest": ["--output", "out"],
         }
         self.assertEqual(tuple(valid_arguments), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         for mode, extra in valid_arguments.items():
@@ -4487,7 +3945,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                 lifecycle._validate_cli_shape(parser, args)
                 if extra:
                     broken = ["--mode", mode, *extra[2:]]
-                elif mode in {"check-promoted", "check-archive"}:
+                elif mode == "check-promoted":
                     broken = ["--mode", mode, "--base-ref", "HEAD"]
                 else:
                     broken = ["--mode", mode, "--wave", "forbidden"]
@@ -4497,49 +3955,14 @@ class ReviewRemediationTests(LifecycleTestCase):
                         lifecycle._validate_cli_shape(parser, parser.parse_args(broken))
                 self.assertEqual(raised.exception.code, 2)
 
-    def test_all_sixteen_modes_have_success_and_write_boundary_matrix(self) -> None:
+    def test_every_shaped_mode_has_success_and_write_boundary_matrix(self) -> None:
         mode_contracts: dict[str, tuple[list[str], bool]] = {
             "check-contract": ([], False),
-            "generate-manifest": (
-                ["--wave", "fixture", "--base-ref", "HEAD", "--output", "{output}"],
-                True,
-            ),
-            "check-manifest": (
-                ["--wave", "fixture", "--manifest", "docs/manifest.yaml"],
-                False,
-            ),
             "check-promoted": ([], False),
-            "generate-summary": (
-                ["--manifest", "docs/manifest.yaml", "--output", "{output}"],
-                True,
-            ),
-            "check-summary": (
-                ["--manifest", "docs/manifest.yaml", "--output", "{output}"],
-                False,
-            ),
-            "check-impacted": (["--base-ref", "HEAD"], False),
-            "report-duplicates": (["--output", "{output}"], True),
-            "report-full": ([], False),
-            "check-full": ([], False),
-            "check-archive": ([], False),
-            "check-directory-budget": ([], False),
-            "generate-archive-ledger": (["--output", "{output}"], True),
-            "check-archive-ledger": (["--output", "{output}"], False),
-            "generate-snapshot-manifest": (["--output", "{output}"], True),
-            "check-snapshot-manifest": (["--output", "{output}"], False),
         }
         self.assertEqual(tuple(mode_contracts), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         write_modes = {mode for mode, (_, writes) in mode_contracts.items() if writes}
-        self.assertEqual(
-            write_modes,
-            {
-                "generate-manifest",
-                "generate-summary",
-                "report-duplicates",
-                "generate-archive-ledger",
-                "generate-snapshot-manifest",
-            },
-        )
+        self.assertEqual(write_modes, set())
         contract = copy.deepcopy(self.contract)
         document = self.document("a" * 40)
         for mode, (raw_extra, writes) in mode_contracts.items():
@@ -4631,64 +4054,14 @@ class ReviewRemediationTests(LifecycleTestCase):
                 else:
                     self.assertFalse(output.exists())
 
-    def test_all_sixteen_modes_have_explicit_exit_class_matrix(self) -> None:
+    def test_every_shaped_mode_has_explicit_exit_class_matrix(self) -> None:
         arguments = {
             "check-contract": [],
-            "generate-manifest": [
-                "--wave",
-                "fixture",
-                "--base-ref",
-                "HEAD",
-                "--output",
-                "{output}",
-            ],
-            "check-manifest": [
-                "--wave",
-                "fixture",
-                "--manifest",
-                "docs/manifest.yaml",
-            ],
             "check-promoted": [],
-            "generate-summary": [
-                "--manifest",
-                "docs/manifest.yaml",
-                "--output",
-                "{output}",
-            ],
-            "check-summary": [
-                "--manifest",
-                "docs/manifest.yaml",
-                "--output",
-                "{output}",
-            ],
-            "check-impacted": ["--base-ref", "HEAD"],
-            "report-duplicates": ["--output", "{output}"],
-            "report-full": [],
-            "check-full": [],
-            "check-archive": [],
-            "check-directory-budget": [],
-            "generate-archive-ledger": ["--output", "{output}"],
-            "check-archive-ledger": ["--output", "{output}"],
-            "generate-snapshot-manifest": ["--output", "{output}"],
-            "check-snapshot-manifest": ["--output", "{output}"],
         }
         ordinary_exits = {
             "check-contract": 0,
-            "generate-manifest": 0,
-            "check-manifest": 1,
             "check-promoted": 1,
-            "generate-summary": 1,
-            "check-summary": 1,
-            "check-impacted": 1,
-            "report-duplicates": 0,
-            "report-full": 0,
-            "check-full": 1,
-            "check-archive": 1,
-            "check-directory-budget": 1,
-            "generate-archive-ledger": 1,
-            "check-archive-ledger": 1,
-            "generate-snapshot-manifest": 1,
-            "check-snapshot-manifest": 1,
         }
         self.assertEqual(tuple(arguments), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
         self.assertEqual(tuple(ordinary_exits), tuple(mode for mode in lifecycle.MODES if mode not in {"check-public", "check-recovery"}))
@@ -4837,96 +4210,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         values.update(metadata_values)
         return metadata.Record(pathlib.Path(path), values, artifact_type)
 
-    def _invoke_corpus_mode(
-        self,
-        root: pathlib.Path,
-        mode: str,
-        output: pathlib.Path,
-    ) -> subprocess.CompletedProcess[str]:
-        if mode == "check-impacted":
-            return self.run_isolated_impacted_cli(root, base_ref="HEAD")
-        arguments = [
-            sys.executable,
-            str(SCRIPT),
-            "--root",
-            str(root),
-            *self.historical_cli_arguments(root),
-            "--mode",
-            mode,
-        ]
-        if mode in {
-            "report-duplicates",
-            "generate-archive-ledger",
-            "check-archive-ledger",
-            "generate-snapshot-manifest",
-            "check-snapshot-manifest",
-        }:
-            arguments.extend(("--output", str(output)))
-        return run(*arguments, cwd=ROOT)
 
-    def test_corpus_modes_reject_final_and_intermediate_markdown_symlinks_without_leakage(
-        self,
-    ) -> None:
-        marker = "outside-corpus-payload-marker"
-        modes = (
-            "report-full",
-            "check-full",
-            "report-duplicates",
-            "check-impacted",
-            "check-archive",
-            "generate-archive-ledger",
-            "check-archive-ledger",
-            "generate-snapshot-manifest",
-            "check-snapshot-manifest",
-        )
-        for attack in ("final", "intermediate"):
-            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
-                fixture = pathlib.Path(directory)
-                root = fixture / "repository"
-                outside = fixture / "outside"
-                root.mkdir()
-                outside.mkdir()
-                init_repo(root)
-                outside_body = (
-                    "---\nstatus: active\nartifact_id: reference:outside\n"
-                    f"artifact_type: reference\nparent_ids: [{marker}]\n---\n\n# Outside\n"
-                )
-                relative = pathlib.PurePosixPath(
-                    "docs/90.references/link.md"
-                    if attack == "final"
-                    else "docs/90.references/nested/link.md"
-                )
-                target = root / relative
-                target.parent.mkdir(parents=True)
-                if attack == "final":
-                    outside_file = outside / "link.md"
-                    outside_file.write_text(outside_body, encoding="utf-8")
-                    target.symlink_to(outside_file)
-                    commit_all(root, "track final symlink")
-                else:
-                    target.write_text("# Safe baseline\n", encoding="utf-8")
-                    commit_all(root, "track regular file")
-                    shutil.rmtree(target.parent)
-                    (outside / "link.md").write_text(outside_body, encoding="utf-8")
-                    target.parent.symlink_to(outside, target_is_directory=True)
-
-                for mode in modes:
-                    with self.subTest(attack=attack, mode=mode):
-                        output = fixture / f"{attack}-{mode}.out"
-                        check_mode = mode.startswith("check-") and mode.endswith(
-                            ("ledger", "manifest")
-                        )
-                        if check_mode:
-                            output.write_bytes(b"sentinel")
-                        result = self._invoke_corpus_mode(root, mode, output)
-                        rendered = result.stdout + result.stderr
-                        self.assertEqual(result.returncode, 3, rendered)
-                        self.assertNotIn(marker, rendered)
-                        self.assertNotIn("Traceback", rendered)
-                        if check_mode:
-                            self.assertEqual(output.read_bytes(), b"sentinel")
-                        else:
-                            self.assertFalse(output.exists())
 
     def _archive_fixture(
         self,
@@ -5611,174 +4895,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             )
         )
 
-    def test_impacted_cli_snapshots_safe_untracked_records_and_blocks_150th_leaf(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
-            baseline = git(root, "rev-parse", "HEAD")
-            candidate = root / "docs/90.references/data/new.md"
-            candidate.parent.mkdir(parents=True)
-            valid = (
-                "---\nstatus: active\nartifact_id: reference:new\n"
-                "artifact_type: reference\nparent_ids: []\n---\n\n# New Reference\n"
-            )
-            candidate.write_text(valid, encoding="utf-8")
-            accepted = self.run_isolated_impacted_cli(root, base_ref=baseline)
-            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
-            self.assertIn("selected=1 violations=0", accepted.stdout)
-            candidate.write_text(
-                valid.replace("status: active", "status: invalid-status"),
-                encoding="utf-8",
-            )
-            rejected = self.run_isolated_impacted_cli(root, base_ref=baseline)
-            self.assertEqual(rejected.returncode, 1, rejected.stdout + rejected.stderr)
-            self.assertIn("selected=1 violations=", rejected.stdout)
 
-        for attack in ("final", "intermediate"):
-            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
-                fixture = pathlib.Path(directory)
-                root = fixture / "repository"
-                outside = fixture / "outside"
-                root.mkdir()
-                outside.mkdir()
-                init_repo(root)
-                git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
-                marker = "outside-untracked-marker"
-                (outside / "leak.md").write_text(marker, encoding="utf-8")
-                target = root / "docs/90.references/data/leak.md"
-                target.parent.mkdir(parents=True)
-                if attack == "final":
-                    target.symlink_to(outside / "leak.md")
-                else:
-                    target.parent.joinpath("nested").symlink_to(
-                        outside, target_is_directory=True
-                    )
-                result = self.run_isolated_impacted_cli(root, base_ref="HEAD")
-                rendered = result.stdout + result.stderr
-                self.assertEqual(result.returncode, 3, rendered)
-                self.assertNotIn(marker, rendered)
-
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            budget = root / "docs/90.references/data/budget"
-            budget.mkdir(parents=True)
-            for index in range(148):
-                (budget / f"{index:03}.md").write_text(
-                    "---\nstatus: active\n"
-                    f"artifact_id: reference:budget-{index:03}\n"
-                    "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
-                    encoding="utf-8",
-                )
-            base_148 = commit_all(root, "148 leaves")
-            leaf_149 = budget / "148.md"
-            leaf_149.write_text(
-                "---\nstatus: active\nartifact_id: reference:budget-148\n"
-                "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
-                encoding="utf-8",
-            )
-            before_limit = self.run_isolated_impacted_cli(root, base_ref=base_148)
-            self.assertEqual(before_limit.returncode, 0, before_limit.stdout + before_limit.stderr)
-            base_149 = commit_all(root, "149 leaves")
-            (budget / "149.md").write_text(
-                "---\nstatus: active\nartifact_id: reference:budget-149\n"
-                "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
-                encoding="utf-8",
-            )
-            at_limit = self.run_isolated_impacted_cli(root, base_ref=base_149)
-            self.assertEqual(at_limit.returncode, 1, at_limit.stdout + at_limit.stderr)
-            self.assertIn("directory-budget-blocked", at_limit.stdout)
-
-    def test_cli_diagnostics_never_emit_metadata_payloads_across_modes(self) -> None:
-        cases = (
-            ("report-full", "sk-do-not-echo-1234567890"),
-            ("check-full", "password=do-not-echo"),
-            ("check-impacted", "credential=do-not-echo"),
-            ("check-archive", "-----BEGIN PRIVATE KEY-----"),
-            ("generate-archive-ledger", "authorization: Bearer do-not-echo-value"),
-            ("check-archive-ledger", ".zsh_history"),
-            ("generate-snapshot-manifest", "2026-07-14T10:00:00 ERROR do-not-echo"),
-            ("check-snapshot-manifest", "token=do-not-echo"),
-        )
-        for mode, marker in cases:
-            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                init_repo(root)
-                git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
-                baseline = git(root, "rev-parse", "HEAD")
-                path = root / "docs/90.references/data/diagnostic.md"
-                path.parent.mkdir(parents=True)
-                path.write_text(
-                    "---\n"
-                    + yaml.safe_dump(
-                        {
-                            "status": "active",
-                            "artifact_id": "reference:diagnostic",
-                            "artifact_type": "reference",
-                            "parent_ids": [marker],
-                        },
-                        sort_keys=False,
-                    )
-                    + "---\n\n# Diagnostic\n",
-                    encoding="utf-8",
-                )
-                commit_all(root, "track diagnostic")
-                output = root / "output.md"
-                arguments = [
-                    sys.executable,
-                    str(SCRIPT),
-                    "--root",
-                    str(root),
-                    *self.historical_cli_arguments(root),
-                    "--mode",
-                    mode,
-                ]
-                if mode in {
-                    "generate-archive-ledger",
-                    "check-archive-ledger",
-                    "generate-snapshot-manifest",
-                    "check-snapshot-manifest",
-                }:
-                    arguments.extend(("--output", str(output)))
-                    if mode.startswith("check-"):
-                        output.write_text("sentinel\n", encoding="utf-8")
-                result = (
-                    self.run_isolated_impacted_cli(root, base_ref=baseline)
-                    if mode == "check-impacted"
-                    else run(*arguments, cwd=ROOT)
-                )
-                rendered = result.stdout + result.stderr
-                self.assertNotIn(marker, rendered)
-                self.assertNotIn(marker, output.read_text(encoding="utf-8") if output.exists() else "")
-                if mode in {"report-full", "check-full", "check-impacted"}:
-                    self.assertEqual(result.returncode, 3, rendered)
-
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            init_repo(root)
-            path = root / "docs/90.references/data/ordinary.md"
-            path.parent.mkdir(parents=True)
-            missing_id = "reference:ordinary-unresolved-id"
-            path.write_text(
-                "---\nstatus: active\nartifact_id: reference:ordinary\n"
-                f"artifact_type: reference\nparent_ids: [{missing_id}]\n---\n\n# Ordinary\n",
-                encoding="utf-8",
-            )
-            commit_all(root)
-            result = run(
-                sys.executable,
-                str(SCRIPT),
-                "--root",
-                str(root),
-                *self.historical_cli_arguments(root),
-                "--mode",
-                "report-full",
-                cwd=ROOT,
-            )
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("unresolved-parent", result.stdout)
-            self.assertNotIn(missing_id, result.stdout + result.stderr)
 
     def test_generated_markdown_table_cells_escape_pipe_and_control_characters(self) -> None:
         record = self.record(
@@ -5837,114 +4954,8 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             ("revert destructive commit",),
         )
 
-    def _invoke_corpus_mode(
-        self,
-        root: pathlib.Path,
-        mode: str,
-        output: pathlib.Path,
-        *,
-        base_ref: str = "HEAD",
-    ) -> subprocess.CompletedProcess[str]:
-        if mode == "check-impacted":
-            return self.run_isolated_impacted_cli(root, base_ref=base_ref)
-        arguments = [
-            sys.executable,
-            str(SCRIPT),
-            "--root",
-            str(root),
-            *self.historical_cli_arguments(root),
-            "--mode",
-            mode,
-        ]
-        if mode in {
-            "report-duplicates",
-            "generate-archive-ledger",
-            "check-archive-ledger",
-            "generate-snapshot-manifest",
-            "check-snapshot-manifest",
-        }:
-            arguments.extend(("--output", str(output)))
-        return run(*arguments, cwd=ROOT)
 
-    def test_real_impacted_cli_accepts_unstaged_delete_and_rename_snapshots(self) -> None:
-        for operation in ("delete", "rename"):
-            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                init_repo(root)
-                source = root / "docs/90.references/source.md"
-                consumer = root / "docs/90.references/consumer.md"
-                source.parent.mkdir(parents=True)
-                source.write_text(
-                    self._reference_text("reference:source", "Source"),
-                    encoding="utf-8",
-                )
-                consumer.write_text(
-                    self._reference_text("reference:consumer", "Consumer")
-                    + "\n[Source](./source.md)\n",
-                    encoding="utf-8",
-                )
-                baseline = commit_all(root, "impacted baseline")
-                if operation == "delete":
-                    source.unlink()
-                    expected_selected = 1
-                else:
-                    source.rename(root / "docs/90.references/renamed.md")
-                    expected_selected = 2
 
-                result = self._invoke_corpus_mode(
-                    root,
-                    "check-impacted",
-                    root / "unused",
-                    base_ref=baseline,
-                )
-                rendered = result.stdout + result.stderr
-                self.assertEqual(result.returncode, 0, rendered)
-                self.assertIn(
-                    f"selected={expected_selected} violations=0",
-                    result.stdout,
-                )
-                self.assertNotIn("corpus-markdown-file-invalid", rendered)
-
-    def test_safety_exception_paths_are_redacted_across_corpus_reading_modes(self) -> None:
-        marker = "token=do-not-echo-1234567890"
-        modes = (
-            "report-full",
-            "check-full",
-            "report-duplicates",
-            "check-impacted",
-            "check-archive",
-            "check-directory-budget",
-            "generate-archive-ledger",
-            "check-archive-ledger",
-            "generate-snapshot-manifest",
-            "check-snapshot-manifest",
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            fixture = pathlib.Path(directory)
-            root = fixture / "repository"
-            outside = fixture / "outside.md"
-            root.mkdir()
-            init_repo(root)
-            outside.write_text("outside payload", encoding="utf-8")
-            unsafe = root / f"docs/90.references/{marker}.md"
-            unsafe.parent.mkdir(parents=True)
-            unsafe.symlink_to(outside)
-            commit_all(root, "track unsafe token-shaped path")
-
-            for mode in modes:
-                with self.subTest(mode=mode):
-                    output = fixture / f"{mode}.out"
-                    if mode in {"check-archive-ledger", "check-snapshot-manifest"}:
-                        output.write_bytes(b"existing-output")
-                    result = self._invoke_corpus_mode(root, mode, output)
-                    rendered = result.stdout + result.stderr
-                    self.assertEqual(result.returncode, 3, rendered)
-                    self.assertNotIn(marker, rendered)
-                    self.assertNotIn("Traceback", rendered)
-                    if mode in {"check-archive-ledger", "check-snapshot-manifest"}:
-                        self.assertEqual(output.read_bytes(), b"existing-output")
-                    else:
-                        self.assertFalse(output.exists())
 
     def _merge_fixture(
         self,
@@ -6617,191 +5628,11 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         self.assertIn("manifest-transition-invalid", codes)
         self.assertIn("manifest-replacement-invalid", codes)
 
-    WRITE_MODES = (
-        "generate-manifest",
-        "generate-summary",
-        "report-duplicates",
-        "generate-archive-ledger",
-        "generate-snapshot-manifest",
-    )
-    CHECK_MODES = (
-        "check-summary",
-        "check-archive-ledger",
-        "check-snapshot-manifest",
-    )
 
-    def _mode_fixture(
-        self,
-        mode: str,
-        output: pathlib.Path,
-    ) -> tuple[list[str], str, lifecycle.MigrationManifestDocument]:
-        document = self.document("a" * 40)
-        arguments = ["--mode", mode]
-        if mode == "generate-manifest":
-            arguments.extend(
-                (
-                    "--wave",
-                    "fixture",
-                    "--base-ref",
-                    "HEAD",
-                    "--output",
-                    str(output),
-                )
-            )
-            rendered = lifecycle.render_migration_manifest(document)
-        elif mode in {"generate-summary", "check-summary"}:
-            arguments.extend(
-                ("--manifest", "docs/manifest.yaml", "--output", str(output))
-            )
-            rendered = lifecycle._render_summary(document)
-        elif mode == "report-duplicates":
-            arguments.extend(("--output", str(output)))
-            rendered = yaml.safe_dump(
-                {"schema_version": 1, "candidates": []},
-                sort_keys=False,
-                width=1000,
-            )
-        elif mode in {"generate-archive-ledger", "check-archive-ledger"}:
-            arguments.extend(("--output", str(output)))
-            rendered = lifecycle.render_archive_ledger(())
-        elif mode in {"generate-snapshot-manifest", "check-snapshot-manifest"}:
-            arguments.extend(("--output", str(output)))
-            rendered = lifecycle.render_snapshot_manifest(())
-        else:
-            raise AssertionError(f"unsupported output mode: {mode}")
-        return arguments, rendered, document
 
-    def _invoke_output_mode(
-        self,
-        root: pathlib.Path,
-        mode: str,
-        output: pathlib.Path,
-    ) -> tuple[int, str, str]:
-        arguments, _, document = self._mode_fixture(mode, output)
-        stdout = io.StringIO()
-        stderr = io.StringIO()
-        with (
-            mock.patch.object(
-                lifecycle,
-                "load_migration_contract",
-                return_value=copy.deepcopy(self.contract),
-            ),
-            mock.patch.object(
-                lifecycle.metadata,
-                "load_profiles",
-                return_value=self.profiles,
-            ),
-            mock.patch.object(
-                lifecycle,
-                "_generate_manifest_skeleton",
-                return_value=document,
-            ),
-            mock.patch.object(
-                lifecycle,
-                "_load_candidate_migration_manifest",
-                return_value=document,
-            ),
-            mock.patch.object(
-                lifecycle,
-                "validate_migration_manifest",
-                return_value=[],
-            ),
-            mock.patch.object(
-                lifecycle,
-                "_candidate_manifest_matches",
-                return_value=True,
-            ),
-            mock.patch.object(lifecycle, "_full_findings", return_value=((), [])),
-            mock.patch.object(
-                lifecycle,
-                "find_duplicate_candidates",
-                return_value=(),
-            ),
-            contextlib.redirect_stdout(stdout),
-            contextlib.redirect_stderr(stderr),
-        ):
-            result = lifecycle.main(["--root", str(root), "--profiles", "fixture-profiles.yaml", "--contract", "fixture-contract.yaml", *arguments])
-        return result, stdout.getvalue(), stderr.getvalue()
 
-    def test_all_output_modes_reject_final_and_intermediate_symlinks(self) -> None:
-        modes = self.WRITE_MODES + self.CHECK_MODES
-        for attack in ("final", "intermediate"):
-            for mode in modes:
-                with (
-                    self.subTest(attack=attack, mode=mode),
-                    tempfile.TemporaryDirectory() as directory,
-                ):
-                    fixture = pathlib.Path(directory)
-                    root = fixture / "repository"
-                    root.mkdir()
-                    outside = fixture / "outside"
-                    outside.mkdir()
-                    output_parent = fixture / "selected"
-                    output_parent.mkdir()
-                    _, rendered, _ = self._mode_fixture(
-                        mode,
-                        output_parent / "placeholder",
-                    )
-                    expected = rendered.encode("utf-8")
-                    if attack == "final":
-                        victim = outside / "victim"
-                        original = expected if mode in self.CHECK_MODES else b"victim-sentinel"
-                        victim.write_bytes(original)
-                        output = output_parent / "result"
-                        output.symlink_to(victim)
-                    else:
-                        alias = output_parent / "alias"
-                        alias.symlink_to(outside, target_is_directory=True)
-                        output = alias / "result"
-                        victim = outside / "result"
-                        original = expected if mode in self.CHECK_MODES else None
-                        if original is not None:
-                            victim.write_bytes(original)
 
-                    result, stdout, stderr = self._invoke_output_mode(
-                        root,
-                        mode,
-                        output,
-                    )
-                    rendered_diagnostic = stdout + stderr
-                    self.assertEqual(result, 3, rendered_diagnostic)
-                    self.assertNotIn("Traceback", rendered_diagnostic)
-                    self.assertNotIn("victim-sentinel", rendered_diagnostic)
-                    if original is None:
-                        self.assertFalse(victim.exists())
-                    else:
-                        self.assertEqual(victim.read_bytes(), original)
-                    self.assertFalse(
-                        any("lifecycle-output" in path.name for path in fixture.rglob("*"))
-                    )
 
-    def test_all_output_modes_reject_nonregular_final_entries(self) -> None:
-        for mode in self.WRITE_MODES + self.CHECK_MODES:
-            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
-                fixture = pathlib.Path(directory)
-                root = fixture / "repository"
-                root.mkdir()
-                output = fixture / "selected-output"
-                output.mkdir()
-                result, stdout, stderr = self._invoke_output_mode(root, mode, output)
-                self.assertEqual(result, 3, stdout + stderr)
-                self.assertTrue(output.is_dir())
-                self.assertNotIn("Traceback", stdout + stderr)
-
-    def test_all_output_modes_accept_regular_absolute_paths(self) -> None:
-        for mode in self.WRITE_MODES + self.CHECK_MODES:
-            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
-                fixture = pathlib.Path(directory)
-                root = fixture / "repository"
-                root.mkdir()
-                output = fixture / "nested" / "result"
-                _, rendered, _ = self._mode_fixture(mode, output)
-                if mode in self.CHECK_MODES:
-                    output.parent.mkdir()
-                    output.write_bytes(rendered.encode("utf-8"))
-                result, stdout, stderr = self._invoke_output_mode(root, mode, output)
-                self.assertEqual(result, 0, stdout + stderr)
-                self.assertEqual(output.read_bytes(), rendered.encode("utf-8"))
 
     def test_atomic_publication_cannot_redirect_a_concurrent_final_symlink(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

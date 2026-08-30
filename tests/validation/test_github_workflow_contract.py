@@ -224,7 +224,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         # metadata suite, which ran under no profile while it was red.
         # 87 since 2026-08-30: leaf.local-hook-rule-tests, covering the evaluator
         # that finally reads the Stage 00 hook rules.
-        self.assertEqual(87, len(contract.gate_registry.nodes))
+        # 88 since 2026-08-31: leaf.local-document-corpus-recovery, which
+        # registers check-recovery. That mode already re-proved every tombstone
+        # commit:path resolves to a regular Git blob, but no profile ran it.
+        self.assertEqual(88, len(contract.gate_registry.nodes))
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,

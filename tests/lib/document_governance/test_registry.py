@@ -146,7 +146,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(self) -> None:
         from scripts.lib.document_governance import (
-            architecture, archive, identity_history, provenance_policy, requirements, spec_packages,
+            architecture, archive, identity_history, requirements, spec_packages,
         )
 
         def read_spec(path):
@@ -161,7 +161,7 @@ class DocumentRegistryTests(unittest.TestCase):
         readers = (
             lambda path: registry_module._read_regular_file(path, 1024),
             architecture._read_regular_utf8, archive._read_regular,
-            identity_history._read_identity_source, provenance_policy._read_regular,
+            identity_history._read_identity_source,
             requirements._read_regular_utf8, read_spec,
         )
         real_open = os.open
