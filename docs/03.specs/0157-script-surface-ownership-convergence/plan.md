@@ -38,6 +38,7 @@ directory produces a tidier version of the same excess.
 - Modify: `scripts/lib/document_governance/suite_registry.py` — the `check-public` binding
 - Modify: `.github/workflow-contract.yml` — add a `check-recovery` leaf beside the existing contract and promoted leaves
 - Modify: `tests/validation/test_document_corpus_lifecycle.py` — `test_modes_are_the_exact_fixed_tuple` at line 1109, and the three `test_all_sixteen_modes_*` matrices at 4463, 4500, 4634
+- Modify: `.github/workflows/document-corpus-lifecycle.yml` — remove the three non-gating steps
 - Delete: `scripts/lib/document_governance/provenance_policy.py`, `tests/lib/document_governance/test_provenance_policy.py`
 
 **Interfaces:**
@@ -45,10 +46,17 @@ directory produces a tidier version of the same excess.
 - Consumes: nothing from earlier tasks.
 - Produces: `MODES = ("check-public", "check-contract", "check-promoted", "check-recovery")`, a four-element tuple every later task may assume.
 
-- [ ] **Step 1: Record which modes a gate reaches, before deleting anything**
+- [ ] **Step 1: Record every consumer of every mode, before deleting anything**
+
+A mode has three possible consumers and all three are searched. An earlier
+version of this step read only the first two, reported three reachable modes,
+and authorised deleting three that a scheduled workflow invokes. A partial
+search cannot prove absence.
 
 ```bash
+echo "=== suite registry ==="
 grep -n "check-document-corpus-lifecycle" scripts/lib/document_governance/suite_registry.py
+echo "=== workflow contract leaves ==="
 python3 - <<'PY'
 import re, pathlib
 t = pathlib.Path(".github/workflow-contract.yml").read_text()
@@ -58,11 +66,22 @@ for g, e, a in re.findall(
     if "corpus-lifecycle" in e:
         print(g, "->", " ".join(re.findall(r'"([^"]+)"', a)))
 PY
+echo "=== workflow run: lines ==="
+grep -rn "check-document-corpus-lifecycle.py" .github/workflows/
+echo "=== every other caller in the repository ==="
+grep -rn "check-document-corpus-lifecycle.py" --include='*.sh' --include='*.py' --include='*.yml' --include='*.yaml' . \
+  | grep -vE "^\./(\.git|graphify-out|docs)/"
 ```
 
-Expected: `check-public` from the suite registry, `check-contract` and
-`check-promoted` from the workflow contract. Write the three into the Task. If
-the output differs, stop and reconcile before deleting a mode.
+Expected at the time of writing: `check-public` from the suite registry,
+`check-contract` and `check-promoted` from the workflow contract, and
+`check-contract`, `check-promoted`, `check-impacted`, `report-full`,
+`report-duplicates` from `.github/workflows/document-corpus-lifecycle.yml`.
+Six distinct modes. Write every line of output into the Task.
+
+If a mode appears that this step does not list, stop and reconcile before
+deleting it. `main` at the time of writing has exactly these; anything else is
+new information.
 
 - [ ] **Step 2: Write the failing test for the reduced tuple**
 
@@ -93,7 +112,30 @@ PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
 
 Expected: FAIL, an 18-tuple against the 4-tuple.
 
-- [ ] **Step 4: Reduce `MODES` and delete the unreachable mode bodies**
+- [ ] **Step 4: Retire the three non-gating workflow steps**
+
+`.github/workflows/document-corpus-lifecycle.yml` invokes `check-impacted`,
+`report-full`, and `report-duplicates` on a weekly schedule. None of them
+gates: the two reports print debt into a log with no artifact upload and no
+failure condition, and `check-impacted --base-ref HEAD~1` on a scheduled run
+compares the tip against its parent, which is not what the week changed.
+Delete those three steps. Keep `Checkout repository`, `Set up Python`,
+`Install repository contract Python dependencies`, `Check lifecycle contract`,
+and `Check promoted lifecycle waves`.
+
+`.github/workflows/**` is a protected surface under
+`docs/00.agent-governance/policies/approval-boundaries.md:49`. The operator
+approved this specific retirement; do not extend the edit beyond those three
+steps.
+
+```bash
+python3 scripts/validation/check-github-workflow-contract.py
+```
+
+Expected: exit 0. The contract pins the workflow's name, triggers, permissions,
+jobs, and timeout, none of which this edit touches.
+
+- [ ] **Step 5: Reduce `MODES` and delete the unreachable mode bodies**
 
 Replace lines 96 to 115 of `scripts/validation/check-document-corpus-lifecycle.py`:
 
@@ -111,7 +153,7 @@ only from one. After each deletion run
 `python3 -c "import ast,pathlib; ast.parse(pathlib.Path('scripts/validation/check-document-corpus-lifecycle.py').read_text())"`
 so a broken parse is caught immediately rather than at the end.
 
-- [ ] **Step 5: Delete `provenance_policy.py` and its test**
+- [ ] **Step 6: Delete `provenance_policy.py` and its test**
 
 ```bash
 git rm scripts/lib/document_governance/provenance_policy.py tests/lib/document_governance/test_provenance_policy.py
@@ -123,7 +165,7 @@ Expected: the only remaining hit is the `check-recovery` call site in
 `policy_findings` it feeds; `check-recovery` keeps `recovery_findings`, which is
 the tuple-to-blob proof the mode exists for.
 
-- [ ] **Step 6: Remove the manifest and suite rows for the deleted module**
+- [ ] **Step 7: Remove the manifest and suite rows for the deleted module**
 
 ```bash
 python3 - <<'PY'
@@ -141,7 +183,7 @@ grep -n "provenance_policy" scripts/lib/document_governance/suite_registry.py sc
 
 Delete every line the `grep` prints.
 
-- [ ] **Step 7: Register `check-recovery` as a gate leaf**
+- [ ] **Step 8: Register `check-recovery` as a gate leaf**
 
 In `.github/workflow-contract.yml`, copy the `leaf.local-document-corpus-promoted`
 block and change exactly two fields:
@@ -160,7 +202,7 @@ block and change exactly two fields:
 Leave `cwd`, `allowed_env_keys`, `timeout_minutes`, `profiles`, and `suite_key`
 identical to the block you copied.
 
-- [ ] **Step 8: Repoint the three mode matrices**
+- [ ] **Step 9: Repoint the three mode matrices**
 
 The matrices at lines 4463, 4500, and 4634 exclude `check-public` and
 `check-recovery` and assert the rest. With four modes the remainder is
@@ -169,7 +211,7 @@ The matrices at lines 4463, 4500, and 4634 exclude `check-public` and
 removed modes. The name carried a count, which SPEC-0155 recorded as the
 failure mode that made `test_all_188_preservation_decisions_...` need renaming.
 
-- [ ] **Step 9: Verify**
+- [ ] **Step 10: Verify**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle 2>&1 | grep -E "^(Ran |OK|FAILED)"
@@ -182,7 +224,7 @@ PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 
 Expected: `OK`, four `exit=0`, `PASS`.
 
-- [ ] **Step 10: Commit**
+- [ ] **Step 11: Commit**
 
 ```bash
 git add -A
