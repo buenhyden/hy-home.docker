@@ -397,15 +397,15 @@ all provider offerings.
 | [Claude Code model configuration](https://code.claude.com/docs/en/model-config)               | 2026-08-08T16:18:04+09:00 | External mutable         | HTTP 200; aliases, precedence, restrictions, effort, and fallback mechanics.                               |
 | [Codex models](https://learn.chatgpt.com/docs/models)                                         | 2026-08-08T16:18:04+09:00 | External mutable         | HTTP 200; Sol/Terra/Luna/Spark, product reasoning, and retirement facts.                                   |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)  | 2026-08-08T16:18:04+09:00 | External mutable         | HTTP 200; exact configuration fields and project-scope limits.                                             |
-| [Provider model contract](../../../00.agent-governance/contracts/provider-models.yaml)        | 2026-08-08                | Workspace tracked        | Complete 11-model registry at Task 4 baseline; fixed cutoff `2026-07-26T20:08:18+09:00`.                   |
-| [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)                        | 2026-08-08                | Workspace tracked        | Human work-profile routing and coupled change protocol.                                                    |
+| Provider model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)        | 2026-08-08                | Workspace tracked        | Complete 11-model registry at Task 4 baseline; fixed cutoff `2026-07-26T20:08:18+09:00`.                   |
+| Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)                        | 2026-08-08                | Workspace tracked        | Human work-profile routing and coupled change protocol.                                                    |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                   | 2026-08-08                | Workspace stale/advisory | Stale at `f8a72211`; corroborated against tracked owners.                                                  |
 | [Anthropic models overview](https://platform.claude.com/docs/en/about-claude/models/overview) | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; full current/legacy model comparison tables, pricing, `claude-mythos-preview` row.      |
 | [Claude Code model configuration](https://code.claude.com/docs/en/model-config)               | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; per-family effort ladder, `ultracode`, availability chains, safety-classifier fallback. |
 | [Codex models](https://learn.chatgpt.com/docs/models)                                         | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; previous-generation/deprecated tiers and 2026-08-31 retirement date.                    |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)  | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; `model_reasoning_effort` five-value enum, source of the flagged drift.                  |
 | [Claude Code subagents reference](https://code.claude.com/docs/en/sub-agents)                 | 2026-08-14T13:40:00+09:00 | External mutable         | HTTP 200; subagent `model`/`effort` frontmatter fields and model-resolution precedence order.              |
-| [Provider model contract](../../../00.agent-governance/contracts/provider-models.yaml)        | 2026-08-14                | Workspace tracked        | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; cutoff, counts, and rows unchanged.          |
+| Provider model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)        | 2026-08-14                | Workspace tracked        | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; cutoff, counts, and rows unchanged.          |
 
 ## Scope Application
 
@@ -433,4 +433,4 @@ observation rather than rewriting history.
 - [Provider implementation comparison](./provider-implementation-comparison.md)
 - [Agent instructions](./agent-instructions-vibe-coding.md)
 - [Scope application matrix](./scope-application-matrix.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

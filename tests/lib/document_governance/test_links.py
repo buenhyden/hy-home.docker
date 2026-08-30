@@ -875,8 +875,18 @@ class LinkSelectionScopeTests(unittest.TestCase):
             self.assertNotIn("docs/90.references/audits/0001-b/README.md", selected)
             self.assertIn("docs/90.references/audits/0001-c/README.md", selected)
 
-    def test_selection_skips_only_the_registered_deferred_packs(self) -> None:
+    def test_selection_has_no_path_exemption(self) -> None:
+        """Nothing is skipped for where it lives, only for what it claims.
+
+        The two agentic research packs were exempted by path while SPEC-0137's
+        disposition was undecided. That Spec Package is now `completed` and the
+        exemption is gone: a research document is read like any other, and a
+        superseded one is skipped by its own status, not by its directory.
+        """
+
         module = load_links_cli()
+        self.assertFalse(hasattr(module, "DEFERRED_PREFIXES"))
+        self.assertFalse(hasattr(module, "_deferred"))
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
             self._tree(
@@ -888,18 +898,12 @@ class LinkSelectionScopeTests(unittest.TestCase):
             selected = {
                 path.relative_to(root).as_posix() for path in module._paths(root)
             }
-            self.assertNotIn(
+            for relative in (
                 "docs/90.references/research/0001-agentic-research-pack-refresh/x.md",
-                selected,
-            )
-            self.assertNotIn(
                 "docs/90.references/research/0002-agentic-engineering-research-pack/x.md",
-                selected,
-            )
-            self.assertIn(
                 "docs/90.references/research/0084-github-actions-platform/README.md",
-                selected,
-            )
+            ):
+                self.assertIn(relative, selected)
 
 
 if __name__ == "__main__":

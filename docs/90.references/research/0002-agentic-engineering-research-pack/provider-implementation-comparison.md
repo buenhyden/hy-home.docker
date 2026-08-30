@@ -300,13 +300,13 @@ stable revision identifier; every vendor row is external mutable.
 | O-SKILL | [Codex build skills](https://learn.chatgpt.com/docs/build-skills) | Verified 2026-08-08: `SKILL.md` discovery, `/skills`/`$` selection, implicit matching. |
 | G-HOOK | [Gemini CLI hooks reference](https://geminicli.com/docs/hooks/reference/) | New 2026-08-14: event list; header/table count mismatch (11 rows vs "12 Total") marked `UNVERIFIED`. |
 | G-AGENT | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
-| WS-CATALOG | [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
-| WS-PROVIDER | [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
+| WS-CATALOG | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
+| WS-PROVIDER | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
 | WS-MATRIX | [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
-| WS-ADAPTER | [`providers/agents-md.md`](../../../00.agent-governance/providers/agents-md.md) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
+| WS-ADAPTER | `providers/agents-md.md` (retired path: `../../../00.agent-governance/providers/agents-md.md`) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
 | WS-CLAUDE | [Claude provider notes](../../../00.agent-governance/providers/claude.md) | Tracked mutable; stale uniform-high effort sentence identified. |
 | WS-CODEX | [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
-| WS-GEMINI | [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
+| WS-GEMINI | Gemini provider notes (retired path: `../../../00.agent-governance/providers/gemini.md`) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
 | WS-GRAPH | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
 
 ## Scope Application
@@ -336,6 +336,6 @@ provider limitations.
 - [Loop engineering](./loop-engineering.md)
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)
-- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

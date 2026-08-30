@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 artifact_id: reference:agentic-research:ai-agent-catalogs
 artifact_type: reference
 parent_ids: []

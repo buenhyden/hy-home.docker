@@ -456,4 +456,4 @@ target and timestamp; never promote tracked intent to applied state.
 - [Loop engineering](./loop-engineering.md)
 - [Spec-driven SDLC](./spec-driven-sdlc.md)
 - [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

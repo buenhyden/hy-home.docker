@@ -378,14 +378,14 @@ Gemini event-count note above).
 | [Codex models](https://learn.chatgpt.com/docs/models) | External mutable, primary | Verified 2026-08-08: model/reasoning controls; no entitlement proof. |
 | [Gemini CLI hooks reference](https://geminicli.com/docs/hooks/reference/) | External mutable, primary | New 2026-08-14: event list; header/table count mismatch (11 vs "12") marked `UNVERIFIED`. |
 | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | External mutable, primary | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
-| [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Workspace tracked | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
-| [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Workspace tracked | Re-read 2026-08-14: 3-provider list, `local_cli_observation`, all 21 event cells, 4 loops. |
+| Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Workspace tracked | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
+| Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Workspace tracked | Re-read 2026-08-14: 3-provider list, `local_cli_observation`, all 21 event cells, 4 loops. |
 | [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Workspace tracked | Re-read 2026-08-14: 3-column matrix, Hookify "local projection not tracked" line. |
-| [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) | Workspace tracked | Corroborated routing map; policy remains in linked owners. |
+| Harness implementation map (retired path: `../../../00.agent-governance/harness-implementation-map.md`) | Workspace tracked | Corroborated routing map; policy remains in linked owners. |
 | [`.claude/settings.json`](../../../../.claude/settings.json) | Workspace tracked | Read 2026-08-14: `permissions`, `hooks`, `autoMode`, `deniedMcpServers`. |
 | [`scripts/hooks/agent-event-hook.sh`](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked | Read 2026-08-14: all 7 event handlers, both Stop-gate functions. |
 | [`scripts/hooks/post-tool-validate.sh`](../../../../scripts/hooks/post-tool-validate.sh) | Workspace tracked | Read 2026-08-14: path-triggered check matrix, optional-tool behavior. |
-| [`.gemini/settings.json`](../../../../../../.gemini/settings.json) + [adapter](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked | Read 2026-08-14: 7 native events, `modelConfigs.overrides`, translation logic. |
+| `.gemini/settings.json` (retired path: `.gemini/settings.json`, absent; Stage 00 supports Claude and Codex only) + [adapter](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked | Read 2026-08-14: 7 native events, `modelConfigs.overrides`, translation logic. |
 | Hookify catalog (`docs/00.agent-governance/rules/hooks/hookify.*.md`) | Workspace tracked | Counted 2026-08-14: 19 files, 7 block/12 warn; no runtime binding found. |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Workspace tracked, stale | Read first; built from `f8a72211`; no uncorroborated claim retained. |
 
@@ -417,4 +417,4 @@ their canonical Stage 00/03/04 owner.
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

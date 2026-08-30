@@ -375,11 +375,11 @@ future arXiv version.
 | [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)                | External mutable, primary       | Verified 2026-08-08: orchestration, thread control, sandbox/permission inheritance.                                   |
 | [Inside the Scaffold (arXiv 2604.03515)](https://arxiv.org/abs/2604.03515)                     | External mutable, primary paper | New 2026-08-14: 13 scaffolds, 5 loop primitives, 11/13 combine multiple primitives.                                   |
 | [How Coding Agents Fail Their Users (arXiv 2605.29442)](https://arxiv.org/abs/2605.29442)      | External mutable, primary paper | New 2026-08-14: 20,574 sessions/1,639 repos, seven failure categories, 90.50%/91.49% figures.                         |
-| [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml)         | Workspace tracked               | Re-read 2026-08-14: eight-state, four-loop, seven-event, 21-cell derivation, including Gemini `deny-retry` Stop mode. |
-| [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml)                     | Workspace tracked               | Re-read 2026-08-14: `evaluation.fixture_count`/`regression_count` typed fields (11/16), scorer, runner, tests.        |
-| [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)                         | Workspace tracked               | Verified human routing view and exact four typed loop rules.                                                          |
+| Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)         | Workspace tracked               | Re-read 2026-08-14: eight-state, four-loop, seven-event, 21-cell derivation, including Gemini `deny-retry` Stop mode. |
+| Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                     | Workspace tracked               | Re-read 2026-08-14: `evaluation.fixture_count`/`regression_count` typed fields (11/16), scorer, runner, tests.        |
+| Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)                         | Workspace tracked               | Verified human routing view and exact four typed loop rules.                                                          |
 | [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Workspace tracked               | Re-read 2026-08-14: three-provider Stop-mode row (`blocking`/`retry`/`deny-retry`).                                   |
-| [`providers/gemini.md`](../../../00.agent-governance/providers/gemini.md)                      | Workspace tracked               | Read 2026-08-14: `AfterAgent` deny-retry mechanism description.                                                       |
+| `providers/gemini.md` (retired path: `../../../00.agent-governance/providers/gemini.md`)                      | Workspace tracked               | Read 2026-08-14: `AfterAgent` deny-retry mechanism description.                                                       |
 | [Shared dispatcher](../../../../scripts/hooks/agent-event-hook.sh)                             | Workspace tracked, executable   | Read directly 2026-08-14: no attempt-counter code path against `max_attempts`.                                        |
 | [Hookify catalog](../../../00.agent-governance/policies/hooks)                                   | Workspace tracked               | Counted 2026-08-14: 2 of 19 rules scoped to `event: stop`; no runtime binding found.                                  |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                    | Workspace tracked, stale        | Read first; built from `f8a72211`; every lead corroborated.                                                           |
@@ -412,4 +412,4 @@ change.
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

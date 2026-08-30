@@ -133,15 +133,17 @@ class PublicSuiteModelTests(unittest.TestCase):
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        # 35 since 2026-08-29. `gate2_claim_review_contract.py` was ported from
-        # `agentic-research-delta-revalidation`, whose whole document layout was
-        # dissolved by the governance migration. It is registered as a
-        # non-standalone validator: it owns the `document-contract` suite and CI
-        # does not invoke it, because the Gate 2 evidence sections it reads have
-        # never been authored, so it fails closed on a subject that does not yet
-        # exist. This count is the guard that makes adding a validator deliberate;
-        # it is raised here on purpose, not relaxed.
-        self.assertEqual(35, len(actual))
+        # 32 since 2026-08-30. The three SPEC-0137 gate modules were retired
+        # with that Spec Package: `agentic-research-gate9-evidence.py`,
+        # `gate2_claim_review_contract.py`, and `carry_owner_contract.py`,
+        # 13,504 lines with their tests. The note this replaces already recorded
+        # why the second one could never run, that the Gate 2 evidence sections
+        # it reads had never been authored so it failed closed on a subject that
+        # did not exist, and raised the count rather than removing the module.
+        # Previously 35 since 2026-08-29. This count is the guard that makes
+        # adding a validator deliberate; lowering it records a removal that the
+        # owning Spec Package has dispositioned.
+        self.assertEqual(32, len(actual))
         self.assertEqual(
             dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
             actual,
@@ -684,9 +686,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
         manual_paths = tuple(
             item.path for item in suites.validators if not item.execution_contexts
         )
-        # 12 since 2026-08-29: the ported gate-2 claim-review contract, which
-        # declares no execution context for the same reason.
-        self.assertEqual(12, len(manual_paths))
+        # 10 since 2026-08-30: the three SPEC-0137 gate modules were retired
+        # with that Spec Package. Two of them, the gate-9 evidence helper and
+        # the ported gate-2 claim-review contract, were among the validators
+        # that declare no execution context. Previously 12 since 2026-08-29.
+        self.assertEqual(10, len(manual_paths))
         forbidden_paths = (
             *manual_paths,
             pathlib.PurePosixPath("scripts/operations/rehearse-sample-service-delivery.sh"),

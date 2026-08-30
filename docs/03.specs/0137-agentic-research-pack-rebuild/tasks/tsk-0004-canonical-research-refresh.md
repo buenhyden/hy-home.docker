@@ -1,6 +1,6 @@
 ---
 profile_id: task
-status: active
+status: cancelled
 artifact_id: task-0137-0004
 artifact_type: task
 parent_ids:

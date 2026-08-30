@@ -530,20 +530,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_agentic_audit_semantic_freshness.py
-- path: scripts/validation/agentic-research-gate9-evidence.py
-  kind: validator
-  public_suites:
-  - document-lifecycle
-  execution_contexts: []
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/audit_criterion_contract.py
   kind: validator
   public_suites:
@@ -559,20 +545,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_audit_criterion_contract.py
-- path: scripts/validation/carry_owner_contract.py
-  kind: validator
-  public_suites:
-  - document-contract
-  execution_contexts: [local, pull_request, push, workflow_dispatch]
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-agent-governance-contract.py
   kind: validator
   public_suites:
@@ -901,20 +873,6 @@ files:
   successor: scripts/validation/compose-core-readiness.lib.sh
   tests:
   - tests/validation/test_compose_core_readiness.py
-- path: scripts/validation/gate2_claim_review_contract.py
-  kind: validator
-  public_suites:
-  - document-contract
-  execution_contexts: []
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/generate-audit-implementation-matrix.sh
   kind: generator
   authority: .github/workflow-contract.yml

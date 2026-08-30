@@ -207,7 +207,7 @@ than an assumption.
 | [Stage 01 requirements](../../../01.requirements/README.md)   |    26 | Active product-intent corpus including its index.                                        |
 | [Stage 02 architecture](../../../02.architecture/README.md)   |    53 | 26 requirement-path files, 26 decision-path files, and the stage index.                  |
 | [Stage 03 specifications](../../../03.specs/README.md)        |    53 | 28 active Spec directories; file and directory counts answer different questions.        |
-| [Stage 04 execution](../../../04.execution/README.md)         |   239 | 104 Plan-path files, 134 Task-path files, and the stage index.                           |
+| Stage 04 execution (retired path: `../../../04.execution/README.md`)         |   239 | 104 Plan-path files, 134 Task-path files, and the stage index.                           |
 | [Stage 05 operations](../../../05.operations/README.md)       |   263 | 88 guide, 87 policy, 85 runbook, one incident index, one release index, one stage index. |
 | [Stage 90 references](../../../90.references/README.md)       |   118 | 42 research, 39 audits, 30 data, 3 LLM Wiki, 3 learning, one stage index.                |
 | [Stage 98 archive](../../../98.archive/README.md)             |    69 | Historical tombstones and archived lifecycle evidence, including 32 Specs.               |
@@ -324,7 +324,7 @@ expansion is `Unverified` here.
 
 ### Agent, provider, and harness system
 
-The [typed agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml)
+The typed agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)
 contains 14 agents and 24 functions. Its eight-value scope enum is `agentic`,
 `architecture`, `common`, `docs`, `infra`, `ops`, `qa`, and `security`.
 
@@ -356,7 +356,7 @@ The exact six normative persona scopes outside the typed enum are `backend`,
 `entry`, `frontend`, `meta`, `mobile`, and `product`. That is a catalog-routing
 finding, not proof that their subject matter is absent.
 
-The [provider-model contract](../../../00.agent-governance/contracts/provider-models.yaml)
+The provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)
 defines 3 providers, 1 compatibility surface, 5 work profiles, 11 model
 records, 8 harness layers, 8 workflow states, 4 harness loops, and 7 semantic
 events. Each model record carries separate `provider_lifecycle`,
@@ -565,10 +565,10 @@ below so a topic-first reader encounters all fourteen scopes.
 | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)                                | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access.                                                                                                                                       |
-| [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
-| [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
-| [Provider-model contract](../../../00.agent-governance/contracts/provider-models.yaml)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
-| [Governance artifact contract](../../../00.agent-governance/contracts/agent-governance-artifacts.yaml) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
+| Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
+| Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
+| Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
+| Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
 | [Persona protocol](../../../00.agent-governance/policies/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
 | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed in both interpreters; results recorded verbatim above.                                                                                                                                                                    |
 | [Governance contract tests](../../../../tests/validation/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
@@ -618,7 +618,7 @@ unit.
 - [Scope application matrix](./scope-application-matrix.md)
 - [Verification and validation](./verification-validation.md)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - [Agent governance hub](../../../00.agent-governance/README.md)
 - [Research category router](../README.md)

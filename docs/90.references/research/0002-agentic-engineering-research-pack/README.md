@@ -284,7 +284,7 @@ entitlement gaps are not promoted.
 - `llms.txt`와 `docs/90.references/data/0082-llm-wiki-index/`는 generator가 소유합니다. 이 pack 또는
   human router 변경만으로 generated artifact를 손으로 고치지 않습니다.
 - requirement, source, scope, old-claim migration evidence의 canonical execution
-  owner는 [Task ledger](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)입니다.
+  owner는 Task ledger (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)입니다.
 - V&V source, workspace count, acceptance-authority, monitoring 또는 generated
   path set이 바뀌면 official source를 다시 열고 owner command와 두 LLM Wiki
   freshness gate를 재실행합니다.
@@ -313,7 +313,7 @@ entitlement gaps are not promoted.
   old-pack 삭제 gate는 Task 11이 소유합니다.
 - 2026-08-11에 별도 source-refresh Task가 20개 leaf를 in-place로 재검증했습니다.
   pack의 21-file/20-leaf 구성, 14-scope 축, 36개 requirement destination은 바뀌지
-  않았습니다. refresh evidence는 [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)가
+  않았습니다. refresh evidence는 Source refresh Task (retired path: `../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`)가
   소유합니다.
 - 2026-08-14에 별도 deepening Task가 20개 leaf 전체를 in-place로 심화했습니다.
   외부 source를 다시 조사하고 각 scope의 tracked evidence를 leaf 산문에서
@@ -321,7 +321,7 @@ entitlement gaps are not promoted.
   36개 requirement destination, leaf `status: draft`는 모두 그대로입니다.
   20개 leaf 전부가 `reviewed_at: 2026-08-14`를 받았으며, deepening evidence와
   재도출 과정에서 확인된 correction은
-  [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)가
+  Deepening Task (retired path: `../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`)가
   소유합니다.
 - 2026-08-17에 coverage 감사가 REQ-03의 loop 측 결손 하나를 확인했습니다.
   `harness-engineering.md`는 `### Environment and rules for workspace application`
@@ -332,17 +332,17 @@ entitlement gaps are not promoted.
   `reviewed_at: 2026-08-17`을 가지고 나머지 19개 leaf는 `2026-08-14`에
   머무릅니다. pack의 21-file/20-leaf 구성, 14-scope 축, 36개 requirement
   destination, leaf `status: draft`는 바뀌지 않았습니다. 증거는
-  [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)가
+  Deepening Task (retired path: `../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`)가
   계속 소유합니다.
 
 ## Related Documents
 
 - [Research references](../README.md)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
-- [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)
-- [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)
+- Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+- Source refresh Task (retired path: `../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`)
+- Deepening Task (retired path: `../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`)
 - [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)
 

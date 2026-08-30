@@ -455,4 +455,4 @@ normative clauses.
 - [Docker Compose and infrastructure](./docker-compose-infrastructure.md)
 - [Security governance](./security-governance.md)
 - [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
-- [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

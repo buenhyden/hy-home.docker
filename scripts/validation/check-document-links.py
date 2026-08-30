@@ -31,13 +31,6 @@ SUPPORT_DOCS = (
 # A document whose status records a past observation is not a current route.
 # Its links are evidence of what resolved when it was written.
 NON_ROUTING_STATUSES = frozenset({"superseded", "retired"})
-# The two agentic research packs are the subject of SPEC-0137's undecided
-# deletion, which SPEC-0155 owns. Repairing their links here would prejudge
-# that disposition. Remove this tuple when SPEC-0155 records the decision.
-DEFERRED_PREFIXES = (
-    pathlib.Path("docs/90.references/research/0001-agentic-research-pack-refresh"),
-    pathlib.Path("docs/90.references/research/0002-agentic-engineering-research-pack"),
-)
 _STATUS = re.compile(r"^status:\s*(\S+)\s*$", re.MULTILINE)
 
 
@@ -56,16 +49,6 @@ def _routing_status(path: pathlib.Path) -> bool:
     return match is None or match.group(1) not in NON_ROUTING_STATUSES
 
 
-def _deferred(root: pathlib.Path, path: pathlib.Path) -> bool:
-    for prefix in DEFERRED_PREFIXES:
-        try:
-            path.relative_to(root / prefix)
-        except ValueError:
-            continue
-        return True
-    return False
-
-
 def _paths(root: pathlib.Path) -> list[pathlib.Path]:
     paths: set[pathlib.Path] = set()
     stage = root / DOC_ROOT
@@ -73,7 +56,7 @@ def _paths(root: pathlib.Path) -> list[pathlib.Path]:
         paths.update(
             path
             for path in stage.rglob("*.md")
-            if path.is_file() and not _deferred(root, path) and _routing_status(path)
+            if path.is_file() and _routing_status(path)
         )
     paths.update(
         root / relative

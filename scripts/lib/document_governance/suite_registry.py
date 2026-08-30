@@ -33,9 +33,7 @@ IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
         PurePosixPath("scripts/hardening/check-all-hardening.sh"): "repository-integrity",
         PurePosixPath("scripts/validation/agent_governance_contract.py"): "agent-governance",
         PurePosixPath("scripts/validation/agent_output_eval.py"): "agent-governance",
-        PurePosixPath("scripts/validation/agentic-research-gate9-evidence.py"): "document-lifecycle",
         PurePosixPath("scripts/validation/audit_criterion_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/carry_owner_contract.py"): "document-contract",
         PurePosixPath("scripts/validation/check-agent-governance-contract.py"): "agent-governance",
         PurePosixPath("scripts/validation/check-agentic-audit-semantic-freshness.py"): "repository-integrity",
         PurePosixPath("scripts/validation/check-doc-implementation-alignment.sh"): "document-graph",
@@ -55,7 +53,6 @@ IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
         PurePosixPath("scripts/validation/check-template-security-baseline.sh"): "repository-integrity",
         PurePosixPath("scripts/validation/ci_gate_adapters.py"): "repository-integrity",
         PurePosixPath("scripts/validation/ci_gate_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/gate2_claim_review_contract.py"): "document-contract",
         PurePosixPath("scripts/validation/github_workflow_contract.py"): "repository-integrity",
         PurePosixPath("scripts/validation/grype_db_seed.py"): "repository-integrity",
         PurePosixPath("scripts/validation/old_path_gate_contract.py"): "document-lifecycle",
@@ -71,10 +68,8 @@ NON_STANDALONE_VALIDATOR_PATHS = frozenset(
     PurePosixPath(path)
     for path in (
         "scripts/validation/agent_governance_contract.py",
-        "scripts/validation/agentic-research-gate9-evidence.py",
         "scripts/validation/ci_gate_adapters.py",
         "scripts/validation/ci_gate_contract.py",
-        "scripts/validation/gate2_claim_review_contract.py",
         "scripts/validation/github_workflow_contract.py",
         "scripts/validation/grype_db_seed.py",
         "scripts/validation/old_path_gate_contract.py",

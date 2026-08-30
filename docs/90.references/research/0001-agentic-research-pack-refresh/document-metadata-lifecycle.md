@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 artifact_id: reference:agentic-research:document-metadata-lifecycle
 artifact_type: reference
 parent_ids: []
