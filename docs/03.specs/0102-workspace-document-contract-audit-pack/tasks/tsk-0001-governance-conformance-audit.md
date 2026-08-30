@@ -521,17 +521,53 @@ same wall.
 | 7 | ~~Review whether five required sections earn their place~~ | D6 | — | **closed 2026-08-29**; 2 of the 5 moved to optional, 3 were not findings |
 | 8 | ~~Close the 16 residual profile findings~~ | D2 | — | **14 closed 2026-08-29**; 2 remain, needing an authorised `archived -> completed` transition the gate's pinned argv cannot supply |
 | 9 | ~~Decide how Stage 90 admits a net-new package, or record that it does not~~ | placement | — | **closed 2026-08-29**; recorded that it does not, in `docs/90.references/audits/README.md` |
-| 10 | Reproduce the intermittent `test_references` failure — specifically, what makes `generated_reference_owners` raise — or prove it cannot recur | D5 | `qa-engineer` | in-rule; 15 direct probes did not reproduce it |
+| 10 | ~~Reproduce the intermittent `test_references` failure~~ | D5 | — | **closed 2026-08-30**; reproduced at 191 of 306 reads, caused by ancestor-directory mtime, and fixed by comparing ancestors on identity |
 | 11 | ~~Collapse the synchronised edit sites needed to wire one gate suite~~ | D5 | — | **closed 2026-08-29**; 12 sites to 8, no verbatim duplicate left |
 | 12 | ~~Decide whether the `docs/04.execution/` entries in live prefix allowlists should be dropped~~ | D4 | — | **closed 2026-08-29**; 5 removed, 8 kept because they exist to reject or to read history |
 | 13 | ~~Re-approve, retire, or re-route the two security scripts~~ | D4 | — | **closed 2026-08-29 by re-routing**; granting the egress remains an operator act and nothing was granted |
-| 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **14 closed 2026-08-30**, gate `exit=0`; 6 runtime rows still need the 5 missing runbooks, and 2 libraries need a first executable test |
-| 14 | Decide, per assertion, whether its subject is the live corpus or the pinned one; then clear the residual 26 and gate-register the suite | D5 | suite owner | **decided 2026-08-30**: fixtures borrow the object database via `alternates`. 87 of 113 green; 22 of the residue are one shape, 2 need a descendant HEAD |
+| 16 | Correct the 22 self-successor `rewrite` rows to `retain`, and give each what `retain` obliges | D3, D4 | manifest owner | **15 closed 2026-08-30**, gate `exit=0`; 6 runtime rows still need the 5 missing runbooks, and 1 package initialiser cannot be proved by the rule as written |
+| 14 | ~~Clear the residual failures and gate-register the suite~~ | D5 | — | **closed 2026-08-30**; 261 of 261 green and registered as `leaf.local-document-metadata-tests`, 66 to 67 reachable typed gates |
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
 | 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
+
+**Reproduced and fixed 2026-08-30. It was never about `test_references`.**
+
+The chain, end to end:
+
+1. `suite_registry.load_manifest_document` opens `scripts/manifest.yaml` through
+   a no-follow walk and snapshots **every ancestor directory from the
+   filesystem root down** — `/`, `/home`, `/home/<user>`, the projects
+   directory, the repository, `scripts/`.
+2. The snapshot it compared included `st_mtime_ns` and `st_ctime_ns`. A
+   directory's mtime moves whenever **any** entry is created or removed inside
+   it, by any process.
+3. On a mismatch it raises `SuiteRegistryError("ancestor changed during read")`.
+4. `SuiteRegistryError` subclasses `ValueError`.
+5. `references.generated_reference_owners` lets that propagate, and
+   `validate_current_references` catches `ValueError` and records
+   `generated-manifest-invalid`.
+6. `test_references` sees the finding and fails.
+
+So the read failed because something unrelated wrote a file in the operator's
+home directory while it ran. That is why fifteen direct probes never
+reproduced it: they happened to run during quiet moments.
+
+**Measured, on a copy of the manifest in a throwaway tree, with a thread
+creating and deleting an unrelated file in an ancestor directory and nothing
+touching the manifest at all: 191 of 306 reads failed.**
+
+**The fix keeps the control and drops the false positive.** An ancestor's
+threat is substitution — becoming a *different* directory mid-read — which
+changes its device and inode. Entry churn does not. Ancestors are now compared
+on `(st_dev, st_ino, st_mode)`; the file itself keeps the full snapshot,
+including size and both timestamps, so a change to the manifest during the read
+is still caught exactly as before. Verified both directions: creating an entry
+inside an ancestor leaves its identity unchanged, and renaming a different
+directory into its place changes it. Re-measured under the same churn: 117
+reads, 0 failures.
 
 ### Two operator scripts are unrunnable, found 2026-08-29 (D4)
 
@@ -717,6 +753,54 @@ anyway. Two authorities disagree about one path.
 means deciding, per assertion, whether its subject is the corpus as it stands or
 the corpus as it was pinned. That is a contract decision for the suite's owner,
 not a fixture repair, and it is what remains of Action 14.
+
+**Closed 2026-08-30: 261 of 261 green, and registered as
+`leaf.local-document-metadata-tests`.** The residue was not 22 contract
+decisions. Every one of them was a citation left behind by a commit that had
+already made the decision, and the commits are nameable:
+
+| Commit | What it changed | What was left citing the old shape |
+| ------ | --------------- | ---------------------------------- |
+| `76ba680c` | dropped a template role, 23 to 22 | a hard-coded count |
+| `9ef889b5` | renamed archive migrations off the `mig-` prefix, and cut the Stage 98 README to a minimal index | a selector example, a fixture path, and a ledger-section split |
+| `49522aa1` | removed a literal `stage-index` route for a path that has never existed | a test asserting that route |
+| `5bab8b36` | rekeyed nine manifest rows onto pre-migration paths, and gave operations subjects their membership from the operations migration manifest | four path constants and two `allow_empty_parents` expectations |
+| `38fc89c5` | retired the sixteen-document `SPEC-0153` package | a test whose subject no longer exists |
+
+Two of the corrections are worth stating precisely, because they show the
+manifests were never the problem. Restoring the right exclusion keys to
+`target_promotion_invariant_digest` reproduced the **expected digest already in
+the test**, `e61a21ba…`, bit for bit; and correcting one prefix made the pinned
+research rows hash to their existing `f3c8d020…`. Both invariants were right all
+along — only the keys naming what to exclude had drifted.
+
+Two were removed rather than repointed, because their subject is gone:
+`test_spec_0153_canonical_package_satisfies_registry_metadata` (the package is a
+Stage 98 tombstone, and the gate already validates every live package) and the
+Stage 98 ledger-section assertions (`9ef889b5` deleted the section). One was
+rebased onto the live authority instead: the Runbook Handoff rule left Stage 00
+for the Stage 99 operations template index, where it is written in Korean.
+
+**One assertion was overtaken rather than stale, and is now the opposite
+claim.** `test_registered_operations_profile_transition_rejects_any_additional_metadata`
+required a rejection on two counts that the Registry has since granted:
+`reviewed_at` is in `policy`'s `optional_frontmatter`, and an operations subject
+may stand with no parent. It now pins the acceptance and, separately, that a key
+the Registry does *not* declare is still rejected — the boundary
+`allow_additional: False` exists for.
+
+**Registration exposed three latent non-hermeticities that no amount of local
+running would have found.** The suite passed standalone and failed under the
+gate three times in a row, each for a different reason:
+
+| Symptom under the gate | Cause |
+| ---------------------- | ----- |
+| `invalid HYHOME_CI_GATE_ROOT` | the gate's root is a `/proc/self/fd/N` handle; `subprocess` closes inherited descriptors, so the same string named nothing in the child. The fixture now opens its own descriptor and passes it through |
+| `working-tree-only; committed branch delta unavailable` | the base inference looks for a branch literally named `main`, and `git init` takes its default from the operator's global config — which the gate does not have, because it runs with its own `HOME`. The fixture now names its branch |
+| eight body-contract deficits | a consequence of the second: with no committed base, the comparison degraded |
+
+The generated readiness snapshot moved from 66 to 67 reachable typed gates,
+which is the independent confirmation that the leaf is live.
 
 **A whole classification subsystem is inert under the live contract.**
 `readme_profiles`, `matching_readme_profiles`, `classify_readme_profile`,
@@ -930,12 +1014,28 @@ imports it. That is a defect in the consumer's import form, not in the manifest,
 and it is left unedited — changing a gate entrypoint's import mechanics is not
 this audit's scope.
 
+**Fifteen since 2026-08-30.** `scripts/lib/hardening-lib.sh` now has its first
+executable evidence, `tests/validation/test_hardening_lib.sh` — 18 assertions
+over all eight of its functions. The library decides whether every tier
+hardening check passes, and it was reached only indirectly through a
+gate-registered caller. The test is proved capable of going red by mutation:
+turning its `grep -Fq` into `grep -q` flips the literal-match assertion from
+`rc=1` to `rc=0`.
+
+`scripts/lib/document_governance/__init__.py` stays `rewrite`, and not for want
+of trying. `tests-unproven` refuses every candidate, because the proof rule
+resolves a target to a module path and looks for that import: nothing imports
+`scripts.lib.document_governance.__init__` by that name, and nothing ever will
+— a package initialiser runs when the package is imported, which the rule has
+no way to express. Same shape as `github_workflow_contract.py`'s unprovable
+consumers.
+
 **Eight rows remain, in two classes.**
 
 | Class | Rows | Blocked on |
 | ----- | ---: | ---------- |
 | `mutation: runtime` | 6 | the five Operations Runbooks that do not exist |
-| library with no executable test | 2 | `scripts/lib/hardening-lib.sh`, `scripts/lib/document_governance/__init__.py` |
+| package initialiser | 1 | a proof rule that cannot express "importing the package runs it" |
 
 Libraries are exempt from `consumers` but not from `tests`, and neither has one.
 The apparent test coverage of `hardening-lib.sh` is not coverage: every match in

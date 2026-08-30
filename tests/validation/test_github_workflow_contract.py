@@ -220,7 +220,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         # that no profile executed until then.
         # 85 since 2026-08-29: leaf.compose-baseline-regressions, which carries
         # the first failing-case coverage for the two Compose baseline gates.
-        self.assertEqual(85, len(contract.gate_registry.nodes))
+        # 86 since 2026-08-30: leaf.local-document-metadata-tests, the 261-test
+        # metadata suite, which ran under no profile while it was red.
+        self.assertEqual(86, len(contract.gate_registry.nodes))
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,

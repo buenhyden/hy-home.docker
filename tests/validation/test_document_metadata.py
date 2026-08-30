@@ -305,6 +305,25 @@ def _materialised_profiles() -> pathlib.Path:
 _PROFILES_FILE: pathlib.Path | None = None
 
 
+def _inheritable_gate_root() -> tuple[dict[str, str], tuple[int, ...]]:
+    """Re-open the gate's repository handle so a child can resolve it.
+
+    Under the gate, `HYHOME_CI_GATE_ROOT` is a `/proc/self/fd/N` path and
+    `PYTHONPATH` points at a generated `sitecustomize.py` that reads it, so
+    every Python child needs the variable *and* a descriptor of its own:
+    `subprocess` closes inherited descriptors, so the same string would name
+    nothing in the child and the checker would exit `invalid
+    HYHOME_CI_GATE_ROOT`. Opening a fresh descriptor on the same directory and
+    passing it through keeps the handle meaningful on the other side.
+    """
+
+    if "HYHOME_CI_GATE_ROOT" not in os.environ:
+        return {}, ()
+    descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY)
+    os.set_inheritable(descriptor, True)
+    return {"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"}, (descriptor,)
+
+
 def run_checker(
     root: pathlib.Path,
     mode: str = "report",
@@ -313,6 +332,25 @@ def run_checker(
     profiles: pathlib.Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     resolved_profiles = _materialised_profiles() if profiles is None else profiles
+    gate_root, descriptors = _inheritable_gate_root()
+    try:
+        return _run_checker_process(
+            root, mode, extra, env, resolved_profiles, gate_root, descriptors
+        )
+    finally:
+        for descriptor in descriptors:
+            os.close(descriptor)
+
+
+def _run_checker_process(
+    root: pathlib.Path,
+    mode: str,
+    extra: tuple[str, ...],
+    env: dict[str, str] | None,
+    resolved_profiles: pathlib.Path,
+    gate_root: dict[str, str],
+    descriptors: tuple[int, ...],
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
             sys.executable,
@@ -326,7 +364,8 @@ def run_checker(
             *extra,
         ],
         cwd=ROOT,
-        env={**os.environ, **(env or {})},
+        env={**os.environ, **gate_root, **(env or {})},
+        pass_fds=descriptors,
         capture_output=True,
         text=True,
         check=False,
@@ -448,64 +487,12 @@ class Task5ChangedMetadataRegressionTests(unittest.TestCase):
                     self.assertNotEqual(0, result.returncode, combined)
                     self.assertIn("requirement-reserved-history-reclassified", combined)
 
-    def test_spec_0153_canonical_package_satisfies_registry_metadata(self) -> None:
-        package = pathlib.Path(
-            "docs/03.specs/0153-workspace-governance-simplification"
-        )
-        selected_paths = [
-            (package / "README.md").as_posix(),
-            (package / "spec.md").as_posix(),
-            (package / "plan.md").as_posix(),
-            *[
-                (
-                    package
-                    / "tasks"
-                    / f"tsk-{number:04d}-{slug}.md"
-                ).as_posix()
-                for number, slug in enumerate(
-                    (
-                        "control-plane",
-                        "stage99",
-                        "bootstrap",
-                        "stage00",
-                        "requirements",
-                        "architecture",
-                        "spec-lifecycle",
-                        "operations",
-                        "references",
-                        "archive",
-                        "script-tests",
-                        "gates",
-                        "closure",
-                    ),
-                    start=1,
-                )
-            ],
-        ]
-        self.assertEqual(16, len(selected_paths))
-
-        profiles = metadata.build_registry_transition_profiles(
-            metadata.load_registry(REGISTRY),
-            metadata.load_profiles(metadata.LEGACY_TRANSITION_PROFILES),
-        )
-        records = metadata.collect_records(
-            ROOT,
-            profiles,
-            selected_paths=selected_paths,
-        )
-        selected = [
-            record
-            for record in records
-            if record.path.as_posix().startswith(f"{package.as_posix()}/")
-        ]
-        self.assertEqual(16, len(selected))
-        manifest = metadata.build_manifest(records)
-        findings = [
-            finding
-            for record in selected
-            for finding in metadata.validate_record(record, profiles, manifest)
-        ]
-        self.assertEqual([], findings)
+    # `test_spec_0153_canonical_package_satisfies_registry_metadata` was removed
+    # on 2026-08-30. Its subject was the sixteen-document `SPEC-0153` package,
+    # which `38fc89c5` retired to a Stage 98 tombstone; `collect_records` found
+    # nothing to validate and the assertion compared 16 against 0. There is no
+    # successor package to repoint it at, and the gate already validates every
+    # live package through `check-document-metadata.py`, so nothing is lost.
 
     def test_legacy_requirement_relation_alias_is_archive_only(self) -> None:
         profiles = metadata.build_registry_transition_profiles(
@@ -1105,12 +1092,40 @@ raise SystemExit(subprocess.run([{real_git!r}, *args], check=False).returncode)
     return {"PATH": f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}"}
 
 
-def init_git(root: pathlib.Path, *, share_objects: bool = False) -> None:
+def seed_registry(root: pathlib.Path) -> None:
+    """Give a fixture the Registry file its base commit is assumed to carry.
+
+    Without it `entries` has no `docs/99.templates/registry.json`, the
+    validator takes its Registry-bootstrap path, and that path requires the
+    base commit to be an *ancestor* of the approved migration baseline — true
+    of every real pre-Registry commit, impossible for a commit the fixture
+    just made.
+    """
+
+    target = root / "docs/99.templates/registry.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(REGISTRY, target)
+
+
+def init_git(
+    root: pathlib.Path,
+    *,
+    share_objects: bool = False,
+    descend_from_head: bool = False,
+) -> None:
     self_check = git(root, "init", "-q")
     if self_check.returncode != 0:
         raise RuntimeError(self_check.stderr)
     git(root, "config", "user.name", "Metadata Fixture")
     git(root, "config", "user.email", "metadata@example.invalid")
+    # Name the branch, do not inherit it. The checker's base inference tries a
+    # branch literally called `main`, and `git init` takes its default from
+    # `init.defaultBranch` in the operator's global config — which the gate
+    # does not have, because it runs with its own `HOME`. Without this the
+    # suite passed locally and fell back to `working-tree-only` under the gate.
+    named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
+    if named.returncode != 0:
+        raise RuntimeError(named.stderr)
     if share_objects:
         # Some validator paths recover a frozen authority by reading a blob at a
         # pinned commit of *this* repository. A fixture repository has no such
@@ -1121,6 +1136,20 @@ def init_git(root: pathlib.Path, *, share_objects: bool = False) -> None:
         alternates = root / ".git/objects/info/alternates"
         alternates.parent.mkdir(parents=True, exist_ok=True)
         alternates.write_text(f"{ROOT / '.git/objects'}\n", encoding="utf-8")
+    if descend_from_head:
+        # Borrowed objects are not enough for the checks that ask
+        # `git merge-base --is-ancestor <pinned commit> HEAD`: a fixture's
+        # first commit is a root commit, so no commit of this repository can
+        # ever be its ancestor. Pointing the unborn branch at this
+        # repository's HEAD first makes the fixture's own commits descend from
+        # it. The tree stays the fixture's own; only the ancestry is borrowed.
+        head = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        updated = git(root, "update-ref", "HEAD", head)
+        if updated.returncode != 0:
+            raise RuntimeError(updated.stderr)
 
 
 def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
@@ -3976,19 +4005,19 @@ class MetadataValidationTests(unittest.TestCase):
                 "guide",
                 "docs/05.operations/catalog/workspace/9991-example/guide.md",
                 "guide-9991",
-                False,
+                True,
             ),
             (
                 "policy",
                 "docs/05.operations/catalog/workspace/9991-example/policy.md",
                 "policy-9991",
-                False,
+                True,
             ),
             (
                 "runbook",
                 "docs/05.operations/catalog/workspace/9991-example/runbook.md",
                 "runbook-9991",
-                False,
+                True,
             ),
             (
                 "incident",
@@ -4038,7 +4067,20 @@ class MetadataValidationTests(unittest.TestCase):
                     if isinstance(traceability, Mapping)
                     else ()
                 )
-                expected = profile_id in {"research", "audit", "data"} or not parents
+                # `5bab8b36` added the third disjunct: an operations subject
+                # takes its membership from the operations migration manifest,
+                # so it may stand without a parent document. 34 of the 60
+                # tracked catalog documents do exactly that.
+                membership = (
+                    traceability.get("membership_authority")
+                    if isinstance(traceability, Mapping)
+                    else None
+                )
+                expected = (
+                    profile_id in {"research", "audit", "data"}
+                    or membership == "operations-migration-manifest"
+                    or not parents
+                )
                 self.assertEqual(
                     expected,
                     profiles["profiles"][profile_id]["allow_empty_parents"],
@@ -7798,7 +7840,8 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "## Related Documents",
         ) + "\n> Rules:\n"
         with directory:
-            init_git(root, share_objects=True)
+            init_git(root, share_objects=True, descend_from_head=True)
+            seed_registry(root)
             migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
             migration.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(
@@ -7852,7 +7895,7 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("template-instruction-in-target", result.stdout)
 
-    def test_registered_operations_profile_transition_rejects_any_additional_metadata(self) -> None:
+    def test_registered_operations_profile_transition_holds_the_registry_boundary(self) -> None:
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
         legacy = root / (
@@ -7872,10 +7915,14 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             "updated": "2026-08-01",
         }
         with directory:
-            init_git(root, share_objects=True)
+            init_git(root, share_objects=True, descend_from_head=True)
+            seed_registry(root)
+            # `9ef889b5` renamed the archive migrations off the `mig-` prefix;
+            # the validator looks for the current name, so the fixture must
+            # use it too.
             migration = root / (
                 "docs/98.archive/migrations/"
-                "mig-0003-workspace-governance-simplification.md"
+                "0003-workspace-governance-simplification.md"
             )
             migration.parent.mkdir(parents=True)
             shutil.copyfile(
@@ -7903,8 +7950,35 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
                 base,
                 profiles=REGISTRY,
             )
+            # Both halves of the old expectation have been overtaken by the
+            # Registry. `reviewed_at` is in `policy`'s `optional_frontmatter`,
+            # so it is declared, not additional; and `5bab8b36` gave operations
+            # subjects their membership from the operations migration manifest,
+            # so `parent_ids: []` no longer raises `missing-parent` — 34 of the
+            # 60 tracked catalog documents stand exactly that way.
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
+
+            # The boundary itself still holds: a key the Registry does not
+            # declare is rejected, which is what `allow_additional: False` is
+            # for.
+            write_doc(
+                catalog,
+                {
+                    "profile_id": "policy",
+                    **metadata_values,
+                    "owner": "undeclared",
+                },
+                POLICY_TARGET_BODY,
+            )
+            result = run_checker(
+                root,
+                "check-changed",
+                "--base-ref",
+                base,
+                profiles=REGISTRY,
+            )
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-            self.assertIn("missing-parent", result.stdout)
 
     def test_registered_operations_move_requires_its_exact_source_at_base(self) -> None:
         directory = tempfile.TemporaryDirectory()
@@ -8820,16 +8894,18 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertTrue(set(role["required_headings"]).issubset(headings))
             self.assertFalse(set(role["forbidden_headings"]) & headings)
 
-        protocol = (
-            ROOT / "docs/00.agent-governance/policies/documentation-protocol.md"
+        # The rule left Stage 00. It was `R4 — Operations Profile Compliance`
+        # in `documentation-protocol.md`, which no longer carries it; the
+        # authority is now the Stage 99 operations template index, and it is
+        # written in Korean because Stage 00 is English-only while stage docs
+        # are not.
+        operations_contract = (
+            ROOT / "docs/99.templates/templates/operations/README.md"
         ).read_text(encoding="utf-8")
-        operations_contract = protocol.split(
-            "**R4 — Operations Profile Compliance (BLOCKING):**", 1
-        )[1].split("## 8.5.", 1)[0]
-        self.assertIn("conditional on a sibling Runbook", operations_contract)
+        self.assertIn("실제 sibling Runbook으로 넘길 때만", operations_contract)
         self.assertNotRegex(
             operations_contract,
-            r"(?is)guides?[^\n]*(?:required|must)[^\n]*Runbook Handoff",
+            r"(?is)guide[^\n]*(?:필수|반드시)[^\n]*Runbook Handoff",
         )
 
     def test_active_stage00_and_stage99_publications_reject_retired_routes(self) -> None:
@@ -8923,21 +8999,23 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertEqual(1, selection.count(row), row)
         self.assertNotIn("docs/98.archive/<original-stage>", selection)
 
-        readme = (ROOT / "docs/98.archive/README.md").read_text(encoding="utf-8")
-        marker = "## Non-Authoritative Historical Provenance Ledger"
-        end_marker = "### End Non-Authoritative Historical Provenance Ledger"
-        self.assertEqual(1, readme.count(marker))
-        self.assertEqual(1, readme.count(end_marker))
-        before, remainder = readme.split(marker, 1)
-        ledger, after = remainder.split(end_marker, 1)
-        active = before + after
-        for literal in (
-            "changes/chg-####-<slug>/plan.md",
-            "changes/chg-####-<slug>/task.md",
-            "tombstones/<stage>/<stable-id>-<slug>.md",
-            "migrations/mig-####-<slug>.md",
-        ):
-            self.assertIn(literal, active)
+        # `9ef889b5` reduced this README to a minimal index. It no longer
+        # publishes route templates, and it no longer carries the quarantined
+        # `## Non-Authoritative Historical Provenance Ledger` that once held
+        # the retired shapes, so both the ledger split and the four route
+        # literals lost their subject. Publishing the typed routes is now the
+        # Registry's job, asserted directly below; what remains checkable in
+        # the README is that it publishes no retired shape anywhere.
+        active = (ROOT / "docs/98.archive/README.md").read_text(encoding="utf-8")
+        registry = metadata.load_registry(REGISTRY)
+        self.assertEqual(
+            "docs/98.archive/migrations/{number:4}-{slug}.md",
+            registry.profiles["migration"]["path_pattern"],
+        )
+        self.assertEqual(
+            "docs/98.archive/tombstones/{stage}/{number:4}-{slug}.md",
+            registry.profiles["tombstone"]["path_pattern"],
+        )
         for retired in (
             "content-archive",
             "content-archive.template.md",
@@ -8952,9 +9030,6 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             active,
             r"(?:docs/)?98\.archive/[^\s`|]*(?:YYYY|(?:19|20)[0-9]{2}(?:-[0-9]{2}-[0-9]{2})?)(?:[-/])",
         )
-        self.assertIn("non-authoritative", ledger.lower())
-        self.assertIn("not routing", ledger.lower())
-        self.assertIn("docs/98.archive/04.execution/", ledger)
 
     def test_typed_role_dates_and_single_archive_target_are_exact(self) -> None:
         profiles = self.profiles["profiles"]
@@ -9091,7 +9166,12 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
                 "tombstone",
                 "spec-0136",
             ),
-            "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md": (
+            # An example path in the frozen selector's own shape, like the
+            # three above it. `9ef889b5` renamed the real records to
+            # `{number:4}-{slug}.md`, which is what the live Registry pattern
+            # expects; this case was moved onto that naming while still being
+            # classified by the legacy `mig-*` selector, which cannot match it.
+            "docs/98.archive/migrations/mig-0001-example.md": (
                 "migration",
                 "mig-0001",
             ),

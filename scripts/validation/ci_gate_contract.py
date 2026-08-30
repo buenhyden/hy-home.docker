@@ -176,6 +176,7 @@ _REQUIRED_JOB_SUITES = {
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
         "leaf.local-document-corpus-lifecycle-tests",
+        "leaf.local-document-metadata-tests",
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
         "leaf.document-governance-library-regressions",

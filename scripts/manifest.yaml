@@ -297,9 +297,10 @@ files:
   mutation: none
   consumers:
   - scripts/hardening/check-all-hardening.sh
-  disposition: rewrite
-  successor: scripts/lib/hardening-lib.sh
-  tests: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_hardening_lib.sh
 - path: scripts/manifest.yaml
   kind: contract
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
