@@ -59,8 +59,8 @@ docs/01.requirements/
 docs/02.architecture/descriptions/
 docs/02.architecture/decisions/
 docs/03.specs/
-docs/04.execution/plans/
-docs/04.execution/tasks/
+docs/03.specs/{number:4}-{slug}/plan.md
+docs/03.specs/{number:4}-{slug}/tasks/
 docs/05.operations/
 docs/90.references/
 docs/99.templates/
@@ -101,8 +101,8 @@ bash scripts/knowledge/report-graphify-health.sh
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-05-10-docs-taxonomy-agent-first-migration.md
-- **Tasks**: ../../04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md
+- **Plan**: co-located at `plan.md` in this package when one is written.
+- **Tasks**: co-located under `tasks/` in this package when execution begins.
 - **Operations Policy**: [../../05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md)
 
 ## Boundaries and Inputs

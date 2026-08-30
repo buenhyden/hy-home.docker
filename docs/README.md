@@ -76,23 +76,8 @@ docs/
 
 ## Migration Map
 
-이전 stage 이름은 다음 canonical 경로로 이관되었습니다.
-
-| Old Path | New Path |
-| --- | --- |
-| `docs/01.prd/` | `docs/01.requirements/` |
-| `docs/02.ard/` | `docs/02.architecture/descriptions/` |
-| `docs/03.adr/` | `docs/02.architecture/decisions/` |
-| `docs/04.specs/` | `docs/03.specs/` |
-| `docs/05.plans/` | `docs/03.specs/####-<slug>/plan.md` |
-| `docs/06.tasks/` | `docs/03.specs/####-<slug>/tasks/` |
-| `docs/07.guides/` | `docs/05.operations/catalog/` |
-| `docs/07.operations/` | `docs/05.operations/catalog/` |
-| `docs/08.operations/` | `docs/05.operations/catalog/` |
-| `docs/09.runbooks/` | `docs/05.operations/catalog/` |
-| `docs/10.incidents/` | `docs/05.operations/incidents/` |
-
-이 표는 과거 경로 해석을 돕기 위한 compatibility note입니다. 새 active artifact는 반드시 새 경로에 작성합니다.
+이전 stage 경로의 이관 매핑은 [Stage 98 migrations](98.archive/migrations/)가
+단일 권위입니다. 이 README는 매핑 사본을 두지 않습니다.
 
 ## How to Work in This Area
 

@@ -85,7 +85,7 @@ not claim or change remote enforcement.
 - Remove verified one-time, obsolete, duplicated, or generated-drift files
   only after ownership, consumer, provenance, and rollback checks.
 - Update direct-impact renderers, validators, tests, canonical audits,
-  generated evidence, and Stage 04 execution artifacts.
+  generated evidence, and co-located Task execution artifacts.
 - Execute implementation through logical commits, fresh implementation agents,
   independent task reviewers, and a fresh whole-branch review.
 
@@ -459,7 +459,7 @@ Agent QA follows this order:
 6. changed-document metadata, traceability, and cross-links;
 7. relevant regression and aggregate checks;
 8. approved controlled all-files wrapper;
-9. sanitized Stage 04 evidence.
+9. sanitized Task evidence.
 
 Direct `pre-commit run --all-files` remains prohibited. The wrapper requires an
 explicit approval for the specific run, a clean committed candidate, bounded
@@ -614,7 +614,7 @@ and read back.
 - a fresh whole-branch security reviewer reports no Critical or Important
   finding;
 - the user explicitly approves the controlled all-files wrapper run;
-- wrapper evidence is sanitized and recorded under the Stage 04 Task;
+- wrapper evidence is sanitized and recorded under the co-located Task;
 - the branch remains local and unpushed unless the user separately requests a
   finish action.
 

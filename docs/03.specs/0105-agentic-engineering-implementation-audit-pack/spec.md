@@ -53,10 +53,8 @@ or scripts.
 - **Spec-Driven SDLC Reference**:
   `spec-driven-sdlc` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf)
 - **Stage 90 Contract**: [../../90.references/README.md](../../90.references/README.md)
-- **Execution Plan**:
-  ../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md
-- **Task Evidence**:
-  ../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md
+- **Execution Plan**: co-located at `plan.md` in this package when one is written.
+- **Task Evidence**: co-located under `tasks/` in this package when execution begins.
 
 ## Contracts
 
@@ -216,7 +214,7 @@ out of scope instead of modifying infra files.
 - **VAL-SPC-003**: Each report has a clear source, evidence, gap, and automation
   candidate model.
 - **VAL-SPC-004**: The implementation work can be planned as separate logical
-  units with separate commits: Stage 03 activation, Stage 04 plan/task
+  units with separate commits: Spec activation, co-located plan and Task
   evidence, Stage 90 audit reports, and final index/progress closure.
 - **VAL-SPC-005**: Validation commands and out-of-scope handling are defined.
 

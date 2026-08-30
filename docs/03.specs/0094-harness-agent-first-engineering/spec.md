@@ -49,7 +49,7 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 | Contract | Source | Required Behavior |
 | --- | --- | --- |
 | Workspace purpose | `README.md`, `infra/README.md` | Operate Docker Compose-based home/development infrastructure through layered `infra/` content and stage documents. |
-| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | Active documents live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. |
+| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | Active documents live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. |
 | Thin root shims | `AGENTS.md`, `CLAUDE.md` | Root files handle entry/import only and delegate detailed policy to Stage 00. |
 | Governance SSOT | `docs/00.agent-governance/` | Owns shared rules, scopes, providers, the agents catalog, memory, and the delegation protocol. |
 | Runtime mirror | `.agents/`, `.claude/`, `.codex/` | Registered provider projections stay synchronized with Stage 00 roles, skills and provider Registry. Configured parity is not runtime acceptance. |
