@@ -283,8 +283,8 @@ No frontmatter field is added or removed. No new identity space is issued.
 3. `python3 scripts/validation/check-document-links.py --mode all` reads the full tracked Markdown corpus and reports zero failures.
 4. `bash scripts/operations/sync-provider-surfaces.sh` followed by `git diff --exit-code` produces no diff.
 5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0.
-6. `grep -rn "Stage 04\|docs/04.execution" docs --include='*.md'` returns matches only inside `superseded` or `completed` documents.
-7. `grep -rn "PRD, SRS" docs/00.agent-governance` returns no match.
+6. No `active` document instructs the reader to use `Stage 04` or `docs/04.execution`. Factual records of paths that existed then, inside execution ledgers, evidence tables, and observation inventories, are not violations and are not rewritten.
+7. `policies/standards.md` no longer requires traceability across artifact types the Stage 99 registry does not define. The prohibition in `policies/documentation-protocol.md` keeps naming them, which is its purpose.
 8. Every file under `docs/00.agent-governance/roles/` carries `agent_id`.
 9. Every profile that can carry a `Related Documents` section registers it.
 10. Command, result, rollback, and skipped checks for each step are recorded in the owning Task.
