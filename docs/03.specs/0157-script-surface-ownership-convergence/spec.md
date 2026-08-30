@@ -85,6 +85,25 @@ computed from that content. A count stays pinned only when it guards a
 deliberate decision, such as the number of registered validators, and then it
 carries the reason in a comment.
 
+### A test judges the corpus, never a deleted taxonomy
+
+The test harness resurrects deleted documents from pinned commits and validates
+against them. Measured: five test modules do it, `HISTORICAL_COMMIT` alone is
+referenced 43 times, and **all seven** resurrected paths are absent from the
+working tree, along with the `docs/99.templates/support/` directory that held
+them.
+
+The consequence is not theoretical. `load_transition_overrides` required
+`evidence_task` to match `docs/03.specs/spec-<slug>/task.md`, a shape with zero
+instances in this repository, because that is the shape the resurrected profile
+blob defines. The validator was matching the harness rather than the corpus, and
+the override was unsatisfiable for as long as that held. This is the same
+pinned-commit pattern SPEC-0155 Task 4 removed from `load_profiles`, surviving
+in the largest test file in the repository.
+
+A test fixture states what the repository is now. Where a past state genuinely
+must be asserted, the fixture is committed as a fixture, not read out of Git.
+
 ### History scanning does not grow without bound
 
 `identity_history.py` reads the complete patch history of each stage directory
@@ -182,9 +201,10 @@ that is both smaller and covered.
 8. `docs/98.archive/README.md` states the recovery procedure without pinning a commit.
 9. Adding one tombstone changes no count literal in `scripts/` or `tests/`, and no test name contains a count.
 10. The identity scan's cost does not grow with repository history, and `MAX_GIT_OUTPUT_BYTES` is not a stopgap.
-11. No file under `scripts/` or `tests/` exceeds 800 lines, or the exception is registered with a reason.
-12. `scripts/README.md` and `tests/README.md` contain no reference to Stage 04 and no claim that the blocking metadata gate is inactive.
-13. `run-ci-gate.py --profile full` exits 0.
+11. No test module resurrects a deleted document from a pinned commit; `HistoricalDocument` has no caller under `tests/`.
+12. No file under `scripts/` or `tests/` exceeds 800 lines, or the exception is registered with a reason.
+13. `scripts/README.md` and `tests/README.md` contain no reference to Stage 04 and no claim that the blocking metadata gate is inactive.
+14. `run-ci-gate.py --profile full` exits 0.
 
 ## Traceability
 
