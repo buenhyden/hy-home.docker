@@ -540,7 +540,7 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         "docs/90.references/audits/0012-readme/README.md": "audit",
         "docs/90.references/audits/0019-readme/README.md": "audit",
         "docs/90.references/audits/0033-readme/README.md": "audit",
-        "docs/90.references/research/0001-agentic-research-pack-refresh/README.md": "research",
+        "docs/90.references/research/0002-agentic-engineering-research-pack/README.md": "research",
     }
 
     def setUp(self) -> None:
@@ -615,7 +615,9 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
     def test_every_tombstone_has_exact_git_provenance(self) -> None:
         inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
         rows = tuple(item.recovery for item in inventory.tombstones)
-        self.assertEqual(42, len(rows))
+        # 43 since 2026-08-30: tombstone-0158 retires the RES-0001 research
+        # pack. Previously 42.
+        self.assertEqual(43, len(rows))
         self.assertTrue(all(item.is_minimal for item in inventory.tombstones))
         self.assertEqual((), archive_authority.validate_recovery_rows(rows, ROOT))
 
@@ -629,9 +631,9 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("migrations=3", result.stdout)
-        self.assertIn("tombstones=42", result.stdout)
-        self.assertIn("decisions=188", result.stdout)
-        self.assertIn("recovery_rows=276 violations=0", result.stdout)
+        self.assertIn("tombstones=43", result.stdout)
+        self.assertIn("decisions=189", result.stdout)
+        self.assertIn("recovery_rows=277 violations=0", result.stdout)
 
     def test_current_links_resolve_without_active_archive_consumers(self) -> None:
         result = subprocess.run(

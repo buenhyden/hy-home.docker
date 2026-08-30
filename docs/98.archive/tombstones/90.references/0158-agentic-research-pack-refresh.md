@@ -12,11 +12,11 @@ updated: 2026-08-30
 
 ## Retired Path
 
-`docs/90.references/research/0001-agentic-research-pack-refresh/`
+`docs/90.references/research/0001-agentic-research-pack-refresh/README.md`
 
 ## Replacement
 
-`docs/90.references/research/0002-agentic-engineering-research-pack/`
+`docs/90.references/research/0002-agentic-engineering-research-pack/README.md`
 
 ## Reason
 
@@ -27,6 +27,11 @@ separate mechanisms existed only to route around them: the link gate's path
 exemption, the LLM wiki generator's retiring-pack prefix, and the old-path gate
 with its allowlist in a cancelled Task. Deleting the pack removes the subject
 those mechanisms guarded.
+
+The retired path is the pack's README because a recovery tuple must resolve to a
+regular Git blob and a directory resolves to a tree. The README carries RES-0001,
+so retiring it retires the package; its nineteen leaves are in the same commit
+and need no tombstone of their own.
 
 ## Recovery Commit
 

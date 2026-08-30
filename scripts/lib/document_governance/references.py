@@ -189,7 +189,16 @@ def tombstoned_paths(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
         # it grants no exemption here, so every target is judged as present-or-
         # missing exactly as it was before.
         return frozenset()
-    return frozenset(record.retired_path for record in inventory.tombstones)
+    retired: set[pathlib.PurePosixPath] = set()
+    for record in inventory.tombstones:
+        retired.add(record.retired_path)
+        if record.retired_path.name == "README.md":
+            # A recovery tuple must resolve to a regular blob, so a pack is
+            # tombstoned through the README that carries its identity rather
+            # than through its directory, which resolves to a tree. Retiring
+            # that README retires the package it names.
+            retired.add(record.retired_path.parent)
+    return frozenset(retired)
 
 
 @dataclasses.dataclass(frozen=True)
