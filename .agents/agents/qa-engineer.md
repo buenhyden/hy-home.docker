@@ -43,4 +43,4 @@ Stop when failures are nondeterministic, environment-only, or outside approved s
 - [Quality standards](../../docs/00.agent-governance/policies/quality-standards.md)
 - [E2E testing](../../docs/00.agent-governance/skills/e2e-testing.md)
 - [Style validation](../../docs/00.agent-governance/skills/style-validation.md)
-- [Test automation](../../docs/00.agent-governance/skills/test-automator.md)
+- [Test authoring](../../docs/00.agent-governance/skills/test-authoring.md)

@@ -710,6 +710,11 @@ class DocumentRegistryTests(unittest.TestCase):
             "scope": "common",
             "function_id": "example",
             "owner_agent": "rules-engineer",
+            "agent_id": "rules-engineer",
+            "tier": "worker",
+            "work_profile": "routine-validation",
+            "permission_profile": "read-only",
+            "skill_ids": ["policy-gate-agent"],
             "generated_by": "scripts/validation/check-document-metadata.py",
         }
         markdown_profiles = {

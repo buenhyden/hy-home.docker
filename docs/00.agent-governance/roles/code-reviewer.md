@@ -9,7 +9,7 @@ work_profile: adversarial-review
 permission_profile: read-only
 skill_ids:
 - code-review-dimensions
-- code-reviewer
+- change-review-execution
 ---
 
 # code-reviewer
@@ -49,5 +49,5 @@ If the review package is incomplete or policy conflicts with the approved plan, 
 
 - [Quality standards](../policies/quality-standards.md)
 - [Code review dimensions](../skills/code-review-dimensions.md)
-- [Code reviewer function](../skills/code-reviewer.md)
+- [Change review execution](../skills/change-review-execution.md)
 - [Subagent protocol](../policies/agentic.md)

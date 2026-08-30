@@ -40,5 +40,5 @@ Mark unverifiable requirements explicitly and request the missing artifact; do n
 ## Related Documents
 
 - [Code reviewer](../roles/code-reviewer.md)
-- [Code reviewer function](code-reviewer.md)
+- [Change review execution](change-review-execution.md)
 - [Common scope](../policies/quality-standards.md)

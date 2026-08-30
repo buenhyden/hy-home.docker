@@ -40,5 +40,5 @@ Quarantine no test silently; isolate flaky environment dependencies and escalate
 ## Related Documents
 
 - [QA engineer](../roles/qa-engineer.md)
-- [Test automation](test-automator.md)
+- [Test authoring](test-authoring.md)
 - [QA scope](../policies/quality-standards.md)

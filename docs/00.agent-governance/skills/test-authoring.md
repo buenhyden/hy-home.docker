@@ -1,13 +1,13 @@
 ---
 profile_id: governance-skill
 layer: agentic
-function_id: test-automator
+function_id: test-authoring
 scope: qa
 status: active
 owner_agent: qa-engineer
 ---
 
-# test-automator
+# test-authoring
 
 ## Preconditions
 

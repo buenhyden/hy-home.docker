@@ -1,13 +1,13 @@
 ---
 profile_id: governance-skill
 layer: agentic
-function_id: code-reviewer
+function_id: change-review-execution
 scope: common
 status: active
 owner_agent: code-reviewer
 ---
 
-# code-reviewer
+# change-review-execution
 
 ## Preconditions
 
