@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: active
+status: completed
 artifact_id: SPEC-0154
 artifact_type: spec
 parent_ids: [REQ-0024, ADR-0027, ADR-0029]
