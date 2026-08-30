@@ -19,7 +19,7 @@ action: warn
 
 This hook is an advisory detector. Resolve the file's language through the sole
 document-role authority at
-`docs/00.agent-governance/policies/documentation-protocol.md#31-language-boundary-by-document-role`;
+`docs/00.agent-governance/policies/documentation-protocol.md#authoring-rules`;
 the hook does not publish a second language table or exception rule.
 
 ## Related Documents

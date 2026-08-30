@@ -12,13 +12,13 @@ Shared standards for instruction design, token efficiency, and execution quality
 - Keep `AGENTS.md` and `CLAUDE.md` as thin entry shims.
 - Keep detailed governance only in `docs/00.agent-governance/`.
 - Use only the canonical order in
-  `policies/bootstrap.md#3-canonical-load-order`.
+  `policies/bootstrap.md#canonical-load-order`.
 - Avoid duplicated instructions across root shims and rule files.
 
 ## 2. Language Standard
 
 - Route artifact language by document role through
-  `policies/documentation-protocol.md#31-language-boundary-by-document-role`.
+  `policies/documentation-protocol.md#authoring-rules`.
 - Conversational responses follow the user's active language preference under
   `policies/output-style.md`.
 

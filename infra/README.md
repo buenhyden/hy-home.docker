@@ -171,7 +171,7 @@ service directory and cover the following agent-verifiable fields:
 
 1. 타겟 계층과 기존 서비스 패턴을 파악한다.
 2. 새 서비스가 `common-optimizations.yml` 템플릿을 준수하는지 확인한다.
-3. `[LOAD:SPECS]` 등 JIT 마커를 사용하여 상세 컨텍스트를 확보한다.
+3. 상세 컨텍스트는 [bootstrap 정규 로드 순서](../docs/00.agent-governance/policies/bootstrap.md#canonical-load-order)에 따라 요청에 필요한 문서만 해석한다.
 4. 이 README의 "Infrastructure Tiers" 테이블을 업데이트하여 추적성을 유지한다.
 
 ## Related Documents

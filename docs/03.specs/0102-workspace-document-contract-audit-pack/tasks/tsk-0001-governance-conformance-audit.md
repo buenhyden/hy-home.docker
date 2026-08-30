@@ -530,7 +530,7 @@ same wall.
 | 17 | ~~Excise the inert `readme_profiles` subsystem, or restore it to the Registry~~ | D4 | — | **closed 2026-08-30; finding withdrawn.** The subsystem is live in the transition envelope, which matches 180 of 185 READMEs and is built by a live gate script |
 | — | ~~Reduce commit-SHA tracking complexity~~ | — | — | **closed 2026-08-30 as a negative result**; the volume is a digest-verified per-row provenance column, and compressing it would break gate 2 |
 | — | ~~Consolidate duplicate-purpose documents~~ | D6, D7 | — | **closed 2026-08-30**; 0 identical bodies in 598 documents, 5 titles corrected, and the one real duplicate package cannot be released by the frozen Stage 90 |
-| 19 | Execute independent gate leaves concurrently instead of in sequence | performance | gate owner | measured: 12 leaves, 628s in sequence, longest ~190s; `check-write` leaves need explicit ordering |
+| 19 | Execute independent gate leaves concurrently instead of in sequence | performance | gate owner | **measured 1.84x** on the two heaviest suites (356.5s to 193.7s, both green); an earlier 3-way probe reporting 1.26x and a failure was invalid — its module list named `test_specs` for `test_spec_packages`. `check-write` leaves still need explicit ordering |
 | 18 | ~~Decide whether Stage 90 should be able to release a superseded package~~ | placement | — | **closed 2026-08-30**; recorded that it does not, beside the Action 9 statement in `docs/90.references/audits/README.md`. Amending the frozen migration stays a Stage 99 decision |
 | 15 | ~~Decide whether the gate should be able to pass `--transition-override-file`~~ | D5 | — | **closed 2026-08-30: no.** The argv pin is correct; the two records that wanted it stay as historical evidence |
 
@@ -1176,6 +1176,58 @@ threefold and remove nothing. It is not taken here: it changes how a
 gate entrypoint executes, some leaves are `check-write` generators that would
 need an explicit ordering or exclusion, and that is a design with its own
 review, not a change to slip into this audit.
+
+### Stage 00 and the three provider surfaces, audited 2026-08-30
+
+Scope: `docs/00.agent-governance/` (87 files), `.agents/` (40), `.claude/` (47),
+`.codex/` (16). Ten independent sweeps; eight returned nothing, and the two that
+found something are fixed here.
+
+| Sweep | Result |
+| ----- | ------ |
+| structural conformance, `agent_governance_contract` over all five projection roots | PASS |
+| provider surface freshness, `provider_surface_renderer` | `drift=0` |
+| provider hook parity matrix | fresh |
+| dangling path references across 190 files | **0** |
+| retired concepts (Stage 04, `SPEC-0136`, `SPEC-0153`, `mig-00`, the deleted profiles YAML, transition-override, the retired provider) | **0** |
+| duplicated rules: 180 bullet rules across 17 policies | **0** — the 11 apparent duplicates are all `## Related Documents` link entries |
+| Legacy / Deprecated / TODO / TBD / FIXME markers | **0** — the two "legacy" hits are a prohibition and a commit-message example |
+| coverage threshold consistency | 90% in both `quality-standards.md` and `roles/qa.md`, and measured by `leaf.storybook-coverage` under the `ci` profile |
+| Stage Authoring Matrix against the Stage 99 Registry | stage sets identical in both directions |
+| **anchor citations across 166 Markdown files** | **7 broken** |
+
+**The 22-roles-to-14-agents asymmetry is not drift.** Eight of the files under
+`roles/` are `layer:` scope documents, not agent roles; the fourteen named roles
+project to fourteen agents on each of the three surfaces, and Codex carries no
+skills directory because the Provider Capability Matrix routes its procedures to
+the shared `.agents/skills/`, which is what the tree holds.
+
+**Seven broken anchors, one cause.** Section numbers were removed from headings
+in `bootstrap.md`, `documentation-protocol.md` and `task-checklists.md`, and the
+citations were not updated: `#3-canonical-load-order`, `#3-completion-contract`,
+and `#31-language-boundary-by-document-role` name headings that no longer exist.
+Four documents cited them — `standards.md`, `quality-standards.md`, and two hook
+policies. All seven now resolve. `documentation-protocol.md` still carried one
+numbered heading, `### 5.1 Gap-to-Stage Routing`, the last of that scheme;
+nothing cites it by anchor, so it is denumbered with the rest.
+
+**`jit-markers.md` is removed, because it contradicted the bootstrap policy
+rather than merely going unused.** It defined twenty `[LOAD:*]` markers mapping
+to documents — a second loading notation. `bootstrap.md` provides "the **sole**
+repository bootstrap sequence", whose step 3 is "resolve only the policies, role,
+and skills needed for the request", and states that adapters "do not define
+alternatives". Measured: **no live governance document routes to it** — not the
+bootstrap policy, not the Stage 00 README, not any policy, role, skill, provider
+adapter, or script — and no script, hook, or provider config acts on a marker.
+Every inbound reference is Stage 90 evidence, a Stage 98 migration row, or
+generated graph output. The one mention of the convention outside its own
+definition, `infra/README.md:174`, told readers to use markers; it now routes to
+the canonical load order instead.
+
+No Stage 98 tombstone was written, and that is the rule rather than an omission:
+the tombstone profile admits `01.requirements`, `02.architecture`, `03.specs`,
+and `05.operations`, and Stage 00 is not among them. `bootstrap.md` names Git
+history as the recovery mechanism.
 
 ### Limitations
 

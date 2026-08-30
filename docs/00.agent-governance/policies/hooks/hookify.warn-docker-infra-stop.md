@@ -13,7 +13,7 @@ action: warn
 
 This hook warns that infra-layer work has conditional completion gates. Apply
 only the canonical contract in
-`docs/00.agent-governance/policies/task-checklists.md#3-completion-contract` and
+`docs/00.agent-governance/policies/task-checklists.md#before-completion` and
 its referenced validators. The hook does not restate pass criteria, blockers,
 settings policy, or evidence fields. Record the result in the applicable
 co-located Task with the exact command result, rollback, and skipped checks.

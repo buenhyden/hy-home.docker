@@ -45,15 +45,15 @@ Quality dimensions:
 
 ## 4. Workflow and Language Routing
 
-- Follow the sole load order in `policies/bootstrap.md#3-canonical-load-order`.
+- Follow the sole load order in `policies/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `policies/workflows.md`.
 - Apply the document-role language table in
-  `policies/documentation-protocol.md#31-language-boundary-by-document-role`.
+  `policies/documentation-protocol.md#authoring-rules`.
 - Resolve write permission through `policies/approval-boundaries.md`.
 
 ## 5. Completion Routing
 
-Use only `policies/task-checklists.md#3-completion-contract`. Its conditional
+Use only `policies/task-checklists.md#before-completion`. Its conditional
 harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `policies/github-governance.md`.

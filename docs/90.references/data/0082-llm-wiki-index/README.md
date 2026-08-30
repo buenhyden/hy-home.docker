@@ -92,7 +92,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/policies/hooks/hookify.warn-post-edit-style-automation.md](../../../00.agent-governance/policies/hooks/hookify.warn-post-edit-style-automation.md) | Markdown reference |
 | [docs/00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md](../../../00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md) | Markdown reference |
 | [docs/00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md](../../../00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md) | Markdown reference |
-| [docs/00.agent-governance/policies/jit-markers.md](../../../00.agent-governance/policies/jit-markers.md) | Markdown reference |
 | [docs/00.agent-governance/policies/output-style.md](../../../00.agent-governance/policies/output-style.md) | Markdown reference |
 | [docs/00.agent-governance/policies/persona.md](../../../00.agent-governance/policies/persona.md) | Markdown reference |
 | [docs/00.agent-governance/policies/postflight-checklist.md](../../../00.agent-governance/policies/postflight-checklist.md) | Markdown reference |

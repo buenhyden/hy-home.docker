@@ -50,7 +50,7 @@ For machine-consumed historical tables, place
 immediately before the table header and separator. Only that contiguous table is
 evidence; surrounding instructions remain current and validated normally.
 
-### 5.1 Gap-to-Stage Routing
+### Gap-to-Stage Routing
 
 | Gap Type | Owner | Rule |
 | --- | --- | --- |
