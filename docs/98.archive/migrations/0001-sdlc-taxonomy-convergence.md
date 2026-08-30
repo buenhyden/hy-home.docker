@@ -5654,4 +5654,4 @@ records:
 
 - [Approved specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
 - [Approved plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
-- [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
+- Archive retention contract (retired path: `99.templates/support/archive-retention-contract.md`)

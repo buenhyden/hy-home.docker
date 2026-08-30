@@ -9622,5 +9622,5 @@ provenance objects, and semantic dispositions above remain unchanged.
 
 - [Specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
 - [Implementation plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
-- [Task evidence](../../03.specs/spec-0136-sdlc-taxonomy-convergence/task.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Task evidence](../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md)
+- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
