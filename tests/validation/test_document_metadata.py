@@ -1116,6 +1116,12 @@ def init_git(
     self_check = git(root, "init", "-q")
     if self_check.returncode != 0:
         raise RuntimeError(self_check.stderr)
+    # Do not inherit the operator's hooks. `core.hooksPath` is a global setting
+    # on developer machines, so a fixture commit would run the operator's
+    # pre-commit hook against a tree the fixture does not own, and its findings
+    # would surface as a fixture construction error. Same class of leak as the
+    # `init.defaultBranch` defense below.
+    git(root, "config", "core.hooksPath", "")
     git(root, "config", "user.name", "Metadata Fixture")
     git(root, "config", "user.email", "metadata@example.invalid")
     # Name the branch, do not inherit it. The checker's base inference tries a
@@ -1123,9 +1129,17 @@ def init_git(
     # `init.defaultBranch` in the operator's global config — which the gate
     # does not have, because it runs with its own `HOME`. Without this the
     # suite passed locally and fell back to `working-tree-only` under the gate.
-    named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
-    if named.returncode != 0:
-        raise RuntimeError(named.stderr)
+    if git(root, "rev-parse", "--verify", "-q", "HEAD").returncode == 0:
+        # A fixture built on a clone already carries the ancestry the checker
+        # reads. Renaming keeps it; repointing HEAD at an unborn branch would
+        # discard it and make every pinned predecessor unreachable.
+        renamed = git(root, "branch", "-M", "main")
+        if renamed.returncode != 0:
+            raise RuntimeError(renamed.stderr)
+    else:
+        named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
+        if named.returncode != 0:
+            raise RuntimeError(named.stderr)
     if share_objects:
         # Some validator paths recover a frozen authority by reading a blob at a
         # pinned commit of *this* repository. A fixture repository has no such

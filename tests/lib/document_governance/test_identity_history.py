@@ -60,11 +60,20 @@ class IdentityHistoryTests(unittest.TestCase):
             retired = self._git(root, "rev-parse", "HEAD").strip()
             findings = identity_history.validate_allocation_transition(root, registry, current, retired)
             self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
-            introduced = {"docs/03.specs/0154-new/spec.md": "SPEC-0154"}
+            # Derive the unallocated number rather than pin one. A literal here
+            # is consumed the moment real work issues that identity, and the
+            # test then asserts that a legitimately allocated number is not
+            # allocated. `SPEC-0154` was the pin and SPEC-0154 was issued.
+            unallocated = registry.identity_spaces["spec"].high_water + 1
+            introduced = {
+                f"docs/03.specs/{unallocated:04d}-new/spec.md": f"SPEC-{unallocated:04d}"
+            }
             findings = identity_history.validate_allocation_transition(root, registry, introduced, retired)
             self.assertIn("identity-allocation-not-advanced", {item.code for item in findings})
             spaces = dict(registry.identity_spaces)
-            spaces["spec"] = dataclasses.replace(spaces["spec"], high_water=154, next_number=155)
+            spaces["spec"] = dataclasses.replace(
+                spaces["spec"], high_water=unallocated, next_number=unallocated + 1
+            )
             advanced = dataclasses.replace(registry, identity_spaces=MappingProxyType(spaces))
             self.assertEqual((), identity_history.validate_allocation_transition(root, advanced, introduced, retired))
 
@@ -336,3 +345,65 @@ class IdentityHistoryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GitPredicateTests(unittest.TestCase):
+    """`git merge-base --is-ancestor` exits 1 to answer `false`, not to fail."""
+
+    def _repo_with_two_unrelated_commits(
+        self, root: pathlib.Path
+    ) -> tuple[str, str]:
+        def run(*args: str) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                ["git", "-C", str(root), *args],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+
+        run("init", "-q")
+        run("config", "core.hooksPath", "")
+        run("config", "user.name", "Predicate Fixture")
+        run("config", "user.email", "predicate@example.invalid")
+        (root / "a.txt").write_text("a", encoding="utf-8")
+        run("add", ".")
+        run("commit", "-qm", "one")
+        first = run("rev-parse", "HEAD").stdout.strip()
+        run("checkout", "-q", "--orphan", "unrelated")
+        (root / "b.txt").write_text("b", encoding="utf-8")
+        run("add", ".")
+        run("commit", "-qm", "two")
+        second = run("rev-parse", "HEAD").stdout.strip()
+        return first, second
+
+    def test_false_predicate_is_an_answer_not_a_scan_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            first, _ = self._repo_with_two_unrelated_commits(root)
+            self.assertFalse(
+                identity_history.git_predicate(
+                    root, ("merge-base", "--is-ancestor", first, "HEAD")
+                )
+            )
+
+    def test_true_predicate_is_reported_as_true(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _, second = self._repo_with_two_unrelated_commits(root)
+            self.assertTrue(
+                identity_history.git_predicate(
+                    root, ("merge-base", "--is-ancestor", second, "HEAD")
+                )
+            )
+
+    def test_scan_failure_names_the_command_and_carries_git_stderr(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._repo_with_two_unrelated_commits(root)
+            with self.assertRaises(IdentityHistoryError) as caught:
+                identity_history.git_predicate(
+                    root, ("merge-base", "--is-ancestor", "not-a-commit", "HEAD")
+                )
+            message = str(caught.exception)
+            self.assertIn("merge-base --is-ancestor not-a-commit HEAD", message)
+            self.assertNotEqual("bounded Git identity scan failed", message)

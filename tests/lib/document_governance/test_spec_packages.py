@@ -120,7 +120,7 @@ def _write_package(
 class SpecPackageTests(unittest.TestCase):
     ACTIVE_ROUTE_FILES = (
         ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
-        ROOT / "docs/00.agent-governance/roles/qa.md",
+        ROOT / "docs/00.agent-governance/policies/quality-standards.md",
         ROOT / "docs/00.agent-governance/skills/execution-plan-agent.md",
         ROOT / ".agents/skills/execution-plan-agent/SKILL.md",
         ROOT / ".claude/skills/execution-plan-agent/SKILL.md",
@@ -646,11 +646,13 @@ class SpecPackageTests(unittest.TestCase):
     def test_current_repository_has_exact_canonical_spec_surface(self) -> None:
         spec_packages = _spec_packages_module()
         packages = spec_packages.load_spec_packages(ROOT / "docs/03.specs")
-        # 30 since 2026-08-29. `38fc89c5` retired the completed governance
-        # migration packages, so the surface legitimately shrank; the pin lagged.
-        # Only the cardinality moved — every surface invariant asserted below
-        # still holds, which is why this is repinned rather than relaxed.
-        self.assertEqual(30, len(packages))
+        # 33 since 2026-08-30. SPEC-0154, SPEC-0155, and SPEC-0156 were issued
+        # for the governance convergence work; the surface legitimately grew.
+        # Previously 30 since 2026-08-29, when `38fc89c5` retired the completed
+        # governance migration packages. Only the cardinality moves — every
+        # surface invariant asserted below still holds, which is why this is
+        # repinned rather than relaxed.
+        self.assertEqual(33, len(packages))
         self.assertTrue(all(not package.path.name.startswith("spec-") for package in packages))
         self.assertFalse((ROOT / "docs/04.execution").exists())
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))

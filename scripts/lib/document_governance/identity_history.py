@@ -74,6 +74,7 @@ class IdentityHistoryError(RuntimeError):
 class _GitOutput:
     text: str
     bytes_read: int
+    returncode: int = 0
 
 
 @dataclasses.dataclass(frozen=True)
@@ -91,6 +92,7 @@ def _run_git(
     *,
     max_output_bytes: int = MAX_GIT_OUTPUT_BYTES,
     timeout_seconds: float = MAX_GIT_SCAN_SECONDS,
+    answer_codes: frozenset[int] = frozenset({0}),
 ) -> _GitOutput:
     if max_output_bytes <= 0 or timeout_seconds <= 0:
         raise IdentityHistoryError("Git identity scan exhausted its bound")
@@ -109,6 +111,7 @@ def _run_git(
         raise IdentityHistoryError("bounded Git identity scan failed")
     selector = selectors.DefaultSelector()
     stdout = bytearray()
+    stderr = bytearray()
     observed = 0
     try:
         for stream, name in ((process.stdout, "stdout"), (process.stderr, "stderr")):
@@ -142,13 +145,24 @@ def _run_git(
                 observed += len(chunk)
                 if key.data == "stdout":
                     stdout.extend(chunk)
+                else:
+                    stderr.extend(chunk)
         remaining_seconds = deadline - time.monotonic()
         if remaining_seconds <= 0:
             _terminate_and_reap(process, selector)
             raise IdentityHistoryError("Git identity scan exceeded its time bound")
         returncode = process.wait(timeout=remaining_seconds)
-        if returncode != 0:
-            raise IdentityHistoryError("bounded Git identity scan failed")
+        if returncode not in answer_codes:
+            # Name the command and carry Git's own words. Five branches of this
+            # function once raised one indistinguishable message and discarded
+            # stderr, which made every failure here undiagnosable.
+            detail = bytes(stderr).decode("utf-8", "replace").strip()
+            raise IdentityHistoryError(
+                "bounded Git identity scan failed: git "
+                + " ".join(arguments)
+                + f" exited {returncode}"
+                + (f": {detail}" if detail else "")
+            )
     except subprocess.SubprocessError as error:
         _terminate_and_reap(process, selector)
         raise IdentityHistoryError("bounded Git identity scan failed") from error
@@ -162,9 +176,21 @@ def _run_git(
         process.stdout.close()
         process.stderr.close()
     try:
-        return _GitOutput(stdout.decode("utf-8"), observed)
+        return _GitOutput(stdout.decode("utf-8"), observed, returncode)
     except UnicodeError as error:
         raise IdentityHistoryError("Git identity scan returned invalid UTF-8") from error
+
+
+def git_predicate(repo: pathlib.Path, arguments: tuple[str, ...]) -> bool:
+    """Run a Git predicate where exit 1 is the answer `false`, not a failure.
+
+    `git merge-base --is-ancestor` documents 0 for true and 1 for false; only
+    2 and above are errors. Reading 1 as a failure turns a legitimate verdict
+    into `configuration-error: bounded Git identity scan failed`.
+    """
+
+    output = _run_git(repo, arguments, answer_codes=frozenset({0, 1}))
+    return output.returncode == 0
 
 
 def _terminate_and_reap(
@@ -420,7 +446,29 @@ def validate_allocation_transition(
         remaining_bytes -= output.bytes_read
         return output.text
 
-    git("merge-base", "--is-ancestor", base_commit, "HEAD")
+    def require_ancestor(ancestor: str, descendant: str, subject: str) -> None:
+        """Assert one commit precedes another, and say so when it does not.
+
+        These four checks are preconditions, not scans. Reading the predicate's
+        exit 1 as a scan failure reported a true verdict as
+        `configuration-error` and named neither commit.
+        """
+
+        nonlocal remaining_bytes
+        output = _run_git(
+            root,
+            ("merge-base", "--is-ancestor", ancestor, descendant),
+            max_output_bytes=min(MAX_GIT_OUTPUT_BYTES, remaining_bytes),
+            timeout_seconds=_remaining_scan_seconds(deadline),
+            answer_codes=frozenset({0, 1}),
+        )
+        remaining_bytes -= output.bytes_read
+        if output.returncode != 0:
+            raise IdentityHistoryError(
+                f"{subject} {ancestor} does not precede {descendant}"
+            )
+
+    require_ancestor(base_commit, "HEAD", "allocation predecessor")
     listing = git("ls-tree", "-r", "-z", base_commit, "--",
                   "docs/99.templates/registry.json", *IDENTITY_SOURCE_PREFIXES)
     entries: dict[str, str] = {}
@@ -449,7 +497,9 @@ def validate_allocation_transition(
 
         try:
             approved_selection = _approved_migration_document(root)
-            git("merge-base", "--is-ancestor", approved_selection["baseline_commit"], "HEAD")
+            require_ancestor(
+                approved_selection["baseline_commit"], "HEAD", "approved migration baseline"
+            )
             for row in approved_selection["rows"]:
                 target = row.get("target_path")
                 identity = row.get("artifact_id")
@@ -466,8 +516,8 @@ def validate_allocation_transition(
         try:
             approved = _approved_migration_document(root)
             approved_base = approved["baseline_commit"]
-            git("merge-base", "--is-ancestor", base_commit, approved_base)
-            git("merge-base", "--is-ancestor", approved_base, "HEAD")
+            require_ancestor(base_commit, approved_base, "allocation predecessor")
+            require_ancestor(approved_base, "HEAD", "approved migration baseline")
             prior_registry = git("log", "--format=%H", "-1", base_commit, "--",
                                  "docs/99.templates/registry.json").strip()
             if prior_registry:
