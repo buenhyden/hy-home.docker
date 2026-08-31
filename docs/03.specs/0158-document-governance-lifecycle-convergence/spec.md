@@ -104,11 +104,29 @@ becomes empty.
 Path, metadata, lifecycle, stale-owner, and link corrections are permitted, as
 is non-lossy integration with a current owner. Preservation is semantic rather
 than byte-for-byte: no checksum, content digest, or expected Git SHA becomes an
-acceptance control. At the design baseline, `95142c3a` records the final
-research-body save and activation, `65e8dfde` the last new-leaf authoring
-event, and later `6663f02c` only three link-destination corrections. Those
-identifiers are provenance-only observations and do not replace execution-time
-classification.
+acceptance control. The sole preservation subject is the entire tracked current
+execution-baseline package measured by Task 2. Historical commits only
+illustrate edit types: `95142c3a` promoted and activated the draft;
+`07b94403` later restored and merged substantive content across all 21 files;
+`3bf50f94` later added claim-bearing corrections; `65e8dfde` remains the last
+new-leaf addition; and `6663f02c` is link-only. Other later governance or path
+edits may exist. No named historical commit represents the final protected
+content, a restore target, Gate, baseline, or branch-lineage control.
+
+Task 2 records the dynamic path inventory as execution evidence. Before that
+Task evidence can be compressed or removed, Task 6 writes a clearly owned,
+package-local preservation declaration in the `RES-0002` README. The
+declaration records the user retention decision and a path list or selector for
+the protected content without hashes, expected SHAs, byte equality, or a pinned
+count. Existing reference/document-governance tests derive the declared set,
+require equality with the safe tracked files under the package root, verify
+presence, and preserve the zero-consumer override; they do not pretend to
+automate semantic equivalence of the research body, sources, or claims.
+
+The package and its declaration remain non-normative research evidence. The
+declaration records the decision and test input; this Specification's
+acceptance contract supplies its authority. Research findings never become
+governance policy merely because they are protected.
 
 Other Stage 90 artifacts may be deleted only after all current consumers have
 been migrated and the applicable profile, identity, and high-water contracts
@@ -230,12 +248,15 @@ Retain Stage 90 sources when their provenance and current consumer remain
 useful, and retain the complete `RES-0002` package under the user-preservation
 override even if consumers reach zero. Remove current-sounding predecessor
 taxonomy from retained evidence without losing the protected research body,
-sources, or claims. Reduce completed Stage 98 Migrations to concise versions of
-all registered required sections: Purpose, Authority Change, Path Mapping,
-Recovery, Approval, and Traceability. Retain only required metadata and
-evidence needed to preserve Migration 0003 as the structural disposition and
-recovery boundary. Add a Tombstone only for a stable retired path that still
-has a live recovery-navigation consumer. Never create a body copy or redirect.
+sources, or claims. Persist the Task 2 protected path set and user decision in
+the package README and make the existing reference-test oracle GREEN before
+transient Task evidence is retired. Reduce completed Stage 98 Migrations to
+concise versions of all registered required sections: Purpose, Authority
+Change, Path Mapping, Recovery, Approval, and Traceability. Retain only required
+metadata and evidence needed to preserve Migration 0003 as the structural
+disposition and recovery boundary. Add a Tombstone only for a stable retired
+path that still has a live recovery-navigation consumer. Never create a body
+copy or redirect.
 
 ### Wave 5: Simplify Gates, Fixtures, and SHA Tracking
 
@@ -276,6 +297,7 @@ its registered recovery is proven.
 | Script manifest | Sole validator inventory and suite membership |
 | Workflow contract | Public profile and CI execution routing |
 | Disposition rule set | Task-local complete coverage rules plus explicit non-`keep` paths; never a lifecycle registry or corpus copy |
+| Protected research declaration | Package-local, non-normative record of the user retention decision and protected path selector; SPEC acceptance remains authoritative |
 | Migration | Minimal path mapping and recovery evidence; no execution body |
 | Tombstone | Minimal stable retired-path recovery pointer |
 | Fixture | Current generated contract, one-field mutation, or temporary-Git recovery case |
@@ -292,6 +314,7 @@ retained projections receive an explicit canonical-source mapping.
 | A useful historical source is deleted as merely old | Require provenance, current-consumer, replacement, recovery, and review decisions separately |
 | A mechanical link correction is mistaken for the latest research save | Classify Git touches by diff purpose and preserve the atomic `RES-0002` package; never select it with a maximum-timestamp shortcut |
 | Consumer cleanup removes the user-protected latest research | Apply `PROTECT_LATEST` before consumer disposition and retain its substantive body, sources, and claims even at zero consumers |
+| Transient Task evidence is removed before protection remains enforceable | Persist the dynamic path declaration in the package README and make existing reference tests GREEN before Task retirement |
 | Historical evidence remains active guidance | Supersede and shorten it or delete it; active owners never defer to Stage 90 |
 | SPEC-0157 is presented as previously approved | Record the anomaly and current revalidation; preserve the real transition order |
 | A Task disposition becomes a new lifecycle | Keep disposition values local to execution; validate document status against Stage 99 only |
@@ -322,9 +345,13 @@ retained projections receive an explicit canonical-source mapping.
    with its substantive research body, sources, and claims semantically
    preserved, even if consumers reach zero. Current path, metadata, owner, and
    link corrections and non-lossy integration are allowed without checksum or
-   SHA pinning. Other Stage 90 artifacts are retained with provenance and a
-   current consumer, or are deleted only after consumer migration and profile,
-   identity, and high-water validation.
+   SHA pinning. Before transient Task evidence is retired, the package README
+   persistently declares the user decision and protected path set without a
+   pinned count, and existing reference tests derive that declaration and prove
+   on-disk equality and presence. Semantic body/source/claim preservation
+   remains a review obligation. Other Stage 90 artifacts are retained with
+   provenance and a current consumer, or are deleted only after consumer
+   migration and profile, identity, and high-water validation.
 7. Stage 98 contains no deleted body, snapshot, raw execution ledger, or
    duplicate digest, and every recovery tuple resolves to a regular Git blob.
 8. Stage 99 Registry and templates contain no parallel or unused document
