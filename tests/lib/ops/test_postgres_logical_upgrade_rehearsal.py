@@ -17,7 +17,7 @@ import unittest
 from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
 FIXTURE = ROOT / "tests/fixtures/postgres-logical-upgrade"
 COMPOSE = FIXTURE / "docker-compose.yml"

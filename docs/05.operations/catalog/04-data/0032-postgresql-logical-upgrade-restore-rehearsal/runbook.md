@@ -34,7 +34,7 @@ Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652
 
 | Step order | Procedure step | Expected result |
 | --- | --- | --- |
-| 1 | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | Fixture, shell contract, negative cases, cleanup, redaction, and verdict tests pass. |
+| 1 | `python3 -m unittest tests.lib.ops.test_postgres_logical_upgrade_rehearsal -v` | Fixture, shell contract, negative cases, cleanup, redaction, and verdict tests pass. |
 | 2 | `bash scripts/lib/ops/rehearse-postgres-logical-upgrade.sh --check` | Full machine-readable Compose render, exact pins, anonymous approved targets, fixture SHA-256, exclusive UID/mode/device/inode evidence ownership, 360-second operation budget, and 60-second cleanup reserve pass inside one 420-second deadline without starting a database. |
 | 3 | `bash scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` | Source and target each prove the same authenticated postmaster identity over TCP `127.0.0.1:5432` twice, two seconds apart, while the container remains running and healthy; separate exact-project renders then pass backup, restore, oracle comparison, cleanup, and atomic canonical publication. |
 | 4 | Run `--negative-case checksum-mismatch`, `partial-state`, `bad-target-major`, and `timeout` separately. | Stable nonzero class `50`, `50`, `10`, and `20`; cleanup passes; canonical handoff is absent after each negative. |

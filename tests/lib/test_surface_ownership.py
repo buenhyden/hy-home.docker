@@ -21,6 +21,24 @@ def _manifest_rows() -> list[dict]:
 class SurfaceOwnershipTests(unittest.TestCase):
     """A directory states what its files are, and no constant restates it."""
 
+    def test_every_library_package_has_a_test_directory(self) -> None:
+        packages = {
+            path.name
+            for path in (ROOT / "scripts/lib").iterdir()
+            if path.is_dir() and not path.name.startswith("__")
+        }
+        missing = sorted(
+            name for name in packages if not (ROOT / "tests/lib" / name).is_dir()
+        )
+        self.assertEqual([], missing)
+
+    def test_no_placeholder_test_directory_remains(self) -> None:
+        for name in ("docs", "qa", "setup"):
+            self.assertFalse(
+                (ROOT / "tests" / name).exists(),
+                f"tests/{name} described a structure that was never built",
+            )
+
     def test_library_rows_declare_no_execution_context(self) -> None:
         """A library declares no execution context.
 

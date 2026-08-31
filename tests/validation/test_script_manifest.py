@@ -645,6 +645,18 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(disposition, self.rows_by_path[path]["disposition"])
 
+        for path in (
+            "scripts/operations/gen-secrets.sh",
+            "scripts/security/seed-grype-db-cache.sh",
+        ):
+            with self.subTest(path=path):
+                row = self.rows_by_path[path]
+                if row["disposition"] == "retain":
+                    self.assertTrue(row["consumers"])
+                    self.assertTrue(row["tests"])
+                    self.assertTrue(is_runbook_authority(row["authority"]))
+
+    def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
         postgres = self.rows_by_path[
             "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
         ]
@@ -658,19 +670,9 @@ class ScriptManifestTests(unittest.TestCase):
             postgres["consumers"],
         )
         self.assertEqual(
-            ["tests/validation/test_postgres_logical_upgrade_rehearsal.py"],
+            ["tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py"],
             postgres["tests"],
         )
-        for path in (
-            "scripts/operations/gen-secrets.sh",
-            "scripts/security/seed-grype-db-cache.sh",
-        ):
-            with self.subTest(path=path):
-                row = self.rows_by_path[path]
-                if row["disposition"] == "retain":
-                    self.assertTrue(row["consumers"])
-                    self.assertTrue(row["tests"])
-                    self.assertTrue(is_runbook_authority(row["authority"]))
 
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
@@ -1234,6 +1236,18 @@ class ScriptManifestValidationTests(unittest.TestCase):
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(self) -> None:
         self.assertIn("tests-missing", self.codes(self.row(tests=[])))
         self.assertIn("mutation-invalid", self.codes(self.row(mutation="default-write")))
+
+    def test_manifest_rejects_retired_placeholder_test_roots(self) -> None:
+        for root in ("docs", "qa", "setup"):
+            test_path = f"tests/{root}/test_example.py"
+            with self.subTest(root=root):
+                self.assertIn(
+                    "tests-location-invalid",
+                    self.codes(
+                        self.row(tests=[test_path]),
+                        self.tracked | {test_path},
+                    ),
+                )
 
     def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(self) -> None:
         library = self.row(

@@ -124,20 +124,20 @@ _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapter
 # These are exact internal commands, not an exemption for an entire script path.
 _INTERNAL_ADAPTER_CONTEXTS = {
     **{
-        ("run-unittest", f"tests.validation.{module}", "-v"): _ALL_EXECUTION_CONTEXTS
-        for module in (
-            "test_agent_output_eval_fixtures",
-            "test_ci_gate_contract",
-            "test_ci_gate_runner",
-            "test_ci_gate_adapters",
-            "test_github_workflow_contract",
-            "test_agent_governance_ci_routing",
-            "test_document_corpus_lifecycle",
-            "test_document_metadata",
-            "test_hook_rules",
-            "test_target_surface_contracts",
-            "test_target_surface_delta_contracts",
-            "test_compose_baseline_gates",
+        ("run-unittest", module_name, "-v"): _ALL_EXECUTION_CONTEXTS
+        for module_name in (
+            "tests.validation.test_agent_output_eval_fixtures",
+            "tests.lib.gate.test_ci_gate_contract",
+            "tests.validation.test_ci_gate_runner",
+            "tests.lib.gate.test_ci_gate_adapters",
+            "tests.lib.gate.test_github_workflow_contract",
+            "tests.validation.test_agent_governance_ci_routing",
+            "tests.validation.test_document_corpus_lifecycle",
+            "tests.validation.test_document_metadata",
+            "tests.validation.test_hook_rules",
+            "tests.lib.target_surface.test_target_surface_contracts",
+            "tests.lib.target_surface.test_target_surface_delta_contracts",
+            "tests.validation.test_compose_baseline_gates",
         )
     },
     # One invocation covering the fourteen mirrored document-governance

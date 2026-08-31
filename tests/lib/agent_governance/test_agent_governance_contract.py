@@ -11,7 +11,7 @@ import unittest
 import yaml
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE = ROOT / "scripts/lib/agent_governance/agent_governance_contract.py"
 
 

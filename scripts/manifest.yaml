@@ -27,7 +27,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_github_workflow_contract.py
+  - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
@@ -100,7 +100,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_target_surface_contracts.py
+  - tests/lib/target_surface/test_target_surface_contracts.py
 - path: scripts/lib/agent_governance/agent_governance_contract.py
   kind: validator
   public_suites:
@@ -114,7 +114,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_governance_contract.py
+  - tests/lib/agent_governance/test_agent_governance_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/document_governance/__init__.py
   kind: library
@@ -317,7 +317,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_ci_gate_adapters.py
+  - tests/lib/gate/test_ci_gate_adapters.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/gate/ci_gate_contract.py
   kind: validator
@@ -334,8 +334,8 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_ci_gate_contract.py
-  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/lib/gate/test_ci_gate_contract.py
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/gate/github_workflow_contract.py
   kind: validator
@@ -346,12 +346,12 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - tests/validation/test_github_workflow_contract.py
+  - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_github_workflow_contract.py
+  - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/hardening-lib.sh
   kind: library
@@ -377,7 +377,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  - tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/lib/ops/validate-harness.sh
   kind: validator
   public_suites:
@@ -406,7 +406,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_grype_db_seed.py
+  - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/lib/target_surface/target_surface_contract.py
   kind: validator
   public_suites:
@@ -420,7 +420,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_target_surface_contracts.py
+  - tests/lib/target_surface/test_target_surface_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/target_surface/target_surface_delta_contract.py
   kind: validator
@@ -435,7 +435,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
 - path: scripts/manifest.yaml
   kind: contract
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -597,7 +597,7 @@ files:
   disposition: rewrite
   successor: scripts/security/seed-grype-db-cache.sh
   tests:
-  - tests/validation/test_grype_db_seed.py
+  - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/security/verify-sample-service-supply-chain.sh
   kind: operations
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -608,7 +608,7 @@ files:
   disposition: rewrite
   successor: scripts/security/verify-sample-service-supply-chain.sh
   tests:
-  - tests/validation/test_grype_db_seed.py
+  - tests/lib/supply_chain/test_grype_db_seed.py
   - tests/validation/test_supply_chain_policy.py
 - path: scripts/validation/agent_output_eval.py
   kind: validator
@@ -845,7 +845,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_github_workflow_contract.py
+  - tests/lib/gate/test_github_workflow_contract.py
 - path: scripts/validation/check-supply-chain-policy.py
   kind: validator
   public_suites:
@@ -876,7 +876,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_target_surface_contracts.py
+  - tests/lib/target_surface/test_target_surface_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-target-surface-delta-contract.py
   kind: validator
@@ -894,7 +894,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
 - path: scripts/validation/check-template-security-baseline.sh
   kind: validator
   public_suites:
@@ -921,8 +921,8 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
   - tests/validation/test_ci_gate_runner.py
-  - tests/validation/test_target_surface_delta_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/compose-core-readiness.lib.sh
   kind: operations

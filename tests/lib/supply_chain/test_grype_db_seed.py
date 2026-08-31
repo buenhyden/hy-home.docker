@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 HELPER_PATH = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 HARNESS_PATH = ROOT / "scripts/security/seed-grype-db-cache.sh"
 OUTPUT_RELATIVE = pathlib.Path(

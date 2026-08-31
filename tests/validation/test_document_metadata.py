@@ -3312,8 +3312,8 @@ class MetadataValidationTests(unittest.TestCase):
 
 # The legacy profile set is frozen at a commit of a file that no longer exists,
 # so it cannot be amended. It was already incomplete when it was frozen: its
-# `tests` profile globs `tests/README.md` and nothing below it, while these five
-# sub-directory READMEs were already tracked at that commit. They are the exact,
+# `tests` profile globs `tests/README.md` and nothing below it, while these two
+# ownership READMEs were already tracked at that commit. They are the exact,
 # enumerated gap — not a class to be skipped, and not corpus drift.
 #
 # `SDLC_TAXONOMY_BOUNDED_README_INPUTS` is not that gap and must not be used as
@@ -3321,10 +3321,7 @@ class MetadataValidationTests(unittest.TestCase):
 # legacy set does classify them: both members match `stage-index`.
 LEGACY_UNCLASSIFIED_READMES = frozenset(
     {
-        "tests/docs/README.md",
         "tests/lib/README.md",
-        "tests/qa/README.md",
-        "tests/setup/README.md",
         "tests/validation/README.md",
     }
 )

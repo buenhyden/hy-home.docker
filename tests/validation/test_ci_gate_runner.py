@@ -731,7 +731,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         roots = contract.public_root_gate_ids(public, suites.public_names)
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene", "--write")),
-            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_postgres_logical_upgrade_rehearsal", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
             (runner.ExecutionContext.LOCAL, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.LOCAL, ("install-playwright",)),
             (runner.ExecutionContext.PUSH, ("check-git-flow",)),

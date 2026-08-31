@@ -295,7 +295,7 @@ for Spec 133 target convergence. The immutable library finding records expose
 stable codes, safe repository paths, and value-free messages. Metadata,
 archive, Compose, and workflow semantics remain delegated to their existing
 owners. Run its focused suite with
-`python3 -m unittest tests.validation.test_target_surface_contracts -v`.
+`python3 -m unittest tests.lib.target_surface.test_target_surface_contracts -v`.
 
 `scripts/validation/check-target-surface-delta-contract.py` is the live routing
 gate. It validates six exact suites, exact-once manifest and executable route
@@ -303,7 +303,7 @@ ownership, changed-path impact, current tracked entrypoints, profile-surface
 agreement, and retirement absence. Historical predecessor snapshots remain
 Git/Migration evidence and are not regenerated as current gate state.
 Run its focused suite with
-`python3 -m unittest tests.validation.test_target_surface_delta_contracts -v`.
+`python3 -m unittest tests.lib.target_surface.test_target_surface_delta_contracts -v`.
 
 `scripts/validation/run-agent-precommit-all-files.sh` is the only approved
 agent entrypoint for `pre-commit run --all-files`. Use it only at the approved

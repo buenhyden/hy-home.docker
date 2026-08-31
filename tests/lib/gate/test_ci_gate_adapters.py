@@ -197,6 +197,50 @@ class CiGateAdapterTests(unittest.TestCase):
         self._assert_run_child_normalizes_spawn_error_without_payload()
         self._assert_eval_invalid_utf8_is_normalized()
 
+    def test_run_unittest_accepts_exact_test_surfaces(self) -> None:
+        modules = (
+            "tests.validation.test_one",
+            "tests.lib.agent_governance.test_agent_governance_contract",
+            "tests.lib.document_governance.test_metadata_validator",
+            "tests.lib.gate.test_ci_gate_adapters",
+            "tests.lib.gate.test_ci_gate_contract",
+            "tests.lib.gate.test_github_workflow_contract",
+            "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+            "tests.lib.supply_chain.test_grype_db_seed",
+            "tests.lib.target_surface.test_target_surface_contracts",
+            "tests.lib.target_surface.test_target_surface_delta_contracts",
+        )
+        for module in modules:
+            with self.subTest(module=module):
+                result, recorder = self.run_with_recorder(
+                    ("run-unittest", module, "-v")
+                )
+                self.assertEqual(0, result)
+                self.assertEqual(
+                    ("python3", "-m", "unittest", module, "-v"),
+                    recorder.calls[0][0],
+                )
+
+    def test_run_unittest_rejects_outside_empty_or_invalid_module_segments(
+        self,
+    ) -> None:
+        for module in (
+            "tests.other.test_escape",
+            "tests.lib",
+            "tests.lib..test_escape",
+            "tests.lib.gate.test-ci_gate_adapters",
+        ):
+            with self.subTest(module=module):
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.run_adapter(
+                        self.root,
+                        ("run-unittest", module, "-v"),
+                        {"PATH": "/usr/bin"},
+                    )
+                self.assertEqual(
+                    "ci-gate-adapter-arguments", caught.exception.code
+                )
+
     def test_run_agent_output_eval_checks_markers_and_emits_output_once(
         self,
     ) -> None:

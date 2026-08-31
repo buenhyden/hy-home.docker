@@ -155,7 +155,7 @@ _REQUIRED_ROOT_CHILDREN = {
 # Derived from `_INTERNAL_ROOT_CHILDREN` since 2026-08-29. It was a second
 # literal listing the same suites, so every new gate suite had to be written
 # into both tables by hand and could silently disagree. The invariant is pinned
-# by `PinDerivationTests` in `tests/validation/test_ci_gate_contract.py`; a root
+# by `PinDerivationTests` in `tests/lib/gate/test_ci_gate_contract.py`; a root
 # that legitimately needs the two to differ has to change that test first.
 _INTERNAL_ROOT_SUITES = {
     job_id: tuple(

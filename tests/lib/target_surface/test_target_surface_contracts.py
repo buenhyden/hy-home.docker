@@ -13,7 +13,7 @@ import yaml
 from scripts.lib.document_governance.git_provenance import HistoricalDocument
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 PROFILES = HistoricalDocument(

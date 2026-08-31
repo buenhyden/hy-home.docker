@@ -78,7 +78,7 @@ REQUIRED_LOCAL_PATHS = frozenset(
         "tests/validation/test_generate_llm_wiki.py",
     }
 )
-APPROVED_TEST_PREFIXES = ("tests/docs/", "tests/lib/", "tests/qa/", "tests/setup/", "tests/validation/")
+APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
 PUBLIC_SUITE_NAMES = frozenset(
     {
         "agent-governance",

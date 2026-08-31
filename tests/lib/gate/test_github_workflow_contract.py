@@ -16,7 +16,7 @@ import unittest
 from unittest import mock
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 REQUIRED_CI_JOBS = frozenset(
     {
@@ -27,8 +27,8 @@ REQUIRED_CI_JOBS = frozenset(
 SUPPLY_CHAIN_SEMANTIC_COMMANDS = (
     (
         "python3 -m unittest tests.validation.test_compose_core_readiness "
-        "tests.validation.test_postgres_logical_upgrade_rehearsal "
-        "tests.validation.test_grype_db_seed "
+        "tests.lib.ops.test_postgres_logical_upgrade_rehearsal "
+        "tests.lib.supply_chain.test_grype_db_seed "
         "tests.validation.test_supply_chain_policy "
         "tests.validation.test_sample_service_delivery_rehearsal -v"
     ),

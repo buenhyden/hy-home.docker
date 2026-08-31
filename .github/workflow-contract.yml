@@ -530,7 +530,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_ci_gate_adapters",
+        "tests.lib.gate.test_ci_gate_adapters",
         "-v"
       ],
       "cwd": ".",
@@ -551,7 +551,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_ci_gate_contract",
+        "tests.lib.gate.test_ci_gate_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1175,7 +1175,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_target_surface_delta_contracts",
+        "tests.lib.target_surface.test_target_surface_delta_contracts",
         "-v"
       ],
       "cwd": ".",
@@ -1211,7 +1211,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_target_surface_contracts",
+        "tests.lib.target_surface.test_target_surface_contracts",
         "-v"
       ],
       "cwd": ".",
@@ -1418,8 +1418,8 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_compose_core_readiness",
-        "tests.validation.test_postgres_logical_upgrade_rehearsal",
-        "tests.validation.test_grype_db_seed",
+        "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+        "tests.lib.supply_chain.test_grype_db_seed",
         "tests.validation.test_supply_chain_policy",
         "tests.validation.test_sample_service_delivery_rehearsal",
         "-v"
@@ -1492,7 +1492,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_github_workflow_contract",
+        "tests.lib.gate.test_github_workflow_contract",
         "-v"
       ],
       "cwd": ".",

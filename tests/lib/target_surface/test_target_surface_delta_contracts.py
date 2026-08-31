@@ -17,7 +17,7 @@ from scripts.validation import ci_gate_runner
 from scripts.lib.target_surface import target_surface_delta_contract as contract
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/validation/check-target-surface-delta-contract.py"
 
 
