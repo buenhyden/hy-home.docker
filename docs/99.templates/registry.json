@@ -663,7 +663,7 @@
     }},
     "architecture-description": {"prefix": "AD-", "width": 4, "high_water": 29, "next_number": 30, "child_spaces": {}},
     "adr": {"prefix": "ADR-", "width": 4, "high_water": 29, "next_number": 30, "child_spaces": {}},
-    "spec": {"prefix": "SPEC-", "width": 4, "high_water": 157, "next_number": 158, "child_spaces": {}},
+    "spec": {"prefix": "SPEC-", "width": 4, "high_water": 158, "next_number": 159, "child_spaces": {}},
     "operations-subject": {"prefix": "OPS-", "width": 4, "high_water": 77, "next_number": 78, "child_spaces": {}},
     "incident": {"prefix": "inc-", "width": 4, "high_water": 1, "next_number": 2, "child_spaces": {}},
     "research": {"prefix": "RES-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},

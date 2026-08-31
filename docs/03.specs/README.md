@@ -97,6 +97,11 @@ docs/03.specs/
 | `SPEC-0136` | [SDLC Taxonomy Convergence](./0136-sdlc-taxonomy-convergence/spec.md) | [Plan](./0136-sdlc-taxonomy-convergence/plan.md), [Task](./0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md) |
 | `SPEC-0137` | [Agentic Research Pack Rebuild](./0137-agentic-research-pack-rebuild/spec.md) | [Plan](./0137-agentic-research-pack-rebuild/plan.md), [Tasks](./0137-agentic-research-pack-rebuild/tasks/) |
 | `SPEC-0152` | [Deleted Reference Leaf Disposition](./0152-deleted-reference-leaf-disposition/spec.md) | [Plan](./0152-deleted-reference-leaf-disposition/plan.md), [Task](./0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md) |
+| `SPEC-0154` | [Governance Consistency Convergence](./0154-governance-consistency-convergence/spec.md) | [Plan](./0154-governance-consistency-convergence/plan.md), [Tasks](./0154-governance-consistency-convergence/tasks/) |
+| `SPEC-0155` | [Validation Surface Reduction](./0155-validation-surface-reduction/spec.md) | [Plan](./0155-validation-surface-reduction/plan.md), [Tasks](./0155-validation-surface-reduction/tasks/) |
+| `SPEC-0156` | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | Spec |
+| `SPEC-0157` | [Script Surface Ownership Convergence](./0157-script-surface-ownership-convergence/spec.md) | [Plan](./0157-script-surface-ownership-convergence/plan.md) |
+| `SPEC-0158` | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | Spec |
 
 ## Role Contract
 
