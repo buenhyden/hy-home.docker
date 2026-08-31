@@ -38,6 +38,8 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 7 | Revalidated Task 1 implementation at `dd665618` | Consumer inventory resolves exactly four reachable modes (`check-public`, `check-contract`, `check-promoted`, `check-recovery`). The lifecycle suite, all four modes, and the workflow contract are GREEN. The shared manifest bundle is RED only for five Task 3-owned package markers; no Task 1 production change or duplicate production commit was made. |
 | 8 | Repaired the remaining Task 2 Spec Package count pin | Directly observed the existing `34 != 35` failure and the new targeted guard RED. Replaced the pin with the loader-to-directory set relation; targeted guard plus archive, lifecycle, and Spec Package suites are GREEN. Independent review remains pending. |
 | 9 | Repaired Task 3 package markers | Captured the exact five-marker manifest RED and dependency evidence, deleted only those markers with `apply_patch`, then confirmed namespace imports, manifest, ownership, and workflow checks GREEN. The focused-test RED is Task 5 unregistered agent-governance fixture work; all five full-Gate results are Task 6 registered recovery-fixture work. |
+| 10 | Revalidated the responsibility-split acceptance scope | Measured 37 files above the earlier diagnostic threshold: 32 Python and 5 shell. Only four have named split boundaries in SPEC-0157, leaving 33 outside this Spec, and no authoritative repository-wide limit or exception mechanism exists. Replaced the unsupported global limit with the four measured responsibility contracts. |
+| 11 | Validated the responsibility-split contract correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`; the all-links check reported `failures=0`; `git diff --check` passed. |
 
 ### Discovered branch commits
 
@@ -384,6 +386,25 @@ owned by Task 6 fixed-workspace/recovery-fixture work:
 
 Task 3 did not expand into that repair.
 
+### Responsibility-split scope preflight
+
+The preflight counted current Python and shell files under `scripts/` and
+`tests/`, then searched Stage 00, Requirements, Architecture, and Stage 99 for
+an authoritative 800-line rule:
+
+~~~text
+total=37 python=32 shell=5
+authoritative 800-line policy matches: 0
+~~~
+
+The four files named by SPEC-0157 have explicit domain or mode boundaries;
+the other 33 do not. No registered exception mechanism exists for a global
+source-size rule. The Spec and Plan therefore treat length only as diagnostic
+evidence and verify the four selected files by responsibility boundary,
+compatibility behavior, lifecycle modes, and preserved test counts. Defining a
+repository-wide limit would require a separately approved Requirement, ADR,
+and Spec rather than an implicit validator or exception registry here.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -485,6 +506,10 @@ is self-approved by this registration.
    test module names change.
 7. A library is determined by its manifest execution contexts and filesystem
    entrypoint ownership, not by an argparse or __main__ guard.
+8. File length is diagnostic evidence only. SPEC-0157 decomposes the four
+   measured files with named responsibility boundaries; the other 33 measured
+   files are out of scope, and a repository-wide source-size policy requires a
+   separate approved Requirement, ADR, and Spec.
 
 ## Deferred Items
 

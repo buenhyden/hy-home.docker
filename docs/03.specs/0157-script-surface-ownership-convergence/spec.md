@@ -20,9 +20,8 @@ not reachable from a registered gate and eight of those were failing; the
 post-Task-4 measured unregistered/failing set is authoritative for execution.
 
 This Spec Package converges the script surface on one ownership rule, reduces the
-machinery that no gate reaches, registers every test module, and splits the four
-monolith files that exceed the repository's own 800-line cohesion limit by an
-order of magnitude.
+machinery that no gate reaches, registers every test module, and decomposes the
+four measured multi-responsibility files along named domain and mode boundaries.
 
 Reduction comes before restructuring. Moving unreachable code into a cleaner
 directory produces a tidier version of the same excess.
@@ -166,14 +165,19 @@ tests/
 describe a structure that was never built. They are replaced by the directories
 above.
 
-### Monolith split
+### Responsibility split
 
-| File | Lines | Becomes |
-| :--- | ---: | :--- |
-| `metadata_validator.py` | 6,774 | `lib/document_governance/metadata/` — profile, lifecycle, heading, identity, reference |
-| `check-document-corpus-lifecycle.py` | 6,484 | one entrypoint plus `lib/document_governance/lifecycle/` |
-| `test_document_metadata.py` | 8,426 | one module per production module above |
-| `test_document_corpus_lifecycle.py` | 7,022 | one module per production module above |
+| File | Current responsibilities | Becomes |
+| :--- | :--- | :--- |
+| `metadata_validator.py` | Profile, lifecycle, heading, identity, and reference validation | Five responsibility modules plus an explicit compatibility re-export |
+| `check-document-corpus-lifecycle.py` | CLI handling plus four registered lifecycle modes | A thin CLI plus one module per registered mode |
+| `test_document_metadata.py` | Tests for all metadata-validation responsibilities | One test module per production responsibility module |
+| `test_document_corpus_lifecycle.py` | Tests for the CLI and all registered lifecycle modes | One test module per registered mode |
+
+File length is diagnostic context, not a repository-wide policy. These four
+files are selected because measurement found named, independently testable
+responsibilities inside each one. Every other file remains out of scope unless
+a later approved Spec defines its responsibility boundary.
 
 The split happens after reduction and after registration, so it operates on code
 that is both smaller and covered.
@@ -215,7 +219,10 @@ that is both smaller and covered.
     from a fixed workspace commit. `HistoricalDocument` remains only in tests
     whose subject is current Stage 98 recovery, and those tests use a temporary
     Git repository or a current recovery row.
-12. No file under `scripts/` or `tests/` exceeds 800 lines, or the exception is registered with a reason.
+12. The four named multi-responsibility files are decomposed along the stated
+    profile, lifecycle, heading, identity, reference, CLI, and registered-mode
+    boundaries. Compatibility imports and all four lifecycle modes remain
+    stable, and the pre-split and post-split test counts are equal.
 13. `scripts/README.md` and `tests/README.md` contain no reference to Stage 04 and no claim that the blocking metadata gate is inactive.
 14. `run-ci-gate.py --profile full` exits 0.
 
@@ -234,7 +241,7 @@ measured, not assumed:
 | 5, no `f259c139` in `docs/` | Closed. The normative pin is gone from Stage 98; the constant stays in `archive.py` because it is the lookup point for 234 documents' recovery records | Only as data for the reduction, never as a deletion target |
 | 7, full inventory blocking | Closed. `--mode check-active` already blocks 421 documents at zero violations | Nothing inherited |
 | 13, transition override wiring | Path contract and status set corrected; still unreachable, since no gate passes `--transition-override-file` | Retired or wired, with the reason recorded |
-| Test harness on resurrected profiles | `test_document_metadata.py` runs the checker against a profile blob read from a pinned commit, knowing only the retired taxonomy | The current-authority fixture work in Acceptance 11 and the monolith split |
+| Test harness on resurrected profiles | `test_document_metadata.py` runs the checker against a profile blob read from a pinned commit, knowing only the retired taxonomy | The current-authority fixture work in Acceptance 11 and the responsibility split |
 
 SPEC-0155 acceptance item 6 was corrected rather than inherited: it demanded that
 `docs/04.execution` not appear in `scripts/`, and nine of its ten occurrences are

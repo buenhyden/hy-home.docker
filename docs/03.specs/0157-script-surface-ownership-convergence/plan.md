@@ -16,7 +16,8 @@ updated: 2026-08-31
 Converge `scripts/` and `tests/` on one ownership rule, in the order that keeps
 every step measurable: reduce what no gate reaches, derive the counts that break
 on legitimate change, restructure the directories, register every test module,
-then split the four monoliths.
+then decompose the four measured multi-responsibility files along their named
+domain and mode boundaries.
 
 Reduction precedes restructuring. Moving unreachable code into a cleaner
 directory produces a tidier version of the same excess.
@@ -1028,14 +1029,14 @@ git commit -m "perf(identity): Scan path names instead of every diff in history"
 
 ---
 
-### Task 8: Split the two production monoliths
+### Task 8: Split the two production responsibility surfaces
 
 **Files:**
 
 - Create: `scripts/lib/document_governance/metadata/{profile,lifecycle,heading,identity,reference}.py`
-- Modify: `scripts/lib/document_governance/metadata_validator.py` (6,774) into a thin re-export
+- Modify: `scripts/lib/document_governance/metadata_validator.py` into a thin compatibility re-export
 - Create: `scripts/lib/document_governance/lifecycle/{public,contract,promoted,recovery}.py`
-- Modify: `scripts/validation/check-document-corpus-lifecycle.py` into an entrypoint
+- Modify: `scripts/validation/check-document-corpus-lifecycle.py` into a thin entrypoint
 
 **Interfaces:**
 
@@ -1053,6 +1054,20 @@ rg -n \
 Record the untruncated result in the current Task. Incidental module globals are
 not an API merely because `dir()` exposes them; the compatibility surface is
 the set that tracked consumers import or access.
+
+Before moving code, also record the focused suite counts and prove that all four
+registered lifecycle modes exit 0. These observations are the behavioral
+baseline for Step 5; file length is not the acceptance oracle.
+
+```bash
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata 2>&1 | grep -E "^Ran "
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle 2>&1 | grep -E "^Ran "
+for mode in check-public check-contract check-promoted check-recovery; do
+  PYTHONPATH=. python3 scripts/validation/check-document-corpus-lifecycle.py \
+    --mode "$mode" >/dev/null 2>&1
+  echo "$mode exit=$?"
+done
+```
 
 - [ ] **Step 2: Write the declared compatibility test**
 
@@ -1091,14 +1106,20 @@ One module per surviving mode: `public.py`, `contract.py`, `promoted.py`,
 - [ ] **Step 5: Verify**
 
 ```bash
-for f in $(find scripts/lib/document_governance -name '*.py'); do
-  n=$(wc -l < "$f"); [ "$n" -gt 800 ] && echo "OVER 800: $n $f"
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+for mode in check-public check-contract check-promoted check-recovery; do
+  PYTHONPATH=. python3 scripts/validation/check-document-corpus-lifecycle.py \
+    --mode "$mode" >/dev/null 2>&1
+  echo "$mode exit=$?"
 done
-PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task7.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task7.txt
-grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task7.txt
+PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task8.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task8.txt
+grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task8.txt
 ```
 
-Expected: no `OVER 800` line and `FULL exit=0`.
+Expected: the declared compatibility API remains importable, both focused suite
+counts equal their Step 1 baselines, all four modes exit 0, and the full Gate
+reports `FULL exit=0`.
 
 - [ ] **Step 6: Commit each move separately**
 
@@ -1115,11 +1136,11 @@ git commit -m "refactor(metadata): Split the validator by responsibility"
 
 ---
 
-### Task 9: Split the test monoliths and close the Spec Packages
+### Task 9: Split the corresponding test responsibility surfaces and close the Spec Packages
 
 **Files:**
 
-- Split: `tests/validation/test_document_metadata.py` (8,426) and `tests/validation/test_document_corpus_lifecycle.py` (7,022) to match Task 8's modules
+- Split: `tests/validation/test_document_metadata.py` and `tests/validation/test_document_corpus_lifecycle.py` to match Task 8's responsibility modules
 - Modify: `scripts/README.md`
 - Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`, and `scripts/manifest.yaml` whenever split test module names change
 - Modify: `docs/03.specs/0154-*/spec.md`, `docs/03.specs/0155-*/spec.md`, `docs/03.specs/0157-*/spec.md`
@@ -1198,10 +1219,10 @@ git diff --cached --name-only
 python3 scripts/knowledge/generate-llm-wiki.py
 python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-final.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-final.txt
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-final.txt
-find scripts tests -name '*.py' -exec wc -l {} + | awk '$1>800 && $2!="total"'
 ```
 
-Expected: both wiki outputs fresh, `FULL exit=0`, and no file over 800 lines.
+Expected: both wiki outputs are fresh, the two post-split test-count sums equal
+their pre-split baselines, and the full Gate reports `FULL exit=0`.
 Regenerate after the last document is authored, not before; the gate checks
 freshness and a Task that writes its own record after regenerating leaves it red.
 
@@ -1226,16 +1247,17 @@ git commit -m "docs(spec): Close the script surface ownership convergence"
 
 ## Verification
 
-Every task ends with `run-ci-gate.py --profile full` reporting `FULL exit=0`,
-read from that line and never from `tail -1`. The final state additionally
-satisfies:
+Every task boundary runs `run-ci-gate.py --profile full` and records the
+`FULL exit=` line rather than inferring it from `tail -1`. A boundary may retain
+only an explicitly measured RED owned by a later Task; the owning Task must
+remove it, and the final boundary reports `FULL exit=0`. The final state
+additionally satisfies:
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$(git merge-base main HEAD)"
 python3 scripts/validation/check-document-links.py --mode all
 python3 scripts/validation/check-script-manifest.py
 bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code
-find scripts tests -name '*.py' -exec wc -l {} + | awk '$1>800 && $2!="total"'
 rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
   tests/validation/test_document_metadata.py \
   tests/validation/test_document_corpus_lifecycle.py \
@@ -1244,8 +1266,8 @@ rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/suppor
 grep -rn "NON_STANDALONE_VALIDATOR_PATHS" scripts tests
 ```
 
-Expected: `violations=0`, `failures=0`, `PASS`, `drift=0` with a clean diff, and
-no output from the last three.
+Expected: `violations=0`, `failures=0`, `PASS`, `drift=0` with a clean diff,
+`FULL exit=0`, and no output from the final two searches.
 
 ## Rulings
 
@@ -1276,6 +1298,11 @@ Two are new to this Spec Package:
 7. **Discovered implementation is revalidated, never retroactively approved.**
    Task 0 records the actual earlier commit range, activates the legal parent
    chain, and reruns the affected checks before any new production mutation.
+8. **File length is diagnostic evidence, not an ownership contract.** The four
+   selected files are split because each contains measured, independently
+   testable responsibilities. A repository-wide source-size policy or exception
+   mechanism requires its own approved Requirement, ADR, and Spec; this Plan
+   does not create one implicitly.
 
 ## Related Documents
 
