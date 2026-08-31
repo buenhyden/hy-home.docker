@@ -1363,10 +1363,14 @@ class ResurrectedMigrationContractTests(unittest.TestCase):
                 )
 
     def test_no_stage_04_route_is_pinned_in_the_validator(self) -> None:
-        source = pathlib.Path(
-            metadata_validator.__file__
-        ).read_text(encoding="utf-8")
-        self.assertNotIn("docs/04.execution", source)
+        facade = pathlib.Path(metadata_validator.__file__)
+        sources = (facade, *sorted((facade.parent / "metadata").glob("*.py")))
+        for path in sources:
+            with self.subTest(path=path.name):
+                self.assertNotIn(
+                    "docs/04.execution",
+                    path.read_text(encoding="utf-8"),
+                )
 
     def test_profiles_still_load_without_the_resurrected_contract(self) -> None:
         """`load_profiles()` no longer takes a contract path and still works.

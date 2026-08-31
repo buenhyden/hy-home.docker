@@ -109,6 +109,23 @@ PRESERVED_APPROVED_MIGRATION_PATHS = (
     | PRESERVED_RESEARCH_MIGRATION_PATHS
     | PRESERVED_TEMPLATE_MIGRATION_PATHS
 )
+
+
+class MetadataValidatorCompatibilityTests(unittest.TestCase):
+    def test_metadata_validator_declares_its_compatibility_api(self) -> None:
+        """The split preserves live imports, not incidental module globals."""
+
+        from scripts.lib.document_governance import metadata_validator
+
+        self.assertTrue(metadata_validator.__all__)
+        missing = [
+            name
+            for name in metadata_validator.__all__
+            if not hasattr(metadata_validator, name)
+        ]
+        self.assertEqual([], missing)
+
+
 PINNED_TARGET_SURFACE_RESEARCH_PATHS = frozenset(
     {
         f"{PINNED_RESEARCH_PACK_PREFIX}README.md",
@@ -926,13 +943,15 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
+        from scripts.lib.document_governance.metadata import reference
+
         profiles = current_profiles()
-        original = metadata._validator.TARGET_MARKDOWN_PREFIXES
+        original = reference.TARGET_MARKDOWN_PREFIXES
         try:
-            metadata._validator.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
+            reference.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
             findings = metadata.validate_repository_contracts(ROOT, profiles)
         finally:
-            metadata._validator.TARGET_MARKDOWN_PREFIXES = original
+            reference.TARGET_MARKDOWN_PREFIXES = original
         self.assertIn(
             "workspace-inventory-coupling",
             {finding.code for finding in findings},

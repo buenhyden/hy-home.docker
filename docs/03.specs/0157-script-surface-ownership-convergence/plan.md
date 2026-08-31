@@ -1155,7 +1155,7 @@ It must also reject a tree, missing object, or non-regular blob. No document-
 contract or Operations test reads a Stage 98 document as fixture authority, and
 no recovery test embeds a workspace commit literal.
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
@@ -1333,13 +1333,16 @@ git commit -m "perf(identity): Scan object names instead of every historical dif
 - Modify: `scripts/lib/document_governance/metadata_validator.py` into a thin compatibility re-export
 - Create: `scripts/lib/document_governance/lifecycle/{public,contract,promoted,recovery}.py`
 - Modify: `scripts/validation/check-document-corpus-lifecycle.py` into a thin entrypoint
+- Modify: `scripts/manifest.yaml` — point dependency evidence at direct owners
+- Modify: `tests/lib/document_governance/test_metadata_validator.py` — direct responsibility import contract
+- Modify: source-location contracts that otherwise inspect only the retired monolith path
 
 **Interfaces:**
 
 - Consumes: Task 1's four modes, Task 2's derived census, Task 6's fixtures. Splitting before those would divide code that is about to be deleted and would do it without a working safety net.
 - Produces: the public names `load_registry`, `build_registry_profiles`, `validate_record`, `validate_repository_contracts`, `load_transition_overrides`, `collect_issued_identities` remain importable from `scripts.lib.document_governance.metadata_validator`, so no caller changes.
 
-- [ ] **Step 1: Record live consumers before moving anything**
+- [x] **Step 1: Record live consumers before moving anything**
 
 ```bash
 rg -n \
@@ -1365,7 +1368,11 @@ for mode in check-public check-contract check-promoted check-recovery; do
 done
 ```
 
-- [ ] **Step 2: Write the declared compatibility test**
+Observed baseline: the untruncated consumer search has 30 rows,
+`metadata_validator.py` has 6,794 lines, the lifecycle CLI has 5,206 lines,
+the focused suites run 51 and 13 tests, and all four modes exit 0.
+
+- [x] **Step 2: Write the declared compatibility test**
 
 ```python
     def test_metadata_validator_declares_its_compatibility_api(self) -> None:
@@ -1385,25 +1392,34 @@ The test fails before `__all__` exists. Build `__all__` from the live-consumer
 inventory in Step 1, then use explicit re-exports from the new modules. Do not
 use wildcard imports or a temporary-file snapshot as a permanent test oracle.
 
-- [ ] **Step 3: Move one responsibility at a time**
+- [x] **Step 3: Move along one acyclic responsibility graph**
 
-For each of profile, lifecycle, heading, identity, reference: cut the functions
-that belong to it into the new module, add explicit imports for the names in
-`metadata_validator.__all__`, and run the compatibility test plus
-`PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata`
-before starting the next one. Five separate commits.
+The measured dependency graph is `profile -> heading -> identity -> lifecycle
+-> reference`. Move whole definitions along that graph, keep shared models and
+Registry projection in `profile`, and keep repository orchestration and `main`
+in `reference`. `metadata_validator.py` becomes a 107-line explicit facade with
+no wildcard import or mutable proxy state. The split is one logical unit because
+intermediate modules cannot satisfy the tracked manifest's direct-consumer
+contract independently.
 
-- [ ] **Step 4: Split the lifecycle checker the same way**
+- [x] **Step 4: Split the lifecycle checker along its measured graph**
 
-One module per surviving mode: `public.py`, `contract.py`, `promoted.py`,
-`recovery.py`. `check-document-corpus-lifecycle.py` keeps `_parser`,
-`_validate_cli_shape`, and a `main` that dispatches on `args.mode`.
+`contract.py` owns models, manifest I/O, common safety, and bounded repository
+reads; `promoted.py` owns semantic reconciliation; `public.py` owns current Spec
+Package lifecycle findings; and `recovery.py` owns only minimal Stage 98
+recovery-row validation. `check-document-corpus-lifecycle.py` keeps `_parser`,
+`_validate_cli_shape`, and `main` dispatch plus explicit compatibility imports.
+Update the script manifest to name these direct importers and prove all nine new
+libraries through one existing mirrored responsibility test; add no Gate leaf,
+fixture suite, or workflow job.
 
 - [ ] **Step 5: Verify**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_metadata_validator.ResponsibilityModuleTests
+PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 for mode in check-public check-contract check-promoted check-recovery; do
   PYTHONPATH=. python3 scripts/validation/check-document-corpus-lifecycle.py \
     --mode "$mode" >/dev/null 2>&1
@@ -1413,21 +1429,32 @@ PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-t
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task8.txt
 ```
 
-Expected: the declared compatibility API remains importable, both focused suite
-counts equal their Step 1 baselines, all four modes exit 0, and the full Gate
+Expected: the declared compatibility API remains importable; the 51 original
+metadata tests remain and the new compatibility test makes that suite 52; the
+13 lifecycle tests remain; the direct responsibility contract passes; all four
+modes exit 0; the manifest is valid without another Gate; and the full Gate
 reports `FULL exit=0`.
 
-- [ ] **Step 6: Commit each move separately**
+- [x] **Step 6: Commit the verified responsibility unit**
 
 ```bash
 git add -A -- scripts/lib/document_governance/metadata \
   scripts/lib/document_governance/lifecycle \
   scripts/lib/document_governance/metadata_validator.py \
   scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/manifest.yaml \
+  tests/lib/document_governance/test_links.py \
+  tests/lib/document_governance/test_metadata_validator.py \
+  tests/lib/document_governance/test_registry.py \
+  tests/lib/document_governance/test_spec_packages.py \
+  tests/lib/document_governance/test_taxonomy.py \
+  tests/validation/test_document_corpus_lifecycle.py \
   tests/validation/test_document_metadata.py \
+  tests/validation/test_script_manifest.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/plan.md \
   docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
 git diff --cached --name-only
-git commit -m "refactor(metadata): Split the validator by responsibility"
+git commit -m "refactor(governance): Split metadata and lifecycle responsibilities"
 ```
 
 ---

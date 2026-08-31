@@ -18,6 +18,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/validation/check-document-links.py"
 METADATA_CLI = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CLI = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
+LIFECYCLE_CONTRACT = (
+    ROOT / "scripts/lib/document_governance/lifecycle/contract.py"
+)
 SCRIPT_MANIFEST_CLI = ROOT / "scripts/validation/check-script-manifest.py"
 
 
@@ -252,8 +255,9 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
         self.assertFalse(provenance.is_regular_blob)
 
     def test_lifecycle_imports_shared_governance_instead_of_metadata_cli(self) -> None:
-        source = LIFECYCLE_CLI.read_text()
-        tree = ast.parse(source)
+        entrypoint_source = LIFECYCLE_CLI.read_text()
+        contract_source = LIFECYCLE_CONTRACT.read_text()
+        tree = ast.parse(f"{entrypoint_source}\n{contract_source}")
         imported = {
             alias.name
             for node in ast.walk(tree)
@@ -262,8 +266,9 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
         }
         self.assertNotIn("check-document-metadata", imported)
         self.assertNotIn("check_document_metadata", imported)
-        self.assertNotIn("_load_metadata_module", source)
-        self.assertIn("metadata_contract", source)
+        self.assertNotIn("_load_metadata_module", entrypoint_source)
+        self.assertNotIn("_load_metadata_module", contract_source)
+        self.assertIn("metadata_contract", contract_source)
 
     def test_manifest_yaml_evidence_requires_an_exact_typed_entry(self) -> None:
         checker = load_script_manifest_cli()

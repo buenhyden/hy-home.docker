@@ -75,6 +75,16 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 44 | Measured and corrected the Task 7 history-scan design | The six stage patch-history projections ranged from 892,728 to 20,716,362 bytes and showed why the 64 MiB patch stopgap was excessive. A path-only identity proposal was rejected before implementation because Requirement child IDs exist only in bodies, Stage 90 leaf names can be references rather than package identities, and a Tombstone path names its retired target rather than its own ID. The new invariant was first RED against the retained `-G`/patch parser and 64 MiB cumulative budget. |
 | 45 | Replaced historical patch parsing with bounded object-name projection | Six path-bounded `git rev-list --objects` queries select source blobs; batched `git grep` returns only identity-bearing lines, while paths select the legal identity family rather than the ID value. The pre/post issued-set captures are byte-identical at SHA-256 `c96d855fe9b5d9667c01a059a9ceb33e44313eff74bd594c8d46b5e37e495bd6`. All 17 identity-history tests and the registered full-history metadata route are GREEN; the measured historical Git output is 2,454,189 bytes under the 8 MiB cumulative cap. |
 | 46 | Completed the Task 7 full-profile boundary | The exact four Task 7 paths were staged with no unstaged change. Static compilation, the 17-test identity module, full-history metadata contracts, changed-document metadata, all links, alignment links, and diff hygiene are GREEN. Every registered Full profile bundle passed, including the expanded 294-test document-governance bundle, and the final marker is `FULL exit=0`. |
+| 47 | Measured the Task 8 production and consumer baselines | The untruncated live-consumer search has 30 rows. `metadata_validator.py` measured 6,794 lines and the lifecycle CLI 5,206 lines. The focused baselines are 51 metadata tests and 13 lifecycle tests; `check-public`, `check-contract`, `check-promoted`, and `check-recovery` all exited 0. |
+| 48 | Witnessed the Task 8 compatibility RED | The new declared-API test failed only because the monolith had no `metadata_validator.__all__`. The dependency analysis rejected a line-only split and established the acyclic production direction `profile -> heading -> identity -> lifecycle -> reference`. |
+| 49 | Split the metadata responsibility surface | The five implementation modules now own Registry/profile models, heading/body validation, identity validation, lifecycle records, and repository references respectively. The compatibility facade is 107 lines, uses explicit re-exports, and preserves every measured direct or adapter-mediated consumer. The five direct consumer suites ran 163 tests in 176.426 seconds and passed before the additional responsibility contract was added. |
+| 50 | Split the lifecycle responsibility surface | The 5,206-line CLI became a 245-line parser/dispatch adapter, including its six-line direct-execution package bootstrap. `contract.py` owns common manifest and safety mechanics, `promoted.py` owns reconciliation, `public.py` owns current Spec Package findings, and `recovery.py` owns only minimal archive recovery validation. The 13-test baseline and all four mode exits remain GREEN. |
+| 51 | Reconciled manifest and source-location ownership | The pre-update manifest reported nine stale direct-consumer edges. After staging exposed the new tracked paths, the new modules were registered as libraries under existing owners and one mirrored responsibility test directly proved all nine APIs without adding a Gate, workflow job, or fixture suite. Source-string tests now inspect their actual profile, promoted, contract, or reference owners instead of the thin facades. The manifest and workflow contracts are GREEN. |
+| 52 | Reached the Task 8 pre-Full focused boundary | Static compilation and diff hygiene are GREEN. The first combined focused run executed 188 tests and retained one stale taxonomy source-location assertion. After repointing it to `lifecycle/promoted.py`, the complete bundle reran 188 tests in 173.784 seconds and passed. The Full Gate remains pending. |
+| 53 | Repaired the lifecycle entrypoint boundary exposed by Full | The first staged Full run rejected the recreated CLI's `100644` mode; restoring `100755` satisfied the entrypoint contract. The next run reached the 13-test lifecycle bundle and exposed package import before held-root validation. A six-line repository-path bootstrap now permits direct execution while `contract.py` still rejects invalid, closed, and foreign `HYHOME_CI_GATE_ROOT` descriptors. The lifecycle suite and all four business modes are GREEN. |
+| 54 | Repointed the final shared-governance source contract | The next Full run reached the 295-test document-governance bundle and failed one assertion because `test_links.py` still searched the thin CLI for `metadata_contract`. The test now inspects `lifecycle/contract.py`, rejects metadata-CLI dynamic loading across both surfaces, and is registered as direct contract evidence. The focused test and manifest are GREEN. |
+| 55 | Reconciled the exact taxonomy-consumer oracle | The following Full run passed all 295 document-governance tests, then failed one of 128 later tests because `test_script_manifest.py` still expected the compatibility facade as taxonomy's sole consumer. The exact oracle now names the two measured importers, `metadata/lifecycle.py` and `metadata/profile.py`; its focused 53-test module and manifest are GREEN. |
+| 56 | Completed the Task 8 full-profile boundary | The final staged Full run passed every registered bundle: 39, 19, 33, 43, 20, 13, 52, 15, 40, 295, 233, 17, 13, 31, 15, 45, 6, and 128 tests. The final marker is `FULL exit=0`; Task 8 adds no Gate leaf, workflow job, or fixture suite. |
 
 ### Discovered branch commits
 
@@ -980,6 +990,127 @@ selected 16 documents with zero violations, legacy exceptions, or transition
 overrides; all-links and alignment modes reported zero failures and zero direct
 Stage 98 links; and cached diff hygiene passed.
 
+### Task 8 — production responsibility surfaces
+
+The live consumer command from the Plan produced these 30 untruncated rows
+before any production move:
+
+~~~text
+tests/lib/document_governance/test_references.py:71:                code = metadata_validator.main(["--root", str(root), "--mode", "check-active"])
+tests/lib/document_governance/test_taxonomy.py:480:                "metadata_validator.TARGET_MARKDOWN_PREFIXES",
+tests/lib/document_governance/test_taxonomy.py:481:                metadata_validator.TARGET_MARKDOWN_PREFIXES,
+tests/lib/document_governance/test_spec_packages.py:670:            ROOT / "scripts/lib/document_governance/metadata_validator.py"
+tests/lib/document_governance/test_spec_packages.py:678:                    f"scripts/lib/document_governance/metadata_validator.py:{stale}"
+scripts/manifest.yaml:134:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:157:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:168:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:180:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:207:  - tests/lib/document_governance/test_metadata_validator.py
+scripts/manifest.yaml:208:- path: scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:219:  - tests/lib/document_governance/test_metadata_validator.py
+scripts/manifest.yaml:255:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:268:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:279:  - scripts/lib/document_governance/metadata_validator.py
+scripts/manifest.yaml:302:  - scripts/lib/document_governance/metadata_validator.py
+tests/lib/document_governance/test_registry.py:25:from scripts.lib.document_governance.metadata_validator import (
+tests/lib/document_governance/test_registry.py:118:        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
+tests/lib/document_governance/test_registry.py:132:        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
+tests/lib/document_governance/test_registry.py:1367:            metadata_validator.__file__
+tests/lib/document_governance/test_registry.py:1381:        signature = inspect.signature(metadata_validator.load_profiles)
+tests/lib/document_governance/test_registry.py:1383:        profiles = metadata_validator.load_profiles()
+scripts/lib/document_governance/metadata_contract.py:5:from scripts.lib.document_governance.metadata_validator import (
+tests/lib/document_governance/test_metadata_validator.py:14:from scripts.lib.document_governance.metadata_validator import (
+tests/lib/document_governance/test_metadata_validator.py:189:        profiles = metadata_validator.build_registry_profiles(self.registry)
+tests/lib/document_governance/test_metadata_validator.py:192:        self.assertEqual("unsupported", metadata_validator.infer_artifact_type(
+tests/lib/document_governance/test_metadata_validator.py:256:        from scripts.lib.document_governance.metadata_validator import (
+tests/validation/test_script_manifest.py:98:    "scripts/lib/document_governance/metadata_validator.py": "check-write",
+tests/validation/test_script_manifest.py:611:            ["scripts/lib/document_governance/metadata_validator.py"],
+tests/validation/test_script_manifest.py:630:                "scripts/lib/document_governance/metadata_validator.py",
+~~~
+
+The production baselines were 6,794 metadata-validator lines and 5,206
+lifecycle-CLI lines. The behavior baselines were 51 and 13 tests respectively,
+and every surviving lifecycle mode exited 0. The compatibility test was written
+before the split and failed on the missing `__all__` declaration.
+
+The metadata graph is deliberately one-way:
+
+~~~text
+profile -> heading -> identity -> lifecycle -> reference -> compatibility facade
+~~~
+
+`profile.py` owns shared models, Registry projection, and path classification;
+`heading.py` owns Markdown/template-body contracts; `identity.py` owns tracked
+source and internal identity validation; `lifecycle.py` owns records and
+transition evidence; and `reference.py` owns repository-wide composition,
+reports, and the CLI implementation. The facade has explicit imports and a
+declared API; it does not use wildcard imports, dynamic loading, or mutable
+state forwarding.
+
+The lifecycle graph separates common contract mechanics from each current
+surface. `contract.py` owns manifest models, I/O, bounded reads, and safety;
+`promoted.py` owns semantic reconciliation; `public.py` owns current Spec
+Package lifecycle findings; and `recovery.py` invokes only the minimal Stage 98
+recovery-row API. The entrypoint retains parser, CLI-shape, dispatch, common
+exit mapping, and explicit compatibility imports.
+
+Measured split sizes:
+
+~~~text
+metadata_validator.py 107
+metadata/heading.py 864
+metadata/identity.py 379
+metadata/lifecycle.py 1380
+metadata/profile.py 2999
+metadata/reference.py 1428
+check-document-corpus-lifecycle.py 245
+lifecycle/contract.py 3074
+lifecycle/promoted.py 1961
+lifecycle/public.py 54
+lifecycle/recovery.py 30
+~~~
+
+Focused evidence before the final Full boundary:
+
+~~~text
+metadata compatibility RED: AttributeError for missing __all__
+metadata compatibility GREEN: Ran 1 test; OK
+metadata direct consumers: Ran 163 tests in 176.426s; OK
+lifecycle baseline: Ran 13 tests in 14.144s; OK
+surface ownership and validator entrypoints: Ran 11 tests; OK
+responsibility-module contract: Ran 1 test; OK
+check-public exit=0
+check-contract exit=0
+check-promoted exit=0
+check-recovery exit=0
+check-script-manifest.py: PASS
+check-github-workflow-contract.py: PASS (workflows=7, jobs=9, actions=8)
+affected plus complete taxonomy module: Ran 18 tests; OK
+final combined focused bundle: Ran 188 tests in 173.784s; OK
+TASK8_FOCUSED_FINAL exit=0
+python bytecode compilation: exit=0
+git diff --check: exit=0
+~~~
+
+Full-boundary convergence evidence:
+
+~~~text
+entrypoint mode RED: expected executable 100755; restored from 100644
+held-root RED: lifecycle bundle Ran 13 tests; 1 invalid-root assertion failed before package bootstrap
+held-root GREEN: lifecycle bundle Ran 13 tests; OK; four business modes exit=0
+source-owner RED: document-governance Ran 295 tests; 1 stale CLI-location assertion
+source-owner GREEN: focused shared-governance test Ran 1 test; OK
+consumer-oracle RED: document-governance Ran 295 tests; OK; later bundle Ran 128 tests; 1 stale taxonomy consumer assertion
+consumer-oracle GREEN: test_script_manifest.py Ran 53 tests; OK
+final Full bundles: 39,19,33,43,20,13,52,15,40,295,233,17,13,31,15,45,6,128
+FULL exit=0
+~~~
+
+The manifest changes register libraries and direct dependency evidence only.
+They add no public suite, Gate leaf, workflow job, fixture, or fixed test-count
+oracle. Task 9 still owns physical TestCase relocation and corresponding runner
+rewiring.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -1127,6 +1258,7 @@ is self-approved by this registration.
 | Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; 9f984929 | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
 | Full-Gate held-root test harness | ecdb7b9e, 3b3733de | Complete; one test-only capability helper serves all reached nested subprocess consumers, with 49 supporting and 64 Task 6 tests GREEN under an explicit held-root environment |
 | Task 6 current-authority fixtures | ecdb7b9e, 3b3733de; 11529e0c | Complete; fixed-history and archive fixture authority removed, focused suites and final Full GREEN |
+| Task 7 bounded identity history | d101142b | Complete; issued set preserved, cumulative history output bounded at 8 MiB, final Full GREEN |
 
 ## Rulings
 
@@ -1235,6 +1367,18 @@ is self-approved by this registration.
     single predecessor snapshot used by transition validation has a separate
     per-snapshot budget. Neither mechanism makes a branch SHA the current
     baseline.
+23. Metadata production dependencies flow only from profile to heading,
+    identity, lifecycle, and reference. The compatibility facade declares and
+    explicitly re-exports measured consumer names; it does not preserve
+    incidental globals, wildcard imports, or assignment forwarding. Lifecycle
+    production separates common contract mechanics, promoted reconciliation,
+    current public Spec Package checks, and minimal recovery validation behind
+    one thin dispatch entrypoint.
+24. A production-library split updates direct manifest consumers and uses one
+    existing mirrored responsibility test until Task 9 relocates whole test
+    classes. It creates no new Gate leaf, workflow job, fixture suite, or count
+    pin. Source-contract tests inspect the implementation owner set rather than
+    a facade path whose emptiness would make them falsely GREEN.
 
 ## Deferred Items
 

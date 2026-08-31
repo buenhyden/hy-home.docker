@@ -131,7 +131,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/lib/document_governance/metadata/reference.py
   disposition: retain
   successor: null
   tests:
@@ -142,7 +142,8 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/lifecycle/recovery.py
   disposition: retain
   successor: null
   tests:
@@ -165,8 +166,10 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/metadata_validator.py
-  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/lib/document_governance/lifecycle/contract.py
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/profile.py
   disposition: retain
   successor: null
   tests:
@@ -182,6 +185,53 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_identity_history.py
+- path: scripts/lib/document_governance/lifecycle/contract.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/lifecycle/public.py
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/lifecycle/promoted.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/lifecycle/public.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/lifecycle/recovery.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/links.py
   kind: library
   authority: docs/00.agent-governance/policies/documentation-protocol.md
@@ -193,13 +243,77 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_links.py
+- path: scripts/lib/document_governance/metadata/heading.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/identity.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/identity.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/lifecycle.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/profile.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/heading.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/reference.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata_contract.py
   kind: library
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/lib/document_governance/lifecycle/contract.py
   - scripts/validation/check-document-metadata.py
   disposition: retain
   successor: null
@@ -265,7 +379,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/lib/document_governance/metadata/reference.py
   disposition: retain
   successor: null
   tests:
@@ -276,8 +390,9 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/metadata_validator.py
-  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/lib/document_governance/lifecycle/public.py
+  - scripts/lib/document_governance/metadata/identity.py
+  - scripts/lib/document_governance/metadata/reference.py
   disposition: retain
   successor: null
   tests:
@@ -299,7 +414,8 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/profile.py
   disposition: retain
   successor: null
   tests:

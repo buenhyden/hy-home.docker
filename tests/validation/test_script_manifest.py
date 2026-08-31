@@ -608,7 +608,10 @@ class ScriptManifestTests(unittest.TestCase):
         row = self.rows_by_path["scripts/lib/document_governance/taxonomy.py"]
         self.assertEqual("retain", row["disposition"])
         self.assertEqual(
-            ["scripts/lib/document_governance/metadata_validator.py"],
+            [
+                "scripts/lib/document_governance/metadata/lifecycle.py",
+                "scripts/lib/document_governance/metadata/profile.py",
+            ],
             row["consumers"],
         )
         self.assertEqual(

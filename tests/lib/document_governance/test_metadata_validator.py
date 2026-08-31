@@ -41,6 +41,40 @@ THREE_DIGIT_ARTIFACT_ID = re.compile(
     r"^artifact_id:\s*(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}\s*$",
     re.MULTILINE,
 )
+
+
+class ResponsibilityModuleTests(unittest.TestCase):
+    def test_split_modules_expose_their_declared_responsibilities(self) -> None:
+        from scripts.lib.document_governance.lifecycle import (
+            contract,
+            promoted,
+            public,
+            recovery,
+        )
+        from scripts.lib.document_governance.metadata import (
+            heading,
+            identity,
+            lifecycle,
+            profile,
+            reference,
+        )
+
+        responsibilities = (
+            (profile, "load_profiles"),
+            (heading, "validate_body_contract"),
+            (identity, "validate_requirement_internal_id_contract"),
+            (lifecycle, "validate_record"),
+            (reference, "validate_repository_contracts"),
+            (contract, "load_migration_manifest"),
+            (promoted, "validate_migration_manifest"),
+            (public, "_spec_package_lifecycle_findings"),
+            (recovery, "run"),
+        )
+        for module, name in responsibilities:
+            with self.subTest(module=module.__name__, name=name):
+                self.assertTrue(callable(getattr(module, name)))
+
+
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_native_migration_compaction_requires_both_exact_provenance_states(self) -> None:
         from scripts.lib.document_governance import archive, metadata_validator as metadata
@@ -128,6 +162,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
+        from scripts.lib.document_governance.metadata import reference
 
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -155,7 +190,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 with self.assertRaises(metadata.ProfileError):
                     metadata.build_current_manifest(root, [record])
                 stderr = io.StringIO()
-                with mock.patch.object(metadata, "collect_records", return_value=[record]), contextlib.redirect_stderr(stderr):
+                with mock.patch.object(reference, "collect_records", return_value=[record]), contextlib.redirect_stderr(stderr):
                     result = metadata.main(["--root", str(root), "--registry", str(PROFILES), "--mode", "check-active"])
                 self.assertEqual(2, result)
                 self.assertIn("configuration-error: retired Spec lineage recovery is invalid", stderr.getvalue())

@@ -150,12 +150,16 @@ class SharedProvenanceTests(unittest.TestCase):
             )
 
     def test_lifecycle_uses_shared_git_provenance(self) -> None:
-        source = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn("scripts.lib.document_governance.git_provenance", source)
-        self.assertNotIn("METADATA_SCRIPT", source)
+        entrypoint = SCRIPT.read_text(encoding="utf-8")
+        contract = (
+            ROOT
+            / "scripts/lib/document_governance/lifecycle/contract.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("scripts.lib.document_governance.git_provenance", contract)
+        self.assertNotIn("METADATA_SCRIPT", entrypoint)
         self.assertNotIn(
             'spec_from_file_location(\n        "document_metadata',
-            source,
+            entrypoint,
         )
 
 

@@ -666,17 +666,19 @@ class SpecPackageTests(unittest.TestCase):
                     violations.append(
                         f"{path.relative_to(ROOT)}:{match.group(0)}"
                     )
-        metadata_source = (
-            ROOT / "scripts/lib/document_governance/metadata_validator.py"
-        ).read_text(encoding="utf-8")
+        metadata_sources = (
+            ROOT / "scripts/lib/document_governance/metadata_validator.py",
+            *sorted(
+                (ROOT / "scripts/lib/document_governance/metadata").glob("*.py")
+            ),
+        )
         for stale in (
             "docs/03.specs/005-data-analytics",
             "docs/03.specs/133-target-surface-contract-convergence",
         ):
-            if stale in metadata_source:
-                violations.append(
-                    f"scripts/lib/document_governance/metadata_validator.py:{stale}"
-                )
+            for path in metadata_sources:
+                if stale in path.read_text(encoding="utf-8"):
+                    violations.append(f"{path.relative_to(ROOT)}:{stale}")
         registry = load_registry(ROOT / "docs/99.templates/registry.json")
         self.assertEqual(
             "docs/03.specs/{package_number:4}-{slug}/plan.md",

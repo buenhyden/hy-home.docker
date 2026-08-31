@@ -509,7 +509,7 @@ class ActiveStageScopeTests(unittest.TestCase):
                 '"04.execution",',
             ),
             (
-                "scripts/validation/check-document-corpus-lifecycle.py",
+                "scripts/lib/document_governance/lifecycle/promoted.py",
                 'not (root / "docs/04.execution").exists()',
             ),
         ):
