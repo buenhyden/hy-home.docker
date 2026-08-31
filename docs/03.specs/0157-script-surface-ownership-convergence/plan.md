@@ -838,10 +838,12 @@ repository's actual generated Graphify output, `graphify-out/`, are excluded.
 Do not add a docs exclusion, `head`, `--max-count`, or another truncation. Record
 the exact command, total matching-line count, classification counts, zero-count
 for prohibited current/live usage, and capture SHA-256 in the current Task.
-Keep the complete untruncated output in `/tmp` and the SDD scratch report, not
-in the authoritative Task body. This changes evidence storage, not search
-coverage: every line is still classified as either preserved historical
-evidence or prohibited current/live usage. Any prohibited hit reopens Task 4.
+Keep the complete untruncated raw output only in `/tmp`. The SDD scratch report
+keeps the exact command, summary counts, and capture SHA-256 but does not copy
+the raw output into the surface searched by that command. This changes evidence
+storage, not search coverage: every captured line is still classified as either
+preserved historical evidence or prohibited current/live usage. Any prohibited
+hit reopens Task 4.
 
 The full Gate may report `FULL exit=1` only for these five Task 6-owned
 `ChangedBodyDeficitGitTests` results already measured in Task 3:

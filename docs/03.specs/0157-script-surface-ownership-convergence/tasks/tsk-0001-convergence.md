@@ -51,6 +51,9 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 20 | Verified the Task 4-owned execution boundary | The adapter regressions, 207-test moved-suite bundle, surface ownership, CI runner, README profiles, script manifest checker, and workflow-contract checker are GREEN. The explicit agent-governance suite retains only its three Task 5-owned missing-SPEC-0153 subcase errors. |
 | 21 | Classified two pre-existing unreachable manifest-test failures | The full `test_script_manifest` module remains RED on the unchanged hook-disposition assertion and an already-absent SPEC-0153 input. Start-HEAD object inspection and a dynamically expanded local full plan prove both predate Task 4 and the module is unreachable; the two Task 4-owned manifest assertions pass directly. |
 | 22 | Verified current documents, stale paths, and full-Gate ownership | Metadata contracts, changed metadata, links, and diff check passed. The untruncated old-path sweep produced 681 historical/evidence lines and zero prohibited current/live hits. After staging the exact implementation paths for entrypoint-identity verification, the full Gate retained only the five exact Task 6-owned `ChangedBodyDeficitGitTests` results. |
+| 23 | Received independent Task 4 implementation review | Task review: `Spec FAIL`, `Quality CHANGES_REQUESTED`; Python review: `CHANGES_REQUESTED`; CI/Gate review: `APPROVED`. The requested changes were the numeric-leading unittest-segment admission and the evidence record that copied raw search output into its own search surface while misstating the manifest run count. |
+| 24 | Corrected the unittest identifier boundary | Added three numeric-leading cases and witnessed all three fail because `AdapterError` was not raised. Restricted every segment to `[A-Za-z_][A-Za-z0-9_]*`; the focused pair, 15-test adapter module, 30-test runner, manifest checker, and workflow checker are GREEN. Correction commit: `ff12147d`. |
+| 25 | Revalidated the corrected full-Gate and evidence boundary | The staged correction full Gate ran 251 tests in 156.679 seconds and retained only the exact Task 6 five. The manifest module ran 53 tests with only its two base-proven unreachable failures. Raw old-path output was removed from the ignored scratch report, and the current authoritative live surfaces were separately rechecked with zero prohibited hits. Metadata contracts and changed-document checks reported zero violations, all links reported zero failures, and diff hygiene passed. Independent Task/Python re-review remains pending. |
 
 ### Discovered branch commits
 
@@ -534,7 +537,7 @@ count and full content, and excludes only `.git` plus the verified generated
 graph root `graphify-out/`. Every line must be classified as preserved
 historical evidence or prohibited current/live usage.
 
-### Task 4 — implemented; independent review pending
+### Task 4 — implemented; correction pending independent re-review
 
 Implementation commit: `6663f02c`
 `refactor(tests): Mirror library ownership in the test surface`.
@@ -581,7 +584,7 @@ check-script-manifest.py: PASS
 check-github-workflow-contract.py: PASS (workflows=7, jobs=9, actions=8)
 ~~~
 
-The full `tests.validation.test_script_manifest` run executed 52 tests and
+The full `tests.validation.test_script_manifest` run executed 53 tests and
 retained exactly two failures:
 
 1. `ScriptManifestTests.test_plan_mandatory_dispositions_and_high_risk_operations`
@@ -650,19 +653,33 @@ The final five results are exactly the Task 6-owned
 4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
 5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
 
-The exact untruncated old-path sweep produced 681 lines. Classification by
-authority surface is exhaustive: 101 `.superpowers` lines are immutable SDD
-review/recovery snapshots or the consumed Task 4 predecessor/proof brief; 224
-Stage 03 lines are predecessor plans/completed evidence or this Task's explicit
-source-to-destination mappings and proof expression; 318 Stage 90 lines are
-dated observations or generated historical datasets; and 38 Stage 98 lines are
-migration/recovery history. The four groups sum to 681. There are zero hits in
-`.github/`, `scripts/`, or `tests/`; zero current command, comment, ownership,
-machine, runbook, or README hits; zero stale live-link destinations; and zero
-forward SPEC-0158 hits. The complete 681-line output remains in
-`.superpowers/sdd/plan/task-4-report.md` and the original temporary capture;
-its SHA-256 is
+After the identifier-shape correction was staged and reviewed, the affected
+adapter module ran 15 tests and the CI runner ran 30 tests, both GREEN. The
+manifest and workflow checkers also passed. The correction full Gate then ran
+251 tests in 156.679 seconds and retained the same two errors and three failures
+listed above, with no adapter, import, manifest, workflow, metadata, or link
+regression.
+
+The exact untruncated old-path sweep was captured from the staged implementation
+snapshot that became commit `6663f02c`, before documentation evidence was added.
+It produced 681 lines. Classification by authority surface is exhaustive: 101
+`.superpowers` lines are immutable SDD review/recovery snapshots or the consumed
+Task 4 predecessor/proof brief; 224 Stage 03 lines are predecessor
+plans/completed evidence or this Task's explicit source-to-destination mappings
+and proof expression; 318 Stage 90 lines are dated observations or generated
+historical datasets; and 38 Stage 98 lines are migration/recovery history. The
+four groups sum to 681, with zero prohibited current/live hits. The complete raw
+capture remains only in `/tmp/spec0157-task4-old-path-hits.txt`; the ignored SDD
+scratch report retains only its summary and hash, and its prior self-recursive
+raw copy was removed. The capture SHA-256 is
 `e8ba87b1edf3b1779d9e30904892e92a34c3f662b2778fdf51fdb3cd0051b8b7`.
+
+At current HEAD, the same 16-form old-path expression was separately rerun over
+`.github/`, `scripts/`, `tests/`, the current PostgreSQL runbook, and draft
+SPEC-0158's forward plan: zero hits. The three Stage 90 research documents were
+also checked for stale Markdown link destinations: zero hits. Their six
+non-link dated-prose literals remain preserved historical evidence rather than
+current/live references.
 
 ### Task 0 recovery checks
 
@@ -718,8 +735,11 @@ eight moves, three placeholder deletions, adapter/runner/workflow/manifest
 wiring, and current/future reference destinations authorized by the Plan.
 Focused Task 4 checks are GREEN; the two base-proven unreachable manifest-test
 failures, three agent-governance fixture errors, and five full-Gate fixture
-results are attributed above to Tasks 5 and 6. Independent Task, Python, and
-CI/Gate reviews remain pending; this is not independent approval.
+results are attributed above to Tasks 5 and 6. The independent Task review
+returned `Spec FAIL` and `Quality CHANGES_REQUESTED`; the Python review returned
+`CHANGES_REQUESTED`; and the CI/Gate review returned `APPROVED`. The Task/Python
+findings are corrected by `ff12147d` and this evidence update but remain pending
+independent re-review, so this is not an approval or completion claim.
 
 Round 2 read-only primary-owner output:
 
@@ -767,7 +787,7 @@ is self-approved by this registration.
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
 | Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
-| Task 4 test ownership mirror | 6663f02c | Implementation and focused checks complete; independent Task/Python/CI review pending |
+| Task 4 test ownership mirror | 6663f02c; ff12147d | Implementation and identifier correction complete; CI/Gate APPROVED; Task/Python correction pending re-review |
 
 ## Rulings
 
@@ -805,10 +825,11 @@ is self-approved by this registration.
     and dotted forms, saves and prints the full untruncated result, and excludes
     only `.git` and generated `graphify-out/` content.
 13. A moved unittest module must cross both the runner's exact argv admission
-    and the adapter's closed module grammar. The grammar accepts valid nonempty
-    dotted segments only below `tests.validation` or `tests.lib`, rejects
-    outside-root and malformed shapes, and does not duplicate domain ownership;
-    the exact runner argv remains the permission boundary.
+    and the adapter's closed module grammar. The grammar accepts only the ASCII
+    Python identifier shape `[A-Za-z_][A-Za-z0-9_]*` for each nonempty dotted
+    segment below `tests.validation` or `tests.lib`, rejects outside-root and
+    malformed shapes, and does not duplicate domain ownership; the exact runner
+    argv remains the permission boundary.
 14. A Task 4-focused expectation cannot hide a pre-existing failure in an
     unreachable module. Task 4 proves its two changed manifest assertions
     GREEN and records the unchanged two-failure module boundary; Task 5 owns
@@ -820,16 +841,17 @@ is self-approved by this registration.
     evidence that the protection worked, not a reason to bypass it.
 16. An absence proof remains untruncated without turning the authoritative Task
     into a log store. The exact command, count, classification totals, zero
-    prohibited result, and capture SHA-256 live here; the complete 681-line
-    output stays in `/tmp` and the ignored SDD scratch report. This is an
+    prohibited result, and capture SHA-256 live here; the complete 681-line raw
+    output stays only in `/tmp`, while the ignored SDD scratch report keeps a
+    summary and hash. Removing its prior raw copy prevents the evidence file
+    from recursively extending the searched surface. This is an
     evidence-retention boundary, not a search truncation or exclusion.
 
 ## Deferred Items
 
-- Independent re-review of the corrected Task 4/Task 5 reachability and
-  stale-path contracts.
-- Independent Task, Python, and CI/Gate review of implementation commit
-  `6663f02c`.
+- Independent Task/Python re-review of the corrected identifier and evidence
+  boundaries. The prior CI/Gate review is APPROVED; no final Task approval is
+  claimed.
 - Task 5 dynamic disposition of the unreachable `test_script_manifest` module
   and repair/registration of the three agent-governance fixture subcases.
 - Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
