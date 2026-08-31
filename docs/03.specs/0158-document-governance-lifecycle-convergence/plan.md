@@ -46,6 +46,10 @@ registered `changed` and `full` validation profiles.
   `tombstone` as Task-local decisions, never Registry statuses.
 - Cover unchanged documents by deterministic cohort rule. List every
   non-`keep` path explicitly; do not create a 1-row-per-file corpus copy.
+- Before any Stage 90 disposition, assign the Task-local preservation class
+  `PROTECT_LATEST` atomically to every baseline file in
+  `docs/90.references/research/0002-agentic-engineering-research-pack/`.
+  This user override survives zero consumers and is not a Registry status.
 - Preserve Migration 0003 as the structural disposition and recovery boundary,
   but never use Stage 98 as current Stage 05 or Stage 99 authority.
 - Keep supply-chain digests, CI event SHAs, regular-blob recovery commits, and
@@ -106,6 +110,9 @@ remaining a second authority.
 | `suite_registry.py` repeats a Task-numbered immutable validator map | Derive validator rows and membership from `scripts/manifest.yaml` |
 | Lifecycle and Operations expose overlapping modes and routes | Retain one complete CLI behavior per validator after equivalence tests; keep recovery as part of lifecycle validation |
 | Persistent digest removal could weaken concurrent-worktree safety | Remove lineage ledgers, not ephemeral policy-required comparison |
+| A later link-only Git touch can be mistaken for the latest saved external research | Classify each relevant diff as content authoring or mechanical path/link correction; do not select preservation by maximum timestamp |
+| Current Stage 90 existence is coupled to Migration 0003's frozen historical target set | Decouple current retention in `references.py` before deletion; Migration 0003 remains recovery history and does not require one Tombstone per deleted package |
+| Preliminary Stage 90 classification found 25 deletion candidates and 39 migration-dependent packages | Treat both counts as discovery evidence only; Task 2 remeasures the current tree and acceptance never pins either count |
 
 ### Role and Evidence Assignment
 
@@ -131,7 +138,7 @@ remaining a second authority.
 | Provider facts | `docs/00.agent-governance/providers/registry.yaml` | Provider, model, permission translation, hook, and projection routing |
 | Document mechanics | `docs/99.templates/registry.json`, schemas, templates | Stage 99 typed document authority |
 | Current solution truth | Stages 01, 02, 03, and 05 | One current owner per requirement, structure, change, or operation |
-| Evidence | `docs/90.references/` | Sourced, dated, non-normative, currently consumed material only |
+| Evidence | `docs/90.references/` | Sourced, dated, non-normative material with current consumers, plus the atomic user-protected latest external-research pack |
 | Recovery | `docs/98.archive/` | Minimal Migration and Tombstone navigation |
 | Validator inventory | `scripts/manifest.yaml` | Validator path, suite, argv, context, tests, and consumers |
 | Execution routing | `.github/workflow-contract.yml` | CI profiles and routing only |
@@ -307,6 +314,26 @@ git ls-files \
 Do not copy the full output into the Task. Record the command, revision, stage
 counts, total, and the rule coverage summary.
 
+Before constructing any Stage 90 disposition cohort, enumerate every tracked
+file currently under
+`docs/90.references/research/0002-agentic-engineering-research-pack/` and
+assign the Task-local preservation class `PROTECT_LATEST` to the entire set as
+one atomic selector. The design baseline observes 21 files, but execution must
+record the actual path set and must not turn `21` into a frozen count Gate or
+acceptance pin. A protected path may receive a `keep`, `rewrite`, `supersede`,
+or non-lossy integration disposition, but never `delete`, `tombstone`, archive,
+or substantive body/source/claim reduction.
+
+Classify the latest relevant Git touches by inspecting their diffs and purpose,
+not by choosing `max(timestamp)`. The design evidence distinguishes the final
+research-body save and activation at `95142c3a`, the last new-leaf authoring at
+`65e8dfde`, and the later three-link destination correction at `6663f02c`.
+Record these as provenance-only observations, never as expected branch SHAs,
+checksums, retention baselines, or new Gate inputs. Re-derive the classification
+at execution time. Likewise, the preliminary 25 `DELETE_CANDIDATE` and 39
+`NEEDS_MIGRATION` package observations seed review only; remeasure the current
+tree and do not freeze either count.
+
 **Step 2: Record ordered `keep` cohorts**
 
 Add a Task table with these columns:
@@ -319,7 +346,9 @@ Add a Task table with these columns:
 Selectors must be executable path/profile/status predicates and mutually
 exclusive by order. A `keep` cohort is valid only when its members have one
 owner, current terminology, valid lifecycle, a current consumer when required,
-and no duplicate purpose.
+and no duplicate purpose. `PROTECT_LATEST` is the first-priority preservation
+classification and overrides only the current-consumer requirement; it remains
+inside the same target total rather than becoming a second disposition row.
 
 **Step 3: Record every non-`keep` path explicitly**
 
@@ -347,11 +376,18 @@ Historical quotations and supply-chain material are classified by purpose, not
 by token alone. Missing owner, consumer, replacement, recovery, or reviewer
 blocks the path rather than defaulting it to deletion.
 
+For a `PROTECT_LATEST` path, list any permitted path, metadata, stale-owner, or
+link correction explicitly and prove that the research body, sources, and
+claims remain semantically present. Do not use byte equality, checksums, or Git
+SHA equality as that proof.
+
 **Step 4: Prove coverage and obtain read-only review**
 
 The sum of ordered cohort counts plus explicit exceptions must equal the target
 total, with zero overlap and zero omission. `rules-engineer` reviews the rule
 set, and `code-reviewer` reviews the exact Task diff. Neither grants approval.
+The review must also prove that every dynamically measured `PROTECT_LATEST`
+path is covered exactly once and that no destructive disposition includes it.
 
 **Step 5: Commit the bounded baseline**
 
@@ -718,8 +754,10 @@ normative scope, consumers, and acceptance must overlap.
 
 Active documents must not publish retired Stage 04, predecessor support,
 memory, rules, Spec-path, Task-path, or template routes as current procedure.
-Historical evidence follows the Stage 00 quotation/table convention or is
-removed when it has no current consumer.
+Historical evidence outside `PROTECT_LATEST` follows the Stage 00
+quotation/table convention or is removed when it has no current consumer. The
+protected pack may receive stale-path corrections but not substantive research
+loss.
 
 **Step 5: Verify and commit by stage**
 
@@ -771,11 +809,28 @@ create empty commits.
 Extend `test_references.py` so every retained Research, Audit, or Data owner has
 the Registry-required provenance fields and at least one current consumer, or
 is an explicitly superseded point-in-time record consumed by a current owner.
-The test derives the set from the current graph and does not pin a document
-count.
+Add the one explicit exception: every path assigned `PROTECT_LATEST` by Task 2
+remains retained even when its consumer set is empty. The test derives both the
+current reference set and protected Task evidence dynamically and does not pin
+a document count, checksum, body digest, or expected Git SHA.
 
 Keep external citations as sources, never as instructions. A source with no
-current consumer is deleted rather than relabeled as useful history.
+current consumer is deleted rather than relabeled as useful history unless it
+belongs to the atomic user-protected latest research pack.
+
+Before any Stage 90 deletion, add a RED relation proving that current package
+existence does not depend on Migration 0003's frozen historical target set.
+Then decouple `scripts/lib/document_governance/references.py`: current Research,
+Audit, and Data retention derives from the current tree, Registry profiles,
+Task 2 disposition evidence, and current consumers, while Migration 0003 is
+read only for historical recovery. This repair must land before a deletion so
+the old coupling cannot force one Tombstone per removed package.
+
+Add a protected-content regression that exercises a zero-consumer
+`PROTECT_LATEST` package and verifies the presence of its substantive research
+sections, source citations, and claim-bearing findings. The relation is
+semantic: stale current paths, metadata, owners, and links may be corrected,
+and no byte-for-byte or hash comparison is permitted.
 
 **Step 2: Write minimal archive-shape regressions**
 
@@ -794,10 +849,16 @@ Do not enforce a line count. Validate semantic sections and recovery instead.
 
 **Step 3: Reduce Stage 90**
 
-For each retained source, keep concise provenance, observed date, findings, and
-the current consumer. Remove or supersede current-sounding predecessor routes.
-Delete leaves with no source or consumer and update inbound links in the same
-commit.
+For each retained source outside `PROTECT_LATEST`, keep concise provenance,
+observed date, findings, and the current consumer. Remove or supersede
+current-sounding predecessor routes. Delete leaves with no source or consumer
+and update inbound links in the same commit, but only after current consumers
+are migrated and profile, identity, and high-water validation passes.
+
+For `PROTECT_LATEST`, retain the complete package even at zero consumers.
+Correct stale current paths, metadata, lifecycle, owners, and links when
+necessary, and integrate findings into current owners only non-lossily. Do not
+delete, archive, or reduce its research body, sources, or claims.
 
 **Step 4: Reduce Stage 98**
 
@@ -809,7 +870,10 @@ commit.
   Recovery, Approval, Traceability, and required metadata only.
 - Replace row-by-row execution narratives with path rules and named exceptions.
 - Retain a Tombstone only when a stable retired path still has a live recovery
-  navigation consumer. Git history is sufficient for every other deletion.
+  navigation consumer. A zero-consumer deletion needs no Tombstone; Git history
+  is sufficient. When a live consumer exists, retain only the minimal package
+  README Tombstone registered by Stage 99 rather than producing leaf-by-leaf or
+  package-wide tombstones.
 - Never place the retired body, redirect text, raw ledger, snapshot, or digest
   duplicate in a Tombstone.
 
@@ -825,6 +889,10 @@ python3 scripts/validation/check-document-links.py --mode all
 ```
 
 Expected: unit tests `OK`, recovery `violations=0`, and links `failures=0`.
+The reference tests must additionally prove that every Task 2
+`PROTECT_LATEST` path and its substantive research content remain, while
+allowing reviewed stale current-path corrections and avoiding checksum or SHA
+enforcement.
 
 **Step 6: Commit evidence and archive reductions separately**
 
@@ -976,6 +1044,14 @@ before continuing.
 
 **Step 1: Run focused and aggregate verification**
 
+First re-read the Task 2 `PROTECT_LATEST` path set and prove that every protected
+`RES-0002` path still exists and retains its substantive research findings,
+source citations, and claims. This is a semantic comparison that permits
+reviewed stale path, metadata, owner, and link corrections; do not compare
+checksums, body hashes, byte equality, or expected Git SHAs. Re-derive all
+other Stage 90 disposition totals from the current tree rather than asserting
+the preliminary 25/39 discovery counts.
+
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-active
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
@@ -1059,7 +1135,8 @@ git commit -m "docs(spec): Retire completed convergence execution bodies"
 | Earlier SPEC-0157 work is presented as approved | P0 records discovered commits and current revalidation | Revert the activation commit; keep the branch evidence unchanged |
 | A complete audit becomes a second corpus copy | Cohort rules plus explicit non-`keep` exceptions only | Revert the Task evidence commit and rewrite the rule summary |
 | A current obligation is deleted with a duplicate | Move unique obligations and update consumers before deletion | Revert the logical stage commit |
-| Stage 90 evidence becomes current authority | Require a current normative owner and consumer | Restore the source, mark it non-normative, and repair the owner |
+| Stage 90 evidence becomes current authority | Require a current normative owner and consumer while retaining `PROTECT_LATEST` as non-normative evidence | Restore the source, mark it non-normative, and repair the owner |
+| Latest external research is lost because consumers reach zero or a link-only commit appears newer | Apply the atomic Task 2 protection set and classify Git diffs by purpose | Restore the complete `RES-0002` package from the last reviewed content-authoring state, then reapply only non-lossy current-path corrections |
 | Stage 98 compaction breaks recovery | Verify every retained `commit:path` as a regular blob before and after | Revert the archive commit; never reconstruct from memory |
 | Provider projection becomes a policy source | Stage 00 owns neutral workflow; registry owns runtime translation only | Revert the source change and regenerate projections |
 | Gate reduction drops a guarantee | Compare finding sets and add replacement regression before deleting a route | Revert the single Gate commit |
@@ -1075,7 +1152,14 @@ The final state must satisfy all of the following:
 - every non-`keep` path has owner, consumer, replacement, recovery, and review;
 - active documents publish no retired path as current procedure;
 - active lifecycle parents and children are mutually consistent;
-- Stage 90 retained evidence is sourced and currently consumed;
+- every Task 2 `PROTECT_LATEST` path in `RES-0002` remains with substantive
+  research findings, sources, and claims semantically preserved, even at zero
+  consumers, while other retained Stage 90 evidence is sourced and currently
+  consumed;
+- other Stage 90 deletions follow consumer migration and profile, identity,
+  and high-water validation, with no redirect/body clone and no Tombstone
+  unless a live recovery-navigation consumer requires one minimal package
+  README;
 - Stage 98 contains no body copy, redirect, raw execution ledger, snapshot, or
   duplicate digest;
 - Stage 99 has no unused copy template or archive-backed current membership;
@@ -1113,6 +1197,22 @@ The final state must satisfy all of the following:
    documentary lineage and test-only workspace pins go.
 10. **Deletion is fail-closed.** Ambiguous ownership, consumer, recovery, or
     concurrent state blocks mutation.
+11. **The latest saved external research is an atomic user-preserved unit.**
+    Every execution-baseline file in `RES-0002` receives `PROTECT_LATEST` before
+    consumer classification, and the override survives zero consumers without
+    becoming a Registry status.
+12. **Git recency is classified by purpose.** Content authoring and activation
+    determine the protected research event; later path or link maintenance does
+    not. Observed commit identifiers remain provenance-only and never become a
+    checksum, expected branch SHA, or Gate input.
+13. **Historical topology does not own current retention.** `references.py`
+    must be independent of Migration 0003's frozen target set before deletion.
+    Zero-consumer removal uses Git recovery without a Tombstone; only a live
+    recovery-navigation consumer justifies one minimal package README
+    Tombstone.
+14. **Preliminary disposition totals are not contracts.** The observed 25
+    deletion candidates and 39 migration-dependent packages are discovery
+    evidence only; Task 2 and final verification remeasure the current tree.
 
 ## Related Documents
 

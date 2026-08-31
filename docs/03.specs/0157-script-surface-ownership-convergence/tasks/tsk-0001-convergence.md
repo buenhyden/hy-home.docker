@@ -54,6 +54,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 23 | Received independent Task 4 implementation review | Task review: `Spec FAIL`, `Quality CHANGES_REQUESTED`; Python review: `CHANGES_REQUESTED`; CI/Gate review: `APPROVED`. The requested changes were the numeric-leading unittest-segment admission and the evidence record that copied raw search output into its own search surface while misstating the manifest run count. |
 | 24 | Corrected the unittest identifier boundary | Added three numeric-leading cases and witnessed all three fail because `AdapterError` was not raised. Restricted every segment to `[A-Za-z_][A-Za-z0-9_]*`; the focused pair, 15-test adapter module, 30-test runner, manifest checker, and workflow checker are GREEN. Correction commit: `ff12147d`. |
 | 25 | Revalidated the corrected full-Gate and evidence boundary | The staged correction full Gate ran 251 tests in 156.679 seconds and retained only the exact Task 6 five. The manifest module ran 53 tests with only its two base-proven unreachable failures. Raw old-path output was removed from the ignored scratch report, and the current authoritative live surfaces were separately rechecked with zero prohibited hits. Metadata contracts and changed-document checks reported zero violations, all links reported zero failures, and diff hygiene passed. Independent Task/Python re-review remains pending. |
+| 26 | Recorded the user-directed Stage 90 preservation boundary | The entire tracked 21-file `RES-0002` research pack is one atomic `PROTECT_LATEST` unit. Commit `95142c3a` is the final research-body save and activation, `65e8dfde` is the last new-leaf authoring event, and later commit `6663f02c` changes only three link destinations. These identifiers are provenance-only observations, not a new Gate, baseline, or branch-lineage control. No Stage 90 artifact was changed or dispositioned by this ruling. |
 
 ### Discovered branch commits
 
@@ -853,12 +854,24 @@ is self-approved by this registration.
     summary and hash. Removing its prior raw copy prevents the evidence file
     from recursively extending the searched surface. This is an
     evidence-retention boundary, not a search truncation or exclusion.
+17. The complete existing tree at
+    `docs/90.references/research/0002-agentic-engineering-research-pack/`
+    remains one atomic `PROTECT_LATEST` unit. SPEC-0157 does not delete,
+    archive, or reduce its research body, sources, or claims and
+    does not broaden Task 4 to perform Stage 90 cleanup. Content-authoring and
+    link-only Git touches remain distinct; `95142c3a`, `65e8dfde`, and
+    `6663f02c` are provenance-only observations and do not establish a Gate,
+    checksum, expected branch SHA, or retention baseline. Draft SPEC-0158 owns
+    the later dynamic Stage 90 classification and any permitted cleanup.
 
 ## Deferred Items
 
 - Task 5 dynamic disposition of the unreachable `test_script_manifest` module
   and repair/registration of the three agent-governance fixture subcases.
 - Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
+- Stage 90 consumer/lifecycle remeasurement and cleanup belong to draft
+  SPEC-0158. Its execution must preserve the atomic `RES-0002` research pack;
+  this active SPEC-0157 Task performs no Stage 90 disposition.
 
 ## Related Documents
 
