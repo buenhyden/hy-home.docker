@@ -19,13 +19,12 @@ from scripts.lib.document_governance import operations_catalog
 from scripts.lib.document_governance.operations_catalog import (
     EXPECTED_DOMAINS,
     EXPECTED_ROLE_COUNTS,
-    MIGRATION_PATH,
     REGISTRY_PATH,
+    CurrentOperationMapping,
     OperationsAuthorityError,
     Task8Migration,
     _run_git_bounded,
     extract_task8_consumers,
-    load_task8_migration,
     read_bounded_regular,
     validate_current_operations,
 )
@@ -34,15 +33,50 @@ from scripts.lib.document_governance.operations_catalog import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
+def current_operation_mappings() -> tuple[CurrentOperationMapping, ...]:
+    """Derive the current catalog contract without reading an archive ledger."""
+
+    mappings: list[CurrentOperationMapping] = []
+    catalog = ROOT / "docs/05.operations/catalog"
+    for path in sorted(catalog.glob("*/[0-9][0-9][0-9][0-9]-*/*.md")):
+        if path.name not in {"guide.md", "policy.md", "runbook.md"}:
+            continue
+        relative = pathlib.PurePosixPath(path.relative_to(ROOT).as_posix())
+        metadata = yaml.safe_load(
+            path.read_text(encoding="utf-8").split("---\n", 2)[1]
+        )
+        mappings.append(
+            CurrentOperationMapping(
+                source_path=relative,
+                target_path=relative,
+                artifact_id=metadata["artifact_id"],
+                action="rename",
+            )
+        )
+    return tuple(mappings)
+
+
+CURRENT_OPERATION_MAPPINGS = current_operation_mappings()
+
+
 def finding_codes(root: pathlib.Path = ROOT) -> set[str]:
-    return {finding.code for finding in validate_current_operations(root, include_semantic_witnesses=False)}
+    with mock.patch.object(
+        operations_catalog,
+        "load_current_operation_mappings",
+        return_value=CURRENT_OPERATION_MAPPINGS,
+    ):
+        return {
+            finding.code
+            for finding in validate_current_operations(
+                root, include_semantic_witnesses=False
+            )
+        }
 
 
 class OperationsCatalogTopologyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.migration = load_task8_migration(ROOT)
-        cls.mappings = operations_catalog.load_current_operation_mappings(ROOT)
+        cls.mappings = CURRENT_OPERATION_MAPPINGS
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
         directory = tempfile.TemporaryDirectory()
@@ -52,11 +86,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             "docs/99.templates/templates/operations",
         ):
             shutil.copytree(ROOT / source, root / source)
-        for source in (
-            "docs/99.templates/registry.json",
-            str(MIGRATION_PATH),
-            "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
-        ):
+        for source in ("docs/99.templates/registry.json",):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / source, target)
@@ -68,7 +98,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
 
     def test_current_operations_has_exact_final_topology(self) -> None:
         self.assertEqual(set(), finding_codes())
-        targets = [row.target_path for row in self.migration.rows if row.action == "rename"]
+        targets = [row.target_path for row in self.mappings if row.action == "rename"]
         self.assertEqual(75, len({path.parent for path in targets if path is not None}))
         self.assertEqual(
             EXPECTED_ROLE_COUNTS,
@@ -83,7 +113,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         )
 
     def test_current_operations_preserves_registered_role_ids(self) -> None:
-        for row in self.migration.rows:
+        for row in self.mappings:
             if row.target_path is None:
                 continue
             current = ROOT / row.target_path
@@ -111,14 +141,14 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_changed_or_duplicate_role_identity_is_rejected(self) -> None:
         context, root = self._fixture()
         with context:
-            targets = [row.target_path for row in self.migration.rows if row.target_path is not None]
+            targets = [row.target_path for row in self.mappings if row.target_path is not None]
             first, second = targets[:2]
             first_text = (root / first).read_text(encoding="utf-8")
             first_id = yaml.safe_load(first_text.split("---\n", 2)[1])["artifact_id"]
             second_path = root / second
             second_path.write_text(
                 second_path.read_text(encoding="utf-8").replace(
-                    f"artifact_id: {self.migration.rows[1].artifact_id}",
+                    f"artifact_id: {self.mappings[1].artifact_id}",
                     f"artifact_id: {first_id}",
                     1,
                 ),
@@ -261,7 +291,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                row.target_path for row in self.mappings if row.target_path is not None
             )
             text = role.read_text(encoding="utf-8")
             role.write_text(text.split("---\n", 2)[0] + "---\n" + text.split("---\n", 2)[1] + "---\n# Arbitrary\n", encoding="utf-8")
@@ -271,7 +301,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                row.target_path for row in self.mappings if row.target_path is not None
             )
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
@@ -285,7 +315,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                row.target_path for row in self.mappings if row.target_path is not None
             )
             role_name = role.stem
             text = role.read_text(encoding="utf-8")
@@ -362,7 +392,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     )
 
     def test_role_symlink_and_nonregular_inputs_are_rejected(self) -> None:
-        target = next(row.target_path for row in self.migration.rows if row.target_path is not None)
+        target = next(row.target_path for row in self.mappings if row.target_path is not None)
         for mutation in ("symlink", "directory"):
             with self.subTest(mutation=mutation):
                 context, root = self._fixture()
@@ -399,69 +429,6 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             self._write_incident_packet(root)
             with mock.patch.object(operations_catalog, "MAX_INCIDENT_ENTRIES", 1):
                 self.assertIn("incident-bounds", finding_codes(root))
-
-
-class Migration0003ContractTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        from scripts.lib.document_governance.archive import APPROVED_MIGRATION_COMMIT, _approved_migration_document
-        from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-        cls.approved = _approved_migration_document(ROOT)
-        cls.execution_source = HistoricalDocument(ROOT, APPROVED_MIGRATION_COMMIT, str(MIGRATION_PATH)).read_text()
-
-    @contextlib.contextmanager
-    def _mutated_migration(self, old: str, new: str):
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            target = root / MIGRATION_PATH
-            target.parent.mkdir(parents=True)
-            text = self.execution_source
-            self.assertIn(old, text)
-            target.write_text(text.replace(old, new, 1), encoding="utf-8")
-            # Only the immutable approved-input boundary is supplied. The
-            # mutated current document still traverses the shared native parser
-            # and exact execution-selection checks.
-            with mock.patch("scripts.lib.document_governance.archive._approved_migration_document", return_value=self.approved):
-                yield directory
-
-    def test_duplicate_yaml_key_is_rejected(self) -> None:
-        old = "row_id: mig-0003-r0257, source_path:"
-        replacement = "row_id: mig-0003-r0257, row_id: mig-0003-r0257, source_path:"
-        with self._mutated_migration(old, replacement) as directory:
-            with self.assertRaisesRegex(OperationsAuthorityError, "duplicate keys"):
-                load_task8_migration(pathlib.Path(directory))
-
-    def test_task8_owner_source_status_and_recovery_contract_is_exact(self) -> None:
-        mutations = (
-            ("owner_task: 8", "owner_task: 9", "owner_task"),
-            ("owner_task: 8", "owner_task: '8'", "owner_task"),
-            ("source_kind: tracked, source_owner_task: null", "source_kind: planned-output, source_owner_task: null", "source_kind"),
-            ("source_kind: tracked, source_owner_task: null", "source_kind: tracked, source_owner_task: 7", "source_owner_task"),
-            ("recovery_commit: null, status: planned", "recovery_commit: deadbeef, status: planned", "recovery"),
-            ("recovery_commit: null, status: planned", "recovery_commit: null, status: completed", "status"),
-        )
-        for old, new, message in mutations:
-            with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                expected = "completed row requires recovery" if message in {"recovery", "status"} else "execution selection differs from approved frozen digest"
-                with self.assertRaisesRegex(OperationsAuthorityError, expected):
-                    load_task8_migration(pathlib.Path(directory))
-
-    def test_full_row_order_uniqueness_and_frozen_digest_are_enforced(self) -> None:
-        row257_source = (
-            "docs/05.operations/catalog/00-workspace/"
-            "ops-0001-common-optimizations-template-exceptions/policy.md"
-        )
-        row258_source = "docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md"
-        mutations = (
-            ("row_id: mig-0003-r0257", "row_id: mig-0003-r0258", "row"),
-            (row258_source, row257_source, "source_path"),
-            ("artifact_id: policy-0001", "artifact_id: policy-review-mutation", "digest"),
-        )
-        for old, new, message in mutations:
-            with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                with self.assertRaisesRegex(OperationsAuthorityError, "execution selection differs from approved frozen digest"):
-                    load_task8_migration(pathlib.Path(directory))
 
 
 class BoundedRegularReaderTests(unittest.TestCase):

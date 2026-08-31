@@ -10,16 +10,13 @@ import unittest
 
 import yaml
 
-from scripts.lib.document_governance.git_provenance import HistoricalDocument
+from scripts.lib.document_governance.registry import classify_path, load_registry
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
-PROFILES = HistoricalDocument(
-    ROOT, "494065806794980080b081439298d7b534d10803",
-    "docs/99.templates/support/document-metadata-profiles.yaml",
-)
+REGISTRY = ROOT / "docs/99.templates/registry.json"
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
 TARGET_MANIFEST = (
     ROOT
@@ -645,38 +642,7 @@ class TargetSurfaceValidatorFindingTests(unittest.TestCase):
 class SampleServiceContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.profiles = metadata.load_profiles(PROFILES)
         cls.text = SERVICE_EXAMPLE.read_text(encoding="utf-8")
-
-    def test_sample_service_uses_canonical_metadata_in_canonical_order(self) -> None:
-        self.assertEqual(
-            {
-                "status": "draft",
-                "artifact_id": "spec:sample-web-service",
-                "artifact_type": "spec",
-                "parent_ids": [
-                    "spec:126-security-supply-chain-remediation",
-                    "spec:127-deployment-release-engineering-remediation",
-                ],
-            },
-            metadata.parse_frontmatter(SERVICE_EXAMPLE),
-        )
-        frontmatter = self.text.split("---", 2)[1]
-        keys = [
-            line.split(":", 1)[0]
-            for line in frontmatter.splitlines()
-            if line and not line.startswith(" ")
-        ]
-        self.assertEqual(
-            self.profiles["common"]["frontmatter_order"][:4],
-            keys,
-        )
-
-    def test_sample_service_sections_follow_the_registered_service_role(self) -> None:
-        role = self.profiles["template_roles"]["service"]
-        headings = [line for line in self.text.splitlines() if line.startswith("## ")]
-        self.assertEqual(role["required_headings"], headings)
-        self.assertNotIn("## Template Usage", headings)
 
     def test_sample_service_contains_no_template_instruction_or_placeholder(
         self,
@@ -749,37 +715,28 @@ class SampleServiceContractTests(unittest.TestCase):
 
 
 class TargetReadmeProfileTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.profiles = metadata.load_profiles(PROFILES)
-
-    def test_historical_75_target_readmes_match_exactly_one_profile(self) -> None:
-        # Historical wave selection is not today's README inventory (Task 11
-        # added responsibility routers). Current routes are owned by Registry
-        # and the script manifest, without resurrecting support YAML readers.
+    def test_target_runtime_readmes_stay_outside_the_document_registry(self) -> None:
         result = subprocess.run(
-            ["git", "ls-tree", "-r", "--name-only", "889d3868ecd0913cddac79a718584a54a8453525", "--", *TARGET_ROOTS],
+            ["git", "ls-files", "--", *TARGET_ROOTS],
             cwd=ROOT, capture_output=True, text=True, check=True,
         )
-        readmes = [pathlib.Path(path) for path in result.stdout.splitlines() if path.endswith("/README.md")]
-        self.assertEqual(75, len(readmes))
+        registry = load_registry(REGISTRY)
+        readmes = [path for path in result.stdout.splitlines() if path.endswith("/README.md")]
+        self.assertTrue(readmes)
         for path in readmes:
-            with self.subTest(path=path.as_posix()):
-                self.assertEqual(1, len(metadata.matching_readme_profiles(path, self.profiles)))
+            with self.subTest(path=path):
+                self.assertIsNone(classify_path(path, registry))
 
-    def test_native_markdown_and_typed_example_do_not_inherit_readme_profiles(
-        self,
-    ) -> None:
+    def test_native_markdown_and_typed_example_stay_outside_the_document_registry(self) -> None:
+        registry = load_registry(REGISTRY)
         native_or_typed_paths = (
-            pathlib.Path(".github/PULL_REQUEST_TEMPLATE.md"),
-            pathlib.Path(".github/SECURITY.md"),
-            pathlib.Path("examples/sample-web-service/service.md"),
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".github/SECURITY.md",
+            "examples/sample-web-service/service.md",
         )
         for path in native_or_typed_paths:
-            with self.subTest(path=path.as_posix()):
-                self.assertEqual(
-                    [], metadata.matching_readme_profiles(path, self.profiles)
-                )
+            with self.subTest(path=path):
+                self.assertIsNone(classify_path(path, registry))
 
     def test_confirmed_localized_overview_headings_use_exact_profile_id(
         self,
@@ -854,27 +811,6 @@ class TargetReadmeProfileTests(unittest.TestCase):
             [line for line in lines if "secrets/db/surreal_db/" in line],
         )
 
-    def test_archive_profiles_remain_distinct_and_windows_tombstone_is_valid(
-        self,
-    ) -> None:
-        registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
-        profiles = metadata.build_registry_profiles(registry)
-        for relative, expected in (
-            ("docs/98.archive/tombstones/05.operations/0095-windows-network-ip.md", "tombstone"),
-            ("docs/98.archive/migrations/0003-workspace-governance-simplification.md", "migration"),
-        ):
-            path = pathlib.Path(relative)
-            with self.subTest(path=relative):
-                self.assertEqual(expected, metadata.infer_artifact_type(path, profiles))
-                if expected == "tombstone":
-                    values = metadata.parse_frontmatter(ROOT / path)
-                    self.assertEqual(expected, values["profile_id"])
-                    self.assertEqual((), metadata.validate_frontmatter(values))
-                else:
-                    # The approved execution ledger remains native schema 2 until
-                    # the controller records closure and compacts it.
-                    self.assertEqual("mig-0003", metadata.parse_frontmatter(ROOT / path)["artifact_id"])
-
     def test_service_local_constraints_survive_in_allowed_working_section(
         self,
     ) -> None:
@@ -936,20 +872,6 @@ class StorybookPhantomContractTests(unittest.TestCase):
             any(line.startswith("160000 ") for line in result.stdout.splitlines())
         )
 
-    def test_historical_spec_and_plan_evidence_remains_allowed(self) -> None:
-        historical_owners = (
-            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
-                               "docs/03.specs/133-target-surface-contract-convergence/spec.md"),
-            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
-                               "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md"),
-        )
-        for path in historical_owners:
-            with self.subTest(path=path.path if isinstance(path, HistoricalDocument) else path.relative_to(ROOT).as_posix()):
-                self.assertIn(
-                    "projects/storybook/mcp", path.read_text(encoding="utf-8")
-                )
-
-
 class DeprecatedRuntimeContractTests(unittest.TestCase):
     def test_seaweedfs_unmounted_duplicate_is_removed_but_scaffold_remains(
         self,
@@ -959,21 +881,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         self.assertFalse(duplicate.exists())
         self.assertTrue(retained.is_file())
-
-        pre_delete_commit = "6c3cbc2e417cba6ca466c28efd8a5c4c408a397c"
-        for path in (SEAWEEDFS_DUPLICATE_PATH, SEAWEEDFS_RETAINED_PATH):
-            with self.subTest(blob=path):
-                result = subprocess.run(
-                    ["git", "rev-parse", f"{pre_delete_commit}:{path}"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                self.assertEqual(
-                    "ba282b3ad8182c680e9064bea323381149d5ef47",
-                    result.stdout.strip(),
-                )
 
         compose = (
             ROOT / "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
@@ -1008,31 +915,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         self.assertFalse((ROOT / duplicate).exists())
         self.assertTrue((ROOT / retained).is_file())
 
-        pre_delete_commit = "bad9a4a0aeb014c9eee398ea039ec0076723cd68"
-        empty_blob = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
-        for path in (duplicate, retained):
-            with self.subTest(blob=path.as_posix()):
-                result = subprocess.run(
-                    [
-                        "git",
-                        "rev-parse",
-                        f"{pre_delete_commit}:{path.as_posix()}",
-                    ],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                self.assertEqual(empty_blob, result.stdout.strip())
-
-        result = subprocess.run(
-            ["git", "rev-parse", f"HEAD:{retained.as_posix()}"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        self.assertEqual(empty_blob, result.stdout.strip())
+        self.assertEqual(b"", (ROOT / retained).read_bytes())
 
         compose_paths = (
             ROOT / "infra/04-data/analytics/opensearch/docker-compose.yml",
@@ -1462,18 +1345,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
                     path=path.relative_to(ROOT).as_posix(), required=required
                 ):
                     self.assertIn(required, text)
-
-    def test_historical_and_negative_influxdb_v2_evidence_remains_allowed(self) -> None:
-        historical_owners = (
-            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
-                               "docs/03.specs/133-target-surface-contract-convergence/spec.md"),
-            HistoricalDocument(ROOT, "1ff8a435c7c671b800b3aa9a6f143f425e3ca43e",
-                               "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md"),
-        )
-        for path in historical_owners:
-            with self.subTest(path=path.path if isinstance(path, HistoricalDocument) else path.relative_to(ROOT).as_posix()):
-                self.assertIn("InfluxDB 2", path.read_text(encoding="utf-8"))
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -65,6 +65,12 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 34 | Completed Task 5 full-profile test registration | The pre-registration oracle measured 20 on-disk modules absent from the reachable local full plan and zero plan-only modules; its admission-only negative stayed GREEN. Eight RED modules were repaired or dispositioned against current owners before routing. Four new responsibility leaves and the existing supply-chain fixture leaf now route all 20 modules through exact adapter argv and public-suite ownership. The final set equality, focused contracts, manifest, and workflow checks are GREEN. Full execution reaches every module and stops only at the same five Task 6-owned `ChangedBodyDeficitGitTests` results. |
 | 35 | Added the current-implementation truth ruling | The user required current implementation to be reflected in the registered Stage 01 and Stage 02 forms. Draft SPEC-0158 now classifies implemented obligations and guarantees to Stage 01, implemented structure and durable decisions to Stage 02, and requires bidirectional zero-gap alignment without copying code, execution logs, or a fixed inventory into documentation. Actual corpus observation and promotion remain unexecuted SPEC-0158 work. |
 | 36 | Revalidated the current-implementation design amendment | Repository metadata contracts and changed-document metadata reported zero violations, legacy exceptions, and transition overrides; all links and the existing implementation-alignment mode reported zero failures; diff hygiene passed. These results prove the design change preserves current contracts only. They do not replace SPEC-0158 Task 2's implementation-subject inventory or Task 5's future bidirectional zero-gap proof. |
+| 37 | Witnessed the Task 6 fixed-workspace invariant RED | The new invariant reported exactly seven dependencies: all three forbidden tokens in `test_document_metadata.py`; `HISTORICAL_COMMIT` and the retired support path in `test_document_corpus_lifecycle.py`; and the retired support path in both `test_target_surface_contracts.py` and `test_spec_packages.py`. No historical body was copied into this evidence. |
+| 38 | Replaced fixed-workspace document fixtures with current authority | Positive cases now derive from the current Registry, current declared templates, current Stage 05 catalog, or current Spec Package records; negative cases mutate bounded temporary copies. `HistoricalDocument` remains only in a temporary Git repository that proves exact regular-blob recovery and rejects tree, missing, and symlink objects. Assertions owned only by the retired support taxonomy or Migration fixture authority were deleted rather than recreated. The invariant, metadata, lifecycle, target-surface, Spec Package, and Operations suites are GREEN, and the exact forbidden-token search is empty. |
+| 39 | Corrected the first nested Full-Gate test capability boundary | Full execution exposed that the supply-chain wrapper test subprocess dropped the Gate's held root descriptor. Commit `ecdb7b9e` forwarded only a `/proc/self/fd/N` descriptor proven to be the same directory as the repository root. The wrapper class is GREEN for all 28 tests both directly and with an explicit held-root environment; this independent test-harness correction does not alter Task 6 document contracts. |
+| 40 | Converged the subsequently reached held-root consumers | The first Task 6 Full run passed the document suites, then exposed the same closed-descriptor cause in 36 tech-stack subcases and eight Python entrypoints. Commit `3b3733de` moved the device/inode/type check to one test-only helper and connected the supply, tech-stack, and entrypoint consumers. The explicit held-root bundle is GREEN for 49 tests, and Task 6's lifecycle plus metadata suites are GREEN for 64 tests with the same helper. |
+| 41 | Completed the Task 6 full-profile boundary | The exact seven Task 6 paths were staged with no unstaged change. All six focused suites, the forbidden-token absence check, metadata contracts, changed-document metadata, all links, implementation alignment, and diff hygiene are GREEN. The final Full Gate ran every registered bundle and reported `FULL exit=0`; Task 6 has no deferred RED. |
+| 42 | Removed the residual archive fixture authority found in final self-review | The passing diff still contained one target-surface test that read a Tombstone and Migration, one Spec Package lifecycle fixture that copied the Migration document from the workspace, and two disabled `_legacy_*` template-fixture methods. The target-surface assertion and dead methods were deleted; the lifecycle test now uses an isolated temporary Git repository and a bounded empty migration-authority mock because its subject is snapshot removal, not archive content. The affected metadata, target-surface, and Spec Package suites are GREEN for 110 tests under the held-root environment. |
 
 ### Discovered branch commits
 
@@ -783,6 +789,89 @@ source-baseline authorization failures. No Task 5 module, adapter admission,
 public owner, local/CI route, generated readiness check, manifest check, or
 workflow contract remains RED.
 
+### Task 6 — current document authority and recovery-only history
+
+The fixed-workspace invariant was written before fixture replacement. Its RED
+set contained exactly these seven file/token pairs:
+
+~~~text
+tests/validation/test_document_metadata.py: HISTORICAL_COMMIT
+tests/validation/test_document_metadata.py: LEGACY_CONTRACT_FIXTURE_COMMIT
+tests/validation/test_document_metadata.py: docs/99.templates/support/
+tests/validation/test_document_corpus_lifecycle.py: HISTORICAL_COMMIT
+tests/validation/test_document_corpus_lifecycle.py: docs/99.templates/support/
+tests/lib/target_surface/test_target_surface_contracts.py: docs/99.templates/support/
+tests/lib/document_governance/test_spec_packages.py: docs/99.templates/support/
+~~~
+
+The replacement keeps current document behavior at its current owner. Registry
+and template tests load `docs/99.templates/registry.json` and the template path
+declared by the applicable role. Operations tests derive their current mapping
+from the Stage 05 catalog. Spec Package and target-surface tests use current
+registered records. Negative cases copy the bounded current value into a
+temporary directory and mutate one relevant field or section.
+
+Tests whose sole subject was the deleted support taxonomy, retired profile
+aliases, fixed branch history, or the Stage 98 Migration fixture authority were
+removed. They were not translated into a new fixture because no current
+Registry, template, or public lifecycle mode owns those contracts. The retained
+body-contract tests cover current deficit preservation, non-leaking mutation
+diagnostics, template-instruction rejection, Registry key boundaries, and code-
+span exclusion.
+
+`HistoricalDocument` is retained only for recovery behavior. That test creates
+its own temporary Git repository, commits a regular file and a symlink, removes
+the worktree paths, reads the exact regular `commit:path`, and rejects tree,
+missing, and non-regular objects. No workspace commit literal, Stage 98 body,
+or retired Stage 99 support path remains fixture authority.
+
+Focused GREEN evidence before the final Full boundary:
+
+~~~text
+tests.lib.test_surface_ownership: Ran 8 tests; OK
+tests.validation.test_document_metadata: Ran 51 tests; OK
+tests.validation.test_document_corpus_lifecycle: Ran 13 tests; OK
+tests.lib.target_surface.test_target_surface_contracts: Ran 43 tests; OK
+tests.lib.document_governance.test_spec_packages: Ran 16 tests; OK
+tests.lib.document_governance.test_operations_catalog: Ran 30 tests; OK
+forbidden fixed-workspace token search: no output
+
+held-root supply-chain wrapper contract: Ran 28 tests; OK
+held-root tech-stack, entrypoint, and supply bundle: Ran 49 tests; OK
+held-root lifecycle and metadata bundle: Ran 64 tests; OK
+supporting test-harness commits: ecdb7b9e, 3b3733de
+~~~
+
+Final staged Full-Gate evidence:
+
+~~~text
+Ran 39 tests; OK
+Ran 19 tests; OK
+Ran 33 tests; OK
+Ran 43 tests; OK
+Ran 20 tests; OK
+Ran 13 tests; OK
+Ran 51 tests; OK
+Ran 15 tests; OK
+Ran 40 tests; OK
+Ran 291 tests; OK
+Ran 233 tests; OK
+Ran 17 tests; OK
+Ran 13 tests; OK
+Ran 31 tests; OK
+Ran 15 tests; OK
+Ran 45 tests; OK (skipped=11)
+Ran 6 tests; OK
+Ran 128 tests; OK
+FULL exit=0
+~~~
+
+Final document-boundary evidence is also GREEN: repository metadata contracts
+reported zero violations; changed-document metadata selected 16 documents with
+zero violations, legacy exceptions, or transition overrides; all-links and
+implementation-alignment link modes reported zero failures and zero direct
+Stage 98 links; and cached diff hygiene passed.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -928,6 +1017,7 @@ is self-approved by this registration.
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 | Task 4 test ownership mirror | 6663f02c; ff12147d | Complete; Task, Python, and CI/Gate reviews APPROVED |
 | Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; 9f984929 | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
+| Full-Gate held-root test harness | ecdb7b9e, 3b3733de | Complete; one test-only capability helper serves all reached nested subprocess consumers, with 49 supporting and 64 Task 6 tests GREEN under an explicit held-root environment |
 
 ## Rulings
 
@@ -1032,7 +1122,6 @@ is self-approved by this registration.
 
 ## Deferred Items
 
-- Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
 - Stage 90 consumer/lifecycle remeasurement and cleanup belong to draft
   SPEC-0158. Its execution must preserve the atomic `RES-0002` research pack;
   migrate consumers and needed meaning from every other baseline package, then

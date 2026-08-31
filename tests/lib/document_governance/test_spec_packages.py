@@ -5,7 +5,6 @@ import importlib
 import importlib.util
 import pathlib
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,7 +14,7 @@ from unittest import mock
 
 import yaml
 
-from scripts.lib.document_governance.git_provenance import HistoricalDocument
+from scripts.lib.document_governance.registry import load_registry
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -473,25 +472,13 @@ class SpecPackageTests(unittest.TestCase):
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            # A shared clone, not `git init`. The approved Migration is recovered
-            # from a specific historical commit, which a fresh repository does
-            # not contain, so this fixture died in `_approved_migration_document`
-            # with "historical document recovery must resolve to a regular blob"
-            # before it reached the lifecycle rule it exists to test. Cloning
-            # first also means the clone target is still empty, so the fixture
-            # files are written after it.
             subprocess.run(
-                ("git", "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(root)),
+                ("git", "init", "--quiet"),
+                cwd=root,
                 check=True,
             )
             stage = root / "docs/03.specs"
             _write_package(stage, plan=True)
-            migration = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-            migration.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(
-                ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
-                migration,
-            )
             subprocess.run(["git", "add", "-A"], cwd=root, check=True)
             subprocess.run(
                 [
@@ -509,11 +496,16 @@ class SpecPackageTests(unittest.TestCase):
             )
             stage.joinpath("0001-example/plan.md").unlink()
             current = spec_packages.load_spec_packages(stage)
-            findings = spec_packages.validate_repository_spec_package_lifecycle(
-                root,
-                current,
-                base_ref="HEAD",
-            )
+            with mock.patch.object(
+                spec_packages,
+                "_read_migration_authority",
+                return_value=({}, {}, frozenset()),
+            ):
+                findings = spec_packages.validate_repository_spec_package_lifecycle(
+                    root,
+                    current,
+                    base_ref="HEAD",
+                )
             self.assertIn(
                 "execution-evidence-recovery-missing",
                 {finding.code for finding in findings},
@@ -685,19 +677,14 @@ class SpecPackageTests(unittest.TestCase):
                 violations.append(
                     f"scripts/lib/document_governance/metadata_validator.py:{stale}"
                 )
-        contract = yaml.safe_load(
-            HistoricalDocument(ROOT, "494065806794980080b081439298d7b534d10803", "docs/99.templates/support/document-corpus-migration-contract.yaml").read_text(
-                encoding="utf-8"
-            )
+        registry = load_registry(ROOT / "docs/99.templates/registry.json")
+        self.assertEqual(
+            "docs/03.specs/{package_number:4}-{slug}/plan.md",
+            registry.profiles["plan"]["path_pattern"],
         )
         self.assertEqual(
-            {
-                "docs/04.execution/plans": "docs/03.specs/####-<capability>/plan.md",
-                "docs/04.execution/tasks": (
-                    "docs/03.specs/####-<capability>/tasks/tsk-####-<slug>.md"
-                ),
-            },
-            contract["planned_partitions"],
+            "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
+            registry.profiles["task"]["path_pattern"],
         )
         self.assertEqual([], violations)
 

@@ -115,6 +115,28 @@ class SurfaceOwnershipTests(unittest.TestCase):
         }
         self.assertEqual(on_disk, _full_profile_unittest_modules())
 
+    def test_document_contract_tests_do_not_read_fixed_workspace_history(self) -> None:
+        """Current contracts never depend on a deleted taxonomy or pinned clone history."""
+
+        contract_tests = (
+            ROOT / "tests/validation/test_document_metadata.py",
+            ROOT / "tests/validation/test_document_corpus_lifecycle.py",
+            ROOT / "tests/lib/target_surface/test_target_surface_contracts.py",
+            ROOT / "tests/lib/document_governance/test_spec_packages.py",
+        )
+        forbidden = (
+            "HISTORICAL_COMMIT",
+            "LEGACY_CONTRACT_FIXTURE_COMMIT",
+            "docs/99.templates/support/",
+        )
+        offenders = [
+            f"{path.relative_to(ROOT)}: {token}"
+            for path in contract_tests
+            for token in forbidden
+            if token in path.read_text(encoding="utf-8")
+        ]
+        self.assertEqual([], offenders)
+
     def test_adapter_admission_alone_is_not_test_registration(self) -> None:
         module = "tests.lib.unreachable.test_admission_only"
         argv = ("run-unittest", module, "-v")
