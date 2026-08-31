@@ -29,14 +29,15 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | :--- | :--- | :--- |
 | 1 | Measured discovered branch work before Task 0 edits | git status --short --branch reported only ## codex/0157-governance-convergence-execution; the merge-base range had 12 non-merge commits and 72 files changed, 3495 insertions(+), 4403 deletions(-). |
 | 2 | Activated SPEC-0157 and plan-0157; created this current Task and index link | Active recovery chain established. No transition override was used. |
-| 3a | Revalidated Task 1 focused checks | Lifecycle suite and all four modes passed; shared manifest check failed on five package markers. Task 1 is reopened pending the Task 3 repair. |
+| 3a | Revalidated Task 1 focused checks | Lifecycle suite and all four modes passed; the shared manifest check then failed only on five Task 3 package markers, resolved by the Task 3 repair below. |
 | 3b | Revalidated Task 2 focused checks | Archive and lifecycle suites passed; Spec Package suite failed one fixed count. Task 2 is reopened. |
-| 3c | Revalidated Task 3 focused checks | Surface ownership and workflow contract passed; manifest and full Gate failed because the five package markers are unregistered. Task 3 is reopened. |
+| 3c | Revalidated Task 3 focused checks | Surface ownership and workflow contract passed; manifest initially failed only because the five package markers were unregistered. |
 | 4 | Recovery metadata/link checks | All three commands passed: contract violations=0, changed-document violations=0, links failures=0. |
 | 5 | Committed recovery record | 923b2765 docs(spec): Activate script surface convergence with recovered evidence. |
 | 6 | Applied review round 1 corrections | Plan activated; complete pre-Task-0 diff-stat captured; completed bookkeeping fixed; manifest snippets and library ownership contract corrected. |
 | 7 | Revalidated Task 1 implementation at `dd665618` | Consumer inventory resolves exactly four reachable modes (`check-public`, `check-contract`, `check-promoted`, `check-recovery`). The lifecycle suite, all four modes, and the workflow contract are GREEN. The shared manifest bundle is RED only for five Task 3-owned package markers; no Task 1 production change or duplicate production commit was made. |
 | 8 | Repaired the remaining Task 2 Spec Package count pin | Directly observed the existing `34 != 35` failure and the new targeted guard RED. Replaced the pin with the loader-to-directory set relation; targeted guard plus archive, lifecycle, and Spec Package suites are GREEN. Independent review remains pending. |
+| 9 | Repaired Task 3 package markers | Captured the exact five-marker manifest RED and dependency evidence, deleted only those markers with `apply_patch`, then confirmed namespace imports, manifest, ownership, and workflow checks GREEN. Full Gate remains RED on five document-metadata baseline tests outside Task 3. |
 
 ### Discovered branch commits
 
@@ -138,7 +139,7 @@ The following is the complete output of git diff --stat
 
 ## Verification Evidence
 
-### Task 1 — revalidated; shared manifest bundle pending Task 3
+### Task 1 — revalidated; shared manifest bundle resolved by Task 3
 
 Logical commits: 412542b0 and 8b4f8e9b.
 
@@ -264,9 +265,10 @@ FAIL [manifest-record-missing] scripts/lib/target_surface/__init__.py
 script_manifest_failures=5
 ~~~
 
-Task 1 lifecycle and workflow behavior are GREEN; the shared manifest bundle
-remains RED pending the Task 3 marker repair. Independent review is pending and
-this revalidation is not an approval.
+Task 1 lifecycle and workflow behavior are GREEN. At this historical
+revalidation point the shared manifest bundle was RED only for the five Task 3
+markers; Task 3 subsequently resolved that shared dependency. Independent
+review is pending and this revalidation is not an approval.
 
 The evidence-only commit `7a10255f` and this correction's successor HEAD are
 documentation state, not the production baseline used for the Task 1 checks.
@@ -322,29 +324,54 @@ document links: mode=all documents=568 links=4868 catalog_pairs_total=46 archive
 PASS: document link mode all
 ~~~
 
-### Task 3 — reopened
+### Task 3 — repaired; independent review pending
 
-Logical commit: d6b7eafe; follow-up ordering fix: e23d93f1.
+Discovered logical commits: `d6b7eafe` (move/ownership) and `e23d93f1`
+(operations ordering follow-up). They are measured discovered work, not
+retroactively approved. New marker repair commit: `58981986`
+`refactor(scripts): Drop redundant package markers`.
+
+Before the repair, `check-script-manifest.py` reported exactly five RED rows:
+`scripts/lib/{agent_governance,gate,ops,supply_chain,target_surface}/__init__.py`.
+Each was a one-line docstring; the dependency sweep found no package-level
+attributes, side effects, exports, or wildcard consumers. The five files were
+removed with `apply_patch`; no manifest rows were added. The ownership rule is
+that `scripts/lib/<domain>` is importable and has no manifest
+`execution_contexts`; an entrypoint guard alone is irrelevant.
 
 ~~~text
+namespace_packages=5
+python_modules=7
+exact_package_imports=7
+ops_namespace=PASS
+ops_shell_files=2
+
 PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
-Ran 3 tests in 0.063s
+Ran 3 tests in 0.102s
 OK
 
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
-script_manifest_failures=5
+PASS: script manifest is valid
 
 PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
 
+Moved-library focused tests
+Ran 224 tests in 142.672s
+FAILED (errors=3)
+errors: `tests.validation.test_agent_governance_contract` copies the absent
+`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
+
 PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full
-Ran 251 tests in 134.008s
+Ran 251 tests in 148.982s
 FAILED (failures=3, errors=2)
 FULL exit=1
 ~~~
 
-The required repair is to remove the five unnecessary __init__.py package
-markers and verify namespace imports; adding five manifest rows is not allowed.
+The full-Gate failures are outside Task 3: five
+`tests.validation.test_document_metadata.ChangedBodyDeficitGitTests` cases for
+the registered-operations baseline and fixture ownership. They are later Task
+5/6 work; Task 3 did not expand into that repair.
 
 ### Task 0 recovery checks
 
@@ -417,9 +444,9 @@ is self-approved by this registration.
 
 | Logical unit | Commit(s) | Status |
 | :--- | :--- | :--- |
-| Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle RED pending Task 3 |
+| Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle resolved by Task 3 repair |
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
-| Task 3 library ownership move | d6b7eafe, e23d93f1 | Reopened by five package-marker manifest failures |
+| Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; independent review pending; full Gate RED outside Task 3 |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 
 ## Rulings
@@ -442,7 +469,7 @@ is self-approved by this registration.
 
 ## Deferred Items
 
-- Task 3 production repair: remove the five unnecessary package markers.
+- Independent review of the Task 3 repair and its full-Gate boundary.
 
 ## Related Documents
 

@@ -412,274 +412,72 @@ record retroactively approves the discovered commits.
 
 ---
 
-### Task 3: Create the library packages
+### Task 3: Reconcile library package ownership
 
-**What measurement changed, before you read the steps.** An earlier version of
-this task moved nine modules into five packages and asserted that no file under
-`scripts/lib/` may define `if __name__ == "__main__"`. Both were wrong, and both
-were corrected here after being measured against the tree.
+The library move is discovered work, not a new action to repeat. The logical
+move commit is `d6b7eafe`; `e23d93f1` is its operations ordering follow-up.
+They moved seven Python modules to `scripts/lib/<domain>/` and two shell-only
+files to `scripts/lib/ops/`. This Task does not retroactively approve, move, or
+recommit that work.
 
-`NON_STANDALONE_VALIDATOR_PATHS` is read at exactly one place,
-`scripts/lib/document_governance/suite_registry.py:251`, where it selects the
-`execution_contexts` a manifest row must declare: `[]` for a listed path, and
-`[local, pull_request, push, workflow_dispatch]` for every other. So the
-derivation this task installs — a path under `scripts/lib/` declares no
-execution context — holds only if the moved set is exactly the listed set. The
-earlier move set was wrong in four rows, in both directions: it left the two
-shell scripts behind, and it moved `agent_output_eval.py` and
-`audit_criterion_contract.py`, which are not on the list and carry real
-execution contexts. The `agent_eval` package is gone; those two modules stay in
-`scripts/validation/`.
+**Files and interfaces:**
 
-The `__main__` ban was a different idea that does not match this repository.
-Five of the seven library modules carry that guard, and
-`scripts/lib/document_governance/metadata_validator.py:6794` carries one before
-any move. `ci_gate_adapters.py` carries one and is simultaneously the declared
-`entrypoint` of thirty-four gate leaves in `.github/workflow-contract.yml`. An
-entrypoint guard is not what makes a module a library here; the absence of an
-execution context is.
+- Discovered library modules: `gate/{ci_gate_contract,ci_gate_adapters,github_workflow_contract}.py`, `supply_chain/grype_db_seed.py`, `target_surface/{target_surface_contract,target_surface_delta_contract}.py`, and `agent_governance/agent_governance_contract.py`.
+- Discovered operations files: `ops/rehearse-postgres-logical-upgrade.sh` and `ops/validate-harness.sh`.
+- Repair only: delete `__init__.py` from `agent_governance`, `gate`, `ops`, `supply_chain`, and `target_surface`; retain `scripts/lib/document_governance/__init__.py`.
+- The ownership rule is `scripts/lib/<domain>` importability plus no manifest `execution_contexts`. An `if __name__ == "__main__"` guard alone is irrelevant. The directories are implicit namespace packages; `ops` remains shell-only.
 
-**Files:**
+- [x] **Step 1: Measure the discovered-work mismatch**
 
-- Do not create package-marker `__init__.py` files. The five markers introduced by the discovered move are unnecessary and must be removed; namespace imports are the required verification.
-- Move into `scripts/lib/gate/`: `ci_gate_contract.py` (1,453), `ci_gate_adapters.py` (996), `github_workflow_contract.py` (2,818)
-- Move into `scripts/lib/supply_chain/`: `grype_db_seed.py` (731)
-- Move into `scripts/lib/target_surface/`: `target_surface_contract.py` (615), `target_surface_delta_contract.py` (495)
-- Move into `scripts/lib/agent_governance/`: `agent_governance_contract.py` (1,016)
-- Move into `scripts/lib/ops/`: `rehearse-postgres-logical-upgrade.sh`, `validate-harness.sh`
-- Leave in place: `scripts/validation/agent_output_eval.py`, `scripts/validation/audit_criterion_contract.py` — both declare execution contexts and are standalone
-- Modify: `scripts/manifest.yaml`, `scripts/lib/document_governance/suite_registry.py`, `scripts/lib/document_governance/references.py`, `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`
-- Create: `tests/lib/test_surface_ownership.py`
+`check-script-manifest.py` reported exactly these five RED rows before the
+repair: `scripts/lib/{agent_governance,gate,ops,supply_chain,target_surface}/__init__.py`, each `manifest-record-missing`. Each marker contained only a
+one-line docstring. A complete dependency search found no package attributes,
+side effects, exports, or wildcard consumers; module-level imports use the
+exact `from scripts.lib.<domain> import module` form.
 
-**Interfaces:**
+- [x] **Step 2: Apply the marker repair without changing the manifest**
 
-- Consumes: nothing from Tasks 1 and 2; this task is independent of them and is sequenced after only so the moved files are already smaller.
-- Produces: import paths `scripts.lib.gate.*`, `scripts.lib.supply_chain.*`, `scripts.lib.target_surface.*`, `scripts.lib.agent_governance.*`, and the script paths `scripts/lib/ops/*.sh`. Every later task uses these.
+Delete only those five markers with `apply_patch`; do not add manifest rows or
+repeat the discovered moves. Repair commit: `58981986`
+`refactor(scripts): Drop redundant package markers`.
 
-- [ ] **Step 1: Write the ownership invariant first**
+- [x] **Step 3: Revalidate the library boundary**
 
-Create `tests/lib/test_surface_ownership.py`:
+~~~text
+namespace_packages=5
+python_modules=7
+exact_package_imports=7
+ops_namespace=PASS
+ops_shell_files=2
 
-```python
-from __future__ import annotations
+PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
+Ran 3 tests in 0.102s
+OK
 
-import pathlib
-import unittest
-
-import yaml
-
-ROOT = pathlib.Path(__file__).resolve().parents[2]
-
-
-def _manifest_rows() -> list[dict]:
-    text = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
-    return [row for row in yaml.safe_load(text) if isinstance(row, dict)]
-
-
-class SurfaceOwnershipTests(unittest.TestCase):
-    """A directory states what its files are, and no constant restates it."""
-
-    def test_library_rows_declare_no_execution_context(self) -> None:
-        """A library declares no execution context.
-
-        This replaced a ban on `if __name__ == "__main__"` that would have been
-        red eight ways. `ci_gate_adapters.py` carries that guard and is the
-        declared entrypoint of thirty-four gate leaves, so the guard is not what
-        makes a module a library here. Declaring no execution context is.
-        """
-
-        offenders = [
-            row["path"]
-            for row in _manifest_rows()
-            if str(row.get("path", "")).startswith("scripts/lib/")
-            and row.get("execution_contexts")
-        ]
-        self.assertEqual([], offenders)
-
-    def test_every_non_standalone_path_lives_under_scripts_lib(self) -> None:
-        """The derivation replacing the constant must be exhaustive.
-
-        Four rows of the earlier move set were wrong in both directions. This
-        asserts the property that made the constant deletable, rather than
-        trusting that the move covered it.
-        """
-
-        offenders = [
-            row["path"]
-            for row in _manifest_rows()
-            if row.get("kind") in {"validator", "library"}
-            and row.get("execution_contexts") == []
-            and not str(row.get("path", "")).startswith("scripts/lib/")
-        ]
-        self.assertEqual([], offenders)
-
-    def test_the_non_standalone_list_is_gone(self) -> None:
-        from scripts.lib.document_governance import suite_registry
-
-        self.assertFalse(hasattr(suite_registry, "NON_STANDALONE_VALIDATOR_PATHS"))
-```
-
-- [ ] **Step 2: Run it and confirm all three fail**
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
-```
-
-Expected: `FAILED`. The second test lists the nine paths that declare `[]` while
-still under `scripts/validation/`; the third reports the constant still present.
-The first passes already, because nothing is under `scripts/lib/` with an
-execution context yet — that is correct, and it is the test that must keep
-passing after the move.
-
-- [ ] **Step 3: Move the files with `git mv` without package markers**
-
-```bash
-mkdir -p scripts/lib/gate scripts/lib/supply_chain scripts/lib/target_surface scripts/lib/agent_governance scripts/lib/ops
-rm -f scripts/lib/gate/__init__.py scripts/lib/supply_chain/__init__.py \
-  scripts/lib/target_surface/__init__.py scripts/lib/agent_governance/__init__.py \
-  scripts/lib/ops/__init__.py
-git mv scripts/validation/ci_gate_contract.py scripts/validation/ci_gate_adapters.py scripts/validation/github_workflow_contract.py scripts/lib/gate/
-git mv scripts/validation/grype_db_seed.py scripts/lib/supply_chain/
-git mv scripts/validation/target_surface_contract.py scripts/validation/target_surface_delta_contract.py scripts/lib/target_surface/
-git mv scripts/validation/agent_governance_contract.py scripts/lib/agent_governance/
-git mv scripts/validation/rehearse-postgres-logical-upgrade.sh scripts/validation/validate-harness.sh scripts/lib/ops/
-git status --porcelain | grep '^R' | wc -l
-```
-
-Expected: `9` renames staged.
-
-Remove the five new package markers if they are present. These directories are
-namespace packages in this repository; adding manifest rows would change the
-manifest row count for no owned script surface.
-
-- [ ] **Step 4: Rewrite every reference, in all three forms**
-
-The dotted form is not the only one. `from scripts.validation import <module>`
-appears at eight sites, one of which mixes a moved module with one that stays
-(`scripts/validation/target_surface_delta_contract.py:23`,
-`from scripts.validation import ci_gate_contract, ci_gate_runner`) and must be
-split rather than substituted. A path string also appears inside a generated-code
-literal at `tests/validation/test_ci_gate_runner.py:1519`, and in
-`scripts/lib/document_governance/references.py:50`.
-
-```bash
-python3 - <<'PY'
-import pathlib, re
-
-MOVES = {
-    "ci_gate_contract": "gate",
-    "ci_gate_adapters": "gate",
-    "github_workflow_contract": "gate",
-    "grype_db_seed": "supply_chain",
-    "target_surface_contract": "target_surface",
-    "target_surface_delta_contract": "target_surface",
-    "agent_governance_contract": "agent_governance",
-}
-SHELL = {
-    "rehearse-postgres-logical-upgrade.sh": "ops",
-    "validate-harness.sh": "ops",
-}
-
-def rewrite(text: str) -> str:
-    # Split a mixed `from scripts.validation import a, b` before anything else,
-    # so the per-module substitutions below see one name per line.
-    def split_mixed(match: re.Match) -> str:
-        names = [n.strip() for n in match.group(1).split(",")]
-        tail = match.group(2) or ""
-        return "\n".join(f"from scripts.validation import {n}{tail}" for n in names)
-
-    text = re.sub(
-        r"^from scripts\.validation import ([^\n#]*,[^\n#]*?)(\s+#.*)?$",
-        split_mixed,
-        text,
-        flags=re.MULTILINE,
-    )
-    for module, package in MOVES.items():
-        text = re.sub(
-            rf"^from scripts\.validation import {module}\b",
-            f"from scripts.lib.{package} import {module}",
-            text,
-            flags=re.MULTILINE,
-        )
-        text = text.replace(
-            f"from scripts.validation import {module}",
-            f"from scripts.lib.{package} import {module}",
-        )
-        text = re.sub(rf"\bscripts\.validation\.{module}\b", f"scripts.lib.{package}.{module}", text)
-        text = re.sub(rf"\bscripts/validation/{module}\.py\b", f"scripts/lib/{package}/{module}.py", text)
-    for script, package in SHELL.items():
-        text = text.replace(f"scripts/validation/{script}", f"scripts/lib/{package}/{script}")
-    return text
-
-changed = 0
-roots = [pathlib.Path("scripts"), pathlib.Path("tests")]
-targets = [p for root in roots for p in root.rglob("*.py")]
-targets += [pathlib.Path("scripts/manifest.yaml"), pathlib.Path(".github/workflow-contract.yml")]
-targets += [p for root in roots for p in root.rglob("*.sh")]
-for path in targets:
-    original = path.read_text(encoding="utf-8")
-    text = rewrite(original)
-    if text != original:
-        path.write_text(text, encoding="utf-8")
-        changed += 1
-print("files rewritten:", changed)
-PY
-```
-
-Then prove no stale reference survives, counting before reading:
-
-```bash
-MOVED='ci_gate_contract|ci_gate_adapters|github_workflow_contract|grype_db_seed|target_surface_contract|target_surface_delta_contract|agent_governance_contract|rehearse-postgres-logical-upgrade|validate-harness'
-grep -rcE "scripts[./]validation[./]($MOVED)" scripts tests .github | grep -v ':0$' || echo "no stale reference"
-```
-
-Expected: `no stale reference`. Do not pipe this through `head`; a truncated
-search is not proof of absence, and this Spec Package has already lost a day to
-that mistake.
-
-- [ ] **Step 5: Delete `NON_STANDALONE_VALIDATOR_PATHS` and derive it**
-
-Step 4 has already rewritten the constant's own nine strings to their new
-`scripts/lib/` paths. Now remove it. At `suite_registry.py:251` the read becomes:
-
-```python
-            expected_contexts = (
-                ()
-                if row_path.as_posix().startswith("scripts/lib/")
-                else EXECUTION_CONTEXT_NAMES[1:]
-                if row_path == PurePosixPath("scripts/hardening/check-all-hardening.sh")
-                else EXECUTION_CONTEXT_NAMES
-            )
-```
-
-Then delete the constant and run `grep -rn "NON_STANDALONE_VALIDATOR_PATHS" scripts tests`,
-expecting no output.
-
-- [ ] **Step 6: Verify**
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
-PYTHONPATH=. python3 -c "from scripts.lib.gate import ci_gate_contract; from scripts.lib.supply_chain import grype_db_seed; from scripts.lib.target_surface import target_surface_contract; from scripts.lib.agent_governance import agent_governance_contract"
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
+PASS: script manifest is valid
+
 PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
-PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task3.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task3.txt
-grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task3.txt
-```
+PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
+~~~
 
-Expected: `OK`, `PASS`, exit 0, and `FULL exit=0`. Read the verdict from the
-`FULL exit=` line, never from `tail -1`; a module under test prints to stdout
-after its own summary, and that has already produced a false green here.
+The moved-library focused suite ran 224 tests and was RED only on three
+`test_agent_governance_contract` fixture copies of an absent SPEC-0153 Task.
+That fixture ownership is outside this repair.
 
-`tests/validation/test_ci_gate_runner.py:150` and `:698` pin the validator
-counts at 30 and 9. This task moves files without adding or removing one, so
-both pins should hold. If either moves, that is real information: report the new
-value and what made it change rather than repinning silently.
+- [x] **Step 4: Record the full-Gate boundary**
 
-- [ ] **Step 7: Reconcile the discovered commit**
+~~~text
+PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full
+Ran 251 tests in 148.982s
+FAILED (failures=3, errors=2)
+FULL exit=1
+~~~
 
-Do not move or recommit these paths a second time. Review the exact discovered
-diff, record its logical commit and focused results in the current Task, and
-open a separate repair commit only when revalidation exposes a real mismatch.
+The five full-Gate failures are document-metadata registered-operations
+baseline/fixture cases owned by the later Task 5/6 fixture work, not by package
+markers. No Task 4--6 production change is authorized here. Independent review
+remains pending; SPEC-0157 remains active and is not completed by this Task.
 
 ---
 
