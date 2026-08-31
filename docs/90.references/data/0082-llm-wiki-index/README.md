@@ -968,6 +968,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/knowledge/generate-llm-wiki.py](../../../../scripts/knowledge/generate-llm-wiki.py) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../../scripts/lib/hardening-lib.sh) | script |
+| [scripts/lib/ops/rehearse-postgres-logical-upgrade.sh](../../../../scripts/lib/ops/rehearse-postgres-logical-upgrade.sh) | script |
+| [scripts/lib/ops/validate-harness.sh](../../../../scripts/lib/ops/validate-harness.sh) | script |
 | [scripts/manifest.yaml](../../../../scripts/manifest.yaml) | YAML config |
 | [scripts/operations/gen-secrets.sh](../../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
@@ -990,7 +992,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/compose-core-readiness.lib.sh](../../../../scripts/validation/compose-core-readiness.lib.sh) | script |
 | [scripts/validation/generate-audit-implementation-matrix.sh](../../../../scripts/validation/generate-audit-implementation-matrix.sh) | script |
 | [scripts/validation/generate-security-automation-readiness.sh](../../../../scripts/validation/generate-security-automation-readiness.sh) | script |
-| [scripts/lib/ops/rehearse-postgres-logical-upgrade.sh](../../../../scripts/lib/ops/rehearse-postgres-logical-upgrade.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-output-eval-fixtures.sh](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
@@ -999,7 +1000,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/run-compose-core-readiness.sh](../../../../scripts/validation/run-compose-core-readiness.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh) | script |
-| [scripts/lib/ops/validate-harness.sh](../../../../scripts/lib/ops/validate-harness.sh) | script |
 
 ### GitHub workflow surface
 
