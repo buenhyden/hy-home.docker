@@ -37,7 +37,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 6 | Applied review round 1 corrections | Plan activated; complete pre-Task-0 diff-stat captured; completed bookkeeping fixed; manifest snippets and library ownership contract corrected. |
 | 7 | Revalidated Task 1 implementation at `dd665618` | Consumer inventory resolves exactly four reachable modes (`check-public`, `check-contract`, `check-promoted`, `check-recovery`). The lifecycle suite, all four modes, and the workflow contract are GREEN. The shared manifest bundle is RED only for five Task 3-owned package markers; no Task 1 production change or duplicate production commit was made. |
 | 8 | Repaired the remaining Task 2 Spec Package count pin | Directly observed the existing `34 != 35` failure and the new targeted guard RED. Replaced the pin with the loader-to-directory set relation; targeted guard plus archive, lifecycle, and Spec Package suites are GREEN. Independent review remains pending. |
-| 9 | Repaired Task 3 package markers | Captured the exact five-marker manifest RED and dependency evidence, deleted only those markers with `apply_patch`, then confirmed namespace imports, manifest, ownership, and workflow checks GREEN. Full Gate remains RED on five document-metadata baseline tests outside Task 3. |
+| 9 | Repaired Task 3 package markers | Captured the exact five-marker manifest RED and dependency evidence, deleted only those markers with `apply_patch`, then confirmed namespace imports, manifest, ownership, and workflow checks GREEN. The focused-test RED is Task 5 unregistered agent-governance fixture work; all five full-Gate results are Task 6 registered recovery-fixture work. |
 
 ### Discovered branch commits
 
@@ -359,8 +359,10 @@ PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
 Moved-library focused tests
 Ran 224 tests in 142.672s
 FAILED (errors=3)
-errors: `tests.validation.test_agent_governance_contract` copies the absent
-`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
+three subcases of `test_mutable_task_token_evidence_is_statement_bounded` in
+the currently unregistered agent-governance test module call `copy2` on the
+absent `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
+(Task 5 measured-unregistered repair)
 
 PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full
 Ran 251 tests in 148.982s
@@ -368,10 +370,17 @@ FAILED (failures=3, errors=2)
 FULL exit=1
 ~~~
 
-The full-Gate failures are outside Task 3: five
-`tests.validation.test_document_metadata.ChangedBodyDeficitGitTests` cases for
-the registered-operations baseline and fixture ownership. They are later Task
-5/6 work; Task 3 did not expand into that repair.
+The full-Gate results are outside Task 3. All five are already-registered
+`tests.validation.test_document_metadata.ChangedBodyDeficitGitTests` cases,
+owned by Task 6 fixed-workspace/recovery-fixture work:
+
+1. Error: `test_registered_operations_catalog_move_uses_migration_0003_body_baseline`
+2. Error: `test_registered_operations_profile_transition_holds_the_registry_boundary`
+3. Failure: `test_preexisting_target_cannot_borrow_registered_source_baseline`
+4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
+5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
+
+Task 3 did not expand into that repair.
 
 ### Task 0 recovery checks
 
@@ -401,6 +410,11 @@ matching. Independent re-review remains pending; this is not an approval.
 Independent review round 1 found the Spec PASS and requested quality changes to
 Task 1 evidence and the Step 8 contract. This correction is pending re-review;
 it is not an approval.
+
+Task 3 review round 1: packaging/Python review is APPROVED. The Task review is
+Spec FAIL with quality CHANGES_REQUESTED solely because the focused and full
+Gate failure attribution was imprecise. This correction is pending re-review;
+it is not final approval.
 
 Round 2 read-only primary-owner output:
 
@@ -446,7 +460,7 @@ is self-approved by this registration.
 | :--- | :--- | :--- |
 | Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle resolved by Task 3 repair |
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
-| Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; independent review pending; full Gate RED outside Task 3 |
+| Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review attribution correction pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 
 ## Rulings

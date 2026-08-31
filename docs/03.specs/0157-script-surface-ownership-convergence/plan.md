@@ -461,9 +461,11 @@ PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
 ~~~
 
-The moved-library focused suite ran 224 tests and was RED only on three
-`test_agent_governance_contract` fixture copies of an absent SPEC-0153 Task.
-That fixture ownership is outside this repair.
+The moved-library focused suite ran 224 tests and was RED only on the three
+subcases of `test_mutable_task_token_evidence_is_statement_bounded` in the
+currently unregistered agent-governance test module. Each subcase failed when
+`copy2` read the absent SPEC-0153 Task fixture. This is Task 5
+measured-unregistered repair work, outside this package-marker repair.
 
 - [x] **Step 4: Record the full-Gate boundary**
 
@@ -474,10 +476,20 @@ FAILED (failures=3, errors=2)
 FULL exit=1
 ~~~
 
-The five full-Gate failures are document-metadata registered-operations
-baseline/fixture cases owned by the later Task 5/6 fixture work, not by package
-markers. No Task 4--6 production change is authorized here. Independent review
-remains pending; SPEC-0157 remains active and is not completed by this Task.
+All five full-Gate results are already-registered
+`tests.validation.test_document_metadata.ChangedBodyDeficitGitTests` cases,
+owned by Task 6 fixed-workspace/recovery-fixture work, not by package markers:
+
+1. Error: `test_registered_operations_catalog_move_uses_migration_0003_body_baseline`
+2. Error: `test_registered_operations_profile_transition_holds_the_registry_boundary`
+3. Failure: `test_preexisting_target_cannot_borrow_registered_source_baseline`
+4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
+5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
+
+No Task 6 production change is authorized here. Packaging/Python review is
+APPROVED. The Task review has Spec FAIL and quality CHANGES_REQUESTED solely
+for this attribution correction; re-review is pending. SPEC-0157 remains active
+and is not completed by this Task.
 
 ---
 
