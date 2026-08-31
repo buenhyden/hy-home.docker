@@ -71,6 +71,10 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 40 | Converged the subsequently reached held-root consumers | The first Task 6 Full run passed the document suites, then exposed the same closed-descriptor cause in 36 tech-stack subcases and eight Python entrypoints. Commit `3b3733de` moved the device/inode/type check to one test-only helper and connected the supply, tech-stack, and entrypoint consumers. The explicit held-root bundle is GREEN for 49 tests, and Task 6's lifecycle plus metadata suites are GREEN for 64 tests with the same helper. |
 | 41 | Completed the Task 6 full-profile boundary | The exact seven Task 6 paths were staged with no unstaged change. All six focused suites, the forbidden-token absence check, metadata contracts, changed-document metadata, all links, implementation alignment, and diff hygiene are GREEN. The final Full Gate ran every registered bundle and reported `FULL exit=0`; Task 6 has no deferred RED. |
 | 42 | Removed the residual archive fixture authority found in final self-review | The passing diff still contained one target-surface test that read a Tombstone and Migration, one Spec Package lifecycle fixture that copied the Migration document from the workspace, and two disabled `_legacy_*` template-fixture methods. The target-surface assertion and dead methods were deleted; the lifecycle test now uses an isolated temporary Git repository and a bounded empty migration-authority mock because its subject is snapshot removal, not archive content. The affected metadata, target-surface, and Spec Package suites are GREEN for 110 tests under the held-root environment. |
+| 43 | Closed Task 6 after the residual-authority correction | Supporting held-root commits `ecdb7b9e` and `3b3733de` plus current-authority fixture commit `11529e0c` form the completed Task 6 unit. Its final staged Full Gate reported `FULL exit=0`; no Stage 98 fixture body or retired Stage 99 support path remains current test authority. |
+| 44 | Measured and corrected the Task 7 history-scan design | The six stage patch-history projections ranged from 892,728 to 20,716,362 bytes and showed why the 64 MiB patch stopgap was excessive. A path-only identity proposal was rejected before implementation because Requirement child IDs exist only in bodies, Stage 90 leaf names can be references rather than package identities, and a Tombstone path names its retired target rather than its own ID. The new invariant was first RED against the retained `-G`/patch parser and 64 MiB cumulative budget. |
+| 45 | Replaced historical patch parsing with bounded object-name projection | Six path-bounded `git rev-list --objects` queries select source blobs; batched `git grep` returns only identity-bearing lines, while paths select the legal identity family rather than the ID value. The pre/post issued-set captures are byte-identical at SHA-256 `c96d855fe9b5d9667c01a059a9ceb33e44313eff74bd594c8d46b5e37e495bd6`. All 17 identity-history tests and the registered full-history metadata route are GREEN; the measured historical Git output is 2,454,189 bytes under the 8 MiB cumulative cap. |
+| 46 | Completed the Task 7 full-profile boundary | The exact four Task 7 paths were staged with no unstaged change. Static compilation, the 17-test identity module, full-history metadata contracts, changed-document metadata, all links, alignment links, and diff hygiene are GREEN. Every registered Full profile bundle passed, including the expanded 294-test document-governance bundle, and the final marker is `FULL exit=0`. |
 
 ### Discovered branch commits
 
@@ -872,6 +876,110 @@ zero violations, legacy exceptions, or transition overrides; all-links and
 implementation-alignment link modes reported zero failures and zero direct
 Stage 98 links; and cached diff hygiene passed.
 
+### Task 7 — bounded object-name identity history
+
+The pre-change scanner asked Git for every matching historical patch under six
+stage roots. Direct measurement of those patch streams produced:
+
+~~~text
+docs/01.requirements 892728
+docs/02.architecture 1367353
+docs/03.specs 18113008
+docs/05.operations 6817929
+docs/90.references 20716362
+docs/98.archive 11542284
+~~~
+
+Object-name enumeration was materially smaller, but the first proposed
+path-only value derivation was not sound. Requirement children can declare an
+ID only in a document body; Stage 90 can place `ref-*` leaves below an Audit,
+Research, or Data package; and a Tombstone filename identifies the retired
+target while the Tombstone's own identity remains in frontmatter. Task 7
+therefore uses paths only to select the allowable stage and identity family.
+It obtains actual issued values from the identity-bearing lines in each source
+blob.
+
+The regression was written before the implementation. It rejected the old
+`git log -G` route, `_record_history_patch`, and the 64 MiB cumulative history
+budget. The replacement:
+
+1. runs one path-bounded `git rev-list --objects` query for each governed stage;
+2. validates every returned object path before grouping source object IDs;
+3. requests at most 256 objects per `git grep` batch and returns only
+   `artifact_id:` lines plus Stage 01 Requirement child-ID lines;
+4. shares one 8 MiB output budget and 45-second deadline across the cumulative
+   issued-history projection; and
+5. leaves the single pinned predecessor-snapshot transition check on a
+   separately named 64 MiB per-snapshot budget.
+
+The implementation does not restore branch-SHA tracking or make a historical
+commit the current baseline. Current documents still use the existing
+regular-file and symlink-safe local reader. Historical objects are immutable
+source blobs selected from reachable refs, while identity-family admission is
+derived from the current stage contract.
+
+The complete issued-identity set was captured immediately before and after the
+scanner replacement. Both canonical JSON captures have the same SHA-256:
+
+~~~text
+c96d855fe9b5d9667c01a059a9ceb33e44313eff74bd594c8d46b5e37e495bd6
+IDENTITY_SET_EQUAL exit=0
+~~~
+
+This hash is transient execution evidence, not a permanent expected-value
+oracle. Instrumentation of the new full-history route reported:
+
+~~~text
+elapsed_seconds=2.329
+identity_spaces=38
+grep: calls=37 bytes=839127
+ls-files: calls=1 bytes=73008
+rev-list: calls=6 bytes=1615062
+rev-parse: calls=1 bytes=5
+history_git_output_bytes=2454189
+~~~
+
+Focused verification before the Full boundary:
+
+~~~text
+key bounded-scan regressions: Ran 6 tests in 5.097s; OK
+tests.lib.document_governance.test_identity_history:
+  Ran 17 tests in 16.188s; OK
+check-document-metadata.py --mode check-contracts --history-scope full:
+  metadata repository contracts: violations=0
+python bytecode compilation: exit=0
+git diff --check: exit=0
+~~~
+
+Final staged Full-Gate evidence:
+
+~~~text
+Ran 39 tests; OK
+Ran 19 tests; OK
+Ran 33 tests; OK
+Ran 43 tests; OK
+Ran 20 tests; OK
+Ran 13 tests; OK
+Ran 51 tests; OK
+Ran 15 tests; OK
+Ran 40 tests; OK
+Ran 294 tests; OK
+Ran 233 tests; OK
+Ran 17 tests; OK
+Ran 13 tests; OK
+Ran 31 tests; OK
+Ran 15 tests; OK
+Ran 45 tests; OK (skipped=11)
+Ran 6 tests; OK
+Ran 128 tests; OK
+FULL exit=0
+~~~
+
+Final document-boundary checks are also GREEN: changed-document metadata
+selected 16 documents with zero violations, legacy exceptions, or transition
+overrides; all-links and alignment modes reported zero failures and zero direct
+Stage 98 links; and cached diff hygiene passed.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -1018,6 +1126,7 @@ is self-approved by this registration.
 | Task 4 test ownership mirror | 6663f02c; ff12147d | Complete; Task, Python, and CI/Gate reviews APPROVED |
 | Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; 9f984929 | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
 | Full-Gate held-root test harness | ecdb7b9e, 3b3733de | Complete; one test-only capability helper serves all reached nested subprocess consumers, with 49 supporting and 64 Task 6 tests GREEN under an explicit held-root environment |
+| Task 6 current-authority fixtures | ecdb7b9e, 3b3733de; 11529e0c | Complete; fixed-history and archive fixture authority removed, focused suites and final Full GREEN |
 
 ## Rulings
 
@@ -1119,6 +1228,13 @@ is self-approved by this registration.
     validators, tests, and code remain evidence or execution surfaces rather
     than the sole durable owner. Draft SPEC-0158 must prove both implementation
     coverage and reverse agreement without a fixed count or new Gate.
+22. Cumulative issued-identity history is a bounded object-name and matched-line
+    projection, not a historical patch stream. Paths select an allowable
+    identity family but never manufacture the identity value. One shared 8 MiB
+    budget covers the historical object-name and identity-line output; the
+    single predecessor snapshot used by transition validation has a separate
+    per-snapshot budget. Neither mechanism makes a branch SHA the current
+    baseline.
 
 ## Deferred Items
 

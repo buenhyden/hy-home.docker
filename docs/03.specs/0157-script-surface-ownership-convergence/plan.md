@@ -1206,7 +1206,7 @@ git commit -m "test(fixtures): Derive document contracts from current authority"
 - Consumes: nothing from earlier tasks.
 - Produces: `collect_issued_identities(root, refs=("--all",)) -> IssuedIdentities`, unchanged in signature and return type. Only its cost changes.
 
-- [ ] **Step 1: Measure what the scan reads today**
+- [x] **Step 1: Measure what the scan reads today**
 
 ```bash
 for d in docs/01.requirements docs/02.architecture docs/03.specs docs/05.operations docs/90.references docs/98.archive; do
@@ -1220,7 +1220,7 @@ Record every number. At SPEC-0155's close `docs/03.specs` was 17.4 MB and
 64 MiB as an explicit stopgap. The scan reads full patch text, so these only
 grow, and deleting a large document adds its bytes to the total.
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```python
     def test_identity_scan_does_not_read_patch_text(self) -> None:
@@ -1228,8 +1228,8 @@ grow, and deleting a large document adds its bytes to the total.
 
         The scan read each stage directory's complete patch history and grepped
         it for identifiers, so every commit made it more expensive and deleting
-        a 2.4 MB document made it more expensive still. Identifiers are in paths
-        and in current frontmatter; neither needs a diff.
+        a 2.4 MB document made it more expensive still. Object names identify
+        the bounded source set; Git needs to return only matching identity lines.
         """
 
         source = (
@@ -1237,77 +1237,90 @@ grow, and deleting a large document adds its bytes to the total.
         ).read_text(encoding="utf-8")
         self.assertNotIn('"-p"', source)
         self.assertNotIn('"--patch"', source)
-        self.assertNotIn("64 * 1024 * 1024", source)
+        self.assertNotIn('"-G"', source)
+        self.assertNotIn("_record_history_patch", source)
+        self.assertIn("MAX_GIT_OUTPUT_BYTES = 8 * 1024 * 1024", source)
+        self.assertNotIn(
+            "MAX_GIT_OUTPUT_BYTES = 64 * 1024 * 1024",
+            source,
+        )
 ```
 
-- [ ] **Step 3: Run it and confirm it fails**
+- [x] **Step 3: Run it and confirm it fails**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_identity_history.IdentityHistoryTests.test_identity_scan_does_not_read_patch_text
 ```
 
-Expected: FAIL on the patch flag and on the stopgap bound.
+Expected: FAIL on the pickaxe patch scan and on the history stopgap bound.
 
-- [ ] **Step 4: Read identifiers from paths, not diffs**
+- [x] **Step 4: Enumerate object names and return only identity lines**
 
-Every issued identifier appears in a document path, because the registry's
-`path_pattern` binds the number into the filename and the checker already
-enforces that binding. Replace the patch scan with a name scan:
+The first path-only design was rejected during implementation revalidation.
+Requirement child identities live only in document bodies, Stage 90 contains
+historical `ref-*` leaves whose file prefix is not their artifact type, and a
+Tombstone path names its retired target rather than the Tombstone's own ID.
+Inferring the identity value from the path would therefore weaken or overstate
+the monotonic allocation contract.
+
+Replace the patch scan with an object-name scan. The path selects the allowed
+identity family; the ID value still comes from the historical source. Batch the
+object IDs by that family and use `git grep -h -I` so Git returns only matching
+`artifact_id:` lines, plus Requirement child-ID lines for Stage 01. Do not read
+or emit full blob or patch bodies:
 
 ```python
-def _historical_paths(
-    repo: pathlib.Path, prefix: str, refs: tuple[str, ...]
-) -> frozenset[str]:
-    """Every path that ever existed under one stage, without reading a diff.
-
-    `--name-only` emits paths; `-p` emitted the full patch text of every commit
-    that touched the stage, which is why the scan cost grew with history and
-    grew again with each deletion.
-    """
-
+def _historical_objects(repo, prefix, refs, *, max_output_bytes, timeout_seconds):
     output = _run_git(
         repo,
-        ("log", *refs, "--name-only", "--format=", "--", prefix),
+        ("rev-list", "--objects", *refs, "--", prefix),
+        max_output_bytes=max_output_bytes,
+        timeout_seconds=timeout_seconds,
     )
-    return frozenset(
-        line
-        for line in output.stdout.decode("utf-8", "replace").splitlines()
-        if line
-    )
+
+# Per bounded object-ID batch; exit 1 means no matching identity line.
+_run_git(
+    repo,
+    ("grep", "-h", "-I", "-i", "-E", "-e", ARTIFACT_ID, *object_ids),
+    answer_codes=frozenset({0, 1}),
+)
 ```
 
-`collect_issued_identities` then applies the existing `HISTORICAL_ID_PATTERN` to
-the path set rather than to patch text, plus the current frontmatter it already
-reads through `_read_identity_source`.
+The six object-name scans and every grep batch share one byte budget and one
+deadline. Keep the single pinned predecessor-snapshot budget separate: it does
+not read cumulative history and retains the existing transition semantics.
 
-- [ ] **Step 5: Restore a bound that is a bound**
+- [x] **Step 5: Restore a bound that is a bound**
 
 ```python
-# Path listings, not patch text. `docs/90.references` is the largest stage at
-# roughly 20 MB of patch text and well under a megabyte of path names, so this
-# is a real ceiling rather than the stopgap it replaced.
+# Object-name listings and matching identity lines, not patch text. The measured
+# full-history projection is about 2.5 MiB, so this is a real shared ceiling.
 MAX_GIT_OUTPUT_BYTES = 8 * 1024 * 1024
 ```
 
-- [ ] **Step 6: Verify the identifier set is unchanged**
+- [x] **Step 6: Verify the identifier set is unchanged**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_identity_history 2>&1 | grep -E "^(Ran |OK|FAILED)"
 PYTHONPATH=. python3 scripts/validation/check-document-metadata.py --mode check-contracts --history-scope full 2>&1 | tail -2
+PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task7.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task7.txt
+grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task7.txt
 ```
 
-Expected: `OK` and `violations=0`. The second command is the registered gate's
-own route, and it is the one that failed at SPEC-0155's close when the bound was
-exceeded.
+Expected: the pre/post issued-set JSON is byte-identical, the unit module is
+`OK`, the registered history route reports `violations=0`, and the Full Gate
+reports `FULL exit=0`. The metadata command is the route that failed at
+SPEC-0155's close when the patch-output bound was exceeded.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -- scripts/lib/document_governance/identity_history.py \
   tests/lib/document_governance/test_identity_history.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/plan.md \
   docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
 git diff --cached --name-only
-git commit -m "perf(identity): Scan path names instead of every diff in history"
+git commit -m "perf(identity): Scan object names instead of every historical diff"
 ```
 
 ---

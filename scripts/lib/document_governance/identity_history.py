@@ -18,16 +18,14 @@ from scripts.lib.document_governance.registry import DocumentRegistry, RegistryF
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
-# Raised from 16 MiB on 2026-08-30. The scan reads the full patch history of a
-# stage directory and greps it for identifiers, so its cost grows with every
-# commit and never shrinks. Measured at this commit: docs/03.specs is 17.4 MB
-# and docs/90.references is 20.6 MB of patch text, both already past the old
-# bound. Deleting a 2.4 MB document is what pushed docs/03.specs over, which is
-# the perverse part: cleaning the corpus makes the scan more expensive.
-#
-# Raising the bound buys time and fixes nothing. The scan should ask Git for
-# identifiers rather than read every diff. SPEC-0157 owns that change.
-MAX_GIT_OUTPUT_BYTES = 64 * 1024 * 1024
+# Object-name listings plus Requirement identity-bearing blobs, not patch text.
+# The six current name scans total less than 2 MiB and the historical
+# Requirement sources less than 3 MiB, so this is a real shared ceiling.
+MAX_GIT_OUTPUT_BYTES = 8 * 1024 * 1024
+# One pinned repository snapshot, not cumulative patch history. This remains a
+# separate ceiling because transition validation reads trusted predecessor
+# documents rather than the compact issued-identity history projection.
+MAX_TRANSITION_GIT_OUTPUT_BYTES = 64 * 1024 * 1024
 MAX_GIT_SCAN_SECONDS = 45
 MAX_IDENTITY_SOURCE_BYTES = 4 * 1024 * 1024
 IDENTITY_SOURCE_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml"})
@@ -39,23 +37,8 @@ IDENTITY_SOURCE_PREFIXES = (
     "docs/90.references/",
     "docs/98.archive/",
 )
-GIT_HISTORY_QUERIES = (
-    (
-        "docs/01.requirements",
-        "(REQ|PRD|SRS|IFR)-[0-9]{4}"
-        "(-(FR|NFR|IF|R|AC)-?[0-9]{4})?",
-    ),
-    ("docs/02.architecture", "(AD|ADR)-[0-9]{4}"),
-    ("docs/03.specs", "SPEC-[0-9]{4}"),
-    (
-        "docs/05.operations",
-        "(GUIDE|POLICY|RUNBOOK|OPS|INC)-[0-9]{4}",
-    ),
-    (
-        "docs/90.references",
-        "(RES|REF|AUD|AUDIT|DATA)-[0-9]{4}",
-    ),
-    ("docs/98.archive", "(MIG|TOMBSTONE)-[0-9]{4}"),
+GIT_HISTORY_QUERIES = tuple(
+    prefix.removesuffix("/") for prefix in IDENTITY_SOURCE_PREFIXES
 )
 HISTORICAL_ID_PATTERN = re.compile(
     r"(?i)\b(?:"
@@ -73,6 +56,12 @@ INTERNAL_REQUIREMENT_PATTERN = re.compile(
     r"SRS-[0-9]{4}-R[0-9]{4}|IFR-[0-9]{4}-R[0-9]{4}"
     r")\b"
 )
+_OBJECT_ID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
+_ARTIFACT_ID_GREP = r"^[[:space:]]*artifact_id[[:space:]]*:"
+_INTERNAL_REQUIREMENT_GREP = (
+    r"(REQ|PRD|SRS|IFR)-[0-9]{4}-(FR|NFR|IF|R|AC)-?[0-9]{4}"
+)
+_GIT_GREP_BATCH_SIZE = 256
 
 
 class IdentityHistoryError(RuntimeError):
@@ -315,22 +304,65 @@ def _record_line(path: str, line: str, collected: dict[str, set[int]]) -> None:
             _record(match.group(0), collected)
 
 
-def _record_history_patch(history: str, collected: dict[str, set[int]]) -> None:
-    """Record identities from one bounded Git patch without losing rename paths."""
+def _history_identity_group(path: str) -> tuple[str, bool] | None:
+    """Return a stage-acceptance path and whether child IDs are required."""
 
-    history_paths = ("", "")
-    for line in history.splitlines():
-        if line.startswith("diff --git a/"):
-            parts = line.split(" ", 3)
-            history_paths = (
-                parts[2][2:] if len(parts) >= 3 else "",
-                parts[3][2:] if len(parts) >= 4 else "",
-            )
+    if path.startswith("docs/01.requirements/"):
+        return "docs/01.requirements/history.md", True
+    if path.startswith("docs/02.architecture/descriptions/"):
+        return "docs/02.architecture/descriptions/history.md", False
+    if path.startswith("docs/02.architecture/decisions/"):
+        return "docs/02.architecture/decisions/history.md", False
+    for prefix in (
+        "docs/03.specs/",
+        "docs/05.operations/",
+        "docs/90.references/",
+        "docs/98.archive/",
+    ):
+        if path.startswith(prefix):
+            return f"{prefix}history.md", False
+    return None
+
+
+def _historical_objects(
+    repo: pathlib.Path,
+    prefix: str,
+    refs: tuple[str, ...],
+    *,
+    max_output_bytes: int,
+    timeout_seconds: float,
+) -> tuple[tuple[tuple[str, str], ...], int]:
+    """Return historical object/path names without reading a Git patch."""
+
+    output = _run_git(
+        repo,
+        ("rev-list", "--objects", *refs, "--", prefix),
+        max_output_bytes=max_output_bytes,
+        timeout_seconds=timeout_seconds,
+    )
+    objects: set[tuple[str, str]] = set()
+    for line in output.text.splitlines():
+        object_id, separator, path = line.partition(" ")
+        if not separator:
             continue
-        old_path, new_path = history_paths
-        selected_path = new_path if line.startswith("+") else old_path
-        if selected_path:
-            _record_line(selected_path, line, collected)
+        if _OBJECT_ID.fullmatch(object_id) is None:
+            raise IdentityHistoryError("Git identity object name is malformed")
+        if not path:
+            continue
+        if path in {"docs", prefix}:
+            continue
+        if (
+            not path.startswith(f"{prefix}/")
+            or pathlib.PurePosixPath(path).as_posix() != path
+            or pathlib.PurePosixPath(path).is_absolute()
+            or any(part in {"", ".", ".."} for part in pathlib.PurePosixPath(path).parts)
+            or any(ord(character) < 32 for character in path)
+        ):
+            raise IdentityHistoryError(
+                f"Git identity object path is unsafe: {path}"
+            )
+        objects.add((object_id, path))
+    return tuple(sorted(objects)), output.bytes_read
 
 
 def _remaining_scan_seconds(deadline: float) -> float:
@@ -381,7 +413,7 @@ def collect_issued_identities(
     *,
     include_current: bool = True,
 ) -> IssuedIdentities:
-    """Return immutable issued-number sets from current files plus bounded Git patches."""
+    """Return issued-number sets from current files and bounded Git objects."""
 
     root = repo.resolve()
     deadline = time.monotonic() + MAX_GIT_SCAN_SECONDS
@@ -408,26 +440,46 @@ def collect_issued_identities(
         for line in _read_identity_source(path).splitlines():
             _record_line(relative, line, collected)
     remaining_output_bytes = MAX_GIT_OUTPUT_BYTES
-    for pathspec, pattern in GIT_HISTORY_QUERIES:
-        output = _run_git(
+    identity_groups: dict[tuple[str, bool], set[str]] = {}
+    for pathspec in GIT_HISTORY_QUERIES:
+        objects, bytes_read = _historical_objects(
             root,
-            (
-                "log",
-                "--no-ext-diff",
-                "--format=",
-                "-U0",
-                "--regexp-ignore-case",
-                "-G",
-                pattern,
-                *refs,
-                "--",
-                pathspec,
-            ),
+            pathspec,
+            refs,
             max_output_bytes=remaining_output_bytes,
             timeout_seconds=_remaining_scan_seconds(deadline),
         )
-        remaining_output_bytes -= output.bytes_read
-        _record_history_patch(output.text, collected)
+        remaining_output_bytes -= bytes_read
+        for object_id, path in objects:
+            if pathlib.PurePosixPath(path).suffix.casefold() not in IDENTITY_SOURCE_SUFFIXES:
+                continue
+            group = _history_identity_group(path)
+            if group is not None:
+                identity_groups.setdefault(group, set()).add(object_id)
+    for (path, include_internal), object_ids in sorted(identity_groups.items()):
+        ordered = sorted(object_ids)
+        for offset in range(0, len(ordered), _GIT_GREP_BATCH_SIZE):
+            patterns = ["-e", _ARTIFACT_ID_GREP]
+            if include_internal:
+                patterns.extend(("-e", _INTERNAL_REQUIREMENT_GREP))
+            output = _run_git(
+                root,
+                (
+                    "grep",
+                    "-h",
+                    "-I",
+                    "-i",
+                    "-E",
+                    *patterns,
+                    *ordered[offset : offset + _GIT_GREP_BATCH_SIZE],
+                ),
+                max_output_bytes=remaining_output_bytes,
+                timeout_seconds=_remaining_scan_seconds(deadline),
+                answer_codes=frozenset({0, 1}),
+            )
+            remaining_output_bytes -= output.bytes_read
+            for line in output.text.splitlines():
+                _record_line(path, line, collected)
     return IssuedIdentities(
         numbers=MappingProxyType(
             {name: frozenset(values) for name, values in sorted(collected.items())}
@@ -446,9 +498,9 @@ def validate_allocation_transition(
     if re.fullmatch(r"[0-9a-f]{40}", base_commit) is None:
         raise IdentityHistoryError("allocation predecessor must be a full commit")
     deadline = time.monotonic() + MAX_GIT_SCAN_SECONDS
-    remaining_bytes = MAX_GIT_OUTPUT_BYTES
+    remaining_bytes = MAX_TRANSITION_GIT_OUTPUT_BYTES
 
-    def git(*args: str, maximum: int = MAX_GIT_OUTPUT_BYTES) -> str:
+    def git(*args: str, maximum: int = MAX_TRANSITION_GIT_OUTPUT_BYTES) -> str:
         nonlocal remaining_bytes
         output = _run_git(root, args, max_output_bytes=min(maximum, remaining_bytes),
                           timeout_seconds=_remaining_scan_seconds(deadline))
@@ -467,7 +519,7 @@ def validate_allocation_transition(
         output = _run_git(
             root,
             ("merge-base", "--is-ancestor", ancestor, descendant),
-            max_output_bytes=min(MAX_GIT_OUTPUT_BYTES, remaining_bytes),
+            max_output_bytes=min(MAX_TRANSITION_GIT_OUTPUT_BYTES, remaining_bytes),
             timeout_seconds=_remaining_scan_seconds(deadline),
             answer_codes=frozenset({0, 1}),
         )
