@@ -1,11 +1,11 @@
 ---
 profile_id: task
-status: active
+status: completed
 artifact_id: task-0157-0001
 artifact_type: task
 parent_ids: [SPEC-0157, plan-0157]
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Recover and Complete Script Surface Ownership Convergence
@@ -13,7 +13,8 @@ updated: 2026-08-31
 ## Objective
 
 Revalidate the implementation discovered on the branch, complete the remaining
-approved work, and close SPEC-0157 without asserting retroactive approval.
+approved work, and close its execution Plan while preserving SPEC-0157's legal
+`active` endpoint without asserting retroactive approval.
 
 ## Inputs
 
@@ -85,6 +86,14 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 54 | Repointed the final shared-governance source contract | The next Full run reached the 295-test document-governance bundle and failed one assertion because `test_links.py` still searched the thin CLI for `metadata_contract`. The test now inspects `lifecycle/contract.py`, rejects metadata-CLI dynamic loading across both surfaces, and is registered as direct contract evidence. The focused test and manifest are GREEN. |
 | 55 | Reconciled the exact taxonomy-consumer oracle | The following Full run passed all 295 document-governance tests, then failed one of 128 later tests because `test_script_manifest.py` still expected the compatibility facade as taxonomy's sole consumer. The exact oracle now names the two measured importers, `metadata/lifecycle.py` and `metadata/profile.py`; its focused 53-test module and manifest are GREEN. |
 | 56 | Completed the Task 8 full-profile boundary | The final staged Full run passed every registered bundle: 39, 19, 33, 43, 20, 13, 52, 15, 40, 295, 233, 17, 13, 31, 15, 45, 6, and 128 tests. The final marker is `FULL exit=0`; Task 8 adds no Gate leaf, workflow job, or fixture suite. |
+| 57 | Committed the Task 8 responsibility unit | Commit `e72e1ee8` contains the verified 22-file production split, direct manifest evidence, source-owner corrections, and final Full evidence. The worktree was clean before Task 9 began. |
+| 58 | Measured the Task 9 test baselines | The pre-split metadata module ran 52 tests in 58.299 seconds and the lifecycle module ran 13 tests in 14.017 seconds; both passed. The source contains ten metadata TestCase classes and three lifecycle TestCase classes. |
+| 59 | Split the test responsibility surfaces without redirects | Whole TestCase classes moved to five metadata and three behavioral lifecycle owners; one `test_promoted.py` structural mirror records that no fourth TestCase existed to move without duplication. Two shared support modules retain only current Registry/CLI, temporary Git, and held-root mechanics. The two legacy aggregate files were deleted after independent discovery passed 52 and 13 tests. |
+| 60 | Rewired the existing Gate leaves and current consumers | The two existing Gate leaves now admit exact five-module and four-module argv tuples; no Gate leaf or workflow job was added. Manifest, workflow, agentic-audit semantics, 9 ownership/archive tests, 52 metadata tests, 13 lifecycle tests, and 162 runner/workflow/manifest/audit tests are GREEN. Active script, test, and GitHub surfaces contain zero old aggregate paths. |
+| 61 | Corrected the historical migration assertion reached by Full | The first pre-closure Full run passed the split modules and then found one archive test that still required the deleted aggregate metadata-test path because historical row `r0842` had once planned a rename. The assertion now applies only to the still-unexecuted `r0848` and `r0852` dispositions; the compact historical projection, digest, and count remain unchanged, and no placeholder or redirect was restored. The focused archive suite and manifest are GREEN. |
+| 62 | Applied the legal document lifecycle endpoints | SPEC-0154 and SPEC-0155 take their merge-base-legal `active -> completed` hop; SPEC-0157 remains `active` because its merge-base endpoint is `draft`; plan-0157 and task-0157-0001 complete under the execution lifecycle. Repository metadata contracts report `violations=0`; changed-document metadata reports `selected=18 violations=0 legacy_exceptions=0 transition_overrides=0`; all links and alignment each report zero failures and `archive_direct_links_total=0`; the script manifest is GREEN. |
+| 63 | Reached the Task 9 pre-closure Full boundary | After the historical-assertion correction, the staged Full profile passed bundles of 39, 19, 33, 43, 20, 13, 52, 15, 40, 295, 233, 17, 13, 31, 15, 45, 6, and 128 tests. The marker is `FULL exit=0`. Final generated-index freshness and post-record Full verification remain the closure boundary. |
+| 64 | Completed the Task 9 post-record Full boundary | With the legal lifecycle endpoints and rows 60 through 63 staged, both generated LLM Wiki outputs were fresh and the Full profile again passed bundles of 39, 19, 33, 43, 20, 13, 52, 15, 40, 295, 233, 17, 13, 31, 15, 45, 6, and 128 tests. The final marker in `/tmp/g-task9-postrecord1.txt` is `FULL exit=0`. This row and the completed Plan checklist are the last authored sources; the commit gate reruns generated-index freshness and the same Full profile without any intervening file change. |
 
 ### Discovered branch commits
 
@@ -1111,6 +1120,40 @@ They add no public suite, Gate leaf, workflow job, fixture, or fixed test-count
 oracle. Task 9 still owns physical TestCase relocation and corresponding runner
 rewiring.
 
+### Task 9 — mirrored test responsibility surfaces
+
+The pre-split and post-split inventories are equal:
+
+~~~text
+metadata baseline: Ran 52 tests in 58.299s; OK
+lifecycle baseline: Ran 13 tests in 14.017s; OK
+metadata split: Ran 52 tests in 60.038s; OK
+lifecycle split: Ran 13 tests in 13.132s; OK
+ownership plus archive derivation: Ran 9 tests; OK
+runner, workflow, manifest, and audit contracts: Ran 162 tests; OK (skipped=11)
+check-script-manifest.py: PASS
+check-github-workflow-contract.py: PASS (workflows=7, jobs=9, actions=8)
+audit_semantic_freshness: PASS assertions=11 failures=0
+~~~
+
+Whole-class ownership is:
+
+| New test module | Moved TestCase classes | Tests |
+| :--- | :--- | ---: |
+| `metadata/test_profile.py` | SharedFrontmatterExtraction, FrontmatterParsing, CurrentRegistryContract, TemplateRoleInference, TemplateMetadata | 22 |
+| `metadata/test_heading.py` | CurrentBodyContract | 9 |
+| `metadata/test_identity.py` | CheckerCli | 9 |
+| `metadata/test_lifecycle.py` | TransitionOverrideEvidencePath | 2 |
+| `metadata/test_reference.py` | MetadataValidatorCompatibility, RepositoryContractIntegration | 10 |
+| `lifecycle/test_contract.py` | SharedProvenance | 3 |
+| `lifecycle/test_public.py` | CurrentPublicContract | 9 |
+| `lifecycle/test_recovery.py` | HistoricalDocumentRecovery | 1 |
+| `lifecycle/test_promoted.py` | No pre-split TestCase existed; direct module and Gate evidence remain | 0 |
+
+No assertion body was re-authored. Unused historical migration globals and
+helpers were not copied into the new support modules. The old aggregate paths
+have neither body copies nor redirects.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -1259,6 +1302,7 @@ is self-approved by this registration.
 | Full-Gate held-root test harness | ecdb7b9e, 3b3733de | Complete; one test-only capability helper serves all reached nested subprocess consumers, with 49 supporting and 64 Task 6 tests GREEN under an explicit held-root environment |
 | Task 6 current-authority fixtures | ecdb7b9e, 3b3733de; 11529e0c | Complete; fixed-history and archive fixture authority removed, focused suites and final Full GREEN |
 | Task 7 bounded identity history | d101142b | Complete; issued set preserved, cumulative history output bounded at 8 MiB, final Full GREEN |
+| Task 8 production responsibility split | e72e1ee8 | Complete; explicit production owners, compatibility surfaces, manifest evidence, and final Full GREEN |
 
 ## Rulings
 

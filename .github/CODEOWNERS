@@ -27,4 +27,5 @@ scripts/validation/check-document-metadata.py @buenhyden
 tests/lib/agent_governance/test_agent_governance_contract.py @buenhyden
 tests/validation/test_agent_governance_ci_routing.py @buenhyden
 tests/validation/test_agent_output_eval_fixtures.py @buenhyden
-tests/validation/test_document_metadata.py @buenhyden
+tests/lib/document_governance/metadata/ @buenhyden
+tests/validation/lifecycle/ @buenhyden

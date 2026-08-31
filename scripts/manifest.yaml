@@ -199,6 +199,7 @@ files:
   tests:
   - tests/lib/document_governance/test_links.py
   - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_contract.py
 - path: scripts/lib/document_governance/lifecycle/promoted.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -210,6 +211,7 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_promoted.py
 - path: scripts/lib/document_governance/lifecycle/public.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -221,6 +223,7 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_public.py
 - path: scripts/lib/document_governance/lifecycle/recovery.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -232,6 +235,7 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_recovery.py
 - path: scripts/lib/document_governance/links.py
   kind: library
   authority: docs/00.agent-governance/policies/documentation-protocol.md
@@ -256,6 +260,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_heading.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/identity.py
   kind: library
@@ -269,6 +274,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_identity.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/lifecycle.py
   kind: library
@@ -281,6 +287,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_lifecycle.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/profile.py
   kind: library
@@ -295,6 +302,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_profile.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/reference.py
   kind: library
@@ -306,6 +314,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_reference.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata_contract.py
   kind: library
@@ -330,6 +339,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/metadata/test_reference.py
   - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/operations_catalog.py
   kind: library
@@ -844,7 +854,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/lifecycle/_support.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-document-links.py
   kind: validator
@@ -879,7 +889,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_document_metadata.py
+  - tests/lib/document_governance/metadata/_support.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-github-workflow-contract.py
   kind: validator

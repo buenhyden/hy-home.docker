@@ -132,14 +132,29 @@ _INTERNAL_ADAPTER_CONTEXTS = {
             "tests.lib.gate.test_ci_gate_adapters",
             "tests.lib.gate.test_github_workflow_contract",
             "tests.validation.test_agent_governance_ci_routing",
-            "tests.validation.test_document_corpus_lifecycle",
-            "tests.validation.test_document_metadata",
             "tests.validation.test_hook_rules",
             "tests.lib.target_surface.test_target_surface_contracts",
             "tests.lib.target_surface.test_target_surface_delta_contracts",
             "tests.validation.test_compose_baseline_gates",
         )
     },
+    (
+        "run-unittest",
+        "tests.lib.document_governance.metadata.test_heading",
+        "tests.lib.document_governance.metadata.test_identity",
+        "tests.lib.document_governance.metadata.test_lifecycle",
+        "tests.lib.document_governance.metadata.test_profile",
+        "tests.lib.document_governance.metadata.test_reference",
+        "-v",
+    ): _ALL_EXECUTION_CONTEXTS,
+    (
+        "run-unittest",
+        "tests.validation.lifecycle.test_contract",
+        "tests.validation.lifecycle.test_promoted",
+        "tests.validation.lifecycle.test_public",
+        "tests.validation.lifecycle.test_recovery",
+        "-v",
+    ): _ALL_EXECUTION_CONTEXTS,
     # One invocation covering the fourteen mirrored document-governance
     # library suites. Every module is named literally here, so the admission
     # is exact in the same way the per-module entries above are; they ran

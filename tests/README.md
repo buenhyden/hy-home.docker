@@ -54,8 +54,11 @@ tests/
 5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
 문서 메타데이터 검증 테스트는
-`PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata`로
-실행합니다. 이 테스트는 advisory inventory와 profile semantics를 함께 검증합니다.
+`PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'`로
+실행합니다. lifecycle entrypoint 검증은
+`PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'`로
+실행합니다. 두 inventory는 각각 5개 production 책임과 4개 등록 mode를
+mirroring하며, 공통 fixture는 discovery 대상이 아닌 `_support.py`만 사용합니다.
 
 changed/new blocking gate는 활성 상태입니다. `check-document-metadata.py
 --mode check-changed --base-ref "$(git merge-base main HEAD)"`가 CI가 강제하는

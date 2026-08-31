@@ -1038,7 +1038,11 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_document_metadata",
+        "tests.lib.document_governance.metadata.test_heading",
+        "tests.lib.document_governance.metadata.test_identity",
+        "tests.lib.document_governance.metadata.test_lifecycle",
+        "tests.lib.document_governance.metadata.test_profile",
+        "tests.lib.document_governance.metadata.test_reference",
         "-v"
       ],
       "cwd": ".",
@@ -1058,7 +1062,10 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_document_corpus_lifecycle",
+        "tests.validation.lifecycle.test_contract",
+        "tests.validation.lifecycle.test_promoted",
+        "tests.validation.lifecycle.test_public",
+        "tests.validation.lifecycle.test_recovery",
         "-v"
       ],
       "cwd": ".",

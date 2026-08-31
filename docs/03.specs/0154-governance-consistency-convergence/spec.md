@@ -1,11 +1,11 @@
 ---
 profile_id: spec
-status: active
+status: completed
 artifact_id: SPEC-0154
 artifact_type: spec
 parent_ids: [REQ-0024, ADR-0027, ADR-0029]
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-09-01
 ---
 
 # Governance Consistency Convergence Specification
@@ -278,38 +278,19 @@ No frontmatter field is added or removed. No new identity space is issued.
 
 ## Acceptance Contract
 
-This Spec Package closes at reduced scope. Items 5 and 11 were unmet at closure
-and transferred to SPEC-0155 by owner decision, with their mechanisms measured
-and recorded in [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md). Items
-1 to 4 and 6 to 10 are met.
-
-**Status, and why it is `active` rather than `completed`.** The `spec` profile
-follows the `spec-package` lifecycle, which requires `draft -> active ->
-completed`. `check-document-metadata.py --mode check-changed` compares the
-status at the merge base with the status at HEAD and does not walk the commits
-between them, so a Spec Package that was `draft` at the merge base cannot reach
-`completed` inside the same change no matter how many intermediate commits it
-passes through. This is the intended behavior for a Spec Package: it is reviewed
-as `active` in one change and completed in a later one. SPEC-0154 was drafted on
-`main` at `9407ba9c`, so it is `active` here and completes after this branch
-merges. An earlier revision of this document set it to `completed` in this
-branch; that was withdrawn rather than carried through the override mechanism,
-which is unreachable in this repository.
-
-The `execution` lifecycle was relaxed to permit `draft -> completed`, because a
-Task is routinely drafted and finished inside one change and the intermediate
-`active` is not observable at the change boundary. That reasoning does not
-extend to a Spec Package and the `spec` profile stays strict, asserted by
-`ExecutionLifecycleTests.test_spec_package_lifecycle_stays_strict`.
+This Spec Package closed at its approved reduced scope. Items 5 and 11 were
+transferred to SPEC-0155 by owner decision, with their mechanisms measured and
+recorded in [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md). SPEC-0155
+completed those blocking-Gate obligations, and SPEC-0157 Task 9 revalidated the
+combined Full profile before applying this legal `active -> completed` endpoint.
+No transition override is used.
 
 1. `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` exits 0.
 2. `python3 scripts/validation/check-document-metadata.py` exits 0 and reports zero `invalid-status` records. This is the advisory inventory and is not the condition CI enforces; item 11 is.
 3. `python3 scripts/validation/check-document-links.py --mode all` reads the full tracked Markdown corpus and reports zero failures.
 4. `bash scripts/operations/sync-provider-surfaces.sh` followed by `git diff --exit-code` produces no diff.
-5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0. **Unmet.** One
-   registered test fails on `configuration-error: bounded Git identity scan failed`,
-   which reproduces at the branch point and is therefore not caused by this Spec
-   Package. Routed to SPEC-0155.
+5. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0. **Met by
+   SPEC-0155 and revalidated at the SPEC-0157 Task 9 closure boundary.**
 6. No `active` document instructs the reader to use `Stage 04` or `docs/04.execution`. Factual records of paths that existed then, inside execution ledgers, evidence tables, and observation inventories, are not violations and are not rewritten.
 7. `policies/standards.md` no longer requires traceability across artifact types the Stage 99 registry does not define. The prohibition in `policies/documentation-protocol.md` keeps naming them, which is its purpose.
 8. Every file under `docs/00.agent-governance/roles/` carries `agent_id`.
@@ -317,11 +298,7 @@ extend to a Spec Package and the `spec` profile stays strict, asserted by
 10. Command, result, rollback, and skipped checks for each step are recorded in the owning Task.
 11. `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <merge-base>`
     reports zero violations. This is the blocking condition CI enforces.
-    **Unmet, four violations.** Two `body-heading-forbidden` findings against the
-    `governance-policy` heading contract and two unreachable `archived -> completed`
-    transition overrides. Both mechanisms are measured and recorded in
-    [Task 6](tasks/tsk-0006-blocking-gate-reconciliation.md); both are routed to
-    SPEC-0155, which owns the validator surface they live in.
+    **Met by SPEC-0155 and revalidated at the SPEC-0157 Task 9 closure boundary.**
 
 ## Traceability
 

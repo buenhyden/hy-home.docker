@@ -1,12 +1,12 @@
 ---
 profile_id: plan
-status: active
+status: completed
 artifact_id: plan-0157
 artifact_type: plan
 parent_ids:
   - SPEC-0157
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Script Surface Ownership Convergence Plan
@@ -1473,7 +1473,7 @@ git commit -m "refactor(governance): Split metadata and lifecycle responsibiliti
 - Consumes: Task 8's module boundaries.
 - Produces: nothing later depends on this task.
 
-- [ ] **Step 1: Record the test count before splitting**
+- [x] **Step 1: Record the test count before splitting**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata 2>&1 | grep -E "^Ran "
@@ -1483,13 +1483,20 @@ PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
 Write both numbers into the Task. The split preserves them; a lost test is a
 lost assertion, not a tidier file.
 
-- [ ] **Step 2: Split into one module per production module**
+- [x] **Step 2: Split into one module per production module**
 
 `tests/lib/document_governance/metadata/test_{profile,lifecycle,heading,identity,reference}.py`
 and `tests/validation/lifecycle/test_{public,contract,promoted,recovery}.py`.
 Move whole `TestCase` classes; do not re-author assertions.
 
-- [ ] **Step 3: Confirm the count is preserved**
+Observed correction: the reduced baselines contain ten metadata `TestCase`
+classes and only three lifecycle `TestCase` classes. Whole classes therefore
+move to their primary owner without duplication. `test_promoted.py` is the
+registered structural mirror with no cloned TestCase; promoted behavior remains
+covered by the existing direct responsibility contract and the registered
+`check-promoted` Gate.
+
+- [x] **Step 3: Confirm the count is preserved**
 
 ```bash
 PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata 2>&1 | grep -E "^Ran "
@@ -1498,7 +1505,7 @@ PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle 2>&1 | g
 
 The two sums must equal the two numbers from Step 1.
 
-- [ ] **Step 4: Update `scripts/README.md` to the new structure**
+- [x] **Step 4: Update `scripts/README.md` to the new structure**
 
 Replace its script table with one row per entrypoint under the new directories,
 and add a short section stating the ownership rule: `lib/<domain>/` holds
@@ -1506,7 +1513,7 @@ importable modules and defines no entrypoint; `<surface>/` holds entrypoints and
 implements no domain logic; `tests/lib/<domain>/` mirrors `lib/<domain>/`, while
 `tests/validation/` retains validation and entrypoint tests.
 
-- [ ] **Step 5: Complete the three Spec Packages**
+- [x] **Step 5: Complete the eligible Spec Packages and preserve the legal endpoint**
 
 SPEC-0154 and SPEC-0155 are `active` at `main` and complete with a single legal
 hop. SPEC-0157 goes `draft` to `active` in its first commit and to `completed`
@@ -1521,20 +1528,24 @@ python3 scripts/validation/check-document-metadata.py --mode check-changed --bas
 Expected: `violations=0`. If it reports `draft -> completed`, the endpoint rule
 is refusing the hop and the status stays `active`.
 
-- [ ] **Step 6: Final verification**
+- [x] **Step 6: Final verification**
 
 ```bash
-git add -A -- tests/lib/document_governance/metadata \
-  tests/validation/lifecycle \
-  tests/validation/test_document_metadata.py \
-  tests/validation/test_document_corpus_lifecycle.py \
-  scripts/README.md \
-  docs/03.specs/0154-validation-surface-reduction/spec.md \
+git add -A -- .github/CODEOWNERS \
+  .github/workflow-contract.yml \
+  docs/03.specs/0154-governance-consistency-convergence/spec.md \
   docs/03.specs/0155-validation-surface-reduction/spec.md \
-  docs/03.specs/0157-script-surface-ownership-convergence/spec.md \
-  docs/03.specs/0157-script-surface-ownership-convergence/plan.md \
-  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md \
-  docs/03.specs/README.md
+  docs/03.specs/0157-script-surface-ownership-convergence \
+  docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md \
+  scripts/README.md \
+  scripts/manifest.yaml \
+  scripts/validation/agentic-audit-semantic-contract.json \
+  scripts/validation/ci_gate_runner.py \
+  tests/README.md \
+  tests/lib/document_governance/metadata \
+  tests/lib/document_governance/test_archive.py \
+  tests/lib/test_surface_ownership.py \
+  tests/validation
 python3 scripts/knowledge/generate-llm-wiki.py --write
 git add -- docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md \
   docs/90.references/data/0082-llm-wiki-index/README.md
@@ -1549,12 +1560,12 @@ their pre-split baselines, and the full Gate reports `FULL exit=0`.
 Regenerate after the last document is authored, not before; the gate checks
 freshness and a Task that writes its own record after regenerating leaves it red.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git diff --cached --check
 git diff --cached --name-only
-git commit -m "docs(spec): Close the script surface ownership convergence"
+git commit -m "refactor(tests): Split document governance test responsibilities"
 ```
 
 ## Risk and Rollback
@@ -1582,8 +1593,8 @@ python3 scripts/validation/check-document-links.py --mode all
 python3 scripts/validation/check-script-manifest.py
 bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code
 rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
-  tests/validation/test_document_metadata.py \
-  tests/validation/test_document_corpus_lifecycle.py \
+  tests/lib/document_governance/metadata \
+  tests/validation/lifecycle \
   tests/lib/target_surface/test_target_surface_contracts.py \
   tests/lib/document_governance/test_spec_packages.py
 grep -rn "NON_STANDALONE_VALIDATOR_PATHS" scripts tests

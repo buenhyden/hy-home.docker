@@ -5,7 +5,7 @@ artifact_id: SPEC-0157
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
 created: 2026-08-30
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Script Surface Ownership Convergence Specification
@@ -201,6 +201,12 @@ that is both smaller and covered.
 | A truncated search is read as proof of absence | Absence is proven with an untruncated sweep; SPEC-0155 recorded this failure |
 
 ## Acceptance Contract
+
+The implementation Plan and Task complete in this change after the final Full
+profile passes. This Spec Package remains `active`: its merge-base endpoint is
+`draft`, so `draft -> completed` would bypass the required `active` review
+boundary. It can take the legal `active -> completed` hop only in a later
+change. No transition override is used to conceal that boundary.
 
 1. Every file under `scripts/lib/` is importable and its manifest row declares no execution contexts.
 2. Every file under `scripts/validation/`, `scripts/gate/`, `scripts/security/`, and `scripts/operations/` is an entrypoint and implements no domain logic.

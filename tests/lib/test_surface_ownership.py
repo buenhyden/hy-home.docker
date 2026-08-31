@@ -119,8 +119,10 @@ class SurfaceOwnershipTests(unittest.TestCase):
         """Current contracts never depend on a deleted taxonomy or pinned clone history."""
 
         contract_tests = (
-            ROOT / "tests/validation/test_document_metadata.py",
-            ROOT / "tests/validation/test_document_corpus_lifecycle.py",
+            *sorted(
+                (ROOT / "tests/lib/document_governance/metadata").glob("*.py")
+            ),
+            *sorted((ROOT / "tests/validation/lifecycle").glob("*.py")),
             ROOT / "tests/lib/target_surface/test_target_surface_contracts.py",
             ROOT / "tests/lib/document_governance/test_spec_packages.py",
         )

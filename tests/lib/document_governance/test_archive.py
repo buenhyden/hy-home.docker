@@ -112,8 +112,12 @@ class MigrationStateTests(unittest.TestCase):
         raw = ("```yaml\n" + yaml.safe_dump(compact) + "```\n").encode()
         with mock.patch.object(self.archive, "_read_regular", return_value=raw):
             self.assertEqual(compact, self.archive._migration_document(ROOT))
-        omitted = [row for row in approved["rows"] if row["row_id"] in {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}]
-        for row in omitted:
+        unexecuted = [
+            row
+            for row in approved["rows"]
+            if row["row_id"] in {"mig-0003-r0848", "mig-0003-r0852"}
+        ]
+        for row in unexecuted:
             self.assertTrue((ROOT / row["source_path"]).is_file())
             self.assertNotIn(row["source_path"], sources)
         for mutation in (rows[:-1], rows + [rows[0]], [rows[1], rows[0], *rows[2:]]):
@@ -216,7 +220,12 @@ class ArchiveMinimizationTests(unittest.TestCase):
         sources = (
             pathlib.Path("scripts/lib/document_governance/archive.py"),
             pathlib.Path("tests/lib/document_governance/test_archive.py"),
-            pathlib.Path("tests/validation/test_document_corpus_lifecycle.py"),
+            *(
+                path.relative_to(ROOT)
+                for path in sorted(
+                    (ROOT / "tests/validation/lifecycle").glob("*.py")
+                )
+            ),
         )
         offenders = []
         for source in sources:

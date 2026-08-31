@@ -1,11 +1,11 @@
 ---
 profile_id: spec
-status: active
+status: completed
 artifact_id: SPEC-0155
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-09-01
 ---
 
 # Validation Surface Reduction Specification
@@ -279,6 +279,11 @@ the removed nodes. No orchestration redesign is in scope.
 | Verification uses the advisory inventory instead of the blocking mode | Acceptance item 11 names `--mode check-changed` explicitly |
 
 ## Acceptance Contract
+
+This Spec Package is complete. All eight Tasks are `completed`; the obligations
+transferred from SPEC-0154 are closed; and SPEC-0157 Task 9 revalidated the
+combined Full profile before applying this legal `active -> completed`
+endpoint. No transition override is used.
 
 1. `python3 scripts/validation/run-ci-gate.py --profile full` exits 0, including `test_reverse_transition_without_override_is_blocked`.
 2. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0.

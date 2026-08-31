@@ -1058,8 +1058,8 @@ Regenerated or retained Stage 90 indexes must not enumerate or link Stage 98.
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_references
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive
-PYTHONPATH=. python3 -m unittest \
-  tests.validation.test_document_corpus_lifecycle
+PYTHONPATH=. python3 -m unittest discover \
+  -s tests/validation/lifecycle -p 'test_*.py'
 python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-recovery
 python3 scripts/validation/check-document-links.py --mode all
 ```
@@ -1187,9 +1187,10 @@ the token `SHA256` appears.
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_suite_registry
-PYTHONPATH=. python3 -m unittest tests.gate.test_ci_gate_runner
-PYTHONPATH=. python3 -m unittest tests.gate.test_ci_gate_adapters
-PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner
+PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_adapters
+PYTHONPATH=. python3 -m unittest discover \
+  -s tests/validation/lifecycle -p 'test_*.py'
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 python3 scripts/validation/check-document-corpus-lifecycle.py
 python3 scripts/validation/check-operations-catalog.py

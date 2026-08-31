@@ -45,8 +45,8 @@ scripts/
 ├── security/            # Local supply-chain verification and generated summary ownership
 ├── requirements.txt     # Python modules required by repository validation scripts
 ├── requirements-pre-commit.txt # Exact CI-only pre-commit tool pin
-├── lib/
-│   └── hardening-lib.sh # Shared implementation for tier hardening checks
+├── lib/<domain>/        # Importable domain modules; never a public entrypoint
+├── lib/hardening-lib.sh # Shared implementation for tier hardening checks
 └── README.md            # This file
 ```
 
@@ -56,6 +56,12 @@ The canonical script surface is the purpose-folder path. Root-level
 `scripts/*.sh` duplicates were removed after docs, CI, hooks, and pre-commit
 references moved to purpose-folder paths. Do not recreate root duplicate
 wrappers unless a future approved compatibility plan explicitly requires them.
+
+`scripts/lib/<domain>/` owns importable domain behavior and defines no public
+entrypoint. Purpose folders such as `scripts/validation/`, `scripts/security/`,
+and `scripts/operations/` own entrypoints and delegate domain logic to the
+library layer. `tests/lib/<domain>/` mirrors library responsibilities, while
+`tests/validation/` retains CLI, entrypoint, and execution-context tests.
 
 The hardening surface is intentionally consolidated into
 `scripts/hardening/check-all-hardening.sh`. Tier-specific wrapper entrypoints
@@ -271,7 +277,7 @@ stable current deficit identities already present at the merge base. Template
 placeholder checks recursively detect registered angle-bracket tokens inside
 composed scalars and lists without treating date-like ID text as a global
 placeholder. Run the focused suite with
-`python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`.
+`python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py' -v`.
 Changed-path review includes tracked, staged, unstaged-new, renamed, and
 explicit existing Markdown paths while treating deletions as non-parseable
 selected paths. The report exposes deterministic semantic states for every
@@ -286,9 +292,9 @@ and `--mode check-recovery`, which re-proves that every tombstone's
 argparse error. Parser, contract, Git, path, redaction, and internal safety
 failures still fail closed.
 Run its focused inventory with
-`python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v`.
-The executable test inventory is
-`tests/validation/test_document_corpus_lifecycle.py`.
+`python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py' -v`.
+The executable test inventory is the four responsibility modules under
+`tests/validation/lifecycle/`; no legacy aggregate or redirect remains.
 
 `scripts/validation/check-target-surface-contract.py` is the thin focused gate
 for Spec 133 target convergence. The immutable library finding records expose
