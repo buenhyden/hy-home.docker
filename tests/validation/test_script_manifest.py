@@ -112,7 +112,7 @@ MUTATION_OVERRIDES = {
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
 MANDATORY_DISPOSITIONS = {
-    "scripts/hooks/post-tool-validate.sh": "rewrite",
+    "scripts/hooks/post-tool-validate.sh": "retain",
     "scripts/knowledge/generate-llm-wiki.py": "retain",
 }
 TASK12_RETIRED_SCRIPTS = frozenset(
