@@ -68,6 +68,10 @@ registered `changed` and `full` validation profiles.
   worktrees; do not persist it as a document lineage ledger.
 - When predecessor content conflicts with current canonical governance, prefer
   the current owner and discard the obsolete rule after recovery review.
+- Treat tracked implementation as the observation source for current truth:
+  implemented obligations map to Stage 01, implemented structures and durable
+  decisions map to Stage 02, and neither Stage 03 execution detail nor Stage 05
+  procedure nor Stage 90 evidence may remain their sole durable owner.
 - Run focused tests before aggregate Gates. Record observed output in the
   current Task and never infer a pass from missing or truncated output.
 - Make no runtime, deployment, remote, secret, credential, or infrastructure
@@ -91,7 +95,10 @@ per guarantee.
 The result must make SDLC state honest: an active Task has active parents,
 terminal parents have no active children, only actual work remains active, and
 completed change packets write their outcomes to current owners rather than
-remaining a second authority.
+remaining a second authority. Stage 01 and Stage 02 also describe the current
+implemented system rather than only desired future state: every implemented
+obligation and structure has one canonical owner, and every statement presented
+as current agrees with tracked implementation.
 
 ## Dependencies
 
@@ -105,6 +112,9 @@ remaining a second authority.
 - Stage 99 Registry, schemas, and registered templates.
 - `scripts/manifest.yaml` for validator inventory and suite membership.
 - `.github/workflow-contract.yml` for CI routing and execution context.
+- Current tracked implementation under `infra/`, `examples/`, `scripts/`,
+  provider adapters, registries, manifests, workflows, tests, and Stage 05
+  operational commands.
 - Current Git-tracked consumers and regular-blob recovery measured at execution
   time.
 
@@ -126,6 +136,7 @@ remaining a second authority.
 | Current Stage 90 existence is coupled to Migration 0003's frozen historical target set | Decouple current retention in `references.py` before deletion; Git owns the retired Migration history and no deleted package receives a Tombstone without a live recovery-navigation consumer |
 | ADR-0029 and Stage 99 still register Migration 0003 as a structural authority | Move the review boundary to current Registry, Task, and validator evidence, correct ADR-0029, remove the active Migration profile/template/allocation surface, then delete the Migration package |
 | Current Stage 00/01/02/03/05/90 documents and generated indexes cite or link to Stage 98 files | Move current meaning to canonical owners, remove every inbound archive-file citation/link, and keep recovery navigation one-way from retained archive records to current replacements |
+| Current implementation is described only by code, a completed Spec, an Operations procedure, a validator, or Stage 90 evidence while Stage 01/02 is absent or stale | Build a subject-level bidirectional coverage inventory; promote obligations to Stage 01 and structures or durable decisions to Stage 02, then correct any current claim that contradicts implementation |
 | Preliminary Stage 90 classification found 25 deletion candidates and 39 migration-dependent packages | Treat both counts as discovery evidence only; Task 2 remeasures the current tree and acceptance never pins either count |
 | Task 2 is the only source for the protected path inventory even though Task 8 retires Task bodies | Before retirement, write the dynamic set to a package-local non-normative README declaration and derive the existing reference-test oracle from it |
 
@@ -152,7 +163,7 @@ remaining a second authority.
 | Neutral governance | `docs/00.agent-governance/{policies,roles,skills}/` | Stage 00 prose contracts |
 | Provider facts | `docs/00.agent-governance/providers/registry.yaml` | Provider, model, permission translation, hook, and projection routing |
 | Document mechanics | `docs/99.templates/registry.json`, schemas, templates | Stage 99 typed document authority |
-| Current solution truth | Stages 01, 02, 03, and 05 | One current owner per requirement, structure, change, or operation |
+| Current solution truth | Stages 01, 02, 03, and 05 plus tracked implementation subjects | Stage 01 owns implemented obligations, Stage 02 owns implemented structure and durable decisions, Stage 03 owns change deltas, and Stage 05 owns procedures with Stage 01/02 prerequisites |
 | Evidence | `docs/90.references/` | The atomic user-protected latest external-research pack plus structural indexes matching the resulting tree; all other baseline evidence packages migrate and retire |
 | Protected research declaration | `docs/90.references/research/0002-agentic-engineering-research-pack/README.md` | Persistent non-normative protected path selector and user-decision record; SPEC-0158 acceptance owns the retention rule |
 | Recovery | `docs/98.archive/` | Minimal approved archive/Tombstone records plus the structural index; no Migration directory at completion |
@@ -369,6 +380,27 @@ that Task 6 must migrate the measured set to a clearly owned package-local
 preservation declaration in the `RES-0002` README before this Task body can be
 compressed or removed.
 
+In the same Task, build a subject-level implementation-truth inventory from
+the current tracked implementation surfaces named in Dependencies. Do not add
+one row per source file: group files only when they implement the same observed
+behavior or structure and have the same canonical owner. Record:
+
+```markdown
+| Implementation subject | Observed current fact | Classification | Canonical Stage 01/02 owner | Mismatch or gap | Disposition | Verification |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+```
+
+Classify required behavior, obligations, invariants, and guarantees as Stage
+01 Requirements. Classify components, boundaries, data flow, and integration
+shape as Stage 02 Architecture Descriptions; classify a durable adopted
+architectural decision and its rationale as a Stage 02 ADR. Stage 03 describes
+the change, Stage 05 describes operation, and Stage 90 records observation;
+none substitutes for a missing Stage 01 or Stage 02 owner. A future requirement
+or proposed architecture may remain only when it is explicitly distinguishable
+from implemented current truth. Record zero unclassified implementation
+subjects and zero current Stage 01/02 claims that contradict observed
+implementation before mutation begins.
+
 **Step 2: Record ordered `keep` cohorts**
 
 Add a Task table with these columns:
@@ -433,7 +465,11 @@ It also proves that every other measured Stage 90 package has an explicit
 delete-after-migration path and that no package is unresolved or silently kept.
 Every inbound Stage 98 file citation or cross-link receives an explicit current
 owner and removal disposition; a historical quotation does not create an
-exception to archive isolation.
+exception to archive isolation. The review also checks the implementation-truth
+inventory in both directions: every observed current obligation or structure
+has the correct Stage 01/02 owner, and every Stage 01/02 statement presented as
+current agrees with the observed implementation. The inventory is Task evidence
+and never becomes a fixed count, manifest mirror, or new Gate.
 
 **Step 5: Commit the bounded baseline**
 
@@ -737,6 +773,9 @@ git commit -m "refactor(docs): Make current contracts independent of archive led
 - Modify: `tests/lib/document_governance/test_requirements.py`
 - Modify: `tests/lib/document_governance/test_architecture.py`
 - Modify: `tests/lib/document_governance/test_spec_packages.py`
+- Modify only if the existing predicate needs strengthening:
+  `scripts/validation/check-doc-implementation-alignment.sh` and its existing
+  document-graph tests; do not add a public Gate or fixed subject count.
 - Modify current-path regression tests that encode deleted duplicates.
 
 **Step 1: Add lifecycle-parent regression cases**
@@ -772,7 +811,40 @@ Implement these with the existing `_write_package` and one-field mutation
 helpers; do not copy a real historical package. Witness RED for the known
 non-conforming current packages before changing their statuses.
 
-**Step 2: Resolve the known lifecycle contradictions**
+**Step 2: Promote observed current implementation truth**
+
+For every Task 2 implementation-truth row:
+
+1. verify the observed behavior or structure directly from tracked code,
+   configuration, manifests, workflows, tests, and operated Stage 05 commands;
+2. write an implemented obligation, invariant, or guarantee into exactly one
+   registered Stage 01 Requirement owner;
+3. write an implemented component structure, boundary, data flow, or
+   integration shape into exactly one registered Stage 02 Architecture
+   Description owner, and write a durable adopted architectural decision and
+   its rationale into exactly one active ADR owner;
+4. link a Stage 05 procedure to its Stage 01 behavior and Stage 02 structural
+   prerequisites without copying the procedure into either owner; and
+5. remove completed Stage 03 bodies, validators, tests, or Stage 90 evidence as
+   sole current owners only after the Stage 01/02 promotion is complete.
+
+Use current implementation as observation, not as permission to invent a
+requirement. A genuine future requirement or proposed architecture must be
+clearly distinguishable from implemented current truth. If the approved
+documentation cannot match implementation without changing runtime behavior,
+stop and create a separately approved behavior-change packet rather than
+silently changing code. Translate facts into the registered Requirement,
+Architecture Description, or ADR form; do not copy implementation listings,
+fixtures, generated output, or execution logs.
+
+Strengthen the existing implementation-alignment predicate only where a
+measured gap proves it necessary. The existing `document-graph` responsibility
+owns the check; this Task adds no suite, Gate, Task-numbered inventory, or fixed
+count. Completion requires zero implementation subjects without the correct
+Stage 01/02 owner and zero Stage 01/02 statements presented as current that
+contradict implementation.
+
+**Step 3: Resolve the known lifecycle contradictions**
 
 Apply these deterministic decisions:
 
@@ -789,7 +861,7 @@ Apply these deterministic decisions:
 
 An ambiguous status stops this step; it is not inferred from age or line count.
 
-**Step 3: Consolidate duplicate current owners**
+**Step 4: Consolidate duplicate current owners**
 
 For each explicit non-`keep` path in Stages 01, 02, and 05:
 
@@ -802,7 +874,7 @@ For each explicit non-`keep` path in Stages 01, 02, and 05:
 Never merge documents merely because their titles are similar. Purpose,
 normative scope, consumers, and acceptance must overlap.
 
-**Step 4: Remove retired current-sounding routes**
+**Step 5: Remove retired current-sounding routes**
 
 Active documents must not publish retired Stage 04, predecessor support,
 memory, rules, Spec-path, Task-path, or template routes as current procedure.
@@ -819,19 +891,21 @@ record may point outward to a current replacement; the current document never
 points back. Add focused existing-suite regressions for both Markdown links and
 explicit archive-file path literals without creating a new public Gate.
 
-**Step 5: Verify and commit by stage**
+**Step 6: Verify and commit by stage**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_requirements
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_architecture
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
+bash scripts/validation/check-doc-implementation-alignment.sh
 python3 scripts/validation/check-document-metadata.py --mode check-active
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-links.py --mode all
 ```
 
-Expected: all units `OK`, both metadata modes report `violations=0`, and links
-report `failures=0`.
+Expected: all units `OK`, implementation alignment reports no uncovered or
+contradictory current truth, both metadata modes report `violations=0`, and
+links report `failures=0`.
 
 Commit Stage 01/02, Stage 03, and Stage 05 as separate logical changes when
 more than one stage changes:
@@ -1178,6 +1252,7 @@ python3 scripts/validation/check-document-metadata.py \
   --mode check-changed \
   --base-ref "$(git merge-base main HEAD)"
 python3 scripts/validation/check-document-links.py --mode all
+bash scripts/validation/check-doc-implementation-alignment.sh
 python3 scripts/validation/check-document-corpus-lifecycle.py
 python3 scripts/validation/check-operations-catalog.py
 python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
@@ -1187,14 +1262,16 @@ python3 scripts/validation/run-ci-gate.py --profile full
 git diff --check
 ```
 
-Expected: zero metadata violations, zero link failures, lifecycle and
-Operations pass, provider drift 0, unit discovery `OK`, full profile exit 0,
-and no diff error.
+Expected: zero metadata violations, zero link failures, zero current
+implementation-alignment gaps or contradictions, lifecycle and Operations
+pass, provider drift 0, unit discovery `OK`, full profile exit 0, and no diff
+error.
 
 **Step 2: Obtain independent review**
 
-- `rules-engineer`: one owner per rule, legal lifecycle, no Stage 90/98 current
-  authority, and no agent verdict presented as user approval.
+- `rules-engineer`: one owner per rule, bidirectional current implementation to
+  Stage 01/02 coverage, legal lifecycle, no Stage 90/98 current authority, and
+  no agent verdict presented as user approval.
 - `code-reviewer`: exact diff, deletion recovery, test adequacy, and acceptance
   item coverage.
 - `ci-cd-engineer` and `security-auditor`: only if workflow or protected CI
@@ -1274,6 +1351,7 @@ the retired Stage 90 Data path must remain absent.
 | Earlier SPEC-0157 work is presented as approved | P0 records discovered commits and current revalidation | Revert the activation commit; keep the branch evidence unchanged |
 | A complete audit becomes a second corpus copy | Cohort rules plus explicit non-`keep` exceptions only | Revert the Task evidence commit and rewrite the rule summary |
 | A current obligation is deleted with a duplicate | Move unique obligations and update consumers before deletion | Revert the logical stage commit |
+| Stage 01/02 documents describe only intent or stale design while current implementation has no matching owner | Require the Task 2 subject inventory and Task 5 bidirectional promotion before evidence retirement | Revert the Stage 01/02 documentation commit, re-observe implementation, and correct the canonical owner without changing runtime behavior |
 | A non-protected Stage 90 package survives because it still has a consumer | Treat the consumer as a migration dependency, require the final package-root set to contain only `RES-0002`, and require unresolved/pending counts of zero | Revert the incomplete cohort change, finish owner migration, then delete the package |
 | Latest external research is lost because consumers reach zero or a link-only commit appears newer | Apply the atomic current-baseline protection set, persistent README declaration, and purpose-based Git classification | Revert the rejected mutation commit or restore its paths from the immediately reviewed pre-mutation current Git state; never restore a named historical pack snapshot |
 | Task retirement removes the only protection oracle | Require the package-local declaration and existing reference tests to be GREEN first | Restore the Task body only long enough to complete the declaration handoff, then rerun the retirement checks |
@@ -1291,6 +1369,12 @@ The final state must satisfy all of the following:
 
 - every target is covered once by ordered disposition rules and exceptions;
 - every non-`keep` path has owner, consumer, replacement, recovery, and review;
+- every implemented required behavior has one current Stage 01 owner, every
+  implemented structure or durable decision has one current Stage 02 owner,
+  and no current Stage 01/02 statement contradicts tracked implementation;
+- future requirements or proposed architectures are explicitly distinguishable
+  from implemented current truth, and Stage 03/05/90 or validator/test surfaces
+  are never the sole durable owners of current requirement or architecture;
 - active documents publish no retired path as current procedure;
 - active lifecycle parents and children are mutually consistent;
 - the persistent `RES-0002` README declaration equals the safe tracked on-disk
@@ -1382,6 +1466,12 @@ The final state must satisfy all of the following:
     replacement, but Stages 00, 01, 02, 03, 05, and 90 never cite or cross-link
     a Stage 98 document or file. Existing lifecycle/link validation owns this
     predicate without a new Gate or fixed census.
+17. **Current implementation is promoted, not copied.** Implemented behavior
+    and guarantees map to Stage 01; implemented structure, boundaries, data
+    flow, and durable decisions map to Stage 02. The Task proves bidirectional
+    coverage with the existing implementation-alignment responsibility, while
+    source listings, fixtures, generated data, and execution history stay in
+    their proper implementation or evidence owners.
 
 ## Related Documents
 

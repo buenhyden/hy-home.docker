@@ -63,6 +63,8 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 32 | Added the archive-isolation and stage-ownership ruling | The user fixed Stage 00 as AI-agent governance/role/skill authority; Stages 01--03 as the consistent SDLC chain; Stage 05 as Operations Guide/Incident/Postmortem/Runbook ownership; Stage 90 as Audit/Research/Data evidence; Stage 98 as isolated archive; and Stage 99 as docs template authority. A read-only search found existing inbound archive-file citations and links across current and historical documents. Draft SPEC-0158 now requires zero such inbound references from Stages 00/01/02/03/05/90, including generated indexes, while allowing retained archive records to point outward. This is design evidence only; the current corpus remains `needs_revalidation` until SPEC-0158 executes and verifies the cleanup. |
 | 33 | Revalidated the corrected Stage 98 and stage-ownership design | Repository metadata contracts reported `violations=0`; changed-document metadata selected 16 documents with `violations=0`, `legacy_exceptions=0`, and `transition_overrides=0`; the existing all-links check reported `failures=0`; and diff hygiene passed. The current link check does not yet enforce the newly approved archive-isolation predicate, so these results validate document shape and existing links only. Actual zero-inbound proof remains unobserved SPEC-0158 work. |
 | 34 | Completed Task 5 full-profile test registration | The pre-registration oracle measured 20 on-disk modules absent from the reachable local full plan and zero plan-only modules; its admission-only negative stayed GREEN. Eight RED modules were repaired or dispositioned against current owners before routing. Four new responsibility leaves and the existing supply-chain fixture leaf now route all 20 modules through exact adapter argv and public-suite ownership. The final set equality, focused contracts, manifest, and workflow checks are GREEN. Full execution reaches every module and stops only at the same five Task 6-owned `ChangedBodyDeficitGitTests` results. |
+| 35 | Added the current-implementation truth ruling | The user required current implementation to be reflected in the registered Stage 01 and Stage 02 forms. Draft SPEC-0158 now classifies implemented obligations and guarantees to Stage 01, implemented structure and durable decisions to Stage 02, and requires bidirectional zero-gap alignment without copying code, execution logs, or a fixed inventory into documentation. Actual corpus observation and promotion remain unexecuted SPEC-0158 work. |
+| 36 | Revalidated the current-implementation design amendment | Repository metadata contracts and changed-document metadata reported zero violations, legacy exceptions, and transition overrides; all links and the existing implementation-alignment mode reported zero failures; diff hygiene passed. These results prove the design change preserves current contracts only. They do not replace SPEC-0158 Task 2's implementation-subject inventory or Task 5's future bidirectional zero-gap proof. |
 
 ### Discovered branch commits
 
@@ -925,7 +927,7 @@ is self-approved by this registration.
 | Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 | Task 4 test ownership mirror | 6663f02c; ff12147d | Complete; Task, Python, and CI/Gate reviews APPROVED |
-| Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; current routing unit | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
+| Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; 9f984929 | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
 
 ## Rulings
 
@@ -1020,6 +1022,13 @@ is self-approved by this registration.
     corrections, generated-index correction, and existing-suite regression.
     Archive navigation is one-way from a retained minimal record to a current
     replacement. This active SPEC-0157 Task performs no archive disposition.
+21. Current implementation truth is promoted by meaning: implemented required
+    behavior, obligations, invariants, and guarantees belong in Stage 01;
+    implemented structure, boundaries, data flow, integration shape, and
+    durable decisions belong in Stage 02. Stage 03, Stage 05, Stage 90,
+    validators, tests, and code remain evidence or execution surfaces rather
+    than the sole durable owner. Draft SPEC-0158 must prove both implementation
+    coverage and reverse agreement without a fixed count or new Gate.
 
 ## Deferred Items
 
@@ -1035,6 +1044,10 @@ is self-approved by this registration.
   This active SPEC-0157 Task changes fixture design so no new current test reads
   archive documents, but it does not mutate Stage 98 or claim the existing
   inbound citations are already removed.
+- The subject-level audit and promotion of current implemented obligations to
+  Stage 01 and current implemented structures or durable decisions to Stage 02
+  belong to draft SPEC-0158. This design record does not claim that the current
+  Requirement and Architecture corpus already has zero gaps or contradictions.
 
 ## Related Documents
 

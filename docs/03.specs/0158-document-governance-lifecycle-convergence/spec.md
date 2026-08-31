@@ -67,6 +67,9 @@ pack, progress document, or compatibility redirect.
   policies.
 - Stage 99 Registry, schemas, and registered templates.
 - The current script manifest and workflow contract.
+- Current Git-tracked implementation surfaces, including infrastructure and
+  example configuration, scripts, registries, manifests, workflows, provider
+  adapters, tests, and the commands operated through Stage 05.
 - Git-tracked consumers, current branch state, and regular-blob recovery
   evidence measured at execution time.
 - The user preservation ruling for the latest externally researched and saved
@@ -178,6 +181,41 @@ stable path.
   ownership of runtime projection paths is a separate, narrower namespace and
   does not compete with this document-template authority.
 
+### Implemented Truth Promotion
+
+Current implementation is an authoritative input to documentation alignment,
+but source code, configuration, validators, workflows, Stage 05 procedures,
+and Stage 90 evidence do not become substitute Requirement or Architecture
+owners. Every implementation subject is classified by the truth it carries:
+
+- an implemented required behavior, user-visible obligation, invariant, or
+  guarantee maps to exactly one active Stage 01 Requirement;
+- an implemented structure, component boundary, data flow, or integration
+  boundary maps to exactly one current Stage 02 Architecture Description;
+- a durable adopted architectural decision and its rationale map to exactly
+  one active Stage 02 ADR, while the Architecture Description may reference
+  rather than duplicate that decision ownership;
+- a change delta and its execution history remain Stage 03 concerns;
+- an operational procedure remains Stage 05, but its required behavior and
+  structural prerequisites trace to Stage 01 and Stage 02; and
+- an observation, audit result, research claim, or generated measurement
+  remains non-normative Stage 90 evidence.
+
+Coverage is bidirectional. Every currently implemented required behavior and
+structural decision has the appropriate Stage 01 or Stage 02 owner, and every
+Stage 01 or Stage 02 statement presented as current agrees with the observed
+implementation. Future intent may remain in a Requirement or proposed
+architecture only when it is explicitly distinguishable from implemented
+current truth; it cannot be described as already implemented. Completed Specs,
+validators, tests, Operations procedures, or evidence packages cannot be the
+sole durable source for a current requirement or architecture fact.
+
+Promotion translates current truth into the registered Requirement,
+Architecture Description, or ADR form. It does not copy source files, test
+fixtures, generated output, or execution logs into Stage 01 or Stage 02. The
+execution Task records a dynamically measured subject-to-owner inventory and
+zero-gap result; no fixed implementation count or new Gate is created.
+
 ### Archive Isolation
 
 Documents under Stages 00, 01, 02, 03, 05, and 90 do not cite, link to, or use
@@ -255,9 +293,12 @@ the `RES-0002` package before applying any disposition. Cover unchanged cohorts
 by deterministic rule and list every non-`keep` target explicitly. Measure
 profile, lifecycle, authority, consumers, duplicate purpose, retired-path
 literals, generated provenance, Gate and fixture references, commit pins, and
-recovery. Mutation begins only after the rules and exceptions cover the target
-set exactly once and every destructive disposition has passed recovery and
-review checks.
+recovery. In parallel, classify current implementation subjects and record the
+Stage 01 or Stage 02 owner for each implemented obligation, structure,
+boundary, and durable decision. Mutation begins only after the document rules
+cover the target set exactly once, the implementation inventory has no
+unclassified subject, and every destructive disposition has passed recovery
+and review checks.
 
 ### Wave 2: Converge Canonical Owners
 
@@ -270,7 +311,11 @@ historical Migration records. Clarify that Stage 99 paths are document paths
 and provider-registry paths are runtime projection paths. Separate workflow
 coordination, mutation, evidence writing, evaluation, review, and human
 approval in the existing role and provider contracts. Regenerate registered
-provider adapters only after their canonical inputs are correct.
+provider adapters only after their canonical inputs are correct. Before
+deleting duplicate or evidentiary descriptions, promote every observed current
+implementation obligation to Stage 01 and every observed current structure or
+durable decision to Stage 02, and correct any Stage 01 or Stage 02 statement
+that describes an aspirational or obsolete state as current.
 
 ### Wave 3: Normalize SDLC Packages
 
@@ -333,7 +378,9 @@ Run focused checks with each change, then the complete document, governance,
 Operations, provider-parity, unit-test, and full CI profiles. Obtain independent
 policy and exact-diff review. Write current outcomes back to canonical owners,
 close terminal packets, and remove temporary or verbose execution material once
-its registered recovery is proven.
+its registered recovery is proven. Re-run implementation alignment in both
+directions and require zero implemented subjects without a Stage 01/02 owner
+and zero current Stage 01/02 claims that contradict the tracked implementation.
 
 ## Interfaces and Data
 
@@ -346,6 +393,7 @@ its registered recovery is proven.
 | Workflow contract | Public profile and CI execution routing |
 | Disposition rule set | Task-local complete coverage rules plus explicit non-`keep` paths; never a lifecycle registry or corpus copy |
 | Protected research declaration | Package-local, non-normative record of the user retention decision and protected path selector; SPEC acceptance remains authoritative |
+| Implementation truth coverage | Task-local subject-to-owner evidence mapping implemented obligations to Stage 01 and implemented structures or decisions to Stage 02; no corpus copy, fixed count, or durable parallel registry |
 | Temporary Migration | In-flight historical source mapping only; every current consumer moves before the interface and directory are deleted |
 | Archive/Tombstone | Explicitly retained minimal historical record or stable retired-path recovery pointer; never current authority |
 | Fixture | Current generated contract, one-field mutation, or temporary-Git recovery case |
@@ -364,6 +412,7 @@ retained projections receive an explicit canonical-source mapping.
 | Consumer cleanup removes the user-protected latest research | Apply `PROTECT_LATEST` before consumer disposition and retain its substantive body, sources, and claims even at zero consumers |
 | Transient Task evidence is removed before protection remains enforceable | Persist the dynamic path declaration in the package README and make existing reference tests GREEN before Task retirement |
 | Historical evidence remains active guidance | Migrate needed meaning to a current owner, then delete the non-protected Stage 90 package; active owners never defer to Stage 90 |
+| Stage 01 or Stage 02 is aspirational, stale, or absent while implementation already exists | Observe the tracked implementation, classify behavior versus structure, promote it to the registered current owner, mark genuinely future intent explicitly, and run the existing implementation-alignment suite in both directions |
 | A current SDLC, Operations, or Reference document cites Stage 98 | Move any still-current meaning to its canonical owner, remove the inbound citation or cross-link, and make the existing link/lifecycle suite reject recurrence |
 | SPEC-0157 is presented as previously approved | Record the anomaly and current revalidation; preserve the real transition order |
 | A Task disposition becomes a new lifecycle | Keep disposition values local to execution; validate document status against Stage 99 only |
@@ -385,13 +434,22 @@ retained projections receive an explicit canonical-source mapping.
    cohorts are not copied into a path-by-path audit pack.
 2. Active documents contain no retired Stage 04, predecessor support, rules,
    memory, agent, Spec-path, or template path presented as current procedure.
-3. No two active Requirement, Architecture Description, Spec, Operations, or
+3. Every currently implemented required behavior has exactly one active Stage
+   01 Requirement owner; every currently implemented structure, boundary, or
+   data flow has exactly one current Stage 02 Architecture Description owner;
+   and every durable adopted architectural decision has exactly one active ADR
+   owner. Reverse validation finds no Stage 01 or Stage 02 statement presented
+   as current that contradicts implementation; future intent is explicitly
+   distinguishable from implemented truth. Stage 03, Stage 05, Stage 90,
+   validators, and tests are never the sole durable owner of those current
+   facts.
+4. No two active Requirement, Architecture Description, Spec, Operations, or
    governance documents own the same purpose or rule.
-4. Active Task, Plan, and Spec states are mutually consistent, and only actual
+5. Active Task, Plan, and Spec states are mutually consistent, and only actual
    work in progress remains active.
-5. SPEC-0157 is normalized without retroactive approval and passes its full
+6. SPEC-0157 is normalized without retroactive approval and passes its full
    completion gate before SPEC-0158 implementation.
-6. Every baseline file in the atomic `RES-0002` research pack remains present
+7. Every baseline file in the atomic `RES-0002` research pack remains present
    with its substantive research body, sources, and claims semantically
    preserved, even if consumers reach zero. Current path, metadata, owner, and
    link corrections and non-lossy integration are allowed without checksum or
@@ -404,47 +462,47 @@ retained projections receive an explicit canonical-source mapping.
    unresolved and pending non-protected package dispositions are both zero.
    Root and category indexes are excluded from this package-root set and match
    the resulting tree.
-7. Stage 98 has no `migrations/` directory or Migration document. It contains
+8. Stage 98 has no `migrations/` directory or Migration document. It contains
    only its structural index and minimal archive/Tombstone records proven
    necessary by an explicit preservation need or live recovery-navigation
    consumer; retained recovery pointers use safe paths and resolve to regular
    Git blobs. No Stage 98 artifact contains a deleted body clone, redirect,
    snapshot, raw execution ledger, duplicate digest, frozen topology, or
    current-membership authority.
-8. Stages 00, 01, 02, 03, 05, and 90 contain zero citations or cross-links to
+9. Stages 00, 01, 02, 03, 05, and 90 contain zero citations or cross-links to
    Stage 98 documents or files, including generated indexes and code-form path
    literals. Any retained archive navigation points outward to current owners;
    no current owner points inward to archive evidence.
-9. Stage 99 Registry and templates contain no parallel or unused document
+10. Stage 99 Registry and templates contain no parallel or unused document
    authority, and every retained template has a registered target role.
-10. The six public suites and `changed|full` profiles remain stable, every
+11. The six public suites and `changed|full` profiles remain stable, every
    manifest validator executes exactly once in `full`, and no Task-numbered
    immutable validator inventory remains.
-11. Document-contract tests contain no fixed-workspace historical document
+12. Document-contract tests contain no fixed-workspace historical document
     resurrection, fixture-count pin, corpus-count pin, or count-bearing test
     name.
-12. Active Plans contain no branch-tip equality, expected SHA lineage,
+13. Active Plans contain no branch-tip equality, expected SHA lineage,
     persistent blob or diff digest ledger, or historical byte-equality control.
     Only approved recovery, supply-chain, actual Task commit evidence, and
     policy-required ephemeral concurrency checks remain.
-13. Workflow coordinator, writer, evidence author, evaluator, governance
+14. Workflow coordinator, writer, evidence author, evaluator, governance
     reviewer, exact-diff reviewer, and human approver responsibilities are
     distinct in canonical Stage 00 and provider routing.
-14. Stage 99 document-path authority and Provider Registry runtime-projection
+15. Stage 99 document-path authority and Provider Registry runtime-projection
     authority are explicitly disjoint; renderer and hook inventories are
     derived from their declared owner rather than a second code constant.
-15. Generated provider adapters are byte-for-byte fresh and define no policy.
-16. Metadata active and contract checks, document graph, document lifecycle and
+16. Generated provider adapters are byte-for-byte fresh and define no policy.
+17. Metadata active and contract checks, document graph, document lifecycle and
     recovery, agent-governance repository checks, Operations complete, focused
     unit tests, provider parity, `git diff --check`, and the full CI profile all
     pass.
-17. No runtime, remote, deployment, secret, or infrastructure state is changed.
+18. No runtime, remote, deployment, secret, or infrastructure state is changed.
 
 ## Traceability
 
 | Parent | Coverage |
 | :--- | :--- |
-| REQ-0024 | Canonical AI-agent governance, role separation, provider projection boundaries, and current Stage terminology |
+| REQ-0024 | Canonical AI-agent governance, role separation, provider projection boundaries, current Stage terminology, and removal of documentation that conflicts with current implementation truth |
 | REQ-0025 | Approved Spec/Plan/Task sequence, targeted and full validation, independent review, recovery, and honest completion |
 | ADR-0029 | Stage 00/99 authority split and six public suites, corrected so current authority and structural review no longer depend on temporary Stage 98 Migrations |
 | SPEC-0157 | Script and test ownership, reachable validation, current fixtures, derived census, and bounded Git-history behavior |
