@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import collections
 import copy
 import os
@@ -233,6 +234,40 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 offenders.extend(
                     f"{source}:{match}" for match in re.findall(pattern, text)
                 )
+        self.assertEqual([], offenders)
+
+    def test_no_current_repository_spec_package_cardinality_pin(self) -> None:
+        """The current repository surface is derived from its spec directories."""
+
+        source = ROOT / "tests/lib/document_governance/test_spec_packages.py"
+        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+        offenders = []
+        for method in ast.walk(tree):
+            if not isinstance(method, ast.FunctionDef) or not method.name.startswith(
+                "test_current_repository_"
+            ):
+                continue
+            for call in ast.walk(method):
+                if not (
+                    isinstance(call, ast.Call)
+                    and isinstance(call.func, ast.Attribute)
+                    and call.func.attr == "assertEqual"
+                    and len(call.args) >= 2
+                ):
+                    continue
+                for literal, candidate in (call.args[:2], call.args[1::-1]):
+                    if not (
+                        isinstance(literal, ast.Constant)
+                        and isinstance(literal.value, int)
+                        and isinstance(candidate, ast.Call)
+                        and isinstance(candidate.func, ast.Name)
+                        and candidate.func.id == "len"
+                        and len(candidate.args) == 1
+                        and isinstance(candidate.args[0], ast.Name)
+                        and candidate.args[0].id == "packages"
+                    ):
+                        continue
+                    offenders.append(f"{method.name}:{literal.value}")
         self.assertEqual([], offenders)
 
     def test_archive_has_only_registered_minimal_roots(self) -> None:
