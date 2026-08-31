@@ -51,7 +51,7 @@ directory produces a tidier version of the same excess.
   production mutation.
 - Does not produce: a claim that earlier work was approved before it occurred.
 
-- [ ] **Step 1: Measure the discovered work**
+- [x] **Step 1: Measure the discovered work**
 
 ```bash
 git status --short --branch
@@ -62,7 +62,7 @@ git diff --stat "$(git merge-base main HEAD)"...HEAD
 Record the exact output in the new Task as discovered branch work. Do not call
 the earlier commits approved; approval begins at this recovery boundary.
 
-- [ ] **Step 2: Create the current Task and activate both parents**
+- [x] **Step 2: Create the current Task and activate both parents**
 
 Create `tasks/tsk-0001-convergence.md` from the registered Task template with
 this frontmatter and opening contract:
@@ -94,14 +94,14 @@ This activation repairs current truth but does not erase the merge-base rule.
 Do not use a transition override to collapse `draft -> active -> completed`
 into one branch endpoint.
 
-- [ ] **Step 3: Revalidate Tasks 1 through 3**
+- [x] **Step 3: Revalidate Tasks 1 through 3**
 
 Run the focused commands already specified at the end of Tasks 1, 2, and 3.
 For each passing task, record its actual logical commits and observed result in
 the current Task, then mark only its completed checkboxes. A mismatch reopens
 that task; it is not explained away as historical.
 
-- [ ] **Step 4: Verify the lifecycle recovery**
+- [x] **Step 4: Verify the lifecycle recovery**
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
@@ -513,7 +513,7 @@ execution context is.
 
 **Files:**
 
-- Create: `scripts/lib/gate/__init__.py`, `scripts/lib/supply_chain/__init__.py`, `scripts/lib/target_surface/__init__.py`, `scripts/lib/agent_governance/__init__.py`, `scripts/lib/ops/__init__.py`
+- Do not create package-marker `__init__.py` files. The five markers introduced by the discovered move are unnecessary and must be removed; namespace imports are the required verification.
 - Move into `scripts/lib/gate/`: `ci_gate_contract.py` (1,453), `ci_gate_adapters.py` (996), `github_workflow_contract.py` (2,818)
 - Move into `scripts/lib/supply_chain/`: `grype_db_seed.py` (731)
 - Move into `scripts/lib/target_surface/`: `target_surface_contract.py` (615), `target_surface_delta_contract.py` (495)
@@ -603,13 +603,13 @@ The first passes already, because nothing is under `scripts/lib/` with an
 execution context yet — that is correct, and it is the test that must keep
 passing after the move.
 
-- [ ] **Step 3: Move the files with `git mv`**
+- [ ] **Step 3: Move the files with `git mv` without package markers**
 
 ```bash
 mkdir -p scripts/lib/gate scripts/lib/supply_chain scripts/lib/target_surface scripts/lib/agent_governance scripts/lib/ops
-for d in gate supply_chain target_surface agent_governance ops; do
-  printf '"""%s domain modules."""\n' "$d" > "scripts/lib/$d/__init__.py"
-done
+rm -f scripts/lib/gate/__init__.py scripts/lib/supply_chain/__init__.py \
+  scripts/lib/target_surface/__init__.py scripts/lib/agent_governance/__init__.py \
+  scripts/lib/ops/__init__.py
 git mv scripts/validation/ci_gate_contract.py scripts/validation/ci_gate_adapters.py scripts/validation/github_workflow_contract.py scripts/lib/gate/
 git mv scripts/validation/grype_db_seed.py scripts/lib/supply_chain/
 git mv scripts/validation/target_surface_contract.py scripts/validation/target_surface_delta_contract.py scripts/lib/target_surface/
@@ -619,6 +619,10 @@ git status --porcelain | grep '^R' | wc -l
 ```
 
 Expected: `9` renames staged.
+
+Remove the five new package markers if they are present. These directories are
+namespace packages in this repository; adding manifest rows would change the
+manifest row count for no owned script surface.
 
 - [ ] **Step 4: Rewrite every reference, in all three forms**
 
@@ -727,6 +731,7 @@ expecting no output.
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
+PYTHONPATH=. python3 -c "from scripts.lib.gate import ci_gate_contract; from scripts.lib.supply_chain import grype_db_seed; from scripts.lib.target_surface import target_surface_contract; from scripts.lib.agent_governance import agent_governance_contract"
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task3.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task3.txt
@@ -754,15 +759,15 @@ open a separate repair commit only when revalidation exposes a real mismatch.
 
 **Files:**
 
-- Create: `tests/gate/`, `tests/agent_eval/`, `tests/supply_chain/`, `tests/target_surface/`, `tests/agent_governance/`
-- Move: the eleven test modules named in Step 2
+- Create: `tests/lib/gate/`, `tests/lib/supply_chain/`, `tests/lib/target_surface/`, `tests/lib/agent_governance/`, `tests/lib/ops/`
+- Move: the measured library-unit test set, derived from primary `scripts/lib/<domain>/` ownership
 - Delete: `tests/docs/README.md`, `tests/qa/README.md`, `tests/setup/README.md` and their directories
 - Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`, `scripts/manifest.yaml`, `tests/README.md`
 
 **Interfaces:**
 
 - Consumes: Task 3's `scripts/lib/<domain>/` packages.
-- Produces: test module paths `tests.gate.*`, `tests.agent_eval.*`, `tests.supply_chain.*`, `tests.target_surface.*`, `tests.agent_governance.*`.
+- Produces: library-unit test module paths under `tests.lib.<domain>.*`. Validation and execution-context tests, including `agent_output_eval` and `audit_criterion_contract`, remain under `tests.validation.*`.
 
 - [ ] **Step 1: Write the mirror invariant**
 
@@ -776,7 +781,7 @@ Add to `tests/lib/test_surface_ownership.py`:
             if path.is_dir() and not path.name.startswith("__")
         }
         missing = sorted(
-            name for name in packages if not (ROOT / "tests" / name).is_dir()
+            name for name in packages if not (ROOT / "tests/lib" / name).is_dir()
         )
         self.assertEqual([], missing)
 
@@ -788,39 +793,64 @@ Add to `tests/lib/test_surface_ownership.py`:
             )
 ```
 
-- [ ] **Step 2: Run it, then move the modules**
+- [ ] **Step 2: Measure primary library ownership, then move only that set**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
-mkdir -p tests/gate tests/agent_eval tests/supply_chain tests/target_surface tests/agent_governance
-git mv tests/validation/test_ci_gate_contract.py tests/validation/test_ci_gate_adapters.py tests/validation/test_ci_gate_runner.py tests/validation/test_github_workflow_contract.py tests/gate/
-git mv tests/validation/test_agent_output_eval_fixtures.py tests/validation/test_audit_criterion_contract.py tests/agent_eval/
-git mv tests/validation/test_grype_db_seed.py tests/validation/test_supply_chain_policy.py tests/supply_chain/
-git mv tests/validation/test_target_surface_contracts.py tests/validation/test_target_surface_delta_contracts.py tests/target_surface/
-git mv tests/validation/test_agent_governance_contract.py tests/validation/test_agent_governance_ci_routing.py tests/agent_governance/
+python3 - <<'PY'
+import pathlib
+import yaml
+
+root = pathlib.Path(".")
+claims: dict[str, set[str]] = {}
+for row in yaml.safe_load((root / "scripts/manifest.yaml").read_text()):
+    path = str(row.get("path", ""))
+    if not path.startswith("scripts/lib/"):
+        continue
+    domain = pathlib.PurePosixPath(path).parts[2]
+    for test in row.get("tests", []):
+        test_path = str(test).replace(".", "/") + ".py"
+        if (root / test_path).is_file():
+            claims.setdefault(test_path, set()).add(domain)
+
+moves = {
+    path.replace("/", ".")[:-3]: (
+        f"tests.lib.{next(iter(domains))}.{pathlib.PurePosixPath(path).stem}"
+    )
+    for path, domains in claims.items()
+    if path.startswith("tests/validation/") and len(domains) == 1
+}
+for old, new in sorted(moves.items()):
+    print(f"{old} -> {new}")
+PY
+mkdir -p tests/lib/gate tests/lib/supply_chain tests/lib/target_surface tests/lib/agent_governance tests/lib/ops
+# Move only the measured library-unit tests to their matching tests/lib domain.
+# Keep agent_output_eval and audit_criterion_contract tests in tests/validation.
 git rm -r tests/docs tests/qa tests/setup
 ```
 
-Expected before the moves: FAIL on both new tests.
+Expected before the moves: FAIL on both new tests. The moved set is the measured
+primary-library-owner set, not a historical list or count.
 
 - [ ] **Step 3: Rewrite the module names in the gate wiring**
 
 ```bash
 python3 - <<'PY'
 import pathlib
+import yaml
+
+claims: dict[str, set[str]] = {}
+for row in yaml.safe_load(pathlib.Path("scripts/manifest.yaml").read_text()):
+    path = str(row.get("path", ""))
+    if not path.startswith("scripts/lib/"):
+        continue
+    domain = pathlib.PurePosixPath(path).parts[2]
+    for test in row.get("tests", []):
+        claims.setdefault(str(test), set()).add(domain)
 moves = {
-    "tests.validation.test_ci_gate_contract": "tests.gate.test_ci_gate_contract",
-    "tests.validation.test_ci_gate_adapters": "tests.gate.test_ci_gate_adapters",
-    "tests.validation.test_ci_gate_runner": "tests.gate.test_ci_gate_runner",
-    "tests.validation.test_github_workflow_contract": "tests.gate.test_github_workflow_contract",
-    "tests.validation.test_agent_output_eval_fixtures": "tests.agent_eval.test_agent_output_eval_fixtures",
-    "tests.validation.test_audit_criterion_contract": "tests.agent_eval.test_audit_criterion_contract",
-    "tests.validation.test_grype_db_seed": "tests.supply_chain.test_grype_db_seed",
-    "tests.validation.test_supply_chain_policy": "tests.supply_chain.test_supply_chain_policy",
-    "tests.validation.test_target_surface_contracts": "tests.target_surface.test_target_surface_contracts",
-    "tests.validation.test_target_surface_delta_contracts": "tests.target_surface.test_target_surface_delta_contracts",
-    "tests.validation.test_agent_governance_contract": "tests.agent_governance.test_agent_governance_contract",
-    "tests.validation.test_agent_governance_ci_routing": "tests.agent_governance.test_agent_governance_ci_routing",
+    old: f"tests.lib.{next(iter(domains))}.{old.rsplit('.', 1)[-1]}"
+    for old, domains in claims.items()
+    if old.startswith("tests.validation.") and len(domains) == 1
 }
 for name in ("scripts/validation/ci_gate_runner.py", ".github/workflow-contract.yml", "scripts/manifest.yaml"):
     path = pathlib.Path(name)
@@ -841,13 +871,14 @@ Replace the fenced block with the directories that now exist:
 tests/
 ├── README.md          # This file
 ├── fixtures/          # 검증기 입력 fixture
-├── lib/               # scripts/lib/document_governance/ 대응
-├── validation/        # scripts/validation/ 진입점 테스트
-├── gate/              # scripts/lib/gate/ 대응
-├── agent_eval/        # scripts/lib/agent_eval/ 대응
-├── supply_chain/      # scripts/lib/supply_chain/ 대응
-├── target_surface/    # scripts/lib/target_surface/ 대응
-└── agent_governance/  # scripts/lib/agent_governance/ 대응
+├── lib/               # scripts/lib/<domain>/ 라이브러리 단위 테스트
+│   ├── document_governance/
+│   ├── gate/
+│   ├── supply_chain/
+│   ├── target_surface/
+│   ├── agent_governance/
+│   └── ops/
+└── validation/        # entrypoint and agent-output evaluation tests
 ```
 
 - [ ] **Step 5: Verify**
@@ -865,8 +896,8 @@ Expected: `OK`, `PASS`, `FULL exit=0`.
 
 ```bash
 git add -A -- \
-  tests/gate tests/agent_eval tests/supply_chain tests/target_surface \
-  tests/agent_governance tests/docs tests/qa tests/setup \
+  tests/lib/gate tests/lib/supply_chain tests/lib/target_surface \
+  tests/lib/agent_governance tests/lib/ops tests/docs tests/qa tests/setup \
   tests/lib/test_surface_ownership.py tests/README.md \
   scripts/validation/ci_gate_runner.py scripts/manifest.yaml \
   .github/workflow-contract.yml \
@@ -877,13 +908,12 @@ git commit -m "refactor(tests): Mirror the library packages and drop the placeho
 
 ---
 
-### Task 5: Register every test module and repair the eight that fail
+### Task 5: Register every measured test module and repair failures
 
 **Files:**
 
 - Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`
-- Modify or delete: the eight failing modules named below
-- Delete: `tests/validation/test_agentic_audit_semantic_freshness.py` if its fixture cannot be rebuilt from the live corpus
+- Modify or delete: only the measured post-Task-4 unregistered modules that fail
 
 **Interfaces:**
 
@@ -896,9 +926,8 @@ Add to `tests/lib/test_surface_ownership.py`:
 
 ```python
     def test_every_test_module_is_registered_in_a_gate(self) -> None:
-        """No module sits on disk unreached. Nineteen did, and eight of those
-        were failing, including one whose thirty-three tests all failed because
-        their fixture copied a document out of a deleted Spec Package.
+        """No module sits on disk unreached. The current measured gap is the
+        authority; do not rely on a predecessor count or module-name list.
         """
 
         import re
@@ -950,33 +979,22 @@ Record every line. A module that fails is diagnosed and dispositioned before it
 is registered; registering a red module turns the gate red for a reason that is
 not this task's change.
 
-- [ ] **Step 4: Disposition `test_agentic_audit_semantic_freshness`**
+- [ ] **Step 4: Disposition each measured failing module**
 
-Its `setUp` copies `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md`,
-and SPEC-0153 was deleted; `docs/98.archive/migrations/0003` is its record. All
-thirty-three of its tests error on that one missing file.
+For every failing module reported by Step 3, inspect its current path and
+failure. Rebuild only a fixture that has a live-corpus subject; otherwise remove
+the module and its manifest row, recording why its current subject is absent.
 
-```bash
-sed -n '130,150p' tests/validation/test_agentic_audit_semantic_freshness.py
-```
+- [ ] **Step 5: Repair the remaining measured failures, one commit each**
 
-If the fixture list can be rebuilt from documents that exist, rebuild it and
-keep the module. If it cannot, delete the module and its manifest row, and
-record in the Task that a test bound to a deleted Spec Package has no subject.
-
-- [ ] **Step 5: Repair the remaining seven, one commit each**
-
-For each of `test_supply_chain_policy`, `test_sample_service_delivery_rehearsal`,
-`test_agent_governance_contract`, `test_script_manifest`,
-`test_compose_core_readiness`, and any module Step 3 newly reports red: read the
-failure, name the root cause in the commit message, and fix the production
-defect rather than the assertion. Where the assertion itself is wrong, say so
-and change it, as SPEC-0155 did for `test_generate_llm_wiki`'s stale 43-script
-pin.
+For each current failure from Step 3, read the failure, name its root cause in
+the commit message, and fix the production defect rather than the assertion.
+Where the assertion is wrong, state that and change it. Do not reintroduce a
+historical module name or failure count.
 
 - [ ] **Step 6: Register the now-green modules**
 
-In `scripts/validation/ci_gate_runner.py`, add each module name to the tuple
+In `scripts/validation/ci_gate_runner.py`, add each measured current module name to the tuple
 that already lists `tests.lib.document_governance.*` and the validation modules,
 keeping the list alphabetically sorted so a later addition is a one-line diff.
 
@@ -1012,7 +1030,7 @@ git commit -m "test(gate): Register every test module and repair the ones nothin
 
 - Modify: `tests/validation/test_document_metadata.py`
 - Modify: `tests/validation/test_document_corpus_lifecycle.py`
-- Modify: `tests/validation/test_target_surface_contracts.py`
+- Modify: `tests/lib/target_surface/test_target_surface_contracts.py`
 - Modify: `tests/lib/document_governance/test_spec_packages.py`
 - Modify: `tests/lib/document_governance/test_operations_catalog.py`
 - Modify: `tests/lib/test_surface_ownership.py`
@@ -1036,7 +1054,7 @@ Add to `tests/lib/test_surface_ownership.py`:
         contract_tests = (
             ROOT / "tests/validation/test_document_metadata.py",
             ROOT / "tests/validation/test_document_corpus_lifecycle.py",
-            ROOT / "tests/validation/test_target_surface_contracts.py",
+            ROOT / "tests/lib/target_surface/test_target_surface_contracts.py",
             ROOT / "tests/lib/document_governance/test_spec_packages.py",
         )
         forbidden = (
@@ -1089,13 +1107,13 @@ No recovery test embeds a workspace commit literal.
 PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
-PYTHONPATH=. python3 -m unittest tests.validation.test_target_surface_contracts
+PYTHONPATH=. python3 -m unittest tests.lib.target_surface.test_target_surface_contracts
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_operations_catalog
 rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
   tests/validation/test_document_metadata.py \
   tests/validation/test_document_corpus_lifecycle.py \
-  tests/validation/test_target_surface_contracts.py \
+  tests/lib/target_surface/test_target_surface_contracts.py \
   tests/lib/document_governance/test_spec_packages.py
 ```
 
@@ -1106,7 +1124,7 @@ Expected: every unit command exits 0 and the final search has no output.
 ```bash
 git add -- tests/validation/test_document_metadata.py \
   tests/validation/test_document_corpus_lifecycle.py \
-  tests/validation/test_target_surface_contracts.py \
+  tests/lib/target_surface/test_target_surface_contracts.py \
   tests/lib/document_governance/test_spec_packages.py \
   tests/lib/document_governance/test_operations_catalog.py \
   tests/lib/test_surface_ownership.py \
@@ -1328,6 +1346,7 @@ git commit -m "refactor(metadata): Split the validator by responsibility"
 
 - Split: `tests/validation/test_document_metadata.py` (8,426) and `tests/validation/test_document_corpus_lifecycle.py` (7,022) to match Task 8's modules
 - Modify: `scripts/README.md`
+- Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`, and `scripts/manifest.yaml` whenever split test module names change
 - Modify: `docs/03.specs/0154-*/spec.md`, `docs/03.specs/0155-*/spec.md`, `docs/03.specs/0157-*/spec.md`
 
 **Interfaces:**
@@ -1365,7 +1384,8 @@ The two sums must equal the two numbers from Step 1.
 Replace its script table with one row per entrypoint under the new directories,
 and add a short section stating the ownership rule: `lib/<domain>/` holds
 importable modules and defines no entrypoint; `<surface>/` holds entrypoints and
-implements no domain logic; `tests/<domain>/` mirrors `lib/<domain>/`.
+implements no domain logic; `tests/lib/<domain>/` mirrors `lib/<domain>/`, while
+`tests/validation/` retains validation and entrypoint tests.
 
 - [ ] **Step 5: Complete the three Spec Packages**
 
@@ -1444,7 +1464,7 @@ find scripts tests -name '*.py' -exec wc -l {} + | awk '$1>800 && $2!="total"'
 rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
   tests/validation/test_document_metadata.py \
   tests/validation/test_document_corpus_lifecycle.py \
-  tests/validation/test_target_surface_contracts.py \
+  tests/lib/target_surface/test_target_surface_contracts.py \
   tests/lib/document_governance/test_spec_packages.py
 grep -rn "NON_STANDALONE_VALIDATOR_PATHS" scripts tests
 ```

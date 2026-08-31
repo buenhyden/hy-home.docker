@@ -1,11 +1,11 @@
 ---
 profile_id: spec
-status: draft
+status: active
 artifact_id: SPEC-0157
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-08-31
 ---
 
 # Script Surface Ownership Convergence Specification
@@ -63,7 +63,8 @@ A directory states what its files are, and no constant restates it.
 | :--- | :--- | :--- |
 | `scripts/lib/<domain>/` | Importable domain logic | `if __name__ == "__main__"`, argparse |
 | `scripts/<surface>/` | Command entrypoints: argv, exit codes | Domain logic implementation |
-| `tests/<domain>/` | Tests for exactly `scripts/lib/<domain>/` | Another domain's tests |
+| `tests/lib/<domain>/` | Library-unit tests for exactly `scripts/lib/<domain>/` | Another library domain's tests |
+| `tests/validation/` | Validation and entrypoint tests | Library-unit ownership claims |
 
 `NON_STANDALONE_VALIDATOR_PATHS` is derived from this rule and deleted as a
 literal.
@@ -136,10 +137,11 @@ scripts/
 │   ├── document_governance/
 │   ├── gate/               # ci_gate_contract, ci_gate_adapters,
 │   │                       #   github_workflow_contract, suite_registry
-│   ├── agent_eval/         # agent_output_eval, audit_criterion_contract
+│   ├── agent_governance/   # agent_governance_contract
 │   ├── supply_chain/       # grype_db_seed, supply-chain policy
-│   └── target_surface/     # target_surface_contract, *_delta_contract
-├── validation/             # document governance entrypoints
+│   ├── target_surface/     # target_surface_contract, *_delta_contract
+│   └── ops/                # operational library scripts
+├── validation/             # document-governance and execution-context entrypoints
 ├── gate/                   # run-ci-gate, run-ci-precommit, run-local-qa-gates
 ├── security/
 ├── operations/
@@ -149,13 +151,14 @@ scripts/
 tests/
 ├── README.md
 ├── fixtures/
-├── document_governance/
-├── gate/
-├── agent_eval/
-├── supply_chain/
-├── target_surface/
-├── operations/
-└── knowledge/
+├── lib/
+│   ├── document_governance/
+│   ├── gate/
+│   ├── supply_chain/
+│   ├── target_surface/
+│   ├── agent_governance/
+│   └── ops/
+└── validation/             # entrypoint tests, including agent-output evaluation
 ```
 
 `tests/docs/`, `tests/qa/`, and `tests/setup/` hold only a README each and
