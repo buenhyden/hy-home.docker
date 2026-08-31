@@ -8,6 +8,7 @@ import io
 import json
 import os
 import pathlib
+import re
 import shlex
 import stat
 import subprocess
@@ -1050,6 +1051,21 @@ class SupplyChainPolicyTests(unittest.TestCase):
 class SupplyChainWrapperContractTests(unittest.TestCase):
     def run_wrapper_library(self, script: str) -> subprocess.CompletedProcess[str]:
         environment = os.environ | {"HYHOME_SUPPLY_CHAIN_LIBRARY_ONLY": "1"}
+        pass_fds: tuple[int, ...] = ()
+        root_override = environment.get("HYHOME_CI_GATE_ROOT", "")
+        match = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", root_override)
+        if match is not None:
+            descriptor = int(match.group(1))
+            try:
+                held, expected = os.fstat(descriptor), ROOT.stat()
+            except OSError:
+                pass
+            else:
+                if stat.S_ISDIR(held.st_mode) and (
+                    held.st_dev,
+                    held.st_ino,
+                ) == (expected.st_dev, expected.st_ino):
+                    pass_fds = (descriptor,)
         return subprocess.run(
             ["bash", "-c", script],
             cwd=ROOT,
@@ -1057,6 +1073,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
+            pass_fds=pass_fds,
         )
 
     def test_all_runtime_invocations_are_offline_and_pull_disabled(self) -> None:
