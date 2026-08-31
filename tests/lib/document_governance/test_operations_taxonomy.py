@@ -151,10 +151,10 @@ class OperationsAuthorityTests(unittest.TestCase):
         self.assertEqual(
             (
                 pathlib.PurePosixPath(
-                    "scripts/validation/check-operations-catalog.py"
+                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 ),
                 pathlib.PurePosixPath(
-                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                    "scripts/validation/check-operations-catalog.py"
                 ),
             ),
             operations.validators,
