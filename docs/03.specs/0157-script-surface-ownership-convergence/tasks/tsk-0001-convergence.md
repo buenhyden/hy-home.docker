@@ -226,8 +226,25 @@ PASS: document link mode all
 
 Independent review round 1 requested corrections to the Plan status, discovered
 diff-stat evidence, completion bookkeeping, Task 4 manifest snippets, and the
-Spec/Plan ownership-rule conflict. This follow-up applies those corrections; it
-is not an independent approval.
+Spec/Plan ownership-rule conflict. Round 2 corrects Task 0 completion state and
+the Task 4 primary-owner algorithm. Independent re-review is pending; neither
+round is an independent approval.
+
+Round 2 read-only primary-owner output:
+
+~~~text
+tests.validation.test_agent_governance_contract -> tests.lib.agent_governance.test_agent_governance_contract
+tests.validation.test_ci_gate_adapters -> tests.lib.gate.test_ci_gate_adapters
+tests.validation.test_ci_gate_contract -> tests.lib.gate.test_ci_gate_contract
+tests.validation.test_github_workflow_contract -> tests.lib.gate.test_github_workflow_contract
+tests.validation.test_grype_db_seed -> tests.lib.supply_chain.test_grype_db_seed
+tests.validation.test_postgres_logical_upgrade_rehearsal -> tests.lib.ops.test_postgres_logical_upgrade_rehearsal
+tests.validation.test_target_surface_contracts -> tests.lib.target_surface.test_target_surface_contracts
+tests.validation.test_target_surface_delta_contracts -> tests.lib.target_surface.test_target_surface_delta_contracts
+mappings=8
+~~~
+
+No hardening-lib or validator_entrypoints mapping was emitted.
 
 Implementer self-review: complete. The diff is limited to the four authorized
 Stage 03 documents; it activates the legal chain, records the observed RED

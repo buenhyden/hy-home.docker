@@ -113,7 +113,7 @@ python3 scripts/validation/check-document-links.py --mode all
 
 Expected: `violations=0`, `violations=0`, and `failures=0`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/03.specs/0157-script-surface-ownership-convergence docs/03.specs/README.md
@@ -806,21 +806,30 @@ manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
 claims: dict[str, set[str]] = {}
 for row in manifest.get("files", []):
     path = str(row.get("path", ""))
-    if not path.startswith("scripts/lib/"):
+    parts = pathlib.PurePosixPath(path).parts
+    if len(parts) < 4 or parts[:2] != ("scripts", "lib"):
         continue
-    domain = pathlib.PurePosixPath(path).parts[2]
+    domain = parts[2]
     for test in row.get("tests", []):
         test_path = str(test)
         if (root / test_path).is_file():
             claims.setdefault(test_path, set()).add(domain)
 
-moves = {
-    path.removesuffix(".py").replace("/", "."): (
-        f"tests.lib.{next(iter(domains))}.{pathlib.PurePosixPath(path).stem}"
-    )
-    for path, domains in claims.items()
-    if path.startswith("tests/validation/") and len(domains) == 1
-}
+def primary_owner(test_path: str, domains: set[str]) -> str | None:
+    if len(domains) == 1:
+        return next(iter(domains))
+    stem = pathlib.PurePosixPath(test_path).stem
+    matches = [domain for domain in domains if domain in stem]
+    return matches[0] if len(matches) == 1 else None
+
+moves = {}
+for test_path, domains in sorted(claims.items()):
+    domain = primary_owner(test_path, domains)
+    if domain is None or not test_path.startswith("tests/validation/"):
+        continue
+    source = test_path.removesuffix(".py").replace("/", ".")
+    destination = f"tests.lib.{domain}.{pathlib.PurePosixPath(test_path).stem}"
+    moves[source] = destination
 for old, new in sorted(moves.items()):
     print(f"{old} -> {new}")
 PY
@@ -844,20 +853,30 @@ manifest = yaml.safe_load(pathlib.Path("scripts/manifest.yaml").read_text())
 claims: dict[str, set[str]] = {}
 for row in manifest.get("files", []):
     path = str(row.get("path", ""))
-    if not path.startswith("scripts/lib/"):
+    parts = pathlib.PurePosixPath(path).parts
+    if len(parts) < 4 or parts[:2] != ("scripts", "lib"):
         continue
-    domain = pathlib.PurePosixPath(path).parts[2]
+    domain = parts[2]
     for test in row.get("tests", []):
         test_path = str(test)
         if test_path:
             claims.setdefault(test_path, set()).add(domain)
-moves = {
-    path.removesuffix(".py").replace("/", "."): (
-        f"tests.lib.{next(iter(domains))}.{pathlib.PurePosixPath(path).stem}"
-    )
-    for path, domains in claims.items()
-    if path.startswith("tests/validation/") and len(domains) == 1
-}
+
+def primary_owner(test_path: str, domains: set[str]) -> str | None:
+    if len(domains) == 1:
+        return next(iter(domains))
+    stem = pathlib.PurePosixPath(test_path).stem
+    matches = [domain for domain in domains if domain in stem]
+    return matches[0] if len(matches) == 1 else None
+
+moves = {}
+for test_path, domains in sorted(claims.items()):
+    domain = primary_owner(test_path, domains)
+    if domain is None or not test_path.startswith("tests/validation/"):
+        continue
+    source = test_path.removesuffix(".py").replace("/", ".")
+    destination = f"tests.lib.{domain}.{pathlib.PurePosixPath(test_path).stem}"
+    moves[source] = destination
 for name in ("scripts/validation/ci_gate_runner.py", ".github/workflow-contract.yml", "scripts/manifest.yaml"):
     path = pathlib.Path(name)
     text = path.read_text(encoding="utf-8")
