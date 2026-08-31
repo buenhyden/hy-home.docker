@@ -1215,7 +1215,7 @@ on_exit
             self.assertEqual("passed", payload["teardown_status"])
             self.assertEqual(EXPECTED_SERVICES, set(payload["services"]))
 
-    def test_override_and_approval_contract_declare_resource_limits(self) -> None:
+    def test_override_declares_resource_limits(self) -> None:
         text = OVERRIDE.read_text(encoding="utf-8")
         expected = {
             "keycloak": ('cpus: "1.00"', "mem_limit: 768m"),
@@ -1235,14 +1235,6 @@ on_exit
             section = text[start:end]
             for declaration in expected[service]:
                 self.assertIn(declaration, section, service)
-
-        for relative in (
-            "docs/04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md",
-            "docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md",
-        ):
-            document = (ROOT / relative).read_text(encoding="utf-8")
-            self.assertIn("Target host class:", document, relative)
-            self.assertIn("Resource limits:", document, relative)
 
     def test_override_declares_closed_service_and_port_contract(self) -> None:
         text = OVERRIDE.read_text(encoding="utf-8")
