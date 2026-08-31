@@ -7,6 +7,8 @@ import subprocess
 import sys
 import unittest
 
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON_ENTRYPOINTS = (
@@ -53,6 +55,7 @@ class ValidatorEntrypointTests(unittest.TestCase):
                     capture_output=True,
                     text=True,
                     timeout=10,
+                    pass_fds=gate_root_pass_fds(ROOT),
                 )
                 self.assertEqual(0, completed.returncode, completed.stderr)
 
@@ -64,6 +67,7 @@ class ValidatorEntrypointTests(unittest.TestCase):
             capture_output=True,
             text=True,
             timeout=10,
+            pass_fds=gate_root_pass_fds(ROOT),
         )
         self.assertEqual(2, completed.returncode, completed.stderr)
 
@@ -77,5 +81,6 @@ class ValidatorEntrypointTests(unittest.TestCase):
                     capture_output=True,
                     text=True,
                     timeout=10,
+                    pass_fds=gate_root_pass_fds(ROOT),
                 )
                 self.assertEqual(0, completed.returncode, completed.stderr)
