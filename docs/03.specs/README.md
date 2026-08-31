@@ -101,7 +101,7 @@ docs/03.specs/
 | `SPEC-0155` | [Validation Surface Reduction](./0155-validation-surface-reduction/spec.md) | [Plan](./0155-validation-surface-reduction/plan.md), [Tasks](./0155-validation-surface-reduction/tasks/) |
 | `SPEC-0156` | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | Spec |
 | `SPEC-0157` | [Script Surface Ownership Convergence](./0157-script-surface-ownership-convergence/spec.md) | [Plan](./0157-script-surface-ownership-convergence/plan.md), [Task](./0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md) |
-| `SPEC-0158` | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | [Plan](./0158-document-governance-lifecycle-convergence/plan.md) |
+| `SPEC-0158` | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | [Plan](./0158-document-governance-lifecycle-convergence/plan.md), [Task](./0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md) |
 
 ## Role Contract
 

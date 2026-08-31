@@ -1,11 +1,11 @@
 ---
 profile_id: spec
-status: draft
+status: active
 artifact_id: SPEC-0158
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025, ADR-0029, SPEC-0157]
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Document Governance Lifecycle Convergence Specification

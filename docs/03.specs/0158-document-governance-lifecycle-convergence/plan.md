@@ -1,11 +1,11 @@
 ---
 profile_id: plan
-status: draft
+status: active
 artifact_id: plan-0158
 artifact_type: plan
 parent_ids: [SPEC-0158]
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Document Governance Lifecycle Convergence Implementation Plan
