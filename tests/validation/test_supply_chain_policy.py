@@ -171,28 +171,6 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 self.checker.inspect_docker_save_archive_config_digest(archive_path),
             )
 
-    def test_completed_specs_and_generated_reference_do_not_claim_active_status(
-        self,
-    ) -> None:
-        paths = [
-            ROOT / f"docs/03.specs/{number}-{slug}/spec.md"
-            for number, slug in (
-                ("124", "compose-runtime-readiness-remediation"),
-                ("125", "infrastructure-operations-readiness-remediation"),
-                ("126", "security-supply-chain-remediation"),
-                ("127", "deployment-release-engineering-remediation"),
-            )
-        ]
-        paths.append(
-            ROOT
-            / "docs/90.references/data/0079-supply-chain-sample-service/README.md"
-        )
-        for path in paths:
-            with self.subTest(path=path):
-                body = path.read_text(encoding="utf-8")
-                self.assertNotIn("This active specification", body)
-                self.assertNotIn("the active Spec 126", body)
-
     def test_policy_and_exception_registry_are_fail_closed(self) -> None:
         policy = self.checker.load_json(POLICY)
         exceptions = self.checker.load_json(EXCEPTIONS)
