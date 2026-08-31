@@ -72,7 +72,8 @@ pack, progress document, or compatibility redirect.
 
 ### Authority and Disposition
 
-Every tracked target receives exactly one Task-local disposition:
+Every tracked target is covered exactly once by an ordered Task-local
+disposition rule:
 
 - `keep`: the artifact is current, uniquely owned, and consumed;
 - `rewrite`: the owner is correct but its current text is not;
@@ -81,9 +82,12 @@ Every tracked target receives exactly one Task-local disposition:
 - `delete`: no current authority, consumer, or preservation need remains;
 - `tombstone`: a deleted stable path needs a minimal recovery pointer.
 
-These values are execution decisions, not document lifecycle statuses. The
-Task records path, current owner, consumers, disposition, replacement, recovery
-evidence, and review. Missing or ambiguous evidence blocks mutation.
+These values are execution decisions, not document lifecycle statuses. A
+verified `keep` cohort may be covered by one deterministic profile or path rule;
+every non-`keep` target is listed by path. The Task records the rule, covered
+count, exceptions, current owner, consumers, disposition, replacement, recovery
+evidence, and review. The rules and exceptions must cover the measured target
+set without overlap or omission. Missing or ambiguous evidence blocks mutation.
 
 ### Stage Responsibilities
 
@@ -104,6 +108,8 @@ evidence, and review. Missing or ambiguous evidence blocks mutation.
   no deleted body, snapshot, raw Task ledger, or duplicate digest.
 - Stage 99 is the sole machine authority for document paths, profiles,
   identifiers, sections, lifecycle, traceability shapes, and copy templates.
+  Provider Registry ownership of runtime projection paths is a separate,
+  narrower namespace and does not compete with this document-path authority.
 
 ### SDLC State
 
@@ -152,18 +158,23 @@ No Task-numbered immutable inventory may restate the manifest.
 Measure the commits and remaining work on the SPEC-0157 branch. Transition its
 Spec and Plan through the registered lifecycle, create a current Task, and
 record earlier commits as implementation discovered and revalidated at the
-current revision. Do not claim prior approval. Complete or explicitly defer the
-remaining bounded work, run the full gate, and close the packet before corpus
-convergence implementation begins.
+current revision. Do not claim prior approval. Because changed-document
+validation compares merge-base endpoints, land the legal SPEC-0157 activation
+and implementation while its Spec remains `active`, then close it from an
+updated base where `active -> completed` is a legal endpoint. Complete or
+explicitly defer the remaining bounded work, run the full gate, and close the
+packet before corpus convergence implementation begins. Do not bypass the
+merge boundary with a transition override.
 
 ### Wave 1: Classify the Corpus
 
-Re-derive the tracked target set and create the complete disposition ledger in
-the current Task. Measure profile, lifecycle, authority, consumers, duplicate
-purpose, retired-path literals, generated provenance, Gate and fixture
-references, commit pins, and recovery. Mutation begins only after every target
-has exactly one disposition and every destructive disposition has passed
-recovery and review checks.
+Re-derive the tracked target set and create the complete disposition rule set in
+the current Task. Cover unchanged cohorts by deterministic rule and list every
+non-`keep` target explicitly. Measure profile, lifecycle, authority, consumers,
+duplicate purpose, retired-path literals, generated provenance, Gate and fixture
+references, commit pins, and recovery. Mutation begins only after the rules and
+exceptions cover the target set exactly once and every destructive disposition
+has passed recovery and review checks.
 
 ### Wave 2: Converge Canonical Owners
 
@@ -187,10 +198,12 @@ only after its current outcome and recovery have been captured.
 
 Retain Stage 90 sources only when their provenance and current consumer remain
 useful. Remove current-sounding predecessor taxonomy from retained evidence.
-Reduce completed Stage 98 Migrations to their registered Path Mapping,
-Recovery, Approval, Traceability, and required metadata. Add a Tombstone only
-for a stable retired path that still needs recovery navigation. Never create a
-body copy or redirect.
+Reduce completed Stage 98 Migrations to concise versions of all registered
+required sections: Purpose, Authority Change, Path Mapping, Recovery, Approval,
+and Traceability. Retain only required metadata and evidence needed to preserve
+Migration 0003 as the structural disposition and recovery boundary. Add a
+Tombstone only for a stable retired path that still needs recovery navigation.
+Never create a body copy or redirect.
 
 ### Wave 5: Simplify Gates, Fixtures, and SHA Tracking
 
@@ -205,10 +218,13 @@ case. They do not resurrect deleted documents from a fixed workspace commit,
 copy full historical bodies, or pin fixture and corpus counts.
 
 Allow commit identifiers only for supply-chain pins, minimal Stage 98 recovery,
-actual terminal Task commit records, and a bounded transition fallback proven
-to have a live recovery consumer. Remove branch-tip equality, design and
-implementation SHA chains, blob or diff digest ledgers, historical byte
-equality, and test-only workspace commit pins.
+actual logical implementation commits recorded in the current Task, and a
+bounded transition fallback proven to have a live recovery consumer. Remove
+branch-tip equality, expected design or implementation SHA chains, persistent
+blob or diff digest ledgers, historical byte equality, and test-only workspace
+commit pins. This does not remove an ephemeral digest comparison required by
+the shared-worktree concurrency policy; that comparison is not retained as a
+document lineage control.
 
 ### Wave 6: Verify and Close
 
@@ -227,7 +243,7 @@ its registered recovery is proven.
 | Stage authoring matrix | One writer, validator, and independent-review mapping per stage |
 | Script manifest | Sole validator inventory and suite membership |
 | Workflow contract | Public profile and CI execution routing |
-| Disposition ledger | Task-local complete path decision set; never a lifecycle registry |
+| Disposition rule set | Task-local complete coverage rules plus explicit non-`keep` paths; never a lifecycle registry or corpus copy |
 | Migration | Minimal path mapping and recovery evidence; no execution body |
 | Tombstone | Minimal stable retired-path recovery pointer |
 | Fixture | Current generated contract, one-field mutation, or temporary-Git recovery case |
@@ -250,14 +266,16 @@ retained projections receive an explicit canonical-source mapping.
 | Fixture cleanup removes a real domain oracle | Limit this reduction to document-contract history fixtures; retain agent-output and supply-chain oracles |
 | Provider projection becomes a policy source | Correct canonical inputs first, generate through the registered renderer, and verify parity |
 | A role grants approval it cannot own | Separate human approval, policy verdict, evidence evaluation, and mutation permissions |
+| SHA reduction weakens concurrent-worktree safety | Retain policy-required ephemeral digest comparison but never persist it as lineage evidence |
 | A public suite responsibility must change | Stop and require a separate ADR rather than expanding this specification |
 | Concurrent or dirty state makes ownership unclear | Stop the Wave, preserve the state, and reclassify before editing |
 
 ## Acceptance Contract
 
-1. Every tracked target at the execution baseline has exactly one disposition,
-   and every non-keep disposition has owner, consumer, replacement, recovery,
-   and review evidence.
+1. Ordered Task-local rules and exceptions cover every tracked target at the
+   execution baseline exactly once. Every non-`keep` path is explicit and has
+   owner, consumer, replacement, recovery, and review evidence; unchanged
+   cohorts are not copied into a path-by-path audit pack.
 2. Active documents contain no retired Stage 04, predecessor support, rules,
    memory, agent, Spec-path, or template path presented as current procedure.
 3. No two active Requirement, Architecture Description, Spec, Operations, or
@@ -278,18 +296,22 @@ retained projections receive an explicit canonical-source mapping.
 10. Document-contract tests contain no fixed-workspace historical document
     resurrection, fixture-count pin, corpus-count pin, or count-bearing test
     name.
-11. Active Plans contain no branch-tip equality, SHA lineage, blob or diff
-    digest ledger, or historical byte-equality control. Only the approved
-    recovery, supply-chain, and terminal evidence uses remain.
+11. Active Plans contain no branch-tip equality, expected SHA lineage,
+    persistent blob or diff digest ledger, or historical byte-equality control.
+    Only approved recovery, supply-chain, actual Task commit evidence, and
+    policy-required ephemeral concurrency checks remain.
 12. Workflow coordinator, writer, evidence author, evaluator, governance
     reviewer, exact-diff reviewer, and human approver responsibilities are
     distinct in canonical Stage 00 and provider routing.
-13. Generated provider adapters are byte-for-byte fresh and define no policy.
-14. Metadata active and contract checks, document graph, document lifecycle and
+13. Stage 99 document-path authority and Provider Registry runtime-projection
+    authority are explicitly disjoint; renderer and hook inventories are
+    derived from their declared owner rather than a second code constant.
+14. Generated provider adapters are byte-for-byte fresh and define no policy.
+15. Metadata active and contract checks, document graph, document lifecycle and
     recovery, agent-governance repository checks, Operations complete, focused
     unit tests, provider parity, `git diff --check`, and the full CI profile all
     pass.
-15. No runtime, remote, deployment, secret, or infrastructure state is changed.
+16. No runtime, remote, deployment, secret, or infrastructure state is changed.
 
 ## Traceability
 

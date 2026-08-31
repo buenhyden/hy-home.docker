@@ -101,8 +101,11 @@ the override was unsatisfiable for as long as that held. This is the same
 pinned-commit pattern SPEC-0155 Task 4 removed from `load_profiles`, surviving
 in the largest test file in the repository.
 
-A test fixture states what the repository is now. Where a past state genuinely
-must be asserted, the fixture is committed as a fixture, not read out of Git.
+A document-contract fixture states what the repository is now. It is derived
+from the current Stage 99 Registry or template and changed by one field for a
+negative case; it never copies a deleted body. Recovery behavior is different:
+it is exercised in a temporary Git repository or against a current Stage 98
+recovery row, where proving a regular blob is the behavior under test.
 
 ### History scanning does not grow without bound
 
@@ -204,7 +207,10 @@ that is both smaller and covered.
 8. `docs/98.archive/README.md` states the recovery procedure without pinning a commit. Closed by SPEC-0155; this item guards against regression.
 9. Adding one tombstone changes no count literal in `scripts/` or `tests/`, and no test name contains a count.
 10. The identity scan's cost does not grow with repository history, and `MAX_GIT_OUTPUT_BYTES` is not a stopgap.
-11. No test module resurrects a deleted document from a pinned commit; `HistoricalDocument` has no caller under `tests/`.
+11. No document-contract or target-surface test resurrects a deleted document
+    from a fixed workspace commit. `HistoricalDocument` remains only in tests
+    whose subject is current Stage 98 recovery, and those tests use a temporary
+    Git repository or a current recovery row.
 12. No file under `scripts/` or `tests/` exceeds 800 lines, or the exception is registered with a reason.
 13. `scripts/README.md` and `tests/README.md` contain no reference to Stage 04 and no claim that the blocking metadata gate is inactive.
 14. `run-ci-gate.py --profile full` exits 0.
@@ -224,7 +230,7 @@ measured, not assumed:
 | 5, no `f259c139` in `docs/` | Closed. The normative pin is gone from Stage 98; the constant stays in `archive.py` because it is the lookup point for 234 documents' recovery records | Only as data for the reduction, never as a deletion target |
 | 7, full inventory blocking | Closed. `--mode check-active` already blocks 421 documents at zero violations | Nothing inherited |
 | 13, transition override wiring | Path contract and status set corrected; still unreachable, since no gate passes `--transition-override-file` | Retired or wired, with the reason recorded |
-| Test harness on resurrected profiles | `test_document_metadata.py` runs the checker against a profile blob read from a pinned commit, knowing only the retired taxonomy | The fixture work in Acceptance 9 and the monolith split |
+| Test harness on resurrected profiles | `test_document_metadata.py` runs the checker against a profile blob read from a pinned commit, knowing only the retired taxonomy | The current-authority fixture work in Acceptance 11 and the monolith split |
 
 SPEC-0155 acceptance item 6 was corrected rather than inherited: it demanded that
 `docs/04.execution` not appear in `scripts/`, and nine of its ten occurrences are

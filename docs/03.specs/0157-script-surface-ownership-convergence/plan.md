@@ -23,12 +23,104 @@ directory produces a tidier version of the same excess.
 
 ## Dependencies
 
-- SPEC-0155 merged at `703e3cf6`. Its plan rulings 1 to 11 carry forward and are restated below.
+- SPEC-0155 is completed and merged. Its plan rulings 1 to 11 carry forward and are restated below.
 - `main` is the merge base for every `--base-ref` computation. It is computed, never pinned.
+- The changed-document Gate compares lifecycle endpoints at the merge base. If
+  `main` still contains SPEC-0157 as `draft`, this branch may finish with the
+  Spec `active`, but it must not claim `completed`. Land the activation and
+  implementation first; close the Spec from an updated `main` where its base
+  state is already `active`.
 - This repository runs `python3 -m unittest`. `pytest` is not installed. Several modules require `PYTHONPATH=.`; the registered gate supplies it.
 - `run-ci-gate.py --profile full` takes roughly 12 minutes. Run it at task boundaries, not per step.
 
 ## Execution Sequence
+
+### Task 0: Restore an honest execution chain
+
+**Files:**
+
+- Create: `docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md`
+- Modify: `docs/03.specs/0157-script-surface-ownership-convergence/spec.md`
+- Modify: `docs/03.specs/0157-script-surface-ownership-convergence/plan.md`
+- Modify: `docs/03.specs/README.md`
+
+**Interfaces:**
+
+- Consumes: the actual branch commit range and the already-authored Spec and Plan.
+- Produces: legal `draft -> active` parents and one current Task before any new
+  production mutation.
+- Does not produce: a claim that earlier work was approved before it occurred.
+
+- [ ] **Step 1: Measure the discovered work**
+
+```bash
+git status --short --branch
+git log --oneline --no-merges "$(git merge-base main HEAD)"..HEAD
+git diff --stat "$(git merge-base main HEAD)"...HEAD
+```
+
+Record the exact output in the new Task as discovered branch work. Do not call
+the earlier commits approved; approval begins at this recovery boundary.
+
+- [ ] **Step 2: Create the current Task and activate both parents**
+
+Create `tasks/tsk-0001-convergence.md` from the registered Task template with
+this frontmatter and opening contract:
+
+```markdown
+---
+profile_id: task
+status: active
+artifact_id: task-0157-0001
+artifact_type: task
+parent_ids: [SPEC-0157, plan-0157]
+created: 2026-08-31
+updated: 2026-08-31
+---
+
+# Recover and Complete Script Surface Ownership Convergence
+
+## Objective
+
+Revalidate the implementation discovered on the branch, complete the remaining
+approved work, and close SPEC-0157 without asserting retroactive approval.
+```
+
+Populate every required Task section. Set `status: active` in `spec.md` and
+`plan.md`, add the Tasks link to the Stage 03 index, and leave verification and
+review entries explicitly pending until observed.
+
+This activation repairs current truth but does not erase the merge-base rule.
+Do not use a transition override to collapse `draft -> active -> completed`
+into one branch endpoint.
+
+- [ ] **Step 3: Revalidate Tasks 1 through 3**
+
+Run the focused commands already specified at the end of Tasks 1, 2, and 3.
+For each passing task, record its actual logical commits and observed result in
+the current Task, then mark only its completed checkboxes. A mismatch reopens
+that task; it is not explained away as historical.
+
+- [ ] **Step 4: Verify the lifecycle recovery**
+
+```bash
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed \
+  --base-ref "$(git merge-base main HEAD)"
+python3 scripts/validation/check-document-links.py --mode all
+```
+
+Expected: `violations=0`, `violations=0`, and `failures=0`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add docs/03.specs/0157-script-surface-ownership-convergence docs/03.specs/README.md
+git commit -m "docs(spec): Activate script surface convergence with recovered evidence"
+```
+
+---
 
 ### Task 1: Reduce the corpus-lifecycle modes
 
@@ -209,7 +301,8 @@ The matrices at lines 4463, 4500, and 4634 exclude `check-public` and
 `check-contract` and `check-promoted`. Rename each test from
 `test_all_sixteen_modes_*` to `test_every_shaped_mode_*` and delete the rows for
 removed modes. The name carried a count, which SPEC-0155 recorded as the
-failure mode that made `test_all_188_preservation_decisions_...` need renaming.
+failure mode that made
+`test_all_188_preservation_decisions_are_unique_and_reviewed` need renaming.
 
 - [ ] **Step 10: Verify**
 
@@ -224,12 +317,13 @@ PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 
 Expected: `OK`, four `exit=0`, `PASS`.
 
-- [ ] **Step 11: Commit**
+- [ ] **Step 11: Reconcile the discovered commit**
 
-```bash
-git add -A
-git commit -m "refactor(validation): Reduce the corpus lifecycle to its four reachable modes"
-```
+Do not create a duplicate commit while revalidating the already-landed work.
+Record the actual logical commit and its focused results in the current Task.
+If a failed check reopens this Task, stage only the exact repaired paths named
+in that Task evidence, inspect `git diff --cached --name-only`, and commit the
+repair separately.
 
 ---
 
@@ -240,11 +334,13 @@ git commit -m "refactor(validation): Reduce the corpus lifecycle to its four rea
 - Modify: `scripts/lib/document_governance/archive.py` — `TASK10_RECOVERY_REFERENCE_COUNT` at line 797 and its check at 810
 - Modify: `tests/lib/document_governance/test_archive.py` — the tombstone and recovery-row pins
 - Modify: `tests/validation/test_document_corpus_lifecycle.py` — `tombstones=`, `recovery_rows=`, `decisions=` string assertions
+- Modify: `tests/lib/document_governance/test_spec_packages.py` — the fixed current package count
 
 **Interfaces:**
 
 - Consumes: Task 1's four-mode tuple, because `check-recovery` prints the counts these tests read.
-- Produces: no literal count of tombstones, recovery rows, or decisions anywhere under `scripts/` or `tests/`.
+- Produces: no literal count of tombstones, recovery rows, preservation
+  decisions, or current Spec Packages anywhere under `scripts/` or `tests/`.
 
 - [ ] **Step 1: Write the invariant that proves the pins are gone**
 
@@ -263,6 +359,7 @@ Add to `tests/lib/document_governance/test_archive.py`:
         sources = (
             pathlib.Path("scripts/lib/document_governance/archive.py"),
             pathlib.Path("tests/lib/document_governance/test_archive.py"),
+            pathlib.Path("tests/lib/document_governance/test_spec_packages.py"),
             pathlib.Path("tests/validation/test_document_corpus_lifecycle.py"),
         )
         offenders = []
@@ -273,6 +370,7 @@ Add to `tests/lib/document_governance/test_archive.py`:
                 r"recovery_rows\s*=\s*\d+",
                 r"decisions\s*=\s*\d+",
                 r"TASK10_RECOVERY_REFERENCE_COUNT\s*=\s*\d+",
+                r"assertEqual\(\d+,\s*len\(packages\)\)",
             ):
                 offenders.extend(
                     f"{source}:{match}" for match in re.findall(pattern, text)
@@ -350,28 +448,39 @@ In `tests/lib/document_governance/test_archive.py`, replace
         )
 ```
 
-- [ ] **Step 5: Verify, including that a new tombstone changes nothing**
+In `tests/lib/document_governance/test_spec_packages.py`, replace the current
+repository assertion that pins `len(packages)` with a set relation:
+
+```python
+        expected_paths = {
+            path
+            for path in (ROOT / "docs/03.specs").iterdir()
+            if path.is_dir() and (path / "spec.md").is_file()
+        }
+        self.assertEqual(expected_paths, {package.path for package in packages})
+```
+
+Rename the test to describe coverage rather than an exact surface size. This is
+the regression SPEC-0158 exposed: adding one valid package changed `34` to `35`
+without changing the contract.
+
+- [ ] **Step 5: Verify the derived relations**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive 2>&1 | grep -E "^(Ran |OK|FAILED)"
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle 2>&1 | grep -E "^(Ran |OK|FAILED)"
-cp docs/98.archive/tombstones/90.references/0158-agentic-research-pack-refresh.md /tmp/probe.md
-sed -e 's/tombstone-0158/tombstone-0159/' -e 's/^# .*/# Probe Tombstone/' /tmp/probe.md \
-  > docs/98.archive/tombstones/90.references/0159-probe.md
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive 2>&1 | grep -E "^(Ran |OK|FAILED)"
-rm docs/98.archive/tombstones/90.references/0159-probe.md
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages 2>&1 | grep -E "^(Ran |OK|FAILED)"
 ```
 
-Expected: `OK` before the probe, `OK` with the probe present, `OK` after removal.
-The middle run is the point: it is the check that the census is derived. Remove
-the probe before committing.
+Expected: all three commands report `OK`. The tests create bounded temporary
+fixtures where mutation is needed; verification does not edit the live archive.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Reconcile the discovered commit**
 
-```bash
-git add -A
-git commit -m "refactor(archive): Derive the recovery census instead of pinning it"
-```
+Do not create a duplicate commit while revalidating the already-landed work.
+Record the actual logical commit and its focused results in the current Task.
+If a failed check reopens this Task, stage only the exact repaired paths named
+in that Task evidence and commit the repair separately.
 
 ---
 
@@ -633,12 +742,11 @@ counts at 30 and 9. This task moves files without adding or removing one, so
 both pins should hold. If either moves, that is real information: report the new
 value and what made it change rather than repinning silently.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 7: Reconcile the discovered commit**
 
-```bash
-git add -A
-git commit -m "refactor(scripts): Give each domain a library package and derive the standalone rule"
-```
+Do not move or recommit these paths a second time. Review the exact discovered
+diff, record its logical commit and focused results in the current Task, and
+open a separate repair commit only when revalidation exposes a real mismatch.
 
 ---
 
@@ -756,7 +864,14 @@ Expected: `OK`, `PASS`, `FULL exit=0`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add -A
+git add -A -- \
+  tests/gate tests/agent_eval tests/supply_chain tests/target_surface \
+  tests/agent_governance tests/docs tests/qa tests/setup \
+  tests/lib/test_surface_ownership.py tests/README.md \
+  scripts/validation/ci_gate_runner.py scripts/manifest.yaml \
+  .github/workflow-contract.yml \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
+git diff --cached --name-only
 git commit -m "refactor(tests): Mirror the library packages and drop the placeholder directories"
 ```
 
@@ -879,96 +994,125 @@ is the cost of the modules no longer being invisible.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add -A
+git status --short
+git add -- scripts/validation/ci_gate_runner.py .github/workflow-contract.yml \
+  tests/lib/test_surface_ownership.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
+# Add each measured repair or deletion by its exact recorded path; never stage
+# the entire worktree.
+git diff --cached --name-only
 git commit -m "test(gate): Register every test module and repair the ones nothing ran"
 ```
 
 ---
 
-### Task 6: Retire the resurrected taxonomy from the test harness
+### Task 6: Retire fixed-workspace historical document fixtures
 
 **Files:**
 
-- Modify: `tests/validation/test_document_metadata.py` — `PROFILES` at line 30, `HISTORICAL_COMMIT`, and the 43 references that read through them
-- Modify: `tests/lib/document_governance/test_links.py`, `test_spec_packages.py`, `test_operations_catalog.py`
-- Create: `tests/fixtures/document_metadata/profiles.yaml` and any other fixture the removed reads need
+- Modify: `tests/validation/test_document_metadata.py`
+- Modify: `tests/validation/test_document_corpus_lifecycle.py`
+- Modify: `tests/validation/test_target_surface_contracts.py`
+- Modify: `tests/lib/document_governance/test_spec_packages.py`
+- Modify: `tests/lib/document_governance/test_operations_catalog.py`
+- Modify: `tests/lib/test_surface_ownership.py`
 
 **Interfaces:**
 
 - Consumes: Task 5's registration, so a regression here is caught rather than silent.
-- Produces: no caller of `HistoricalDocument` under `tests/`.
+- Produces: current Registry/template fixtures for document contracts and
+  temporary-Git or current-row fixtures for Stage 98 recovery.
+- Preserves: `HistoricalDocument` only where regular-blob recovery is the
+  behavior under test.
 
-- [ ] **Step 1: Write the invariant**
+- [ ] **Step 1: Write the fixed-workspace invariant**
 
 Add to `tests/lib/test_surface_ownership.py`:
 
 ```python
-    def test_no_test_resurrects_a_deleted_document(self) -> None:
-        """A fixture states what the repository is now.
+    def test_document_contract_tests_do_not_read_fixed_workspace_history(self) -> None:
+        """Current contracts never depend on a deleted taxonomy or pinned clone history."""
 
-        Five modules read deleted documents out of pinned commits, and all seven
-        resurrected paths are absent from the working tree along with the
-        `docs/99.templates/support/` directory that held them. That is why
-        `load_transition_overrides` required a Task path shape this repository
-        has zero of: the validator was matching the harness, not the corpus.
-        """
-
+        contract_tests = (
+            ROOT / "tests/validation/test_document_metadata.py",
+            ROOT / "tests/validation/test_document_corpus_lifecycle.py",
+            ROOT / "tests/validation/test_target_surface_contracts.py",
+            ROOT / "tests/lib/document_governance/test_spec_packages.py",
+        )
+        forbidden = (
+            "HISTORICAL_COMMIT",
+            "LEGACY_CONTRACT_FIXTURE_COMMIT",
+            "docs/99.templates/support/",
+        )
         offenders = [
-            str(path.relative_to(ROOT))
-            for path in (ROOT / "tests").rglob("*.py")
-            if "HistoricalDocument(" in path.read_text(encoding="utf-8")
+            f"{path.relative_to(ROOT)}: {token}"
+            for path in contract_tests
+            for token in forbidden
+            if token in path.read_text(encoding="utf-8")
         ]
         self.assertEqual([], offenders)
 ```
 
-- [ ] **Step 2: Run it and confirm it fails with five modules**
+- [ ] **Step 2: Run it and record the current offenders**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_no_test_resurrects_a_deleted_document
+PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_document_contract_tests_do_not_read_fixed_workspace_history
 ```
 
-- [ ] **Step 3: Commit the resurrected profile blob as a real fixture**
+Expected: FAIL naming the current historical constants and retired support
+paths. Record the exact files in the current Task; do not copy their bodies.
 
-```bash
-mkdir -p tests/fixtures/document_metadata
-git show "$(python3 -c "
-import re, pathlib
-t = pathlib.Path('tests/validation/test_document_metadata.py').read_text()
-print(re.search(r'HISTORICAL_COMMIT = \"([0-9a-f]{40})\"', t).group(1))
-")":docs/99.templates/support/document-metadata-profiles.yaml \
-  > tests/fixtures/document_metadata/profiles.yaml
-git add tests/fixtures/document_metadata/profiles.yaml
-```
+- [ ] **Step 3: Replace document-contract fixtures with current sources**
 
-The blob is now a tracked fixture with a name that says what it is. Nothing is
-read out of Git at test time, and the file no longer disappears when history is
-rewritten or a shallow clone is used.
+For positive cases, load `docs/99.templates/registry.json` and the template path
+declared by its `template_roles` row. For a negative case, copy that current
+value into a temporary directory and mutate exactly one field or section. Reuse
+the existing `registry_fixture` and `fixture` helpers in
+`test_document_metadata.py`; do not create a second profile registry under
+`tests/fixtures/`.
 
-- [ ] **Step 4: Repoint `PROFILES` and delete the resurrection helper**
+Delete assertions whose only subject is the removed
+`docs/99.templates/support/` taxonomy. Replace an assertion only when the same
+behavior is still declared by the current Registry or a current template.
 
-```python
-PROFILES = ROOT / "tests/fixtures/document_metadata/profiles.yaml"
-```
+- [ ] **Step 4: Keep recovery tests recovery-specific**
 
-Delete `_materialised_profiles` and its `_PROFILES_FILE` global; `run_checker`
-passes `PROFILES` directly. Repeat for the other six resurrected paths, giving
-each a fixture file under `tests/fixtures/` named for what it holds.
+`test_operations_catalog.py` may read the current Migration 0003 recovery row.
+Any other `HistoricalDocument` test creates a temporary Git repository, commits
+one regular file, deletes it from the worktree, and reads that exact
+`commit:path`. It must also reject a tree, missing object, or non-regular blob.
+No recovery test embeds a workspace commit literal.
 
 - [ ] **Step 5: Verify**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
-PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata 2>&1 | grep -E "^(Ran |OK|FAILED)"
-grep -rn "HistoricalDocument(" tests || echo "no resurrection under tests/"
+PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+PYTHONPATH=. python3 -m unittest tests.validation.test_target_surface_contracts
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_operations_catalog
+rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
+  tests/validation/test_document_metadata.py \
+  tests/validation/test_document_corpus_lifecycle.py \
+  tests/validation/test_target_surface_contracts.py \
+  tests/lib/document_governance/test_spec_packages.py
 ```
 
-Expected: `OK`, `OK`, and no output from the `grep`.
+Expected: every unit command exits 0 and the final search has no output.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add -A
-git commit -m "test(fixtures): Commit the pinned profile blobs instead of reading them from Git"
+git add -- tests/validation/test_document_metadata.py \
+  tests/validation/test_document_corpus_lifecycle.py \
+  tests/validation/test_target_surface_contracts.py \
+  tests/lib/document_governance/test_spec_packages.py \
+  tests/lib/document_governance/test_operations_catalog.py \
+  tests/lib/test_surface_ownership.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
+git diff --cached --name-only
+git commit -m "test(fixtures): Derive document contracts from current authority"
 ```
 
 ---
@@ -1082,7 +1226,10 @@ exceeded.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add -A
+git add -- scripts/lib/document_governance/identity_history.py \
+  tests/lib/document_governance/test_identity_history.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
+git diff --cached --name-only
 git commit -m "perf(identity): Scan path names instead of every diff in history"
 ```
 
@@ -1102,40 +1249,43 @@ git commit -m "perf(identity): Scan path names instead of every diff in history"
 - Consumes: Task 1's four modes, Task 2's derived census, Task 6's fixtures. Splitting before those would divide code that is about to be deleted and would do it without a working safety net.
 - Produces: the public names `load_registry`, `build_registry_profiles`, `validate_record`, `validate_repository_contracts`, `load_transition_overrides`, `collect_issued_identities` remain importable from `scripts.lib.document_governance.metadata_validator`, so no caller changes.
 
-- [ ] **Step 1: Record the public surface before moving anything**
+- [ ] **Step 1: Record live consumers before moving anything**
 
 ```bash
-PYTHONPATH=. python3 - <<'PY'
-import inspect, sys
-sys.path.insert(0, ".")
-from scripts.lib.document_governance import metadata_validator as m
-names = sorted(n for n in dir(m) if not n.startswith("_"))
-print(len(names))
-open("/tmp/metadata-surface-before.txt", "w").write("\n".join(names))
-PY
+rg -n \
+  "from scripts\.lib\.document_governance\.metadata_validator import|metadata_validator\." \
+  scripts tests
 ```
 
-- [ ] **Step 2: Write the surface-preservation test**
+Record the untruncated result in the current Task. Incidental module globals are
+not an API merely because `dir()` exposes them; the compatibility surface is
+the set that tracked consumers import or access.
+
+- [ ] **Step 2: Write the declared compatibility test**
 
 ```python
-    def test_metadata_validator_public_surface_is_unchanged_by_the_split(self) -> None:
-        """The split moves code, never the interface its callers import."""
+    def test_metadata_validator_declares_its_compatibility_api(self) -> None:
+        """The split preserves live imports, not every incidental module global."""
 
         from scripts.lib.document_governance import metadata_validator
 
-        expected = set(
-            pathlib.Path("/tmp/metadata-surface-before.txt").read_text().split()
-        )
-        actual = {n for n in dir(metadata_validator) if not n.startswith("_")}
-        self.assertEqual(set(), expected - actual)
+        self.assertTrue(metadata_validator.__all__)
+        missing = [
+            name for name in metadata_validator.__all__
+            if not hasattr(metadata_validator, name)
+        ]
+        self.assertEqual([], missing)
 ```
+
+The test fails before `__all__` exists. Build `__all__` from the live-consumer
+inventory in Step 1, then use explicit re-exports from the new modules. Do not
+use wildcard imports or a temporary-file snapshot as a permanent test oracle.
 
 - [ ] **Step 3: Move one responsibility at a time**
 
 For each of profile, lifecycle, heading, identity, reference: cut the functions
-that belong to it into the new module, add
-`from scripts.lib.document_governance.metadata.<name> import *  # noqa: F401,F403`
-to `metadata_validator.py`, and run the surface test plus
+that belong to it into the new module, add explicit imports for the names in
+`metadata_validator.__all__`, and run the compatibility test plus
 `PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata`
 before starting the next one. Five separate commits.
 
@@ -1160,7 +1310,13 @@ Expected: no `OVER 800` line and `FULL exit=0`.
 - [ ] **Step 6: Commit each move separately**
 
 ```bash
-git add -A
+git add -A -- scripts/lib/document_governance/metadata \
+  scripts/lib/document_governance/lifecycle \
+  scripts/lib/document_governance/metadata_validator.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  tests/validation/test_document_metadata.py \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
+git diff --cached --name-only
 git commit -m "refactor(metadata): Split the validator by responsibility"
 ```
 
@@ -1229,9 +1385,21 @@ is refusing the hop and the status stays `active`.
 - [ ] **Step 6: Final verification**
 
 ```bash
-git add -A
+git add -A -- tests/lib/document_governance/metadata \
+  tests/validation/lifecycle \
+  tests/validation/test_document_metadata.py \
+  tests/validation/test_document_corpus_lifecycle.py \
+  scripts/README.md \
+  docs/03.specs/0154-validation-surface-reduction/spec.md \
+  docs/03.specs/0155-validation-surface-reduction/spec.md \
+  docs/03.specs/0157-script-surface-ownership-convergence/spec.md \
+  docs/03.specs/0157-script-surface-ownership-convergence/plan.md \
+  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md \
+  docs/03.specs/README.md
 python3 scripts/knowledge/generate-llm-wiki.py --write
-git add -A
+git add -- docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md \
+  docs/90.references/data/0082-llm-wiki-index/README.md
+git diff --cached --name-only
 python3 scripts/knowledge/generate-llm-wiki.py
 python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-final.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-final.txt
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-final.txt
@@ -1245,7 +1413,8 @@ freshness and a Task that writes its own record after regenerating leaves it red
 - [ ] **Step 7: Commit**
 
 ```bash
-git add -A
+git diff --cached --check
+git diff --cached --name-only
 git commit -m "docs(spec): Close the script surface ownership convergence"
 ```
 
@@ -1256,9 +1425,9 @@ git commit -m "docs(spec): Close the script surface ownership convergence"
 | A mode is deleted that a gate reaches | Step 1 of Task 1 prints the registered modes before any deletion | `git revert` the Task 1 commit |
 | A move breaks an import that no test covers | Task 3 Step 4 greps for stale paths and the full gate runs at the task boundary | `git revert`; `git mv` is reversible in one commit |
 | Registering a red module makes the gate red for an unrelated reason | Task 5 measures every module before registering it and repairs first | Unregister the single module; its repair commit stands alone |
-| A fixture rebuilt from Git changes what a test asserts | Task 6 commits the exact blob rather than re-authoring it | `git revert`; the blob is byte-identical to what the test read before |
-| A split loses a test | Task 8 Step 1 records the counts and Step 3 compares the sums | `git revert` the single split commit |
-| A count is repinned instead of derived | Task 2's probe writes a tombstone and re-runs; a derived census is unmoved | `git revert` the Task 2 commit |
+| A retired historical test encoded a still-current guarantee | Task 6 replaces it only when the current Registry or template declares the same behavior | `git revert`; restore the test and classify its current owner before retrying |
+| A split loses a test | Task 9 Step 1 records the counts and Step 3 compares the sums | `git revert` the single split commit |
+| A count is repinned instead of derived | Task 2 compares current path sets and source relations rather than a literal | `git revert` the Task 2 commit |
 
 ## Verification
 
@@ -1272,7 +1441,11 @@ python3 scripts/validation/check-document-links.py --mode all
 python3 scripts/validation/check-script-manifest.py
 bash scripts/operations/sync-provider-surfaces.sh --check && git diff --exit-code
 find scripts tests -name '*.py' -exec wc -l {} + | awk '$1>800 && $2!="total"'
-grep -rn "HistoricalDocument(" tests
+rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/support/" \
+  tests/validation/test_document_metadata.py \
+  tests/validation/test_document_corpus_lifecycle.py \
+  tests/validation/test_target_surface_contracts.py \
+  tests/lib/document_governance/test_spec_packages.py
 grep -rn "NON_STANDALONE_VALIDATOR_PATHS" scripts tests
 ```
 
@@ -1301,8 +1474,13 @@ Two are new to this Spec Package:
 5. **A directory states what its files are, and no constant restates it.** The
    ownership rule is enforced by `tests/lib/test_surface_ownership.py`, not by a
    list someone maintains.
-6. **A test judges the corpus, never a deleted taxonomy.** Where a past state
-   must be asserted, the fixture is committed as a fixture.
+6. **A document-contract test judges the current corpus, never a deleted
+   taxonomy.** Current contracts derive from the Registry or registered
+   template. Recovery tests use temporary Git or a current Stage 98 row and do
+   not pin an unrelated workspace commit.
+7. **Discovered implementation is revalidated, never retroactively approved.**
+   Task 0 records the actual earlier commit range, activates the legal parent
+   chain, and reruns the affected checks before any new production mutation.
 
 ## Related Documents
 
