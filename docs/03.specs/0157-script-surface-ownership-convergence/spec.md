@@ -104,9 +104,9 @@ in the largest test file in the repository.
 
 A document-contract fixture states what the repository is now. It is derived
 from the current Stage 99 Registry or template and changed by one field for a
-negative case; it never copies a deleted body. Recovery behavior is different:
-it is exercised in a temporary Git repository or against a current Stage 98
-recovery row, where proving a regular blob is the behavior under test.
+negative case; it never copies a deleted body. Recovery behavior is exercised
+only in a temporary Git repository, where proving a regular blob is the
+behavior under test. A current contract test does not read an archive document.
 
 ### History scanning does not grow without bound
 
@@ -208,17 +208,19 @@ that is both smaller and covered.
 4. Test modules on disk and test modules run by `--profile full` are the same set.
 5. Each module in the post-Task-4 measured unregistered/failing set passes or is removed with a recorded reason.
 6. `check-document-corpus-lifecycle.py` exposes exactly four modes, all registered.
-7. `provenance_policy.py` no longer exists. `TASK10_BASELINE_COMMIT` and
-   `APPROVED_BASELINE_RECOVERY_PATHS` stay: SPEC-0155 measured that commit as the
-   lookup point for 234 deleted documents' recovery records, so removing it would
-   delete a live guarantee rather than dead SHA tracking.
-8. `docs/98.archive/README.md` states the recovery procedure without pinning a commit. Closed by SPEC-0155; this item guards against regression.
+7. `provenance_policy.py` no longer exists. Existing archive recovery constants
+   are not expanded or made fixture authority; draft SPEC-0158 owns their
+   consumer decoupling and terminal disposition under the approved minimal-
+   archive design.
+8. The archive index contains no pinned expected branch commit. Closed by
+   SPEC-0155; this item guards against regression without citing an archive
+   document as current authority.
 9. Adding one tombstone changes no count literal in `scripts/` or `tests/`, and no test name contains a count.
 10. The identity scan's cost does not grow with repository history, and `MAX_GIT_OUTPUT_BYTES` is not a stopgap.
 11. No document-contract or target-surface test resurrects a deleted document
-    from a fixed workspace commit. `HistoricalDocument` remains only in tests
-    whose subject is current Stage 98 recovery, and those tests use a temporary
-    Git repository or a current recovery row.
+    from a fixed workspace commit or reads an archive document as fixture
+    authority. `HistoricalDocument` remains only where regular-blob recovery is
+    the subject, and those tests use a temporary Git repository.
 12. The four named multi-responsibility files are decomposed along the stated
     profile, lifecycle, heading, identity, reference, CLI, and registered-mode
     boundaries. Compatibility imports and all four lifecycle modes remain

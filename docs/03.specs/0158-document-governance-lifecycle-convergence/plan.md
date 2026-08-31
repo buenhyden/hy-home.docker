@@ -59,8 +59,9 @@ registered `changed` and `full` validation profiles.
   then delete the package. Completion requires zero unresolved or pending
   dispositions and a package-root set containing only `RES-0002`; root and
   category READMEs are structural indexes and are excluded from that set.
-- Preserve Migration 0003 as the structural disposition and recovery boundary,
-  but never use Stage 98 as current Stage 05 or Stage 99 authority.
+- Treat Migration 0001--0003 as temporary historical inputs. Move every current
+  consumer to its canonical owner, then delete the documents and
+  `docs/98.archive/migrations/` before completion.
 - Keep supply-chain digests, CI event SHAs, regular-blob recovery commits, and
   actual logical Task commits. Remove expected lineage and test-only pins.
 - Preserve policy-required ephemeral digest comparison for concurrent
@@ -81,9 +82,11 @@ registered `changed` and `full` validation profiles.
 Audit and converge the tracked documents under Stages 00, 01, 02, 03, 05, 90,
 98, and 99, including work in progress. Current owners are repaired first.
 Duplicate, contradictory, obsolete, Legacy, and Deprecated material is then
-rewritten, consolidated, superseded, or deleted. Stage 98 retains only minimal
-recovery navigation, and validators retain one source for inventory and one
-predicate per guarantee.
+rewritten, consolidated, superseded, or deleted. Stage 98 retains only its
+structural index and minimal archive/Tombstone records required by an explicit
+preservation need or measured live recovery-navigation consumer; it retains no
+Migration package. Validators retain one source for inventory and one predicate
+per guarantee.
 
 The result must make SDLC state honest: an active Task has active parents,
 terminal parents have no active children, only actual work remains active, and
@@ -110,17 +113,19 @@ remaining a second authority.
 | Confirmed conflict | Corrected ruling used by this Plan |
 | :--- | :--- |
 | SPEC-0157 implementation exists while its Spec and Plan are `draft` and no Task exists | Activate through the legal transition, record earlier commits as discovered and revalidated, and never claim retroactive approval |
-| SPEC-0157 proposed copying historical document blobs into fixtures | Current contract fixtures derive from Stage 99; recovery fixtures use temporary Git or a current Stage 98 row |
+| SPEC-0157 proposed copying historical document blobs into fixtures | Current contract fixtures derive from Stage 99 and recovery fixtures use temporary Git; no current contract test reads an archive document |
 | A one-row-per-document disposition ledger would become another large audit pack | Ordered cohort rules cover `keep`; every non-`keep` path is explicit |
-| The Stage 98 reduction omitted required Migration sections | Retain concise Purpose, Authority Change, Path Mapping, Recovery, Approval, and Traceability |
-| Stage 05 membership delegates current truth to an Operations migration manifest | Derive current membership from Stage 05 plus Stage 99; use Migration only for recovery |
+| The earlier Stage 98 design made six Migration sections a permanent contract | Treat Migration documents as temporary convergence inputs, remove their active Registry contract, and delete them after consumer handoff |
+| Stage 05 membership delegates current truth to an Operations migration manifest | Derive current membership from Stage 05 plus Stage 99; remove every Migration dependency before deletion |
 | Provider registry workflow states grant mutation to read-only roles and restate provider-neutral policy | Keep neutral workflow order in Stage 00 and provider runtime translation in the provider registry |
 | Generated `.agents/rules` and `.agents/workflows` have no tracked consumer | Remove those projections and their managed roots; retain only proven native or navigation projections |
 | `suite_registry.py` repeats a Task-numbered immutable validator map | Derive validator rows and membership from `scripts/manifest.yaml` |
 | Lifecycle and Operations expose overlapping modes and routes | Retain one complete CLI behavior per validator after equivalence tests; keep recovery as part of lifecycle validation |
 | Persistent digest removal could weaken concurrent-worktree safety | Remove lineage ledgers, not ephemeral policy-required comparison |
 | A later link-only Git touch can be mistaken for the latest saved external research | Classify each relevant diff as content authoring or mechanical path/link correction; do not select preservation by maximum timestamp |
-| Current Stage 90 existence is coupled to Migration 0003's frozen historical target set | Decouple current retention in `references.py` before deletion; Migration 0003 remains recovery history and does not require one Tombstone per deleted package |
+| Current Stage 90 existence is coupled to Migration 0003's frozen historical target set | Decouple current retention in `references.py` before deletion; Git owns the retired Migration history and no deleted package receives a Tombstone without a live recovery-navigation consumer |
+| ADR-0029 and Stage 99 still register Migration 0003 as a structural authority | Move the review boundary to current Registry, Task, and validator evidence, correct ADR-0029, remove the active Migration profile/template/allocation surface, then delete the Migration package |
+| Current Stage 00/01/02/03/05/90 documents and generated indexes cite or link to Stage 98 files | Move current meaning to canonical owners, remove every inbound archive-file citation/link, and keep recovery navigation one-way from retained archive records to current replacements |
 | Preliminary Stage 90 classification found 25 deletion candidates and 39 migration-dependent packages | Treat both counts as discovery evidence only; Task 2 remeasures the current tree and acceptance never pins either count |
 | Task 2 is the only source for the protected path inventory even though Task 8 retires Task bodies | Before retirement, write the dynamic set to a package-local non-normative README declaration and derive the existing reference-test oracle from it |
 
@@ -150,7 +155,7 @@ remaining a second authority.
 | Current solution truth | Stages 01, 02, 03, and 05 | One current owner per requirement, structure, change, or operation |
 | Evidence | `docs/90.references/` | The atomic user-protected latest external-research pack plus structural indexes matching the resulting tree; all other baseline evidence packages migrate and retire |
 | Protected research declaration | `docs/90.references/research/0002-agentic-engineering-research-pack/README.md` | Persistent non-normative protected path selector and user-decision record; SPEC-0158 acceptance owns the retention rule |
-| Recovery | `docs/98.archive/` | Minimal Migration and Tombstone navigation |
+| Recovery | `docs/98.archive/` | Minimal approved archive/Tombstone records plus the structural index; no Migration directory at completion |
 | Validator inventory | `scripts/manifest.yaml` | Validator path, suite, argv, context, tests, and consumers |
 | Execution routing | `.github/workflow-contract.yml` | CI profiles and routing only |
 | Predicates | `scripts/lib/**`, `scripts/validation/**` | One implementation per guarantee |
@@ -401,6 +406,10 @@ rg -n -i \
   docs/99.templates -g '*.md'
 rg -n '\b[0-9a-f]{7,40}\b|branch-tip|blob digest|diff digest|SHA lineage' \
   docs/03.specs docs/98.archive scripts tests
+rg -n --glob '*.md' \
+  'docs/98\.archive/.+\.(md|json|ya?ml)|\]\([^)]*98\.archive/[^)]*\)' \
+  docs/00.agent-governance docs/01.requirements docs/02.architecture \
+  docs/03.specs docs/05.operations docs/90.references
 ```
 
 Historical quotations and supply-chain material are classified by purpose, not
@@ -422,6 +431,9 @@ The review must also prove that every dynamically measured `PROTECT_LATEST`
 path is covered exactly once and that no destructive disposition includes it.
 It also proves that every other measured Stage 90 package has an explicit
 delete-after-migration path and that no package is unresolved or silently kept.
+Every inbound Stage 98 file citation or cross-link receives an explicit current
+owner and removal disposition; a historical quotation does not create an
+exception to archive isolation.
 
 **Step 5: Commit the bounded baseline**
 
@@ -506,6 +518,11 @@ profiles; the Provider Registry owns runtime projection paths and provider
 translation facts only. Put Stage 00 skills and Provider Registry facts into
 bootstrap precedence without allowing either to override Stage 00 policy.
 Describe tracked native runtime controls as consumers, not policy sources.
+
+Remove every Stage 00 citation or cross-link to a Stage 98 document or file.
+Stage 00 may define the archive stage's role, but no policy, role, skill, or
+provider document may use archive evidence as its source or related-document
+destination.
 
 The provider registry retains only provider identities, native paths, canonical
 role/skill patterns, work profiles, model translations, permission
@@ -656,10 +673,11 @@ templates without pinning a count.
 
 **Step 2: Derive current Operations from the current tree**
 
-Remove Migration 0002 or Migration 0003 as the membership source for current
+Remove Migration 0002 and Migration 0003 as membership sources for current
 Stage 05 validation. The current set is the safe, tracked directory tree under
-`docs/05.operations/catalog/`, interpreted through Stage 99 profiles. Migration
-rows remain available only through archive/recovery code.
+`docs/05.operations/catalog/`, interpreted through Stage 99 profiles. No
+current Operations, Registry, generator, or validator path may require a
+Migration row after this Task.
 
 Keep `validate_current_operations` as the public library predicate. Remove
 historical row-count and exact-rename assertions from current Operations tests;
@@ -794,6 +812,13 @@ owner, then is deleted under Task 6. A current consumer delays deletion only
 until migration; it never authorizes package retention. The protected pack may
 receive stale-path corrections but not substantive research loss.
 
+Remove every Stage 98 document/file citation and cross-link from retained Stage
+01, 02, 03, and 05 documents. If a citation carries still-current meaning,
+write that meaning to its canonical owner first. A retained minimal archive
+record may point outward to a current replacement; the current document never
+points back. Add focused existing-suite regressions for both Markdown links and
+explicit archive-file path literals without creating a new public Gate.
+
 **Step 5: Verify and commit by stage**
 
 ```bash
@@ -822,7 +847,7 @@ create empty commits.
 
 ---
 
-### Task 6: Retire non-protected Stage 90 evidence and reduce Stage 98 recovery
+### Task 6: Retire non-protected Stage 90 evidence and remove temporary Stage 98 Migrations
 
 **Files:**
 
@@ -830,9 +855,11 @@ create empty commits.
   delete every other Task 2 package under `docs/90.references/`.
 - Modify or remove every generator, manifest row, workflow route, test, and
   current document consumer that points to a non-protected Stage 90 package.
-- Rewrite: `docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md`
-- Rewrite: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
-- Rewrite: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
+- Delete after consumer handoff:
+  `docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md`,
+  `docs/98.archive/migrations/0002-operations-catalog-convergence.md`, and
+  `docs/98.archive/migrations/0003-workspace-governance-simplification.md`.
+- Remove the empty `docs/98.archive/migrations/` directory.
 - Delete or retain explicitly reviewed paths under
   `docs/98.archive/tombstones/`.
 - Modify: `docs/90.references/README.md`, `docs/98.archive/README.md`
@@ -840,6 +867,9 @@ create empty commits.
   `docs/90.references/research/0002-agentic-engineering-research-pack/README.md`
 - Modify: `scripts/lib/document_governance/references.py`
 - Modify: `scripts/lib/document_governance/archive.py`
+- Modify: `docs/02.architecture/decisions/0029-workspace-governance-authority.md`
+- Modify: `docs/99.templates/registry.json` and remove the unused Migration
+  template route and source.
 - Modify: `tests/lib/document_governance/test_references.py`
 - Modify: `tests/lib/document_governance/test_archive.py`
 - Modify recovery-focused lifecycle tests.
@@ -880,9 +910,9 @@ existence does not depend on Migration 0003's frozen historical target set.
 Then decouple `scripts/lib/document_governance/references.py`: protected
 Research retention derives from the current tree, Registry profile, and the
 persistent package-local declaration, while current consumers are migration
-preconditions for every other package and Migration 0003 is read only for
-historical recovery. This repair must land before a deletion so the old
-coupling cannot force one Tombstone per removed package.
+preconditions for every other package. Migration 0003 is temporary source
+evidence only until that coupling is removed. This repair must land before a
+deletion so the old coupling cannot force one Tombstone per removed package.
 
 Add a protected-content regression that exercises a zero-consumer
 `PROTECT_LATEST` package through the README declaration and verifies the
@@ -894,18 +924,21 @@ for-byte or hash comparison is permitted.
 
 **Step 2: Write minimal archive-shape regressions**
 
-Extend `test_archive.py` to prove:
+Extend `test_archive.py` to prove the completion shape:
 
-- every Migration has all six registered required sections;
-- completed Migration bodies contain no raw Task ledger, snapshot body,
-  duplicate digest table, or `## Execution Evidence`;
-- every Tombstone has only the registered minimal recovery sections plus an
-  optional Related Documents section;
-- every retained recovery tuple resolves to a regular Git blob; and
+- `docs/98.archive/migrations/` is absent;
+- Stage 98 contains only its structural README and the archive/Tombstone paths
+  selected by the Task 2 explicit-preservation and live-consumer inventory;
+- every retained record has only its registered minimal sections plus an
+  optional Related Documents section, uses safe paths, and has no Migration
+  parent or link;
+- every retained `commit:path` resolves to a regular Git blob when recovery is
+  claimed; and
 - no test compares a recovered historical body byte-for-byte with current
   governance.
 
-Do not enforce a line count. Validate semantic sections and recovery instead.
+Delete Migration section, body, digest, row-count, exact-topology, and current-
+membership checks. Do not replace them with a line count or a new census pin.
 
 **Step 3: Reduce Stage 90**
 
@@ -922,26 +955,31 @@ pending dispositions.
 For `PROTECT_LATEST`, retain the complete package even at zero consumers.
 Correct stale current paths, metadata, lifecycle, owners, and links when
 necessary, and integrate findings into current owners only non-lossily. Do not
-delete, archive, or reduce its research body, sources, or claims.
+delete, archive, or reduce its research body, sources, or claims. Remove every
+Stage 98 document/file citation and cross-link, including stale measurements,
+while preserving the surrounding research claim and external source meaning.
+Regenerated or retained Stage 90 indexes must not enumerate or link Stage 98.
 
-**Step 4: Reduce Stage 98**
+**Step 4: Remove temporary Stage 98 Migrations**
 
-- Mark Migration 0001 and 0002 `superseded` when Migration 0003 and current
-  owners cover their authority change.
-- Keep Migration 0003 `completed` and concise as the structural disposition and
-  recovery boundary.
-- In each Migration retain Purpose, Authority Change, summarized Path Mapping,
-  Recovery, Approval, Traceability, and required metadata only.
-- Replace row-by-row execution narratives with path rules and named exceptions.
-- Retain a Tombstone only when a stable retired path still has a live recovery
-  navigation consumer. A zero-consumer deletion needs no Tombstone; Git history
-  is sufficient. When a live consumer exists, retain only the minimal package
-  README Tombstone registered by Stage 99 rather than producing leaf-by-leaf or
-  package-wide tombstones.
-- Never place the retired body, redirect text, raw ledger, snapshot, or digest
-  duplicate in a Tombstone.
+- Enumerate every tracked code, test, generator, manifest, workflow, Registry,
+  ADR, and document consumer of Migration 0001--0003.
+- Move current structural truth and review evidence to Stage 99, current owners,
+  the current Task, or focused validators as appropriate. Git remains the
+  full-content recovery boundary.
+- Correct ADR-0029 so Migration 0003 is no longer a structural review boundary;
+  remove the active Stage 99 Migration profile, template route/source,
+  lifecycle binding, and allocation surface after the final consumer moves.
+- Delete all three Migration documents and remove `migrations/` only after the
+  consumer inventory reaches zero.
+- Reclassify every existing Stage 98 record by explicit preservation need and
+  live recovery-navigation consumer. Delete records with neither; retain only
+  the registered minimal shape for a proven need and remove all Migration
+  parents and links.
+- Never place retired bodies, redirects, raw ledgers, snapshots, digests, frozen
+  membership, or historical topology in a retained record or README.
 
-**Step 5: Prove recovery before deletion and after compaction**
+**Step 5: Prove recovery before and after Migration deletion**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_references
@@ -952,7 +990,8 @@ python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-recov
 python3 scripts/validation/check-document-links.py --mode all
 ```
 
-Expected: unit tests `OK`, recovery `violations=0`, and links `failures=0`.
+Expected: unit tests `OK`, recovery `violations=0`, links `failures=0`, zero
+current Migration consumers, and no `docs/98.archive/migrations/` directory.
 The reference tests must additionally derive the persistent README declaration,
 prove exact on-disk protected-path equality and presence, and preserve the
 zero-consumer override. Independent review proves that substantive research
@@ -965,7 +1004,7 @@ baseline package is absent, and unresolved and pending dispositions are zero.
 
 ```bash
 git commit -m "docs(references): Retire non-protected evidence packages"
-git commit -m "docs(archive): Reduce recovery records to minimal navigation"
+git commit -m "docs(archive): Remove temporary migration records"
 ```
 
 Stage only the paths for the corresponding logical change.
@@ -1026,6 +1065,12 @@ mode inventory. Remove the duplicate contract/promoted/recovery leaves and the
 non-gating scheduled workflow. The manifest-owned document-lifecycle validator
 is the one executable route; focused recovery remains a library unit test.
 
+Keep the archive-isolation predicate in this existing route: tracked Markdown
+under Stages 00, 01, 02, 03, 05, and 90 fails when it links to or explicitly
+cites a Stage 98 file. Test a resolved Markdown link and a code-form path
+citation. Do not create a new validator, public suite, Gate profile, or frozen
+match count.
+
 **Step 4: Collapse Operations modes**
 
 `check-operations-catalog.py` validates the complete current Stage 05 tree by
@@ -1055,7 +1100,7 @@ Classify every remaining commit or digest use. Retain only:
 
 - supply-chain integrity;
 - CI event and merge-base selection;
-- current Stage 98 regular-blob recovery;
+- retained minimal Stage 98 regular-blob recovery;
 - actual logical commits in the current Task; and
 - policy-required ephemeral concurrent-worktree comparison.
 
@@ -1191,12 +1236,17 @@ git commit -m "docs(spec): Complete document governance convergence"
 
 Stage the exact Task 2-recorded generated-output replacement paths in the same
 commit; never stage or regenerate the retired Stage 90 Data destination.
+Before setting the Specification terminal, rewrite its transitional archive-
+file names and paths as a concise outcome statement. The completed Spec may
+describe the Stage 98 role and the fact that its temporary Migration layer was
+removed, but it must not cite or cross-link any Stage 98 document or file.
 
 **Step 4: Remove transient completed execution bodies**
 
 After the completion commit is a regular Git recovery boundary and no current
 consumer needs the Plan or Task body, delete the completed Plan and Task, update
-the Stage 03 index to link only the completed Spec, and regenerate the LLM Wiki.
+the Stage 03 index to link only the completed Spec, and regenerate the LLM Wiki
+without enumerating or linking Stage 98 files.
 Do not add a Tombstone unless a stable inbound consumer was discovered after
 the completion commit. The `RES-0002` package-local preservation declaration
 and its GREEN existing-test oracle are mandatory preconditions; Task retirement
@@ -1227,7 +1277,8 @@ the retired Stage 90 Data path must remain absent.
 | A non-protected Stage 90 package survives because it still has a consumer | Treat the consumer as a migration dependency, require the final package-root set to contain only `RES-0002`, and require unresolved/pending counts of zero | Revert the incomplete cohort change, finish owner migration, then delete the package |
 | Latest external research is lost because consumers reach zero or a link-only commit appears newer | Apply the atomic current-baseline protection set, persistent README declaration, and purpose-based Git classification | Revert the rejected mutation commit or restore its paths from the immediately reviewed pre-mutation current Git state; never restore a named historical pack snapshot |
 | Task retirement removes the only protection oracle | Require the package-local declaration and existing reference tests to be GREEN first | Restore the Task body only long enough to complete the declaration handoff, then rerun the retirement checks |
-| Stage 98 compaction breaks recovery | Verify every retained `commit:path` as a regular blob before and after | Revert the archive commit; never reconstruct from memory |
+| Stage 98 reduction breaks required recovery navigation | Inventory explicit preservation needs and live consumers, then verify every retained recovery `commit:path` as a regular blob before and after | Revert the archive commit; never reconstruct from memory |
+| A current stage still cites an archive file | Require zero inbound Stage 98 file citations and cross-links in Stages 00/01/02/03/05/90 and keep the check in the existing lifecycle/link suite | Restore the current-owner text if meaning was lost, then remove the archive dependency rather than restoring the inbound link |
 | Provider projection becomes a policy source | Stage 00 owns neutral workflow; registry owns runtime translation only | Revert the source change and regenerate projections |
 | Gate reduction drops a guarantee | Compare finding sets and add replacement regression before deleting a route | Revert the single Gate commit |
 | Fixture cleanup removes a real oracle | Scope historical removal to document taxonomy; preserve agent-output and supply-chain fixtures | Restore the specific oracle and classify its real owner |
@@ -1253,8 +1304,16 @@ The final state must satisfy all of the following:
   identity, and high-water validation, with no redirect/body clone and no
   Tombstone unless a live recovery-navigation consumer requires one minimal
   package README;
-- Stage 98 contains no body copy, redirect, raw execution ledger, snapshot, or
-  duplicate digest;
+- Stage 98 has no Migration document, temporary Migration directory, active
+  Migration Registry/template surface, or current consumer; it contains only
+  its structural index and minimal records backed by an explicit preservation
+  need or measured live recovery-navigation consumer;
+- retained Stage 98 records contain no body copy, redirect, raw execution
+  ledger, snapshot, duplicate digest, frozen topology, or current-membership
+  authority;
+- Stages 00, 01, 02, 03, 05, and 90 contain zero Stage 98 document/file
+  citations or cross-links, including generated indexes and code-form path
+  literals; archive navigation is one-way toward current replacements;
 - Stage 99 has no unused copy template or archive-backed current membership;
 - provider adapters are fresh and contain no policy;
 - manifest validator inventory has no Task-numbered Python mirror;
@@ -1275,12 +1334,15 @@ The final state must satisfy all of the following:
    obligation.
 3. **Complete coverage does not require a corpus copy.** Ordered selectors and
    explicit exceptions are smaller, rerunnable, and easier to review.
-4. **Stage 98 minimum equals the Registry contract.** Minimal Migration content
-   still includes all six required sections and regular-blob recovery.
+4. **Stage 98 minimum is smaller than the retired Migration contract.** The
+   Registry and tests allow the Migration directory to be absent; only a
+   retained minimal record receives safe-path, shape, and regular-blob recovery
+   validation appropriate to its proven need.
 5. **Provider facts and neutral policy are different authorities.** Stage 00
    owns workflow behavior; provider data translates native runtime mechanics.
-6. **Migration records history, not current membership.** Current Stage 05 and
-   Stage 99 truth cannot depend on a completed archive body.
+6. **Migration records are temporary convergence inputs.** Current Stage 05,
+   Stage 99, ADR, generator, and validator truth moves first; Git retains the
+   deleted history after all Migration documents and their directory are gone.
 7. **Public interfaces remain stable while internal routes shrink.** The six
    suites and `changed|full` profiles stay; duplicate modes and inventories do
    not.
@@ -1302,7 +1364,8 @@ The final state must satisfy all of the following:
     become final protected content, a restore target, checksum, expected branch
     SHA, or Gate input.
 13. **Historical topology does not own current retention.** `references.py`
-    must be independent of Migration 0003's frozen target set before deletion.
+    must be independent of Migration 0003's frozen target set before deletion,
+    and no current consumer may remain when the Migration package is removed.
     Zero-consumer removal uses Git recovery without a Tombstone; only a live
     recovery-navigation consumer justifies one minimal package README
     Tombstone.
@@ -1315,6 +1378,10 @@ The final state must satisfy all of the following:
     derive that declaration and enforce on-disk equality, presence, and the
     zero-consumer override; SPEC acceptance remains authoritative and semantic
     body/source/claim preservation remains a review contract.
+16. **Archive navigation is one-way.** Stage 98 may point to a current
+    replacement, but Stages 00, 01, 02, 03, 05, and 90 never cite or cross-link
+    a Stage 98 document or file. Existing lifecycle/link validation owns this
+    predicate without a new Gate or fixed census.
 
 ## Related Documents
 
@@ -1325,4 +1392,3 @@ The final state must satisfy all of the following:
 - [Approval Boundaries](../../00.agent-governance/policies/approval-boundaries.md)
 - [Stage Authoring Matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [Stage 98 Archive](../../98.archive/README.md)

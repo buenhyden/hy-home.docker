@@ -25,7 +25,9 @@ and it has no Task. This specification therefore starts by restoring an honest
 SPEC-0157 chain, then converges the current corpus by lifecycle rather than by
 directory. Canonical owners are repaired before non-normative evidence is
 retired, compressed, or removed. Git remains the recovery boundary; Stage 98
-does not become a copy of deleted bodies.
+does not become a copy of deleted bodies. Its current Migration documents are
+temporary historical inputs: all current consumers move to canonical owners
+before the documents and `migrations/` directory are deleted.
 
 The convergence reduces authority and validation machinery. It creates no new
 top-level stage, public suite, public gate profile, document lifecycle, audit
@@ -144,26 +146,51 @@ stable path.
 
 ### Stage Responsibilities
 
-- Stage 00 is the sole provider-neutral AI-agent policy, role, skill, provider
-  boundary, and SDLC authority.
-- Stage 01 owns current solution-independent requirements. Substantively
-  duplicate packages converge on one owner.
-- Stage 02 owns current architecture descriptions and the durable ADR log.
-  Superseded ADRs remain in that log.
-- Stage 03 keeps current capability Specs and honest change packets. Completed
-  or cancelled execution bodies do not remain active guidance.
-- Stage 05 keeps procedures for current operational subjects. Duplicate
-  procedures converge on one subject owner.
-- Stage 90 keeps only the atomic user-protected latest external-research
-  package as non-normative evidence. Every other Research, Audit, or Data
-  package migrates unique needed meaning and current consumers to canonical
-  owners, then is deleted. Structural indexes are regenerated to match.
-- Stage 98 keeps minimal migration and tombstone recovery navigation. It stores
-  no deleted body, snapshot, raw Task ledger, or duplicate digest.
-- Stage 99 is the sole machine authority for document paths, profiles,
-  identifiers, sections, lifecycle, traceability shapes, and copy templates.
-  Provider Registry ownership of runtime projection paths is a separate,
-  narrower namespace and does not compete with this document-path authority.
+- Stage 00 is the sole provider-neutral AI-agent governance authority. It
+  defines policy, system rules, roles, skills, provider boundaries, and the
+  common SDLC workflow; no product-stage document or generated adapter may
+  redefine them.
+- Stage 01 owns current solution-independent SDLC requirements. Substantively
+  duplicate packages converge on one owner and use the registered Requirement
+  contract.
+- Stage 02 owns current SDLC architecture descriptions and the durable ADR log.
+  Superseded ADRs remain in that decision log without becoming current rules.
+- Stage 03 owns current capability Specs and honest change packets under the
+  same SDLC lifecycle. Completed or cancelled execution bodies do not remain
+  active guidance.
+- Stage 05 owns current operational subjects and organizes them through the
+  registered Guide, Incident, Postmortem, Runbook, and related Operations
+  profiles. Duplicate procedures converge on one subject owner.
+- Stage 90 owns non-normative workspace evidence organized as Audit, Research,
+  and Data. In this convergence it keeps only the atomic user-protected latest
+  external-research package; every other execution-baseline package migrates
+  unique needed meaning and current consumers to canonical owners, then is
+  deleted. Structural indexes are regenerated to match.
+- Stage 98 owns only explicitly retained historical/archive records for SDLC,
+  Operations, and References. Its `migrations/` directory is temporary while
+  current consumers are decoupled and is absent at completion. The final tree
+  keeps the structural README and only minimal archive/Tombstone records with a
+  measured preservation or live recovery-navigation need; it stores no body
+  clone, redirect, snapshot, raw Task ledger, or duplicate digest.
+- Stage 99 is the sole machine authority for the document and file templates
+  used under `docs/`, including paths, profiles, identifiers, sections,
+  lifecycle, traceability shapes, and template sources. Provider Registry
+  ownership of runtime projection paths is a separate, narrower namespace and
+  does not compete with this document-template authority.
+
+### Archive Isolation
+
+Documents under Stages 00, 01, 02, 03, 05, and 90 do not cite, link to, or use
+any Stage 98 document or file as a source, replacement, related document,
+membership input, or recovery lookup. The prohibition covers resolved Markdown
+links and explicit archive-file path citations, including generated indexes.
+It does not prohibit describing the Stage 98 role in current governance prose.
+
+Recovery navigation is one-way: a retained minimal Stage 98 record may point
+to its current replacement or canonical owner, but current authority never
+points back to archive evidence. Stage 99 may define the minimal archive record
+shape because it owns templates; that machine contract does not make an
+archive record a current source.
 
 ### SDLC State
 
@@ -235,11 +262,15 @@ review checks.
 ### Wave 2: Converge Canonical Owners
 
 Repair Stage 00 and Stage 99 boundaries first. Then update the affected Stage
-01, Stage 02, and Stage 05 owners. Clarify that Stage 99 paths are document
-paths and provider-registry paths are runtime projection paths. Separate
-workflow coordination, mutation, evidence writing, evaluation, review, and
-human approval in the existing role and provider contracts. Regenerate
-registered provider adapters only after their canonical inputs are correct.
+01, Stage 02, and Stage 05 owners, including ADR-0029's obsolete statement that
+Migration 0003 is a permanent structural review boundary. Remove the active
+Stage 99 Migration profile, template route, lifecycle binding, and allocation
+surface after their last current consumer has moved; Git owns the deleted
+historical Migration records. Clarify that Stage 99 paths are document paths
+and provider-registry paths are runtime projection paths. Separate workflow
+coordination, mutation, evidence writing, evaluation, review, and human
+approval in the existing role and provider contracts. Regenerate registered
+provider adapters only after their canonical inputs are correct.
 
 ### Wave 3: Normalize SDLC Packages
 
@@ -257,15 +288,17 @@ even if consumers reach zero. For every other Stage 90 source, migrate unique
 needed meaning, citations, generated outputs, and current consumers to their
 canonical owners, then delete the source package. Remove current-sounding
 predecessor taxonomy without losing the protected research body, sources, or
-claims. Persist the Task 2 protected path set and user decision in the package
+claims. Remove or rewrite every Stage 98 file citation in the protected package
+without treating that path cleanup as permission to reduce its research
+meaning. Persist the Task 2 protected path set and user decision in the package
 README and make the existing reference-test oracle GREEN before transient Task
-evidence is retired. Reduce completed Stage 98 Migrations to
-concise versions of all registered required sections: Purpose, Authority
-Change, Path Mapping, Recovery, Approval, and Traceability. Retain only required
-metadata and evidence needed to preserve Migration 0003 as the structural
-disposition and recovery boundary. Add a Tombstone only for a stable retired
-path that still has a live recovery-navigation consumer. Never create a body
-copy or redirect.
+evidence is retired. Treat the three completed Stage 98 Migrations only as
+temporary source evidence while their current consumers are enumerated and
+moved. After the final consumer is decoupled, delete Migration 0001--0003 and
+the `migrations/` directory. Retain an archive/Tombstone record only for an
+explicit preservation need or a stable retired path that still has a measured
+live recovery-navigation consumer, and remove its dependency on a Migration
+parent or link. Never create a body copy or redirect.
 
 ### Wave 5: Simplify Gates, Fixtures, and SHA Tracking
 
@@ -279,14 +312,20 @@ derived from the Registry, a one-field mutation, and a temporary-Git recovery
 case. They do not resurrect deleted documents from a fixed workspace commit,
 copy full historical bodies, or pin fixture and corpus counts.
 
-Allow commit identifiers only for supply-chain pins, minimal Stage 98 recovery,
-actual logical implementation commits recorded in the current Task, and a
-bounded transition fallback proven to have a live recovery consumer. Remove
-branch-tip equality, expected design or implementation SHA chains, persistent
-blob or diff digest ledgers, historical byte equality, and test-only workspace
-commit pins. This does not remove an ephemeral digest comparison required by
-the shared-worktree concurrency policy; that comparison is not retained as a
-document lineage control.
+Keep only the existing minimal Stage 98 validation needed for retained archive
+or Tombstone records: safe paths, the registered minimal shape, and a
+`commit:path` that resolves to a regular Git blob when recovery is claimed.
+Remove Migration-body, section-count, row-count, digest, topology, and current-
+membership checks.
+
+Allow commit identifiers only for supply-chain pins, retained minimal Stage 98
+recovery, actual logical implementation commits recorded in the current Task,
+and a bounded transition fallback proven to have a live recovery consumer.
+Remove branch-tip equality, expected design or implementation SHA chains,
+persistent blob or diff digest ledgers, historical byte equality, and test-only
+workspace commit pins. This does not remove an ephemeral digest comparison
+required by the shared-worktree concurrency policy; that comparison is not
+retained as a document lineage control.
 
 ### Wave 6: Verify and Close
 
@@ -307,8 +346,8 @@ its registered recovery is proven.
 | Workflow contract | Public profile and CI execution routing |
 | Disposition rule set | Task-local complete coverage rules plus explicit non-`keep` paths; never a lifecycle registry or corpus copy |
 | Protected research declaration | Package-local, non-normative record of the user retention decision and protected path selector; SPEC acceptance remains authoritative |
-| Migration | Minimal path mapping and recovery evidence; no execution body |
-| Tombstone | Minimal stable retired-path recovery pointer |
+| Temporary Migration | In-flight historical source mapping only; every current consumer moves before the interface and directory are deleted |
+| Archive/Tombstone | Explicitly retained minimal historical record or stable retired-path recovery pointer; never current authority |
 | Fixture | Current generated contract, one-field mutation, or temporary-Git recovery case |
 
 Generated provider adapters may consume Stage 00 sources and provider routing
@@ -325,9 +364,11 @@ retained projections receive an explicit canonical-source mapping.
 | Consumer cleanup removes the user-protected latest research | Apply `PROTECT_LATEST` before consumer disposition and retain its substantive body, sources, and claims even at zero consumers |
 | Transient Task evidence is removed before protection remains enforceable | Persist the dynamic path declaration in the package README and make existing reference tests GREEN before Task retirement |
 | Historical evidence remains active guidance | Migrate needed meaning to a current owner, then delete the non-protected Stage 90 package; active owners never defer to Stage 90 |
+| A current SDLC, Operations, or Reference document cites Stage 98 | Move any still-current meaning to its canonical owner, remove the inbound citation or cross-link, and make the existing link/lifecycle suite reject recurrence |
 | SPEC-0157 is presented as previously approved | Record the anomaly and current revalidation; preserve the real transition order |
 | A Task disposition becomes a new lifecycle | Keep disposition values local to execution; validate document status against Stage 99 only |
-| Stage 98 reduction breaks recovery | Prove every retained `commit:path` resolves to a regular Git blob before mutation |
+| A historical Migration remains a current authority or permanent archive package | Block completion until every current consumer is moved and the Migration profile, files, and directory are removed |
+| Stage 98 reduction breaks required recovery navigation | Inventory live consumers first and prove every retained recovery `commit:path` resolves to a regular Git blob before and after mutation |
 | Gate reduction drops a live guarantee | Search every registered and direct consumer, add the replacement test, then remove the old path |
 | Fixture cleanup removes a real domain oracle | Limit this reduction to document-contract history fixtures; retain agent-output and supply-chain oracles |
 | Provider projection becomes a policy source | Correct canonical inputs first, generate through the registered renderer, and verify parity |
@@ -363,32 +404,41 @@ retained projections receive an explicit canonical-source mapping.
    unresolved and pending non-protected package dispositions are both zero.
    Root and category indexes are excluded from this package-root set and match
    the resulting tree.
-7. Stage 98 contains no deleted body, snapshot, raw execution ledger, or
-   duplicate digest, and every recovery tuple resolves to a regular Git blob.
-8. Stage 99 Registry and templates contain no parallel or unused document
+7. Stage 98 has no `migrations/` directory or Migration document. It contains
+   only its structural index and minimal archive/Tombstone records proven
+   necessary by an explicit preservation need or live recovery-navigation
+   consumer; retained recovery pointers use safe paths and resolve to regular
+   Git blobs. No Stage 98 artifact contains a deleted body clone, redirect,
+   snapshot, raw execution ledger, duplicate digest, frozen topology, or
+   current-membership authority.
+8. Stages 00, 01, 02, 03, 05, and 90 contain zero citations or cross-links to
+   Stage 98 documents or files, including generated indexes and code-form path
+   literals. Any retained archive navigation points outward to current owners;
+   no current owner points inward to archive evidence.
+9. Stage 99 Registry and templates contain no parallel or unused document
    authority, and every retained template has a registered target role.
-9. The six public suites and `changed|full` profiles remain stable, every
+10. The six public suites and `changed|full` profiles remain stable, every
    manifest validator executes exactly once in `full`, and no Task-numbered
    immutable validator inventory remains.
-10. Document-contract tests contain no fixed-workspace historical document
+11. Document-contract tests contain no fixed-workspace historical document
     resurrection, fixture-count pin, corpus-count pin, or count-bearing test
     name.
-11. Active Plans contain no branch-tip equality, expected SHA lineage,
+12. Active Plans contain no branch-tip equality, expected SHA lineage,
     persistent blob or diff digest ledger, or historical byte-equality control.
     Only approved recovery, supply-chain, actual Task commit evidence, and
     policy-required ephemeral concurrency checks remain.
-12. Workflow coordinator, writer, evidence author, evaluator, governance
+13. Workflow coordinator, writer, evidence author, evaluator, governance
     reviewer, exact-diff reviewer, and human approver responsibilities are
     distinct in canonical Stage 00 and provider routing.
-13. Stage 99 document-path authority and Provider Registry runtime-projection
+14. Stage 99 document-path authority and Provider Registry runtime-projection
     authority are explicitly disjoint; renderer and hook inventories are
     derived from their declared owner rather than a second code constant.
-14. Generated provider adapters are byte-for-byte fresh and define no policy.
-15. Metadata active and contract checks, document graph, document lifecycle and
+15. Generated provider adapters are byte-for-byte fresh and define no policy.
+16. Metadata active and contract checks, document graph, document lifecycle and
     recovery, agent-governance repository checks, Operations complete, focused
     unit tests, provider parity, `git diff --check`, and the full CI profile all
     pass.
-16. No runtime, remote, deployment, secret, or infrastructure state is changed.
+17. No runtime, remote, deployment, secret, or infrastructure state is changed.
 
 ## Traceability
 
@@ -396,7 +446,7 @@ retained projections receive an explicit canonical-source mapping.
 | :--- | :--- |
 | REQ-0024 | Canonical AI-agent governance, role separation, provider projection boundaries, and current Stage terminology |
 | REQ-0025 | Approved Spec/Plan/Task sequence, targeted and full validation, independent review, recovery, and honest completion |
-| ADR-0029 | Stage 00/99 authority split, six public suites, Task evidence, Stage 90 non-authority, and Stage 98 recovery boundary |
+| ADR-0029 | Stage 00/99 authority split and six public suites, corrected so current authority and structural review no longer depend on temporary Stage 98 Migrations |
 | SPEC-0157 | Script and test ownership, reachable validation, current fixtures, derived census, and bounded Git-history behavior |
 
 ## Operational Impact
@@ -416,4 +466,3 @@ than inferred from documentation.
 - [SDLC](../../00.agent-governance/sdlc.md)
 - [Stage Authoring Matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [Stage 98 Archive](../../98.archive/README.md)

@@ -59,6 +59,9 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 28 | Closed the Stage 90 preservation re-review | Independent re-review returned `Spec compliance: PASS` and `Quality: APPROVED`. It confirmed that no historical SHA is a protected-content baseline, the Task 2 current execution-baseline package is the sole protection subject, and Task 6 must establish the package-local persistent declaration and existing reference-test coverage before transient Task evidence retires. Design commits: `f7ccecfb`, `b00c697f`. No Stage 90 artifact was changed or dispositioned. |
 | 29 | Strengthened Stage 90 cleanup to a completion condition | The user confirmed that the latest externally researched `RES-0002` package is preserved and every other baseline Research, Audit, or Data package must reach terminal disposition. Draft SPEC-0158 now requires consumer and needed-meaning migration followed by deletion, a final package-root set containing only `RES-0002`, and zero unresolved or pending dispositions. Root/category READMEs are structural indexes, not packages. No Stage 90 artifact was changed or dispositioned by this design correction. |
 | 30 | Revalidated the mandatory cleanup design against current tracked evidence | The protected package still has 21 tracked execution-baseline paths as an observation rather than a count pin; Stage 90 status and diff are empty; the search for superseded optional-retention wording returned zero hits. Metadata contracts and changed-document metadata reported zero violations, all links reported zero failures, and diff hygiene passed. This validates the design boundary only; actual migration and deletion remain unobserved SPEC-0158 work. |
+| 31 | Corrected the Stage 98 retention design after the user ruling | Current inspection found three Migration documents and direct consumers across the active ADR, Stage 99, governance libraries, generators, manifests, and tests. Draft SPEC-0158 now treats the Migration layer as temporary historical input: it must move every current consumer first, remove the active Migration contract, delete all Migration documents and their directory, and retain only the structural index plus minimal archive records proven necessary by explicit preservation or live recovery navigation. SPEC-0157 changed no Stage 98 artifact and makes no implementation-completion claim. |
+| 32 | Added the archive-isolation and stage-ownership ruling | The user fixed Stage 00 as AI-agent governance/role/skill authority; Stages 01--03 as the consistent SDLC chain; Stage 05 as Operations Guide/Incident/Postmortem/Runbook ownership; Stage 90 as Audit/Research/Data evidence; Stage 98 as isolated archive; and Stage 99 as docs template authority. A read-only search found existing inbound archive-file citations and links across current and historical documents. Draft SPEC-0158 now requires zero such inbound references from Stages 00/01/02/03/05/90, including generated indexes, while allowing retained archive records to point outward. This is design evidence only; the current corpus remains `needs_revalidation` until SPEC-0158 executes and verifies the cleanup. |
+| 33 | Revalidated the corrected Stage 98 and stage-ownership design | Repository metadata contracts reported `violations=0`; changed-document metadata selected 16 documents with `violations=0`, `legacy_exceptions=0`, and `transition_overrides=0`; the existing all-links check reported `failures=0`; and diff hygiene passed. The current link check does not yet enforce the newly approved archive-isolation predicate, so these results validate document shape and existing links only. Actual zero-inbound proof remains unobserved SPEC-0158 work. |
 
 ### Discovered branch commits
 
@@ -903,6 +906,25 @@ is self-approved by this registration.
     baseline Research, Audit, or Data package. Its completion package-root set
     contains only `RES-0002`, with zero unresolved or pending dispositions;
     structural root/category READMEs are excluded from that set.
+18. Stage 00 owns AI-agent governance, system rules, roles, skills, provider
+    boundaries, and the common SDLC workflow; Stages 01--03 own the consistent
+    Requirements, Architecture, and Spec chain; Stage 05 owns current
+    operational profiles; Stage 90 owns non-normative Audit, Research, and Data;
+    Stage 98 owns isolated minimal archive records; and Stage 99 owns the docs
+    templates and document-shape contract.
+19. Stage 98 Migration records are temporary historical inputs, not a durable
+    authority or retention target. Draft SPEC-0158 must first decouple the
+    active ADR, Stage 99, validators, generators, manifests, tests, and every
+    other current consumer; then it removes the Migration contract, documents,
+    and directory. Validation stays limited to safe paths, minimal retained-
+    record shape, and regular-blob recovery when claimed; no body, digest,
+    count, topology, or current-membership contract survives.
+20. Stages 00, 01, 02, 03, 05, and 90 must contain zero citations or
+    cross-links to Stage 98 documents or files. Draft SPEC-0158 owns the
+    source-bounded inventory, current-owner migration, protected-research path
+    corrections, generated-index correction, and existing-suite regression.
+    Archive navigation is one-way from a retained minimal record to a current
+    replacement. This active SPEC-0157 Task performs no archive disposition.
 
 ## Deferred Items
 
@@ -915,6 +937,11 @@ is self-approved by this registration.
   delete it. SPEC-0158 cannot complete until only `RES-0002` remains as a
   package and unresolved/pending dispositions are zero. This active SPEC-0157
   Task performs no Stage 90 disposition.
+- Stage 98 consumer decoupling, Migration removal, minimal archive
+  reclassification, and inbound-reference cleanup belong to draft SPEC-0158.
+  This active SPEC-0157 Task changes fixture design so no new current test reads
+  archive documents, but it does not mutate Stage 98 or claim the existing
+  inbound citations are already removed.
 
 ## Related Documents
 

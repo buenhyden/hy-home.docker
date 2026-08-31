@@ -1093,7 +1093,7 @@ git commit -m "test(gate): Route every test module through the full profile"
 
 - Consumes: Task 5's registration, so a regression here is caught rather than silent.
 - Produces: current Registry/template fixtures for document contracts and
-  temporary-Git or current-row fixtures for Stage 98 recovery.
+  temporary-Git fixtures for regular-blob recovery.
 - Preserves: `HistoricalDocument` only where regular-blob recovery is the
   behavior under test.
 
@@ -1149,11 +1149,11 @@ behavior is still declared by the current Registry or a current template.
 
 - [ ] **Step 4: Keep recovery tests recovery-specific**
 
-`test_operations_catalog.py` may read the current Migration 0003 recovery row.
-Any other `HistoricalDocument` test creates a temporary Git repository, commits
-one regular file, deletes it from the worktree, and reads that exact
-`commit:path`. It must also reject a tree, missing object, or non-regular blob.
-No recovery test embeds a workspace commit literal.
+Every `HistoricalDocument` test creates a temporary Git repository, commits one
+regular file, deletes it from the worktree, and reads that exact `commit:path`.
+It must also reject a tree, missing object, or non-regular blob. No document-
+contract or Operations test reads a Stage 98 document as fixture authority, and
+no recovery test embeds a workspace commit literal.
 
 - [ ] **Step 5: Verify**
 
@@ -1576,8 +1576,8 @@ Two are new to this Spec Package:
    list someone maintains.
 6. **A document-contract test judges the current corpus, never a deleted
    taxonomy.** Current contracts derive from the Registry or registered
-   template. Recovery tests use temporary Git or a current Stage 98 row and do
-   not pin an unrelated workspace commit.
+   template. Recovery tests use temporary Git, do not read archive documents,
+   and do not pin an unrelated workspace commit.
 7. **Discovered implementation is revalidated, never retroactively approved.**
    Task 0 records the actual earlier commit range, activates the legal parent
    chain, and reruns the affected checks before any new production mutation.
