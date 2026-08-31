@@ -341,125 +341,46 @@ repair separately.
 
 **Files:**
 
-- Modify: `scripts/lib/document_governance/archive.py` — `TASK10_RECOVERY_REFERENCE_COUNT` at line 797 and its check at 810
-- Modify: `tests/lib/document_governance/test_archive.py` — the tombstone and recovery-row pins
-- Modify: `tests/validation/test_document_corpus_lifecycle.py` — `tombstones=`, `recovery_rows=`, `decisions=` string assertions
-- Modify: `tests/lib/document_governance/test_spec_packages.py` — the fixed current package count
+- Modify: `tests/lib/document_governance/test_archive.py` — targeted guard for the
+  current-repository Spec Package coverage test
+- Modify: `tests/lib/document_governance/test_spec_packages.py` — derive the
+  current package surface from Spec directories
 
 **Interfaces:**
 
-- Consumes: Task 1's four-mode tuple, because `check-recovery` prints the counts these tests read.
-- Produces: no literal count of tombstones, recovery rows, preservation
-  decisions, or current Spec Packages anywhere under `scripts/` or `tests/`.
+Task 2's archive and lifecycle relations already landed in discovered commits
+`dd41a675` and `342863ff`; their focused suites were revalidated GREEN. The
+only remaining mismatch directly observed in this Task is the literal current
+Spec Package count (`34 != 35`).
 
-- [ ] **Step 1: Write the invariant that proves the pins are gone**
-
-Add to `tests/lib/document_governance/test_archive.py`:
-
-```python
-    def test_no_census_literal_pins_archive_content(self) -> None:
-        """A count that describes repository content is computed from it.
-
-        Authoring one tombstone during SPEC-0157's design broke eleven
-        hand-maintained counts, one of them encoded in a test's name. Each had
-        to be found and advanced by hand, and finding them was the expensive
-        part.
-        """
-
-        sources = (
-            pathlib.Path("scripts/lib/document_governance/archive.py"),
-            pathlib.Path("tests/lib/document_governance/test_archive.py"),
-            pathlib.Path("tests/lib/document_governance/test_spec_packages.py"),
-            pathlib.Path("tests/validation/test_document_corpus_lifecycle.py"),
-        )
-        offenders = []
-        for source in sources:
-            text = (ROOT / source).read_text(encoding="utf-8")
-            for pattern in (
-                r"tombstones\s*=\s*\d+",
-                r"recovery_rows\s*=\s*\d+",
-                r"decisions\s*=\s*\d+",
-                r"TASK10_RECOVERY_REFERENCE_COUNT\s*=\s*\d+",
-                r"assertEqual\(\d+,\s*len\(packages\)\)",
-            ):
-                offenders.extend(
-                    f"{source}:{match}" for match in re.findall(pattern, text)
-                )
-        self.assertEqual([], offenders)
-```
-
-- [ ] **Step 2: Run it and confirm it fails**
+- [x] **Step 1: Reproduce the remaining current-repository failure**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive.ArchiveMinimizationTests.test_no_census_literal_pins_archive_content
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
 ```
 
-Expected: FAIL listing the four literals.
+Observed: `test_current_repository_has_exact_canonical_spec_surface` failed
+with `34 != 35` while the loader and on-disk `spec.md` directories both exposed
+the same 35-package set.
 
-- [ ] **Step 3: Derive the constant in `archive.py`**
+- [x] **Step 2: Add and witness the narrow regression guard**
 
-Replace `TASK10_RECOVERY_REFERENCE_COUNT = 277` and the check that reads it:
+Add a test that parses only `test_current_repository_*` methods in
+`test_spec_packages.py` and rejects an integer literal compared with
+`len(packages)`. This deliberately does not scan the whole file: fixture tests
+legitimately assert their one-package fixture cardinality.
 
-```python
-def _expected_recovery_reference_count(root: pathlib.Path) -> int:
-    """Legacy change deletions plus one row per tombstone, counted from both.
-
-    This replaced a frozen literal that every legitimate tombstone broke, along
-    with three test literals that moved with it.
-    """
-
-    change_rows = sum(
-        1
-        for row in task10_rows(root)
-        if row.get("action") == "delete"
-        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
-    )
-    return change_rows + len(load_archive(root / "docs/98.archive").tombstones)
+```bash
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive.ArchiveMinimizationTests.test_no_current_repository_spec_package_cardinality_pin
 ```
 
-In `load_task10_recovery_references`, replace the constant comparison:
+Observed before the repair: the guard failed with
+`test_current_repository_has_exact_canonical_spec_surface:34`.
 
-```python
-    expected = _expected_recovery_reference_count(root)
-    if len(references) != expected:
-        raise ValueError(
-            f"Task 10 must expose exactly {expected} artifact recovery tuples"
-        )
-```
+- [x] **Step 3: Derive the current Spec Package surface**
 
-The check still fails closed: it now catches a reference list that disagrees
-with the ledger and the archive, which is the real invariant, rather than
-disagreeing with a number someone typed.
-
-- [ ] **Step 4: Replace the three test literals with relations**
-
-In `tests/validation/test_document_corpus_lifecycle.py`,
-`test_check_recovery_mode_uses_minimal_archive_authority` asserts
-`tombstones=43`, `recovery_rows=277`, and `decisions=189` as substrings.
-Replace them:
-
-```python
-        inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
-        rows = archive_authority.load_task10_recovery_references(ROOT)
-        decisions = archive_authority.load_task10_preservation_decisions(ROOT)
-        self.assertIn(f"tombstones={len(inventory.tombstones)}", result.stdout)
-        self.assertIn(f"recovery_rows={len(rows)}", result.stdout)
-        self.assertIn(f"decisions={len(decisions)}", result.stdout)
-```
-
-In `tests/lib/document_governance/test_archive.py`, replace
-`self.assertEqual(43, len(inventory.tombstones))` and
-`self.assertEqual(277, len(rows))` with the relation each was approximating:
-
-```python
-        self.assertEqual(
-            len(inventory.tombstones),
-            sum(1 for item in rows if item.commit),
-        )
-```
-
-In `tests/lib/document_governance/test_spec_packages.py`, replace the current
-repository assertion that pins `len(packages)` with a set relation:
+Rename the current-repository test for coverage rather than cardinality and
+replace its literal with this set relation:
 
 ```python
         expected_paths = {
@@ -470,27 +391,24 @@ repository assertion that pins `len(packages)` with a set relation:
         self.assertEqual(expected_paths, {package.path for package in packages})
 ```
 
-Rename the test to describe coverage rather than an exact surface size. This is
-the regression SPEC-0158 exposed: adding one valid package changed `34` to `35`
-without changing the contract.
+Keep the existing prefix, Stage 04, and legacy-role assertions unchanged.
 
-- [ ] **Step 5: Verify the derived relations**
+- [x] **Step 4: Verify the repair and existing derived relations**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive 2>&1 | grep -E "^(Ran |OK|FAILED)"
-PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle 2>&1 | grep -E "^(Ran |OK|FAILED)"
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages 2>&1 | grep -E "^(Ran |OK|FAILED)"
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
 ```
 
-Expected: all three commands report `OK`. The tests create bounded temporary
-fixtures where mutation is needed; verification does not edit the live archive.
+Observed: archive (22 tests), lifecycle (116 tests), and Spec Package (16 tests)
+all report `OK`.
 
-- [ ] **Step 6: Reconcile the discovered commit**
+- [x] **Step 5: Record the repair boundary**
 
-Do not create a duplicate commit while revalidating the already-landed work.
-Record the actual logical commit and its focused results in the current Task.
-If a failed check reopens this Task, stage only the exact repaired paths named
-in that Task evidence and commit the repair separately.
+Keep `dd41a675` and `342863ff` as discovered archive/lifecycle evidence; record
+the new current-Spec-Package repair separately in the active Task. Neither
+record retroactively approves the discovered commits.
 
 ---
 

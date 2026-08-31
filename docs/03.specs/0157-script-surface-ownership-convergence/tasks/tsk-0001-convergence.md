@@ -36,6 +36,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 5 | Committed recovery record | 923b2765 docs(spec): Activate script surface convergence with recovered evidence. |
 | 6 | Applied review round 1 corrections | Plan activated; complete pre-Task-0 diff-stat captured; completed bookkeeping fixed; manifest snippets and library ownership contract corrected. |
 | 7 | Revalidated Task 1 implementation at `dd665618` | Consumer inventory resolves exactly four reachable modes (`check-public`, `check-contract`, `check-promoted`, `check-recovery`). The lifecycle suite, all four modes, and the workflow contract are GREEN. The shared manifest bundle is RED only for five Task 3-owned package markers; no Task 1 production change or duplicate production commit was made. |
+| 8 | Repaired the remaining Task 2 Spec Package count pin | Directly observed the existing `34 != 35` failure and the new targeted guard RED. Replaced the pin with the loader-to-directory set relation; targeted guard plus archive, lifecycle, and Spec Package suites are GREEN. Independent review remains pending. |
 
 ### Discovered branch commits
 
@@ -270,27 +271,56 @@ this revalidation is not an approval.
 The evidence-only commit `7a10255f` and this correction's successor HEAD are
 documentation state, not the production baseline used for the Task 1 checks.
 
-### Task 2 — reopened
+### Task 2 — repaired; independent review pending
 
-Logical commits: dd41a675 and 342863ff.
+Discovered logical commits: `dd41a675` and `342863ff`. They already derive the
+archive/lifecycle relations; this Task does not retroactively approve them.
+Current repair commit: `053a39ab`.
 
 ~~~text
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
+FAIL: test_current_repository_has_exact_canonical_spec_surface
+AssertionError: 34 != 35
+
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive.ArchiveMinimizationTests.test_no_current_repository_spec_package_cardinality_pin
+FAIL: ['test_current_repository_has_exact_canonical_spec_surface:34']
+
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive.ArchiveMinimizationTests.test_no_current_repository_spec_package_cardinality_pin
+Ran 1 test in 0.019s
+OK
+
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive
-Ran 21 tests in 31.453s
+Ran 22 tests in 40.992s
 OK
 
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
-Ran 116 tests in 109.165s
+Ran 116 tests in 134.804s
 OK
 
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
-Ran 16 tests in 5.827s
-FAILED (failures=1)
+Ran 16 tests in 7.930s
+OK
 ~~~
 
-The remaining failure is the current valid-package assertion 34 != 35. Task 2
-must measure and remove the actual remaining count pin, not recreate the
-obsolete four-failure RED demonstration.
+The repaired current-repository test compares the set of immediate Stage 03
+directories containing `spec.md` with `{package.path for package in packages}`.
+It retains the prefix, Stage 04, and legacy-role assertions. The AST guard
+examines only `test_current_repository_*` methods for an integer literal against
+`len(packages)`, so intentional one-package fixture cardinalities remain valid.
+
+The documentation record was also checked after this repair:
+
+~~~text
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+metadata repository contracts: violations=0
+
+python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$(git merge-base main HEAD)"
+metadata check-changed: selected=14 violations=0 legacy_exceptions=0 transition_overrides=0
+
+python3 scripts/validation/check-document-links.py --mode all
+document links: mode=all documents=568 links=4868 catalog_pairs_total=46 archive_direct_links_total=0 removed_template_mentions_total=0 failures=0
+PASS: document link mode all
+~~~
 
 ### Task 3 — reopened
 
@@ -388,7 +418,7 @@ is self-approved by this registration.
 | Logical unit | Commit(s) | Status |
 | :--- | :--- | :--- |
 | Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle RED pending Task 3 |
-| Task 2 census derivation | dd41a675, 342863ff | Reopened by 34 != 35 |
+| Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
 | Task 3 library ownership move | d6b7eafe, e23d93f1 | Reopened by five package-marker manifest failures |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 
@@ -412,7 +442,6 @@ is self-approved by this registration.
 
 ## Deferred Items
 
-- Task 2 production repair: remove the measured Spec Package count pin.
 - Task 3 production repair: remove the five unnecessary package markers.
 
 ## Related Documents
