@@ -229,6 +229,9 @@ class CiGateAdapterTests(unittest.TestCase):
             "tests.lib",
             "tests.lib..test_escape",
             "tests.lib.gate.test-ci_gate_adapters",
+            "tests.lib.123bad",
+            "tests.lib.gate.9module",
+            "tests.validation.0case",
         ):
             with self.subTest(module=module):
                 with self.assertRaises(adapters.AdapterError) as caught:

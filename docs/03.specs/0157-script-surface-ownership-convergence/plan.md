@@ -666,13 +666,14 @@ Runner admission is not sufficient: `ci_gate_adapters.py` currently admits
 only `tests.validation.*` and `tests.lib.document_governance.*`. Replace only
 the structural boundary of `_UNITTEST_MODULE` with the two authoritative roots
 `tests.validation` and `tests.lib`, followed by one or more nonempty dotted
-identifier segments. Do not enumerate library domains here: that would create a
-second hand-maintained ownership list beside the exact invocation authority in
-`_INTERNAL_ADAPTER_CONTEXTS`. Use this exact structural grammar:
+segments with the ASCII Python identifier shape
+`[A-Za-z_][A-Za-z0-9_]*`. Do not enumerate library domains here: that would
+create a second hand-maintained ownership list beside the exact invocation
+authority in `_INTERNAL_ADAPTER_CONTEXTS`. Use this exact structural grammar:
 
 ```python
 _UNITTEST_MODULE = re.compile(
-    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z0-9_]+)+\Z"
+    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z"
 )
 ```
 

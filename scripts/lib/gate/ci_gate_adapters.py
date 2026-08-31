@@ -37,7 +37,7 @@ _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
 # valid nonempty dotted segments. Exact complete argv admission remains owned
 # by the runner, so this grammar does not duplicate the library-domain list.
 _UNITTEST_MODULE = re.compile(
-    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z0-9_]+)+\Z"
+    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z"
 )
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _GIT_OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
