@@ -56,6 +56,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 25 | Revalidated the corrected full-Gate and evidence boundary | The staged correction full Gate ran 251 tests in 156.679 seconds and retained only the exact Task 6 five. The manifest module ran 53 tests with only its two base-proven unreachable failures. Raw old-path output was removed from the ignored scratch report, and the current authoritative live surfaces were separately rechecked with zero prohibited hits. Metadata contracts and changed-document checks reported zero violations, all links reported zero failures, and diff hygiene passed. Independent Task/Python re-review remains pending. |
 | 26 | Recorded the user-directed Stage 90 preservation boundary | The entire tracked 21-file `RES-0002` research pack observed at this ruling is one atomic `PROTECT_LATEST` unit, but SPEC-0158 Task 2 must remeasure the current execution baseline. Commit `95142c3a` promoted and activated the draft; `07b94403` later restored and merged substantive content across all 21 files; `3bf50f94` later added claim-bearing corrections; `65e8dfde` remains the last new-leaf addition; and `6663f02c` changes only three link destinations. Other later governance or path edits may exist. Every identifier is illustrative provenance only, never the final protected state, a restore target, Gate, baseline, or branch-lineage control. No Stage 90 artifact was changed or dispositioned by this ruling. |
 | 27 | Corrected the Stage 90 preservation design after independent review | Review returned `Spec FAIL` and `Quality CHANGES_REQUESTED`: the first version mislabeled `95142c3a` as the final research-body state and left the protected path inventory only in transient Task evidence. The correction makes the Task 2 current package measurement the sole preservation subject and requires Task 6 to persist the non-hash path declaration in the `RES-0002` package README before Task evidence retirement. Correction is pending independent re-review and claims no approval. |
+| 28 | Closed the Stage 90 preservation re-review | Independent re-review returned `Spec compliance: PASS` and `Quality: APPROVED`. It confirmed that no historical SHA is a protected-content baseline, the Task 2 current execution-baseline package is the sole protection subject, and Task 6 must establish the package-local persistent declaration and existing reference-test coverage before transient Task evidence retires. Design commits: `f7ccecfb`, `b00c697f`. No Stage 90 artifact was changed or dispositioned. |
 
 ### Discovered branch commits
 
@@ -539,7 +540,7 @@ count and full content, and excludes only `.git` plus the verified generated
 graph root `graphify-out/`. Every line must be classified as preserved
 historical evidence or prohibited current/live usage.
 
-### Task 4 — implemented; correction pending independent re-review
+### Task 4 — implemented and independently approved
 
 Implementation commit: `6663f02c`
 `refactor(tests): Mirror library ownership in the test surface`.
@@ -760,6 +761,16 @@ Task 2 current execution-baseline package as the preservation subject and
 requires a package-local README declaration plus existing reference-test
 coverage before Task retirement. Independent re-review is pending; this is not
 an approval.
+
+Stage 90 preservation correction re-review: `Spec compliance: PASS`;
+`Quality: APPROVED`. The reviewer confirmed that the current Task 2 measurement
+is the sole protection subject, every named commit is illustrative
+provenance only, and the persistent package-local declaration plus existing
+reference-test coverage must be GREEN before transient Task evidence retires.
+The review also confirmed that the correction adds no top-level Gate, public
+suite, validator, schema, content hash, byte-equality oracle, or count pin and
+does not mutate any Stage 90 artifact. The preservation design is approved;
+actual Stage 90 disposition remains deferred to draft SPEC-0158.
 
 Round 2 read-only primary-owner output:
 
