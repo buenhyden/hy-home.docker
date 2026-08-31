@@ -57,14 +57,14 @@ from dataclasses import dataclass
 # The shell selected and entered the Git root; import only its own package.
 sys.path.insert(0, str(pathlib.Path.cwd()))
 
-from scripts.validation.ci_gate_contract import (
+from scripts.lib.gate.ci_gate_contract import (
     GateContractError,
     load_contract_document,
     load_public_suite_registry,
     parse_public_gate_contract,
     public_root_gate_ids,
 )
-from scripts.validation.github_workflow_contract import (
+from scripts.lib.gate.github_workflow_contract import (
     WorkflowContractError,
     WorkflowDocument,
     load_workflow_contract,

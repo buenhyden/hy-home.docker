@@ -5,7 +5,7 @@ BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
 if [[ "$#" -ne 0 ]]; then
-  echo "Usage: bash scripts/validation/validate-harness.sh" >&2
+  echo "Usage: bash scripts/lib/ops/validate-harness.sh" >&2
   exit 2
 fi
 

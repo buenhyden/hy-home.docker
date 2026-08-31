@@ -15,12 +15,13 @@ from typing import Final
 
 import yaml
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.lib.document_governance import suite_registry  # noqa: E402
-from scripts.validation import ci_gate_contract, ci_gate_runner  # noqa: E402
+from scripts.lib.gate import ci_gate_contract  # noqa: E402
+from scripts.validation import ci_gate_runner  # noqa: E402
 
 
 PUBLIC_SUITES: Final = (

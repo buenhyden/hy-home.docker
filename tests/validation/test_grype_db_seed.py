@@ -11,7 +11,7 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-HELPER_PATH = ROOT / "scripts/validation/grype_db_seed.py"
+HELPER_PATH = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 HARNESS_PATH = ROOT / "scripts/security/seed-grype-db-cache.sh"
 OUTPUT_RELATIVE = pathlib.Path(
     "_workspace/repo-support/"

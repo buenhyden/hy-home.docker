@@ -744,7 +744,7 @@ class DocumentLinksCliTests(unittest.TestCase):
                     self.assertEqual(2, rejected.returncode)
 
     def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
-        from scripts.validation.agent_governance_contract import HISTORICAL_TABLE_MARKER, current_markdown_authority
+        from scripts.lib.agent_governance.agent_governance_contract import HISTORICAL_TABLE_MARKER, current_markdown_authority
 
         command = "bash scripts/validation/check-doc-traceability.sh"
         table = f"{HISTORICAL_TABLE_MARKER}\n| Command | Result |\n| --- | --- |\n| `{command}` | observed PASS |\n"
@@ -754,7 +754,7 @@ class DocumentLinksCliTests(unittest.TestCase):
 
     def test_active_publications_do_not_instruct_deleted_shell_validators(self) -> None:
         from scripts.lib.document_governance.frontmatter import read_frontmatter_values
-        from scripts.validation.agent_governance_contract import current_markdown_authority
+        from scripts.lib.agent_governance.agent_governance_contract import current_markdown_authority
 
         candidates = [ROOT / "README.md"]
         for root in (

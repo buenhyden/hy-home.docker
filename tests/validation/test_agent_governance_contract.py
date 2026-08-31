@@ -12,7 +12,7 @@ import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-MODULE = ROOT / "scripts/validation/agent_governance_contract.py"
+MODULE = ROOT / "scripts/lib/agent_governance/agent_governance_contract.py"
 
 
 def load_contract_module():

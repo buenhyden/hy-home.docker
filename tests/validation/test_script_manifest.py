@@ -105,7 +105,7 @@ MUTATION_OVERRIDES = {
     "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
     "scripts/validation/generate-security-automation-readiness.sh": "check-write",
     "scripts/validation/report-provider-hook-parity.sh": "check-write",
-    "scripts/validation/rehearse-postgres-logical-upgrade.sh": "runtime",
+    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/validation/run-compose-core-readiness.sh": "runtime",
     "scripts/validation/compose-core-readiness.lib.sh": "runtime",
@@ -474,7 +474,7 @@ class ScriptManifestTests(unittest.TestCase):
                     inputs.add(semantic["task_evidence"])
                     inputs.update(path for assertion in semantic["assertions"] for path in assertion["required_evidence_paths"])
                 elif "supply-chain" in script:
-                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/validation/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
+                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/lib/supply_chain/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "infra").glob("supply-chain*.json"))
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "tests/fixtures/supply-chain").rglob("*") if path.is_file())
                 elif "hook-parity" in script:
@@ -628,7 +628,7 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertFalse(
             _python_imports_target(
                 adapter,
-                "scripts/validation/target_surface_contract.py",
+                "scripts/lib/target_surface/target_surface_contract.py",
             )
         )
 
@@ -646,7 +646,7 @@ class ScriptManifestTests(unittest.TestCase):
                 self.assertEqual(disposition, self.rows_by_path[path]["disposition"])
 
         postgres = self.rows_by_path[
-            "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(

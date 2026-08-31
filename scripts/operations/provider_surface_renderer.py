@@ -19,11 +19,10 @@ from dataclasses import dataclass
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-VALIDATION = ROOT / "scripts/validation"
-if str(VALIDATION) not in sys.path:
-    sys.path.insert(0, str(VALIDATION))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-from agent_governance_contract import (  # noqa: E402
+from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
     AgentGovernanceState,
     ContractLoadError,
     RoleRecord,

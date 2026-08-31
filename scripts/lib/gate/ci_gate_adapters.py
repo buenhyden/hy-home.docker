@@ -241,7 +241,7 @@ def main(argv: list[str] | None = None) -> int:
     root = (
         pathlib.Path(root_value)
         if root_value
-        else pathlib.Path(__file__).resolve().parents[2]
+        else pathlib.Path(__file__).resolve().parents[3]
     )
     try:
         return run_adapter(root, arguments, os.environ)

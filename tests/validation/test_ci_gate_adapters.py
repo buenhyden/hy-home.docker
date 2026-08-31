@@ -12,7 +12,7 @@ import unittest
 from collections.abc import Mapping
 from unittest import mock
 
-from scripts.validation import ci_gate_adapters as adapters
+from scripts.lib.gate import ci_gate_adapters as adapters
 
 
 REAL_SUBPROCESS_RUN = subprocess.run

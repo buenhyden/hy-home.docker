@@ -112,7 +112,7 @@ Direct re-read of `agent-catalog.yaml` at commit
 `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` confirms
 exactly 14 `agent_id` entries (`agent-catalog.yaml:53,69,85,103,117,133,147,
 162,177,194,211,227,243,257`), matching `EXPECTED_AGENT_COUNT = 14` enforced
-in `scripts/validation/agent_governance_contract.py:69`. Every entry's scope,
+in `scripts/lib/agent_governance/agent_governance_contract.py:69`. Every entry's scope,
 tier, and work profile:
 
 | `agent_id`            | `scope`    | `tier`       | `work_profile`             |
@@ -363,7 +363,7 @@ does not evidence that an environment override was set here.
 | [Claude Code subagents reference](https://code.claude.com/docs/en/sub-agents)                                                                               | 2026-08-14T13:40:00+09:00 | External mutable  | HTTP 200; subagent model-resolution precedence, `effort` frontmatter, and the explicit no-per-subagent-thinking statement.                  |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                                                                | 2026-08-14T13:40:00+09:00 | External mutable  | Re-read; HTTP 200; source of the `model_reasoning_effort` five-value drift analysis.                                                        |
 | Agent catalog contract (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                                                                         | 2026-08-14                | Workspace tracked | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; 14 agents, 8-value `scopes:` enum, full role table re-derived line by line.   |
-| [Governance contract validator](../../../../scripts/validation/agent_governance_contract.py)                                                                | 2026-08-14                | Workspace tracked | `EXPECTED_AGENT_COUNT = 14` / `EXPECTED_FUNCTION_COUNT = 24` / `EXPECTED_PROVIDER_COUNT = 3` constants at lines 69-71.                      |
+| [Governance contract validator](../../../../scripts/lib/agent_governance/agent_governance_contract.py)                                                                | 2026-08-14                | Workspace tracked | `EXPECTED_AGENT_COUNT = 14` / `EXPECTED_FUNCTION_COUNT = 24` / `EXPECTED_PROVIDER_COUNT = 3` constants at lines 69-71.                      |
 | [LLM model routing 2026: cost-quality optimization](https://www.digitalapplied.com/blog/llm-model-routing-2026-cost-quality-optimization-engineering-guide) | 2026-08-14                | External mutable  | Dynamic complexity-scored routing practice and reported cost-reduction figures; not adopted, comparative only.                              |
 | [TRACE-Router: task-consistent and adaptive online routing for agentic AI](https://arxiv.org/html/2607.22465v1)                                             | 2026-08-14                | External fixed    | Versioned arXiv preprint; formalizes dynamic routing as an online decision problem, contrasted against this repository's static assignment. |
 

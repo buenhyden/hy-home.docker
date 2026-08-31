@@ -22,7 +22,7 @@ TIMEOUT_NEGATIVE_TOTAL_SECONDS=20
 TIMEOUT_NEGATIVE_CLEANUP_RESERVE_SECONDS=8
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 FIXTURE_DIR="${ROOT_DIR}/tests/fixtures/postgres-logical-upgrade"
 COMPOSE_FILE="${FIXTURE_DIR}/docker-compose.yml"
 SEED_SQL="${FIXTURE_DIR}/sql/001_schema_and_seed.sql"

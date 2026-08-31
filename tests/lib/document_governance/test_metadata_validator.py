@@ -23,7 +23,7 @@ from scripts.lib.document_governance.taxonomy import (
     requirement_package_identity,
     validate_stable_identity,
 )
-from scripts.validation.ci_gate_contract import (
+from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
     load_public_suite_registry,
     parse_public_gate_contract,

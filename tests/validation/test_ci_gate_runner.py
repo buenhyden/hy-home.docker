@@ -17,8 +17,8 @@ from unittest import mock
 
 import yaml
 
-from scripts.validation import ci_gate_contract as contract
-from scripts.validation import ci_gate_adapters as adapters
+from scripts.lib.gate import ci_gate_contract as contract
+from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.validation import ci_gate_runner as runner
 
 
@@ -163,7 +163,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             index = next(
                 index
                 for index, row in enumerate(rows)
-                if row["path"] == "scripts/validation/ci_gate_contract.py"
+                if row["path"] == "scripts/lib/gate/ci_gate_contract.py"
             )
             if mode == "kind":
                 rows[index]["kind"] = "library"
@@ -625,7 +625,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 item.path
                 for item in suites.validators
                 if item.path
-                != pathlib.PurePosixPath("scripts/validation/ci_gate_adapters.py")
+                != pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
             }
             self.assertEqual(
                 explained_paths,
@@ -639,10 +639,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
             if not item.execution_contexts
         }
         self.assertIn(
-            "scripts/validation/rehearse-postgres-logical-upgrade.sh",
+            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh",
             manual_only,
         )
-        self.assertIn("scripts/validation/validate-harness.sh", manual_only)
+        self.assertIn("scripts/lib/ops/validate-harness.sh", manual_only)
         gates = contract.parse_gate_registry(
             document, ".github/workflow-contract.yml"
         )
@@ -779,7 +779,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 ("scripts/operations/rehearse-sample-service-delivery.sh", ("rehearse",)),
                 ("scripts/knowledge/generate-llm-wiki.py", ("--write",)),
                 ("scripts/validation/report-provider-hook-parity.sh", ()),
-                ("scripts/validation/ci_gate_adapters.py", ("run-zizmor-sarif",)),
+                ("scripts/lib/gate/ci_gate_adapters.py", ("run-zizmor-sarif",)),
             )
         )
         for invocation in forbidden:
@@ -800,7 +800,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         document = contract.load_contract_document(pathlib.Path.cwd())
         for node in document["gate_nodes"]:
             if node["gate_id"] == "leaf.local-diff-hygiene":
-                node["entrypoint"] = "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                node["entrypoint"] = "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 node["argv"] = []
         with (
             mock.patch.object(runner, "load_contract_document", return_value=document),
@@ -1297,11 +1297,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         original_root = self.root.with_name(f"{self.root.name}-original")
@@ -1331,7 +1331,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                             dataclasses.replace(
                                 _invocation(
                                     "setup.compose-env",
-                                    "scripts/validation/ci_gate_adapters.py",
+                                    "scripts/lib/gate/ci_gate_adapters.py",
                                 ),
                                 argv=("prepare-compose-env",),
                             ),
@@ -1358,11 +1358,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         fake_bin = self.root / "fake-bin-isolation"
@@ -1376,7 +1376,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         invocation = dataclasses.replace(
             _invocation(
                 "leaf.zizmor",
-                "scripts/validation/ci_gate_adapters.py",
+                "scripts/lib/gate/ci_gate_adapters.py",
             ),
             argv=("run-zizmor-sarif",),
         )
@@ -1401,11 +1401,11 @@ class DescriptorExecutionTests(unittest.TestCase):
         (self.root / "results.sarif").unlink()
 
     def _assert_registered_adapter_integrations(self) -> None:
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         (self.root / ".env.example").write_text(
@@ -1429,14 +1429,14 @@ class DescriptorExecutionTests(unittest.TestCase):
             dataclasses.replace(
                 _invocation(
                     "setup.compose-env",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("prepare-compose-env",),
             ),
             dataclasses.replace(
                 _invocation(
                     "leaf.zizmor",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("run-zizmor-sarif",),
             ),
@@ -1516,7 +1516,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         harness = (
             "#!/usr/bin/env python3\n"
             "import pathlib,subprocess,sys,time\n"
-            "from scripts.validation import ci_gate_adapters as adapters\n"
+            "from scripts.lib.gate import ci_gate_adapters as adapters\n"
             "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             f"source={child_source!r}\n"
             "command=(sys.executable,'-c',source,mode,ready,ack,release,trigger)\n"
@@ -1543,11 +1543,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             "    raise SystemExit(2)\n"
             "raise SystemExit(result.returncode)\n"
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         self.add_entrypoint("scripts/validation/tree-harness.py", harness)

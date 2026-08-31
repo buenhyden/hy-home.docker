@@ -47,14 +47,13 @@ def _repository_root() -> pathlib.Path:
 
 
 ROOT = _repository_root()
-_VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
-if _VALIDATION_DIRECTORY not in sys.path:
-    sys.path.insert(0, _VALIDATION_DIRECTORY)
 _REPOSITORY_DIRECTORY = str(ROOT)
 if _REPOSITORY_DIRECTORY not in sys.path:
     sys.path.insert(0, _REPOSITORY_DIRECTORY)
 
-from agent_governance_contract import normalize_repo_relative_path  # noqa: E402
+from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
+    normalize_repo_relative_path,
+)
 from scripts.lib.document_governance.architecture import (  # noqa: E402
     ArchitectureDocumentError,
     load_architecture_documents,

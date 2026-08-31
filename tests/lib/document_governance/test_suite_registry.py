@@ -123,7 +123,7 @@ class SuiteRegistryTests(unittest.TestCase):
         duplicate["path"] = "scripts/lib/document_governance/duplicate.py"
         duplicate["kind"] = "library"
         duplicate.pop("public_suites")
-        duplicate["consumers"] = ["scripts/validation/ci_gate_contract.py"] * 2
+        duplicate["consumers"] = ["scripts/lib/gate/ci_gate_contract.py"] * 2
         document["files"].append(duplicate)
         with self.assertRaisesRegex(SuiteRegistryError, "duplicates"):
             self._load(document)

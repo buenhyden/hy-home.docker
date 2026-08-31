@@ -101,6 +101,21 @@ files:
   successor: null
   tests:
   - tests/validation/test_target_surface_contracts.py
+- path: scripts/lib/agent_governance/agent_governance_contract.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: []
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-agent-governance-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/document_governance/__init__.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -273,7 +288,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/ci_gate_contract.py
+  - scripts/lib/gate/ci_gate_contract.py
   disposition: retain
   successor: null
   tests:
@@ -289,6 +304,55 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_taxonomy.py
+- path: scripts/lib/gate/ci_gate_adapters.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_ci_gate_adapters.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/gate/ci_gate_contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/gate/github_workflow_contract.py
+  - scripts/lib/target_surface/target_surface_delta_contract.py
+  - scripts/validation/ci_gate_runner.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_ci_gate_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/gate/github_workflow_contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/hardening-lib.sh
   kind: library
   authority: .github/workflow-contract.yml
@@ -300,6 +364,78 @@ files:
   successor: null
   tests:
   - tests/validation/test_hardening_lib.sh
+- path: scripts/lib/ops/rehearse-postgres-logical-upgrade.sh
+  kind: validator
+  public_suites:
+  - operations
+  execution_contexts: []
+  authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+- path: scripts/lib/ops/validate-harness.sh
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/supply_chain/grype_db_seed.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/security/seed-grype-db-cache.sh
+  - scripts/security/verify-sample-service-supply-chain.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_grype_db_seed.py
+- path: scripts/lib/target_surface/target_surface_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-target-surface-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/target_surface/target_surface_delta_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-target-surface-delta-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/manifest.yaml
   kind: contract
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -474,21 +610,6 @@ files:
   tests:
   - tests/validation/test_grype_db_seed.py
   - tests/validation/test_supply_chain_policy.py
-- path: scripts/validation/agent_governance_contract.py
-  kind: validator
-  public_suites:
-  - agent-governance
-  execution_contexts: []
-  authority: docs/99.templates/registry.json
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/check-agent-governance-contract.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agent_governance_contract.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/agent_output_eval.py
   kind: validator
   public_suites:
@@ -789,46 +910,13 @@ files:
   successor: null
   tests:
   - tests/validation/test_compose_baseline_gates.py
-- path: scripts/validation/ci_gate_adapters.py
-  kind: validator
-  public_suites:
-  - repository-integrity
-  execution_contexts: []
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - .github/workflow-contract.yml
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_ci_gate_adapters.py
-  - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/ci_gate_contract.py
-  kind: validator
-  public_suites:
-  - repository-integrity
-  execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/ci_gate_runner.py
-  - scripts/validation/github_workflow_contract.py
-  - scripts/validation/target_surface_delta_contract.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_ci_gate_contract.py
-  - tests/validation/test_target_surface_delta_contracts.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/ci_gate_runner.py
   kind: runner
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/target_surface_delta_contract.py
+  - scripts/lib/target_surface/target_surface_delta_contract.py
   - tests/validation/test_ci_gate_runner.py
   disposition: retain
   successor: null
@@ -882,51 +970,6 @@ files:
   - --check
   outputs:
   - docs/90.references/data/0078-security-automation-readiness/README.md
-- path: scripts/validation/github_workflow_contract.py
-  kind: validator
-  public_suites:
-  - repository-integrity
-  execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_github_workflow_contract.py
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_github_workflow_contract.py
-  - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/grype_db_seed.py
-  kind: validator
-  public_suites:
-  - repository-integrity
-  execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/security/seed-grype-db-cache.sh
-  - scripts/security/verify-sample-service-supply-chain.sh
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_grype_db_seed.py
-- path: scripts/validation/rehearse-postgres-logical-upgrade.sh
-  kind: validator
-  public_suites:
-  - operations
-  execution_contexts: []
-  authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
-  lifecycle: active
-  mutation: runtime
-  consumers:
-  - docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/validation/report-audit-pack-coverage.sh
   kind: validator
   public_suites:
@@ -1036,35 +1079,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/target_surface_contract.py
-  kind: validator
-  public_suites:
-  - document-contract
-  execution_contexts: []
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/check-target-surface-contract.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_target_surface_contracts.py
-  - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/target_surface_delta_contract.py
-  kind: validator
-  public_suites:
-  - document-contract
-  execution_contexts: []
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/check-target-surface-delta-contract.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_target_surface_delta_contracts.py
 - path: scripts/validation/validate-docker-compose.sh
   kind: operations
   authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
@@ -1075,17 +1089,3 @@ files:
   disposition: rewrite
   successor: scripts/validation/validate-docker-compose.sh
   tests: []
-- path: scripts/validation/validate-harness.sh
-  kind: validator
-  public_suites:
-  - agent-governance
-  execution_contexts: []
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_validator_entrypoints.py

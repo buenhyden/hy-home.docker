@@ -31,7 +31,7 @@ EXECUTION_CONTEXT_NAMES = (
 IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
     {
         PurePosixPath("scripts/hardening/check-all-hardening.sh"): "repository-integrity",
-        PurePosixPath("scripts/validation/agent_governance_contract.py"): "agent-governance",
+        PurePosixPath("scripts/lib/agent_governance/agent_governance_contract.py"): "agent-governance",
         PurePosixPath("scripts/validation/agent_output_eval.py"): "agent-governance",
         PurePosixPath("scripts/validation/audit_criterion_contract.py"): "repository-integrity",
         PurePosixPath("scripts/validation/check-agent-governance-contract.py"): "agent-governance",
@@ -50,31 +50,17 @@ IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
         PurePosixPath("scripts/validation/check-target-surface-contract.py"): "document-contract",
         PurePosixPath("scripts/validation/check-target-surface-delta-contract.py"): "document-contract",
         PurePosixPath("scripts/validation/check-template-security-baseline.sh"): "repository-integrity",
-        PurePosixPath("scripts/validation/ci_gate_adapters.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/ci_gate_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/github_workflow_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/grype_db_seed.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/rehearse-postgres-logical-upgrade.sh"): "operations",
+        PurePosixPath("scripts/lib/gate/ci_gate_adapters.py"): "repository-integrity",
+        PurePosixPath("scripts/lib/gate/ci_gate_contract.py"): "repository-integrity",
+        PurePosixPath("scripts/lib/gate/github_workflow_contract.py"): "repository-integrity",
+        PurePosixPath("scripts/lib/supply_chain/grype_db_seed.py"): "repository-integrity",
+        PurePosixPath("scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"): "operations",
         PurePosixPath("scripts/validation/report-audit-pack-coverage.sh"): "document-lifecycle",
         PurePosixPath("scripts/validation/report-provider-hook-parity.sh"): "agent-governance",
-        PurePosixPath("scripts/validation/target_surface_contract.py"): "document-contract",
-        PurePosixPath("scripts/validation/target_surface_delta_contract.py"): "document-contract",
-        PurePosixPath("scripts/validation/validate-harness.sh"): "agent-governance",
+        PurePosixPath("scripts/lib/target_surface/target_surface_contract.py"): "document-contract",
+        PurePosixPath("scripts/lib/target_surface/target_surface_delta_contract.py"): "document-contract",
+        PurePosixPath("scripts/lib/ops/validate-harness.sh"): "agent-governance",
     }
-)
-NON_STANDALONE_VALIDATOR_PATHS = frozenset(
-    PurePosixPath(path)
-    for path in (
-        "scripts/validation/agent_governance_contract.py",
-        "scripts/validation/ci_gate_adapters.py",
-        "scripts/validation/ci_gate_contract.py",
-        "scripts/validation/github_workflow_contract.py",
-        "scripts/validation/grype_db_seed.py",
-        "scripts/validation/rehearse-postgres-logical-upgrade.sh",
-        "scripts/validation/target_surface_contract.py",
-        "scripts/validation/target_surface_delta_contract.py",
-        "scripts/validation/validate-harness.sh",
-    )
 )
 _MIRRORED_TEST_ROOT = PurePosixPath("tests/lib/document_governance")
 MAX_MANIFEST_BYTES = 1_048_576
@@ -248,7 +234,7 @@ def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
             )
             expected_contexts = (
                 ()
-                if row_path in NON_STANDALONE_VALIDATOR_PATHS
+                if row_path.as_posix().startswith("scripts/lib/")
                 else EXECUTION_CONTEXT_NAMES[1:]
                 if row_path == PurePosixPath("scripts/hardening/check-all-hardening.sh")
                 else EXECUTION_CONTEXT_NAMES

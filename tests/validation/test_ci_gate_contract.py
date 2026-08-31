@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.validation import ci_gate_contract as contract
+from scripts.lib.gate import ci_gate_contract as contract
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]

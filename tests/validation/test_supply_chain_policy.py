@@ -28,7 +28,7 @@ COSIGN_OFFLINE_SIGNING_CONFIG = (
 )
 COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
-SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
+SEED_HELPER = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
 
 RUNTIME_MATERIAL_REF = (

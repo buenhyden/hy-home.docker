@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PYTHON_ENTRYPOINTS = (
     "scripts/knowledge/generate-llm-wiki.py",
     "scripts/operations/provider_surface_renderer.py",
-    "scripts/validation/agent_governance_contract.py",
+    "scripts/lib/agent_governance/agent_governance_contract.py",
     "scripts/validation/agent_output_eval.py",
     "scripts/validation/check-agent-governance-contract.py",
     "scripts/validation/check-document-corpus-lifecycle.py",
@@ -22,11 +22,11 @@ PYTHON_ENTRYPOINTS = (
     "scripts/validation/check-supply-chain-policy.py",
     "scripts/validation/check-target-surface-contract.py",
     "scripts/validation/check-target-surface-delta-contract.py",
-    "scripts/validation/ci_gate_contract.py",
+    "scripts/lib/gate/ci_gate_contract.py",
     "scripts/validation/ci_gate_runner.py",
-    "scripts/validation/github_workflow_contract.py",
+    "scripts/lib/gate/github_workflow_contract.py",
     "scripts/validation/run-ci-gate.py",
-    "scripts/validation/target_surface_contract.py",
+    "scripts/lib/target_surface/target_surface_contract.py",
 )
 SHELL_ENTRYPOINTS = (
     "scripts/hardening/check-all-hardening.sh",
@@ -38,7 +38,7 @@ SHELL_ENTRYPOINTS = (
     "scripts/validation/run-agent-output-eval-fixtures.sh",
     "scripts/validation/run-agent-precommit-all-files.sh",
     "scripts/validation/run-local-qa-gates.sh",
-    "scripts/validation/validate-harness.sh",
+    "scripts/lib/ops/validate-harness.sh",
 )
 
 
@@ -58,7 +58,7 @@ class ValidatorEntrypointTests(unittest.TestCase):
 
     def test_ci_gate_adapter_rejects_unadmitted_commands(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "scripts/validation/ci_gate_adapters.py", "unadmitted"],
+            [sys.executable, "scripts/lib/gate/ci_gate_adapters.py", "unadmitted"],
             cwd=ROOT,
             check=False,
             capture_output=True,

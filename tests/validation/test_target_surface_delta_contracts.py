@@ -12,9 +12,9 @@ from unittest import mock
 
 import yaml
 
-from scripts.validation import ci_gate_contract
+from scripts.lib.gate import ci_gate_contract
 from scripts.validation import ci_gate_runner
-from scripts.validation import target_surface_delta_contract as contract
+from scripts.lib.target_surface import target_surface_delta_contract as contract
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]

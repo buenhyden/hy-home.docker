@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.validation.ci_gate_contract import load_public_suite_registry
+from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -295,7 +295,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             1,
             operations.validators.count(
                 pathlib.PurePosixPath(
-                    "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 )
             ),
         )

@@ -21,7 +21,7 @@ from collections.abc import Mapping
 from scripts.lib.document_governance import suite_registry as public_suite_registry
 
 try:
-    from scripts.validation.ci_gate_contract import (
+    from scripts.lib.gate.ci_gate_contract import (
         GateContractError,
         GateKind,
         GateRegistry,
@@ -120,7 +120,7 @@ class ExecutionContext(enum.Enum):
 
 _ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
 _CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
-_INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/validation/ci_gate_adapters.py")
+_INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
 # These are exact internal commands, not an exemption for an entire script path.
 _INTERNAL_ADAPTER_CONTEXTS = {
     **{

@@ -15,7 +15,7 @@ from typing import Final
 import yaml
 
 try:
-    from scripts.validation.ci_gate_contract import (
+    from scripts.lib.gate.ci_gate_contract import (
         CI_DEPENDENCY_BOOTSTRAP,
         GateContractError,
         GateRegistry,
@@ -2790,7 +2790,7 @@ def main(argv: list[str] | None = None) -> int:
     root = (
         arguments.root.resolve()
         if arguments.root is not None
-        else pathlib.Path(__file__).resolve().parents[2]
+        else pathlib.Path(__file__).resolve().parents[3]
     )
     try:
         contract = load_workflow_contract(root)

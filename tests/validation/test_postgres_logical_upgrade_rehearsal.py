@@ -14,11 +14,11 @@ import textwrap
 import time
 import unittest
 
-from scripts.validation.ci_gate_contract import load_public_suite_registry
+from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+SCRIPT = ROOT / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
 FIXTURE = ROOT / "tests/fixtures/postgres-logical-upgrade"
 COMPOSE = FIXTURE / "docker-compose.yml"
 SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
@@ -211,10 +211,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="ior-direct-run-", dir="/tmp") as tmp:
             root = Path(tmp) / "repo"
-            script = root / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+            script = root / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
             script.parent.mkdir(parents=True)
             shutil.copy2(SCRIPT, script)
-            shutil.copy2(IMAGE_IDENTITY_CHECKER, script.parent / IMAGE_IDENTITY_CHECKER.name)
+            checker = root / "scripts/validation" / IMAGE_IDENTITY_CHECKER.name
+            checker.parent.mkdir(parents=True)
+            shutil.copy2(IMAGE_IDENTITY_CHECKER, checker)
             if stub_image_config_observer:
                 source = script.read_text(encoding="utf-8")
                 marker = 'if [ "$SCRIPT_IS_SOURCED" = false ]; then\n'
@@ -514,7 +516,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     root = Path(tmp) / "repo"
                     isolated_script = (
                         root
-                        / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                        / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                     )
                     isolated_script.parent.mkdir(parents=True)
                     shutil.copy2(SCRIPT, isolated_script)
@@ -1078,7 +1080,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         )
         self.assertEqual(
             operations.validators.count(
-                Path("scripts/validation/rehearse-postgres-logical-upgrade.sh")
+                Path("scripts/lib/ops/rehearse-postgres-logical-upgrade.sh")
             ),
             1,
         )

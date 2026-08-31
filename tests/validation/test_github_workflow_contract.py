@@ -17,7 +17,7 @@ from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-MODULE_PATH = ROOT / "scripts/validation/github_workflow_contract.py"
+MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 REQUIRED_CI_JOBS = frozenset(
     {
         "validation-changed",

@@ -30,7 +30,7 @@ CURRENT_DELTA_MANIFEST = (
     ROOT
     / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
-TARGET_VALIDATOR = ROOT / "scripts/validation/target_surface_contract.py"
+TARGET_VALIDATOR = ROOT / "scripts/lib/target_surface/target_surface_contract.py"
 TARGET_CLI = ROOT / "scripts/validation/check-target-surface-contract.py"
 TARGET_ROOTS = (
     ".github",

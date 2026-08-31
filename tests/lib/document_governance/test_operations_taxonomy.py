@@ -22,7 +22,7 @@ from scripts.lib.document_governance.operations_catalog import (
     load_task8_migration,
     validate_active_operations_references,
 )
-from scripts.validation.ci_gate_contract import (
+from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
     load_public_suite_registry,
     parse_public_gate_contract,
@@ -154,7 +154,7 @@ class OperationsAuthorityTests(unittest.TestCase):
                     "scripts/validation/check-operations-catalog.py"
                 ),
                 pathlib.PurePosixPath(
-                    "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 ),
             ),
             operations.validators,
@@ -166,7 +166,7 @@ class OperationsAuthorityTests(unittest.TestCase):
             row
             for row in manifest["files"]
             if row["path"]
-            == "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+            == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
         )
         self.assertEqual("validator", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])
@@ -222,7 +222,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
         self.assertEqual(
             registry.public_names,
-            _public_suites_for("scripts/validation/ci_gate_contract.py"),
+            _public_suites_for("scripts/lib/gate/ci_gate_contract.py"),
         )
 
     def test_migration0003_slice_is_exact_and_preconditions_are_resolved(self) -> None:
