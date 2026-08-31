@@ -138,7 +138,7 @@ git commit -m "docs(spec): Activate script surface convergence with recovered ev
 - Consumes: nothing from earlier tasks.
 - Produces: `MODES = ("check-public", "check-contract", "check-promoted", "check-recovery")`, a four-element tuple every later task may assume.
 
-- [ ] **Step 1: Record every consumer of every mode, before deleting anything**
+- [x] **Step 1: Record every consumer of every mode, before deleting anything**
 
 A mode has three possible consumers and all three are searched. An earlier
 version of this step read only the first two, reported three reachable modes,
@@ -175,7 +175,7 @@ If a mode appears that this step does not list, stop and reconcile before
 deleting it. `main` at the time of writing has exactly these; anything else is
 new information.
 
-- [ ] **Step 2: Write the failing test for the reduced tuple**
+- [x] **Step 2: Write the failing test for the reduced tuple**
 
 In `tests/validation/test_document_corpus_lifecycle.py`, replace the body of
 `test_modes_are_the_exact_fixed_tuple`:
@@ -204,7 +204,7 @@ PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
 
 Expected: FAIL, an 18-tuple against the 4-tuple.
 
-- [ ] **Step 4: Retire the three non-gating workflow steps**
+- [x] **Step 4: Retire the three non-gating workflow steps**
 
 `.github/workflows/document-corpus-lifecycle.yml` invokes `check-impacted`,
 `report-full`, and `report-duplicates` on a weekly schedule. None of them
@@ -227,7 +227,7 @@ python3 scripts/validation/check-github-workflow-contract.py
 Expected: exit 0. The contract pins the workflow's name, triggers, permissions,
 jobs, and timeout, none of which this edit touches.
 
-- [ ] **Step 5: Reduce `MODES` and delete the unreachable mode bodies**
+- [x] **Step 5: Reduce `MODES` and delete the unreachable mode bodies**
 
 Replace lines 96 to 115 of `scripts/validation/check-document-corpus-lifecycle.py`:
 
@@ -245,7 +245,7 @@ only from one. After each deletion run
 `python3 -c "import ast,pathlib; ast.parse(pathlib.Path('scripts/validation/check-document-corpus-lifecycle.py').read_text())"`
 so a broken parse is caught immediately rather than at the end.
 
-- [ ] **Step 6: Delete `provenance_policy.py` and its test**
+- [x] **Step 6: Delete `provenance_policy.py` and its test**
 
 ```bash
 git rm scripts/lib/document_governance/provenance_policy.py tests/lib/document_governance/test_provenance_policy.py
@@ -257,7 +257,7 @@ Expected: the only remaining hit is the `check-recovery` call site in
 `policy_findings` it feeds; `check-recovery` keeps `recovery_findings`, which is
 the tuple-to-blob proof the mode exists for.
 
-- [ ] **Step 7: Remove the manifest and suite rows for the deleted module**
+- [x] **Step 7: Remove the manifest and suite rows for the deleted module**
 
 ```bash
 python3 - <<'PY'
@@ -275,7 +275,7 @@ grep -n "provenance_policy" scripts/lib/document_governance/suite_registry.py sc
 
 Delete every line the `grep` prints.
 
-- [ ] **Step 8: Register `check-recovery` as a gate leaf**
+- [x] **Step 8: Register `check-recovery` as a gate leaf**
 
 In `.github/workflow-contract.yml`, copy the `leaf.local-document-corpus-promoted`
 block and change exactly two fields:
@@ -294,7 +294,7 @@ block and change exactly two fields:
 Leave `cwd`, `allowed_env_keys`, `timeout_minutes`, `profiles`, and `suite_key`
 identical to the block you copied.
 
-- [ ] **Step 9: Repoint the three mode matrices**
+- [x] **Step 9: Repoint the three mode matrices**
 
 The matrices at lines 4463, 4500, and 4634 exclude `check-public` and
 `check-recovery` and assert the rest. With four modes the remainder is
@@ -304,7 +304,7 @@ removed modes. The name carried a count, which SPEC-0155 recorded as the
 failure mode that made
 `test_all_188_preservation_decisions_are_unique_and_reviewed` need renaming.
 
-- [ ] **Step 10: Verify**
+- [x] **Step 10: Verify**
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle 2>&1 | grep -E "^(Ran |OK|FAILED)"
@@ -317,7 +317,13 @@ PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 
 Expected: `OK`, four `exit=0`, `PASS`.
 
-- [ ] **Step 11: Reconcile the discovered commit**
+Revalidated at `dd665618`: the lifecycle suite, all four modes, and the
+GitHub workflow contract are GREEN. The shared manifest bundle remains RED
+only for the five Task 3-owned unregistered package markers
+(`scripts/lib/{agent_governance,gate,ops,supply_chain,target_surface}/__init__.py`);
+do not register or remove them in Task 1.
+
+- [x] **Step 11: Reconcile the discovered commit**
 
 Do not create a duplicate commit while revalidating the already-landed work.
 Record the actual logical commit and its focused results in the current Task.

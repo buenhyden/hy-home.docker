@@ -35,6 +35,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 4 | Recovery metadata/link checks | All three commands passed: contract violations=0, changed-document violations=0, links failures=0. |
 | 5 | Committed recovery record | 923b2765 docs(spec): Activate script surface convergence with recovered evidence. |
 | 6 | Applied review round 1 corrections | Plan activated; complete pre-Task-0 diff-stat captured; completed bookkeeping fixed; manifest snippets and library ownership contract corrected. |
+| 7 | Revalidated Task 1 implementation at `dd665618` | Consumer inventory resolves exactly four reachable modes (`check-public`, `check-contract`, `check-promoted`, `check-recovery`). The lifecycle suite, all four modes, and the workflow contract are GREEN. The shared manifest bundle is RED only for five Task 3-owned package markers; no Task 1 production change or duplicate production commit was made. |
 
 ### Discovered branch commits
 
@@ -136,7 +137,7 @@ The following is the complete output of git diff --stat
 
 ## Verification Evidence
 
-### Task 1 — reopened
+### Task 1 — revalidated; shared manifest bundle pending Task 3
 
 Logical commits: 412542b0 and 8b4f8e9b.
 
@@ -159,8 +160,49 @@ FAIL [manifest-record-missing] scripts/lib/target_surface/__init__.py
 script_manifest_failures=5
 ~~~
 
-The focused check is not fully green. It remains reopened; the recorded
-manifest failure is owned by the Task 3 package-marker correction.
+Current HEAD revalidation at `dd665618` found the exact reachable mode set by
+all consumer classes: `check-public` from the suite registry;
+`check-contract`, `check-promoted`, and `check-recovery` from workflow-contract
+leaves; and `check-contract` plus `check-promoted` from the scheduled workflow.
+The broader repository sweep found references and test fixtures, but no further
+mode invocation. The distinct reachable set is therefore exactly the four modes
+in `MODES`.
+
+~~~text
+PYTHONPATH=. python3 -m unittest tests.validation.test_document_corpus_lifecycle
+Ran 116 tests in 105.953s
+OK
+
+check-public exit=0
+check-contract exit=0
+check-promoted exit=0
+check-recovery exit=0
+
+PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
+PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
+~~~
+
+The implementation remains the two discovered logical commits `412542b0` and
+`8b4f8e9b`; their diffs match Task 1 Steps 1--9: four-mode tuple, recovery
+leaf, retirement of the three scheduled non-gating calls, deletion of
+`provenance_policy`, manifest/suite cleanup, and reduced mode matrices. No
+duplicate production commit was created during revalidation.
+
+The manifest check is not fully green, but its exact five failures are only the
+Task 3-owned unregistered package markers:
+
+~~~text
+FAIL [manifest-record-missing] scripts/lib/agent_governance/__init__.py
+FAIL [manifest-record-missing] scripts/lib/gate/__init__.py
+FAIL [manifest-record-missing] scripts/lib/ops/__init__.py
+FAIL [manifest-record-missing] scripts/lib/supply_chain/__init__.py
+FAIL [manifest-record-missing] scripts/lib/target_surface/__init__.py
+script_manifest_failures=5
+~~~
+
+Task 1 lifecycle and workflow behavior are GREEN; the shared manifest bundle
+remains RED pending the Task 3 marker repair. Independent review is pending and
+this revalidation is not an approval.
 
 ### Task 2 — reopened
 
@@ -275,7 +317,7 @@ is self-approved by this registration.
 
 | Logical unit | Commit(s) | Status |
 | :--- | :--- | :--- |
-| Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Reopened by the focused manifest check |
+| Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle RED pending Task 3 |
 | Task 2 census derivation | dd41a675, 342863ff | Reopened by 34 != 35 |
 | Task 3 library ownership move | d6b7eafe, e23d93f1 | Reopened by five package-marker manifest failures |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
