@@ -40,6 +40,8 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 9 | Repaired Task 3 package markers | Captured the exact five-marker manifest RED and dependency evidence, deleted only those markers with `apply_patch`, then confirmed namespace imports, manifest, ownership, and workflow checks GREEN. The focused-test RED is Task 5 unregistered agent-governance fixture work; all five full-Gate results are Task 6 registered recovery-fixture work. |
 | 10 | Revalidated the responsibility-split acceptance scope | Measured 37 files above the earlier diagnostic threshold: 32 Python and 5 shell. Only four have named split boundaries in SPEC-0157, leaving 33 outside this Spec, and no authoritative repository-wide limit or exception mechanism exists. Replaced the unsupported global limit with the four measured responsibility contracts. |
 | 11 | Validated the responsibility-split contract correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`; the all-links check reported `failures=0`; `git diff --check` passed. |
+| 12 | Reconciled Task 4 with the actual test mirror and gate wiring | Fixed the move set at eight modules, prohibited new package markers, replaced the impossible generated-prefix rewrite with exact dotted modules, enumerated all current machine/current-document references, and corrected the Task 4 through Task 6 full-Gate ownership boundaries. Rebased four forward references in draft SPEC-0158 without activating or executing it. |
+| 13 | Validated the Task 4 preflight correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`; the all-links check reported `failures=0`; `git diff --check` passed. No production, test, Gate, manifest, workflow, or generated-provider file was modified. |
 
 ### Discovered branch commits
 
@@ -405,6 +407,82 @@ compatibility behavior, lifecycle modes, and preserved test counts. Defining a
 repository-wide limit would require a separately approved Requirement, ADR,
 and Spec rather than an implicit validator or exception registry here.
 
+### Task 4 ownership and wiring preflight
+
+The authoritative mirror set is exactly these eight moves:
+
+~~~text
+tests/validation/test_agent_governance_contract.py -> tests/lib/agent_governance/test_agent_governance_contract.py
+tests/validation/test_ci_gate_adapters.py -> tests/lib/gate/test_ci_gate_adapters.py
+tests/validation/test_ci_gate_contract.py -> tests/lib/gate/test_ci_gate_contract.py
+tests/validation/test_github_workflow_contract.py -> tests/lib/gate/test_github_workflow_contract.py
+tests/validation/test_grype_db_seed.py -> tests/lib/supply_chain/test_grype_db_seed.py
+tests/validation/test_postgres_logical_upgrade_rehearsal.py -> tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py
+tests/validation/test_target_surface_contracts.py -> tests/lib/target_surface/test_target_surface_contracts.py
+tests/validation/test_target_surface_delta_contracts.py -> tests/lib/target_surface/test_target_surface_delta_contracts.py
+~~~
+
+No new `__init__.py` is created. Seven moved files change their repository-root
+derivation from `parents[2]` to `parents[3]`; `test_ci_gate_adapters.py` has no
+such root constant.
+
+The CI runner cannot be corrected by replacing old module strings because its
+current block generates a `tests.validation` prefix from bare stems. Task 4
+replaces it with this exact dotted-module tuple:
+
+~~~text
+tests.validation.test_agent_output_eval_fixtures
+tests.lib.gate.test_ci_gate_contract
+tests.validation.test_ci_gate_runner
+tests.lib.gate.test_ci_gate_adapters
+tests.lib.gate.test_github_workflow_contract
+tests.validation.test_agent_governance_ci_routing
+tests.validation.test_document_corpus_lifecycle
+tests.validation.test_document_metadata
+tests.validation.test_hook_rules
+tests.lib.target_surface.test_target_surface_contracts
+tests.lib.target_surface.test_target_surface_delta_contracts
+tests.validation.test_compose_baseline_gates
+~~~
+
+Current machine references to rewire are the six workflow-contract leaves
+`leaf.ci-gate-adapter-regressions`, `leaf.ci-gate-contract-regressions`,
+`leaf.workflow-contract-regressions`, `leaf.local-target-surface-regressions`,
+`leaf.local-target-delta-regressions`, and `leaf.supply-chain-fixture-policy`;
+the last keeps its other modules while moving both PostgreSQL and Grype tests.
+The same change covers the two supply-chain semantic strings in
+`github_workflow_contract.py` and its moved test, the CI runner's negative
+PostgreSQL name, every manifest reference with sorted test lists, the
+PostgreSQL expectation in `test_script_manifest.py`, the current comment in
+`ci_gate_contract.py`, the agent-governance CODEOWNERS row, accepted manifest
+test roots, the exact two unclassified test READMEs, and the surface-ownership
+invariants.
+
+Current document references to update are the two target-surface commands in
+`scripts/README.md`; the ownership descriptions in `tests/README.md`,
+`tests/lib/README.md`, and `tests/validation/README.md`; the PostgreSQL runbook
+command; and only the live Markdown destinations in
+`quality-ci-formatting.md`, `scope-application-matrix.md`, and
+`workspace-baseline.md` (one CI-gate link and two agent-governance links). The
+three placeholder READMEs under `tests/docs`,
+`tests/qa`, and `tests/setup` are deleted without redirects or tombstones.
+Completed evidence and historical literals stay unchanged.
+
+Draft SPEC-0158 contained four forward instructions for the old
+agent-governance test path: two file references, one dotted unittest command,
+and one staging path. They are rebased to
+`tests/lib/agent_governance/test_agent_governance_contract.py` because the user
+included work in progress in this convergence. SPEC-0158 remains draft and is
+not executed by this Task.
+
+Seven already-registered moved suites must be GREEN. The moved
+agent-governance suite is run explicitly and may retain only its three measured
+Task 5-owned missing-SPEC-0153 fixture subcases. At the Task 4 and Task 5 full
+Gate boundaries, only the five exact Task 6-owned
+`ChangedBodyDeficitGitTests` results recorded above may remain RED. Task 6 owns
+their repair and must restore `FULL exit=0`; no moved-module import or
+registration failure may be deferred.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -510,10 +588,17 @@ is self-approved by this registration.
    measured files with named responsibility boundaries; the other 33 measured
    files are out of scope, and a repository-wide source-size policy requires a
    separate approved Requirement, ADR, and Spec.
+9. Task 4 moves exactly eight primary-owner tests, uses implicit namespace
+   packages, and rewires current executable/current-link references only.
+   Historical literals remain evidence; draft SPEC-0158's future instructions
+   are rebased without changing its lifecycle.
+10. Every Task boundary runs the full Gate and records owned/deferred RED.
+    Task 4 and Task 5 may retain only the five measured Task 6 failures; Task 6
+    and the final boundary require `FULL exit=0`.
 
 ## Deferred Items
 
-- Independent review of the Task 3 repair and its full-Gate boundary.
+- Independent review of this Task 4 preflight correction.
 
 ## Related Documents
 

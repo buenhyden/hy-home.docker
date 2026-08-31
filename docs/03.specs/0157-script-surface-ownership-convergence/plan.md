@@ -500,15 +500,26 @@ pending re-review; SPEC-0157 remains active and is not completed by this Task.
 
 **Files:**
 
-- Create: `tests/lib/gate/`, `tests/lib/supply_chain/`, `tests/lib/target_surface/`, `tests/lib/agent_governance/`, `tests/lib/ops/`
-- Move: the measured library-unit test set, derived from primary `scripts/lib/<domain>/` ownership
-- Delete: `tests/docs/README.md`, `tests/qa/README.md`, `tests/setup/README.md` and their directories
-- Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`, `scripts/manifest.yaml`, `tests/README.md`
+- Create as implicit namespace directories: `tests/lib/gate/`,
+  `tests/lib/supply_chain/`, `tests/lib/target_surface/`,
+  `tests/lib/agent_governance/`, and `tests/lib/ops/`.
+- Move exactly the eight measured library-unit tests listed in Step 2.
+- Delete with `apply_patch`: `tests/docs/README.md`, `tests/qa/README.md`, and
+  `tests/setup/README.md`. The empty directories then disappear; do not leave a
+  redirect or Stage 98 tombstone.
+- Modify the current machine wiring, ownership documentation, runbook command,
+  and live link destinations enumerated in Steps 3 through 5.
 
 **Interfaces:**
 
 - Consumes: Task 3's `scripts/lib/<domain>/` packages.
-- Produces: library-unit test module paths under `tests.lib.<domain>.*`. Validation and execution-context tests, including `agent_output_eval` and `audit_criterion_contract`, remain under `tests.validation.*`.
+- Produces: library-unit test module paths under `tests.lib.<domain>.*`.
+- Preserves: validation and execution-context tests, including
+  `agent_output_eval` and `audit_criterion_contract`, under
+  `tests.validation.*`.
+- Does not create: `__init__.py` in any new test directory. The test mirror uses
+  implicit namespace packages, so every registered moved suite is invoked by
+  its exact dotted module name.
 
 - [ ] **Step 1: Write the mirror invariant**
 
@@ -534,152 +545,203 @@ Add to `tests/lib/test_surface_ownership.py`:
             )
 ```
 
-- [ ] **Step 2: Measure primary library ownership, then move only that set**
+Run the focused ownership test before implementing. It must fail only on the
+missing mirror directories and the three placeholder roots.
 
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
-python3 - <<'PY'
-import pathlib
-import yaml
+- [ ] **Step 2: Move exactly the measured primary-owner set**
 
-root = pathlib.Path(".")
-manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
-claims: dict[str, set[str]] = {}
-for row in manifest.get("files", []):
-    path = str(row.get("path", ""))
-    parts = pathlib.PurePosixPath(path).parts
-    if len(parts) < 4 or parts[:2] != ("scripts", "lib"):
-        continue
-    domain = parts[2]
-    for test in row.get("tests", []):
-        test_path = str(test)
-        if (root / test_path).is_file():
-            claims.setdefault(test_path, set()).add(domain)
+The preflight primary-owner census is the execution authority for this Task:
 
-def primary_owner(test_path: str, domains: set[str]) -> str | None:
-    if len(domains) == 1:
-        return next(iter(domains))
-    stem = pathlib.PurePosixPath(test_path).stem
-    normalized = stem.removeprefix("test_")
-    matches = [
-        domain
-        for domain in domains
-        if normalized == domain or normalized.startswith(domain + "_")
-    ]
-    return matches[0] if len(matches) == 1 else None
+| From | To |
+| :--- | :--- |
+| `tests/validation/test_agent_governance_contract.py` | `tests/lib/agent_governance/test_agent_governance_contract.py` |
+| `tests/validation/test_ci_gate_adapters.py` | `tests/lib/gate/test_ci_gate_adapters.py` |
+| `tests/validation/test_ci_gate_contract.py` | `tests/lib/gate/test_ci_gate_contract.py` |
+| `tests/validation/test_github_workflow_contract.py` | `tests/lib/gate/test_github_workflow_contract.py` |
+| `tests/validation/test_grype_db_seed.py` | `tests/lib/supply_chain/test_grype_db_seed.py` |
+| `tests/validation/test_postgres_logical_upgrade_rehearsal.py` | `tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py` |
+| `tests/validation/test_target_surface_contracts.py` | `tests/lib/target_surface/test_target_surface_contracts.py` |
+| `tests/validation/test_target_surface_delta_contracts.py` | `tests/lib/target_surface/test_target_surface_delta_contracts.py` |
 
-moves = {}
-for test_path, domains in sorted(claims.items()):
-    domain = primary_owner(test_path, domains)
-    if domain is None or not test_path.startswith("tests/validation/"):
-        continue
-    source = test_path.removesuffix(".py").replace("/", ".")
-    destination = f"tests.lib.{domain}.{pathlib.PurePosixPath(test_path).stem}"
-    moves[source] = destination
-for old, new in sorted(moves.items()):
-    print(f"{old} -> {new}")
-PY
-mkdir -p tests/lib/gate tests/lib/supply_chain tests/lib/target_surface tests/lib/agent_governance tests/lib/ops
-# Move only the measured library-unit tests to their matching tests/lib domain.
-# Keep agent_output_eval and audit_criterion_contract tests in tests/validation.
-git rm -r tests/docs tests/qa tests/setup
+Use `git mv` for exactly these eight files. Do not move
+`test_validator_entrypoints.py`, `test_agent_output_eval_fixtures.py`, or any
+audit/agentic test. Do not add `__init__.py`.
+
+Seven moved modules derive `ROOT` from `Path(__file__).resolve().parents[2]`;
+change those to `parents[3]`. `test_ci_gate_adapters.py` has no `ROOT` constant
+and needs no depth edit.
+
+- [ ] **Step 3: Replace generated-prefix runner wiring with exact modules**
+
+`ci_gate_runner.py` currently stores bare stems and prepends
+`tests.validation`. A generic old-to-new string replacement cannot rewrite that
+shape. Replace the generated-prefix block with an exact dotted-module tuple:
+
+```python
+**{
+    ("run-unittest", module_name, "-v"): _ALL_EXECUTION_CONTEXTS
+    for module_name in (
+        "tests.validation.test_agent_output_eval_fixtures",
+        "tests.lib.gate.test_ci_gate_contract",
+        "tests.validation.test_ci_gate_runner",
+        "tests.lib.gate.test_ci_gate_adapters",
+        "tests.lib.gate.test_github_workflow_contract",
+        "tests.validation.test_agent_governance_ci_routing",
+        "tests.validation.test_document_corpus_lifecycle",
+        "tests.validation.test_document_metadata",
+        "tests.validation.test_hook_rules",
+        "tests.lib.target_surface.test_target_surface_contracts",
+        "tests.lib.target_surface.test_target_surface_delta_contracts",
+        "tests.validation.test_compose_baseline_gates",
+    )
+},
 ```
 
-Expected before the moves: FAIL on both new tests. The moved set is the measured
-primary-library-owner set, not a historical list or count.
+Keep the tuple's contract order. In
+`tests/validation/test_ci_gate_runner.py`, update the negative PostgreSQL module
+name to `tests.lib.ops.test_postgres_logical_upgrade_rehearsal`.
 
-- [ ] **Step 3: Rewrite the module names in the gate wiring**
+- [ ] **Step 4: Rewire every current machine contract**
 
-```bash
-python3 - <<'PY'
-import pathlib
-import yaml
+Update these six workflow-contract leaves without changing their ownership or
+other arguments:
 
-manifest = yaml.safe_load(pathlib.Path("scripts/manifest.yaml").read_text())
-claims: dict[str, set[str]] = {}
-for row in manifest.get("files", []):
-    path = str(row.get("path", ""))
-    parts = pathlib.PurePosixPath(path).parts
-    if len(parts) < 4 or parts[:2] != ("scripts", "lib"):
-        continue
-    domain = parts[2]
-    for test in row.get("tests", []):
-        test_path = str(test)
-        if test_path:
-            claims.setdefault(test_path, set()).add(domain)
+| Gate leaf | Moved module(s) |
+| :--- | :--- |
+| `leaf.ci-gate-adapter-regressions` | `tests.lib.gate.test_ci_gate_adapters` |
+| `leaf.ci-gate-contract-regressions` | `tests.lib.gate.test_ci_gate_contract` |
+| `leaf.workflow-contract-regressions` | `tests.lib.gate.test_github_workflow_contract` |
+| `leaf.local-target-surface-regressions` | `tests.lib.target_surface.test_target_surface_contracts` |
+| `leaf.local-target-delta-regressions` | `tests.lib.target_surface.test_target_surface_delta_contracts` |
+| `leaf.supply-chain-fixture-policy` | `tests.lib.ops.test_postgres_logical_upgrade_rehearsal` and `tests.lib.supply_chain.test_grype_db_seed`; preserve its other modules |
 
-def primary_owner(test_path: str, domains: set[str]) -> str | None:
-    if len(domains) == 1:
-        return next(iter(domains))
-    stem = pathlib.PurePosixPath(test_path).stem
-    normalized = stem.removeprefix("test_")
-    matches = [
-        domain
-        for domain in domains
-        if normalized == domain or normalized.startswith(domain + "_")
-    ]
-    return matches[0] if len(matches) == 1 else None
+Then update the two supply-chain semantic strings in
+`scripts/lib/gate/github_workflow_contract.py` and in the moved
+`tests/lib/gate/test_github_workflow_contract.py`.
 
-moves = {}
-for test_path, domains in sorted(claims.items()):
-    domain = primary_owner(test_path, domains)
-    if domain is None or not test_path.startswith("tests/validation/"):
-        continue
-    source = test_path.removesuffix(".py").replace("/", ".")
-    destination = f"tests.lib.{domain}.{pathlib.PurePosixPath(test_path).stem}"
-    moves[source] = destination
-for name in ("scripts/validation/ci_gate_runner.py", ".github/workflow-contract.yml", "scripts/manifest.yaml"):
-    path = pathlib.Path(name)
-    text = path.read_text(encoding="utf-8")
-    for old, new in moves.items():
-        text = text.replace(old, new)
-        text = text.replace(old.replace(".", "/") + ".py", new.replace(".", "/") + ".py")
-    path.write_text(text, encoding="utf-8")
-    print("rewritten:", name)
-PY
+Rewrite every moved test path in `scripts/manifest.yaml`, preserving every row
+and sorting each `tests:` list. In particular, the CI runner row's relevant
+ordered values are:
+
+```yaml
+tests:
+- tests/lib/target_surface/test_target_surface_delta_contracts.py
+- tests/validation/test_ci_gate_runner.py
+- tests/validation/test_validator_entrypoints.py
 ```
 
-- [ ] **Step 4: Correct `tests/README.md`'s Structure block**
+Also update:
 
-Replace the fenced block with the directories that now exist:
+- `scripts/validation/check-script-manifest.py`: accepted test roots are exactly
+  `tests/lib/` and `tests/validation/`;
+- `tests/validation/test_script_manifest.py`: the PostgreSQL expected path and
+  regressions that reject the retired placeholder roots;
+- `tests/validation/test_document_metadata.py`: the unclassified test README
+  set is exactly `tests/lib/README.md` and `tests/validation/README.md`;
+- `scripts/lib/gate/ci_gate_contract.py`: its current test-path comment;
+- `.github/CODEOWNERS`: the agent-governance test path; and
+- `tests/lib/test_surface_ownership.py`: the mirror and placeholder-absence
+  invariants from Step 1.
 
-```text
-tests/
-├── README.md          # This file
-├── fixtures/          # 검증기 입력 fixture
-├── lib/               # scripts/lib/<domain>/ 라이브러리 단위 테스트
-│   ├── document_governance/
-│   ├── gate/
-│   ├── supply_chain/
-│   ├── target_surface/
-│   ├── agent_governance/
-│   └── ops/
-└── validation/        # entrypoint and agent-output evaluation tests
-```
+The moved agent-governance module remains unregistered in Task 4. Task 5 owns
+its measured fixture repair and registration.
 
-- [ ] **Step 5: Verify**
+- [ ] **Step 5: Update only current documentation and future instructions**
+
+Delete the three placeholder READMEs with `apply_patch`. Update:
+
+- `tests/README.md`, `tests/lib/README.md`, and
+  `tests/validation/README.md` to describe the actual two-surface ownership;
+- the two target-surface test commands in `scripts/README.md`;
+- the PostgreSQL command in
+  `docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md`;
+- only the three live Markdown link destinations: the CI gate contract link in
+  `docs/90.references/research/0002-agentic-engineering-research-pack/quality-ci-formatting.md`
+  becomes `../../../../tests/lib/gate/test_ci_gate_contract.py`, while the
+  governance contract links in `scope-application-matrix.md` and
+  `workspace-baseline.md` become
+  `../../../../tests/lib/agent_governance/test_agent_governance_contract.py`;
+  keep their dated prose and historical literals unchanged; and
+- every forward instruction in draft SPEC-0158's `plan.md` that names
+  `tests/validation/test_agent_governance_contract.py`, including its dotted
+  unittest command, to the new agent-governance test path. Keep SPEC-0158 draft
+  and do not execute it.
+
+Completed Spec/Task evidence, Stage 90 dated observations, Stage 98 recovery
+records, and generated historical datasets preserve their old-path literals.
+Only current commands, machine wiring, current comments, ownership declarations,
+and clickable link destinations move.
+
+- [ ] **Step 6: Prove the seven already-registered moved suites**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
+PYTHONPATH=. python3 -m unittest \
+  tests.lib.gate.test_ci_gate_adapters \
+  tests.lib.gate.test_ci_gate_contract \
+  tests.lib.gate.test_github_workflow_contract \
+  tests.lib.ops.test_postgres_logical_upgrade_rehearsal \
+  tests.lib.supply_chain.test_grype_db_seed \
+  tests.lib.target_surface.test_target_surface_contracts \
+  tests.lib.target_surface.test_target_surface_delta_contracts
+PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
+PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner
+PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest
+PYTHONPATH=. python3 -m unittest \
+  tests.validation.test_document_metadata.ReadmeProfileTests
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
-PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task4.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task4.txt
+PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
+```
+
+Expected: all seven registered moved suites and every ownership/wiring check are
+GREEN. Run the eighth suite explicitly:
+
+```bash
+PYTHONPATH=. python3 -m unittest \
+  tests.lib.agent_governance.test_agent_governance_contract
+```
+
+It may remain RED only on the three Task 5-owned missing-SPEC-0153 fixture
+subcases already measured in Task 3. Record their exact identities; do not
+repair or register that module here.
+
+- [ ] **Step 7: Verify documents, stale paths, and the full-Gate boundary**
+
+Run metadata contracts, changed-document metadata, all links, and an
+untruncated old-path sweep. Classify every remaining old-path hit: historical
+evidence may remain, but no current machine reference, command, comment,
+ownership declaration, future instruction, or clickable link destination may
+use an old path.
+
+```bash
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed --base-ref "$(git merge-base main HEAD)"
+python3 scripts/validation/check-document-links.py --mode all
+git diff --check
+PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full \
+  > /tmp/g-task4.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task4.txt
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task4.txt
 ```
 
-Expected: `OK`, `PASS`, `FULL exit=0`.
+The full Gate may report `FULL exit=1` only for these five Task 6-owned
+`ChangedBodyDeficitGitTests` results already measured in Task 3:
 
-- [ ] **Step 6: Commit**
+1. Error: `test_registered_operations_catalog_move_uses_migration_0003_body_baseline`
+2. Error: `test_registered_operations_profile_transition_holds_the_registry_boundary`
+3. Failure: `test_preexisting_target_cannot_borrow_registered_source_baseline`
+4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
+5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
+
+No moved-module import, registration, manifest, workflow-contract, metadata, or
+link failure is allowed.
+
+- [ ] **Step 8: Commit**
+
+Stage only the exact moved, deleted, and current-reference paths recorded in
+this Task; inspect `git diff --cached --name-only` before committing.
 
 ```bash
-git add -A -- \
-  tests/lib/gate tests/lib/supply_chain tests/lib/target_surface \
-  tests/lib/agent_governance tests/lib/ops tests/docs tests/qa tests/setup \
-  tests/lib/test_surface_ownership.py tests/README.md \
-  scripts/validation/ci_gate_runner.py scripts/manifest.yaml \
-  .github/workflow-contract.yml \
-  docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
-git diff --cached --name-only
-git commit -m "refactor(tests): Mirror the library packages and drop the placeholder directories"
+git commit -m "refactor(tests): Mirror library ownership in the test surface"
 ```
 
 ---
@@ -782,8 +844,11 @@ PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-t
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task5.txt
 ```
 
-Expected: `OK` and `FULL exit=0`. The gate will now run noticeably longer; that
-is the cost of the modules no longer being invisible.
+Expected: the registration invariant is `OK`. The full Gate may remain RED only
+for the same five Task 6-owned `ChangedBodyDeficitGitTests` results recorded in
+Task 4; no unregistered module, moved-path import, or newly registered suite may
+fail. The gate will now run noticeably longer because the modules are no longer
+invisible.
 
 - [ ] **Step 8: Commit**
 
@@ -891,9 +956,14 @@ rg -n "HISTORICAL_COMMIT|LEGACY_CONTRACT_FIXTURE_COMMIT|docs/99.templates/suppor
   tests/validation/test_document_corpus_lifecycle.py \
   tests/lib/target_surface/test_target_surface_contracts.py \
   tests/lib/document_governance/test_spec_packages.py
+PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full \
+  > /tmp/g-task6.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task6.txt
+grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task6.txt
 ```
 
-Expected: every unit command exits 0 and the final search has no output.
+Expected: every unit command exits 0, the search has no output, the five
+deferred `ChangedBodyDeficitGitTests` results are repaired, and the full Gate
+reports `FULL exit=0`.
 
 - [ ] **Step 6: Commit**
 

@@ -381,7 +381,7 @@ No corpus mutation is allowed before this commit.
 - Modify: `scripts/lib/agent_governance/agent_governance_contract.py`
 - Modify: `scripts/operations/provider_surface_renderer.py`
 - Modify: `scripts/validation/report-provider-hook-parity.sh`
-- Modify: `tests/validation/test_agent_governance_contract.py`
+- Modify: `tests/lib/agent_governance/test_agent_governance_contract.py`
 - Modify: `tests/validation/test_provider_surface_renderer.py`
 - Modify: `tests/validation/test_provider_native_surfaces.py`
 - Modify: `tests/validation/test_provider_hook_parity.py`
@@ -392,7 +392,7 @@ No corpus mutation is allowed before this commit.
 
 **Step 1: Write the policy/registry boundary regression**
 
-Add to `tests/validation/test_agent_governance_contract.py`:
+Add to `tests/lib/agent_governance/test_agent_governance_contract.py`:
 
 ```python
     def test_provider_registry_does_not_restate_neutral_workflow_policy(self) -> None:
@@ -499,7 +499,7 @@ postflight and CI use `--check`. Then regenerate once and immediately prove
 freshness:
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_agent_governance_contract
+PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract
 PYTHONPATH=. python3 -m unittest tests.validation.test_provider_surface_renderer
 PYTHONPATH=. python3 -m unittest tests.validation.test_provider_hook_parity
 PYTHONPATH=. python3 -m unittest tests.validation.test_agent_output_eval_fixtures
@@ -527,7 +527,7 @@ git add docs/00.agent-governance/policies/workflows.md \
   scripts/lib/agent_governance/agent_governance_contract.py \
   scripts/operations/provider_surface_renderer.py \
   scripts/validation/report-provider-hook-parity.sh \
-  tests/validation/test_agent_governance_contract.py \
+  tests/lib/agent_governance/test_agent_governance_contract.py \
   tests/validation/test_provider_surface_renderer.py \
   tests/validation/test_provider_native_surfaces.py \
   tests/validation/test_provider_hook_parity.py \
