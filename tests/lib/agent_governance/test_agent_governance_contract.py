@@ -304,9 +304,11 @@ class AgentGovernanceContractTests(unittest.TestCase):
             self.assertTrue(contract._has_unsupported_active_token(path, candidate))
 
     def test_mutable_task_token_evidence_is_statement_bounded(self) -> None:
-        task = (
-            "docs/03.specs/0153-workspace-governance-simplification/"
-            "tasks/tsk-0004-stage00.md"
+        task = "docs/03.specs/9999-example/tasks/tsk-0001-evidence.md"
+        fixture = (
+            "# Stage 00 convergence evidence\n\n"
+            "The change completed while removing Gemini, Antigravity, "
+            "and project memory.\n"
         )
         cases = ("evidence-only-edit", "new-active-authority", "altered-statement")
         for case in cases:
@@ -315,7 +317,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 copy_governance_fixture(root)
                 target = root / task
                 target.parent.mkdir(parents=True)
-                shutil.copy2(ROOT / task, target)
+                target.write_text(fixture, encoding="utf-8")
                 text = target.read_text(encoding="utf-8")
                 if case == "evidence-only-edit":
                     text += "\nPost-commit evidence: logical commit recorded.\n"
