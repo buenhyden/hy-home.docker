@@ -819,7 +819,12 @@ def primary_owner(test_path: str, domains: set[str]) -> str | None:
     if len(domains) == 1:
         return next(iter(domains))
     stem = pathlib.PurePosixPath(test_path).stem
-    matches = [domain for domain in domains if domain in stem]
+    normalized = stem.removeprefix("test_")
+    matches = [
+        domain
+        for domain in domains
+        if normalized == domain or normalized.startswith(domain + "_")
+    ]
     return matches[0] if len(matches) == 1 else None
 
 moves = {}
@@ -866,7 +871,12 @@ def primary_owner(test_path: str, domains: set[str]) -> str | None:
     if len(domains) == 1:
         return next(iter(domains))
     stem = pathlib.PurePosixPath(test_path).stem
-    matches = [domain for domain in domains if domain in stem]
+    normalized = stem.removeprefix("test_")
+    matches = [
+        domain
+        for domain in domains
+        if normalized == domain or normalized.startswith(domain + "_")
+    ]
     return matches[0] if len(matches) == 1 else None
 
 moves = {}
