@@ -46,6 +46,11 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 15 | Corrected full-profile reachability and stale-path proof | Replaced the Task 5 source-string union with an Acceptance 4 oracle derived from the local full public execution plan, added an admission-only negative regression and an independently owned agent-governance leaf contract, and added a complete 16-form old-path sweep that excludes only `.git` and `graphify-out/`. Independent re-review remains pending. |
 | 16 | Rechecked the moved-suite execution boundary | A source-of-truth review found that `_UNITTEST_MODULE` still admitted only `tests.validation` and `tests.lib.document_governance`; runner parity alone would therefore leave the moved gate, ops, supply-chain, target-surface, and agent-governance modules rejected by the adapter. Task 4 now writes the adapter regression RED first, admits valid nonempty dotted segments below the two authoritative roots `tests.validation` and `tests.lib`, keeps outside-root and malformed shapes rejected, and leaves actual authority in the runner's exact argv map. |
 | 17 | Validated the independent-review correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`, `legacy_exceptions=0`, and `transition_overrides=0`; the all-links check reported `failures=0`; `git diff --check` passed. Independent re-review remains pending. |
+| 18 | Witnessed the Task 4 ownership and adapter RED | Surface ownership failed on the five missing mirror domains and the existing placeholder roots. The positive adapter regression produced eight `ci-gate-adapter-arguments` errors for the moved modules, while the existing validation/document-governance cases and the outside/empty/invalid negative remained GREEN. |
+| 19 | Mirrored the measured library-unit test surface | Moved exactly eight tests with `git mv`, changed the seven repository-root depths, expanded only the adapter's structural root grammar, rewired exact runner/workflow/manifest/current references, and deleted the three placeholder READMEs without a redirect or tombstone. Implementation commit: `6663f02c`. |
+| 20 | Verified the Task 4-owned execution boundary | The adapter regressions, 207-test moved-suite bundle, surface ownership, CI runner, README profiles, script manifest checker, and workflow-contract checker are GREEN. The explicit agent-governance suite retains only its three Task 5-owned missing-SPEC-0153 subcase errors. |
+| 21 | Classified two pre-existing unreachable manifest-test failures | The full `test_script_manifest` module remains RED on the unchanged hook-disposition assertion and an already-absent SPEC-0153 input. Start-HEAD object inspection and a dynamically expanded local full plan prove both predate Task 4 and the module is unreachable; the two Task 4-owned manifest assertions pass directly. |
+| 22 | Verified current documents, stale paths, and full-Gate ownership | Metadata contracts, changed metadata, links, and diff check passed. The untruncated old-path sweep produced 681 historical/evidence lines and zero prohibited current/live hits. After staging the exact implementation paths for entrypoint-identity verification, the full Gate retained only the five exact Task 6-owned `ChangedBodyDeficitGitTests` results. |
 
 ### Discovered branch commits
 
@@ -529,6 +534,136 @@ count and full content, and excludes only `.git` plus the verified generated
 graph root `graphify-out/`. Every line must be classified as preserved
 historical evidence or prohibited current/live usage.
 
+### Task 4 — implemented; independent review pending
+
+Implementation commit: `6663f02c`
+`refactor(tests): Mirror library ownership in the test surface`.
+
+The pre-implementation ownership run produced two failures. The exact missing
+mirror set was `agent_governance`, `gate`, `ops`, `supply_chain`, and
+`target_surface`; the placeholder assertion stopped at the first existing root,
+`tests/docs`, and a direct empty-directory check confirmed that `tests/docs`,
+`tests/qa`, and `tests/setup` contained no file after their three READMEs were
+deleted. The pre-implementation adapter run executed two test methods: its
+positive method produced eight `ci-gate-adapter-arguments` errors, one for each
+new moved module, while the existing `tests.validation` and
+`tests.lib.document_governance` cases passed and the outside/empty/invalid
+negative method was GREEN.
+
+The implementation then moved exactly this set:
+
+~~~text
+tests/validation/test_agent_governance_contract.py -> tests/lib/agent_governance/test_agent_governance_contract.py
+tests/validation/test_ci_gate_adapters.py -> tests/lib/gate/test_ci_gate_adapters.py
+tests/validation/test_ci_gate_contract.py -> tests/lib/gate/test_ci_gate_contract.py
+tests/validation/test_github_workflow_contract.py -> tests/lib/gate/test_github_workflow_contract.py
+tests/validation/test_grype_db_seed.py -> tests/lib/supply_chain/test_grype_db_seed.py
+tests/validation/test_postgres_logical_upgrade_rehearsal.py -> tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py
+tests/validation/test_target_surface_contracts.py -> tests/lib/target_surface/test_target_surface_contracts.py
+tests/validation/test_target_surface_delta_contracts.py -> tests/lib/target_surface/test_target_surface_delta_contracts.py
+~~~
+
+No `__init__.py` was added. Seven moved modules changed their root derivation
+from `parents[2]` to `parents[3]`; the adapter test has no root constant. The
+three placeholder READMEs and their now-empty directories were removed without
+a redirect or tombstone.
+
+Focused GREEN evidence:
+
+~~~text
+adapter allow/reject regressions: Ran 2 tests; OK
+seven registered moved suites: Ran 207 tests in 109.926s; OK (skipped=11)
+surface ownership: Ran 5 tests; OK
+CI gate runner: Ran 30 tests in 8.212s; OK
+README profiles: Ran 4 tests; OK
+Task 4 PostgreSQL/retired-root manifest assertions: Ran 2 tests; OK
+check-script-manifest.py: PASS
+check-github-workflow-contract.py: PASS (workflows=7, jobs=9, actions=8)
+~~~
+
+The full `tests.validation.test_script_manifest` run executed 52 tests and
+retained exactly two failures:
+
+1. `ScriptManifestTests.test_plan_mandatory_dispositions_and_high_risk_operations`
+   with `path='scripts/hooks/post-tool-validate.sh'`: expected `rewrite`, current
+   manifest row `retain`.
+2. `ScriptManifestTests.test_stage90_generators_require_write_and_touch_only_declared_output`
+   with `script='scripts/validation/generate-audit-implementation-matrix.sh'`:
+   missing `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md`.
+
+These are Task 5 measured-unreachable work, not Task 4 regressions. The
+`git diff --unified=0 0453dcee -- tests/validation/test_script_manifest.py
+scripts/manifest.yaml` result changed only the moved PostgreSQL path, the new
+retired-root regression, and moved manifest references; neither failing test
+body nor the hook row changed. At `0453dcee`, the manifest already declared the
+hook `retain`, the test constant already required `rewrite`, and
+`git cat-file -e 0453dcee:docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md`
+failed because that path did not exist. Dynamic expansion of the local `full`
+public plan found 25 reachable unittest modules and reported
+`reachable_test_script_manifest=False`. The two exact Task 4-owned manifest
+methods ran separately and are GREEN; no assertion was weakened and no deleted
+fixture was restored.
+
+The explicit eighth moved suite retained exactly the measured Task 5 boundary:
+
+~~~text
+tests.lib.agent_governance.test_agent_governance_contract
+Ran 19 tests in 4.205s
+FAILED (errors=3)
+test_mutable_task_token_evidence_is_statement_bounded(case='evidence-only-edit')
+test_mutable_task_token_evidence_is_statement_bounded(case='new-active-authority')
+test_mutable_task_token_evidence_is_statement_bounded(case='altered-statement')
+all three: missing docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md
+~~~
+
+Document and full-Gate evidence:
+
+~~~text
+metadata repository contracts: violations=0
+metadata check-changed: selected=16 violations=0 legacy_exceptions=0 transition_overrides=0
+document links: mode=all documents=568 links=4868 failures=0
+git diff --check: exit=0
+
+initial full-Gate attempt before staging:
+FAIL [ci-gate-entrypoint-identity] scripts/lib/gate/ci_gate_adapters.py
+The entrypoint was then staged with the exact Task 4 implementation paths so
+the runner could compare the file descriptor with the reviewed index object.
+
+registered focused bundles inside the full Gate:
+Ran 39 tests; OK
+Ran 48 tests; OK
+Ran 20 tests; OK
+Ran 116 tests; OK
+
+final full bundle:
+Ran 251 tests in 119.766s
+FAILED (failures=3, errors=2)
+FULL exit=1
+~~~
+
+The final five results are exactly the Task 6-owned
+`ChangedBodyDeficitGitTests` boundary and no others:
+
+1. Error: `test_registered_operations_catalog_move_uses_migration_0003_body_baseline`
+2. Error: `test_registered_operations_profile_transition_holds_the_registry_boundary`
+3. Failure: `test_preexisting_target_cannot_borrow_registered_source_baseline`
+4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
+5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
+
+The exact untruncated old-path sweep produced 681 lines. Classification by
+authority surface is exhaustive: 101 `.superpowers` lines are immutable SDD
+review/recovery snapshots or the consumed Task 4 predecessor/proof brief; 224
+Stage 03 lines are predecessor plans/completed evidence or this Task's explicit
+source-to-destination mappings and proof expression; 318 Stage 90 lines are
+dated observations or generated historical datasets; and 38 Stage 98 lines are
+migration/recovery history. The four groups sum to 681. There are zero hits in
+`.github/`, `scripts/`, or `tests/`; zero current command, comment, ownership,
+machine, runbook, or README hits; zero stale live-link destinations; and zero
+forward SPEC-0158 hits. The complete 681-line output remains in
+`.superpowers/sdd/plan/task-4-report.md` and the original temporary capture;
+its SHA-256 is
+`e8ba87b1edf3b1779d9e30904892e92a34c3f662b2778fdf51fdb3cd0051b8b7`.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -578,6 +713,14 @@ module grammar; the corrected Task 4 now owns its RED allow/reject regressions
 and two-root structural repair while exact runner argv remains authoritative.
 This is not an approval or completion claim.
 
+Task 4 implementer self-review: the production diff is limited to the exact
+eight moves, three placeholder deletions, adapter/runner/workflow/manifest
+wiring, and current/future reference destinations authorized by the Plan.
+Focused Task 4 checks are GREEN; the two base-proven unreachable manifest-test
+failures, three agent-governance fixture errors, and five full-Gate fixture
+results are attributed above to Tasks 5 and 6. Independent Task, Python, and
+CI/Gate reviews remain pending; this is not independent approval.
+
 Round 2 read-only primary-owner output:
 
 ~~~text
@@ -624,6 +767,7 @@ is self-approved by this registration.
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
 | Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
+| Task 4 test ownership mirror | 6663f02c | Implementation and focused checks complete; independent Task/Python/CI review pending |
 
 ## Rulings
 
@@ -665,11 +809,30 @@ is self-approved by this registration.
     dotted segments only below `tests.validation` or `tests.lib`, rejects
     outside-root and malformed shapes, and does not duplicate domain ownership;
     the exact runner argv remains the permission boundary.
+14. A Task 4-focused expectation cannot hide a pre-existing failure in an
+    unreachable module. Task 4 proves its two changed manifest assertions
+    GREEN and records the unchanged two-failure module boundary; Task 5 owns
+    the dynamic disposition when it compares on-disk tests with the local full
+    plan.
+15. The full Gate verifies an internal entrypoint against the Git index object.
+    When Task 4 changes that entrypoint, the exact implementation paths are
+    staged and reviewed before the full Gate; an unstaged identity failure is
+    evidence that the protection worked, not a reason to bypass it.
+16. An absence proof remains untruncated without turning the authoritative Task
+    into a log store. The exact command, count, classification totals, zero
+    prohibited result, and capture SHA-256 live here; the complete 681-line
+    output stays in `/tmp` and the ignored SDD scratch report. This is an
+    evidence-retention boundary, not a search truncation or exclusion.
 
 ## Deferred Items
 
 - Independent re-review of the corrected Task 4/Task 5 reachability and
   stale-path contracts.
+- Independent Task, Python, and CI/Gate review of implementation commit
+  `6663f02c`.
+- Task 5 dynamic disposition of the unreachable `test_script_manifest` module
+  and repair/registration of the three agent-governance fixture subcases.
+- Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
 
 ## Related Documents
 

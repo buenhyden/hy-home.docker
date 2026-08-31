@@ -769,14 +769,30 @@ PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership
 PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner
 PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest
 PYTHONPATH=. python3 -m unittest \
+  tests.validation.test_script_manifest.ScriptManifestTests.test_postgres_logical_upgrade_uses_the_mirrored_ops_test \
+  tests.validation.test_script_manifest.ScriptManifestValidationTests.test_manifest_rejects_retired_placeholder_test_roots
+PYTHONPATH=. python3 -m unittest \
   tests.validation.test_document_metadata.ReadmeProfileTests
 PYTHONPATH=. python3 scripts/validation/check-script-manifest.py
 PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 ```
 
-Expected: all seven registered moved suites and every ownership/wiring check are
-GREEN, including the adapter shape grammar and its outside/empty/invalid
-negative. Run the eighth suite explicitly:
+Expected: all seven registered moved suites and every Task 4-owned
+ownership/wiring check are GREEN, including the adapter shape grammar, its
+outside/empty/invalid negative, and the two exact manifest assertions added or
+updated by this Task. The full `test_script_manifest` module may remain RED only
+for a defect proven present at the Task 4 base and dynamically confirmed absent
+from the local full plan; Task 5 owns the measured disposition of that
+unreachable module. Record exact test identities and base evidence rather than
+weakening an assertion or restoring a deleted fixture. Run the eighth suite
+explicitly:
+
+At the Task 4 start commit, the exact allowed `test_script_manifest` boundary
+is `test_plan_mandatory_dispositions_and_high_risk_operations` for the
+pre-existing `post-tool-validate.sh` disposition mismatch and
+`test_stage90_generators_require_write_and_touch_only_declared_output` for the
+already-absent SPEC-0153 archive Task input. No other result in that module may
+be deferred, and Task 5 must remeasure the module from the local full-plan gap.
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -803,6 +819,7 @@ rg --hidden --no-ignore -n --no-heading --color never \
   . > /tmp/spec0157-task4-old-path-hits.txt
 wc -l /tmp/spec0157-task4-old-path-hits.txt
 cat /tmp/spec0157-task4-old-path-hits.txt
+sha256sum /tmp/spec0157-task4-old-path-hits.txt
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-metadata.py \
   --mode check-changed --base-ref "$(git merge-base main HEAD)"
@@ -818,9 +835,12 @@ dotted module names. `--hidden --no-ignore` prevents hidden current surfaces or
 ignored workspace text from disappearing from the proof; only `.git` and the
 repository's actual generated Graphify output, `graphify-out/`, are excluded.
 Do not add a docs exclusion, `head`, `--max-count`, or another truncation. Record
-the matching-line count and the complete file contents in the current Task,
-classifying every line as either preserved historical evidence or prohibited
-current/live usage. Any prohibited hit reopens Task 4.
+the exact command, total matching-line count, classification counts, zero-count
+for prohibited current/live usage, and capture SHA-256 in the current Task.
+Keep the complete untruncated output in `/tmp` and the SDD scratch report, not
+in the authoritative Task body. This changes evidence storage, not search
+coverage: every line is still classified as either preserved historical
+evidence or prohibited current/live usage. Any prohibited hit reopens Task 4.
 
 The full Gate may report `FULL exit=1` only for these five Task 6-owned
 `ChangedBodyDeficitGitTests` results already measured in Task 3:
