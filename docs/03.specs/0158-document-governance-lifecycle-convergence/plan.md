@@ -53,6 +53,12 @@ registered `changed` and `full` validation profiles.
 - Before the current Task can be compressed or removed, Task 6 must migrate its
   dynamic protected path inventory into the `RES-0002` package README and make
   the existing reference/document-governance test oracle GREEN.
+- Treat every other execution-baseline Stage 90 Research, Audit, or Data
+  package as a mandatory terminal disposition. Migrate current consumers,
+  unique needed meaning, citations, or generated outputs to canonical owners,
+  then delete the package. Completion requires zero unresolved or pending
+  dispositions and a package-root set containing only `RES-0002`; root and
+  category READMEs are structural indexes and are excluded from that set.
 - Preserve Migration 0003 as the structural disposition and recovery boundary,
   but never use Stage 98 as current Stage 05 or Stage 99 authority.
 - Keep supply-chain digests, CI event SHAs, regular-blob recovery commits, and
@@ -142,7 +148,7 @@ remaining a second authority.
 | Provider facts | `docs/00.agent-governance/providers/registry.yaml` | Provider, model, permission translation, hook, and projection routing |
 | Document mechanics | `docs/99.templates/registry.json`, schemas, templates | Stage 99 typed document authority |
 | Current solution truth | Stages 01, 02, 03, and 05 | One current owner per requirement, structure, change, or operation |
-| Evidence | `docs/90.references/` | Sourced, dated, non-normative material with current consumers, plus the atomic user-protected latest external-research pack |
+| Evidence | `docs/90.references/` | The atomic user-protected latest external-research pack plus structural indexes matching the resulting tree; all other baseline evidence packages migrate and retire |
 | Protected research declaration | `docs/90.references/research/0002-agentic-engineering-research-pack/README.md` | Persistent non-normative protected path selector and user-decision record; SPEC-0158 acceptance owns the retention rule |
 | Recovery | `docs/98.archive/` | Minimal Migration and Tombstone navigation |
 | Validator inventory | `scripts/manifest.yaml` | Validator path, suite, argv, context, tests, and consumers |
@@ -342,6 +348,17 @@ execution-baseline package remeasured by this Task. Likewise, the preliminary
 25 `DELETE_CANDIDATE` and 39 `NEEDS_MIGRATION` package observations seed review
 only; remeasure the current tree and do not freeze either count.
 
+Every dynamically remeasured Stage 90 package outside `PROTECT_LATEST` is a
+non-`keep` path set. A package root is a category child directory under
+`docs/90.references/{audits,data,research}/`; Stage 90 root/category READMEs
+are structural indexes rather than packages. Current consumers or unique needed
+meaning make migration a deletion precondition, not a reason to retain the
+package. Assign an explicit replacement and `delete` disposition to every such
+package leaf and README. The final package-root set must contain only the
+protected root, with zero unresolved or pending dispositions. Structural root
+and category READMEs are not packages and are regenerated or removed to reflect
+that final set.
+
 The Task 2 path inventory is execution evidence, not the durable oracle. Record
 that Task 6 must migrate the measured set to a clearly owned package-local
 preservation declaration in the `RES-0002` README before this Task body can be
@@ -362,6 +379,7 @@ owner, current terminology, valid lifecycle, a current consumer when required,
 and no duplicate purpose. `PROTECT_LATEST` is the first-priority preservation
 classification and overrides only the current-consumer requirement; it remains
 inside the same target total rather than becoming a second disposition row.
+No non-protected Stage 90 package belongs to a `keep` cohort.
 
 **Step 3: Record every non-`keep` path explicitly**
 
@@ -387,7 +405,8 @@ rg -n '\b[0-9a-f]{7,40}\b|branch-tip|blob digest|diff digest|SHA lineage' \
 
 Historical quotations and supply-chain material are classified by purpose, not
 by token alone. Missing owner, consumer, replacement, recovery, or reviewer
-blocks the path rather than defaulting it to deletion.
+blocks mutation rather than defaulting the path to deletion, and the Task and
+Specification cannot complete while that disposition remains unresolved.
 
 For a `PROTECT_LATEST` path, list any permitted path, metadata, stale-owner, or
 link correction explicitly and prove that the research body, sources, and
@@ -401,6 +420,8 @@ total, with zero overlap and zero omission. `rules-engineer` reviews the rule
 set, and `code-reviewer` reviews the exact Task diff. Neither grants approval.
 The review must also prove that every dynamically measured `PROTECT_LATEST`
 path is covered exactly once and that no destructive disposition includes it.
+It also proves that every other measured Stage 90 package has an explicit
+delete-after-migration path and that no package is unresolved or silently kept.
 
 **Step 5: Commit the bounded baseline**
 
@@ -767,10 +788,11 @@ normative scope, consumers, and acceptance must overlap.
 
 Active documents must not publish retired Stage 04, predecessor support,
 memory, rules, Spec-path, Task-path, or template routes as current procedure.
-Historical evidence outside `PROTECT_LATEST` follows the Stage 00
-quotation/table convention or is removed when it has no current consumer. The
-protected pack may receive stale-path corrections but not substantive research
-loss.
+Historical evidence outside `PROTECT_LATEST` first moves any needed quotation,
+finding, citation, generated output, or current consumer to its canonical
+owner, then is deleted under Task 6. A current consumer delays deletion only
+until migration; it never authorizes package retention. The protected pack may
+receive stale-path corrections but not substantive research loss.
 
 **Step 5: Verify and commit by stage**
 
@@ -800,11 +822,14 @@ create empty commits.
 
 ---
 
-### Task 6: Reduce Stage 90 evidence and Stage 98 recovery
+### Task 6: Retire non-protected Stage 90 evidence and reduce Stage 98 recovery
 
 **Files:**
 
-- Modify, supersede, or delete Task 2 paths under `docs/90.references/`.
+- Modify the protected `RES-0002` package and structural indexes; migrate then
+  delete every other Task 2 package under `docs/90.references/`.
+- Modify or remove every generator, manifest row, workflow route, test, and
+  current document consumer that points to a non-protected Stage 90 package.
 - Rewrite: `docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md`
 - Rewrite: `docs/98.archive/migrations/0002-operations-catalog-convergence.md`
 - Rewrite: `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
@@ -831,32 +856,33 @@ the declaration records the decision, while SPEC-0158 acceptance supplies its
 authority and no research claim becomes policy.
 
 Extend `test_references.py` on the existing reference/document-governance test
-surface so every retained Research, Audit, or Data owner has the Registry-
-required provenance fields and at least one current consumer, or is an
-explicitly superseded point-in-time record consumed by a current owner. Add the
-one explicit exception: every path derived from the persistent `RES-0002`
-README declaration remains retained even when its consumer set is empty. The
-test asserts that the declared protected path set equals the protected files on
-disk and that every declared path exists. Concretely, it compares the declared
-set with the safe tracked file set below the package root. It does not load the
-transient Task as its durable source and does not pin a document count,
-checksum, body digest, byte equality, or expected Git SHA. Keep this within
+surface so every path derived from the persistent `RES-0002` README declaration
+remains retained even when its consumer set is empty. The test asserts that the
+declared protected path set equals the protected files on disk and that every
+declared path exists. Concretely, it compares the declared set with the safe
+tracked file set below the package root. The Task 2 execution evidence and
+completion review separately prove that every other baseline Research, Audit,
+or Data package migrated and was deleted; no current consumer or superseded
+status is a retention exception. The test does not load the transient Task as
+its durable source and does not pin a document count, checksum, body digest,
+byte equality, or expected Git SHA. Keep this within
 `tests/lib/document_governance/test_references.py` and the existing document-
 governance suite; do not add a top-level Gate, public suite, manifest validator,
 or Stage 99 schema.
 
-Keep external citations as sources, never as instructions. A source with no
-current consumer is deleted rather than relabeled as useful history unless it
-belongs to the atomic user-protected latest research pack.
+Keep external citations as sources, never as instructions. Outside the atomic
+user-protected latest research pack, a source with no consumer is deleted and a
+source with a consumer first migrates needed meaning and that consumer, then is
+deleted rather than relabeled as useful history.
 
 Before any Stage 90 deletion, add a RED relation proving that current package
 existence does not depend on Migration 0003's frozen historical target set.
-Then decouple `scripts/lib/document_governance/references.py`: current Research,
-Audit, and Data retention derives from the current tree, Registry profiles,
-the persistent package-local declaration, and current consumers, while
-Migration 0003 is read only for historical recovery. This repair must land
-before a deletion so the old coupling cannot force one Tombstone per removed
-package.
+Then decouple `scripts/lib/document_governance/references.py`: protected
+Research retention derives from the current tree, Registry profile, and the
+persistent package-local declaration, while current consumers are migration
+preconditions for every other package and Migration 0003 is read only for
+historical recovery. This repair must land before a deletion so the old
+coupling cannot force one Tombstone per removed package.
 
 Add a protected-content regression that exercises a zero-consumer
 `PROTECT_LATEST` package through the README declaration and verifies the
@@ -883,11 +909,15 @@ Do not enforce a line count. Validate semantic sections and recovery instead.
 
 **Step 3: Reduce Stage 90**
 
-For each retained source outside `PROTECT_LATEST`, keep concise provenance,
-observed date, findings, and the current consumer. Remove or supersede
-current-sounding predecessor routes. Delete leaves with no source or consumer
-and update inbound links in the same commit, but only after current consumers
-are migrated and profile, identity, and high-water validation passes.
+For every source outside `PROTECT_LATEST`, migrate needed provenance, findings,
+citations, generated outputs, and current consumers to the recorded canonical
+owner, then delete the package and update inbound links in the same logical
+change. A consumerless package can be deleted directly after profile, identity,
+and high-water validation. Do not retain, shorten in place, or merely
+supersede a non-protected package. Regenerate or remove Stage 90 root/category
+indexes to match the resulting tree. Completion requires the dynamically
+measured package-root set to contain only `RES-0002`, with zero unresolved or
+pending dispositions.
 
 For `PROTECT_LATEST`, retain the complete package even at zero consumers.
 Correct stale current paths, metadata, lifecycle, owners, and links when
@@ -928,12 +958,13 @@ prove exact on-disk protected-path equality and presence, and preserve the
 zero-consumer override. Independent review proves that substantive research
 body, sources, and claims remain while allowing reviewed stale current-path
 corrections and avoiding checksum or SHA enforcement. Do not proceed to Task 8
-until both the declaration and these tests are GREEN.
+until both the declaration and these tests are GREEN, every non-protected
+baseline package is absent, and unresolved and pending dispositions are zero.
 
 **Step 6: Commit evidence and archive reductions separately**
 
 ```bash
-git commit -m "docs(references): Retain only sourced current evidence"
+git commit -m "docs(references): Retire non-protected evidence packages"
 git commit -m "docs(archive): Reduce recovery records to minimal navigation"
 ```
 
@@ -1075,7 +1106,9 @@ before continuing.
   `docs/03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md`
 - Remove other terminal Plan and Task bodies, including SPEC-0157 execution
   bodies, only after their last current consumer is removed in this closure.
-- Regenerate: `docs/90.references/data/0082-llm-wiki-index/**`
+- Regenerate any Task 2-recorded replacement for generated indexes formerly
+  stored as non-protected Stage 90 Data packages; do not recreate a deleted
+  Stage 90 output.
 - Regenerate retained provider projections.
 
 **Step 1: Run focused and aggregate verification**
@@ -1088,7 +1121,10 @@ citations, and claims remain. This semantic review permits approved stale path,
 metadata, owner, and link corrections; do not compare checksums, body hashes,
 byte equality, or expected Git SHAs. Re-derive all other Stage 90 disposition
 totals from the current tree rather than asserting the preliminary 25/39
-discovery counts.
+discovery counts. Prove that the resulting package-root set contains only the
+protected `RES-0002` root and that unresolved and pending dispositions are
+zero. Structural root/category READMEs are excluded from the package-root set
+but must match the resulting tree.
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode check-active
@@ -1134,7 +1170,9 @@ package-local README declaration exists, the existing reference tests derive
 it without reading the Task, the declared set equals the safe tracked on-disk
 package set, and the zero-consumer override is GREEN.
 
-Regenerate the LLM Wiki after the last document edit:
+Regenerate the LLM Wiki at the Task 2-recorded canonical replacement output
+after the last document edit. The generator and its consumers must no longer
+write or link a non-protected Stage 90 Data package:
 
 ```bash
 python3 scripts/knowledge/generate-llm-wiki.py --write
@@ -1147,9 +1185,12 @@ Expected: generated output is fresh.
 git add docs/03.specs/0158-document-governance-lifecycle-convergence/spec.md \
   docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md \
   docs/03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md \
-  docs/03.specs/README.md docs/90.references/data/0082-llm-wiki-index
+  docs/03.specs/README.md
 git commit -m "docs(spec): Complete document governance convergence"
 ```
+
+Stage the exact Task 2-recorded generated-output replacement paths in the same
+commit; never stage or regenerate the retired Stage 90 Data destination.
 
 **Step 4: Remove transient completed execution bodies**
 
@@ -1169,9 +1210,12 @@ git add -u -- \
   docs/03.specs/0157-script-surface-ownership-convergence/tasks \
   docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md \
   docs/03.specs/0158-document-governance-lifecycle-convergence/tasks
-git add docs/03.specs/README.md docs/90.references/data/0082-llm-wiki-index
+git add docs/03.specs/README.md
 git commit -m "docs(spec): Retire completed convergence execution bodies"
 ```
+
+Stage the regenerated canonical replacement output by its exact Task 2 path;
+the retired Stage 90 Data path must remain absent.
 
 ## Risk and Rollback
 
@@ -1180,7 +1224,7 @@ git commit -m "docs(spec): Retire completed convergence execution bodies"
 | Earlier SPEC-0157 work is presented as approved | P0 records discovered commits and current revalidation | Revert the activation commit; keep the branch evidence unchanged |
 | A complete audit becomes a second corpus copy | Cohort rules plus explicit non-`keep` exceptions only | Revert the Task evidence commit and rewrite the rule summary |
 | A current obligation is deleted with a duplicate | Move unique obligations and update consumers before deletion | Revert the logical stage commit |
-| Stage 90 evidence becomes current authority | Require a current normative owner and consumer while retaining `PROTECT_LATEST` as non-normative evidence | Restore the source, mark it non-normative, and repair the owner |
+| A non-protected Stage 90 package survives because it still has a consumer | Treat the consumer as a migration dependency, require the final package-root set to contain only `RES-0002`, and require unresolved/pending counts of zero | Revert the incomplete cohort change, finish owner migration, then delete the package |
 | Latest external research is lost because consumers reach zero or a link-only commit appears newer | Apply the atomic current-baseline protection set, persistent README declaration, and purpose-based Git classification | Revert the rejected mutation commit or restore its paths from the immediately reviewed pre-mutation current Git state; never restore a named historical pack snapshot |
 | Task retirement removes the only protection oracle | Require the package-local declaration and existing reference tests to be GREEN first | Restore the Task body only long enough to complete the declaration handoff, then rerun the retirement checks |
 | Stage 98 compaction breaks recovery | Verify every retained `commit:path` as a regular blob before and after | Revert the archive commit; never reconstruct from memory |
@@ -1201,12 +1245,14 @@ The final state must satisfy all of the following:
 - the persistent `RES-0002` README declaration equals the safe tracked on-disk
   package set, every declared path exists, and the zero-consumer override stays
   GREEN; independent review confirms substantive research findings, sources,
-  and claims remain semantically preserved, while other retained Stage 90
-  evidence is sourced and currently consumed;
-- other Stage 90 deletions follow consumer migration and profile, identity,
-  and high-water validation, with no redirect/body clone and no Tombstone
-  unless a live recovery-navigation consumer requires one minimal package
-  README;
+  and claims remain semantically preserved;
+- after consumer and needed-meaning migration, the dynamically measured Stage
+  90 package-root set contains only `RES-0002`, unresolved and pending
+  dispositions are zero, and structural indexes match the resulting tree;
+- every non-protected Stage 90 deletion follows consumer migration and profile,
+  identity, and high-water validation, with no redirect/body clone and no
+  Tombstone unless a live recovery-navigation consumer requires one minimal
+  package README;
 - Stage 98 contains no body copy, redirect, raw execution ledger, snapshot, or
   duplicate digest;
 - Stage 99 has no unused copy template or archive-backed current membership;
@@ -1243,7 +1289,8 @@ The final state must satisfy all of the following:
 9. **SHA is retained by purpose, not token.** Integrity and recovery uses stay;
    documentary lineage and test-only workspace pins go.
 10. **Deletion is fail-closed.** Ambiguous ownership, consumer, recovery, or
-    concurrent state blocks mutation.
+    concurrent state blocks mutation, and unresolved disposition blocks Task
+    and Specification completion rather than becoming a retained exception.
 11. **The latest saved external research is an atomic user-preserved unit.**
     Every execution-baseline file in `RES-0002` receives `PROTECT_LATEST` before
     consumer classification, and the override survives zero consumers without

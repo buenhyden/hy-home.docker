@@ -57,6 +57,8 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 26 | Recorded the user-directed Stage 90 preservation boundary | The entire tracked 21-file `RES-0002` research pack observed at this ruling is one atomic `PROTECT_LATEST` unit, but SPEC-0158 Task 2 must remeasure the current execution baseline. Commit `95142c3a` promoted and activated the draft; `07b94403` later restored and merged substantive content across all 21 files; `3bf50f94` later added claim-bearing corrections; `65e8dfde` remains the last new-leaf addition; and `6663f02c` changes only three link destinations. Other later governance or path edits may exist. Every identifier is illustrative provenance only, never the final protected state, a restore target, Gate, baseline, or branch-lineage control. No Stage 90 artifact was changed or dispositioned by this ruling. |
 | 27 | Corrected the Stage 90 preservation design after independent review | Review returned `Spec FAIL` and `Quality CHANGES_REQUESTED`: the first version mislabeled `95142c3a` as the final research-body state and left the protected path inventory only in transient Task evidence. The correction makes the Task 2 current package measurement the sole preservation subject and requires Task 6 to persist the non-hash path declaration in the `RES-0002` package README before Task evidence retirement. Correction is pending independent re-review and claims no approval. |
 | 28 | Closed the Stage 90 preservation re-review | Independent re-review returned `Spec compliance: PASS` and `Quality: APPROVED`. It confirmed that no historical SHA is a protected-content baseline, the Task 2 current execution-baseline package is the sole protection subject, and Task 6 must establish the package-local persistent declaration and existing reference-test coverage before transient Task evidence retires. Design commits: `f7ccecfb`, `b00c697f`. No Stage 90 artifact was changed or dispositioned. |
+| 29 | Strengthened Stage 90 cleanup to a completion condition | The user confirmed that the latest externally researched `RES-0002` package is preserved and every other baseline Research, Audit, or Data package must reach terminal disposition. Draft SPEC-0158 now requires consumer and needed-meaning migration followed by deletion, a final package-root set containing only `RES-0002`, and zero unresolved or pending dispositions. Root/category READMEs are structural indexes, not packages. No Stage 90 artifact was changed or dispositioned by this design correction. |
+| 30 | Revalidated the mandatory cleanup design against current tracked evidence | The protected package still has 21 tracked execution-baseline paths as an observation rather than a count pin; Stage 90 status and diff are empty; the search for superseded optional-retention wording returned zero hits. Metadata contracts and changed-document metadata reported zero violations, all links reported zero failures, and diff hygiene passed. This validates the design boundary only; actual migration and deletion remain unobserved SPEC-0158 work. |
 
 ### Discovered branch commits
 
@@ -772,6 +774,15 @@ suite, validator, schema, content hash, byte-equality oracle, or count pin and
 does not mutate any Stage 90 artifact. The preservation design is approved;
 actual Stage 90 disposition remains deferred to draft SPEC-0158.
 
+Mandatory Stage 90 cleanup revalidation: the current tracked `RES-0002` package
+remains unchanged and complete at this design boundary, while every other
+baseline package is now a mandatory delete-after-migration target. Repository
+metadata, changed-document metadata, links, and diff hygiene are GREEN, and the
+superseded optional-retention phrases are absent. Per the workspace audit
+revalidation procedure, implementation acceptance remains `needs_revalidation`
+until SPEC-0158 executes the consumer migrations, deletions, persistent
+protection declaration, and final package-root measurement.
+
 Round 2 read-only primary-owner output:
 
 ~~~text
@@ -888,7 +899,10 @@ is self-approved by this registration.
     no named historical commit is the final protected content, a restore
     target, Gate, checksum, expected branch SHA, or retention baseline. Draft
     SPEC-0158 owns the dynamic classification, persistent package-local
-    declaration, and any permitted cleanup.
+    declaration, and mandatory terminal disposition of every non-protected
+    baseline Research, Audit, or Data package. Its completion package-root set
+    contains only `RES-0002`, with zero unresolved or pending dispositions;
+    structural root/category READMEs are excluded from that set.
 
 ## Deferred Items
 
@@ -897,7 +911,10 @@ is self-approved by this registration.
 - Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
 - Stage 90 consumer/lifecycle remeasurement and cleanup belong to draft
   SPEC-0158. Its execution must preserve the atomic `RES-0002` research pack;
-  this active SPEC-0157 Task performs no Stage 90 disposition.
+  migrate consumers and needed meaning from every other baseline package, then
+  delete it. SPEC-0158 cannot complete until only `RES-0002` remains as a
+  package and unresolved/pending dispositions are zero. This active SPEC-0157
+  Task performs no Stage 90 disposition.
 
 ## Related Documents
 

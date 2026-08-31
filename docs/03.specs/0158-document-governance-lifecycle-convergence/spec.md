@@ -128,11 +128,19 @@ declaration records the decision and test input; this Specification's
 acceptance contract supplies its authority. Research findings never become
 governance policy merely because they are protected.
 
-Other Stage 90 artifacts may be deleted only after all current consumers have
-been migrated and the applicable profile, identity, and high-water contracts
-pass. A deletion creates no redirect or body clone. A minimal package-README
-Tombstone is allowed only when an actual live recovery-navigation consumer
-still requires the retired stable path.
+Every Stage 90 Research, Audit, or Data package outside `RES-0002` is a
+mandatory convergence target. A package root is a category child directory
+under `docs/90.references/{audits,data,research}/`; root and category READMEs
+are structural indexes, not packages. A package with no current consumer is
+deleted; a package with a current consumer or unique needed meaning first
+migrates that consumer or meaning to its current canonical owner and is then
+deleted. At completion, the dynamically measured package-root set is exactly the protected
+`RES-0002` root, with zero unresolved or pending package disposition. Stage 90
+root and category READMEs are structural indexes rather than evidence packages
+and are regenerated or removed to match the resulting tree. A deletion creates
+no redirect or body clone. A minimal package-README Tombstone is allowed only
+when an actual live recovery-navigation consumer still requires the retired
+stable path.
 
 ### Stage Responsibilities
 
@@ -146,10 +154,10 @@ still requires the retired stable path.
   or cancelled execution bodies do not remain active guidance.
 - Stage 05 keeps procedures for current operational subjects. Duplicate
   procedures converge on one subject owner.
-- Stage 90 keeps non-normative evidence when provenance and a current consumer
-  justify it, plus the atomic user-protected latest external-research package.
-  Stale observations outside that package are shortened and superseded or are
-  deleted after consumer migration and contract checks.
+- Stage 90 keeps only the atomic user-protected latest external-research
+  package as non-normative evidence. Every other Research, Audit, or Data
+  package migrates unique needed meaning and current consumers to canonical
+  owners, then is deleted. Structural indexes are regenerated to match.
 - Stage 98 keeps minimal migration and tombstone recovery navigation. It stores
   no deleted body, snapshot, raw Task ledger, or duplicate digest.
 - Stage 99 is the sole machine authority for document paths, profiles,
@@ -244,13 +252,14 @@ only after its current outcome and recovery have been captured.
 
 ### Wave 4: Reduce Evidence and Archive
 
-Retain Stage 90 sources when their provenance and current consumer remain
-useful, and retain the complete `RES-0002` package under the user-preservation
-override even if consumers reach zero. Remove current-sounding predecessor
-taxonomy from retained evidence without losing the protected research body,
-sources, or claims. Persist the Task 2 protected path set and user decision in
-the package README and make the existing reference-test oracle GREEN before
-transient Task evidence is retired. Reduce completed Stage 98 Migrations to
+Retain the complete `RES-0002` package under the user-preservation override
+even if consumers reach zero. For every other Stage 90 source, migrate unique
+needed meaning, citations, generated outputs, and current consumers to their
+canonical owners, then delete the source package. Remove current-sounding
+predecessor taxonomy without losing the protected research body, sources, or
+claims. Persist the Task 2 protected path set and user decision in the package
+README and make the existing reference-test oracle GREEN before transient Task
+evidence is retired. Reduce completed Stage 98 Migrations to
 concise versions of all registered required sections: Purpose, Authority
 Change, Path Mapping, Recovery, Approval, and Traceability. Retain only required
 metadata and evidence needed to preserve Migration 0003 as the structural
@@ -311,11 +320,11 @@ retained projections receive an explicit canonical-source mapping.
 
 | Failure mode | Guardrail |
 | :--- | :--- |
-| A useful historical source is deleted as merely old | Require provenance, current-consumer, replacement, recovery, and review decisions separately |
+| Needed historical meaning or citations are lost during mandatory package retirement | Require provenance, current-consumer, replacement, recovery, and review decisions before deletion; migrate needed meaning rather than preserving the source package |
 | A mechanical link correction is mistaken for the latest research save | Classify Git touches by diff purpose and preserve the atomic `RES-0002` package; never select it with a maximum-timestamp shortcut |
 | Consumer cleanup removes the user-protected latest research | Apply `PROTECT_LATEST` before consumer disposition and retain its substantive body, sources, and claims even at zero consumers |
 | Transient Task evidence is removed before protection remains enforceable | Persist the dynamic path declaration in the package README and make existing reference tests GREEN before Task retirement |
-| Historical evidence remains active guidance | Supersede and shorten it or delete it; active owners never defer to Stage 90 |
+| Historical evidence remains active guidance | Migrate needed meaning to a current owner, then delete the non-protected Stage 90 package; active owners never defer to Stage 90 |
 | SPEC-0157 is presented as previously approved | Record the anomaly and current revalidation; preserve the real transition order |
 | A Task disposition becomes a new lifecycle | Keep disposition values local to execution; validate document status against Stage 99 only |
 | Stage 98 reduction breaks recovery | Prove every retained `commit:path` resolves to a regular Git blob before mutation |
@@ -349,9 +358,11 @@ retained projections receive an explicit canonical-source mapping.
    persistently declares the user decision and protected path set without a
    pinned count, and existing reference tests derive that declaration and prove
    on-disk equality and presence. Semantic body/source/claim preservation
-   remains a review obligation. Other Stage 90 artifacts are retained with
-   provenance and a current consumer, or are deleted only after consumer
-   migration and profile, identity, and high-water validation.
+   remains a review obligation. After consumer and needed-meaning migration,
+   the dynamically measured Stage 90 package-root set is exactly `RES-0002`;
+   unresolved and pending non-protected package dispositions are both zero.
+   Root and category indexes are excluded from this package-root set and match
+   the resulting tree.
 7. Stage 98 contains no deleted body, snapshot, raw execution ledger, or
    duplicate digest, and every recovery tuple resolves to a regular Git blob.
 8. Stage 99 Registry and templates contain no parallel or unused document
