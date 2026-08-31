@@ -1,6 +1,6 @@
 ---
 profile_id: spec
-status: active
+status: completed
 artifact_id: SPEC-0157
 artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
@@ -202,11 +202,10 @@ that is both smaller and covered.
 
 ## Acceptance Contract
 
-The implementation Plan and Task complete in this change after the final Full
-profile passes. This Spec Package remains `active`: its merge-base endpoint is
-`draft`, so `draft -> completed` would bypass the required `active` review
-boundary. It can take the legal `active -> completed` hop only in a later
-change. No transition override is used to conceal that boundary.
+The implementation Plan and Task completed on the activation branch after the
+final Full profile passed. That branch then reached `main`, making `active` the
+merge-base endpoint for this dedicated closure change. This Spec Package now
+takes the legal `active -> completed` hop without a transition override.
 
 1. Every file under `scripts/lib/` is importable and its manifest row declares no execution contexts.
 2. Every file under `scripts/validation/`, `scripts/gate/`, `scripts/security/`, and `scripts/operations/` is an entrypoint and implements no domain logic.
