@@ -1,0 +1,32 @@
+{
+  "approval_ref": "task:2026-07-19-compose-runtime-readiness-remediation#approval-2026-07-19",
+  "cleanup_status": "passed",
+  "completed_at": "2026-07-19T00:01:00Z",
+  "elapsed_seconds": 60,
+  "endpoint_verdicts": {
+    "keycloak-ready": "passed",
+    "oauth2-proxy-ping": "passed",
+    "traefik-ping": "passed",
+    "vault-agent-sentinel": "passed",
+    "vault-health": "passed"
+  },
+  "observed_state": "ready",
+  "overall_status": "ready",
+  "producer_spec": "spec:124-compose-runtime-readiness-remediation",
+  "producer_task": "task:2026-07-19-compose-runtime-readiness-remediation",
+  "project_name": "hyhome-crr-fixture",
+  "recovery_status": "passed",
+  "redaction_status": "passed",
+  "scenario": "vault-restart-recovery",
+  "schema_version": 2,
+  "services": {
+    "keycloak": {"container": "healthy"},
+    "oauth2-proxy": {"container": "healthy"},
+    "traefik": {"container": "healthy"},
+    "vault": {"container": "healthy"},
+    "vault-agent": {"container": "healthy"}
+  },
+  "started_at": "2026-07-19T00:00:00Z",
+  "target_class": "local-linked-worktree-docker-engine",
+  "teardown_status": "passed"
+}
