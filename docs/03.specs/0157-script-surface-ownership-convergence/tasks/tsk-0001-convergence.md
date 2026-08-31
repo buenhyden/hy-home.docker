@@ -42,6 +42,10 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 11 | Validated the responsibility-split contract correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`; the all-links check reported `failures=0`; `git diff --check` passed. |
 | 12 | Reconciled Task 4 with the actual test mirror and gate wiring | Fixed the move set at eight modules, prohibited new package markers, replaced the impossible generated-prefix rewrite with exact dotted modules, enumerated all current machine/current-document references, and corrected the Task 4 through Task 6 full-Gate ownership boundaries. Rebased four forward references in draft SPEC-0158 without activating or executing it. |
 | 13 | Validated the Task 4 preflight correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`; the all-links check reported `failures=0`; `git diff --check` passed. No production, test, Gate, manifest, workflow, or generated-provider file was modified. |
+| 14 | Received independent Task 4 preflight review | `Spec compliance: FAIL`; `Quality: CHANGES_REQUESTED`. The review found that Task 5 could falsely count admission-only strings as registration and that Task 4's old-path sweep had no reproducible untruncated command. |
+| 15 | Corrected full-profile reachability and stale-path proof | Replaced the Task 5 source-string union with an Acceptance 4 oracle derived from the local full public execution plan, added an admission-only negative regression and an independently owned agent-governance leaf contract, and added a complete 16-form old-path sweep that excludes only `.git` and `graphify-out/`. Independent re-review remains pending. |
+| 16 | Rechecked the moved-suite execution boundary | A source-of-truth review found that `_UNITTEST_MODULE` still admitted only `tests.validation` and `tests.lib.document_governance`; runner parity alone would therefore leave the moved gate, ops, supply-chain, target-surface, and agent-governance modules rejected by the adapter. Task 4 now writes the adapter regression RED first, admits valid nonempty dotted segments below the two authoritative roots `tests.validation` and `tests.lib`, keeps outside-root and malformed shapes rejected, and leaves actual authority in the runner's exact argv map. |
+| 17 | Validated the independent-review correction | Metadata contracts reported `violations=0`; changed-document metadata selected 14 documents with `violations=0`, `legacy_exceptions=0`, and `transition_overrides=0`; the all-links check reported `failures=0`; `git diff --check` passed. Independent re-review remains pending. |
 
 ### Discovered branch commits
 
@@ -445,6 +449,17 @@ tests.lib.target_surface.test_target_surface_delta_contracts
 tests.validation.test_compose_baseline_gates
 ~~~
 
+The runner tuple is only the outer admission boundary. The lower
+`ci_gate_adapters.py` grammar currently accepts `tests.validation.*` and
+`tests.lib.document_governance.*`, so the newly mirrored gate, ops,
+supply-chain, target-surface, and agent-governance modules would pass runner
+parity and then fail adapter dispatch. Task 4 therefore writes focused adapter
+regressions before the move: all eight moved `tests.lib.<domain>.*` modules must
+be accepted, while a root outside `tests.validation` or `tests.lib`, an empty
+segment, and an invalid segment must be rejected. The grammar does not enumerate
+domains because that would duplicate ownership; `_INTERNAL_ADAPTER_CONTEXTS`
+continues to grant permission only to exact complete argv tuples.
+
 Current machine references to rewire are the six workflow-contract leaves
 `leaf.ci-gate-adapter-regressions`, `leaf.ci-gate-contract-regressions`,
 `leaf.workflow-contract-regressions`, `leaf.local-target-surface-regressions`,
@@ -483,6 +498,37 @@ Gate boundaries, only the five exact Task 6-owned
 their repair and must restore `FULL exit=0`; no moved-module import or
 registration failure may be deferred.
 
+### Task 4 preflight review correction
+
+Independent review rejected the first preflight because the proposed Task 5
+invariant unioned quoted module names from `ci_gate_runner.py` and the workflow
+contract. `_INTERNAL_ADAPTER_CONTEXTS` admits an exact internal argv but does
+not put that invocation in a plan; a module could therefore appear in the
+allowlist, have no reachable leaf, and falsely count as registered.
+
+The corrected Acceptance 4 oracle loads `.github/workflow-contract.yml` and
+`scripts/manifest.yaml`, selects every public suite for profile `full`, expands
+their `public_gate.suite_roots`, builds the local public validation plan, and
+collects dotted modules only from its reachable `run-unittest` invocations. The
+on-disk `test_*.py` set must equal that set. A focused negative test temporarily
+admits a nonexistent module without creating a leaf and proves it remains
+unregistered.
+
+Every retained Task 5 module now requires both exact runner admission and a
+full-profile reachable leaf under its recorded public-suite owner. The repaired
+agent-governance contract test receives the independent leaf
+`leaf.agent-governance-regressions` directly under
+`public_gate.suite_roots["agent-governance"]`; it is also wired through the CI
+repo-contract root and all three local profile projections. It is not placed in
+the document-governance aggregate.
+
+The Task 4 stale-path proof now runs one untruncated `rg` over all eight old
+filesystem paths and all eight old dotted module names. It uses
+`--hidden --no-ignore`, saves complete output under `/tmp`, prints both its line
+count and full content, and excludes only `.git` plus the verified generated
+graph root `graphify-out/`. Every line must be classified as preserved
+historical evidence or prohibited current/live usage.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -519,6 +565,18 @@ it is not final approval.
 
 Task 3 review round 2 adds the exact three parameterized focused-test subcase
 identities. It is pending re-review and does not claim approval.
+
+Task 4 preflight independent review: `Spec compliance: FAIL`; `Quality:
+CHANGES_REQUESTED`. Finding 1: the Task 5 source-string union could count a
+runner admission with no reachable workflow leaf. Finding 2: Task 4 described
+an untruncated old-path sweep without giving an executable command. The current
+correction derives registration from the local full public plan, adds the
+admission-only negative regression and agent-governance ownership leaf, and
+specifies the complete saved-output `rg` proof. Independent re-review is
+pending. A subsequent source-of-truth check also found the adapter's narrower
+module grammar; the corrected Task 4 now owns its RED allow/reject regressions
+and two-root structural repair while exact runner argv remains authoritative.
+This is not an approval or completion claim.
 
 Round 2 read-only primary-owner output:
 
@@ -577,8 +635,9 @@ is self-approved by this registration.
 4. Task 4 mirrors library-unit tests below tests/lib/<domain>, includes
    tests/lib/ops, and keeps validation/entrypoint tests in tests/validation.
    Agent-output evaluation modules remain validation entrypoints.
-5. Task 5 uses the measured post-Task-4 unregistered module set and current
-   module names rather than a stale count or predecessor list.
+5. Task 5 uses both measured post-Task-4 differences between on-disk modules
+   and local-full reachable modules, with current names rather than a stale
+   count or predecessor list.
 6. Task 6 uses tests/lib/target_surface/test_target_surface_contracts.py; Task
    9 updates ci_gate_runner.py, workflow contract, and manifest whenever split
    test module names change.
@@ -595,10 +654,22 @@ is self-approved by this registration.
 10. Every Task boundary runs the full Gate and records owned/deferred RED.
     Task 4 and Task 5 may retain only the five measured Task 6 failures; Task 6
     and the final boundary require `FULL exit=0`.
+11. A test is registered only when its exact adapter argv is admitted and its
+    owning public-suite leaf is reachable in the local full execution plan.
+    Source-string presence and admission-only entries are not registration.
+12. Task 4 stale-path evidence covers all eight old paths in both filesystem
+    and dotted forms, saves and prints the full untruncated result, and excludes
+    only `.git` and generated `graphify-out/` content.
+13. A moved unittest module must cross both the runner's exact argv admission
+    and the adapter's closed module grammar. The grammar accepts valid nonempty
+    dotted segments only below `tests.validation` or `tests.lib`, rejects
+    outside-root and malformed shapes, and does not duplicate domain ownership;
+    the exact runner argv remains the permission boundary.
 
 ## Deferred Items
 
-- Independent review of this Task 4 preflight correction.
+- Independent re-review of the corrected Task 4/Task 5 reachability and
+  stale-path contracts.
 
 ## Related Documents
 

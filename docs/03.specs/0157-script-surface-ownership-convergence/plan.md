@@ -507,6 +507,9 @@ pending re-review; SPEC-0157 remains active and is not completed by this Task.
 - Delete with `apply_patch`: `tests/docs/README.md`, `tests/qa/README.md`, and
   `tests/setup/README.md`. The empty directories then disappear; do not leave a
   redirect or Stage 98 tombstone.
+- Modify: `scripts/lib/gate/ci_gate_adapters.py` so its closed unittest-module
+  grammar admits the two authoritative test roots without duplicating domain
+  ownership already enforced by exact runner argv.
 - Modify the current machine wiring, ownership documentation, runbook command,
   and live link destinations enumerated in Steps 3 through 5.
 
@@ -520,8 +523,11 @@ pending re-review; SPEC-0157 remains active and is not completed by this Task.
 - Does not create: `__init__.py` in any new test directory. The test mirror uses
   implicit namespace packages, so every registered moved suite is invoked by
   its exact dotted module name.
+- Preserves: the adapter's closed module grammar. It admits nonempty valid
+  dotted segments only below `tests.validation` or `tests.lib`; actual
+  invocation authority remains the runner's exact argv map.
 
-- [ ] **Step 1: Write the mirror invariant**
+- [ ] **Step 1: Write the mirror and adapter-boundary invariants**
 
 Add to `tests/lib/test_surface_ownership.py`:
 
@@ -548,6 +554,61 @@ Add to `tests/lib/test_surface_ownership.py`:
 Run the focused ownership test before implementing. It must fail only on the
 missing mirror directories and the three placeholder roots.
 
+Also add these focused regressions to the still-unmoved
+`tests/validation/test_ci_gate_adapters.py` before changing the adapter:
+
+```python
+    def test_run_unittest_accepts_exact_test_surfaces(self) -> None:
+        modules = (
+            "tests.validation.test_one",
+            "tests.lib.agent_governance.test_agent_governance_contract",
+            "tests.lib.document_governance.test_metadata_validator",
+            "tests.lib.gate.test_ci_gate_adapters",
+            "tests.lib.gate.test_ci_gate_contract",
+            "tests.lib.gate.test_github_workflow_contract",
+            "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+            "tests.lib.supply_chain.test_grype_db_seed",
+            "tests.lib.target_surface.test_target_surface_contracts",
+            "tests.lib.target_surface.test_target_surface_delta_contracts",
+        )
+        for module in modules:
+            with self.subTest(module=module):
+                result, recorder = self.run_with_recorder(
+                    ("run-unittest", module, "-v")
+                )
+                self.assertEqual(0, result)
+                self.assertEqual(
+                    ("python3", "-m", "unittest", module, "-v"),
+                    recorder.calls[0][0],
+                )
+
+    def test_run_unittest_rejects_outside_empty_or_invalid_module_segments(
+        self,
+    ) -> None:
+        for module in (
+            "tests.other.test_escape",
+            "tests.lib",
+            "tests.lib..test_escape",
+            "tests.lib.gate.test-ci_gate_adapters",
+        ):
+            with self.subTest(module=module):
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.run_adapter(
+                        self.root,
+                        ("run-unittest", module, "-v"),
+                        {"PATH": "/usr/bin"},
+                    )
+                self.assertEqual(
+                    "ci-gate-adapter-arguments", caught.exception.code
+                )
+```
+
+Run both focused adapter tests before implementation. The exact-surface test is
+RED for the five newly mirrored domains while the existing validation and
+document-governance cases stay GREEN; the outside/empty/invalid negative is
+GREEN.
+This RED proves the lower adapter boundary independently of runner admission.
+
 - [ ] **Step 2: Move exactly the measured primary-owner set**
 
 The preflight primary-owner census is the execution authority for this Task:
@@ -571,7 +632,7 @@ Seven moved modules derive `ROOT` from `Path(__file__).resolve().parents[2]`;
 change those to `parents[3]`. `test_ci_gate_adapters.py` has no `ROOT` constant
 and needs no depth edit.
 
-- [ ] **Step 3: Replace generated-prefix runner wiring with exact modules**
+- [ ] **Step 3: Replace generated-prefix wiring and extend the closed adapter grammar**
 
 `ci_gate_runner.py` currently stores bare stems and prepends
 `tests.validation`. A generic old-to-new string replacement cannot rewrite that
@@ -600,6 +661,24 @@ shape. Replace the generated-prefix block with an exact dotted-module tuple:
 Keep the tuple's contract order. In
 `tests/validation/test_ci_gate_runner.py`, update the negative PostgreSQL module
 name to `tests.lib.ops.test_postgres_logical_upgrade_rehearsal`.
+
+Runner admission is not sufficient: `ci_gate_adapters.py` currently admits
+only `tests.validation.*` and `tests.lib.document_governance.*`. Replace only
+the structural boundary of `_UNITTEST_MODULE` with the two authoritative roots
+`tests.validation` and `tests.lib`, followed by one or more nonempty dotted
+identifier segments. Do not enumerate library domains here: that would create a
+second hand-maintained ownership list beside the exact invocation authority in
+`_INTERNAL_ADAPTER_CONTEXTS`. Use this exact structural grammar:
+
+```python
+_UNITTEST_MODULE = re.compile(
+    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z0-9_]+)+\Z"
+)
+```
+
+The runner's exact argv map remains the permission boundary; the adapter regex
+only rejects malformed or out-of-root module shapes. The two Step 1 adapter
+regressions must then be GREEN at the moved dotted test path.
 
 - [ ] **Step 4: Rewire every current machine contract**
 
@@ -676,6 +755,9 @@ and clickable link destinations move.
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
+  tests.lib.gate.test_ci_gate_adapters.CiGateAdapterTests.test_run_unittest_accepts_exact_test_surfaces \
+  tests.lib.gate.test_ci_gate_adapters.CiGateAdapterTests.test_run_unittest_rejects_outside_empty_or_invalid_module_segments
+PYTHONPATH=. python3 -m unittest \
   tests.lib.gate.test_ci_gate_adapters \
   tests.lib.gate.test_ci_gate_contract \
   tests.lib.gate.test_github_workflow_contract \
@@ -693,7 +775,8 @@ PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 ```
 
 Expected: all seven registered moved suites and every ownership/wiring check are
-GREEN. Run the eighth suite explicitly:
+GREEN, including the adapter shape grammar and its outside/empty/invalid
+negative. Run the eighth suite explicitly:
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -713,6 +796,13 @@ ownership declaration, future instruction, or clickable link destination may
 use an old path.
 
 ```bash
+rg --hidden --no-ignore -n --no-heading --color never \
+  '(tests/validation/test_(agent_governance_contract|ci_gate_adapters|ci_gate_contract|github_workflow_contract|grype_db_seed|postgres_logical_upgrade_rehearsal|target_surface_contracts|target_surface_delta_contracts)\.py|tests\.validation\.test_(agent_governance_contract|ci_gate_adapters|ci_gate_contract|github_workflow_contract|grype_db_seed|postgres_logical_upgrade_rehearsal|target_surface_contracts|target_surface_delta_contracts))([^[:alnum:]_]|$)' \
+  --glob '!.git' --glob '!.git/**' \
+  --glob '!graphify-out' --glob '!graphify-out/**' \
+  . > /tmp/spec0157-task4-old-path-hits.txt
+wc -l /tmp/spec0157-task4-old-path-hits.txt
+cat /tmp/spec0157-task4-old-path-hits.txt
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-metadata.py \
   --mode check-changed --base-ref "$(git merge-base main HEAD)"
@@ -723,6 +813,15 @@ PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full \
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task4.txt
 ```
 
+The regular expression covers all eight old filesystem paths and all eight old
+dotted module names. `--hidden --no-ignore` prevents hidden current surfaces or
+ignored workspace text from disappearing from the proof; only `.git` and the
+repository's actual generated Graphify output, `graphify-out/`, are excluded.
+Do not add a docs exclusion, `head`, `--max-count`, or another truncation. Record
+the matching-line count and the complete file contents in the current Task,
+classifying every line as either preserved historical evidence or prohibited
+current/live usage. Any prohibited hit reopens Task 4.
+
 The full Gate may report `FULL exit=1` only for these five Task 6-owned
 `ChangedBodyDeficitGitTests` results already measured in Task 3:
 
@@ -732,8 +831,8 @@ The full Gate may report `FULL exit=1` only for these five Task 6-owned
 4. Failure: `test_registered_operations_move_requires_its_exact_source_at_base`
 5. Failure: `test_unrelated_operations_readme_does_not_receive_transition_authorization`
 
-No moved-module import, registration, manifest, workflow-contract, metadata, or
-link failure is allowed.
+No moved-module import, adapter dispatch, registration, manifest,
+workflow-contract, metadata, or link failure is allowed.
 
 - [ ] **Step 8: Commit**
 
@@ -750,78 +849,123 @@ git commit -m "refactor(tests): Mirror library ownership in the test surface"
 
 **Files:**
 
-- Modify: `scripts/validation/ci_gate_runner.py`, `.github/workflow-contract.yml`
-- Modify or delete: only the measured post-Task-4 unregistered modules that fail
+- Modify: `.github/workflow-contract.yml`
+- Modify: `scripts/validation/ci_gate_runner.py`
+- Modify: `scripts/lib/gate/ci_gate_contract.py`
+- Modify: `tests/lib/test_surface_ownership.py`
+- Modify: `tests/validation/test_ci_gate_runner.py`
+- Modify: `tests/lib/gate/test_ci_gate_contract.py`
+- Modify: `tests/lib/gate/test_github_workflow_contract.py`
+- Repair: `tests/lib/agent_governance/test_agent_governance_contract.py`
+- Modify or delete: only the other measured post-Task-4 unreachable modules
+  that fail; update `scripts/manifest.yaml` only when a measured disposition
+  removes or changes a registered test reference.
 
 **Interfaces:**
 
 - Consumes: Task 4's module paths.
-- Produces: the set of test modules on disk equals the set the full gate runs.
+- Produces: the set of `test_*.py` modules on disk equals the exact dotted
+  modules in reachable `run-unittest` leaves of the local `full` public plan.
+- Distinguishes: `_INTERNAL_ADAPTER_CONTEXTS` is an exact invocation admission
+  map. It does not register a module and is never unioned with workflow-contract
+  strings to compute coverage.
+- Requires: every retained measured module has both an admitted exact adapter
+  argv and an owning public-suite leaf reachable from that suite in the local
+  `full` plan.
 
-- [ ] **Step 1: Write the coverage invariant**
+- [ ] **Step 1: Write the full-plan reachability invariant first**
 
-Add to `tests/lib/test_surface_ownership.py`:
+Add the required imports and a helper to `tests/lib/test_surface_ownership.py`.
+The helper must use the same public-plan builders as `run-ci-gate.py`; it must
+not parse source strings:
 
 ```python
-    def test_every_test_module_is_registered_in_a_gate(self) -> None:
-        """No module sits on disk unreached. The current measured gap is the
-        authority; do not rely on a predecessor count or module-name list.
-        """
+from unittest import mock
 
-        import re
+from scripts.lib.gate import ci_gate_contract as gate_contract
+from scripts.validation import ci_gate_runner as gate_runner
 
-        registered: set[str] = set()
-        for source in (
-            ROOT / "scripts/validation/ci_gate_runner.py",
-            ROOT / ".github/workflow-contract.yml",
-        ):
-            registered |= set(
-                re.findall(r'"(tests\.[a-z0-9_.]+)"', source.read_text(encoding="utf-8"))
-            )
+
+def _full_profile_unittest_modules() -> set[str]:
+    document = gate_contract.load_contract_document(ROOT)
+    registry = gate_contract.parse_gate_registry(
+        document, ".github/workflow-contract.yml"
+    )
+    suites = gate_contract.load_public_suite_registry(
+        ROOT / "scripts/manifest.yaml"
+    )
+    public_gate = gate_contract.parse_public_gate_contract(document, suites)
+    selected = gate_contract.select_public_suites(public_gate, "full", ())
+    plan = gate_runner.build_public_validation_plan(
+        registry,
+        gate_contract.public_root_gate_ids(public_gate, selected),
+        suites,
+        selected,
+        gate_runner.ExecutionContext.LOCAL,
+        profile="full",
+    )
+    return {
+        module
+        for invocation in plan
+        if invocation.entrypoint == gate_runner._INTERNAL_ADAPTER_PATH
+        and invocation.argv[:1] == ("run-unittest",)
+        and invocation.argv[-1:] == ("-v",)
+        for module in invocation.argv[1:-1]
+    }
+
+
+class SurfaceOwnershipTests(unittest.TestCase):
+    def test_every_test_module_is_reachable_from_the_full_profile(self) -> None:
         on_disk = {
             str(path.relative_to(ROOT).with_suffix("")).replace("/", ".")
             for path in (ROOT / "tests").rglob("test_*.py")
         }
-        self.assertEqual(set(), on_disk - registered)
+        self.assertEqual(on_disk, _full_profile_unittest_modules())
+
+    def test_adapter_admission_alone_is_not_test_registration(self) -> None:
+        module = "tests.lib.unreachable.test_admission_only"
+        argv = ("run-unittest", module, "-v")
+        with mock.patch.dict(
+            gate_runner._INTERNAL_ADAPTER_CONTEXTS,
+            {argv: gate_runner._ALL_EXECUTION_CONTEXTS},
+        ):
+            self.assertNotIn(module, _full_profile_unittest_modules())
 ```
 
-- [ ] **Step 2: Run it and record the gap**
+The equality is Acceptance 4's focused oracle. The negative regression prevents
+a future implementation from making it GREEN by merely adding a string to the
+runner admission map.
+
+- [ ] **Step 2: Witness RED and record the reachable-plan gap**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_every_test_module_is_registered_in_a_gate
+PYTHONPATH=. python3 -m unittest \
+  tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_every_test_module_is_reachable_from_the_full_profile \
+  tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_adapter_admission_alone_is_not_test_registration
 ```
 
-Expected: FAIL listing the unregistered modules. Write the list into the Task.
+Expected: the equality test is RED and the admission-only negative regression
+is GREEN. Record both exact differences, `on_disk - reachable` and
+`reachable - on_disk`, in the Task; the latter is expected to be empty at this
+boundary but must not be assumed. Do not replace either set with a predecessor
+count or a source-string census.
 
-- [ ] **Step 3: Measure each unregistered module before registering it**
+- [ ] **Step 3: Measure each unreachable module before registering it**
 
-```bash
-for m in $(PYTHONPATH=. python3 - <<'PY'
-import re, pathlib
-ROOT = pathlib.Path(".")
-registered = set()
-for source in ("scripts/validation/ci_gate_runner.py", ".github/workflow-contract.yml"):
-    registered |= set(re.findall(r'"(tests\.[a-z0-9_.]+)"', pathlib.Path(source).read_text()))
-for path in ROOT.joinpath("tests").rglob("test_*.py"):
-    name = str(path.with_suffix("")).replace("/", ".")
-    if name not in registered:
-        print(name)
-PY
-); do
-  r=$(PYTHONPATH=. timeout 300 python3 -m unittest "$m" 2>&1 | grep -E "^(Ran [0-9]+ tests|OK|OK \(|FAILED)" | tr '\n' ' ')
-  printf "%-56s %s\n" "$m" "${r:-TIMEOUT}"
-done
-```
-
-Record every line. A module that fails is diagnosed and dispositioned before it
-is registered; registering a red module turns the gate red for a reason that is
-not this task's change.
+For every module in the Step 2 difference, run its exact dotted name directly
+with the existing 300-second bound and record `Ran`, `OK`, `FAILED`, or timeout.
+A module that fails is diagnosed and dispositioned before routing; a module that
+is already present in an admission tuple but absent from the full plan remains
+unreachable and is not silently exempted.
 
 - [ ] **Step 4: Disposition each measured failing module**
 
 For every failing module reported by Step 3, inspect its current path and
 failure. Rebuild only a fixture that has a live-corpus subject; otherwise remove
-the module and its manifest row, recording why its current subject is absent.
+the module and its manifest references, recording why its current subject is
+absent. For every retained module, record exactly one owning public suite and
+one owning leaf. Existing manifest claims are evidence, but a multi-suite or
+missing claim requires an explicit responsibility ruling in the Task.
 
 - [ ] **Step 5: Repair the remaining measured failures, one commit each**
 
@@ -830,37 +974,83 @@ the commit message, and fix the production defect rather than the assertion.
 Where the assertion is wrong, state that and change it. Do not reintroduce a
 historical module name or failure count.
 
-- [ ] **Step 6: Register the now-green modules**
+- [ ] **Step 6: Give every retained module admission and reachable ownership**
 
-In `scripts/validation/ci_gate_runner.py`, add each measured current module name to the tuple
-that already lists `tests.lib.document_governance.*` and the validation modules,
-keeping the list alphabetically sorted so a later addition is a one-line diff.
+For each retained GREEN module:
+
+1. Add the exact complete `run-unittest ... -v` invocation to
+   `_INTERNAL_ADAPTER_CONTEXTS`. When one leaf runs multiple modules, admission
+   matches that complete ordered argv; a per-module string elsewhere is not a
+   substitute.
+2. Create or update a workflow leaf whose `argv` contains that module and place
+   the leaf directly under its recorded owner in `public_gate.suite_roots`.
+3. Make the leaf reachable in both CI and local profile projections, updating
+   the exact root/child pins in `ci_gate_contract.py` and their contract tests.
+   Reusing a CI-only leaf without local profile reachability does not satisfy
+   the local `--profile full` contract.
+
+The repaired agent-governance contract test has this fixed topology:
+
+- leaf id and suite key: `leaf.agent-governance-regressions` and
+  `agent-governance-regressions`;
+- exact argv: `run-unittest`,
+  `tests.lib.agent_governance.test_agent_governance_contract`, `-v`;
+- exact admission in `ci_gate_runner.py`;
+- CI reachability as a child of `ci.repo-contracts`;
+- local reachability as an independent root in the three local profile-root
+  projections; and
+- public ownership as a direct member of
+  `public_gate.suite_roots["agent-governance"]`, beside the existing provider,
+  evaluation, and contract roots.
+
+Do not place this leaf in `local.document-corpus-lifecycle` or the
+document-governance library regression leaf, and do not add it as a direct
+child of `ci.validation-full`; `ci.repo-contracts` supplies CI reachability.
+Update the post-Task-4
+`tests/lib/gate/test_ci_gate_contract.py` pins, the full-plan tests in
+`tests/validation/test_ci_gate_runner.py`, and the registered-node census in
+`tests/lib/gate/test_github_workflow_contract.py` from the actual graph change.
 
 - [ ] **Step 7: Verify**
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.test_surface_ownership 2>&1 | grep -E "^(Ran |OK|FAILED)"
+PYTHONPATH=. python3 -m unittest \
+  tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_every_test_module_is_reachable_from_the_full_profile \
+  tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_adapter_admission_alone_is_not_test_registration
+PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner
+PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_contract
+PYTHONPATH=. python3 -m unittest tests.lib.gate.test_github_workflow_contract
+PYTHONPATH=. python3 scripts/validation/check-github-workflow-contract.py
 PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full > /tmp/g-task5.txt 2>&1; echo "FULL exit=$?" >> /tmp/g-task5.txt
 grep -nE "^(Ran [0-9]+ tests|OK|FAILED)|FULL exit=" /tmp/g-task5.txt
 ```
 
-Expected: the registration invariant is `OK`. The full Gate may remain RED only
-for the same five Task 6-owned `ChangedBodyDeficitGitTests` results recorded in
-Task 4; no unregistered module, moved-path import, or newly registered suite may
-fail. The gate will now run noticeably longer because the modules are no longer
-invisible.
+Expected: on-disk and local-full reachable dotted module sets are exactly equal;
+the admission-only negative stays GREEN; the agent-governance leaf is present in
+the full plan under its owning public suite; and all contract suites are GREEN.
+The full Gate may remain RED only for the same five Task 6-owned
+`ChangedBodyDeficitGitTests` results recorded in Task 4. No unreachable module,
+admission mismatch, wrong-suite route, moved-path import, or newly registered
+suite may fail.
 
 - [ ] **Step 8: Commit**
 
 ```bash
 git status --short
-git add -- scripts/validation/ci_gate_runner.py .github/workflow-contract.yml \
+git add -- .github/workflow-contract.yml \
+  scripts/validation/ci_gate_runner.py \
+  scripts/lib/gate/ci_gate_contract.py \
   tests/lib/test_surface_ownership.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/lib/gate/test_ci_gate_contract.py \
+  tests/lib/gate/test_github_workflow_contract.py \
+  tests/lib/agent_governance/test_agent_governance_contract.py \
   docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md
 # Add each measured repair or deletion by its exact recorded path; never stage
-# the entire worktree.
+# the entire worktree. Add scripts/manifest.yaml only for a recorded manifest
+# disposition.
 git diff --cached --name-only
-git commit -m "test(gate): Register every test module and repair the ones nothing ran"
+git commit -m "test(gate): Route every test module through the full profile"
 ```
 
 ---
