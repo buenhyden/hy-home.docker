@@ -422,6 +422,10 @@
         "leaf.repo-metadata-base",
         "setup.repo-python-dependencies",
         "leaf.repo-document-metadata",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions",
+        "leaf.repository-integrity-regressions",
+        "leaf.document-lifecycle-regressions",
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",
         "leaf.ci-gate-adapter-regressions",
@@ -483,6 +487,27 @@
       "children": [
         "leaf.zizmor"
       ]
+    },
+    {
+      "gate_id": "leaf.agent-governance-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.agent_governance.test_agent_governance_contract",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "agent-governance-regressions"
     },
     {
       "gate_id": "leaf.agent-output-eval-fixture-gate",
@@ -690,6 +715,29 @@
       ],
       "opaque": true,
       "suite_key": "dependency-vulnerability-audit"
+    },
+    {
+      "gate_id": "leaf.document-lifecycle-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.validation.test_generate_llm_wiki",
+        "tests.validation.test_security_automation_readiness",
+        "tests.validation.test_workspace_governance_migration",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 15,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "document-lifecycle-regressions"
     },
     {
       "gate_id": "leaf.docs-implementation-alignment",
@@ -1261,6 +1309,30 @@
       "suite_key": "pre-commit"
     },
     {
+      "gate_id": "leaf.provider-governance-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.validation.test_provider_hook_parity",
+        "tests.validation.test_provider_native_surfaces",
+        "tests.validation.test_provider_surface_renderer",
+        "tests.validation.test_stop_gate_deferred_paths",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 15,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "provider-governance-regressions"
+    },
+    {
       "gate_id": "leaf.quickwin-baseline",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
@@ -1296,6 +1368,33 @@
       ],
       "opaque": true,
       "suite_key": "compose-baseline-regressions"
+    },
+    {
+      "gate_id": "leaf.repository-integrity-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.lib.test_surface_ownership",
+        "tests.validation.test_agentic_audit_semantic_freshness",
+        "tests.validation.test_audit_criterion_contract",
+        "tests.validation.test_reference_stage_repo_contract",
+        "tests.validation.test_script_manifest",
+        "tests.validation.test_tech_stack_version_contract",
+        "tests.validation.test_validator_entrypoints",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 20,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "repository-integrity-regressions"
     },
     {
       "gate_id": "leaf.repo-contracts",
@@ -1428,7 +1527,10 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "profiles": [
-        "ci"
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
       ],
       "opaque": true,
       "suite_key": "supply-chain-fixture-policy"
@@ -1563,6 +1665,7 @@
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
         "leaf.local-document-corpus-recovery",
+        "leaf.document-lifecycle-regressions",
         "leaf.document-governance-library-regressions"
       ]
     },
@@ -1618,6 +1721,7 @@
       ],
       "opaque": false,
       "children": [
+        "leaf.supply-chain-fixture-policy",
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness"
       ]
@@ -1793,6 +1897,8 @@
         "leaf.local-provider-surface-drift",
         "ci.agent-output-eval-fixture-gate",
         "leaf.local-agent-governance-contract",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions",
         "leaf.local-tech-stack-version-drift",
         "ci.docs-traceability",
         "leaf.docs-implementation-alignment",
@@ -1805,6 +1911,7 @@
         "local.template-security-baseline",
         "local.quickwin-baseline",
         "local.generated-freshness",
+        "leaf.repository-integrity-regressions",
         "leaf.repo-contracts"
       ],
       "classification": "local"
@@ -1817,6 +1924,8 @@
         "leaf.local-provider-surface-drift",
         "ci.agent-output-eval-fixture-gate",
         "leaf.local-agent-governance-contract",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions",
         "ci.docs-traceability",
         "leaf.docs-implementation-alignment",
         "local.document-corpus-lifecycle",
@@ -1827,6 +1936,7 @@
         "local.infrastructure-hardening",
         "local.template-security-baseline",
         "local.generated-freshness",
+        "leaf.repository-integrity-regressions",
         "leaf.repo-contracts"
       ],
       "classification": "local"
@@ -1839,6 +1949,8 @@
         "leaf.local-provider-surface-drift",
         "ci.agent-output-eval-fixture-gate",
         "leaf.local-agent-governance-contract",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions",
         "leaf.local-tech-stack-version-drift",
         "ci.docs-traceability",
         "leaf.docs-implementation-alignment",
@@ -1851,6 +1963,7 @@
         "local.template-security-baseline",
         "local.quickwin-baseline",
         "local.generated-freshness",
+        "leaf.repository-integrity-regressions",
         "leaf.repo-contracts",
         "local.compose-all-profiles-validation"
       ],
@@ -1866,7 +1979,9 @@
       "agent-governance": [
         "leaf.local-provider-surface-drift",
         "ci.agent-output-eval-fixture-gate",
-        "leaf.local-agent-governance-contract"
+        "leaf.local-agent-governance-contract",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions"
       ],
       "document-contract": [
         "leaf.repo-metadata-base",
@@ -1879,6 +1994,7 @@
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
+        "leaf.document-lifecycle-regressions",
         "leaf.local-llm-wiki-freshness",
         "leaf.local-audit-matrix-freshness",
         "leaf.local-security-readiness-freshness"
@@ -1902,7 +2018,8 @@
         "ci.git-flow-contract",
         "ci.frontend-quality",
         "ci.storybook-coverage",
-        "ci.zizmor"
+        "ci.zizmor",
+        "leaf.repository-integrity-regressions"
       ]
     },
     "changed_path_rules": [

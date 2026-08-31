@@ -227,7 +227,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         # 88 since 2026-08-31: leaf.local-document-corpus-recovery, which
         # registers check-recovery. That mode already re-proved every tombstone
         # commit:path resolves to a regular Git blob, but no profile ran it.
-        self.assertEqual(88, len(contract.gate_registry.nodes))
+        # 92 since 2026-08-31: four Task 5 regression leaves make every retained
+        # on-disk unittest reachable without adding a public suite.
+        self.assertEqual(92, len(contract.gate_registry.nodes))
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,
@@ -781,6 +783,37 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "leaf.storybook-coverage",
             ),
             expanded,
+        )
+
+    def test_task5_agent_governance_regression_leaf_has_fixed_topology(
+        self,
+    ) -> None:
+        document = self.load_contract_document(ROOT)
+        nodes = {
+            node["gate_id"]: node
+            for node in document["gate_nodes"]
+        }
+        gate_id = "leaf.agent-governance-regressions"
+        self.assertEqual(
+            [
+                "run-unittest",
+                "tests.lib.agent_governance.test_agent_governance_contract",
+                "-v",
+            ],
+            nodes[gate_id]["argv"],
+        )
+        self.assertEqual(
+            ["ci", "local-script-backed", "local-harness", "local-all-profiles"],
+            nodes[gate_id]["profiles"],
+        )
+        self.assertIn(gate_id, nodes["ci.repo-contracts"]["children"])
+        self.assertNotIn(gate_id, nodes["ci.validation-full"]["children"])
+        for profile in document["profile_roots"]:
+            with self.subTest(profile=profile["profile"]):
+                self.assertIn(gate_id, profile["root_gate_ids"])
+        self.assertIn(
+            gate_id,
+            document["public_gate"]["suite_roots"]["agent-governance"],
         )
 
     @contextlib.contextmanager

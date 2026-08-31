@@ -896,7 +896,7 @@ git commit -m "refactor(tests): Mirror library ownership in the test surface"
   argv and an owning public-suite leaf reachable from that suite in the local
   `full` plan.
 
-- [ ] **Step 1: Write the full-plan reachability invariant first**
+- [x] **Step 1: Write the full-plan reachability invariant first**
 
 Add the required imports and a helper to `tests/lib/test_surface_ownership.py`.
 The helper must use the same public-plan builders as `run-ci-gate.py`; it must
@@ -959,7 +959,7 @@ The equality is Acceptance 4's focused oracle. The negative regression prevents
 a future implementation from making it GREEN by merely adding a string to the
 runner admission map.
 
-- [ ] **Step 2: Witness RED and record the reachable-plan gap**
+- [x] **Step 2: Witness RED and record the reachable-plan gap**
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -973,7 +973,7 @@ is GREEN. Record both exact differences, `on_disk - reachable` and
 boundary but must not be assumed. Do not replace either set with a predecessor
 count or a source-string census.
 
-- [ ] **Step 3: Measure each unreachable module before registering it**
+- [x] **Step 3: Measure each unreachable module before registering it**
 
 For every module in the Step 2 difference, run its exact dotted name directly
 with the existing 300-second bound and record `Ran`, `OK`, `FAILED`, or timeout.
@@ -981,7 +981,7 @@ A module that fails is diagnosed and dispositioned before routing; a module that
 is already present in an admission tuple but absent from the full plan remains
 unreachable and is not silently exempted.
 
-- [ ] **Step 4: Disposition each measured failing module**
+- [x] **Step 4: Disposition each measured failing module**
 
 For every failing module reported by Step 3, inspect its current path and
 failure. Rebuild only a fixture that has a live-corpus subject; otherwise remove
@@ -990,14 +990,14 @@ absent. For every retained module, record exactly one owning public suite and
 one owning leaf. Existing manifest claims are evidence, but a multi-suite or
 missing claim requires an explicit responsibility ruling in the Task.
 
-- [ ] **Step 5: Repair the remaining measured failures, one commit each**
+- [x] **Step 5: Repair the remaining measured failures, one commit each**
 
 For each current failure from Step 3, read the failure, name its root cause in
 the commit message, and fix the production defect rather than the assertion.
 Where the assertion is wrong, state that and change it. Do not reintroduce a
 historical module name or failure count.
 
-- [ ] **Step 6: Give every retained module admission and reachable ownership**
+- [x] **Step 6: Give every retained module admission and reachable ownership**
 
 For each retained GREEN module:
 
@@ -1034,7 +1034,7 @@ Update the post-Task-4
 `tests/validation/test_ci_gate_runner.py`, and the registered-node census in
 `tests/lib/gate/test_github_workflow_contract.py` from the actual graph change.
 
-- [ ] **Step 7: Verify**
+- [x] **Step 7: Verify**
 
 ```bash
 PYTHONPATH=. python3 -m unittest \
@@ -1056,7 +1056,7 @@ The full Gate may remain RED only for the same five Task 6-owned
 admission mismatch, wrong-suite route, moved-path import, or newly registered
 suite may fail.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git status --short

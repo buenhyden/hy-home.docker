@@ -62,6 +62,7 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | 31 | Corrected the Stage 98 retention design after the user ruling | Current inspection found three Migration documents and direct consumers across the active ADR, Stage 99, governance libraries, generators, manifests, and tests. Draft SPEC-0158 now treats the Migration layer as temporary historical input: it must move every current consumer first, remove the active Migration contract, delete all Migration documents and their directory, and retain only the structural index plus minimal archive records proven necessary by explicit preservation or live recovery navigation. SPEC-0157 changed no Stage 98 artifact and makes no implementation-completion claim. |
 | 32 | Added the archive-isolation and stage-ownership ruling | The user fixed Stage 00 as AI-agent governance/role/skill authority; Stages 01--03 as the consistent SDLC chain; Stage 05 as Operations Guide/Incident/Postmortem/Runbook ownership; Stage 90 as Audit/Research/Data evidence; Stage 98 as isolated archive; and Stage 99 as docs template authority. A read-only search found existing inbound archive-file citations and links across current and historical documents. Draft SPEC-0158 now requires zero such inbound references from Stages 00/01/02/03/05/90, including generated indexes, while allowing retained archive records to point outward. This is design evidence only; the current corpus remains `needs_revalidation` until SPEC-0158 executes and verifies the cleanup. |
 | 33 | Revalidated the corrected Stage 98 and stage-ownership design | Repository metadata contracts reported `violations=0`; changed-document metadata selected 16 documents with `violations=0`, `legacy_exceptions=0`, and `transition_overrides=0`; the existing all-links check reported `failures=0`; and diff hygiene passed. The current link check does not yet enforce the newly approved archive-isolation predicate, so these results validate document shape and existing links only. Actual zero-inbound proof remains unobserved SPEC-0158 work. |
+| 34 | Completed Task 5 full-profile test registration | The pre-registration oracle measured 20 on-disk modules absent from the reachable local full plan and zero plan-only modules; its admission-only negative stayed GREEN. Eight RED modules were repaired or dispositioned against current owners before routing. Four new responsibility leaves and the existing supply-chain fixture leaf now route all 20 modules through exact adapter argv and public-suite ownership. The final set equality, focused contracts, manifest, and workflow checks are GREEN. Full execution reaches every module and stops only at the same five Task 6-owned `ChangedBodyDeficitGitTests` results. |
 
 ### Discovered branch commits
 
@@ -689,6 +690,97 @@ also checked for stale Markdown link destinations: zero hits. Their six
 non-link dated-prose literals remain preserved historical evidence rather than
 current/live references.
 
+### Task 5 — every test module is reachable from the local full plan
+
+The reachability test was written before routing. Its first run left the
+admission-only negative GREEN and reported this exact `on_disk - reachable`
+set; `reachable - on_disk` was empty:
+
+~~~text
+tests.lib.agent_governance.test_agent_governance_contract
+tests.lib.ops.test_postgres_logical_upgrade_rehearsal
+tests.lib.supply_chain.test_grype_db_seed
+tests.lib.test_surface_ownership
+tests.validation.test_agentic_audit_semantic_freshness
+tests.validation.test_audit_criterion_contract
+tests.validation.test_compose_core_readiness
+tests.validation.test_generate_llm_wiki
+tests.validation.test_provider_hook_parity
+tests.validation.test_provider_native_surfaces
+tests.validation.test_provider_surface_renderer
+tests.validation.test_reference_stage_repo_contract
+tests.validation.test_sample_service_delivery_rehearsal
+tests.validation.test_script_manifest
+tests.validation.test_security_automation_readiness
+tests.validation.test_stop_gate_deferred_paths
+tests.validation.test_supply_chain_policy
+tests.validation.test_tech_stack_version_contract
+tests.validation.test_validator_entrypoints
+tests.validation.test_workspace_governance_migration
+~~~
+
+Direct execution classified twelve modules GREEN: PostgreSQL rehearsal, Grype
+seed, audit criterion, all three provider modules, reference-stage contract,
+security readiness, stop-gate deferred paths, tech-stack versions, validator
+entrypoints, and workspace-governance migration. The other eight were RED and
+received these current-owner dispositions before registration:
+
+| Module | Measured cause | Disposition |
+| :--- | :--- | :--- |
+| `tests.lib.agent_governance.test_agent_governance_contract` | Three subcases copied a Task from retired SPEC-0153 | Replaced with a local semantic fixture in `50583a90` |
+| `tests.lib.test_surface_ownership` | The newly written equality oracle reported the exact 20-module gap | Closed by the reachable ownership routes in this Task 5 unit |
+| `tests.validation.test_agentic_audit_semantic_freshness` | The fixture copied retired Task evidence | Added a bounded test-owned evidence fixture in `b25b7e32` |
+| `tests.validation.test_compose_core_readiness` | A runtime contract test read deleted `docs/04.execution` approval documents | Removed the historical document dependency while preserving resource-limit assertions in `bd0e7645` |
+| `tests.validation.test_generate_llm_wiki` | Generated Stage 90 navigation output was stale after the active Task entered the tracked corpus | Regenerated the two declared outputs in `d1bdccd9` |
+| `tests.validation.test_sample_service_delivery_rehearsal` | Tests depended on absent mutable `_workspace` readiness and recovery verdicts | Added explicit test-owned verdict fixtures and narrow overrides in `3d765f52` |
+| `tests.validation.test_script_manifest` | One generator fixture required retired Task evidence and one assertion contradicted the current retained hook owner | Replaced the fixture in `b25b7e32` and corrected the current-owner expectation in `2f1468f9` |
+| `tests.validation.test_supply_chain_policy` | A status assertion read deleted completed-Spec documents instead of the current supply-chain contract | Removed that obsolete assertion in `3ec4246d` |
+
+The retained modules have one responsibility route each:
+
+| Public owner | Reachable leaf | Modules |
+| :--- | :--- | :--- |
+| `agent-governance` | `leaf.agent-governance-regressions` | Agent-governance contract |
+| `agent-governance` | `leaf.provider-governance-regressions` | Provider hook parity, native surfaces, renderer, and stop-gate deferred paths |
+| `repository-integrity` | `leaf.repository-integrity-regressions` | Surface ownership, audit semantic freshness, audit criterion, Stage 90 repository contract, script manifest, tech-stack versions, and validator entrypoints |
+| `document-lifecycle` | `leaf.document-lifecycle-regressions` | LLM Wiki generation, security readiness, and workspace-governance migration |
+| `operations` | `leaf.supply-chain-fixture-policy` | Compose readiness, PostgreSQL rehearsal, Grype seed, supply-chain policy, and delivery rehearsal |
+
+The first integrated Full run exposed one execution-boundary defect that a
+standalone provider test could not show: the Gate's sealed
+`HYHOME_CI_GATE_ROOT=/proc/self/fd/N` value reached a non-Gate subprocess after
+that descriptor was no longer inherited. The provider renderer test now drops
+only that internal variable from the subprocess it owns, matching the existing
+document-governance test pattern without weakening Gate invocation isolation.
+The four new leaves plus local reachability for the existing supply-chain
+fixture leaf changed the generated security-readiness observation from 69 to
+74 reachable typed gates; the declared 13-control model was regenerated
+without adding another Gate or a count assertion.
+
+Final Task 5 evidence:
+
+~~~text
+surface ownership and gate/workflow contracts: Ran 96 tests; OK (skipped=11)
+agent and provider responsibility groups: Ran 52 tests; OK
+repository-integrity group: Ran 127 tests; OK
+document-lifecycle group: Ran 40 tests; OK
+operations fixture group: Ran 233 tests; OK
+check-github-workflow-contract.py: PASS (workflows=7, jobs=9, actions=8)
+check-script-manifest.py: PASS
+on_disk - reachable: empty
+reachable - on_disk: empty
+
+full Gate document-metadata module: Ran 251 tests in 127.543s
+FAILED (failures=3, errors=2)
+FULL exit=1
+~~~
+
+The five Full results are exactly the Task 6 boundary already recorded after
+Task 4: the two registered Operations-move fixture errors and the three
+source-baseline authorization failures. No Task 5 module, adapter admission,
+public owner, local/CI route, generated readiness check, manifest check, or
+workflow contract remains RED.
+
 ### Task 0 recovery checks
 
 ~~~text
@@ -833,6 +925,7 @@ is self-approved by this registration.
 | Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 | Task 4 test ownership mirror | 6663f02c; ff12147d | Complete; Task, Python, and CI/Gate reviews APPROVED |
+| Task 5 full-profile registration | 50583a90, b25b7e32, bd0e7645, 3ec4246d, 2f1468f9, 3d765f52, d1bdccd9; current routing unit | Complete; focused contracts GREEN and Full retains only the five Task 6 results |
 
 ## Rulings
 
@@ -846,7 +939,9 @@ is self-approved by this registration.
    Agent-output evaluation modules remain validation entrypoints.
 5. Task 5 uses both measured post-Task-4 differences between on-disk modules
    and local-full reachable modules, with current names rather than a stale
-   count or predecessor list.
+   count or predecessor list. Its completed invariant is set equality, not a
+   twenty-module count pin; every retained module has exact argv admission and
+   one reachable public owner.
 6. Task 6 uses tests/lib/target_surface/test_target_surface_contracts.py; Task
    9 updates ci_gate_runner.py, workflow contract, and manifest whenever split
    test module names change.
@@ -928,8 +1023,6 @@ is self-approved by this registration.
 
 ## Deferred Items
 
-- Task 5 dynamic disposition of the unreachable `test_script_manifest` module
-  and repair/registration of the three agent-governance fixture subcases.
 - Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
 - Stage 90 consumer/lifecycle remeasurement and cleanup belong to draft
   SPEC-0158. Its execution must preserve the atomic `RES-0002` research pack;

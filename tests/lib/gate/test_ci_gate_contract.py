@@ -121,6 +121,8 @@ LOCAL_SCRIPT_ROOTS = (
     "leaf.local-provider-surface-drift",
     "ci.agent-output-eval-fixture-gate",
     "leaf.local-agent-governance-contract",
+    "leaf.agent-governance-regressions",
+    "leaf.provider-governance-regressions",
     "leaf.local-tech-stack-version-drift",
     "ci.docs-traceability",
     "leaf.docs-implementation-alignment",
@@ -133,6 +135,7 @@ LOCAL_SCRIPT_ROOTS = (
     "local.template-security-baseline",
     "local.quickwin-baseline",
     "local.generated-freshness",
+    "leaf.repository-integrity-regressions",
     "leaf.repo-contracts",
 )
 LOCAL_HARNESS_ROOTS = tuple(

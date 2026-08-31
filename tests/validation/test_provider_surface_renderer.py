@@ -18,6 +18,14 @@ RENDERER = ROOT / "scripts/operations/provider_surface_renderer.py"
 WRAPPER = ROOT / "scripts/operations/sync-provider-surfaces.sh"
 
 
+def _child_env() -> dict[str, str]:
+    """Return an environment for a non-gate subprocess owned by this test."""
+
+    environment = dict(os.environ)
+    environment.pop("HYHOME_CI_GATE_ROOT", None)
+    return environment
+
+
 def load_renderer():
     spec = importlib.util.spec_from_file_location("provider_surface_renderer", RENDERER)
     if spec is None or spec.loader is None:
@@ -312,6 +320,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         result = subprocess.run(
             ["bash", str(WRAPPER), "--check"],
             cwd=ROOT,
+            env=_child_env(),
             capture_output=True,
             text=True,
             check=False,

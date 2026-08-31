@@ -74,6 +74,10 @@ _INTERNAL_ROOT_CHILDREN = {
         "leaf.repo-metadata-base",
         "setup.repo-python-dependencies",
         "leaf.repo-document-metadata",
+        "leaf.agent-governance-regressions",
+        "leaf.provider-governance-regressions",
+        "leaf.repository-integrity-regressions",
+        "leaf.document-lifecycle-regressions",
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",
         "leaf.ci-gate-adapter-regressions",
@@ -181,6 +185,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.local-document-corpus-contract",
         "leaf.local-document-corpus-promoted",
         "leaf.local-document-corpus-recovery",
+        "leaf.document-lifecycle-regressions",
         "leaf.document-governance-library-regressions",
     ),
     "local.target-surface": (
@@ -199,6 +204,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.workflow-contract",
     ),
     "local.supply-chain": (
+        "leaf.supply-chain-fixture-policy",
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness",
     ),
@@ -247,6 +253,8 @@ _LOCAL_SCRIPT_BACKED_ROOTS = (
     "leaf.local-provider-surface-drift",
     "ci.agent-output-eval-fixture-gate",
     "leaf.local-agent-governance-contract",
+    "leaf.agent-governance-regressions",
+    "leaf.provider-governance-regressions",
     "leaf.local-tech-stack-version-drift",
     "ci.docs-traceability",
     "leaf.docs-implementation-alignment",
@@ -259,6 +267,7 @@ _LOCAL_SCRIPT_BACKED_ROOTS = (
     "local.template-security-baseline",
     "local.quickwin-baseline",
     "local.generated-freshness",
+    "leaf.repository-integrity-regressions",
     "leaf.repo-contracts",
 )
 _LOCAL_HARNESS_ROOTS = tuple(

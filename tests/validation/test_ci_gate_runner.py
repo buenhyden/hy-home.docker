@@ -128,6 +128,51 @@ class PublicSuiteModelTests(unittest.TestCase):
         self.assertCountEqual(expected_paths, rendered_paths)
         self.assertEqual(len(expected_paths), len(set(rendered_paths)))
 
+    def test_full_plan_routes_task5_regressions_through_their_public_owner(self) -> None:
+        expected_by_suite = {
+            "agent-governance": {
+                "tests.lib.agent_governance.test_agent_governance_contract",
+                "tests.validation.test_provider_hook_parity",
+                "tests.validation.test_provider_native_surfaces",
+                "tests.validation.test_provider_surface_renderer",
+                "tests.validation.test_stop_gate_deferred_paths",
+            },
+            "document-lifecycle": {
+                "tests.validation.test_generate_llm_wiki",
+                "tests.validation.test_security_automation_readiness",
+                "tests.validation.test_workspace_governance_migration",
+            },
+            "operations": {
+                "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+                "tests.lib.supply_chain.test_grype_db_seed",
+                "tests.validation.test_compose_core_readiness",
+                "tests.validation.test_sample_service_delivery_rehearsal",
+                "tests.validation.test_supply_chain_policy",
+            },
+            "repository-integrity": {
+                "tests.lib.test_surface_ownership",
+                "tests.validation.test_agentic_audit_semantic_freshness",
+                "tests.validation.test_audit_criterion_contract",
+                "tests.validation.test_reference_stage_repo_contract",
+                "tests.validation.test_script_manifest",
+                "tests.validation.test_tech_stack_version_contract",
+                "tests.validation.test_validator_entrypoints",
+            },
+        }
+        task5_modules = set().union(*expected_by_suite.values())
+        for suite, expected in expected_by_suite.items():
+            with self.subTest(suite=suite):
+                plan = _real_public_plan((suite,), {})
+                actual = {
+                    module
+                    for invocation in plan
+                    if invocation.entrypoint == runner._INTERNAL_ADAPTER_PATH
+                    and invocation.argv[:1] == ("run-unittest",)
+                    and invocation.argv[-1:] == ("-v",)
+                    for module in invocation.argv[1:-1]
+                }
+                self.assertEqual(expected, actual & task5_modules)
+
     def test_task11_retained_validator_ownership_is_immutable(self) -> None:
         registry = contract.load_public_suite_registry()
         actual = {

@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import pathlib
 import unittest
+from unittest import mock
 
 import yaml
+
+from scripts.lib.gate import ci_gate_contract as gate_contract
+from scripts.validation import ci_gate_runner as gate_runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -16,6 +20,32 @@ def _manifest_rows() -> list[dict]:
     if not isinstance(rows, list) or not rows:
         raise AssertionError("scripts/manifest.yaml must carry a non-empty files list")
     return [row for row in rows if isinstance(row, dict)]
+
+
+def _full_profile_unittest_modules() -> set[str]:
+    document = gate_contract.load_contract_document(ROOT)
+    registry = gate_contract.parse_gate_registry(
+        document, ".github/workflow-contract.yml"
+    )
+    suites = gate_contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+    public_gate = gate_contract.parse_public_gate_contract(document, suites)
+    selected = gate_contract.select_public_suites(public_gate, "full", ())
+    plan = gate_runner.build_public_validation_plan(
+        registry,
+        gate_contract.public_root_gate_ids(public_gate, selected),
+        suites,
+        selected,
+        gate_runner.ExecutionContext.LOCAL,
+        profile="full",
+    )
+    return {
+        module
+        for invocation in plan
+        if invocation.entrypoint == gate_runner._INTERNAL_ADAPTER_PATH
+        and invocation.argv[:1] == ("run-unittest",)
+        and invocation.argv[-1:] == ("-v",)
+        for module in invocation.argv[1:-1]
+    }
 
 
 class SurfaceOwnershipTests(unittest.TestCase):
@@ -77,3 +107,19 @@ class SurfaceOwnershipTests(unittest.TestCase):
         from scripts.lib.document_governance import suite_registry
 
         self.assertFalse(hasattr(suite_registry, "NON_STANDALONE_VALIDATOR_PATHS"))
+
+    def test_every_test_module_is_reachable_from_the_full_profile(self) -> None:
+        on_disk = {
+            str(path.relative_to(ROOT).with_suffix("")).replace("/", ".")
+            for path in (ROOT / "tests").rglob("test_*.py")
+        }
+        self.assertEqual(on_disk, _full_profile_unittest_modules())
+
+    def test_adapter_admission_alone_is_not_test_registration(self) -> None:
+        module = "tests.lib.unreachable.test_admission_only"
+        argv = ("run-unittest", module, "-v")
+        with mock.patch.dict(
+            gate_runner._INTERNAL_ADAPTER_CONTEXTS,
+            {argv: gate_runner._ALL_EXECUTION_CONTEXTS},
+        ):
+            self.assertNotIn(module, _full_profile_unittest_modules())
