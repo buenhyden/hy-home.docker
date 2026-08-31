@@ -462,6 +462,7 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 inputs = {script}
+                fixture_sources: dict[str, Path] = {}
                 if "tech-stack" in script:
                     (root / "infra").mkdir()
                     (root / "infra/tech-stack.versions.json").write_text(json.dumps({"entries": [{"component": "fixture", "images": ["fixture:1"], "compose_files": ["infra/docker-compose.fixture.yml"]}]}))
@@ -472,6 +473,9 @@ class ScriptManifestTests(unittest.TestCase):
                     semantic = json.loads((ROOT / "scripts/validation/agentic-audit-semantic-contract.json").read_text())
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "docs/90.references/audits").rglob("*.md"))
                     inputs.add(semantic["task_evidence"])
+                    fixture_sources[semantic["task_evidence"]] = (
+                        ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
+                    )
                     inputs.update(path for assertion in semantic["assertions"] for path in assertion["required_evidence_paths"])
                 elif "supply-chain" in script:
                     inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/lib/supply_chain/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
@@ -482,7 +486,8 @@ class ScriptManifestTests(unittest.TestCase):
                     copy_fixture(root)
                 self.assertLess(len(inputs), 180, "fixture must remain a bounded producer input set")
                 for relative in sorted(inputs):
-                    source, target = ROOT / relative, root / relative
+                    source = fixture_sources.get(relative, ROOT / relative)
+                    target = root / relative
                     self.assertTrue(source.is_file(), relative)
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(source, target)

@@ -16,6 +16,9 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
 CONTRACT = pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json")
+TASK_EVIDENCE_FIXTURE = (
+    ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
+)
 sys.path.insert(0, str(SCRIPT.parent))
 
 spec = importlib.util.spec_from_file_location(
@@ -121,7 +124,6 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         required_paths = {
             pathlib.Path(contract["audit_index"]),
             pathlib.Path(contract["overview"]),
-            pathlib.Path(contract["task_evidence"]),
             pathlib.Path(contract["canonical_pack"]) / "0019-readme/README.md",
             pathlib.Path(contract["canonical_pack"]) / "0033-readme/README.md",
             CONTRACT,
@@ -140,6 +142,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             destination = self.repo / relative_path
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / relative_path, destination)
+
+        task_evidence = self.repo / contract["task_evidence"]
+        task_evidence.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(TASK_EVIDENCE_FIXTURE, task_evidence)
 
         self.contract = json.loads(self.contract_path.read_text(encoding="utf-8"))
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
