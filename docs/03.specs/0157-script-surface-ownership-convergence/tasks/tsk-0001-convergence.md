@@ -360,8 +360,10 @@ Moved-library focused tests
 Ran 224 tests in 142.672s
 FAILED (errors=3)
 three subcases of `test_mutable_task_token_evidence_is_statement_bounded` in
-the currently unregistered agent-governance test module call `copy2` on the
-absent `docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
+the currently unregistered agent-governance test module:
+`case='evidence-only-edit'`, `case='new-active-authority'`, and
+`case='altered-statement'`. Each calls `copy2` on the absent
+`docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md`
 (Task 5 measured-unregistered repair)
 
 PYTHONPATH=. python3 scripts/validation/run-ci-gate.py --profile full
@@ -416,6 +418,9 @@ Spec FAIL with quality CHANGES_REQUESTED solely because the focused and full
 Gate failure attribution was imprecise. This correction is pending re-review;
 it is not final approval.
 
+Task 3 review round 2 adds the exact three parameterized focused-test subcase
+identities. It is pending re-review and does not claim approval.
+
 Round 2 read-only primary-owner output:
 
 ~~~text
@@ -460,7 +465,7 @@ is self-approved by this registration.
 | :--- | :--- | :--- |
 | Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Revalidated: lifecycle/workflow GREEN; shared manifest bundle resolved by Task 3 repair |
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
-| Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review attribution correction pending re-review |
+| Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 
 ## Rulings

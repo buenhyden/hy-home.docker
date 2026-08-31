@@ -463,9 +463,11 @@ PASS: GitHub workflow contract (workflows=7, jobs=9, actions=8)
 
 The moved-library focused suite ran 224 tests and was RED only on the three
 subcases of `test_mutable_task_token_evidence_is_statement_bounded` in the
-currently unregistered agent-governance test module. Each subcase failed when
-`copy2` read the absent SPEC-0153 Task fixture. This is Task 5
-measured-unregistered repair work, outside this package-marker repair.
+currently unregistered agent-governance test module:
+`case='evidence-only-edit'`, `case='new-active-authority'`, and
+`case='altered-statement'`. Each failed when `copy2` read the absent SPEC-0153
+Task fixture. This is Task 5 measured-unregistered repair work, outside this
+package-marker repair.
 
 - [x] **Step 4: Record the full-Gate boundary**
 
@@ -488,8 +490,8 @@ owned by Task 6 fixed-workspace/recovery-fixture work, not by package markers:
 
 No Task 6 production change is authorized here. Packaging/Python review is
 APPROVED. The Task review has Spec FAIL and quality CHANGES_REQUESTED solely
-for this attribution correction; re-review is pending. SPEC-0157 remains active
-and is not completed by this Task.
+for attribution. Round 2 adds the exact parameterized subcase identities and is
+pending re-review; SPEC-0157 remains active and is not completed by this Task.
 
 ---
 
