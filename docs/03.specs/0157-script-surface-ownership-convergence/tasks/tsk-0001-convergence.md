@@ -160,8 +160,71 @@ FAIL [manifest-record-missing] scripts/lib/target_surface/__init__.py
 script_manifest_failures=5
 ~~~
 
-Current HEAD revalidation at `dd665618` found the exact reachable mode set by
-all consumer classes: `check-public` from the suite registry;
+The following complete caller inventory was recovered read-only from
+`412542b0^`, the production predecessor of the discovered lifecycle-reduction
+commit. It is historical discovered evidence, not retroactive approval. It
+records every line from the four Step 1 consumer searches.
+
+~~~text
+=== suite registry ===
+412542b0^:scripts/lib/document_governance/suite_registry.py:41:        PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"): "document-lifecycle",
+412542b0^:scripts/lib/document_governance/suite_registry.py:90:        "check-document-corpus-lifecycle.py": ("--mode", "check-public"),
+=== workflow contract leaves ===
+leaf.local-document-corpus-contract -> --mode check-contract
+leaf.local-document-corpus-promoted -> --mode check-promoted
+=== workflow run lines ===
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:34:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:36:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:42:            python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref HEAD~1
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:47:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-full
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:53:          python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-duplicates --output "$report_path"
+=== every other caller in the repository ===
+412542b0^:.github/workflow-contract.yml:952:      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:.github/workflow-contract.yml:1031:      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:34:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:36:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:42:            python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref HEAD~1
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:47:        run: python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-full
+412542b0^:.github/workflows/document-corpus-lifecycle.yml:53:          python3 scripts/validation/check-document-corpus-lifecycle.py --mode report-duplicates --output "$report_path"
+412542b0^:scripts/lib/document_governance/references.py:49:    pathlib.PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"),
+412542b0^:scripts/lib/document_governance/suite_registry.py:41:        PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"): "document-lifecycle",
+412542b0^:scripts/lib/document_governance/suite_registry.py:90:        "check-document-corpus-lifecycle.py": ("--mode", "check-public"),
+412542b0^:scripts/manifest.yaml:130:  - scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/manifest.yaml:155:  - scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/manifest.yaml:188:  - scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/manifest.yaml:229:  - scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/manifest.yaml:277:  - scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/manifest.yaml:605:- path: scripts/validation/check-document-corpus-lifecycle.py
+412542b0^:scripts/validation/check-document-corpus-lifecycle.py:2257:            generated_by="check-document-corpus-lifecycle.py",
+412542b0^:scripts/validation/check-document-corpus-lifecycle.py:2313:        generated_by="check-document-corpus-lifecycle.py",
+412542b0^:scripts/validation/ci_gate_runner.py:515:                if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+412542b0^:scripts/validation/ci_gate_runner.py:517:                else () if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+412542b0^:tests/lib/document_governance/test_links.py:20:LIFECYCLE_CLI = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
+412542b0^:tests/lib/document_governance/test_taxonomy.py:512:                "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_ci_gate_runner.py:896:                for name in ("check-document-metadata.py", "check-document-corpus-lifecycle.py"):
+412542b0^:tests/validation/test_document_corpus_lifecycle.py:31:SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
+412542b0^:tests/validation/test_document_corpus_lifecycle.py:1016:            generated_by="check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_document_metadata.py:1373:            "generated_by": "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_document_metadata.py:1659:                    "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_document_metadata.py:1661:                    "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_document_metadata.py:1671:                "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_document_metadata.py:1675:                "scripts/validation/check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_script_manifest.py:103:    "scripts/validation/check-document-corpus-lifecycle.py": "check-write",
+412542b0^:tests/validation/test_target_surface_contracts.py:18:LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
+412542b0^:tests/validation/test_target_surface_contracts.py:311:            "generated_by": "check-document-corpus-lifecycle.py",
+412542b0^:tests/validation/test_validator_entrypoints.py:18:    "scripts/validation/check-document-corpus-lifecycle.py",
+~~~
+
+The suite binding, the two workflow-contract leaves, and the five workflow run
+lines are callers. `scripts/lib/document_governance/references.py`, manifest
+rows, `generated_by` fields, CI-runner path handling, and every `tests/` match
+above are reference, configuration, or test evidence rather than an additional
+mode caller. The historical reachable set was the six modes `check-public`,
+`check-contract`, `check-promoted`, `check-impacted`, `report-full`, and
+`report-duplicates`.
+
+At the Task 1 production baseline `dd665618`, revalidation found the exact
+post-reduction reachable mode set by all consumer classes: `check-public` from the suite registry;
 `check-contract`, `check-promoted`, and `check-recovery` from workflow-contract
 leaves; and `check-contract` plus `check-promoted` from the scheduled workflow.
 The broader repository sweep found references and test fixtures, but no further
@@ -203,6 +266,9 @@ script_manifest_failures=5
 Task 1 lifecycle and workflow behavior are GREEN; the shared manifest bundle
 remains RED pending the Task 3 marker repair. Independent review is pending and
 this revalidation is not an approval.
+
+The evidence-only commit `7a10255f` and this correction's successor HEAD are
+documentation state, not the production baseline used for the Task 1 checks.
 
 ### Task 2 — reopened
 
@@ -274,6 +340,10 @@ round is an independent approval.
 
 Round 3 replaces substring domain matching with normalized full-domain-token
 matching. Independent re-review remains pending; this is not an approval.
+
+Independent review round 1 found the Spec PASS and requested quality changes to
+Task 1 evidence and the Step 8 contract. This correction is pending re-review;
+it is not an approval.
 
 Round 2 read-only primary-owner output:
 

@@ -278,7 +278,7 @@ Delete every line the `grep` prints.
 - [x] **Step 8: Register `check-recovery` as a gate leaf**
 
 In `.github/workflow-contract.yml`, copy the `leaf.local-document-corpus-promoted`
-block and change exactly two fields:
+block and change exactly three fields:
 
 ```json
     {
@@ -289,10 +289,14 @@ block and change exactly two fields:
         "--mode",
         "check-recovery"
       ],
+      "suite_key": "local-document-corpus-recovery",
 ```
 
-Leave `cwd`, `allowed_env_keys`, `timeout_minutes`, `profiles`, and `suite_key`
-identical to the block you copied.
+Leave `cwd`, `allowed_env_keys`, `timeout_minutes`, and `profiles` identical to
+the block you copied. The recovery leaf must have the unique suite key
+`local-document-corpus-recovery`: the gate contract requires
+`gate_id == leaf.{suite_key}`. Add `leaf.local-document-corpus-recovery` as a
+child of the existing `local.document-corpus-lifecycle` aggregate.
 
 - [x] **Step 9: Repoint the three mode matrices**
 
