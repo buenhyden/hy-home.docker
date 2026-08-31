@@ -1,6 +1,6 @@
 ---
 profile_id: plan
-status: draft
+status: active
 artifact_id: plan-0157
 artifact_type: plan
 parent_ids:
@@ -802,19 +802,20 @@ import pathlib
 import yaml
 
 root = pathlib.Path(".")
+manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
 claims: dict[str, set[str]] = {}
-for row in yaml.safe_load((root / "scripts/manifest.yaml").read_text()):
+for row in manifest.get("files", []):
     path = str(row.get("path", ""))
     if not path.startswith("scripts/lib/"):
         continue
     domain = pathlib.PurePosixPath(path).parts[2]
     for test in row.get("tests", []):
-        test_path = str(test).replace(".", "/") + ".py"
+        test_path = str(test)
         if (root / test_path).is_file():
             claims.setdefault(test_path, set()).add(domain)
 
 moves = {
-    path.replace("/", ".")[:-3]: (
+    path.removesuffix(".py").replace("/", "."): (
         f"tests.lib.{next(iter(domains))}.{pathlib.PurePosixPath(path).stem}"
     )
     for path, domains in claims.items()
@@ -839,18 +840,23 @@ python3 - <<'PY'
 import pathlib
 import yaml
 
+manifest = yaml.safe_load(pathlib.Path("scripts/manifest.yaml").read_text())
 claims: dict[str, set[str]] = {}
-for row in yaml.safe_load(pathlib.Path("scripts/manifest.yaml").read_text()):
+for row in manifest.get("files", []):
     path = str(row.get("path", ""))
     if not path.startswith("scripts/lib/"):
         continue
     domain = pathlib.PurePosixPath(path).parts[2]
     for test in row.get("tests", []):
-        claims.setdefault(str(test), set()).add(domain)
+        test_path = str(test)
+        if test_path:
+            claims.setdefault(test_path, set()).add(domain)
 moves = {
-    old: f"tests.lib.{next(iter(domains))}.{old.rsplit('.', 1)[-1]}"
-    for old, domains in claims.items()
-    if old.startswith("tests.validation.") and len(domains) == 1
+    path.removesuffix(".py").replace("/", "."): (
+        f"tests.lib.{next(iter(domains))}.{pathlib.PurePosixPath(path).stem}"
+    )
+    for path, domains in claims.items()
+    if path.startswith("tests/validation/") and len(domains) == 1
 }
 for name in ("scripts/validation/ci_gate_runner.py", ".github/workflow-contract.yml", "scripts/manifest.yaml"):
     path = pathlib.Path(name)

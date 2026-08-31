@@ -29,11 +29,12 @@ approved work, and close SPEC-0157 without asserting retroactive approval.
 | :--- | :--- | :--- |
 | 1 | Measured discovered branch work before Task 0 edits | git status --short --branch reported only ## codex/0157-governance-convergence-execution; the merge-base range had 12 non-merge commits and 72 files changed, 3495 insertions(+), 4403 deletions(-). |
 | 2 | Activated SPEC-0157 and plan-0157; created this current Task and index link | Active recovery chain established. No transition override was used. |
-| 3 | Revalidated Task 1 focused checks | Lifecycle suite and all four modes passed; shared manifest check failed on five package markers. Task 1 is reopened pending the Task 3 repair. |
-| 3 | Revalidated Task 2 focused checks | Archive and lifecycle suites passed; Spec Package suite failed one fixed count. Task 2 is reopened. |
-| 3 | Revalidated Task 3 focused checks | Surface ownership and workflow contract passed; manifest and full Gate failed because the five package markers are unregistered. Task 3 is reopened. |
+| 3a | Revalidated Task 1 focused checks | Lifecycle suite and all four modes passed; shared manifest check failed on five package markers. Task 1 is reopened pending the Task 3 repair. |
+| 3b | Revalidated Task 2 focused checks | Archive and lifecycle suites passed; Spec Package suite failed one fixed count. Task 2 is reopened. |
+| 3c | Revalidated Task 3 focused checks | Surface ownership and workflow contract passed; manifest and full Gate failed because the five package markers are unregistered. Task 3 is reopened. |
 | 4 | Recovery metadata/link checks | All three commands passed: contract violations=0, changed-document violations=0, links failures=0. |
-| 5 | Commit recovery record | Pending after metadata/link checks and cached-diff review. |
+| 5 | Committed recovery record | 923b2765 docs(spec): Activate script surface convergence with recovered evidence. |
+| 6 | Applied review round 1 corrections | Plan activated; complete pre-Task-0 diff-stat captured; completed bookkeeping fixed; manifest snippets and library ownership contract corrected. |
 
 ### Discovered branch commits
 
@@ -52,10 +53,86 @@ dd41a675 refactor(archive): Derive the recovery census instead of pinning it
 85af3767 docs(plan): Plan the script surface convergence as nine measured tasks
 ~~~
 
-The discovered diff-stat command reported the 72-file, 3495 insertion, and
-4403 deletion summary above. Its changed paths span the Task 1 lifecycle
-reduction, Task 2 census derivation, Task 3 library move, their tests and gate
-wiring, plus the previously authored planning and generated-reference surfaces.
+### Exact discovered diff-stat before Task 0
+
+The following is the complete output of git diff --stat
+703e3cf6b76fc7f9d0c4bb6ac65c6f1111b8545f...71cf939029b18140bbbb4e86af6e50d8f7187347:
+
+~~~text
+ .github/CODEOWNERS                                 |    2 +-
+ .github/workflow-contract.yml                      |   87 +-
+ .github/workflows/document-corpus-lifecycle.yml    |   18 -
+ .../plan.md                                        | 1490 ++++++++++++++
+ .../spec.md                                        |   21 +-
+ .../plan.md                                        | 1126 +++++++++++
+ .../spec.md                                        |  342 ++++
+ docs/03.specs/README.md                            |    5 +
+ .../runbook.md                                     |    8 +-
+ .../README.md                                      |    8 +-
+ .../0078-security-automation-readiness/README.md   |    2 +-
+ .../data/0082-llm-wiki-index/README.md             |    7 +-
+ .../agent-model-selection.md                       |    4 +-
+ .../ai-agent-catalogs.md                           |    2 +-
+ .../memory-hierarchy.md                            |    6 +-
+ .../scope-application-matrix.md                    |    2 +-
+ docs/99.templates/registry.json                    |    2 +-
+ scripts/README.md                                  |   23 +-
+ scripts/lib/agent_governance/__init__.py           |    1 +
+ .../agent_governance}/agent_governance_contract.py |    0
+ scripts/lib/document_governance/archive.py         |   17 -
+ .../lib/document_governance/metadata_validator.py  |    7 +-
+ .../lib/document_governance/provenance_policy.py   |  373 ----
+ scripts/lib/document_governance/references.py      |    2 +-
+ scripts/lib/document_governance/suite_registry.py  |   34 +-
+ scripts/lib/gate/__init__.py                       |    1 +
+ .../{validation => lib/gate}/ci_gate_adapters.py   |    2 +-
+ .../{validation => lib/gate}/ci_gate_contract.py   |    1 +
+ .../gate}/github_workflow_contract.py              |    4 +-
+ scripts/lib/ops/__init__.py                        |    1 +
+ .../ops}/rehearse-postgres-logical-upgrade.sh      |    2 +-
+ .../{validation => lib/ops}/validate-harness.sh    |    2 +-
+ scripts/lib/supply_chain/__init__.py               |    1 +
+ .../supply_chain}/grype_db_seed.py                 |    0
+ scripts/lib/target_surface/__init__.py             |    1 +
+ .../target_surface}/target_surface_contract.py     |    0
+ .../target_surface_delta_contract.py               |    5 +-
+ scripts/manifest.yaml                              |  288 ++-
+ scripts/operations/provider_surface_renderer.py    |    7 +-
+ scripts/security/seed-grype-db-cache.sh            |    2 +-
+ .../security/verify-sample-service-supply-chain.sh |    2 +-
+ .../validation/check-agent-governance-contract.py  |    8 +-
+ .../validation/check-document-corpus-lifecycle.py  | 1284 +-----------
+ .../validation/check-github-workflow-contract.py   |   10 +-
+ .../validation/check-storybook-contract.sh         |    6 +-
+ .../validation/check-target-surface-contract.py    |    2 +-
+ .../check-target-surface-delta-contract.py         |    2 +-
+ .../validation/ci_gate_runner.py                   |    5 +-
+ .../generate-security-automation-readiness.sh      |    4 +-
+ tests/lib/document_governance/test_archive.py      |   54 +-
+ tests/lib/document_governance/test_links.py        |    4 +-
+ .../document_governance/test_metadata_validator.py |    2 +-
+ .../test_operations_taxonomy.py                    |   10 +-
+ .../test_provenance_policy.py                      |  289 ---
+ tests/lib/document_governance/test_registry.py     |    4 +-
+ .../lib/document_governance/test_suite_registry.py |    2 +-
+ tests/lib/test_surface_ownership.py                |   61 +
+ tests/validation/test_agent_governance_contract.py |    2 +-
+ tests/validation/test_ci_gate_adapters.py          |    2 +-
+ tests/validation/test_ci_gate_contract.py          |    2 +-
+ tests/validation/test_ci_gate_runner.py            |   58 +-
+ tests/validation/test_document_corpus_lifecycle.py | 2122 +-------------------
+ tests/validation/test_github_workflow_contract.py  |    7 +-
+ tests/validation/test_grype_db_seed.py             |    2 +-
+ .../test_postgres_logical_upgrade_rehearsal.py     |   14 +-
+ .../test_reference_stage_repo_contract.py          |    2 +-
+ tests/validation/test_script_manifest.py           |    8 +-
+ tests/validation/test_supply_chain_policy.py       |    2 +-
+ tests/validation/test_target_surface_contracts.py  |    2 +-
+ .../test_target_surface_delta_contracts.py         |    4 +-
+ .../validation/test_tech_stack_version_contract.py |    4 +-
+ tests/validation/test_validator_entrypoints.py     |   12 +-
+ 72 files changed, 3495 insertions(+), 4403 deletions(-)
+~~~
 
 ## Verification Evidence
 
@@ -147,7 +224,10 @@ PASS: document link mode all
 
 ## Review Evidence
 
-Independent review: pending.
+Independent review round 1 requested corrections to the Plan status, discovered
+diff-stat evidence, completion bookkeeping, Task 4 manifest snippets, and the
+Spec/Plan ownership-rule conflict. This follow-up applies those corrections; it
+is not an independent approval.
 
 Implementer self-review: complete. The diff is limited to the four authorized
 Stage 03 documents; it activates the legal chain, records the observed RED
@@ -162,7 +242,7 @@ is self-approved by this registration.
 | Task 1 lifecycle reduction | 412542b0, 8b4f8e9b | Reopened by the focused manifest check |
 | Task 2 census derivation | dd41a675, 342863ff | Reopened by 34 != 35 |
 | Task 3 library ownership move | d6b7eafe, e23d93f1 | Reopened by five package-marker manifest failures |
-| Task 0 recovery record | This commit | Recovery chain and observed evidence |
+| Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
 
 ## Rulings
 
@@ -179,12 +259,13 @@ is self-approved by this registration.
 6. Task 6 uses tests/lib/target_surface/test_target_surface_contracts.py; Task
    9 updates ci_gate_runner.py, workflow contract, and manifest whenever split
    test module names change.
+7. A library is determined by its manifest execution contexts and filesystem
+   entrypoint ownership, not by an argparse or __main__ guard.
 
 ## Deferred Items
 
 - Task 2 production repair: remove the measured Spec Package count pin.
 - Task 3 production repair: remove the five unnecessary package markers.
-- Task 0 metadata/link recovery checks and independent review.
 
 ## Related Documents
 
