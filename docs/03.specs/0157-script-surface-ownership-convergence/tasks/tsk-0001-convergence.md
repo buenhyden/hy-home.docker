@@ -741,6 +741,13 @@ returned `Spec FAIL` and `Quality CHANGES_REQUESTED`; the Python review returned
 findings are corrected by `ff12147d` and this evidence update but remain pending
 independent re-review, so this is not an approval or completion claim.
 
+Task 4 correction re-review: `Spec compliance: PASS`; `Quality: APPROVED`;
+Python review `APPROVED`; CI/Gate review `APPROVED`. The reviewers independently
+confirmed the identifier grammar, numeric-leading negative cases, 53-test
+manifest boundary, summary-only SDD evidence, exact eight moves, and the final
+full-Gate boundary of only the five Task 6-owned results. Task 4 is complete;
+SPEC-0157, its Plan, and this execution Task remain active for Tasks 5--9.
+
 Round 2 read-only primary-owner output:
 
 ~~~text
@@ -787,7 +794,7 @@ is self-approved by this registration.
 | Task 2 census derivation | dd41a675, 342863ff; 053a39ab | Archive/lifecycle relations revalidated; current Spec Package repair GREEN; independent review pending |
 | Task 3 library ownership move | d6b7eafe, e23d93f1; 58981986 | Five package-marker repair revalidated; packaging/Python APPROVED; Task review round 2 attribution detail pending re-review |
 | Task 0 recovery record | 923b2765 | Recovery chain and observed evidence |
-| Task 4 test ownership mirror | 6663f02c; ff12147d | Implementation and identifier correction complete; CI/Gate APPROVED; Task/Python correction pending re-review |
+| Task 4 test ownership mirror | 6663f02c; ff12147d | Complete; Task, Python, and CI/Gate reviews APPROVED |
 
 ## Rulings
 
@@ -849,9 +856,6 @@ is self-approved by this registration.
 
 ## Deferred Items
 
-- Independent Task/Python re-review of the corrected identifier and evidence
-  boundaries. The prior CI/Gate review is APPROVED; no final Task approval is
-  claimed.
 - Task 5 dynamic disposition of the unreachable `test_script_manifest` module
   and repair/registration of the three agent-governance fixture subcases.
 - Task 6 repair of the five exact `ChangedBodyDeficitGitTests` results.
