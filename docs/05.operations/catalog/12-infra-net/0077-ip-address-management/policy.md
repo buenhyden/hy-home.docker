@@ -5,7 +5,7 @@ artifact_id: policy-0077
 artifact_type: policy
 parent_ids: []
 created: 2026-04-01
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 
 <!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md -->
@@ -57,4 +57,4 @@ updated: 2026-08-11
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)
+- [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)

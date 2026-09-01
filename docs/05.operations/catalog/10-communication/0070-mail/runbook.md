@@ -6,7 +6,7 @@ artifact_type: runbook
 parent_ids:
   - SPEC-0011
 created: 2026-05-17
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 <!-- Target: docs/05.operations/catalog/10-communication/0070-mail/runbook.md -->
 
@@ -64,7 +64,7 @@ updated: 2026-08-11
 ### Observability and Evidence Sources
 
 - **Logs**: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`
-- **Static config**: [mail compose](../../../../../infra/10-communication/mail/docker-compose.yml), [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)
+- **Static config**: [mail compose](../../../../../infra/10-communication/mail/docker-compose.yml), [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **Runtime signals**: container status, host port probe output, Traefik route response, DNS/TLS probe output
 
 ### Safe Rollback or Recovery Procedure

@@ -39,5 +39,5 @@ Runtime-changing network actions remain separately approval-gated.
 
 - [Operations index](../../README.md)
 - [Infrastructure index](../../../../infra/README.md)
-- [`infra_net` specification](../../../03.specs/0098-standardize-infra-net/spec.md)
+- [`infra_net` architecture and allocation map](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - [Incident records](../../incidents/README.md)

@@ -429,7 +429,7 @@ bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --che
 
 # Approved final QA only; prefixes must match the task's reviewed scope
 bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-example.md \
+  --task docs/03.specs/9999-example-change/tasks/tsk-0001-example.md \
   --allow-prefix docs/ \
   --allow-prefix scripts/
 
@@ -544,6 +544,7 @@ generators; it never invokes runtime-changing rows.
 - [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
 - [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
 - [Public Suite Ownership Manifest](manifest.yaml)
-- [Script Lifecycle Taxonomy Specification](../docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md)
+- [Workspace Governance Authority](../docs/02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Document Profile Registry](../docs/99.templates/registry.json)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
