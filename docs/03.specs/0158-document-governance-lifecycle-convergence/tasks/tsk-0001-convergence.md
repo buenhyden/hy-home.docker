@@ -7,7 +7,7 @@ owner: "@buenhyden"
 artifact_id: SPEC-0158-TSK-0001
 parent_ids: [SPEC-0158, SPEC-0158-PLAN-0001]
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Converge Document Governance by Lifecycle
@@ -538,6 +538,32 @@ consumer handoffs because a target disposition changes their navigation.
 | `.github/INDEX.md`, `.github/rulesets/main-protection.md` | Data 0071 observation | rewrite under `S90-D0071` | Stage 00 GitHub policy and `.github/workflow-contract.yml` | each path at `6317553e` |
 | retained code, tests, manifests, and provider projections named in the Stage 90 ledger | non-protected package path or generated-output coupling | migrate under the exact handoff ID | current Registry, manifest, runtime source, fixture, or check-only output named in that row | each tracked path at `6317553e` |
 
+### 2026-09-02 artifact identity and frontmatter envelope convergence
+
+Applied on the merged `main` after `codex/0158-...` fast-forwarded into it. The
+pre-merge attempt was re-planned against the merged tree rather than replayed,
+because the merge retired paths the earlier pass had rewritten.
+
+One registered identity shape now covers each stage. Spec members carry the
+package sequence (`SPEC-####-PLAN-####`, `SPEC-####-TSK-####`); Operations roles
+separate by prefix (`GDE-`, `POL-`, `RUN-`); incidents are year scoped
+(`inc-<year>-####`, `inc-<year>-####-PM`); reference members carry the container
+sequence with `m####-<slug>.md` filenames; migrations use `MIG-####`; and
+tombstones inherit `tomb-<retired artifact id>` through a new
+`identity_relation: inherited`, so a retirement issues no new number.
+
+The frontmatter envelope collapses the keys that let a document and the Registry
+disagree. `profile_id` and `artifact_type` become one `type` carrying the
+`family/kind` role; domain identifiers become `artifact_id`; `last-updated`
+unifies as `updated`; and `title` no longer repeats the identity. Provider-owned
+runtime projections are the single exception and keep the runtime's own `name`,
+`description`, `model`, and `model_reasoning_effort`.
+
+Frozen Migration ledgers were treated as evidence, not as corpus. Only the
+frontmatter identity line moved; each fenced ledger block is byte-identical to
+its pre-convergence base, and the tripwire digest was re-pinned with that
+rationale recorded beside it.
+
 ## Verification Evidence
 
 - `git ls-files <eight roots> | rg '\\.md$' | sort -u`:
@@ -638,6 +664,35 @@ consumer handoffs because a target disposition changes their navigation.
   Data 0082 are generated path removal only; both non-protected outputs remain
   scheduled for Task 6 deletion.
 
+
+### 2026-09-02 identity convergence observed evidence
+
+- `PYTHONPATH=. python3 -m unittest <52 tests/**/test_*.py modules>`:
+  `Ran 1099 tests ... OK (skipped=11)`.
+- `python3 scripts/validation/run-ci-gate.py --profile full`: exit 0 with zero
+  `FAIL` lines outside the `AOE-CATALOG` negative fixtures and the pre-commit
+  wrapper's own rejection assertions.
+- `python3 scripts/validation/check-document-metadata.py --mode check-active`:
+  `selected=396 violations=0 legacy_exceptions=0 transition_overrides=0`.
+- `python3 scripts/validation/check-document-metadata.py --mode check-contracts`:
+  `violations=0`.
+- `python3 scripts/validation/check-document-links.py --mode all`:
+  `documents=568 links=4376 failures=0`.
+- Identity census over tracked `docs/` frontmatter: `SPEC-` 23, `GDE-` 66,
+  `POL-` 64, `RUN-` 62, `RES-####-m####` 20, `DATA-` 18, `MIG-` 3,
+  `tomb-` 83, plus one Plan and two Task package members. The remaining
+  `ADR-` 28, `REQ-` 27, `AD-` 27, `AUD-` 16, and `RES-` 5 are pre-existing
+  container identities outside this change.
+- Tombstone inheritance derived from the retired path, not reissued: `SPEC` 44,
+  `AUD` 23, `GDE` 8, `DATA` 5, `RUN` 1, `RES` 1, `POL` 1 - 83 total, zero
+  collisions.
+- Frozen ledger integrity against base `9255bc15`: all three
+  `docs/98.archive/migrations/*.md` fenced evidence blocks hash identical
+  (`92a0dbbc...`, `36ce30b5...`, `6575bb83...`).
+- Retired keys absent from tracked `docs/`: `profile_id`, `artifact_type`,
+  `last-updated`, `audit_id`, `research_id`, `incident_id`, and `stage` all
+  return zero matches.
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -722,6 +777,8 @@ The final read-only verdicts are GREEN and do not grant approval:
 | Consolidate current procedures | `60608e95` | provider drift 0, links 0 |
 | Anchor validation ownership to current authorities | `c2080c6c` | script manifest PASS, `test_script_manifest` OK |
 | Correct stale evidence references | `25a38723` | links `failures=0`, generated LLM Wiki fresh, protected pack body unchanged |
+| Converge artifact identity and the frontmatter envelope | `e0b3fbf6` | 1099 tests OK, gate exit 0, check-active `396/0`, links `4376/0`, frozen ledger blocks byte-identical |
+| Correct two claims that contradict the tracked workspace | `38f30006` | `plan.md` instruction matches its Task; Codex hook coverage re-read from `.codex/hooks.json` |
 
 ## Rulings
 
