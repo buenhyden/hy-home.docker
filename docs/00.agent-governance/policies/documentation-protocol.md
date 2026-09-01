@@ -62,7 +62,7 @@ evidence; surrounding instructions remain current and validated normally.
 | Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
-| Historical lookup | `docs/98.archive/` | Add only minimal migration or tombstone navigation. |
+| Historical recovery | Git history; Stage 98 is non-authoritative | Recover prior content without creating a current authoring route. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 

@@ -30,15 +30,6 @@ GOVERNANCE_PROFILES = {
     "governance-sdlc",
     "governance-skill",
 }
-EXPECTED_GENERATED_ROOTS = (
-    ".agents/agents",
-    ".agents/rules",
-    ".agents/skills",
-    ".agents/workflows",
-    ".claude/agents",
-    ".claude/skills",
-    ".codex/agents",
-)
 REGISTRY_KEYS = {
     "schema_version",
     "providers",
@@ -48,77 +39,15 @@ REGISTRY_KEYS = {
     "models",
     "model_catalog_policy",
     "permissions",
-    "workflow_states",
     "semantic_events",
     "hook_contracts",
-    "harness_layers",
-    "harness_loops",
-    "evidence_fields",
-    "prohibited_evidence",
+    "projections",
     "agent_output_eval",
     "generated_roots",
 }
-HARNESS_LOOPS = {
-    "approved-all-files-gate",
-    "bounded-implementation",
-    "context-bootstrap",
-    "independent-review",
-}
-EXPECTED_HOOK_COMMANDS = {
-    "claude": {
-        "SessionStart": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"',
-        "PreToolUse": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"',
-        "PostToolUse": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"',
-        "Stop": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"',
-        "SessionEnd": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"',
-        "PreCompact": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"',
-        "UserPromptSubmit": 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"',
-    },
-    "codex": {
-        event: (
-            'HY_HOME_HOOK_PROVIDER=codex bash '
-            '"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/'
-            f'agent-event-hook.sh" {event}'
-        )
-        for event in (
-            "SessionStart",
-            "PreToolUse",
-            "PostToolUse",
-            "Stop",
-            "PreCompact",
-            "UserPromptSubmit",
-        )
-    },
-}
-EXPECTED_HARNESS_LAYERS = (
-    ("canonical-contract", "rules-engineer", "canonical-authority", "design-plan"),
-    ("role-skill-routing", "workflow-supervisor", "registered-routing", "discover"),
-    ("permission-boundary", "rules-engineer", "explicit-authority", "approval"),
-    ("provider-model-policy", "eval-engineer", "native-schema-compatibility", "design-plan"),
-    ("semantic-events", "hook-developer", "native-event-honesty", "implement"),
-    ("controlled-validation", "qa-engineer", "deterministic-checks", "implement"),
-    ("tracked-ci", "ci-cd-engineer", "least-privilege-workflow", "implement"),
-    ("sanitized-evidence", "eval-engineer", "value-free-evidence", "evidence"),
-)
-EXPECTED_HARNESS_LOOP_VALUES = {
-    "context-bootstrap": (
-        "workflow-supervisor", "rules-engineer", "read-only", ("discover",), 1,
-        "bootstrap-contract-pass", "escalate",
-    ),
-    "bounded-implementation": (
-        "qa-engineer", "code-reviewer", "workspace-write", ("implement", "validate"), 2,
-        "focused-checks-pass", "narrow-then-escalate",
-    ),
-    "independent-review": (
-        "code-reviewer", "eval-engineer", "read-only", ("independent-review", "evidence"), 2,
-        "critical-and-important-zero", "escalate",
-    ),
-    "approved-all-files-gate": (
-        "qa-engineer", "code-reviewer", "workspace-write", ("validate", "evidence"), 1,
-        "controlled-wrapper-pass", "record-and-stop",
-    ),
-}
 MAX_TEXT_BYTES = 4 * 1024 * 1024
+IDENTIFIER_PATTERN = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
+SAFE_REPOSITORY_PATH_PART = re.compile(r"\.?[A-Za-z0-9][A-Za-z0-9._-]*")
 _RETIRED_PROVIDER = "ge" + "mini"
 _RETIRED_EXPERIMENT = "anti" + "gravity"
 _RETIRED_HANDOFF = "project" + r"[- .]?" + "memory"
@@ -338,11 +267,39 @@ def _strings(value: object, *, field: str, path: pathlib.PurePosixPath) -> tuple
     return result
 
 
+def _identifiers(
+    value: object, *, field: str, path: pathlib.PurePosixPath
+) -> tuple[str, ...]:
+    result = _strings(value, field=field, path=path)
+    if any(IDENTIFIER_PATTERN.fullmatch(item) is None for item in result):
+        raise ContractLoadError(f"AGC-FIELD-INVALID path={path} field={field}")
+    return result
+
+
 def _string(values: Mapping[str, object], field: str, path: pathlib.PurePosixPath) -> str:
     value = values.get(field)
     if not isinstance(value, str) or not value:
         raise ContractLoadError(f"AGC-FIELD-INVALID path={path} field={field}")
     return value
+
+
+def _identifier(
+    values: Mapping[str, object], field: str, path: pathlib.PurePosixPath
+) -> str:
+    value = _string(values, field, path)
+    if IDENTIFIER_PATTERN.fullmatch(value) is None:
+        raise ContractLoadError(f"AGC-FIELD-INVALID path={path} field={field}")
+    return value
+
+
+def _safe_executable(value: object, *, field: str) -> pathlib.PurePosixPath:
+    executable = _safe_relative(str(value))
+    if any(
+        SAFE_REPOSITORY_PATH_PART.fullmatch(part) is None
+        for part in executable.parts
+    ):
+        raise ContractLoadError(f"AGC-UNSAFE-EXECUTABLE field={field}")
+    return executable
 
 
 def _mapping(value: object, *, field: str) -> Mapping[str, object]:
@@ -364,10 +321,35 @@ def _projection_pattern(value: object, *, token: str, field: str) -> str:
     return value
 
 
+def _projection_root(pattern: str, *, token: str) -> pathlib.PurePosixPath:
+    marker = "{" + token + "}"
+    parts = pathlib.PurePosixPath(pattern).parts
+    for index, part in enumerate(parts):
+        if marker in part and index > 0:
+            return _safe_relative(pathlib.PurePosixPath(*parts[:index]))
+    raise ContractLoadError("AGC-PROJECTION-PATTERN")
+
+
+def _hook_command_matches_registration(
+    provider_id: str,
+    event: str,
+    command: str,
+    executable: pathlib.PurePosixPath,
+) -> bool:
+    if provider_id == "claude":
+        expected = f'bash "$CLAUDE_PROJECT_DIR/{executable.as_posix()}"'
+    else:
+        expected = (
+            "HY_HOME_HOOK_PROVIDER=codex bash "
+            '"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/'
+            f'{executable.as_posix()}" {event}'
+        )
+    return command == expected
+
+
 def _validate_registry(
     root: pathlib.Path,
     registry: Mapping[str, object],
-    registered_roles: frozenset[str],
 ) -> tuple[tuple[ProviderRecord, ...], CompatibilityRecord]:
     _exact_keys(registry, REGISTRY_KEYS, field="root")
     if registry.get("schema_version") != 1:
@@ -440,6 +422,36 @@ def _validate_registry(
     }:
         raise ContractLoadError("AGC-CANONICAL-SOURCE-PATTERN")
     providers = set(SUPPORTED_PROVIDERS)
+    raw_projections = registry.get("projections")
+    if not isinstance(raw_projections, list) or not raw_projections:
+        raise ContractLoadError("AGC-PROJECTIONS")
+    projection_paths: set[pathlib.PurePosixPath] = set()
+    for index, raw_projection in enumerate(raw_projections):
+        projection = _mapping(raw_projection, field=f"projections[{index}]")
+        _exact_keys(
+            projection,
+            {"provider_id", "path", "source"},
+            field=f"projections[{index}]",
+        )
+        provider_id = projection.get("provider_id")
+        if provider_id not in {*providers, "shared"}:
+            raise ContractLoadError(f"AGC-PROJECTION-PROVIDER field={index}")
+        path = _safe_relative(str(projection.get("path", "")))
+        source = _safe_relative(str(projection.get("source", "")))
+        expected_prefix = ".agents" if provider_id == "shared" else f".{provider_id}"
+        if (
+            len(path.parts) != 2
+            or path.parts[0] != expected_prefix
+            or path.suffix.casefold() != ".md"
+            or SAFE_REPOSITORY_PATH_PART.fullmatch(path.name) is None
+            or source.parts[: len(GOVERNANCE.parts)] != GOVERNANCE.parts
+            or source.suffix.casefold() != ".md"
+        ):
+            raise ContractLoadError(f"AGC-PROJECTION-ROUTE field={index}")
+        if path in projection_paths:
+            raise ContractLoadError(f"AGC-PROJECTION-DUPLICATE field={index}")
+        _read_text(root, source)
+        projection_paths.add(path)
     permissions = _mapping(registry.get("permissions"), field="permissions")
     if permissions != {
         "read-only": {"claude": "plan", "codex": "read-only"},
@@ -461,6 +473,10 @@ def _validate_registry(
             not isinstance(events, list)
             or not events
             or any(not isinstance(event, str) or not event for event in events)
+            or any(
+                re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", event) is None
+                for event in events
+            )
             or len(events) != len(set(events))
             or tuple(contracts) != tuple(events)
         ):
@@ -476,14 +492,21 @@ def _validate_registry(
                 or not 1 <= contract["timeout"] <= 600
             ):
                 raise ContractLoadError(f"AGC-HOOK-BINDING field={provider_id}.{event}")
-            if contract.get("command") != EXPECTED_HOOK_COMMANDS[provider_id].get(event):
+            if contract.get("matcher") is not None and not isinstance(contract.get("matcher"), str):
+                raise ContractLoadError(f"AGC-HOOK-BINDING field={provider_id}.{event}")
+            executable = _safe_executable(
+                contract.get("executable"), field=f"{provider_id}.{event}"
+            )
+            _read_text(root, executable)
+            if not _hook_command_matches_registration(
+                provider_id,
+                event,
+                str(contract["command"]),
+                executable,
+            ):
                 raise ContractLoadError(
                     f"AGC-HOOK-COMMAND-TEMPLATE field={provider_id}.{event}"
                 )
-            if contract.get("matcher") is not None and not isinstance(contract.get("matcher"), str):
-                raise ContractLoadError(f"AGC-HOOK-BINDING field={provider_id}.{event}")
-            executable = _safe_relative(str(contract.get("executable", "")))
-            _read_text(root, executable)
     work_profiles = _mapping(registry.get("work_profiles"), field="work_profiles")
     models = _mapping(registry.get("models"), field="models")
     if not work_profiles or not models:
@@ -508,6 +531,15 @@ def _validate_registry(
             ):
                 raise ContractLoadError(f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}")
             value = selection.get("value")
+            if provider_id == "codex" and (
+                model.get("control") != "model_reasoning_effort"
+                or selection.get("control") != "model_reasoning_effort"
+                or not isinstance(value, str)
+                or not value
+            ):
+                raise ContractLoadError(
+                    f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}"
+                )
             if model.get("control") == "unsupported":
                 if value is not None or selection.get("control") != "effort":
                     raise ContractLoadError(f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}")
@@ -530,6 +562,14 @@ def _validate_registry(
         _exact_keys(model, expected_model_keys, field=f"models.{model_id}")
         if model.get("provider") not in providers:
             raise ContractLoadError(f"AGC-MODEL-PROVIDER field={model_id}")
+        if (
+            model.get("provider") == "claude"
+            and model.get("control") not in {"effort", "unsupported"}
+        ) or (
+            model.get("provider") == "codex"
+            and model.get("control") != "model_reasoning_effort"
+        ):
+            raise ContractLoadError(f"AGC-MODEL-CONTROL field={model_id}")
         if model.get("runtime_acceptance") != "needs_revalidation" or model.get("entitlement") != "needs_revalidation":
             raise ContractLoadError(f"AGC-MODEL-STATUS field={model_id}")
         listed = model.get("work_profiles")
@@ -568,97 +608,35 @@ def _validate_registry(
         ],
     }:
         raise ContractLoadError("AGC-MODEL-CATALOG-POLICY")
-    workflow_states = registry.get("workflow_states")
-    expected_state_ids = (
-        "discover", "design/plan", "approval", "implement", "validate",
-        "independent-review", "evidence", "handoff",
-    )
-    state_keys = {
-        "state_id", "owner_agent", "required_inputs", "mutation_authority",
-        "entry_condition", "exit_gate", "max_attempts", "failure_return",
-        "evidence_fields", "handoff_target",
-    }
-    if not isinstance(workflow_states, list) or len(workflow_states) != len(expected_state_ids):
-        raise ContractLoadError("AGC-WORKFLOW-STATES")
-    for index, raw_state in enumerate(workflow_states):
-        state = _mapping(raw_state, field=f"workflow_states[{index}]")
-        _exact_keys(state, state_keys, field=f"workflow_states[{index}]")
-        if state.get("state_id") != expected_state_ids[index]:
-            raise ContractLoadError("AGC-WORKFLOW-STATES")
-        for field in ("owner_agent", "mutation_authority", "entry_condition", "exit_gate", "failure_return", "handoff_target"):
-            if not isinstance(state.get(field), str) or not state[field]:
-                raise ContractLoadError(f"AGC-WORKFLOW-STATE field={field}")
-        if state["owner_agent"] not in registered_roles:
-            raise ContractLoadError("AGC-WORKFLOW-STATE field=owner_agent")
-        if state["mutation_authority"] not in permissions:
-            raise ContractLoadError("AGC-WORKFLOW-STATE field=mutation_authority")
-        if state["failure_return"] not in {*expected_state_ids, "stop"}:
-            raise ContractLoadError("AGC-WORKFLOW-STATE field=failure_return")
-        if state["handoff_target"] not in {*expected_state_ids, "complete"}:
-            raise ContractLoadError("AGC-WORKFLOW-STATE field=handoff_target")
-        for field in ("required_inputs", "evidence_fields"):
-            values = state.get(field)
-            if not isinstance(values, list) or not values or any(not isinstance(item, str) or not item for item in values):
-                raise ContractLoadError(f"AGC-WORKFLOW-STATE field={field}")
-        if not isinstance(state.get("max_attempts"), int) or not 1 <= state["max_attempts"] <= 2:
-            raise ContractLoadError("AGC-WORKFLOW-STATE field=max_attempts")
-    raw_layers = registry.get("harness_layers")
-    layer_keys = {"layer_id", "owner_agent", "gate", "failure_return"}
-    if not isinstance(raw_layers, list) or len(raw_layers) != len(EXPECTED_HARNESS_LAYERS):
-        raise ContractLoadError("AGC-HARNESS-LAYERS")
-    actual_layers: list[tuple[str, str, str, str]] = []
-    for index, raw_layer in enumerate(raw_layers):
-        layer = _mapping(raw_layer, field=f"harness_layers[{index}]")
-        _exact_keys(layer, layer_keys, field=f"harness_layers[{index}]")
-        values = tuple(layer.get(field) for field in ("layer_id", "owner_agent", "gate", "failure_return"))
-        if any(not isinstance(value, str) or not value for value in values):
-            raise ContractLoadError(f"AGC-HARNESS-LAYER field={index}")
-        if layer["owner_agent"] not in registered_roles:
-            raise ContractLoadError(f"AGC-HARNESS-LAYER-ROLE field={index}")
-        actual_layers.append(values)
-    if tuple(actual_layers) != EXPECTED_HARNESS_LAYERS:
-        raise ContractLoadError("AGC-HARNESS-LAYERS")
-
-    loops = _mapping(registry.get("harness_loops"), field="harness_loops")
-    if set(loops) != HARNESS_LOOPS:
-        raise ContractLoadError("AGC-HARNESS-LOOPS")
-    loop_keys = {
-        "owner_agent", "reviewer_agent", "permission_profile", "workflow_states",
-        "max_attempts", "stop_condition", "on_failure",
-    }
-    for loop_id, raw_loop in loops.items():
-        loop = _mapping(raw_loop, field=f"harness_loops.{loop_id}")
-        _exact_keys(loop, loop_keys, field=f"harness_loops.{loop_id}")
-        references = loop.get("workflow_states")
-        if (
-            not isinstance(references, list)
-            or not references
-            or any(item not in expected_state_ids for item in references)
-            or not isinstance(loop.get("max_attempts"), int)
-            or not 1 <= loop["max_attempts"] <= 2
-            or loop.get("owner_agent") not in registered_roles
-            or loop.get("reviewer_agent") not in registered_roles
-            or loop.get("permission_profile") not in permissions
-            or not isinstance(loop.get("stop_condition"), str)
-            or not loop["stop_condition"]
-            or not isinstance(loop.get("on_failure"), str)
-            or not loop["on_failure"]
-        ):
-            raise ContractLoadError(f"AGC-HARNESS-LOOP field={loop_id}")
-        actual = (
-            loop["owner_agent"],
-            loop["reviewer_agent"],
-            loop["permission_profile"],
-            tuple(references),
-            loop["max_attempts"],
-            loop["stop_condition"],
-            loop["on_failure"],
-        )
-        if actual != EXPECTED_HARNESS_LOOP_VALUES[loop_id]:
-            raise ContractLoadError(f"AGC-HARNESS-LOOP-VALUES field={loop_id}")
     generated = registry.get("generated_roots")
-    generated_values = tuple(generated) if isinstance(generated, list) else ()
-    if generated_values != EXPECTED_GENERATED_ROOTS:
+    if (
+        not isinstance(generated, list)
+        or not generated
+        or any(not isinstance(item, str) for item in generated)
+        or len(generated) != len(set(generated))
+    ):
+        raise ContractLoadError("AGC-GENERATED-ROOTS")
+    generated_roots = {_safe_relative(item) for item in generated}
+    required_roots = {
+        _projection_root(compatibility.agent_pattern, token="agent_id"),
+        _projection_root(compatibility.skill_pattern, token="skill_id"),
+    }
+    for record in records:
+        required_roots.add(_projection_root(record.agent_pattern, token="agent_id"))
+        required_roots.add(_projection_root(record.skill_pattern, token="skill_id"))
+    if (
+        generated_roots != required_roots
+        or any(
+            len(path.parts) < 2
+            or path.parts[0] not in {".agents", ".claude", ".codex"}
+            for path in generated_roots
+        )
+        or any(
+            path.is_relative_to(root_path)
+            for path in projection_paths
+            for root_path in required_roots
+        )
+    ):
         raise ContractLoadError("AGC-GENERATED-ROOTS")
     return tuple(records), compatibility
 
@@ -674,7 +652,7 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
             continue
         if values.get("profile_id") != "governance-role":
             raise ContractLoadError(f"AGC-ROLE-PROFILE path={relative}")
-        agent_id = _string(values, "agent_id", relative)
+        agent_id = _identifier(values, "agent_id", relative)
         if file_path.stem != agent_id:
             raise ContractLoadError(f"AGC-ROLE-IDENTITY path={relative}")
         records.append(
@@ -684,7 +662,9 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
                 tier=_string(values, "tier", relative),
                 work_profile=_string(values, "work_profile", relative),
                 permission_profile=_string(values, "permission_profile", relative),
-                skill_ids=_strings(values.get("skill_ids"), field="skill_ids", path=relative),
+                skill_ids=_identifiers(
+                    values.get("skill_ids"), field="skill_ids", path=relative
+                ),
                 source_path=relative,
                 source_text=text,
             )
@@ -699,14 +679,14 @@ def _load_skills(root: pathlib.Path) -> tuple[SkillRecord, ...]:
         relative = pathlib.PurePosixPath(file_path.relative_to(root).as_posix())
         text = _read_text(root, relative)
         values = _frontmatter(text, relative)
-        skill_id = _string(values, "function_id", relative)
+        skill_id = _identifier(values, "function_id", relative)
         if file_path.stem != skill_id or values.get("profile_id") != "governance-skill":
             raise ContractLoadError(f"AGC-SKILL-IDENTITY path={relative}")
         records.append(
             SkillRecord(
                 skill_id=skill_id,
                 scope=_string(values, "scope", relative),
-                owner_agent=_string(values, "owner_agent", relative),
+                owner_agent=_identifier(values, "owner_agent", relative),
                 source_path=relative,
                 source_text=text,
             )
@@ -719,9 +699,7 @@ def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     roles = _load_roles(root)
     skills = _load_skills(root)
     registry = _load_yaml(root, REGISTRY)
-    provider_records, compatibility = _validate_registry(
-        root, registry, frozenset(item.agent_id for item in roles)
-    )
+    provider_records, compatibility = _validate_registry(root, registry)
     provider_ids = tuple(item.provider_id for item in provider_records)
     governance_root = root / GOVERNANCE
     root_entries = tuple(sorted(path.name for path in governance_root.iterdir()))
@@ -757,10 +735,26 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
         findings.append(_finding(GOVERNANCE / "providers", "AGC-PROVIDER-INVENTORY", "provider inventory differs"))
     role_ids = tuple(item.agent_id for item in state.roles)
     skill_ids = tuple(item.skill_id for item in state.skills)
-    if len(role_ids) != 14 or len(role_ids) != len(set(role_ids)):
-        findings.append(_finding(GOVERNANCE / "roles", "AGC-ROLE-SET", "expected 14 unique roles"))
-    if len(skill_ids) != 23 or len(skill_ids) != len(set(skill_ids)):
-        findings.append(_finding(GOVERNANCE / "skills", "AGC-SKILL-SET", "expected 23 unique skills"))
+    role_paths = {
+        pathlib.PurePosixPath(path.relative_to(root).as_posix())
+        for path in (root / GOVERNANCE / "roles").glob("*.md")
+    }
+    skill_paths = {
+        pathlib.PurePosixPath(path.relative_to(root).as_posix())
+        for path in (root / GOVERNANCE / "skills").glob("*.md")
+    }
+    if (
+        not role_ids
+        or len(role_ids) != len(set(role_ids))
+        or role_paths != {item.source_path for item in state.roles}
+    ):
+        findings.append(_finding(GOVERNANCE / "roles", "AGC-ROLE-SET", "role identities and source paths differ"))
+    if (
+        not skill_ids
+        or len(skill_ids) != len(set(skill_ids))
+        or skill_paths != {item.source_path for item in state.skills}
+    ):
+        findings.append(_finding(GOVERNANCE / "skills", "AGC-SKILL-SET", "skill identities and source paths differ"))
     roles = set(role_ids)
     skills = set(skill_ids)
     work_profiles = bundle.registry.get("work_profiles")
@@ -769,14 +763,8 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
         findings.append(_finding(REGISTRY, "AGC-PROVIDER-REGISTRY", "work profiles and permissions are required"))
         return sorted(set(findings))
     models = bundle.registry.get("models")
-    loops = bundle.registry.get("harness_loops")
-    layers = bundle.registry.get("harness_layers")
     if not isinstance(models, dict) or not models:
         findings.append(_finding(REGISTRY, "AGC-MODEL-CATALOG", "active model catalog is required"))
-    if not isinstance(loops, dict) or set(loops) != HARNESS_LOOPS:
-        findings.append(_finding(REGISTRY, "AGC-HARNESS-LOOPS", "bounded harness loops differ"))
-    if not isinstance(layers, list) or len(layers) != 8:
-        findings.append(_finding(REGISTRY, "AGC-HARNESS-LAYERS", "expected eight harness layers"))
     for role in state.roles:
         if role.work_profile not in work_profiles:
             findings.append(_finding(role.source_path, "AGC-WORK-PROFILE", "unknown work profile"))
@@ -801,14 +789,28 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
         for model_id, model in models.items():
             if not isinstance(model, dict) or model.get("runtime_acceptance") != "needs_revalidation" or model.get("entitlement") != "needs_revalidation":
                 findings.append(_finding(REGISTRY, "AGC-MODEL-STATUS", f"model status incomplete: {model_id}"))
+    return sorted(set(findings))
+
+
+def _validate_stage99_governance_profiles(root: pathlib.Path) -> list[Finding]:
     try:
         stage99 = json.loads(_read_text(root, "docs/99.templates/registry.json"))
-        profiles = {item.get("profile_id") for item in stage99.get("profiles", []) if isinstance(item, dict)}
+        profiles = {
+            item.get("profile_id")
+            for item in stage99.get("profiles", [])
+            if isinstance(item, dict)
+        }
     except (ContractLoadError, json.JSONDecodeError, AttributeError) as error:
         raise ContractLoadError("AGC-STAGE99-INVALID") from error
-    if not GOVERNANCE_PROFILES.issubset(profiles):
-        findings.append(_finding("docs/99.templates/registry.json", "AGC-STAGE99-PROFILES", "governance profiles are incomplete"))
-    return sorted(set(findings))
+    if GOVERNANCE_PROFILES.issubset(profiles):
+        return []
+    return [
+        _finding(
+            "docs/99.templates/registry.json",
+            "AGC-STAGE99-PROFILES",
+            "governance profiles are incomplete",
+        )
+    ]
 
 
 def _projection_ids(root: pathlib.Path, directory: str, suffix: str) -> set[str]:
@@ -948,6 +950,8 @@ def validate_repository(
     findings: list[Finding] = []
     roles = {item.agent_id for item in bundle.state.roles}
     skills = {item.skill_id for item in bundle.state.skills}
+    if section == "all":
+        findings.extend(_validate_stage99_governance_profiles(root))
     if section in {"catalog", "providers", "all"}:
         for directory, suffix, expected, code in (
             (".agents/agents", ".md", roles, "AGC-AGENT-PROJECTION"),

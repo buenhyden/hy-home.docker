@@ -14,8 +14,10 @@ It never expands through delegation or provider handoff.
   files, shell history, or tokens.
 - Runtime restart, rollout, deployment, remote mutation, credential change, and
   destructive recovery require separate explicit approval.
-- Provider, model, permission, retry, and stop bounds come from the canonical
-  role frontmatter and `providers/registry.yaml`.
+- Role permissions come from canonical role frontmatter; provider/model and
+  permission translations come from `providers/registry.yaml`; lifecycle,
+  retry, and stop behavior comes from [workflows.md](workflows.md). Provider
+  facts cannot override Stage 00 policy.
 - Untracked or ignored scratch state is not evidence. Preserve other workers'
   dirty state and stop if ownership cannot be proven.
 - A configured hook or provider surface proves tracked adoption only.
@@ -38,6 +40,8 @@ It never expands through delegation or provider handoff.
 - `doc-writer` may edit approved documentation.
 - All other roles are read-only unless their Task explicitly includes a
   documentation update.
+- `workflow-supervisor`, `rules-engineer`, `eval-engineer`, and
+  `code-reviewer` remain read-only even when they route or review writable work.
 - Policy changes require `rules-engineer` review.
 
 **Protected Surfaces**

@@ -30,14 +30,17 @@ Edit the existing canonical file in place.
 
 ```bash
 # WARNING: parallel replacement document file
-docs/03.specs/service-spec-new.md
+docs/03.specs/0158-example/spec-new.md
 
 # ALLOWED
-docs/03.specs/service-spec.md
+docs/03.specs/0158-example/spec.md
 ```
 
 Before creating a file, check whether a canonical document already exists and
-edit that file directly. Git history preserves the change record.
+edit that file directly. Record sequencing and execution evidence only in the
+same Spec Package's `plan.md` and `tasks/tsk-####-*.md`; do not create a
+parallel Plan, Task, progress, or handoff authority. Git history preserves the
+change record.
 
 ## Related Documents
 

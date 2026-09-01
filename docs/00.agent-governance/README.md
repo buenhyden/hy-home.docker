@@ -48,7 +48,9 @@ No other active top-level entry is permitted.
 3. Load only the policy, role, skill, provider adapter, and stage documents
    needed for the active request.
 4. Record implementation and verification evidence in the active Task.
-5. Regenerate adapters with `scripts/operations/sync-provider-surfaces.sh`.
+5. Regenerate adapters with `scripts/operations/sync-provider-surfaces.sh`;
+   treat any provider quarantine as a nonzero exact-path cleanup handoff under
+   [Provider adapters](providers/README.md), then prove `--check` drift 0.
 
 ## Related Documents
 

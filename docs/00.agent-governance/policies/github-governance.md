@@ -12,10 +12,8 @@ Repo-local stricter rules always override this document; never weaken them on th
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
 - This is an agent behavior contract, not evidence of applied GitHub settings.
-  The approved dated public snapshot is
-  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`;
-  its control-plane verification and observed failure root cause are both
-  `unverified`.
+  Remote control-plane state remains `unverified` until it is authenticated and
+  read back for the named repository.
 - "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
 - Remote branch protection and ruleset state must be authenticated and read
   back before claiming enforcement. The tracked desired-state proposal lives
@@ -34,17 +32,18 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Draft/WIP PRs are allowed for collaboration, but they must not be treated as merge-ready and must list remaining work in the PR template.
 - Agents must not self-approve or bypass required reviewers.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
-- When Migration or recovery evidence references Git commit IDs, preserve those
-  exact objects in delivered history using a merge commit or fast-forward.
-  Squash or rebase must not discard or rewrite referenced recovery commits.
+- Git history is the recovery mechanism. A current Task may name a temporary
+  recovery commit, but must not turn a branch tip, expected SHA, checksum, or
+  commit census into a standing merge Gate.
 
 ## 3. Merge and Branch Discipline
 
-- Delete a feature branch only after referenced recovery commits are reachable
-  from the delivered protected branch; verify recovery blobs after integration.
+- Delete a feature branch only after its approved change is reachable from the
+  delivered protected branch and its linked worktree is clean.
 - Long-lived branches other than `main` require explicit user authorization.
-- Integrate a diverged branch without rewriting referenced recovery commits.
-  Any unreferenced-history cleanup still requires explicit authorization.
+- Do not rewrite a current Task's named recovery commit before integration.
+  History cleanup beyond the completed feature branch requires explicit
+  authorization.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
 ## 4. GitHub Actions Security Contract
@@ -114,7 +113,7 @@ evidence must state:
 | Change Type | Required Local Evidence | CI-Only Evidence | Required Skip Rationale |
 | --- | --- | --- | --- |
 | Docs or governance docs | Diff hygiene, doc implementation alignment, repo contracts, doc traceability, provider sync when provider docs changed | Required docs/repo contract jobs | Domain tests are N/A for docs-only changes. |
-| Archive/tombstone migration | Diff hygiene, doc implementation alignment, stale active-reference scans, repo contracts, doc traceability, archive ledger review | Required docs/repo contract jobs | Domain tests and runtime checks are N/A unless behavior/config changed. |
+| Historical-file cleanup | Diff hygiene, stale active-reference scan, and minimal metadata/link checks | Required docs/repo contract jobs | Domain tests and runtime checks are N/A unless behavior/config changed. |
 | Hook, script, or validator | Targeted command output plus repo contracts | Required quality/security jobs | GitHub-only permissions, SARIF upload, or protected remote state if not locally runnable. |
 | Runtime or Docker config | Compose/hardening/local smoke checks when approved | Compose and hardening jobs | Live mutation skipped without approval. |
 | GitHub workflow/protection | Static review and local contract checks | GitHub Actions and branch-protection verification | Any remote state not verified must be reported as unverified, not done. |
@@ -204,7 +203,6 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `docs/00.agent-governance/providers/codex.md`
 - `.github/INDEX.md`
 - `.github/rulesets/main-protection.md`
-- `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`
 - `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
 
 ## References

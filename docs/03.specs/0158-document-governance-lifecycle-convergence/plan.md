@@ -618,8 +618,11 @@ oracle and thresholds.
 
 Update the provider and environment policies so `--write` is permitted only
 after an approved canonical Stage 00 or Provider Registry change. Ordinary
-postflight and CI use `--check`. Then regenerate once and immediately prove
-freshness:
+postflight and CI use `--check`. A stale generated projection is first moved to
+private quarantine and returns nonzero; inspect and remove only the reported
+exact quarantine files under the approved retirement and Git recovery
+boundary, then rerun `--write`. `--check` remains nonzero while cleanup is
+pending. After that bounded handoff, immediately prove freshness:
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract

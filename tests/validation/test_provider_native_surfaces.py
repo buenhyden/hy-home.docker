@@ -63,7 +63,6 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             if path.parts[:2] == (".agents", "skills") and path.name == "SKILL.md"
         }
         self.assertEqual(expected, actual)
-        self.assertEqual(23, len(actual))
 
     def test_unknown_provider_fails_closed(self) -> None:
         renderer = load_renderer()

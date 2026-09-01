@@ -37,7 +37,9 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 - `docs/00.agent-governance/policies/agentic.md`
 - `docs/00.agent-governance/policies/documentation-protocol.md`
 - `.claude/CLAUDE.md`
-- `.codex/README.md`
+- `.codex/agents/*.toml`
+- `.codex/hooks.json`
+- `docs/00.agent-governance/providers/codex.md`
 - `scripts/validation/check-repo-contracts.sh`
 - `scripts/validation/check-document-links.py`
 - `scripts/knowledge/report-graphify-health.sh`
@@ -53,7 +55,7 @@ This document analyzes the `hy-home.docker` workspace purpose, rules, environmen
 | Thin root shims | `AGENTS.md`, `CLAUDE.md` | Root files handle entry/import only and delegate detailed policy to Stage 00. |
 | Governance SSOT | `docs/00.agent-governance/` | Owns shared rules, scopes, providers, the agents catalog, memory, and the delegation protocol. |
 | Runtime mirror | `.agents/`, `.claude/`, `.codex/` | Registered provider projections stay synchronized with Stage 00 roles, skills and provider Registry. Configured parity is not runtime acceptance. |
-| Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex is a hook/context surface and does not create a parallel delegated-agent catalog. |
+| Codex boundary | `.codex/agents/*.toml`, `.codex/hooks.json`, `providers/codex.md` | Codex native files consume Stage 00 roles and provider facts; they do not create a parallel delegated-agent catalog. |
 | Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify is a navigation aid when the corpus is clean; when contamination exists, downgrade it to advisory and re-check against tracked source and canonical docs. |
 | Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | Completion is proven through repository contracts, docs traceability, default/core Compose profiles, supported hardening tiers, and hook payload simulation. |
 
@@ -71,7 +73,7 @@ provider and catalog ownership is defined by Stage 00.
 | Agent entry and provider routing | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md` | Provider-neutral entry and provider shims remain thin. `RTK.md` describes the Codex CLI proxy convention, though `rtk` may be unavailable in the current shell. |
 | Governance rules | `bootstrap.md`, `persona.md`, `task-checklists.md`, `agentic.md`, `documentation-protocol.md`, `stage-authoring-matrix.md`, `scopes/agentic.md` | Non-mutating discovery, persona routing, scope loading, template-first docs, and completion checks are explicit. |
 | Harness runtime | `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.claude/hooks/*.sh` | The supervisor uses `opus`, workers use `sonnet`, and agents have exactly one scope import. Claude hooks must preserve JSON output without shell command substitution. |
-| Codex runtime | `.codex/README.md`, `.codex/hooks.json`, `providers/codex.md` | Codex hooks provide graphify context and post-edit validation, not policy authority. |
+| Codex runtime | `.codex/agents/*.toml`, `.codex/hooks.json`, `providers/codex.md` | Codex role adapters and hooks consume Stage 00 policy and Registry facts; they do not own policy. |
 | Agent/function catalog | `docs/00.agent-governance/agents/**`, `subagent-protocol.md` | Eight agents and ten functions are connected to the runtime mirror. |
 | Templates and validators | `docs/99.templates/*.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh` | Stage template contracts and runtime drift checks are included in repository validation. |
 

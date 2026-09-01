@@ -194,7 +194,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/task-breakdown-agent/SKILL.md](../../../../.claude/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/test-authoring/SKILL.md](../../../../.claude/skills/test-authoring/SKILL.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/SKILL.md](../../../../.claude/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
-| [.codex/README.md](../../../../.codex/README.md) | folder index |
 | [.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml) | source path |
 | [.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) | source path |
 | [.codex/agents/doc-writer.toml](../../../../.codex/agents/doc-writer.toml) | source path |
@@ -363,6 +362,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md](../../../03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-convergence.md) | Markdown reference |
 | [docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md](../../../03.specs/0158-document-governance-lifecycle-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0158-document-governance-lifecycle-convergence/spec.md](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md](../../../03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

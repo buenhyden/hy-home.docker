@@ -43,6 +43,30 @@ def copy_governance_fixture(root: pathlib.Path) -> None:
 
 
 class AgentGovernanceContractTests(unittest.TestCase):
+    def test_provider_registry_does_not_restate_neutral_workflow_policy(self) -> None:
+        registry = yaml.safe_load(
+            (ROOT / "docs/00.agent-governance/providers/registry.yaml").read_text()
+        )
+        neutral_keys = {
+            "workflow_states",
+            "harness_layers",
+            "harness_loops",
+            "evidence_fields",
+            "prohibited_evidence",
+        }
+        self.assertEqual(set(), neutral_keys & set(registry))
+
+    def test_read_only_review_roles_remain_read_only(self) -> None:
+        state = contract.load_agent_governance(ROOT)
+        permissions = {role.agent_id: role.permission_profile for role in state.roles}
+        for role_id in (
+            "workflow-supervisor",
+            "eval-engineer",
+            "rules-engineer",
+            "code-reviewer",
+        ):
+            self.assertEqual("read-only", permissions[role_id])
+
     def test_supported_providers_and_governance_roots_are_exact(self) -> None:
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)
@@ -54,8 +78,14 @@ class AgentGovernanceContractTests(unittest.TestCase):
             ("README.md", "claude.md", "codex.md", "registry.yaml"),
             state.provider_entries,
         )
-        self.assertEqual(14, len(state.roles))
-        self.assertEqual(23, len(state.skills))
+        self.assertEqual(
+            {path.stem for path in (ROOT / "docs/00.agent-governance/roles").glob("*.md")},
+            {role.agent_id for role in state.roles},
+        )
+        self.assertEqual(
+            {path.stem for path in (ROOT / "docs/00.agent-governance/skills").glob("*.md")},
+            {skill.skill_id for skill in state.skills},
+        )
         self.assertFalse((ROOT / "docs/00.agent-governance/memory").exists())
         retired_provider = "ge" + "mini"
         self.assertFalse((ROOT / ("." + retired_provider)).exists())
@@ -131,6 +161,36 @@ class AgentGovernanceContractTests(unittest.TestCase):
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), tuple(item.provider_id for item in state.provider_records))
         self.assertEqual(".claude/agents/{agent_id}.md", state.provider_records[0].agent_pattern)
+
+        def inject_unsafe_event(data) -> None:
+            unsafe = "Stop;echo"
+            data["semantic_events"]["codex"] = [
+                unsafe if event == "Stop" else event
+                for event in data["semantic_events"]["codex"]
+            ]
+            data["hook_contracts"]["codex"] = {
+                (unsafe if event == "Stop" else event): (
+                    {
+                        **binding,
+                        "command": binding["command"].removesuffix(" Stop")
+                        + f" {unsafe}",
+                    }
+                    if event == "Stop"
+                    else binding
+                )
+                for event, binding in data["hook_contracts"]["codex"].items()
+            }
+
+        def make_codex_effort_unsupported(data) -> None:
+            model = data["models"]["gpt-5.6-sol"]
+            model["control"] = "unsupported"
+            model.pop("supported_values")
+            for profile in data["work_profiles"].values():
+                selection = profile["codex"]
+                if selection["model"] == "gpt-5.6-sol":
+                    selection["control"] = "effort"
+                    selection["value"] = None
+
         mutations = {
             "top-level-key": lambda data: data.update({"unknown": True}),
             "provider-key": lambda data: data["providers"][0].update({"unknown": True}),
@@ -149,6 +209,8 @@ class AgentGovernanceContractTests(unittest.TestCase):
             "model-provider": lambda data: data["models"]["gpt-5.6-sol"].update(
                 {"provider": "claude"}
             ),
+            "codex-null-effort": make_codex_effort_unsupported,
+            "unsafe-event": inject_unsafe_event,
         }
         for name, mutation in mutations.items():
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
@@ -158,6 +220,68 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 data = yaml.safe_load(path.read_text(encoding="utf-8"))
                 mutation(data)
                 path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+                with self.assertRaises(contract.ContractLoadError):
+                    contract.load_agent_governance(root)
+
+    def test_hook_executable_rejects_shell_metacharacters(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+            binding = data["hook_contracts"]["codex"]["Stop"]
+            original = binding["executable"]
+            unsafe = "scripts/hooks/$(id).sh"
+            target = root / unsafe
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(root / original, target)
+            binding["executable"] = unsafe
+            binding["command"] = binding["command"].replace(original, unsafe)
+            registry_path.write_text(
+                yaml.safe_dump(data, sort_keys=False), encoding="utf-8"
+            )
+
+            with self.assertRaises(contract.ContractLoadError):
+                contract.load_agent_governance(root)
+
+    def test_canonical_role_and_skill_identifiers_are_safe_slugs(self) -> None:
+        cases = {
+            "role-id": (
+                "docs/00.agent-governance/roles/code-reviewer.md",
+                "docs/00.agent-governance/roles/evil: true.md",
+                "agent_id: code-reviewer",
+                "agent_id: 'evil: true'",
+            ),
+            "skill-id": (
+                "docs/00.agent-governance/skills/code-review-dimensions.md",
+                "docs/00.agent-governance/skills/evil: true.md",
+                "function_id: code-review-dimensions",
+                "function_id: 'evil: true'",
+            ),
+            "owner-id": (
+                "docs/00.agent-governance/skills/code-review-dimensions.md",
+                "docs/00.agent-governance/skills/code-review-dimensions.md",
+                "owner_agent: code-reviewer",
+                "owner_agent: 'evil: true'",
+            ),
+            "skill-reference": (
+                "docs/00.agent-governance/roles/code-reviewer.md",
+                "docs/00.agent-governance/roles/code-reviewer.md",
+                "- code-review-dimensions",
+                "- 'evil: true'",
+            ),
+        }
+        for name, (source_name, target_name, before, after) in cases.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                source = root / source_name
+                target = root / target_name
+                text = source.read_text(encoding="utf-8").replace(before, after, 1)
+                if target != source:
+                    source.unlink()
+                target.write_text(text, encoding="utf-8")
+
                 with self.assertRaises(contract.ContractLoadError):
                     contract.load_agent_governance(root)
 
@@ -342,33 +466,30 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 else:
                     self.assertIn(task, unsupported)
 
-    def test_loops_states_and_harness_layers_are_strict_and_cross_referenced(self) -> None:
+    def test_projection_routes_and_managed_roots_are_strict(self) -> None:
         mutations = {
-            "loop-owner": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"owner_agent": "not-a-role"}
+            "projection-provider": lambda data: data["projections"][0].update(
+                {"provider_id": "unsupported"}
             ),
-            "loop-reviewer": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"reviewer_agent": "not-a-role"}
+            "projection-source": lambda data: data["projections"][0].update(
+                {"source": "docs/90.references/current.md"}
             ),
-            "loop-stop": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"stop_condition": ""}
+            "projection-route": lambda data: data["projections"][0].update(
+                {"path": ".codex/README.md"}
             ),
-            "loop-failure": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"on_failure": []}
+            "projection-duplicate": lambda data: data["projections"].append(
+                dict(data["projections"][0])
             ),
-            "state-owner": lambda data: data["workflow_states"][0].update(
-                {"owner_agent": "not-a-role"}
+            "projection-managed-collision": lambda data: data["projections"][0].update(
+                {"path": ".agents/agents/code-reviewer.md"}
             ),
-            "state-return": lambda data: data["workflow_states"][0].update(
-                {"failure_return": "invented-state"}
+            "projection-native-config": lambda data: data["projections"][1].update(
+                {"path": ".claude/settings.json"}
             ),
-            "layer-owner": lambda data: data["harness_layers"][0].update(
-                {"owner_agent": "not-a-role"}
+            "managed-root-extra": lambda data: data["generated_roots"].append(
+                ".agents/other"
             ),
-            "layer-gate": lambda data: data["harness_layers"][0].update({"gate": ""}),
-            "layer-return": lambda data: data["harness_layers"][0].update(
-                {"failure_return": "invented-state"}
-            ),
+            "managed-root-missing": lambda data: data["generated_roots"].pop(),
         }
         for name, mutation in mutations.items():
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:

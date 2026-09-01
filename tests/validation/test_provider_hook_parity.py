@@ -24,10 +24,6 @@ def copy_fixture(root: pathlib.Path) -> None:
         target = root / source
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / source, target)
-    shutil.copytree(
-        ROOT / "docs/00.agent-governance/roles",
-        root / "docs/00.agent-governance/roles",
-    )
     registry = yaml.safe_load(
         (root / "docs/00.agent-governance/providers/registry.yaml").read_text(
             encoding="utf-8"
@@ -79,7 +75,7 @@ class ProviderHookParityTests(unittest.TestCase):
             check=False,
         )
 
-    def test_current_dispatchers_wrappers_timeouts_events_and_loops_are_exact(self) -> None:
+    def test_current_dispatchers_wrappers_timeouts_and_events_are_exact(self) -> None:
         self.assertEqual(0, self.run_validation(ROOT).returncode)
 
     def test_generated_data_is_fresh(self) -> None:
@@ -107,8 +103,8 @@ class ProviderHookParityTests(unittest.TestCase):
                 path.write_text(json.dumps(data), encoding="utf-8")
                 self.assertNotEqual(0, self.run_validation(root).returncode)
 
-    def test_executable_mode_and_loop_contract_mutations_fail_closed(self) -> None:
-        for case in ("mode", "loop-field", "workflow-state"):
+    def test_executable_mode_and_registry_binding_mutations_fail_closed(self) -> None:
+        for case in ("mode", "duplicate-event", "missing-contract"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_fixture(root)
@@ -119,15 +115,13 @@ class ProviderHookParityTests(unittest.TestCase):
                         "executable"
                     ]
                     executable.chmod(0o644)
-                elif case == "loop-field":
-                    registry["harness_loops"]["bounded-implementation"].pop(
-                        "max_attempts"
-                    )
+                elif case == "duplicate-event":
+                    registry["semantic_events"]["codex"].append("Stop")
                     registry_path.write_text(
                         yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
                     )
                 else:
-                    registry["workflow_states"][0]["state_id"] = "invented"
+                    registry["hook_contracts"]["codex"].pop("Stop")
                     registry_path.write_text(
                         yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
                     )
@@ -154,36 +148,84 @@ class ProviderHookParityTests(unittest.TestCase):
                 native_path.write_text(json.dumps(native), encoding="utf-8")
                 self.assertNotEqual(0, self.run_validation(root).returncode)
 
-    def test_parity_rejects_corrupt_loop_state_and_harness_values(self) -> None:
-        mutations = {
-            "loop-owner": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"owner_agent": "not-a-role"}
-            ),
-            "loop-stop": lambda data: data["harness_loops"]["context-bootstrap"].update(
-                {"stop_condition": ""}
-            ),
-            "state-owner": lambda data: data["workflow_states"][0].update(
-                {"owner_agent": "not-a-role"}
-            ),
-            "state-return": lambda data: data["workflow_states"][0].update(
-                {"failure_return": "invented-state"}
-            ),
-            "layer-gate": lambda data: data["harness_layers"][0].update({"gate": ""}),
-            "layer-return": lambda data: data["harness_layers"][0].update(
-                {"failure_return": "invented-state"}
-            ),
-        }
-        for name, mutation in mutations.items():
-            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                copy_fixture(root)
-                registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
-                registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
-                mutation(registry)
-                registry_path.write_text(
-                    yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
+    def test_synchronized_unsafe_event_name_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            unsafe = "Stop;echo"
+            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+            registry["semantic_events"]["codex"] = [
+                unsafe if event == "Stop" else event
+                for event in registry["semantic_events"]["codex"]
+            ]
+            registry["hook_contracts"]["codex"] = {
+                (unsafe if event == "Stop" else event): (
+                    {
+                        **binding,
+                        "command": binding["command"].removesuffix(" Stop")
+                        + f" {unsafe}",
+                    }
+                    if event == "Stop"
+                    else binding
                 )
-                self.assertNotEqual(0, self.run_validation(root).returncode)
+                for event, binding in registry["hook_contracts"]["codex"].items()
+            }
+            registry_path.write_text(
+                yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
+            )
+
+            native_path = root / ".codex/hooks.json"
+            native = json.loads(native_path.read_text(encoding="utf-8"))
+            native["hooks"][unsafe] = native["hooks"].pop("Stop")
+            native["hooks"][unsafe][0]["hooks"][0]["command"] = registry[
+                "hook_contracts"
+            ]["codex"][unsafe]["command"]
+            native_path.write_text(json.dumps(native), encoding="utf-8")
+
+            self.assertNotEqual(0, self.run_validation(root).returncode)
+
+    def test_synchronized_unsafe_executable_path_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+            binding = registry["hook_contracts"]["codex"]["Stop"]
+            original = binding["executable"]
+            unsafe = "scripts/hooks/$(id).sh"
+            target = root / unsafe
+            shutil.copy2(root / original, target)
+            binding["executable"] = unsafe
+            binding["command"] = binding["command"].replace(original, unsafe)
+            registry_path.write_text(
+                yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
+            )
+
+            native_path = root / ".codex/hooks.json"
+            native = json.loads(native_path.read_text(encoding="utf-8"))
+            native["hooks"]["Stop"][0]["hooks"][0]["command"] = binding["command"]
+            native_path.write_text(json.dumps(native), encoding="utf-8")
+
+            self.assertNotEqual(0, self.run_validation(root).returncode)
+
+    def test_parity_scope_excludes_neutral_workflow_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+            registry.update(
+                {
+                    "workflow_states": "not-provider-parity-data",
+                    "harness_layers": "not-provider-parity-data",
+                    "harness_loops": "not-provider-parity-data",
+                }
+            )
+            registry_path.write_text(
+                yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
+            )
+            self.assertEqual(0, self.run_validation(root).returncode)
 
 
 if __name__ == "__main__":

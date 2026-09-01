@@ -619,7 +619,7 @@ files:
   - docs/90.references/data/0061-tech-stack-version-provenance/README.md
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
-  authority: docs/99.templates/registry.json
+  authority: docs/00.agent-governance/providers/registry.yaml
   lifecycle: transition
   mutation: check-write
   consumers:

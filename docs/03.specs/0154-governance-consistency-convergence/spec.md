@@ -180,23 +180,15 @@ that omit it. The Output Style Contract requires the section on every document
 and 499 of 599 documents already carry it, but only the 8 Stage 00 and README
 profiles declare it, so the corpus follows a rule the registry does not state.
 
-`generated_roots` in `providers/registry.yaml` is a list of managed
-**directories**, not a manifest of generated files:
-`provider_surface_renderer.py` raises `managed root is not a directory` for any
-non-directory entry. Two of the five renderer outputs are directory-shaped and
-belong in it, `.agents/rules` and `.agents/workflows`; the other three,
-`.agents/README.md`, `.claude/CLAUDE.md`, and `.codex/README.md`, are single
-files and cannot be roots. Adding the two directories also requires extending
-`EXPECTED_GENERATED_ROOTS` at
-`scripts/validation/agent_governance_contract.py:33`, which the renderer imports
-and compares exactly.
-
-The three single-file routes stay declared where the renderer already declares
-them, at `provider_surface_renderer.py` lines 289 to 293. The Task records that
-no field outside the renderer names them, so a reader of `registry.yaml` alone
-cannot tell they are generated. Closing that gap needs a generated-file manifest
-that does not exist today; it is recorded as a deferred item rather than forced
-into a field with different semantics.
+`generated_roots` in `providers/registry.yaml` is a deletion-safety boundary for
+managed role and skill projection **directories**, not a manifest of generated
+files. The contract derives the required root set from registered agent/skill
+patterns, so no parallel `EXPECTED_GENERATED_ROOTS` census exists. Static
+single-file projections are explicit typed `projections` rows for
+`.agents/README.md` and `.claude/CLAUDE.md`. Consumerless `.agents/rules`,
+`.agents/workflows`, and the Codex README projection were removed; Codex runtime
+facts remain in `.codex/agents/*.toml`, `.codex/hooks.json`, and the Stage 00
+Codex provider adapter.
 
 ### 4. Retired taxonomy removal
 
@@ -257,8 +249,8 @@ SPEC-0155 for the same reason.
 | `docs/99.templates/registry.json` `transitions`                      | `spec` maps to `spec-package`                                            |
 | `docs/99.templates/registry.json` `profiles[governance-role]`        | seven fields move to `required_frontmatter`                              |
 | `docs/99.templates/registry.json` `profiles[*].optional_sections`    | `Related Documents` added to 16 content profiles                         |
-| `docs/00.agent-governance/providers/registry.yaml` `generated_roots` | 2 directory entries added                                                |
-| `scripts/validation/agent_governance_contract.py:33`                 | `EXPECTED_GENERATED_ROOTS` extended to match                             |
+| `docs/00.agent-governance/providers/registry.yaml` projection fields | managed roots derive from patterns; static routes are typed rows          |
+| Agent-governance contract                                            | validates derived set equality without a parallel fixed root census       |
 | Spec frontmatter                                                     | `completed` becomes a valid `status`; `superseded_by` used on retirement |
 | `scripts/validation/check-document-links.py`                         | selection scope widened, `superseded` exempted                           |
 | `check-document-links.py` `DOC_ROOTS` and `SUPPORT_DOCS`             | replaced by full tracked-corpus selection                                |

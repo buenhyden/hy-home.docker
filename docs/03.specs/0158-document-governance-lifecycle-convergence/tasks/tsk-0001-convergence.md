@@ -571,6 +571,40 @@ consumer handoffs because a target disposition changes their navigation.
 - Independent coverage and exact-diff review must be GREEN before this baseline
   is committed.
 
+### 2026-09-01 Task 3 observed evidence
+
+- The provider-registry ownership regression was RED while provider-neutral
+  workflow and harness fields remained in the Registry, then GREEN after Stage
+  00 became their sole owner. Read-only review-role permissions stayed GREEN.
+- Renderer regressions were RED then GREEN for malformed generated markers,
+  oversized or stale Codex projections, FIFO nonblocking behavior, symlink and
+  replacement races, private quarantine handoff, and pending-cleanup failure.
+  Stale generated paths are never automatically unlinked: `--write` preserves
+  them in quarantine and returns nonzero until exact manual cleanup, while
+  `--check` also remains nonzero.
+- Structured-surface regressions parse every generated shared and Claude YAML
+  frontmatter document and every Codex TOML role. Arbitrary colon-containing
+  identities and model controls are quoted safely, and a Codex null-effort
+  mutation is rejected.
+- Agent-output evaluation regressions were RED then GREEN for direct
+  prohibitions, passive and modal forms, conditional carve-outs, same-sentence
+  reversals, and 5,000 repeated clauses. Seven hazard/direct-negation pairs
+  prove symmetric handling, including `will/was inferred` versus
+  `will/was not inferred`.
+- The five changed unit modules ran 116 tests in aggregate with final result
+  `OK`. Intentional negative fixture logs are expected assertions, not test
+  failures.
+- Provider freshness reported `providers=2 drift=0`; the repository
+  agent-governance contract reported `failures=0`; script manifest, fixture and
+  regression catalogs, hook parity, and both generated LLM Wiki outputs passed.
+- Document alignment and traceability each inspected 569 documents and 4,870
+  links with zero failures and zero current-to-archive links. Changed metadata
+  against the explicit local `main` base selected 25 documents with zero
+  violations. Shell syntax, Python compilation, and `git diff --check` passed.
+- The protected RES-0002 research pack changed by one line replacement in the
+  provider comparison only; no quarantine, temporary projection, archive,
+  redirect, or Tombstone artifact was added.
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -605,6 +639,22 @@ The final read-only verdicts are GREEN and do not grant approval:
   findings. Confirmed one-file scope, arithmetic, handoff equality, recovery,
   protected dispositions, readiness implementation selection, recorded
   validators, and diff hygiene.
+
+### Task 3 independent review
+
+- `rules-engineer`: no Critical, High, or Medium findings; `SPEC`, `QUALITY`,
+  and `EXACT-DIFF` verdicts all PASS. It confirmed the Stage 00/Registry
+  authority boundary, derived identities, simplified lifecycle controls, and
+  inferred-approval grammar.
+- `code-reviewer`: no Critical, High, or Medium findings; `SPEC`, `QUALITY`, and
+  `EXACT-DIFF` verdicts all PASS. It confirmed exactly 74 regenerated role and
+  skill projections, three consumerless deletions, one protected-research line
+  replacement, no automatic quarantine deletion, and no transient artifacts.
+- `python-reviewer`: no Critical, High, or Medium findings; `SPEC`, `QUALITY`,
+  and `EXACT-DIFF` verdicts all PASS. It independently reran the 116 tests,
+  compilation and available linting, provider freshness, contracts, manifest,
+  parity, and diff hygiene. These review verdicts are evidence and do not
+  substitute for user approval.
 
 ## Commit Ledger
 
