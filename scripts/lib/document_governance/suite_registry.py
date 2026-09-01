@@ -45,7 +45,6 @@ COMPLETE_CAPABILITY_ARGV = MappingProxyType(
         "check-agent-governance-contract.py": ("--mode", "repository", "--section", "all"),
         "check-document-links.py": ("--mode", "all"),
         "check-document-metadata.py": ("--mode", "check-changed"),
-        "check-operations-catalog.py": ("--mode", "complete"),
         "check-supply-chain-policy.py": ("--check",),
         "check-target-surface-delta-contract.py": ("--mode", "advisory"),
         "report-audit-pack-coverage.sh": ("--check",),

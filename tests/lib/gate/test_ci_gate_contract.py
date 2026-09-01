@@ -337,12 +337,12 @@ class CiGateContractTests(unittest.TestCase):
             ".github/workflow-contract.yml",
         )
         nodes = {node.gate_id: node for node in registry.nodes}
-        leaf = nodes["leaf.operations-catalog-manifest"]
+        leaf = nodes["leaf.operations-catalog"]
         self.assertEqual(
             pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
             leaf.entrypoint,
         )
-        self.assertEqual(("--mode", "complete"), leaf.argv)
+        self.assertEqual((), leaf.argv)
         self.assertIn("ci", leaf.profiles)
         self.assertIn(
             leaf.gate_id,

@@ -903,9 +903,6 @@ files:
   public_suites:
   - operations
   execution_contexts: [local, pull_request, push, workflow_dispatch]
-  execution_argv:
-  - --mode
-  - complete
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none

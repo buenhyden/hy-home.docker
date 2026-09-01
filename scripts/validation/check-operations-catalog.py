@@ -20,25 +20,25 @@ from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--mode",
-        choices=("manifest", "structure", "executed", "complete", "consumers"),
-        required=True,
-    )
-    parser.add_argument("--domains", help="retained for bounded CLI compatibility")
-    return parser
+    return argparse.ArgumentParser(description=__doc__)
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = _parser()
-    args = parser.parse_args(argv)
-    if args.domains and args.mode != "executed":
-        parser.error("--domains is accepted only by --mode executed")
+    """Validate the complete current Stage 05 tree in one route.
+
+    The five retired modes selected between two validations, not five.
+    `manifest`, `structure`, and `executed` ran the current-operations check
+    alone; `complete` and `consumers` added the active-reference check. This
+    route always runs both, so it is what `complete` did and nothing is lost.
+    `--domains` was accepted and never read.
+    """
+
+    _parser().parse_args(argv)
     try:
-        findings = validate_current_operations(ROOT)
-        if args.mode in {"complete", "consumers"}:
-            findings = (*findings, *validate_active_operations_references(ROOT))
+        findings = (
+            *validate_current_operations(ROOT),
+            *validate_active_operations_references(ROOT),
+        )
     except OperationsAuthorityError as error:
         print(f"FAIL {error.code}: {error}")
         return 1

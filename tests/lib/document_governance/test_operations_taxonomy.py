@@ -29,7 +29,7 @@ def _public_suites_for(*changed_paths: str) -> tuple[str, ...]:
 
 
 class OperationsAuthorityTests(unittest.TestCase):
-    def test_operations_checker_is_executable_and_publishes_required_mode_usage(
+    def test_operations_checker_is_executable_and_has_one_complete_route(
         self,
     ) -> None:
         checker = ROOT / "scripts/validation/check-operations-catalog.py"
@@ -42,8 +42,25 @@ class OperationsAuthorityTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn("--mode", result.stdout)
-        self.assertIn("complete", result.stdout)
+        for retired in ("--mode", "--domains"):
+            with self.subTest(option=retired):
+                self.assertNotIn(retired, result.stdout)
+
+        # The default route runs both validations, which is what --mode
+        # complete did; the other four modes were subsets of it.
+        default = subprocess.run(
+            [str(checker)], cwd=ROOT, capture_output=True, text=True, check=False
+        )
+        self.assertEqual(0, default.returncode, default.stdout + default.stderr)
+        self.assertIn("operations-catalog:", default.stdout)
+        rejected = subprocess.run(
+            [str(checker), "--mode", "complete"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(0, rejected.returncode)
 
     def test_active_corpus_has_no_generic_predecessor_or_release_role_routes(
         self,
