@@ -6,7 +6,7 @@ artifact_type: spec
 parent_ids:
   - AD-0014
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 # 02-Auth Optimization Hardening Specification
 
@@ -125,8 +125,6 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md
-- **Tasks**: ../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/catalog/02-auth/0014-keycloak/guide.md](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)
 - **Policy**: [../../05.operations/catalog/02-auth/0014-keycloak/policy.md](../../05.operations/catalog/02-auth/0014-keycloak/policy.md)
 - **Runbook**: [../../05.operations/catalog/02-auth/0014-keycloak/runbook.md](../../05.operations/catalog/02-auth/0014-keycloak/runbook.md)

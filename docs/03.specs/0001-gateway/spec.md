@@ -6,7 +6,7 @@ artifact_type: spec
 parent_ids:
   - AD-0001
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 # Gateway Tier (01-gateway) Technical Specification
 
@@ -109,8 +109,6 @@ docker compose exec nginx nginx -t
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-03-26-01-gateway-standardization.md
-- **Tasks**: ../../04.execution/tasks/2026-03-26-01-gateway-tasks.md
 - **Guide**: [../../05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md](../../05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md)
 - **Policy**: [../../05.operations/catalog/01-gateway/0013-traefik/policy.md](../../05.operations/catalog/01-gateway/0013-traefik/policy.md)
 - **Runbook**: [../../05.operations/catalog/01-gateway/0013-traefik/runbook.md](../../05.operations/catalog/01-gateway/0013-traefik/runbook.md)

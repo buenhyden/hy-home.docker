@@ -6,7 +6,7 @@ artifact_type: spec
 parent_ids:
   - AD-0024
 created: 2026-07-05
-updated: 2026-08-14
+updated: 2026-09-01
 ---
 # 09-Tooling Optimization Hardening Technical Specification
 
@@ -128,8 +128,6 @@ bash scripts/validation/check-repo-contracts.sh
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
-- **Tasks**: ../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)
 - **Policy**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)

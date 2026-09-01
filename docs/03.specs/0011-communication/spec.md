@@ -6,7 +6,7 @@ artifact_type: spec
 parent_ids:
   - AD-0010
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 # Communication Tier Technical Specification
 
@@ -190,8 +190,6 @@ openssl s_client -starttls smtp -connect mail.${DEFAULT_URL}:587
 - **PRD**: [011-communication.md](../../01.requirements/0011-communication.md)
 - **ARD**: [0010-communication-architecture.md](../../02.architecture/descriptions/0010-communication-architecture.md)
 - **ADR**: [0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-10-communication-standardization.md
-- **Tasks**: ../../04.execution/tasks/2026-03-26-10-communication-tasks.md
 - **Guide**: [../../05.operations/catalog/10-communication/0070-mail/guide.md](../../05.operations/catalog/10-communication/0070-mail/guide.md)
 - **Policy**: [../../05.operations/catalog/10-communication/0070-mail/policy.md](../../05.operations/catalog/10-communication/0070-mail/policy.md)
 - **Runbook**: [../../05.operations/catalog/10-communication/0070-mail/runbook.md](../../05.operations/catalog/10-communication/0070-mail/runbook.md)

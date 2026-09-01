@@ -128,8 +128,8 @@ without a pinned count, hashes, expected SHAs, or byte equality.
 | Document and validation authority | `docs/99.templates/registry.json`; `scripts/manifest.yaml`; `.github/workflow-contract.yml`; document-governance libraries implement profile, validator, and CI routing | requirement + structure + decision | REQ-0024 clauses; AD-0027 boundaries; ADR-0029 | Migration and duplicate inventories still act as inputs | Tasks 4/6/7 derive from current owners | exact files + Registry/manifest/workflow relation review |
 | Operational readiness | `examples/sample-web-service/**`; `docs/05.operations/catalog/**`; `scripts/validation/run-compose-core-readiness.sh`; `scripts/validation/compose-core-readiness.lib.sh`; `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh`; `scripts/security/verify-sample-service-supply-chain.sh`; `scripts/validation/check-supply-chain-policy.py`; `scripts/operations/rehearse-sample-service-delivery.sh`; and their focused tests implement typed procedures plus local-isolated readiness, recovery, supply-chain, promotion, and rollback behavior | requirement + structure + decision | REQ-0025; AD-0028; ADR-0028 | two Stage 98 links and one Stage 04 reference | Tasks 4/5 rewrite current procedures; keep implemented owners | exact tracked selectors + `test_compose_core_readiness`, `test_postgres_logical_upgrade_rehearsal`, `test_supply_chain_policy`, and `test_sample_service_delivery_rehearsal` |
 
-The bidirectional review uses the exact selectors above, not
-`check-doc-implementation-alignment.sh` as a semantic oracle. In the owner-to-
+The bidirectional review uses the exact selectors above, not the
+`--mode alignment` link predicate as a semantic oracle. In the owner-to-
 implementation direction, all 25 Requirement leaves, all 25 Architecture
 Description leaves, and all 25 active ADR leaves occur in at least one row;
 ADR-0027 is deliberately excluded from the active-ADR set and receives an
@@ -552,7 +552,7 @@ consumer handoffs because a target disposition changes their navigation.
   retained consumers `36/36`, `S90-NONE` zero-consumer sets `28/28`, Stage 03
   package handoffs `16/16`, and Stage 98 Migration handoffs `3/3`; zero missing
   or extra consumer paths and zero unused handoff IDs.
-- `bash scripts/validation/check-doc-implementation-alignment.sh`: exit 0.
+- `python3 scripts/validation/check-document-links.py --mode alignment`: exit 0.
 - `bash scripts/operations/sync-provider-surfaces.sh --check`:
   `providers=2 drift=0`.
 - `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all`:

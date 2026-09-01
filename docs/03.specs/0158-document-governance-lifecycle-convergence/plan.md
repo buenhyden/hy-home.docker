@@ -102,8 +102,8 @@ as current agrees with tracked implementation.
 
 ## Dependencies
 
-- [SPEC-0157](../0157-script-surface-ownership-convergence/spec.md) and its
-  [corrected Plan](../0157-script-surface-ownership-convergence/plan.md).
+- Completed [SPEC-0157](../0157-script-surface-ownership-convergence/spec.md)
+  outcome and its Git-recoverable execution history.
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0025](../../01.requirements/0025-operational-readiness-closure.md), and
   [ADR-0029](../../02.architecture/decisions/0029-workspace-governance-authority.md).
@@ -777,7 +777,7 @@ git commit -m "refactor(docs): Make current contracts independent of archive led
 - Modify: `tests/lib/document_governance/test_architecture.py`
 - Modify: `tests/lib/document_governance/test_spec_packages.py`
 - Modify only if the existing predicate needs strengthening:
-  `scripts/validation/check-doc-implementation-alignment.sh` and its existing
+  `scripts/validation/check-document-links.py` alignment mode and its existing
   document-graph tests; do not add a public Gate or fixed subject count.
 - Modify current-path regression tests that encode deleted duplicates.
 
@@ -900,7 +900,7 @@ explicit archive-file path literals without creating a new public Gate.
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_requirements
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_architecture
 PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages
-bash scripts/validation/check-doc-implementation-alignment.sh
+python3 scripts/validation/check-document-links.py --mode alignment
 python3 scripts/validation/check-document-metadata.py --mode check-active
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-links.py --mode all
@@ -1256,7 +1256,7 @@ python3 scripts/validation/check-document-metadata.py \
   --mode check-changed \
   --base-ref "$(git merge-base main HEAD)"
 python3 scripts/validation/check-document-links.py --mode all
-bash scripts/validation/check-doc-implementation-alignment.sh
+python3 scripts/validation/check-document-links.py --mode alignment
 python3 scripts/validation/check-document-corpus-lifecycle.py
 python3 scripts/validation/check-operations-catalog.py
 python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
@@ -1480,7 +1480,7 @@ The final state must satisfy all of the following:
 ## Related Documents
 
 - [Specification](spec.md)
-- [SPEC-0157 Plan](../0157-script-surface-ownership-convergence/plan.md)
+- [SPEC-0157 outcome](../0157-script-surface-ownership-convergence/spec.md)
 - [SDLC](../../00.agent-governance/sdlc.md)
 - [Documentation Protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Approval Boundaries](../../00.agent-governance/policies/approval-boundaries.md)
