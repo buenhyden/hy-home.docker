@@ -928,7 +928,16 @@ create empty commits.
 
 ---
 
-### Task 6: Retire non-protected Stage 90 evidence and remove temporary Stage 98 Migrations
+### Task 6: Retire unregistered Stage 90 evidence
+
+**Amended 2026-09-02.** Steps 3 and 4 below are withdrawn. The Stage 99
+Registry now governs `audits/`, `data/`, and `docs/98.archive/migrations/`
+through the `audit`, `audit-member`, `data`, `generated`, and `migration`
+profiles, each with a registered identity shape. A package with a registered
+profile has a current owner and is not a convergence target, so the mandatory
+deletion of every non-protected Stage 90 package and of Migration 0001--0003 no
+longer applies. Steps 1, 2, and 5 stand. What remains of this Task is the
+retention proof, not a reduction.
 
 **Files:**
 
@@ -1021,7 +1030,11 @@ Extend `test_archive.py` to prove the completion shape:
 Delete Migration section, body, digest, row-count, exact-topology, and current-
 membership checks. Do not replace them with a line count or a new census pin.
 
-**Step 3: Reduce Stage 90**
+**Step 3: Reduce Stage 90 — WITHDRAWN 2026-09-02**
+
+Superseded by the registered `audit`, `audit-member`, `data`, and `generated`
+profiles. The original text is kept below for traceability and is not
+executable.
 
 For every source outside `PROTECT_LATEST`, migrate needed provenance, findings,
 citations, generated outputs, and current consumers to the recorded canonical
@@ -1041,7 +1054,12 @@ Stage 98 document/file citation and cross-link, including stale measurements,
 while preserving the surrounding research claim and external source meaning.
 Regenerated or retained Stage 90 indexes must not enumerate or link Stage 98.
 
-**Step 4: Remove temporary Stage 98 Migrations**
+**Step 4: Remove temporary Stage 98 Migrations — WITHDRAWN 2026-09-02**
+
+Superseded by the registered `migration` profile and `MIG-####` identity. The
+Migrations stay as frozen evidence with their digest tripwire active; only
+current authority coupling is removed. The original text is kept below for
+traceability and is not executable.
 
 - Enumerate every tracked code, test, generator, manifest, workflow, Registry,
   ADR, and document consumer of Migration 0001--0003.
@@ -1226,15 +1244,17 @@ before continuing.
 
 - Modify: all affected stage indexes and current owners.
 - Modify: `docs/03.specs/0158-document-governance-lifecycle-convergence/spec.md`
-- Modify then remove after terminal recovery proof:
-  `docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md`
-- Modify then remove after terminal recovery proof:
-  `docs/03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md`
+- Amended 2026-09-02: retain
+  `docs/03.specs/0158-document-governance-lifecycle-convergence/plan.md` and
+  `docs/03.specs/0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md`.
+  This Task carries the recorded execution evidence for the identity and
+  frontmatter convergence, so removing it would delete the only current record
+  of what shipped. Mark both terminal at closure instead of deleting them.
 - Remove other terminal Plan and Task bodies, including SPEC-0157 execution
   bodies, only after their last current consumer is removed in this closure.
-- Regenerate any Task 2-recorded replacement for generated indexes formerly
-  stored as non-protected Stage 90 Data packages; do not recreate a deleted
-  Stage 90 output.
+- Amended 2026-09-02: the Stage 90 Data packages are retained under the
+  registered `data` and `generated` profiles, so their generators keep writing
+  in place. Regenerate them rather than replacing them.
 - Regenerate retained provider projections.
 
 **Step 1: Run focused and aggregate verification**

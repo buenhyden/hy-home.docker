@@ -135,14 +135,19 @@ declaration records the decision and test input; this Specification's
 acceptance contract supplies its authority. Research findings never become
 governance policy merely because they are protected.
 
-Every Stage 90 Research, Audit, or Data package outside `RES-0002` is a
-mandatory convergence target. A package root is a category child directory
-under `docs/90.references/{audits,data,research}/`; root and category READMEs
-are structural indexes, not packages. A package with no current consumer is
-deleted; a package with a current consumer or unique needed meaning first
+Amended 2026-09-02: a Stage 90 package governed by a registered Stage 99
+profile is retained under that profile. The `audit`, `audit-member`, `data`,
+and `generated` profiles now carry registered identity shapes (`AUD-####`,
+`AUD-####-m####`, `DATA-####`, `DATA-####-m####`), so those packages have a
+current owner and are no longer convergence targets. An unregistered Stage 90
+package outside `RES-0002` remains a mandatory convergence target. A package
+root is a category child directory under
+`docs/90.references/{audits,data,research}/`; root and category READMEs are
+structural indexes, not packages. An unregistered package with no current
+consumer is deleted; one with a current consumer or unique needed meaning first
 migrates that consumer or meaning to its current canonical owner and is then
-deleted. At completion, the dynamically measured package-root set is exactly the protected
-`RES-0002` root, with zero unresolved or pending package disposition. Stage 90
+deleted. At completion, every remaining package root resolves to a registered
+Stage 99 profile, with zero unresolved or pending package disposition. Stage 90
 root and category READMEs are structural indexes rather than evidence packages
 and are regenerated or removed to match the resulting tree. A deletion creates
 no redirect or body clone. A minimal package-README Tombstone is allowed only
@@ -306,10 +311,12 @@ and review checks.
 
 Repair Stage 00 and Stage 99 boundaries first. Then update the affected Stage
 01, Stage 02, and Stage 05 owners, including ADR-0029's obsolete statement that
-Migration 0003 is a permanent structural review boundary. Remove the active
-Stage 99 Migration profile, template route, lifecycle binding, and allocation
-surface after their last current consumer has moved; Git owns the deleted
-historical Migration records. Clarify that Stage 99 paths are document paths
+Migration 0003 is a permanent structural review boundary. Amended 2026-09-02:
+the Stage 99 Migration profile, template route, lifecycle binding, and
+allocation surface are retained. `MIG-####` is a registered identity shape and
+`archive/migration.template.md` is a registered template, so the Migration
+interface has a current owner; ADR-0029's correction is limited to removing the
+review-boundary claim. Clarify that Stage 99 paths are document paths
 and provider-registry paths are runtime projection paths. Separate workflow
 coordination, mutation, evidence writing, evaluation, review, and human
 approval in the existing role and provider contracts. Regenerate registered
@@ -339,10 +346,10 @@ claims. Remove or rewrite every Stage 98 file citation in the protected package
 without treating that path cleanup as permission to reduce its research
 meaning. Persist the Task 2 protected path set and user decision in the package
 README and make the existing reference-test oracle GREEN before transient Task
-evidence is retired. Treat the three completed Stage 98 Migrations only as
-temporary source evidence while their current consumers are enumerated and
-moved. After the final consumer is decoupled, delete Migration 0001--0003 and
-the `migrations/` directory. Retain an archive/Tombstone record only for an
+evidence is retired. Amended 2026-09-02: the three completed Stage 98 Migrations are retained as
+frozen historical evidence under the registered `migration` profile. Their
+fenced ledger blocks stay byte-identical and their digest tripwire stays
+active; only current authority coupling is removed, never the records. Retain an archive/Tombstone record only for an
 explicit preservation need or a stable retired path that still has a measured
 live recovery-navigation consumer, and remove its dependency on a Migration
 parent or link. Never create a body copy or redirect.
@@ -362,8 +369,10 @@ copy full historical bodies, or pin fixture and corpus counts.
 Keep only the existing minimal Stage 98 validation needed for retained archive
 or Tombstone records: safe paths, the registered minimal shape, and a
 `commit:path` that resolves to a regular Git blob when recovery is claimed.
-Remove Migration-body, section-count, row-count, digest, topology, and current-
-membership checks.
+Amended 2026-09-02: retain the frozen-Migration digest tripwire, which proves
+the historical evidence blocks are unmodified. Remove only the section-count,
+row-count, topology, and current-membership checks that made a historical
+ledger a current authority.
 
 Allow commit identifiers only for supply-chain pins, retained minimal Stage 98
 recovery, actual logical implementation commits recorded in the current Task,
@@ -459,15 +468,17 @@ retained projections receive an explicit canonical-source mapping.
    persistently declares the user decision and protected path set without a
    pinned count, and existing reference tests derive that declaration and prove
    on-disk equality and presence. Semantic body/source/claim preservation
-   remains a review obligation. After consumer and needed-meaning migration,
-   the dynamically measured Stage 90 package-root set is exactly `RES-0002`;
-   unresolved and pending non-protected package dispositions are both zero.
+   remains a review obligation. Amended 2026-09-02: after consumer and
+   needed-meaning migration, every remaining Stage 90 package root resolves to
+   a registered Stage 99 profile; unresolved and pending unregistered package
+   dispositions are both zero.
    Root and category indexes are excluded from this package-root set and match
    the resulting tree.
-8. Stage 98 has no `migrations/` directory or Migration document. It contains
-   only its structural index and minimal archive/Tombstone records proven
-   necessary by an explicit preservation need or live recovery-navigation
-   consumer; retained recovery pointers use safe paths and resolve to regular
+8. Amended 2026-09-02: Stage 98 retains `migrations/` and its three Migration
+   documents as frozen evidence under the registered `migration` profile, with
+   no current authority coupling. It otherwise contains only its structural
+   index and minimal archive/Tombstone records proven necessary by an explicit
+   preservation need or live recovery-navigation consumer; retained recovery pointers use safe paths and resolve to regular
    Git blobs. No Stage 98 artifact contains a deleted body clone, redirect,
    snapshot, raw execution ledger, duplicate digest, frozen topology, or
    current-membership authority.

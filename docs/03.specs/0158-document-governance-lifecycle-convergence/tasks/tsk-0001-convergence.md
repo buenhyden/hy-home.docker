@@ -665,6 +665,37 @@ rationale recorded beside it.
   scheduled for Task 6 deletion.
 
 
+### 2026-09-02 amendment ruling
+
+Task 6 Steps 3 and 4 and two Task 8 file rows were withdrawn before execution
+because they contradicted decisions taken after the Plan was written.
+
+The Plan required deleting every non-protected Stage 90 package and Migration
+0001--0003, and removing the Stage 99 Migration profile and template route. The
+Registry now governs those same paths through the `audit`, `audit-member`,
+`data`, `generated`, and `migration` profiles, each carrying a registered
+identity shape (`AUD-####`, `AUD-####-m####`, `DATA-####`, `DATA-####-m####`,
+`MIG-####`), and `archive/migration.template.md` is a registered template
+source. Executing the Plan as written would have deleted 33 package roots, the
+seven generators that write the Data packages, three frozen evidence ledgers,
+and their 134 tracked consumers, then removed the identities and template that
+had just been registered for them.
+
+Task 8 additionally required deleting this Plan and this Task after closure.
+This Task holds the only current record of the identity and frontmatter
+convergence, so deletion would remove the evidence rather than retire it. Both
+documents are retained and marked terminal at closure instead.
+
+The withdrawn Step bodies are kept in the Plan under a WITHDRAWN banner rather
+than deleted, so the superseded intent stays traceable. The governing Spec was
+amended in the same change: acceptance criteria 7 and 8, the Stage 90 target
+definition, Wave 2, Wave 4, and the Migration check clause now say that a
+package with a registered Stage 99 profile is retained under it.
+
+A registered profile is the ownership test. An unregistered Stage 90 package
+outside `RES-0002` remains a convergence target.
+
+
 ### 2026-09-02 identity convergence observed evidence
 
 - `PYTHONPATH=. python3 -m unittest <52 tests/**/test_*.py modules>`:
