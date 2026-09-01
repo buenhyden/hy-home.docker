@@ -111,7 +111,6 @@ Current document-contract counts and implementation status route to the
 ## Related Documents
 
 - [Audit references](README.md)
-- [Document restructure design spec](../../../03.specs/0103-document-restructure-audit-contract-archive/spec.md)
 - Document restructure implementation plan
 - Document restructure task evidence
 - [Template contract](../../../99.templates/README.md)

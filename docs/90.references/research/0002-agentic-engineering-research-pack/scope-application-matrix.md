@@ -374,7 +374,7 @@ the other two findings it carried are separate from it. Re-derived 2026-08-19:
 ## Scope Implications
 
 Applicable leaf names below refer to the flat twenty-leaf pack contract in
-[Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md).
+[SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md).
 `workspace-baseline.md` and this matrix apply to every row and are omitted from
 the per-row leaf lists to keep the table readable. The `Catalog reachability`
 column now reports agent and function counts separately, because the two differ
@@ -493,7 +493,7 @@ separately approved evidence exists.
 | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py)               | 2026-08-14 | Tracked mutable        | Newly cited. Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only.                                                                                                                             |
 | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                   | 2026-08-14 | Tracked mutable        | Newly cited. Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns.                                                                                                                                     |
 | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
-| [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)                                | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged.                                                                                                                                                                           |
+| [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
 | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-32's derivations are unchanged.                                                                                                                                                                                    |
 | [Workspace baseline](./workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
 | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/)  | 2026-08-14 | External mutable       | Newly cited. `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization.                                                                                                                 |
@@ -555,7 +555,7 @@ explicit disposition for every scope and link back to this matrix.
 
 - [Workspace baseline](./workspace-baseline.md)
 - [Verification and validation](./verification-validation.md)
-- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
+- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - [Agent governance hub](../../../00.agent-governance/README.md)

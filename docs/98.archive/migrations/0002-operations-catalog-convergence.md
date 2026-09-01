@@ -9620,7 +9620,4 @@ provenance objects, and semantic dispositions above remain unchanged.
 
 ## Related Documents
 
-- [Specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
-- [Implementation plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
-- [Task evidence](../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

@@ -454,5 +454,5 @@ normative clauses.
 - [Quality, CI, and formatting](./quality-ci-formatting.md)
 - [Docker Compose and infrastructure](./docker-compose-infrastructure.md)
 - [Security governance](./security-governance.md)
-- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
+- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

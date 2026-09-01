@@ -4,7 +4,7 @@ status: active
 artifact_id: RES-0002
 artifact_type: research
 parent_ids:
-  - SPEC-0137
+  - SPEC-0158
 created: 2026-08-28
 updated: 2026-08-30
 observed_at: 2026-08-28
@@ -336,7 +336,7 @@ entitlement gaps are not promoted.
 ## Related Documents
 
 - [Research references](../README.md)
-- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
+- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - Source refresh Task (retired path: `../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`)

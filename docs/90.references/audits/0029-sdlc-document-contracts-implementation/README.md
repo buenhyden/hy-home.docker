@@ -199,7 +199,6 @@ active until promotion and final closure reviews pass.
 - [Frontmatter, template, and README audit](../0024-frontmatter-template-readme-implementation/README.md)
 - [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
 - [Implementation overview](../0026-implementation-overview/README.md)
-- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective
 

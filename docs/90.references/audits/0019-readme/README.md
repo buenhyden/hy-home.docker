@@ -194,7 +194,6 @@ scope whenever comparing counts.
 
 - [Audit references](README.md)
 - `Agentic engineering research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Audit pack spec](../../../03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md)
 - Audit pack plan
 - Audit pack task evidence
 

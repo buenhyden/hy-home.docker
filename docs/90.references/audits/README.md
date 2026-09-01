@@ -32,9 +32,8 @@ migration, which is a Stage 99 decision and has not been taken.
 
 A cross-stage audit that is not the successor of an existing package belongs in
 a Task under its governing Spec, where `task` is a `package-member` profile and
-so allocates no global identity. See
-[task-0102-0001](../../03.specs/0102-workspace-document-contract-audit-pack/tasks/tsk-0001-governance-conformance-audit.md).
-Changing this is a Stage 99 decision and has not been taken.
+so allocates no global identity. Changing this is a Stage 99 decision and has
+not been taken.
 
 ## Packages
 

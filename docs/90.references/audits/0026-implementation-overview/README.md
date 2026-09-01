@@ -4,8 +4,7 @@ status: active
 artifact_id: AUD-0026
 artifact_type: audit
 parent_ids:
-- SPEC-0123
-- task-0123-0001
+- AUD-0019
 created: '2026-07-05'
 updated: '2026-08-23'
 observed_at: '2026-07-05'
@@ -275,7 +274,6 @@ tracked workflow/script surfaces.
 - [Frontmatter, template, and README implementation audit](../0024-frontmatter-template-readme-implementation/README.md)
 - [Security framework maturity coverage](../0031-security-framework-maturity/README.md)
 - `Research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Audit pack spec](../../../03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md)
 - Audit pack plan
 
 ## Objective
