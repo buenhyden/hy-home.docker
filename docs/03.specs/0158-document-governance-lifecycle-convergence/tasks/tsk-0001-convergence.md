@@ -712,6 +712,14 @@ The final read-only verdicts are GREEN and do not grant approval:
 | Activate SPEC-0158 and create its one current Task | `6317553e` | metadata contracts 0, changed metadata 0, links 0, diff hygiene |
 | Record lifecycle disposition and consumer handoffs | `f5420ebe` | exact 592-path coverage, recovery blobs, independent governance and exact-diff review |
 | Separate neutral governance from provider projections | `360ef5d6` | 116 changed tests, provider drift 0, agent contract 0, links 0, independent three-seat review |
+| Make current contracts independent of archive ledgers | `ff82f135` | archive independence, manifest consumer evidence, links 0 |
+| Consolidate current governance owners | `e368a092` | Registry authority, exact template registration, protected-research diff 0 |
+| Derive Spec Package deletion approval from the current tree | `dcaf9bf1` | RED witnessed then GREEN; `test_spec_packages` 20 OK; Stage 98 authority coupling removed; fixed counts `49`/`46` removed |
+| Consolidate duplicate current owners | `d87e3ae4` | `test_requirements` 20 OK, `test_architecture` 14 OK |
+| Normalize active execution lifecycles | `61d408ce` | 44 members removed with zero retained parent declarations; metadata contracts 0, check-active 0 |
+| Consolidate current procedures | `60608e95` | provider drift 0, links 0 |
+| Anchor validation ownership to current authorities | `c2080c6c` | script manifest PASS, `test_script_manifest` OK |
+| Correct stale evidence references | `25a38723` | links `failures=0`, generated LLM Wiki fresh, protected pack body unchanged |
 
 ## Rulings
 
@@ -739,6 +747,32 @@ The final read-only verdicts are GREEN and do not grant approval:
    or deletions.
 10. Ignored provider-local files are observed but not promoted to evidence or
     deleted without exact ownership proof.
+
+### 2026-09-01 Task 5 observed evidence
+
+- `PYTHONPATH=. python3 -m unittest <every tests/**/test_*.py module>`:
+  `Ran 1094 tests ... OK (skipped=11)`.
+- `python3 scripts/validation/run-ci-gate.py --profile full`: exit 0 with zero
+  `FAIL` lines on the committed tip.
+- `python3 scripts/validation/check-document-metadata.py --mode check-active`:
+  `selected=401 violations=0`.
+- `python3 scripts/validation/check-document-metadata.py --mode check-contracts`:
+  `violations=0`.
+- `python3 scripts/validation/check-document-links.py --mode all`:
+  `documents=527 links=4451 failures=0`.
+- Deletion measurement before mutation: twelve packages were removed in whole
+  and three retained their Spec while dropping only `completed` execution
+  bodies. No retained Stage 03 document declares a removed member as a parent.
+
+### Task 6 inputs observed during Task 5
+
+- About thirty unlinked plain-text references to the retired `0102` and `0103`
+  execution bodies remain inside non-protected Stage 90 audit packages. They
+  break no registered check and their containing packages are deleted by
+  Task 6, so they were left for that deletion rather than edited twice.
+- `identity_history`, `metadata/heading`, `metadata/profile`,
+  `lifecycle/promoted`, and `check-agentic-audit-semantic-freshness` still read
+  the Stage 98 Migration authority. `spec_packages` no longer does.
 
 ## Deferred Items
 
