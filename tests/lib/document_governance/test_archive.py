@@ -706,16 +706,21 @@ class ArchiveMinimizationTests(unittest.TestCase):
         `lifecycle/promoted.py` were the sole thing standing between 0001 and a
         silent edit, and a count cannot see a changed path or commit. All three
         retained ledgers are frozen evidence, so all three are pinned here.
+
+        Repinned in the same change: both declared the retired `SPEC-0136` as
+        parent, which the 0158 merge removed, so the frontmatter now points at
+        its tombstone. The fenced evidence blocks are byte-identical; only the
+        frontmatter parent moved.
         """
 
         for name, digest in (
             (
                 "0001-sdlc-taxonomy-convergence.md",
-                "08275f2a4a9f4ac60114af382d9da1de90425e2b28510f327425a10d3a7b4729",
+                "4aeecc3c6b9adf3d1936de6fc016b1f53167cee984c8cdf006304b8ff7ed41dd",
             ),
             (
                 "0002-operations-catalog-convergence.md",
-                "060c455eb0a2ed78aef419834ea99dd84f911668739d14ed3c7bbcd3e188ac12",
+                "a1909833fa8f44c8754f716647e978988cb717a25c453a0f33ae95ec592257b6",
             ),
         ):
             with self.subTest(migration=name):

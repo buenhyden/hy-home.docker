@@ -1267,9 +1267,10 @@ citations, and claims remain. This semantic review permits approved stale path,
 metadata, owner, and link corrections; do not compare checksums, body hashes,
 byte equality, or expected Git SHAs. Re-derive all other Stage 90 disposition
 totals from the current tree rather than asserting the preliminary 25/39
-discovery counts. Prove that the resulting package-root set contains only the
-protected `RES-0002` root and that unresolved and pending dispositions are
-zero. Structural root/category READMEs are excluded from the package-root set
+discovery counts. Amended 2026-09-02: prove that every remaining package root
+resolves to a registered Stage 99 profile, and that unresolved and pending
+unregistered dispositions are zero. `RES-0002` keeps its preservation override
+on top of that. Structural root/category READMEs are excluded from the package-root set
 but must match the resulting tree.
 
 ```bash

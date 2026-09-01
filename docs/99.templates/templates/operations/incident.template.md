@@ -6,7 +6,7 @@ layer: <layer>
 status: open
 owner: <owner>
 artifact_id: inc-<year>-####
-parent_ids: []
+parent_ids: [RUN-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 occurred_at: YYYY-MM-DDTHH:MM:SSZ

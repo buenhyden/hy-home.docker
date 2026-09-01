@@ -118,7 +118,12 @@ def _validate_template_source(
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids must be a placeholder list"))
     elif not parents and not target_profile.get("allow_empty_parents", False):
         findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
-    elif any(parent != parent_placeholder for parent in parents):
+    elif parent_placeholder is not None and any(
+        parent != parent_placeholder for parent in parents
+    ):
+        # Only enforce canonicality when a placeholder is actually configured.
+        # The JSON Registry projection supplies none, so an unguarded compare
+        # made every non-empty parent_ids list "noncanonical" against None.
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
     for key in record.metadata:
         if key == "parent_ids":

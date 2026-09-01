@@ -9,12 +9,46 @@
       "artifact_id_pattern": "REQ-{number:4}",
       "identity_relation": "direct",
       "template_id": "requirements/package",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by"],
-      "required_sections": ["Problem and Goals", "Stakeholders and User Needs", "Functional Requirements", "Non-functional Requirements", "Constraints", "Acceptance Criteria", "Traceability"],
-      "optional_sections": ["Assumptions", "Interface Requirements", "Risks", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Problem and Goals",
+        "Stakeholders and User Needs",
+        "Functional Requirements",
+        "Non-functional Requirements",
+        "Constraints",
+        "Acceptance Criteria",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Assumptions",
+        "Interface Requirements",
+        "Risks",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": [], "internal_id_spaces": ["FR", "NFR", "IF"]},
+      "traceability": {
+        "allowed_parent_profiles": [],
+        "internal_id_spaces": [
+          "FR",
+          "NFR",
+          "IF"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -25,12 +59,42 @@
       "artifact_id_pattern": "AD-{number:4}",
       "identity_relation": "direct",
       "template_id": "architecture/description",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by"],
-      "required_sections": ["Context and Stakeholders", "System Boundaries", "Components", "Data Flow", "Deployment View", "Quality Attributes", "Traceability"],
-      "optional_sections": ["Risks", "Evolution", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Context and Stakeholders",
+        "System Boundaries",
+        "Components",
+        "Data Flow",
+        "Deployment View",
+        "Quality Attributes",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Risks",
+        "Evolution",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["requirements-package"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "requirements-package"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -41,13 +105,47 @@
       "artifact_id_pattern": "ADR-{number:4}",
       "identity_relation": "direct",
       "template_id": "architecture/decision",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by"],
-      "required_sections": ["Context", "Options Considered", "Decision", "Consequences", "Traceability"],
-      "optional_sections": ["Compliance", "Decision Drivers", "Follow-up", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Context",
+        "Options Considered",
+        "Decision",
+        "Consequences",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Compliance",
+        "Decision Drivers",
+        "Follow-up",
+        "Related Documents"
+      ],
       "lifecycle_id": "adr",
-      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description"]},
-      "exceptions": [{"kind": "retain-superseded-in-place"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "requirements-package",
+          "architecture-description"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "retain-superseded-in-place"
+        }
+      ]
     },
     {
       "profile_id": "spec",
@@ -57,12 +155,48 @@
       "artifact_id_pattern": "SPEC-{number:4}",
       "identity_relation": "direct",
       "template_id": "specs/spec",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by", "reviewed_at", "next_review_at"],
-      "required_sections": ["Overview", "Boundaries and Inputs", "Behavior Contract", "Technical Approach", "Interfaces and Data", "Failure Modes and Guardrails", "Acceptance Contract", "Traceability"],
-      "optional_sections": ["Open Questions", "Operational Impact", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by",
+        "reviewed_at",
+        "next_review_at"
+      ],
+      "required_sections": [
+        "Overview",
+        "Boundaries and Inputs",
+        "Behavior Contract",
+        "Technical Approach",
+        "Interfaces and Data",
+        "Failure Modes and Guardrails",
+        "Acceptance Contract",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Open Questions",
+        "Operational Impact",
+        "Related Documents"
+      ],
       "lifecycle_id": "spec-package",
-      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "requirements-package",
+          "architecture-description",
+          "adr",
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -73,12 +207,25 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "layer", "owner", "version", "status", "generated_by"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version",
+        "status",
+        "generated_by"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
-      "traceability": {"allowed_parent_profiles": ["spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -95,7 +242,11 @@
       "optional_sections": [],
       "lifecycle_id": null,
       "media_type": "application/yaml",
-      "traceability": {"allowed_parent_profiles": ["spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -112,7 +263,11 @@
       "optional_sections": [],
       "lifecycle_id": null,
       "media_type": "application/graphql-response+json",
-      "traceability": {"allowed_parent_profiles": ["spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -129,7 +284,11 @@
       "optional_sections": [],
       "lifecycle_id": null,
       "media_type": "text/protobuf",
-      "traceability": {"allowed_parent_profiles": ["spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -140,13 +299,43 @@
       "artifact_id_pattern": "SPEC-{package_number:4}-PLAN-{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "specs/plan",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "completed_at"],
-      "required_sections": ["Objective", "Dependencies", "Execution Sequence", "Risk and Rollback", "Verification"],
-      "optional_sections": ["Rulings", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "completed_at"
+      ],
+      "required_sections": [
+        "Objective",
+        "Dependencies",
+        "Execution Sequence",
+        "Risk and Rollback",
+        "Verification"
+      ],
+      "optional_sections": [
+        "Rulings",
+        "Related Documents"
+      ],
       "lifecycle_id": "execution",
-      "traceability": {"allowed_parent_profiles": ["spec"]},
-      "exceptions": [{"kind": "transient-after-completion"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "transient-after-completion"
+        }
+      ]
     },
     {
       "profile_id": "task",
@@ -156,13 +345,47 @@
       "artifact_id_pattern": "SPEC-{package_number:4}-TSK-{task_number:4}",
       "identity_relation": "package-member",
       "template_id": "specs/task",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "completed_at"],
-      "required_sections": ["Objective", "Inputs", "Work Log", "Verification Evidence", "Review Evidence", "Commit Ledger"],
-      "optional_sections": ["Rulings", "Deferred Items", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "completed_at"
+      ],
+      "required_sections": [
+        "Objective",
+        "Inputs",
+        "Work Log",
+        "Verification Evidence",
+        "Review Evidence",
+        "Commit Ledger"
+      ],
+      "optional_sections": [
+        "Rulings",
+        "Deferred Items",
+        "Related Documents"
+      ],
       "lifecycle_id": "execution",
-      "traceability": {"allowed_parent_profiles": ["spec", "plan", "task"]},
-      "exceptions": [{"kind": "transient-after-completion"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec",
+          "plan",
+          "task"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "transient-after-completion"
+        }
+      ]
     },
     {
       "profile_id": "operations-domain-readme",
@@ -172,8 +395,17 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "layer", "owner", "version", "status", "generated_by"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version",
+        "status",
+        "generated_by"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
@@ -188,12 +420,45 @@
       "artifact_id_pattern": "GDE-{number:4}",
       "identity_relation": "subject-member",
       "template_id": "operations/guide",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
-      "required_sections": ["Purpose", "Audience", "Prerequisites", "Usage", "Troubleshooting", "Verification", "Traceability"],
-      "optional_sections": ["Examples", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Audience",
+        "Prerequisites",
+        "Usage",
+        "Troubleshooting",
+        "Verification",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Examples",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["spec", "policy", "runbook"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec",
+          "policy",
+          "runbook"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -204,12 +469,46 @@
       "artifact_id_pattern": "POL-{number:4}",
       "identity_relation": "subject-member",
       "template_id": "operations/policy",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
-      "required_sections": ["Purpose", "Scope", "Policy Statements", "Enforcement", "Exceptions", "Verification", "Traceability"],
-      "optional_sections": ["Definitions", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Scope",
+        "Policy Statements",
+        "Enforcement",
+        "Exceptions",
+        "Verification",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Definitions",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "requirements-package",
+          "architecture-description",
+          "adr",
+          "spec"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -220,12 +519,47 @@
       "artifact_id_pattern": "RUN-{number:4}",
       "identity_relation": "subject-member",
       "template_id": "operations/runbook",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
-      "required_sections": ["Purpose", "Trigger", "Prerequisites", "Procedure", "Verification", "Rollback", "Escalation", "Traceability"],
-      "optional_sections": ["Automation", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Trigger",
+        "Prerequisites",
+        "Procedure",
+        "Verification",
+        "Rollback",
+        "Escalation",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Automation",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["spec", "guide", "policy", "task"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec",
+          "guide",
+          "policy",
+          "task"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -236,13 +570,47 @@
       "artifact_id_pattern": "inc-{year:4}-{number:4}",
       "identity_relation": "direct",
       "template_id": "operations/incident",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated", "occurred_at"],
-      "optional_frontmatter": ["version", "resolved_at"],
-      "required_sections": ["Summary", "Impact", "Coordination", "Timeline", "Mitigation", "Current Status", "Corrective Actions", "Traceability"],
-      "optional_sections": ["Communications", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+        "occurred_at"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "resolved_at"
+      ],
+      "required_sections": [
+        "Summary",
+        "Impact",
+        "Coordination",
+        "Timeline",
+        "Mitigation",
+        "Current Status",
+        "Corrective Actions",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Communications",
+        "Related Documents"
+      ],
       "lifecycle_id": "incident",
-      "traceability": {"allowed_parent_profiles": ["runbook"]},
-      "exceptions": [{"kind": "year-directory"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "runbook"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "year-directory"
+        }
+      ]
     },
     {
       "profile_id": "postmortem",
@@ -252,13 +620,49 @@
       "artifact_id_pattern": "inc-{year:4}-{number:4}-PM",
       "identity_relation": "package-member",
       "template_id": "operations/postmortem",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated", "reviewed_at"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by"],
-      "required_sections": ["Summary", "Impact", "Timeline", "Root Cause", "Contributing Factors", "Detection and Response", "Corrective Actions", "Learning", "Traceability"],
-      "optional_sections": ["Follow-up Review", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+        "reviewed_at"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Summary",
+        "Impact",
+        "Timeline",
+        "Root Cause",
+        "Contributing Factors",
+        "Detection and Response",
+        "Corrective Actions",
+        "Learning",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Follow-up Review",
+        "Related Documents"
+      ],
       "lifecycle_id": "point-in-time",
-      "traceability": {"allowed_parent_profiles": ["incident"]},
-      "exceptions": [{"kind": "year-directory"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "incident"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "year-directory"
+        }
+      ]
     },
     {
       "profile_id": "research",
@@ -268,12 +672,48 @@
       "artifact_id_pattern": "RES-{number:4}",
       "identity_relation": "direct",
       "template_id": "references/research",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated", "observed_at"],
-      "optional_frontmatter": ["version", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
-      "required_sections": ["Question", "Scope", "Method", "Findings", "Sources", "Implications", "Traceability"],
-      "optional_sections": ["Limitations", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+        "observed_at"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Question",
+        "Scope",
+        "Method",
+        "Findings",
+        "Sources",
+        "Implications",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Limitations",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec", "research"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "requirements-package",
+          "architecture-description",
+          "adr",
+          "spec",
+          "research"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -284,12 +724,48 @@
       "artifact_id_pattern": "AUD-{number:4}",
       "identity_relation": "direct",
       "template_id": "references/audit",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated", "observed_at"],
-      "optional_frontmatter": ["version", "generated_by", "reviewed_at", "supersedes", "superseded_by"],
-      "required_sections": ["Objective", "Scope", "Criteria", "Evidence", "Findings", "Conformance", "Actions", "Traceability"],
-      "optional_sections": ["Limitations", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+        "observed_at"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "generated_by",
+        "reviewed_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Objective",
+        "Scope",
+        "Criteria",
+        "Evidence",
+        "Findings",
+        "Conformance",
+        "Actions",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Limitations",
+        "Related Documents"
+      ],
       "lifecycle_id": "point-in-time",
-      "traceability": {"allowed_parent_profiles": ["spec", "task", "research", "audit"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec",
+          "task",
+          "research",
+          "audit"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -300,12 +776,48 @@
       "artifact_id_pattern": "DATA-{number:4}",
       "identity_relation": "direct",
       "template_id": "references/data",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated", "observed_at"],
-      "optional_frontmatter": ["version", "generated_by", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
-      "required_sections": ["Purpose", "Schema", "Provenance", "Inventory", "Refresh", "Consumers", "Traceability"],
-      "optional_sections": ["Limitations", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+        "observed_at"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "generated_by",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Schema",
+        "Provenance",
+        "Inventory",
+        "Refresh",
+        "Consumers",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Limitations",
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["research", "audit", "spec", "task"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "research",
+          "audit",
+          "spec",
+          "task"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -316,13 +828,42 @@
       "artifact_id_pattern": "RES-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "references/research-member",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "reviewed_at", "review_cycle", "next_review_at", "observed_at", "supersedes", "superseded_by"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "review_cycle",
+        "next_review_at",
+        "observed_at",
+        "supersedes",
+        "superseded_by"
+      ],
       "required_sections": [],
-      "optional_sections": ["Related Documents"],
+      "optional_sections": [
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["research"]},
-      "exceptions": [{"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "research"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "delegate-reference-members",
+          "owner": "scripts/lib/document_governance/references.py"
+        }
+      ]
     },
     {
       "profile_id": "audit-member",
@@ -332,13 +873,42 @@
       "artifact_id_pattern": "AUD-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "references/audit-member",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "reviewed_at", "review_cycle", "next_review_at", "observed_at", "supersedes", "superseded_by"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "reviewed_at",
+        "review_cycle",
+        "next_review_at",
+        "observed_at",
+        "supersedes",
+        "superseded_by"
+      ],
       "required_sections": [],
-      "optional_sections": ["Related Documents"],
+      "optional_sections": [
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["audit"]},
-      "exceptions": [{"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}]
+      "traceability": {
+        "allowed_parent_profiles": [
+          "audit"
+        ]
+      },
+      "exceptions": [
+        {
+          "kind": "delegate-reference-members",
+          "owner": "scripts/lib/document_governance/references.py"
+        }
+      ]
     },
     {
       "profile_id": "migration",
@@ -348,12 +918,49 @@
       "artifact_id_pattern": "MIG-{number:4}",
       "identity_relation": "direct",
       "template_id": "archive/migration",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "archive_disposition", "archive_reason", "archived_at", "archived_blob", "archived_commit", "archived_from", "preservation_class", "supersedes", "superseded_by"],
-      "required_sections": ["Purpose", "Authority Change", "Path Mapping", "Recovery", "Approval", "Traceability"],
-      "optional_sections": ["Execution Evidence", "Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "archive_disposition",
+        "archive_reason",
+        "archived_at",
+        "archived_blob",
+        "archived_commit",
+        "archived_from",
+        "preservation_class",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Authority Change",
+        "Path Mapping",
+        "Recovery",
+        "Approval",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Execution Evidence",
+        "Related Documents"
+      ],
       "lifecycle_id": "historical",
-      "traceability": {"allowed_parent_profiles": ["spec", "adr", "migration"]},
+      "traceability": {
+        "allowed_parent_profiles": [
+          "spec",
+          "adr",
+          "migration"
+        ]
+      },
       "exceptions": []
     },
     {
@@ -364,12 +971,36 @@
       "artifact_id_pattern": "tomb-{retired_artifact_id}",
       "identity_relation": "inherited",
       "template_id": "archive/tombstone",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "supersedes", "superseded_by"],
-      "required_sections": ["Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability"],
-      "optional_sections": ["Related Documents"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "supersedes",
+        "superseded_by"
+      ],
+      "required_sections": [
+        "Retired Path",
+        "Replacement",
+        "Reason",
+        "Recovery Commit",
+        "Traceability"
+      ],
+      "optional_sections": [
+        "Related Documents"
+      ],
       "lifecycle_id": "historical",
-      "traceability": {"allowed_parent_profiles": []},
+      "traceability": {
+        "allowed_parent_profiles": []
+      },
       "exceptions": []
     },
     {
@@ -377,17 +1008,49 @@
       "type": "common/readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/{stage}/README.md",
-      "additional_paths": ["docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/05.operations/catalog/README.md", "docs/05.operations/incidents/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"],
+      "additional_paths": [
+        "docs/02.architecture/decisions/README.md",
+        "docs/02.architecture/descriptions/README.md",
+        "docs/05.operations/catalog/README.md",
+        "docs/05.operations/incidents/README.md",
+        "docs/99.templates/templates/README.md",
+        "docs/99.templates/templates/common/README.md",
+        "docs/99.templates/templates/operations/README.md"
+      ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "owner", "version", "status", "layer", "generated_by", "runtime", "artifact_type"],
-      "required_sections": ["Overview", "Scope", "Structure", "How to Work in This Area", "Related Documents"],
-      "optional_sections": ["Audience"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version",
+        "status",
+        "layer",
+        "generated_by",
+        "runtime",
+        "artifact_type"
+      ],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "Audience"
+      ],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": [{"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}]
+      "exceptions": [
+        {
+          "kind": "delegate-reference-members",
+          "owner": "scripts/lib/document_governance/references.py"
+        }
+      ]
     },
     {
       "profile_id": "github-navigation-index",
@@ -397,9 +1060,22 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "layer", "owner", "version"],
-      "required_sections": ["Purpose", "Surface Map", "Authority and Change Routes", "Verification", "Related Documents"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Surface Map",
+        "Authority and Change Routes",
+        "Verification",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": null,
       "traceability": {},
@@ -413,10 +1089,21 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer"],
-      "optional_frontmatter": ["title", "owner", "version", "status", "runtime"],
+      "required_frontmatter": [
+        "type",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version",
+        "status",
+        "runtime"
+      ],
       "free_form_sections": true,
-      "required_sections": ["Related Documents"],
+      "required_sections": [
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -430,8 +1117,21 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "layer", "owner", "version", "name", "enabled", "event", "conditions", "action", "pattern"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version",
+        "name",
+        "enabled",
+        "event",
+        "conditions",
+        "action",
+        "pattern"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": "living",
@@ -446,9 +1146,32 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer", "agent_id", "scope", "tier", "status", "work_profile", "permission_profile", "skill_ids"],
-      "optional_frontmatter": ["title", "owner", "version"],
-      "required_sections": ["Purpose", "Use When", "Inputs", "Outputs", "Permissions", "Success Criteria", "Failure and Escalation", "Related Documents"],
+      "required_frontmatter": [
+        "type",
+        "layer",
+        "agent_id",
+        "scope",
+        "tier",
+        "status",
+        "work_profile",
+        "permission_profile",
+        "skill_ids"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Use When",
+        "Inputs",
+        "Outputs",
+        "Permissions",
+        "Success Criteria",
+        "Failure and Escalation",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -462,9 +1185,28 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer", "function_id", "scope", "status", "owner_agent"],
-      "optional_frontmatter": ["title", "owner", "version"],
-      "required_sections": ["Preconditions", "Inputs", "Procedure", "Outputs", "Gates", "Failure Handling", "Related Documents"],
+      "required_frontmatter": [
+        "type",
+        "layer",
+        "function_id",
+        "scope",
+        "status",
+        "owner_agent"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version"
+      ],
+      "required_sections": [
+        "Preconditions",
+        "Inputs",
+        "Procedure",
+        "Outputs",
+        "Gates",
+        "Failure Handling",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -478,9 +1220,24 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer"],
-      "optional_frontmatter": ["title", "owner", "version", "status", "runtime"],
-      "required_sections": ["Purpose", "Loading", "Runtime Boundary", "Verification", "Related Documents"],
+      "required_frontmatter": [
+        "type",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version",
+        "status",
+        "runtime"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Loading",
+        "Runtime Boundary",
+        "Verification",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -494,9 +1251,23 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer"],
-      "optional_frontmatter": ["title", "owner", "version", "status"],
-      "required_sections": ["Overview", "Scope", "Structure", "How to Work in This Area", "Related Documents"],
+      "required_frontmatter": [
+        "type",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version",
+        "status"
+      ],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -510,9 +1281,22 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "layer"],
-      "optional_frontmatter": ["title", "owner", "version", "status"],
-      "required_sections": ["Purpose", "Lifecycle", "Authority Boundaries", "Related Documents"],
+      "required_frontmatter": [
+        "type",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "owner",
+        "version",
+        "status"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Lifecycle",
+        "Authority Boundaries",
+        "Related Documents"
+      ],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
@@ -526,13 +1310,28 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["name", "description"],
-      "optional_frontmatter": ["model", "model_reasoning_effort", "tools", "effort", "permissionMode", "skills"],
+      "required_frontmatter": [
+        "name",
+        "description"
+      ],
+      "optional_frontmatter": [
+        "model",
+        "model_reasoning_effort",
+        "tools",
+        "effort",
+        "permissionMode",
+        "skills"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": [{"kind": "provider-owned-binding", "owner": "scripts/operations/provider_surface_renderer.py"}]
+      "exceptions": [
+        {
+          "kind": "provider-owned-binding",
+          "owner": "scripts/operations/provider_surface_renderer.py"
+        }
+      ]
     },
     {
       "profile_id": "template-source",
@@ -542,8 +1341,16 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type", "status"],
-      "optional_frontmatter": ["title", "layer", "owner", "version"],
+      "required_frontmatter": [
+        "type",
+        "status"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": "living",
@@ -558,10 +1365,30 @@
       "artifact_id_pattern": "DATA-{number:4}-m{member_number:4}",
       "identity_relation": "package-member",
       "template_id": "references/data-member",
-      "required_frontmatter": ["title", "type", "layer", "status", "owner", "artifact_id", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["version", "generated_by", "observed_at", "reviewed_at", "next_review_at", "supersedes", "superseded_by"],
+      "required_frontmatter": [
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "version",
+        "generated_by",
+        "observed_at",
+        "reviewed_at",
+        "next_review_at",
+        "supersedes",
+        "superseded_by"
+      ],
       "required_sections": [],
-      "optional_sections": ["Related Documents"],
+      "optional_sections": [
+        "Related Documents"
+      ],
       "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
@@ -574,8 +1401,15 @@
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
-      "required_frontmatter": ["type"],
-      "optional_frontmatter": ["title", "layer", "owner", "version"],
+      "required_frontmatter": [
+        "type"
+      ],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
@@ -591,7 +1425,12 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [],
-      "optional_frontmatter": ["title", "layer", "owner", "version"],
+      "optional_frontmatter": [
+        "title",
+        "layer",
+        "owner",
+        "version"
+      ],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
@@ -600,148 +1439,1362 @@
     }
   ],
   "template_roles": {
-    "requirements/package": {"source": "docs/99.templates/templates/requirements/requirement-package.template.md", "profile_id": "requirements-package"},
-    "architecture/description": {"source": "docs/99.templates/templates/architecture/architecture-description.template.md", "profile_id": "architecture-description"},
-    "architecture/decision": {"source": "docs/99.templates/templates/architecture/adr.template.md", "profile_id": "adr"},
-    "specs/spec": {"source": "docs/99.templates/templates/specs/spec.template.md", "profile_id": "spec"},
-    "specs/plan": {"source": "docs/99.templates/templates/specs/plan.template.md", "profile_id": "plan"},
-    "specs/task": {"source": "docs/99.templates/templates/specs/task.template.md", "profile_id": "task"},
-    "specs/openapi": {"source": "docs/99.templates/templates/specs/openapi.template.yaml", "profile_id": "openapi-contract"},
-    "specs/graphql": {"source": "docs/99.templates/templates/specs/schema.template.graphql", "profile_id": "graphql-contract"},
-    "specs/proto": {"source": "docs/99.templates/templates/specs/service.template.proto", "profile_id": "proto-contract"},
-    "operations/guide": {"source": "docs/99.templates/templates/operations/guide.template.md", "profile_id": "guide"},
-    "operations/policy": {"source": "docs/99.templates/templates/operations/policy.template.md", "profile_id": "policy"},
-    "operations/runbook": {"source": "docs/99.templates/templates/operations/runbook.template.md", "profile_id": "runbook"},
-    "operations/incident": {"source": "docs/99.templates/templates/operations/incident.template.md", "profile_id": "incident"},
-    "operations/postmortem": {"source": "docs/99.templates/templates/operations/postmortem.template.md", "profile_id": "postmortem"},
-    "references/research": {"source": "docs/99.templates/templates/references/research.template.md", "profile_id": "research"},
-    "references/audit": {"source": "docs/99.templates/templates/references/audit.template.md", "profile_id": "audit"},
-    "references/research-member": {"source": "docs/99.templates/templates/references/research-member.template.md", "profile_id": "research-member"},
-    "references/audit-member": {"source": "docs/99.templates/templates/references/audit-member.template.md", "profile_id": "audit-member"},
-    "references/data-member": {"source": "docs/99.templates/templates/references/data-member.template.md", "profile_id": "generated"},
-    "references/data": {"source": "docs/99.templates/templates/references/data.template.md", "profile_id": "data"},
-    "archive/migration": {"source": "docs/99.templates/templates/archive/migration.template.md", "profile_id": "migration"},
-    "archive/tombstone": {"source": "docs/99.templates/templates/archive/tombstone.template.md", "profile_id": "tombstone"},
-    "common/readme": {"source": "docs/99.templates/templates/common/readme.template.md", "profile_id": "readme"}
+    "requirements/package": {
+      "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
+      "profile_id": "requirements-package"
+    },
+    "architecture/description": {
+      "source": "docs/99.templates/templates/architecture/architecture-description.template.md",
+      "profile_id": "architecture-description"
+    },
+    "architecture/decision": {
+      "source": "docs/99.templates/templates/architecture/adr.template.md",
+      "profile_id": "adr"
+    },
+    "specs/spec": {
+      "source": "docs/99.templates/templates/specs/spec.template.md",
+      "profile_id": "spec"
+    },
+    "specs/plan": {
+      "source": "docs/99.templates/templates/specs/plan.template.md",
+      "profile_id": "plan"
+    },
+    "specs/task": {
+      "source": "docs/99.templates/templates/specs/task.template.md",
+      "profile_id": "task"
+    },
+    "specs/openapi": {
+      "source": "docs/99.templates/templates/specs/openapi.template.yaml",
+      "profile_id": "openapi-contract"
+    },
+    "specs/graphql": {
+      "source": "docs/99.templates/templates/specs/schema.template.graphql",
+      "profile_id": "graphql-contract"
+    },
+    "specs/proto": {
+      "source": "docs/99.templates/templates/specs/service.template.proto",
+      "profile_id": "proto-contract"
+    },
+    "operations/guide": {
+      "source": "docs/99.templates/templates/operations/guide.template.md",
+      "profile_id": "guide"
+    },
+    "operations/policy": {
+      "source": "docs/99.templates/templates/operations/policy.template.md",
+      "profile_id": "policy"
+    },
+    "operations/runbook": {
+      "source": "docs/99.templates/templates/operations/runbook.template.md",
+      "profile_id": "runbook"
+    },
+    "operations/incident": {
+      "source": "docs/99.templates/templates/operations/incident.template.md",
+      "profile_id": "incident"
+    },
+    "operations/postmortem": {
+      "source": "docs/99.templates/templates/operations/postmortem.template.md",
+      "profile_id": "postmortem"
+    },
+    "references/research": {
+      "source": "docs/99.templates/templates/references/research.template.md",
+      "profile_id": "research"
+    },
+    "references/audit": {
+      "source": "docs/99.templates/templates/references/audit.template.md",
+      "profile_id": "audit"
+    },
+    "references/research-member": {
+      "source": "docs/99.templates/templates/references/research-member.template.md",
+      "profile_id": "research-member"
+    },
+    "references/audit-member": {
+      "source": "docs/99.templates/templates/references/audit-member.template.md",
+      "profile_id": "audit-member"
+    },
+    "references/data-member": {
+      "source": "docs/99.templates/templates/references/data-member.template.md",
+      "profile_id": "generated"
+    },
+    "references/data": {
+      "source": "docs/99.templates/templates/references/data.template.md",
+      "profile_id": "data"
+    },
+    "archive/migration": {
+      "source": "docs/99.templates/templates/archive/migration.template.md",
+      "profile_id": "migration"
+    },
+    "archive/tombstone": {
+      "source": "docs/99.templates/templates/archive/tombstone.template.md",
+      "profile_id": "tombstone"
+    },
+    "common/readme": {
+      "source": "docs/99.templates/templates/common/readme.template.md",
+      "profile_id": "readme"
+    }
   },
   "lifecycles": {
     "living": {
-      "statuses": ["draft", "active", "superseded", "retired"],
-      "transitions": {"draft": ["active", "retired"], "active": ["superseded", "retired"], "superseded": [], "retired": []}
+      "statuses": [
+        "draft",
+        "active",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "active",
+          "retired"
+        ],
+        "active": [
+          "superseded",
+          "retired"
+        ],
+        "superseded": [],
+        "retired": []
+      }
     },
     "adr": {
-      "statuses": ["draft", "active", "superseded", "retired", "rejected"],
-      "transitions": {"draft": ["active", "rejected", "retired"], "active": ["superseded", "retired"], "superseded": [], "retired": [], "rejected": []}
+      "statuses": [
+        "draft",
+        "active",
+        "superseded",
+        "retired",
+        "rejected"
+      ],
+      "transitions": {
+        "draft": [
+          "active",
+          "rejected",
+          "retired"
+        ],
+        "active": [
+          "superseded",
+          "retired"
+        ],
+        "superseded": [],
+        "retired": [],
+        "rejected": []
+      }
     },
     "execution": {
-      "statuses": ["draft", "active", "blocked", "completed", "cancelled"],
-      "transitions": {"draft": ["active", "completed", "cancelled"], "active": ["blocked", "completed", "cancelled"], "blocked": ["active", "cancelled"], "completed": [], "cancelled": []}
+      "statuses": [
+        "draft",
+        "active",
+        "blocked",
+        "completed",
+        "cancelled"
+      ],
+      "transitions": {
+        "draft": [
+          "active",
+          "completed",
+          "cancelled"
+        ],
+        "active": [
+          "blocked",
+          "completed",
+          "cancelled"
+        ],
+        "blocked": [
+          "active",
+          "cancelled"
+        ],
+        "completed": [],
+        "cancelled": []
+      }
     },
     "incident": {
-      "statuses": ["open", "mitigated", "closed"],
-      "transitions": {"open": ["mitigated", "closed"], "mitigated": ["closed"], "closed": []}
+      "statuses": [
+        "open",
+        "mitigated",
+        "closed"
+      ],
+      "transitions": {
+        "open": [
+          "mitigated",
+          "closed"
+        ],
+        "mitigated": [
+          "closed"
+        ],
+        "closed": []
+      }
     },
     "point-in-time": {
-      "statuses": ["draft", "active", "superseded", "retired"],
-      "transitions": {"draft": ["active", "retired"], "active": ["superseded", "retired"], "superseded": [], "retired": []}
+      "statuses": [
+        "draft",
+        "active",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "active",
+          "retired"
+        ],
+        "active": [
+          "superseded",
+          "retired"
+        ],
+        "superseded": [],
+        "retired": []
+      }
     },
     "historical": {
-      "statuses": ["draft", "completed", "superseded"],
-      "transitions": {"draft": ["completed"], "completed": ["superseded"], "superseded": []}
+      "statuses": [
+        "draft",
+        "completed",
+        "superseded"
+      ],
+      "transitions": {
+        "draft": [
+          "completed"
+        ],
+        "completed": [
+          "superseded"
+        ],
+        "superseded": []
+      }
     },
     "spec-package": {
-      "statuses": ["draft", "active", "completed", "superseded", "retired"],
-      "transitions": {"draft": ["active", "retired"], "active": ["completed", "superseded", "retired"], "completed": [], "superseded": [], "retired": []}
+      "statuses": [
+        "draft",
+        "active",
+        "completed",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "active",
+          "retired"
+        ],
+        "active": [
+          "completed",
+          "superseded",
+          "retired"
+        ],
+        "completed": [],
+        "superseded": [],
+        "retired": []
+      }
     }
   },
   "identity_spaces": {
-    "requirement": {"prefix": "REQ-", "width": 4, "high_water": 26, "next_number": 27, "child_spaces": {
-      "REQ-0001.FR": {"prefix": "REQ-0001-FR-", "width": 4, "high_water": 4, "next_number": 5, "current_issued": [1, 2, 3, 4], "reserved_history": [], "child_spaces": {}},
-      "REQ-0001.NFR": {"prefix": "REQ-0001-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0001.IF": {"prefix": "REQ-0001-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0002.FR": {"prefix": "REQ-0002-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0002.NFR": {"prefix": "REQ-0002-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0002.IF": {"prefix": "REQ-0002-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0003.FR": {"prefix": "REQ-0003-FR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [1, 2, 3, 4], "reserved_history": [5, 6, 7], "child_spaces": {}},
-      "REQ-0003.NFR": {"prefix": "REQ-0003-NFR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [5, 6, 7], "reserved_history": [1, 2, 3, 4], "child_spaces": {}},
-      "REQ-0003.IF": {"prefix": "REQ-0003-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0004.FR": {"prefix": "REQ-0004-FR-", "width": 4, "high_water": 4, "next_number": 5, "current_issued": [1, 2, 3, 4], "reserved_history": [], "child_spaces": {}},
-      "REQ-0004.NFR": {"prefix": "REQ-0004-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0004.IF": {"prefix": "REQ-0004-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0005.FR": {"prefix": "REQ-0005-FR-", "width": 4, "high_water": 4, "next_number": 5, "current_issued": [1, 2, 3, 4], "reserved_history": [], "child_spaces": {}},
-      "REQ-0005.NFR": {"prefix": "REQ-0005-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0005.IF": {"prefix": "REQ-0005-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0006.FR": {"prefix": "REQ-0006-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0006.NFR": {"prefix": "REQ-0006-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0006.IF": {"prefix": "REQ-0006-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0007.FR": {"prefix": "REQ-0007-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0007.NFR": {"prefix": "REQ-0007-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0007.IF": {"prefix": "REQ-0007-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0008.FR": {"prefix": "REQ-0008-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0008.NFR": {"prefix": "REQ-0008-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0008.IF": {"prefix": "REQ-0008-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0009.FR": {"prefix": "REQ-0009-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0009.NFR": {"prefix": "REQ-0009-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0009.IF": {"prefix": "REQ-0009-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0010.FR": {"prefix": "REQ-0010-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0010.NFR": {"prefix": "REQ-0010-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0010.IF": {"prefix": "REQ-0010-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0011.FR": {"prefix": "REQ-0011-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0011.NFR": {"prefix": "REQ-0011-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0011.IF": {"prefix": "REQ-0011-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0012.FR": {"prefix": "REQ-0012-FR-", "width": 4, "high_water": 4, "next_number": 5, "current_issued": [1, 2, 3, 4], "reserved_history": [], "child_spaces": {}},
-      "REQ-0012.NFR": {"prefix": "REQ-0012-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0012.IF": {"prefix": "REQ-0012-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0013.FR": {"prefix": "REQ-0013-FR-", "width": 4, "high_water": 4, "next_number": 5, "current_issued": [1, 2, 3, 4], "reserved_history": [], "child_spaces": {}},
-      "REQ-0013.NFR": {"prefix": "REQ-0013-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0013.IF": {"prefix": "REQ-0013-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0014.FR": {"prefix": "REQ-0014-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0014.NFR": {"prefix": "REQ-0014-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0014.IF": {"prefix": "REQ-0014-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0015.FR": {"prefix": "REQ-0015-FR-", "width": 4, "high_water": 5, "next_number": 6, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [], "child_spaces": {}},
-      "REQ-0015.NFR": {"prefix": "REQ-0015-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0015.IF": {"prefix": "REQ-0015-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0016.FR": {"prefix": "REQ-0016-FR-", "width": 4, "high_water": 6, "next_number": 7, "current_issued": [1, 2, 3, 4, 5, 6], "reserved_history": [], "child_spaces": {}},
-      "REQ-0016.NFR": {"prefix": "REQ-0016-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0016.IF": {"prefix": "REQ-0016-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0017.FR": {"prefix": "REQ-0017-FR-", "width": 4, "high_water": 6, "next_number": 7, "current_issued": [1, 2, 3, 4, 5, 6], "reserved_history": [], "child_spaces": {}},
-      "REQ-0017.NFR": {"prefix": "REQ-0017-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0017.IF": {"prefix": "REQ-0017-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0018.FR": {"prefix": "REQ-0018-FR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [1, 2, 3, 4, 5, 6, 7], "reserved_history": [], "child_spaces": {}},
-      "REQ-0018.NFR": {"prefix": "REQ-0018-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0018.IF": {"prefix": "REQ-0018-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0019.FR": {"prefix": "REQ-0019-FR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [1, 2, 3, 4, 5, 6, 7], "reserved_history": [], "child_spaces": {}},
-      "REQ-0019.NFR": {"prefix": "REQ-0019-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0019.IF": {"prefix": "REQ-0019-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0020.FR": {"prefix": "REQ-0020-FR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [1, 2, 3, 4, 5, 6, 7], "reserved_history": [], "child_spaces": {}},
-      "REQ-0020.NFR": {"prefix": "REQ-0020-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0020.IF": {"prefix": "REQ-0020-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0021.FR": {"prefix": "REQ-0021-FR-", "width": 4, "high_water": 6, "next_number": 7, "current_issued": [1, 2, 3, 4, 5, 6], "reserved_history": [], "child_spaces": {}},
-      "REQ-0021.NFR": {"prefix": "REQ-0021-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0021.IF": {"prefix": "REQ-0021-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0022.FR": {"prefix": "REQ-0022-FR-", "width": 4, "high_water": 9, "next_number": 10, "current_issued": [1, 2, 3, 4, 5, 6, 7, 8, 9], "reserved_history": [], "child_spaces": {}},
-      "REQ-0022.NFR": {"prefix": "REQ-0022-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0022.IF": {"prefix": "REQ-0022-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0023.FR": {"prefix": "REQ-0023-FR-", "width": 4, "high_water": 3, "next_number": 4, "current_issued": [1, 2, 3], "reserved_history": [], "child_spaces": {}},
-      "REQ-0023.NFR": {"prefix": "REQ-0023-NFR-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0023.IF": {"prefix": "REQ-0023-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0024.FR": {"prefix": "REQ-0024-FR-", "width": 4, "high_water": 13, "next_number": 14, "current_issued": [1, 2, 3, 4, 5, 6, 7, 8], "reserved_history": [9, 10, 11, 12, 13], "child_spaces": {}},
-      "REQ-0024.NFR": {"prefix": "REQ-0024-NFR-", "width": 4, "high_water": 13, "next_number": 14, "current_issued": [9, 10, 11, 12, 13], "reserved_history": [1, 2, 3, 4, 5, 6, 7, 8], "child_spaces": {}},
-      "REQ-0024.IF": {"prefix": "REQ-0024-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}},
-      "REQ-0025.FR": {"prefix": "REQ-0025-FR-", "width": 4, "high_water": 16, "next_number": 17, "current_issued": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "reserved_history": [11, 12, 13, 14, 15, 16], "child_spaces": {}},
-      "REQ-0025.NFR": {"prefix": "REQ-0025-NFR-", "width": 4, "high_water": 16, "next_number": 17, "current_issued": [11, 12, 13, 14, 15, 16], "reserved_history": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "child_spaces": {}},
-      "REQ-0025.IF": {"prefix": "REQ-0025-IF-", "width": 4, "high_water": 1, "next_number": 2, "current_issued": [], "reserved_history": [1], "child_spaces": {}}, "REQ-0026.FR": {"prefix": "REQ-0026-FR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [1, 2, 3, 4, 5], "reserved_history": [6, 7], "child_spaces": {}}, "REQ-0026.NFR": {"prefix": "REQ-0026-NFR-", "width": 4, "high_water": 7, "next_number": 8, "current_issued": [6, 7], "reserved_history": [1, 2, 3, 4, 5], "child_spaces": {}}, "REQ-0026.IF": {"prefix": "REQ-0026-IF-", "width": 4, "high_water": 0, "next_number": 1, "current_issued": [], "reserved_history": [], "child_spaces": {}}
-    }},
-    "architecture-description": {"prefix": "AD-", "width": 4, "high_water": 30, "next_number": 31, "child_spaces": {}},
-    "adr": {"prefix": "ADR-", "width": 4, "high_water": 30, "next_number": 31, "child_spaces": {}},
-    "spec": {"prefix": "SPEC-", "width": 4, "high_water": 158, "next_number": 159, "child_spaces": {}},
-    "operations-subject": {"prefix": "OPS-", "width": 4, "high_water": 77, "next_number": 78, "child_spaces": {}},
-    "incident": {"prefix": "inc-", "width": 4, "high_water": 1, "next_number": 2, "child_spaces": {}},
-    "research": {"prefix": "RES-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
-    "audit": {"prefix": "AUD-", "width": 4, "high_water": 96, "next_number": 97, "child_spaces": {}},
-    "data": {"prefix": "DATA-", "width": 4, "high_water": 95, "next_number": 96, "child_spaces": {}},
-    "migration": {"prefix": "MIG-", "width": 4, "high_water": 3, "next_number": 4, "child_spaces": {}},
-    "tombstone": {"prefix": "tomb-", "width": 4, "high_water": 198, "next_number": 199, "child_spaces": {}}
+    "requirement": {
+      "prefix": "REQ-",
+      "width": 4,
+      "high_water": 26,
+      "next_number": 27,
+      "child_spaces": {
+        "REQ-0001.FR": {
+          "prefix": "REQ-0001-FR-",
+          "width": 4,
+          "high_water": 4,
+          "next_number": 5,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0001.NFR": {
+          "prefix": "REQ-0001-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0001.IF": {
+          "prefix": "REQ-0001-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0002.FR": {
+          "prefix": "REQ-0002-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0002.NFR": {
+          "prefix": "REQ-0002-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0002.IF": {
+          "prefix": "REQ-0002-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0003.FR": {
+          "prefix": "REQ-0003-FR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [
+            5,
+            6,
+            7
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0003.NFR": {
+          "prefix": "REQ-0003-NFR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            5,
+            6,
+            7
+          ],
+          "reserved_history": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0003.IF": {
+          "prefix": "REQ-0003-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0004.FR": {
+          "prefix": "REQ-0004-FR-",
+          "width": 4,
+          "high_water": 4,
+          "next_number": 5,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0004.NFR": {
+          "prefix": "REQ-0004-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0004.IF": {
+          "prefix": "REQ-0004-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0005.FR": {
+          "prefix": "REQ-0005-FR-",
+          "width": 4,
+          "high_water": 4,
+          "next_number": 5,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0005.NFR": {
+          "prefix": "REQ-0005-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0005.IF": {
+          "prefix": "REQ-0005-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0006.FR": {
+          "prefix": "REQ-0006-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0006.NFR": {
+          "prefix": "REQ-0006-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0006.IF": {
+          "prefix": "REQ-0006-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0007.FR": {
+          "prefix": "REQ-0007-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0007.NFR": {
+          "prefix": "REQ-0007-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0007.IF": {
+          "prefix": "REQ-0007-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0008.FR": {
+          "prefix": "REQ-0008-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0008.NFR": {
+          "prefix": "REQ-0008-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0008.IF": {
+          "prefix": "REQ-0008-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0009.FR": {
+          "prefix": "REQ-0009-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0009.NFR": {
+          "prefix": "REQ-0009-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0009.IF": {
+          "prefix": "REQ-0009-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0010.FR": {
+          "prefix": "REQ-0010-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0010.NFR": {
+          "prefix": "REQ-0010-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0010.IF": {
+          "prefix": "REQ-0010-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0011.FR": {
+          "prefix": "REQ-0011-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0011.NFR": {
+          "prefix": "REQ-0011-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0011.IF": {
+          "prefix": "REQ-0011-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0012.FR": {
+          "prefix": "REQ-0012-FR-",
+          "width": 4,
+          "high_water": 4,
+          "next_number": 5,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0012.NFR": {
+          "prefix": "REQ-0012-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0012.IF": {
+          "prefix": "REQ-0012-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0013.FR": {
+          "prefix": "REQ-0013-FR-",
+          "width": 4,
+          "high_water": 4,
+          "next_number": 5,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0013.NFR": {
+          "prefix": "REQ-0013-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0013.IF": {
+          "prefix": "REQ-0013-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0014.FR": {
+          "prefix": "REQ-0014-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0014.NFR": {
+          "prefix": "REQ-0014-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0014.IF": {
+          "prefix": "REQ-0014-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0015.FR": {
+          "prefix": "REQ-0015-FR-",
+          "width": 4,
+          "high_water": 5,
+          "next_number": 6,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0015.NFR": {
+          "prefix": "REQ-0015-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0015.IF": {
+          "prefix": "REQ-0015-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0016.FR": {
+          "prefix": "REQ-0016-FR-",
+          "width": 4,
+          "high_water": 6,
+          "next_number": 7,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0016.NFR": {
+          "prefix": "REQ-0016-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0016.IF": {
+          "prefix": "REQ-0016-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0017.FR": {
+          "prefix": "REQ-0017-FR-",
+          "width": 4,
+          "high_water": 6,
+          "next_number": 7,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0017.NFR": {
+          "prefix": "REQ-0017-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0017.IF": {
+          "prefix": "REQ-0017-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0018.FR": {
+          "prefix": "REQ-0018-FR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0018.NFR": {
+          "prefix": "REQ-0018-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0018.IF": {
+          "prefix": "REQ-0018-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0019.FR": {
+          "prefix": "REQ-0019-FR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0019.NFR": {
+          "prefix": "REQ-0019-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0019.IF": {
+          "prefix": "REQ-0019-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0020.FR": {
+          "prefix": "REQ-0020-FR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0020.NFR": {
+          "prefix": "REQ-0020-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0020.IF": {
+          "prefix": "REQ-0020-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0021.FR": {
+          "prefix": "REQ-0021-FR-",
+          "width": 4,
+          "high_water": 6,
+          "next_number": 7,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0021.NFR": {
+          "prefix": "REQ-0021-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0021.IF": {
+          "prefix": "REQ-0021-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0022.FR": {
+          "prefix": "REQ-0022-FR-",
+          "width": 4,
+          "high_water": 9,
+          "next_number": 10,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0022.NFR": {
+          "prefix": "REQ-0022-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0022.IF": {
+          "prefix": "REQ-0022-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0023.FR": {
+          "prefix": "REQ-0023-FR-",
+          "width": 4,
+          "high_water": 3,
+          "next_number": 4,
+          "current_issued": [
+            1,
+            2,
+            3
+          ],
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "REQ-0023.NFR": {
+          "prefix": "REQ-0023-NFR-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0023.IF": {
+          "prefix": "REQ-0023-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0024.FR": {
+          "prefix": "REQ-0024-FR-",
+          "width": 4,
+          "high_water": 13,
+          "next_number": 14,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "reserved_history": [
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0024.NFR": {
+          "prefix": "REQ-0024-NFR-",
+          "width": 4,
+          "high_water": 13,
+          "next_number": 14,
+          "current_issued": [
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "reserved_history": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0024.IF": {
+          "prefix": "REQ-0024-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0025.FR": {
+          "prefix": "REQ-0025-FR-",
+          "width": 4,
+          "high_water": 16,
+          "next_number": 17,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "reserved_history": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0025.NFR": {
+          "prefix": "REQ-0025-NFR-",
+          "width": 4,
+          "high_water": 16,
+          "next_number": 17,
+          "current_issued": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ],
+          "reserved_history": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0025.IF": {
+          "prefix": "REQ-0025-IF-",
+          "width": 4,
+          "high_water": 1,
+          "next_number": 2,
+          "current_issued": [],
+          "reserved_history": [
+            1
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0026.FR": {
+          "prefix": "REQ-0026-FR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "reserved_history": [
+            6,
+            7
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0026.NFR": {
+          "prefix": "REQ-0026-NFR-",
+          "width": 4,
+          "high_water": 7,
+          "next_number": 8,
+          "current_issued": [
+            6,
+            7
+          ],
+          "reserved_history": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "child_spaces": {}
+        },
+        "REQ-0026.IF": {
+          "prefix": "REQ-0026-IF-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "current_issued": [],
+          "reserved_history": [],
+          "child_spaces": {}
+        }
+      }
+    },
+    "architecture-description": {
+      "prefix": "AD-",
+      "width": 4,
+      "high_water": 30,
+      "next_number": 31,
+      "child_spaces": {}
+    },
+    "adr": {
+      "prefix": "ADR-",
+      "width": 4,
+      "high_water": 30,
+      "next_number": 31,
+      "child_spaces": {}
+    },
+    "spec": {
+      "prefix": "SPEC-",
+      "width": 4,
+      "high_water": 158,
+      "next_number": 159,
+      "child_spaces": {}
+    },
+    "operations-subject": {
+      "prefix": "OPS-",
+      "width": 4,
+      "high_water": 77,
+      "next_number": 78,
+      "child_spaces": {}
+    },
+    "incident": {
+      "prefix": "inc-",
+      "width": 4,
+      "high_water": 1,
+      "next_number": 2,
+      "child_spaces": {}
+    },
+    "research": {
+      "prefix": "RES-",
+      "width": 4,
+      "high_water": 95,
+      "next_number": 96,
+      "child_spaces": {}
+    },
+    "audit": {
+      "prefix": "AUD-",
+      "width": 4,
+      "high_water": 96,
+      "next_number": 97,
+      "child_spaces": {}
+    },
+    "data": {
+      "prefix": "DATA-",
+      "width": 4,
+      "high_water": 95,
+      "next_number": 96,
+      "child_spaces": {}
+    },
+    "migration": {
+      "prefix": "MIG-",
+      "width": 4,
+      "high_water": 3,
+      "next_number": 4,
+      "child_spaces": {}
+    },
+    "tombstone": {
+      "prefix": "tomb-",
+      "width": 4,
+      "high_water": 198,
+      "next_number": 199,
+      "child_spaces": {}
+    }
   },
   "transitions": {
     "requirements-package": "living",
