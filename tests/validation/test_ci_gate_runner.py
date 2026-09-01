@@ -789,7 +789,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
         roots = contract.public_root_gate_ids(public, suites.public_names)
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene", "--write")),
-            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "-v")),
             (runner.ExecutionContext.LOCAL, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.LOCAL, ("install-playwright",)),
             (runner.ExecutionContext.PUSH, ("check-git-flow",)),
@@ -806,6 +807,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene",)),
             (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_ci_gate_runner", "-v")),
+            # A single well-shaped module is admitted by the grammar. Splitting
+            # a batch cannot hide a module: test_surface_ownership proves the
+            # full profile runs every on-disk module exactly once.
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
             (runner.ExecutionContext.PULL_REQUEST, ("check-git-flow",)),
             (runner.ExecutionContext.PUSH, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.WORKFLOW_DISPATCH, ("install-playwright",)),

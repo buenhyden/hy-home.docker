@@ -6,6 +6,7 @@ from unittest import mock
 
 import yaml
 
+from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.gate import ci_gate_contract as gate_contract
 from scripts.validation import ci_gate_runner as gate_runner
 
@@ -22,7 +23,7 @@ def _manifest_rows() -> list[dict]:
     return [row for row in rows if isinstance(row, dict)]
 
 
-def _full_profile_unittest_modules() -> set[str]:
+def _full_profile_unittest_modules() -> list[str]:
     document = gate_contract.load_contract_document(ROOT)
     registry = gate_contract.parse_gate_registry(
         document, ".github/workflow-contract.yml"
@@ -38,14 +39,14 @@ def _full_profile_unittest_modules() -> set[str]:
         gate_runner.ExecutionContext.LOCAL,
         profile="full",
     )
-    return {
+    return [
         module
         for invocation in plan
         if invocation.entrypoint == gate_runner._INTERNAL_ADAPTER_PATH
         and invocation.argv[:1] == ("run-unittest",)
         and invocation.argv[-1:] == ("-v",)
         for module in invocation.argv[1:-1]
-    }
+    ]
 
 
 class SurfaceOwnershipTests(unittest.TestCase):
@@ -113,7 +114,15 @@ class SurfaceOwnershipTests(unittest.TestCase):
             str(path.relative_to(ROOT).with_suffix("")).replace("/", ".")
             for path in (ROOT / "tests").rglob("test_*.py")
         }
-        self.assertEqual(on_disk, _full_profile_unittest_modules())
+        planned = _full_profile_unittest_modules()
+        self.assertEqual(on_disk, set(planned))
+        # Exactly once. The adapter grammar admits any well-shaped module, so
+        # this is the only thing stopping the full profile from running one
+        # module twice while another is silently dropped.
+        duplicates = sorted(
+            module for module in set(planned) if planned.count(module) > 1
+        )
+        self.assertEqual([], duplicates)
 
     def test_document_contract_tests_do_not_read_fixed_workspace_history(self) -> None:
         """Current contracts never depend on a deleted taxonomy or pinned clone history."""
@@ -142,8 +151,10 @@ class SurfaceOwnershipTests(unittest.TestCase):
     def test_adapter_admission_alone_is_not_test_registration(self) -> None:
         module = "tests.lib.unreachable.test_admission_only"
         argv = ("run-unittest", module, "-v")
-        with mock.patch.dict(
-            gate_runner._INTERNAL_ADAPTER_CONTEXTS,
-            {argv: gate_runner._ALL_EXECUTION_CONTEXTS},
-        ):
-            self.assertNotIn(module, _full_profile_unittest_modules())
+        # The grammar admits any well-shaped module, so admission alone cannot
+        # register a test. Only the workflow contract route puts it in the plan.
+        self.assertTrue(
+            ci_gate_adapters.admits_adapter_invocation(argv, "local"),
+            "the grammar admits this shape",
+        )
+        self.assertNotIn(module, _full_profile_unittest_modules())

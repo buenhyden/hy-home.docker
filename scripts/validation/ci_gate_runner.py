@@ -18,6 +18,7 @@ import tempfile
 import time
 from collections.abc import Mapping
 
+from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.document_governance import suite_registry as public_suite_registry
 
 try:
@@ -121,124 +122,6 @@ class ExecutionContext(enum.Enum):
 _ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
 _CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
 _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
-# These are exact internal commands, not an exemption for an entire script path.
-_INTERNAL_ADAPTER_CONTEXTS = {
-    **{
-        ("run-unittest", module_name, "-v"): _ALL_EXECUTION_CONTEXTS
-        for module_name in (
-            "tests.validation.test_agent_output_eval_fixtures",
-            "tests.lib.gate.test_ci_gate_contract",
-            "tests.validation.test_ci_gate_runner",
-            "tests.lib.gate.test_ci_gate_adapters",
-            "tests.lib.gate.test_github_workflow_contract",
-            "tests.validation.test_agent_governance_ci_routing",
-            "tests.validation.test_hook_rules",
-            "tests.lib.target_surface.test_target_surface_contracts",
-            "tests.lib.target_surface.test_target_surface_delta_contracts",
-            "tests.validation.test_compose_baseline_gates",
-        )
-    },
-    (
-        "run-unittest",
-        "tests.lib.document_governance.metadata.test_heading",
-        "tests.lib.document_governance.metadata.test_identity",
-        "tests.lib.document_governance.metadata.test_lifecycle",
-        "tests.lib.document_governance.metadata.test_profile",
-        "tests.lib.document_governance.metadata.test_reference",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.validation.lifecycle.test_contract",
-        "tests.validation.lifecycle.test_promoted",
-        "tests.validation.lifecycle.test_public",
-        "tests.validation.lifecycle.test_recovery",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    # One invocation covering the fourteen mirrored document-governance
-    # library suites. Every module is named literally here, so the admission
-    # is exact in the same way the per-module entries above are; they ran
-    # under no profile until 2026-08-29 and four had rotted unnoticed.
-    (
-        "run-unittest",
-        "tests.lib.document_governance.test_architecture",
-        "tests.lib.document_governance.test_archive",
-        "tests.lib.document_governance.test_identity_history",
-        "tests.lib.document_governance.test_links",
-        "tests.lib.document_governance.test_metadata_validator",
-        "tests.lib.document_governance.test_operations_catalog",
-        "tests.lib.document_governance.test_operations_taxonomy",
-        "tests.lib.document_governance.test_references",
-        "tests.lib.document_governance.test_registry",
-        "tests.lib.document_governance.test_requirements",
-        "tests.lib.document_governance.test_spec_packages",
-        "tests.lib.document_governance.test_suite_registry",
-        "tests.lib.document_governance.test_taxonomy",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.lib.agent_governance.test_agent_governance_contract",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.validation.test_provider_hook_parity",
-        "tests.validation.test_provider_native_surfaces",
-        "tests.validation.test_provider_surface_renderer",
-        "tests.validation.test_stop_gate_deferred_paths",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.lib.test_surface_ownership",
-        "tests.validation.test_agentic_audit_semantic_freshness",
-        "tests.validation.test_audit_criterion_contract",
-        "tests.validation.test_reference_stage_repo_contract",
-        "tests.validation.test_script_manifest",
-        "tests.validation.test_tech_stack_version_contract",
-        "tests.validation.test_validator_entrypoints",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.validation.test_generate_llm_wiki",
-        "tests.validation.test_security_automation_readiness",
-        "tests.validation.test_workspace_governance_migration",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    (
-        "run-unittest",
-        "tests.validation.test_compose_core_readiness",
-        "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
-        "tests.lib.supply_chain.test_grype_db_seed",
-        "tests.validation.test_supply_chain_policy",
-        "tests.validation.test_sample_service_delivery_rehearsal",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    ("run-agent-output-eval",): _ALL_EXECUTION_CONTEXTS,
-    ("check-diff-hygiene",): _ALL_EXECUTION_CONTEXTS,
-    ("check-shell-syntax",): _ALL_EXECUTION_CONTEXTS,
-    ("verify-metadata-base",): frozenset(
-        {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
-    ),
-    ("check-git-flow",): frozenset({ExecutionContext.PULL_REQUEST}),
-    **{
-        ("run-npm", *arguments, "--prefix", "projects/storybook/nextjs"):
-        _CI_EXECUTION_CONTEXTS
-        for arguments in (
-            ("audit", "--audit-level=high"),
-            ("ci",),
-            ("run", "lint"),
-            ("run", "typecheck"),
-            ("run", "build"),
-            ("run", "build-storybook"),
-            ("run", "coverage"),
-        )
-    },
-    ("install-playwright",): _CI_EXECUTION_CONTEXTS,
-    ("run-zizmor-sarif",): _CI_EXECUTION_CONTEXTS,
-}
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
@@ -259,7 +142,9 @@ def _is_admitted_internal_invocation(
     context: ExecutionContext,
 ) -> bool:
     if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
-        return context in _INTERNAL_ADAPTER_CONTEXTS.get(invocation.argv, ())
+        return ci_gate_adapters.admits_adapter_invocation(
+            invocation.argv, context.value
+        )
     return (invocation.entrypoint, invocation.argv) in _INTERNAL_CHECK_INVOCATIONS
 
 

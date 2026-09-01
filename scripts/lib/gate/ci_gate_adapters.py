@@ -6,6 +6,7 @@ import fcntl
 import os
 import pathlib
 import re
+from types import MappingProxyType
 import stat
 import subprocess
 import sys
@@ -36,8 +37,13 @@ _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
 # The structural boundary admits only the two authoritative test roots and
 # valid nonempty dotted segments. Exact complete argv admission remains owned
 # by the runner, so this grammar does not duplicate the library-domain list.
+# A `test_` segment is required, so a bare package name is rejected: it is
+# shape-valid but runs no tests, and admitting one would let a batch shrink
+# silently. Trailing class or method selectors stay admitted; the full-profile
+# coverage test compares module strings, so a narrowed selector fails there.
 _UNITTEST_MODULE = re.compile(
-    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z"
+    r"(?:tests\.validation|tests\.lib)(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
+    r"\.test_[A-Za-z0-9_]+(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z"
 )
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _GIT_OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
@@ -126,6 +132,78 @@ def run_adapter(
             product_error = None
     assert result is not None
     return result
+
+
+# Admission grammar. The runner asks this module whether an adapter invocation
+# is admitted in an execution context, so the gate no longer repeats every test
+# module and command tuple. Test coverage is guaranteed separately, by
+# comparing the on-disk test modules with the modules the full profile runs.
+_ALL_CONTEXTS = frozenset(
+    {"local", "pull_request", "push", "push_initial", "workflow_dispatch"}
+)
+_CI_CONTEXTS = _ALL_CONTEXTS - {"local"}
+ADAPTER_CONTEXTS = MappingProxyType(
+    {
+        "check-diff-hygiene": _ALL_CONTEXTS,
+        "check-shell-syntax": _ALL_CONTEXTS,
+        "run-agent-output-eval": _ALL_CONTEXTS,
+        "run-unittest": _ALL_CONTEXTS,
+        "verify-metadata-base": frozenset({"pull_request", "push"}),
+        "check-git-flow": frozenset({"pull_request"}),
+        "install-playwright": _CI_CONTEXTS,
+        "run-npm": _CI_CONTEXTS,
+        "run-zizmor-sarif": _CI_CONTEXTS,
+        # Workflow setup steps, never admitted as gate leaves.
+        "install-python-requirements": frozenset(),
+        "prepare-compose-env": frozenset(),
+    }
+)
+_NPM_ARGUMENT_SHAPES = frozenset(
+    {("audit", "--audit-level=high"), ("ci",)}
+    | {("run", script) for script in _NPM_SCRIPTS}
+)
+
+
+def validate_adapter_argv(argv: tuple[str, ...]) -> None:
+    """Raise unless argv is a bounded, well-shaped adapter invocation."""
+
+    if not argv or argv[0] not in SUBCOMMANDS:
+        raise AdapterError(
+            "ci-gate-adapter-command", "the adapter subcommand is not admitted"
+        )
+    command, arguments = argv[0], argv[1:]
+    if command == "run-unittest":
+        if len(arguments) < 2 or arguments[-1] != "-v":
+            _argument_error()
+        modules = arguments[:-1]
+        if len(modules) != len(set(modules)):
+            _argument_error()
+        for module in modules:
+            if not _UNITTEST_MODULE.match(module):
+                _argument_error()
+        return
+    if command == "run-npm":
+        if arguments[-len(_NPM_PREFIX):] != _NPM_PREFIX:
+            _argument_error()
+        if arguments[: -len(_NPM_PREFIX)] not in _NPM_ARGUMENT_SHAPES:
+            _argument_error()
+        return
+    if command == "install-python-requirements":
+        if len(arguments) != 1 or arguments[0] not in _REQUIREMENT_PATHS:
+            _argument_error()
+        return
+    if arguments:
+        _argument_error()
+
+
+def admits_adapter_invocation(argv: tuple[str, ...], context: str) -> bool:
+    """Return whether this adapter invocation is admitted in `context`."""
+
+    try:
+        validate_adapter_argv(argv)
+    except AdapterError:
+        return False
+    return context in ADAPTER_CONTEXTS.get(argv[0], frozenset())
 
 
 def _dispatch_adapter(
