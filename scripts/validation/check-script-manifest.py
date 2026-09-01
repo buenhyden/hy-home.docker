@@ -41,8 +41,6 @@ OPTIONAL_FIELDS = frozenset(
     {
         "check_command",
         "outputs",
-        "current_authorities",
-        "semantic_witnesses",
         "public_suites",
         "execution_argv",
         "execution_contexts",
@@ -101,21 +99,6 @@ MACHINE_AUTHORITIES = frozenset(
 )
 MAX_OBSERVED_PATHS = 50_000
 MAX_OBSERVED_BYTES = 512 * 1_048_576
-OPERATIONS_AUTHORITY_PATHS = frozenset(
-    {
-        "scripts/lib/document_governance/operations_catalog.py",
-        "scripts/validation/check-operations-catalog.py",
-    }
-)
-OPERATIONS_CURRENT_AUTHORITIES = [
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
-    "docs/99.templates/registry.json",
-]
-OPERATIONS_SEMANTIC_WITNESSES = [
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
-]
-
-
 @dataclass(frozen=True, order=True)
 class Finding:
     code: str
@@ -282,42 +265,6 @@ def validate_manifest_document(
             findings.append(_finding("authority-invalid", path, "authority must be a non-empty repository path"))
         elif authority not in tracked:
             findings.append(_finding("authority-untracked", path, f"authority is not tracked: {authority}"))
-        current_authorities = row.get("current_authorities")
-        semantic_witnesses = row.get("semantic_witnesses")
-        if path in OPERATIONS_AUTHORITY_PATHS:
-            if (
-                authority != "docs/99.templates/registry.json"
-                or current_authorities != OPERATIONS_CURRENT_AUTHORITIES
-                or semantic_witnesses != OPERATIONS_SEMANTIC_WITNESSES
-            ):
-                findings.append(
-                    _finding(
-                        "operations-authority-invalid",
-                        path,
-                        "current authority must be Registry + Migration 0003; "
-                        "Migration 0002 is semantic witness only",
-                    )
-                )
-            for reference in [
-                *(current_authorities if isinstance(current_authorities, list) else []),
-                *(semantic_witnesses if isinstance(semantic_witnesses, list) else []),
-            ]:
-                if not _safe_repo_path(reference) or reference not in tracked:
-                    findings.append(
-                        _finding(
-                            "operations-authority-untracked",
-                            path,
-                            f"authority evidence is not tracked: {reference}",
-                        )
-                    )
-        elif current_authorities is not None or semantic_witnesses is not None:
-            findings.append(
-                _finding(
-                    "operations-authority-invalid",
-                    path,
-                    "Operations authority fields are allowed only on the Operations implementation/gate",
-                )
-            )
         if row.get("lifecycle") not in LIFECYCLES:
             findings.append(_finding("lifecycle-invalid", path, f"invalid lifecycle: {row.get('lifecycle')!r}"))
         if row.get("mutation") not in MUTATIONS:

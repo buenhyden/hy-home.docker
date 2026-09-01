@@ -9,7 +9,7 @@ profile_id: operations-domain-readme
 ## Overview
 
 This domain co-locates the existing AI service guides, controls, and recovery
-procedures under their frozen `ops-0055` through `ops-0059` identities.
+procedures under their current four-digit subject directories.
 
 ## Audience
 

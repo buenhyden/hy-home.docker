@@ -1137,17 +1137,6 @@ def _legacy_deficit_identity(finding: Finding) -> tuple[str, str]:
     return finding.code, finding.message
 
 
-def _exact_task8_profile_addition(record: Record, base_record: Record) -> bool:
-    """Allow only the Registry-required profile key on a verified Task 8 move."""
-
-    if record.artifact_type not in {"guide", "policy", "runbook"}:
-        return False
-    if "profile_id" in base_record.metadata:
-        return False
-    expected = {**base_record.metadata, "profile_id": record.artifact_type}
-    return record.metadata == expected
-
-
 def _legacy_exception_evidence(
     record: Record,
     findings: Sequence[Finding],
@@ -1160,9 +1149,7 @@ def _legacy_exception_evidence(
 ) -> tuple[int, int] | None:
     if record.parse_error or base_record is None:
         return None
-    metadata_preserved = record.metadata == base_record.metadata or (
-        approved_structural_move and _exact_task8_profile_addition(record, base_record)
-    )
+    metadata_preserved = record.metadata == base_record.metadata
     if base_record.parse_error or not metadata_preserved:
         return None
     if any(finding.severity == "error" for finding in body_findings):
@@ -1301,46 +1288,6 @@ def _task5_moved_body_baseline(
     return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
 
 
-def _task8_operations_move_sources(root: pathlib.Path) -> dict[str, str]:
-    """Return exact Task 8 target-to-source paths from frozen Migration 0003."""
-
-    from scripts.lib.document_governance.operations_catalog import (
-        MIGRATION_PATH,
-        OperationsAuthorityError,
-        load_current_operation_mappings,
-    )
-
-    if not (root / MIGRATION_PATH).is_file():
-        return {}
-    try:
-        mappings = load_current_operation_mappings(root)
-    except OperationsAuthorityError as error:
-        raise ProfileError(f"cannot load Task 8 Operations move authority: {error}") from error
-    return {
-        row.target_path.as_posix(): row.source_path.as_posix()
-        for row in mappings
-        if row.target_path is not None
-    }
-
-
-def _operations_catalog_moved_body_baseline(
-    root: pathlib.Path,
-    target: pathlib.Path,
-    profiles: dict[str, object],
-    base_ref: str | None,
-    mappings: Mapping[str, str],
-) -> tuple[Record | None, str | None]:
-    """Read the exact Migration 0003 source baseline for a Task 8 target."""
-
-    legacy = mappings.get(target.as_posix())
-    if legacy is None:
-        return None, None
-    legacy_text = _text_at_ref(root, pathlib.Path(legacy), base_ref)
-    if legacy_text is None:
-        return None, None
-    return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
-
-
 _TASK10_ARCHIVE_MOVE_SOURCES = {
     "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md":
         "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
@@ -1366,15 +1313,3 @@ def _task10_archive_moved_body_baseline(
     if legacy_text is None:
         return None, None
     return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
-
-
-_TASK8_OPERATIONS_README_TRANSITION_PATHS = frozenset(
-    {
-        "docs/05.operations/README.md",
-        "docs/05.operations/catalog/03-security/README.md",
-        "docs/05.operations/catalog/10-communication/README.md",
-        "docs/05.operations/catalog/11-laboratory/README.md",
-        "docs/05.operations/catalog/12-infra-net/README.md",
-    }
-)
-_TASK8_RELEASE_DELETION_SOURCE = pathlib.Path("docs/05.operations/releases/README.md")

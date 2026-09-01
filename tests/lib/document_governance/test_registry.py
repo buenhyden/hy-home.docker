@@ -34,7 +34,6 @@ from scripts.lib.document_governance.metadata_validator import (
     validate_record,
 )
 from scripts.lib.document_governance import metadata_validator
-from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
@@ -245,26 +244,18 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(profile_id, classify_path(path, registry))
 
-        from scripts.lib.document_governance.archive import _migration_document
-        from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-        documents = {}
-        for name in ("spec.md", "plan.md"):
-            path = ROOT / package / name
-            if path.is_file():
-                documents[name] = path
-            else:
-                migration = _migration_document(ROOT)
-                self.assertEqual(3, migration["schema_version"])
-                rows = [row for row in migration["rows"]
-                        if row["source_path"] == (package / name).as_posix()
-                        and row["action"] == "delete"]
-                self.assertEqual(1, len(rows))
-                documents[name] = HistoricalDocument(ROOT, rows[0]["recovery_commit"], rows[0]["source_path"])
-        spec_values = read_frontmatter_values(documents["spec.md"])
-        plan_values = read_frontmatter_values(documents["plan.md"])
-        self.assertEqual("SPEC-0153", spec_values["artifact_id"])
-        self.assertEqual("plan-0153", plan_values["artifact_id"])
+        self.assertEqual(
+            "SPEC-0153",
+            registry.profiles["spec"]["artifact_id_pattern"].replace(
+                "{number:4}", "0153"
+            ),
+        )
+        self.assertEqual(
+            "plan-0153",
+            registry.profiles["plan"]["artifact_id_pattern"].replace(
+                "{package_number:4}", "0153"
+            ),
+        )
 
     def test_specific_profile_wins_over_unsupported_fallback(self) -> None:
         registry = load_registry()
@@ -274,7 +265,7 @@ class DocumentRegistryTests(unittest.TestCase):
             classify_path("docs/01.requirements/0001-example.md", registry),
         )
 
-    def test_package_indexes_machine_contracts_and_operation_subjects_are_registered(self) -> None:
+    def test_package_indexes_and_machine_contracts_are_registered(self) -> None:
         registry = load_registry()
 
         expected = {
@@ -283,7 +274,6 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/03.specs/0153-example/contracts/schema.graphql": "graphql-contract",
             "docs/03.specs/0153-example/contracts/service.proto": "proto-contract",
             "docs/05.operations/catalog/04-data/README.md": "operations-domain-readme",
-            "docs/05.operations/catalog/04-data/0051-example/README.md": "operations-subject-readme",
         }
         for path, profile_id in expected.items():
             with self.subTest(path=path):
@@ -301,6 +291,18 @@ class DocumentRegistryTests(unittest.TestCase):
                 {"artifact_type": "guide", "artifact_id": "guide-0052"},
                 registry.profiles,
             ),
+        )
+
+    def test_operations_subject_readme_profile_is_absent(self) -> None:
+        registry = load_registry()
+
+        self.assertNotIn("operations-subject-readme", registry.profiles)
+        self.assertNotIn("operations-subject-readme", registry.transitions)
+        self.assertIsNone(
+            classify_path(
+                "docs/05.operations/catalog/04-data/0051-example/README.md",
+                registry,
+            )
         )
 
     def test_registered_numeric_identities_do_not_use_substring_matches(self) -> None:
@@ -361,6 +363,36 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertNotIn("docs/05.operations/", text)
                 self.assertNotIn("docs/90.references/", text)
                 self.assertNotIn("docs/98.archive/", text)
+
+    def test_operations_profiles_do_not_delegate_current_membership_to_archive(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata_validator import (
+            build_registry_profiles,
+        )
+
+        registry = load_registry()
+        profiles = build_registry_profiles(registry)["profiles"]
+
+        for profile_id in ("guide", "policy", "runbook"):
+            with self.subTest(profile_id=profile_id):
+                traceability = registry.profiles[profile_id]["traceability"]
+                self.assertNotIn("membership_authority", traceability)
+                self.assertTrue(profiles[profile_id]["allow_empty_parents"])
+
+    def test_every_copy_template_is_registered(self) -> None:
+        registry = load_registry()
+        registered = {
+            pathlib.Path(str(value["source"]))
+            for value in registry.template_roles.values()
+        }
+        actual = {
+            path.relative_to(ROOT)
+            for path in (ROOT / "docs/99.templates/templates").rglob("*")
+            if path.is_file() and ".template." in path.name
+        }
+
+        self.assertEqual(actual, registered)
 
     def test_invalid_registry_mutations_fail_closed(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -728,7 +760,6 @@ class DocumentRegistryTests(unittest.TestCase):
             {
                 "spec-package-readme",
                 "operations-domain-readme",
-                "operations-subject-readme",
                 "readme",
                 "governance-policy",
                 "governance-hook-policy",

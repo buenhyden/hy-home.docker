@@ -9,7 +9,7 @@ profile_id: operations-domain-readme
 ## Overview
 
 This domain co-locates the existing LGTM, Alloy, alerting, profiling, and
-retention roles under their frozen `ops-0039` through `ops-0049` identities.
+retention roles under their current four-digit subject directories.
 
 ## Audience
 

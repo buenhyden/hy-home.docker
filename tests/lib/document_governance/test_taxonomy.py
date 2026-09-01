@@ -110,7 +110,11 @@ def tracked_paths(pathspec: str) -> list[str]:
         capture_output=True,
         text=True,
     )
-    return result.stdout.splitlines()
+    return [
+        relative
+        for relative in result.stdout.splitlines()
+        if (ROOT / relative).is_file()
+    ]
 
 
 def metadata_for(relative_path: str) -> dict[str, object]:

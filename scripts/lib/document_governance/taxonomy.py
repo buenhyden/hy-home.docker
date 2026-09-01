@@ -383,9 +383,9 @@ def _numeric_identity_matches(
     if path_match is None or artifact_match is None:
         return False
     if identity_relation == "subject-member":
-        # The Operations migration manifest owns exact role-to-subject
-        # membership. Registry validation establishes each identity shape
-        # independently and must never equate their four-digit numbers.
+        # Current subject-directory containment owns role membership. Registry
+        # validation establishes each identity shape independently and must
+        # never equate their four-digit numbers.
         return "subject_number" in path_match.groupdict()
     required = "number" if identity_relation == "direct" else next(
         (

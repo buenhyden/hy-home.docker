@@ -14,8 +14,8 @@ schemas under `contracts/` validate the registry and document
 frontmatter. Human and AI-agent policy remains in Stage 00, and executable gate
 behavior remains in registered `scripts/` modules.
 
-Predecessor contracts are retained only as explicit Git recovery evidence in
-Migration 0003; they are not current authoring or validation inputs.
+Predecessor contracts are recoverable through Git history; they are not current
+authoring or validation inputs.
 
 ## Scope
 
@@ -23,7 +23,8 @@ Stage 99 owns:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
-- the Research, Audit, Data, Migration, and Tombstone profiles;
+- the Research, Audit, Data, and Tombstone profiles plus a transition-only
+  Migration profile for the temporary records being retired by SPEC-0158;
 - canonical path and stable-ID patterns;
 - profile-specific frontmatter and section contracts;
 - lifecycle states and allowed forward transitions;
@@ -70,8 +71,8 @@ defines a canonical target artifact.
   `next_number` is always greater than `high_water`.
 - Operations subjects and role artifacts have independent stable IDs. The
   Registry validates the four-digit subject route and each role ID shape but
-  never equates their numbers. Exact role-to-subject membership is registered
-  and enforced by the approved Operations migration manifest in Task 8.
+  never equates their numbers. The current catalog directory containment owns
+  role-to-subject membership.
 - Incident year directories are the only date-path exception.
 - A lifecycle transition is valid only when registered for the profile's
   lifecycle. Terminal states have no outgoing transition.
@@ -125,4 +126,3 @@ docs/99.templates/
 
 - [Template catalog](./templates/README.md)
 - [Workspace governance authority ADR](../02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Migration ledger](../98.archive/migrations/0003-workspace-governance-simplification.md)

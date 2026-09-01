@@ -344,14 +344,10 @@ files:
 - path: scripts/lib/document_governance/operations_catalog.py
   kind: library
   authority: docs/99.templates/registry.json
-  current_authorities:
-  - docs/98.archive/migrations/0003-workspace-governance-simplification.md
-  - docs/99.templates/registry.json
-  semantic_witnesses:
-  - docs/98.archive/migrations/0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:
+  - scripts/lib/document_governance/references.py
   - scripts/validation/check-operations-catalog.py
   disposition: retain
   successor: null
@@ -915,11 +911,6 @@ files:
   - --mode
   - complete
   authority: docs/99.templates/registry.json
-  current_authorities:
-  - docs/98.archive/migrations/0003-workspace-governance-simplification.md
-  - docs/99.templates/registry.json
-  semantic_witnesses:
-  - docs/98.archive/migrations/0002-operations-catalog-convergence.md
   lifecycle: active
   mutation: none
   consumers:

@@ -8,8 +8,8 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates each existing guide, policy, and runbook under its frozen
-`ops-0036` through `ops-0038` identity without changing operational behavior.
+This domain co-locates each existing guide, policy, and runbook under its
+current four-digit subject directory without changing operational behavior.
 
 ## Audience
 

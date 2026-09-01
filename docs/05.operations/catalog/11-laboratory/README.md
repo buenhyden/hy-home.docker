@@ -8,10 +8,9 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates the existing Dashboard, Dozzle, Open Notebook,
-optimization-hardening, Portainer, and RedisInsight roles under frozen
-`ops-0071` through `ops-0076` identities. The catalog does not add a role that
-is absent from the migration ledger.
+This domain co-locates the current Dashboard, Dozzle, Open Notebook,
+optimization-hardening, Portainer, and RedisInsight roles under stable
+four-digit subject identities. Role membership follows the current tree.
 
 ## Audience
 

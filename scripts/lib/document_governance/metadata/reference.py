@@ -64,17 +64,13 @@ from scripts.lib.document_governance.metadata.identity import (
     validate_requirement_internal_id_contract,
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
-    _TASK8_OPERATIONS_README_TRANSITION_PATHS,
-    _TASK8_RELEASE_DELETION_SOURCE,
     _legacy_exception_evidence,
     _link_target_neutral_text,
-    _operations_catalog_moved_body_baseline,
     _record_from_text,
     _task10_archive_moved_body_baseline,
     _task5_legacy_parent_ids,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
-    _task8_operations_move_sources,
     _text_at_ref,
     collect_records,
     collect_records_at_ref,
@@ -1165,41 +1161,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
         return 2
     base_records: list[Record] = []
-    task8_operations_move_sources: dict[str, str] = {}
-    verified_task8_move_targets: set[str] = set()
     verified_task10_move_targets: set[str] = set()
-    task8_release_deletion_at_base = False
-    if args.mode == "check-changed":
-        try:
-            task8_operations_move_sources = _task8_operations_move_sources(root)
-        except ProfileError as error:
-            print(f"configuration-error: {error}", file=sys.stderr)
-            return 2
     if base.merge_base:
         try:
             base_records = collect_records_at_ref(root, profiles, base.merge_base)
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
-    if task8_operations_move_sources and base.merge_base:
-        task8_release_deletion_at_base = (
-            _text_at_ref(root, _TASK8_RELEASE_DELETION_SOURCE, base.merge_base) is not None
-        )
     base_records_by_path = {record.path.as_posix(): record for record in base_records}
     if args.mode == "check-changed" and base.merge_base:
         for path_text in sorted(changed_selection):
             if path_text in base_records_by_path:
-                continue
-            moved_record, _ = _operations_catalog_moved_body_baseline(
-                root,
-                pathlib.Path(path_text),
-                profiles,
-                base.merge_base,
-                task8_operations_move_sources,
-            )
-            if moved_record is not None:
-                base_records_by_path[path_text] = moved_record
-                verified_task8_move_targets.add(path_text)
                 continue
             moved_record, _ = _task10_archive_moved_body_baseline(
                 root,
@@ -1278,16 +1250,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 == _link_target_neutral_text(base_text)
             ):
                 link_only_changes.add(path_text)
-            if base_record is None or base_text is None:
-                moved_record, moved_text = _operations_catalog_moved_body_baseline(
-                    root,
-                    record.path,
-                    profiles,
-                    base.merge_base,
-                    task8_operations_move_sources,
-                )
-                base_record = moved_record or base_record
-                base_text = moved_text or base_text
             if base_record is None or base_text is None:
                 moved_record, moved_text = _task10_archive_moved_body_baseline(
                     root,
@@ -1376,13 +1338,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 changed_body_findings.get(path, []),
                 path in link_only_changes,
                 task5_legacy_parent_ids,
-                path in verified_task8_move_targets
-                or path in verified_task10_move_targets
-                or (
-                    task8_release_deletion_at_base
-                    and path in _TASK8_OPERATIONS_README_TRANSITION_PATHS
-                    and path in base_records_by_path
-                ),
+                path in verified_task10_move_targets,
             )
         )
         is not None

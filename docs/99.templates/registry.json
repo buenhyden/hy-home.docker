@@ -170,21 +170,6 @@
       "exceptions": []
     },
     {
-      "profile_id": "operations-subject-readme",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/catalog/{domain}/{number:4}-{slug}/README.md",
-      "artifact_id_pattern": "ops-{number:4}",
-      "identity_relation": "direct",
-      "template_id": null,
-      "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
-      "optional_frontmatter": ["reviewed_at", "next_review_at"],
-      "required_sections": [],
-      "optional_sections": [],
-      "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["spec", "architecture-description", "adr"]},
-      "exceptions": []
-    },
-    {
       "profile_id": "guide",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/guide.md",
@@ -196,7 +181,7 @@
       "required_sections": ["Purpose", "Audience", "Prerequisites", "Usage", "Troubleshooting", "Verification", "Traceability"],
       "optional_sections": ["Examples", "Related Documents"],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["spec", "policy", "runbook"], "membership_authority": "operations-migration-manifest"},
+      "traceability": {"allowed_parent_profiles": ["spec", "policy", "runbook"]},
       "exceptions": []
     },
     {
@@ -211,7 +196,7 @@
       "required_sections": ["Purpose", "Scope", "Policy Statements", "Enforcement", "Exceptions", "Verification", "Traceability"],
       "optional_sections": ["Definitions", "Related Documents"],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"], "membership_authority": "operations-migration-manifest"},
+      "traceability": {"allowed_parent_profiles": ["requirements-package", "architecture-description", "adr", "spec"]},
       "exceptions": []
     },
     {
@@ -226,7 +211,7 @@
       "required_sections": ["Purpose", "Trigger", "Prerequisites", "Procedure", "Verification", "Rollback", "Escalation", "Traceability"],
       "optional_sections": ["Automation", "Related Documents"],
       "lifecycle_id": "living",
-      "traceability": {"allowed_parent_profiles": ["spec", "guide", "policy", "task"], "membership_authority": "operations-migration-manifest"},
+      "traceability": {"allowed_parent_profiles": ["spec", "guide", "policy", "task"]},
       "exceptions": []
     },
     {
@@ -310,7 +295,7 @@
       "path_pattern": "docs/98.archive/migrations/{number:4}-{slug}.md",
       "artifact_id_pattern": "mig-{number:4}",
       "identity_relation": "direct",
-      "template_id": "archive/migration",
+      "template_id": null,
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],
       "optional_frontmatter": ["archive_disposition", "archive_reason", "archived_at", "archived_blob", "archived_commit", "archived_from", "preservation_class", "supersedes", "superseded_by"],
       "required_sections": ["Purpose", "Authority Change", "Path Mapping", "Recovery", "Approval", "Traceability"],
@@ -331,7 +316,7 @@
       "required_sections": ["Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability"],
       "optional_sections": ["Related Documents"],
       "lifecycle_id": "historical",
-      "traceability": {"allowed_parent_profiles": ["migration"]},
+      "traceability": {"allowed_parent_profiles": []},
       "exceptions": []
     },
     {
@@ -343,7 +328,7 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": ["profile_id"],
-      "optional_frontmatter": ["status", "layer", "generated_by", "runtime"],
+      "optional_frontmatter": ["status", "layer", "generated_by", "runtime", "artifact_type"],
       "required_sections": ["Overview", "Scope", "Structure", "How to Work in This Area", "Related Documents"],
       "optional_sections": ["Audience"],
       "lifecycle_id": "living",
@@ -550,8 +535,8 @@
     "references/research": {"source": "docs/99.templates/templates/references/research.template.md", "profile_id": "research"},
     "references/audit": {"source": "docs/99.templates/templates/references/audit.template.md", "profile_id": "audit"},
     "references/data": {"source": "docs/99.templates/templates/references/data.template.md", "profile_id": "data"},
-    "archive/migration": {"source": "docs/99.templates/templates/archive/migration.template.md", "profile_id": "migration"},
-    "archive/tombstone": {"source": "docs/99.templates/templates/archive/tombstone.template.md", "profile_id": "tombstone"}
+    "archive/tombstone": {"source": "docs/99.templates/templates/archive/tombstone.template.md", "profile_id": "tombstone"},
+    "common/readme": {"source": "docs/99.templates/templates/common/readme.template.md", "profile_id": "readme"}
   },
   "lifecycles": {
     "living": {
@@ -679,7 +664,6 @@
     "spec": "spec-package",
     "plan": "execution",
     "task": "execution",
-    "operations-subject-readme": "living",
     "guide": "living",
     "policy": "living",
     "runbook": "living",

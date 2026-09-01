@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate current Stage 05 Operations and its bounded consumers."""
+"""Validate the bounded current Stage 05 Operations tree."""
 
 from __future__ import annotations
 
@@ -14,9 +14,6 @@ if str(ROOT) not in sys.path:
 
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
-    consumer_inventory_json,
-    extract_task8_consumers,
-    load_task8_migration,
     validate_active_operations_references,
     validate_current_operations,
 )
@@ -39,14 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.domains and args.mode != "executed":
         parser.error("--domains is accepted only by --mode executed")
     try:
-        if args.mode == "consumers":
-            migration = load_task8_migration(ROOT)
-            print(consumer_inventory_json(extract_task8_consumers(ROOT, migration)))
-            return 0
-        findings = validate_current_operations(
-            ROOT, include_semantic_witnesses=args.mode in {"executed", "complete"}
-        )
-        if args.mode == "complete":
+        findings = validate_current_operations(ROOT)
+        if args.mode in {"complete", "consumers"}:
             findings = (*findings, *validate_active_operations_references(ROOT))
     except OperationsAuthorityError as error:
         print(f"FAIL {error.code}: {error}")
@@ -56,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(f"operations-catalog: FAIL findings={len(findings)}")
         return 1
-    print("operations-catalog: PASS domains=13 subjects=75 guides=66 policies=64 runbooks=62 releases=0")
+    print("operations-catalog: PASS")
     return 0
 
 

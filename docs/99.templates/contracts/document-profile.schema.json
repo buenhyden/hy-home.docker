@@ -92,10 +92,7 @@
       "additionalProperties": false,
       "properties": {
         "allowed_parent_profiles": {"$ref": "#/$defs/stringList"},
-        "internal_id_spaces": {"$ref": "#/$defs/stringList"},
-        "membership_authority": {
-          "const": "operations-migration-manifest"
-        }
+        "internal_id_spaces": {"$ref": "#/$defs/stringList"}
       }
     },
     "templateRole": {

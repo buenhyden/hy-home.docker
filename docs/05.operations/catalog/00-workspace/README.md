@@ -8,7 +8,7 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain groups existing workspace subjects by stable `ops-` identity. Each
+This domain groups existing workspace subjects by stable four-digit identity. Each
 subject exposes only the roles it actually has: guide for routine context,
 policy for controls, and runbook for ordered recovery or validation.
 

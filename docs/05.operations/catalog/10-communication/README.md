@@ -8,9 +8,9 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates the existing Stalwart and MailHog guide, policy, and
-runbook under the frozen `0070-mail` identity. No operational role is
-created beyond the three roles recorded in the migration ledger.
+This domain co-locates the current Stalwart and MailHog guide, policy, and
+runbook under the stable `0070-mail` identity. Its role membership follows the
+current subject tree.
 
 ## Audience
 

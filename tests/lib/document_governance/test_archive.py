@@ -186,8 +186,8 @@ class MigrationStateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.read(candidate)
 
-    def test_native_compact_rows_reach_current_operations_references_and_archive_consumers(self):
-        from scripts.lib.document_governance import operations_catalog, references, spec_packages
+    def test_native_compact_rows_reach_remaining_archive_consumers(self):
+        from scripts.lib.document_governance import references, spec_packages
 
         approved = self.archive._approved_migration_document(ROOT)
         compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [
@@ -196,12 +196,10 @@ class MigrationStateTests(unittest.TestCase):
             for row in approved["rows"]
         ]}
         with mock.patch.object(self.archive, "_migration_document", return_value=compact):
-            self.assertEqual(193, len(operations_catalog.load_current_operation_mappings(ROOT)))
             self.assertEqual(116, len(references.load_task9_migration(ROOT).rows))
             self.assertFalse(hasattr(references.load_task9_migration(ROOT).rows[0], "row_id"))
             self.assertEqual(275, len(self.archive.task10_rows(ROOT)))
             self.assertEqual(46, len(spec_packages._read_migration_authority(ROOT)[0]))
-            self.assertFalse(hasattr(operations_catalog.load_current_operation_mappings(ROOT)[0], "owner_task"))
 
 
 class ArchiveMinimizationTests(unittest.TestCase):

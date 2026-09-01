@@ -681,7 +681,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/README.md](../../../99.templates/templates/README.md) | folder index |
 | [docs/99.templates/templates/architecture/adr.template.md](../../../99.templates/templates/architecture/adr.template.md) | Markdown reference |
 | [docs/99.templates/templates/architecture/architecture-description.template.md](../../../99.templates/templates/architecture/architecture-description.template.md) | Markdown reference |
-| [docs/99.templates/templates/archive/migration.template.md](../../../99.templates/templates/archive/migration.template.md) | Markdown reference |
 | [docs/99.templates/templates/archive/tombstone.template.md](../../../99.templates/templates/archive/tombstone.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/README.md](../../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/readme.template.md](../../../99.templates/templates/common/readme.template.md) | Markdown reference |

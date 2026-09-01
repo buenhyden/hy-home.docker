@@ -63,8 +63,8 @@ status: active
 5. Guide의 `## Runbook Handoff`는 실제 sibling Runbook이 있고 그 절차로
    넘겨야 할 때만 작성한다. Runbook의 `## Automation Handoff`도 실제
    자동화 artifact와 검증 가능한 link가 있을 때만 작성한다.
-6. 모든 subject가 세 역할을 모두 가질 필요는 없다. frozen inventory에
-   존재하거나 별도 승인된 역할만 추가한다.
+6. 모든 subject가 세 역할을 모두 가질 필요는 없다. 현재 운영 책임에
+   필요한 역할만 등록된 Stage 99 프로필로 추가한다.
 7. 사고는 `incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 owning domain `README.md`와 관련 inbound
    link를 함께 갱신한다.
@@ -76,8 +76,8 @@ status: active
 - Policy는 명령 순서를 소유하지 않는다.
 - Runbook은 evidence, rollback/recovery, escalation 기준을 포함한다.
 - root, catalog, domain README만 active Operations index를 발행한다.
-- archive, generated summary, migration ledger의 immutable provenance는 current
-  path rewrite 대상으로 취급하지 않는다.
+- 과거 경로와 실행 이력은 Git에서 복구하며 current Operations 권한으로
+  사용하지 않는다.
 
 ## Related Documents
 

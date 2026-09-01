@@ -706,6 +706,8 @@ This paragraph explains how verification evidence will be interpreted.
             if relative.startswith("docs/00.agent-governance/memory/"):
                 continue
             path = ROOT / relative
+            if not path.exists():
+                continue
             if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
                 continue
             for line_number, line in enumerate(

@@ -63,11 +63,22 @@ def _validate_template_source(
     target_type = role.get("artifact_profile")
     if not isinstance(target_type, str):
         return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
-    if role_name == "readme":
+    if target_type == "readme":
+        expected = {
+            "profile_id": "readme",
+            "status": "draft",
+            "artifact_type": "readme",
+        }
         return (
             []
-            if record.metadata == {"status": "draft"}
-            else [_finding(record, "invalid-template-metadata", "README source metadata must be exactly status: draft")]
+            if record.metadata == expected
+            else [
+                _finding(
+                    record,
+                    "invalid-template-metadata",
+                    "README source metadata must match the registered README template envelope",
+                )
+            ]
         )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)

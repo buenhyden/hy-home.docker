@@ -3,18 +3,15 @@
 
 from __future__ import annotations
 
-import argparse
 import collections
 import copy
 import dataclasses
 import datetime as dt
 import fnmatch
-import hashlib
 import os
 import pathlib
 import re
 import stat
-import subprocess
 import sys
 from collections.abc import Mapping, Sequence
 
@@ -54,26 +51,13 @@ if _REPOSITORY_DIRECTORY not in sys.path:
 from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
     normalize_repo_relative_path,
 )
-from scripts.lib.document_governance.architecture import (  # noqa: E402
-    ArchitectureDocumentError,
-    load_architecture_documents,
-    validate_supersession_graph,
-)
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
-    FrontmatterError,
     parse_frontmatter_text as _parse_frontmatter_text,
     read_frontmatter_values,
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     HistoricalDocument,
-    resolve_git_provenance,
-)
-from scripts.lib.document_governance.identity_history import (  # noqa: E402
-    IdentityHistoryError,
-    collect_issued_identities,
-    validate_identity_history,
-    validate_allocation_transition,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DEFAULT_REGISTRY,
@@ -81,23 +65,10 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     RegistryError,
     classify_path as classify_registered_path,
     load_registry,
-    load_trusted_requirement_allocation_baseline,
-    validate_frontmatter,
-)
-from scripts.lib.document_governance.requirements import (  # noqa: E402
-    RequirementPackageError,
-    load_requirement_packages,
-)
-from scripts.lib.document_governance.spec_packages import (  # noqa: E402
-    SpecPackageError,
-    load_spec_packages,
-    resolve_lifecycle_base,
-    validate_repository_spec_package_lifecycle,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     classify_path as classify_taxonomy_path,
     requirement_package_identity,
-    validate_stable_identity,
 )
 
 
@@ -1569,16 +1540,15 @@ def matching_template_roles(
     normalized = pathlib.PurePosixPath(path.as_posix())
     if normalized.is_absolute() or any(part in {"", ".", ".."} for part in normalized.parts):
         return []
+    registry = profiles.get("_registry")
+    if isinstance(registry, DocumentRegistry):
+        registered_profile = classify_registered_path(normalized, registry)
+        if registered_profile != artifact_type:
+            return []
     common = profiles.get("common", {})
     excluded = common.get("inventory_excludes", []) if isinstance(common, dict) else []
     if normalized.as_posix() in excluded:
         return []
-    if artifact_type == "readme":
-        try:
-            classify_readme_profile(path, profiles)
-        except ProfileError:
-            return []
-
     template_roles = profiles.get("template_roles", {})
     if not isinstance(template_roles, dict):
         return []
@@ -2918,7 +2888,7 @@ def build_registry_transition_profiles(
             "allowed_parent_types": parents,
             "allow_empty_parents": (
                 profile_id in {"research", "audit", "data"}
-                or isinstance(traceability, Mapping) and traceability.get("membership_authority") == "operations-migration-manifest"
+                or profile.get("identity_relation") == "subject-member"
                 or not parents
             ),
             "allow_additional": False,
@@ -2938,10 +2908,21 @@ def build_registry_transition_profiles(
         path_pattern = profile.get("path_pattern") if isinstance(profile, Mapping) else None
         if not isinstance(profile, Mapping) or not isinstance(path_pattern, str):
             continue
+        additional_paths = profile.get("additional_paths", ())
+        target_patterns = [path_pattern]
+        if isinstance(additional_paths, Sequence) and not isinstance(
+            additional_paths, (str, bytes, bytearray)
+        ):
+            target_patterns.extend(
+                path for path in additional_paths if isinstance(path, str)
+            )
         projected_roles[role_id] = {
             "source": role.get("source"),
             "artifact_profile": profile_id,
-            "target_globs": [_registry_path_glob(path_pattern)],
+            "target_globs": [
+                _registry_path_glob(pattern)
+                for pattern in dict.fromkeys(target_patterns)
+            ],
             "required_headings": [
                 f"## {section}" for section in profile.get("required_sections", ())
             ],

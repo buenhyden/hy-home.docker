@@ -605,6 +605,37 @@ consumer handoffs because a target disposition changes their navigation.
   provider comparison only; no quarantine, temporary projection, archive,
   redirect, or Tombstone artifact was added.
 
+### 2026-09-01 Task 4 observed evidence
+
+- Stage 99 Registry is the sole current profile, path, lifecycle, identity,
+  and template-role authority. Operations profiles no longer delegate current
+  membership to a Migration, and the Operations validator no longer consumes
+  archive rows, recovery commits, frozen inventories, or branch-tip witnesses.
+- Current Operations membership is derived from the bounded tracked tree under
+  `docs/05.operations/catalog/`. Required indexes and role leaves must be
+  tracked regular files without symlink components; malformed Registry input,
+  excessive JSON depth, final or parent symlinks, and FIFO replacement races
+  fail closed with findings rather than tracebacks or blocking reads.
+- Every live copy template has exactly one Registry role. The unused Migration
+  authoring template and role were removed, `common/readme` was registered for
+  its real consumers, and subject README authoring was removed because current
+  Operations subjects are containers whose managed leaves are guides,
+  policies, and runbooks.
+- Registry, Operations catalog, and Operations taxonomy ran 96 tests with final
+  result `OK`. The broader Python review ran 201 core tests, 21 metadata
+  heading/lifecycle/reference tests, and 39 archive/taxonomy tests with final
+  result `OK`; the metadata suite run recorded here ran 82 tests with result
+  `OK`.
+- Metadata contracts reported `violations=0`; changed metadata against explicit
+  `main` selected 46 paths with zero violations; Operations complete reported
+  `PASS`; document links inspected 568 documents and 4,866 links with zero
+  failures and zero current-to-archive links; script manifest and both generated
+  LLM Wiki outputs passed.
+- Scoped Ruff and `git diff --check 360ef5d6` passed. The protected RES-0002
+  research pack has zero diff from the Task 3 commit. Changes to Data 0076 and
+  Data 0082 are generated path removal only; both non-protected outputs remain
+  scheduled for Task 6 deletion.
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -656,11 +687,31 @@ The final read-only verdicts are GREEN and do not grant approval:
   parity, and diff hygiene. These review verdicts are evidence and do not
   substitute for user approval.
 
+### Task 4 independent review
+
+- `rules-engineer`: final governance verdict PASS. Its only Low finding was a
+  stale fixed-count PASS message; the message was reduced to the derived
+  predicate result and revalidated. It confirmed Registry authority, exact
+  template registration, current-tree Operations membership, and zero
+  protected-research diff.
+- `code-reviewer`: no remaining Critical, High, Medium, or Low findings;
+  `SPEC`, `QUALITY`, and `EXACT-DIFF` verdicts all PASS. It confirmed archive
+  independence, manifest consumer evidence, deleted-template cleanup, Stage 05
+  terminology, validators, and diff hygiene.
+- `python-reviewer`: final PASS with no High, Medium, or Low findings after
+  iterative corrections for tracked membership, non-regular indexes, Registry
+  adapter ownership, malformed shapes, allocation bounds, depth limits,
+  parent/final symlinks, and FIFO races. It independently ran 201 core tests
+  plus focused metadata and archive/taxonomy suites. These review verdicts are
+  evidence and do not substitute for user approval.
+
 ## Commit Ledger
 
 | Logical change | Commit | Verification |
 | :--- | :--- | :--- |
 | Activate SPEC-0158 and create its one current Task | `6317553e` | metadata contracts 0, changed metadata 0, links 0, diff hygiene |
+| Record lifecycle disposition and consumer handoffs | `f5420ebe` | exact 592-path coverage, recovery blobs, independent governance and exact-diff review |
+| Separate neutral governance from provider projections | `360ef5d6` | 116 changed tests, provider drift 0, agent contract 0, links 0, independent three-seat review |
 
 ## Rulings
 

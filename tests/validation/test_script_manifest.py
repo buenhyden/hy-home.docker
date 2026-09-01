@@ -26,13 +26,6 @@ OPERATIONS_MANIFEST_PATHS = (
     "scripts/lib/document_governance/operations_catalog.py",
     "scripts/validation/check-operations-catalog.py",
 )
-OPERATIONS_CURRENT_AUTHORITIES = (
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
-    "docs/99.templates/registry.json",
-)
-OPERATIONS_SEMANTIC_WITNESSES = (
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
-)
 MIGRATION_ROOTS = (
     "docs/01.requirements",
     "docs/02.architecture",
@@ -537,11 +530,6 @@ class ScriptManifestTests(unittest.TestCase):
                 and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
-            if row["path"] in OPERATIONS_MANIFEST_PATHS:
-                expected_fields = expected_fields | {
-                    "current_authorities",
-                    "semantic_witnesses",
-                }
             if row["kind"] == "validator":
                 expected_fields = expected_fields | {
                     "public_suites",
@@ -705,23 +693,13 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(migration_authority, authority)
 
-    def test_operations_implementation_and_gate_declare_current_and_witness_authority(self) -> None:
+    def test_operations_implementation_and_gate_use_the_registry_authority(self) -> None:
         for path in OPERATIONS_MANIFEST_PATHS:
             with self.subTest(path=path):
                 row = self.rows_by_path[path]
                 self.assertEqual("docs/99.templates/registry.json", row["authority"])
-                self.assertEqual(
-                    list(OPERATIONS_CURRENT_AUTHORITIES),
-                    row["current_authorities"],
-                )
-                self.assertEqual(
-                    list(OPERATIONS_SEMANTIC_WITNESSES),
-                    row["semantic_witnesses"],
-                )
-                self.assertNotIn(
-                    OPERATIONS_SEMANTIC_WITNESSES[0],
-                    row["current_authorities"],
-                )
+                self.assertNotIn("current_authorities", row)
+                self.assertNotIn("semantic_witnesses", row)
 
     def test_runbook_authority_accepts_only_canonical_catalog_leaf_shape(self) -> None:
         self.assertTrue(
@@ -1212,25 +1190,13 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn("authority-invalid", self.codes(self.row(authority="")))
         self.assertIn("authority-untracked", self.codes(self.row(authority="docs/unknown.md")))
 
-    def test_operations_rows_reject_semantic_witness_as_current_authority(self) -> None:
-        tracked = self.tracked | set(OPERATIONS_CURRENT_AUTHORITIES) | set(
-            OPERATIONS_SEMANTIC_WITNESSES
-        )
-        valid = self.row(
-            path=OPERATIONS_MANIFEST_PATHS[0],
-            authority="docs/99.templates/registry.json",
-            current_authorities=list(OPERATIONS_CURRENT_AUTHORITIES),
-            semantic_witnesses=list(OPERATIONS_SEMANTIC_WITNESSES),
-        )
-        self.assertNotIn("operations-authority-invalid", self.codes(valid, tracked))
-        mutated = {
-            **valid,
-            "current_authorities": [
-                OPERATIONS_SEMANTIC_WITNESSES[0],
-                "docs/99.templates/registry.json",
-            ],
-        }
-        self.assertIn("operations-authority-invalid", self.codes(mutated, tracked))
+    def test_manifest_rejects_retired_operations_authority_fields(self) -> None:
+        for field in ("current_authorities", "semantic_witnesses"):
+            with self.subTest(field=field):
+                self.assertIn(
+                    "fields-unknown",
+                    self.codes(self.row(**{field: ["docs/authority.md"]})),
+                )
 
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
         self.assertIn("disposition-invalid", self.codes(self.row(disposition="deprecated")))

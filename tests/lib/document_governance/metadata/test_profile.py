@@ -108,9 +108,32 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             with self.subTest(role=role_name, path=path_text):
                 self.assertEqual(
                     role_name,
-                    metadata.classify_template_role(
+                    profile_module.classify_template_role(
                         pathlib.Path(path_text), profile_id, self.profiles
                     ),
+                )
+
+    def test_common_readme_role_covers_every_additional_registered_path(self) -> None:
+        readme = self.registry.profiles["readme"]
+        for path_text in readme["additional_paths"]:
+            with self.subTest(path=path_text):
+                self.assertEqual(
+                    "common/readme",
+                    profile_module.classify_template_role(
+                        pathlib.Path(path_text), "readme", self.profiles
+                    ),
+                )
+
+    def test_common_readme_role_rejects_unregistered_routes(self) -> None:
+        for path_text in (
+            "docs/not-a-stage/README.md",
+            "docs/02.architecture/unknown/README.md",
+        ):
+            with self.subTest(path=path_text), self.assertRaises(
+                profile_module.ProfileError
+            ):
+                profile_module.classify_template_role(
+                    pathlib.Path(path_text), "readme", self.profiles
                 )
 
 class TemplateMetadataTests(unittest.TestCase):
@@ -221,20 +244,21 @@ class TemplateMetadataTests(unittest.TestCase):
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)
 
-    def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
+    def test_stage_99_catalogs_publish_the_current_role_inventory(self) -> None:
         catalogs = {
             "docs/99.templates/README.md": (
                 "Requirement Package",
                 "Architecture Description",
                 "Guide, Policy, Runbook, Incident, and Postmortem",
-                "Research, Audit, Data, Migration, and Tombstone",
+                "Research, Audit, Data, and Tombstone",
+                "transition-only\n  Migration profile",
             ),
             "docs/99.templates/templates/README.md": (
                 "Requirement Package",
                 "Architecture Description, ADR",
                 "Guide, Policy, Runbook, Incident, Postmortem",
                 "Research, Audit, Data",
-                "Migration, Tombstone",
+                "| Archive | `archive/` | Tombstone |",
             ),
         }
         for relative_path, literal_inventories in catalogs.items():
@@ -299,7 +323,14 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
         path_text = "docs/99.templates/templates/common/readme.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
-        self.assertEqual({"status": "draft"}, values)
+        self.assertEqual(
+            {
+                "profile_id": "readme",
+                "status": "draft",
+                "artifact_type": "readme",
+            },
+            values,
+        )
 
     def test_governance_template_source_rejects_typed_leaf_metadata(self) -> None:
         record = metadata.Record(

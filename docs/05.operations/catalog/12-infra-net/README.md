@@ -8,8 +8,8 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates the existing guide, policy, and runbook under the frozen
-`0077-ip-address-management` identity. The three roles preserve their
+This domain co-locates the existing guide, policy, and runbook under the current
+`0077-ip-address-management` subject directory. The three roles preserve their
 separate usage, control, and procedure responsibilities.
 
 ## Audience

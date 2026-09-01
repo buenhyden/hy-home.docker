@@ -3,7 +3,7 @@ profile_id: tombstone
 status: draft
 artifact_id: tombstone-####
 artifact_type: tombstone
-parent_ids: [mig-####]
+parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -28,4 +28,4 @@ updated: YYYY-MM-DD
 
 ## Traceability
 
-{{archive_readme_or_migration_link}}
+{{archive_index_or_current_owner_link}}
