@@ -668,15 +668,19 @@ class RequirementPackageTests(unittest.TestCase):
         )
         self.assertFalse(tuple(stage.glob("prd-*.md")))
 
-    def test_changed_spec_0136_consumers_reference_declared_child_ids(self) -> None:
+    def test_current_specs_reference_declared_requirement_child_ids(self) -> None:
         requirements = _requirements_module()
         packages = requirements.load_requirement_packages(ROOT / "docs/01.requirements")
         declared = {
             item.identity for package in packages for item in package.items
         }
-        consumers = (
-            ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
-            ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
+        spec_packages = importlib.import_module(
+            "scripts.lib.document_governance.spec_packages"
+        ).load_spec_packages(ROOT / "docs/03.specs")
+        consumers = tuple(
+            ROOT / package.spec.path
+            for package in spec_packages
+            if package.spec.status == "active"
         )
         referenced = {
             identity
@@ -694,10 +698,6 @@ class RequirementPackageTests(unittest.TestCase):
                     path.read_text(encoding="utf-8")
                 ),
                 path,
-            )
-            self.assertIn(
-                "Acceptance items reference their matching FR IDs",
-                path.read_text(encoding="utf-8"),
             )
 
         retired_injections = (

@@ -5,7 +5,7 @@ artifact_id: REQ-0022
 artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 11-Laboratory Optimization & Hardening Product Requirements
 
@@ -45,7 +45,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **REQ-0022-FR-0004**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
 - **REQ-0022-FR-0005**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
 - **REQ-0022-FR-0006**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-0022-FR-0007**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0022-FR-0007**: `docs/{01.requirements,02.architecture,03.specs,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-0022-FR-0008**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
 - **REQ-0022-FR-0009**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
 
@@ -70,7 +70,7 @@ No separately numbered solution-independent external interface requirement was i
   - `.env.example` (allowlist 변수)
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` optimization-hardening 문서/README
 - **Out of Scope**:
   - 신규 Laboratory 서비스 도입
   - 관리 도구 major version migration
@@ -95,9 +95,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/0012-laboratory/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
 - **Policy**: [../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)

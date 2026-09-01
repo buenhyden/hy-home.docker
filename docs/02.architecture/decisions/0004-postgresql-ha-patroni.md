@@ -6,7 +6,7 @@ artifact_type: adr
 parent_ids:
   - AD-0004
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA
 
@@ -63,4 +63,3 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Architecture Description**: [../descriptions/0004-data-architecture.md](../descriptions/0004-data-architecture.md)
 - **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-04-data-standardization.md

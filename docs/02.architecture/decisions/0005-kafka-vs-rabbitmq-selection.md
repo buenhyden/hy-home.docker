@@ -6,7 +6,7 @@ artifact_type: adr
 parent_ids:
   - AD-0005
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 
@@ -72,4 +72,3 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Architecture Description**: [../descriptions/0005-messaging-architecture.md](../descriptions/0005-messaging-architecture.md)
 - **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-05-messaging-standardization.md

@@ -6,7 +6,7 @@ artifact_type: architecture-description
 parent_ids:
   - REQ-0013
 created: 2026-03-27
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # Open WebUI Architecture Description
 
@@ -99,5 +99,4 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
 - **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/0009-ai/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md
 - **ADR**: [../decisions/0016-open-webui-implementation.md](../decisions/0016-open-webui-implementation.md)

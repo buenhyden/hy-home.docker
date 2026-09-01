@@ -6,7 +6,7 @@ artifact_type: adr
 parent_ids:
   - AD-0020
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0020: Messaging Hardening and HA Expansion Strategy
 
@@ -79,6 +79,4 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../descriptions/0020-messaging-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
-- **Tasks**: ../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md
 - **Related ADR**: [ADR-0005](0005-kafka-vs-rabbitmq-selection.md)

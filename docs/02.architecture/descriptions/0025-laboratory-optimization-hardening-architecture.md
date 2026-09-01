@@ -6,7 +6,7 @@ artifact_type: architecture-description
 parent_ids:
   - REQ-0022
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 11-Laboratory Optimization Hardening Architecture Description
 
@@ -105,9 +105,7 @@ This hardening Architecture Description does not introduce production data owner
 
 - **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0022-laboratory-optimization-hardening.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)

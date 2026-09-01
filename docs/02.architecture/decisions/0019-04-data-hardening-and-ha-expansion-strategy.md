@@ -6,7 +6,7 @@ artifact_type: adr
 parent_ids:
   - AD-0019
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0019: 04-Data Hardening and HA Expansion Strategy
 
@@ -79,6 +79,4 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0016-data-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md
-- **Tasks**: ../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md)

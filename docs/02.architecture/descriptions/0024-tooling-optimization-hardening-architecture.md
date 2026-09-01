@@ -6,7 +6,7 @@ artifact_type: architecture-description
 parent_ids:
   - REQ-0021
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 09-Tooling Optimization Hardening Architecture Description
 
@@ -117,9 +117,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 - **PRD**: [../01.requirements/0021-tooling-optimization-hardening.md](../../01.requirements/0021-tooling-optimization-hardening.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/0010-tooling/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)

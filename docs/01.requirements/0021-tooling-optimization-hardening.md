@@ -5,7 +5,7 @@ artifact_id: REQ-0021
 artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 09-Tooling Optimization & Hardening Product Requirements
 
@@ -44,7 +44,7 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
 - **REQ-0021-FR-0002**: tooling compose는 `infra_net` external 경계 선언을 명시해야 한다.
 - **REQ-0021-FR-0003**: locust-worker는 healthcheck를 제공해야 하며, k6 volume 참조 drift를 제거해야 한다.
 - **REQ-0021-FR-0004**: `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-0021-FR-0005**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0021-FR-0005**: `docs/{01.requirements,02.architecture,03.specs,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-0021-FR-0006**: 카탈로그 기준으로 terraform 승인/백업/drift, terrakube 권한/감사로그, registry 서명/스캔 차단, sonarqube 품질게이트 재정의, k6 회귀 baseline, locust 분산 토폴로지/정리 루틴, syncthing ACL/암호화/충돌 정책을 작업 로드맵에 반영해야 한다.
 
 ## Non-functional Requirements
@@ -67,7 +67,7 @@ No separately numbered solution-independent external interface requirement was i
   - `infra/09-tooling/*/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` tooling optimization-hardening 문서/README
 - **Out of Scope**:
   - 신규 도구 도입(예: 신규 테스트 프레임워크)
   - 즉시 모든 카탈로그 확장 항목의 런타임 구현
@@ -92,9 +92,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../03.specs/0010-tooling/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/09-tooling/optimization-hardening.md](../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)
 - **Operation**: [../05.operations/policies/09-tooling/optimization-hardening.md](../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/09-tooling/optimization-hardening.md](../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)

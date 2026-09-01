@@ -6,7 +6,7 @@ artifact_type: architecture-description
 parent_ids:
   - REQ-0014
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 02-Auth Optimization Hardening Architecture Description
 
@@ -113,5 +113,4 @@ updated: 2026-08-10
 
 - **PRD**: [../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0014-auth-optimization-hardening.md)
 - **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
