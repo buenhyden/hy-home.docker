@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Neo4j Health and Recovery Triage Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0033
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0033
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

@@ -1,8 +1,13 @@
 ---
+title: "Reference: Agentic Engineering Scope Application Matrix"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:scope-application-matrix
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0015
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -495,7 +500,7 @@ separately approved evidence exists.
 | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
 | [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
 | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-32's derivations are unchanged.                                                                                                                                                                                    |
-| [Workspace baseline](./workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
+| [Workspace baseline](./m0020-workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
 | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/)  | 2026-08-14 | External mutable       | Newly cited. `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization.                                                                                                                 |
 | [A2A protocol specification](https://github.com/a2aproject/A2A)                                        | 2026-08-14 | External mutable       | Newly cited. Agent Card separates protocol `capabilities` from functional `skills`; undeclared capability MUST error.                                                                                                               |
 | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; cannot enforce its principles at protocol level.                                                                                                                |
@@ -538,8 +543,8 @@ separately approved evidence exists.
 
 ## Architecture Practice Composition Links
 
-- [Documentation architecture](./documentation-architecture.md)
-- [SDLC document roles](./sdlc-document-roles.md)
+- [Documentation architecture](./m0007-documentation-architecture.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
 
 ## Maintenance
 
@@ -553,8 +558,8 @@ explicit disposition for every scope and link back to this matrix.
 
 ## Related Documents
 
-- [Workspace baseline](./workspace-baseline.md)
-- [Verification and validation](./verification-validation.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Verification and validation](./m0019-verification-validation.md)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

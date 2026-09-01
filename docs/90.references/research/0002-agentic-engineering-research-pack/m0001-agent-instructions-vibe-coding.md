@@ -1,8 +1,13 @@
 ---
+title: "Reference: Agent Instructions and Bounded Vibe Coding"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:agent-instructions-vibe-coding
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0001
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -124,7 +129,7 @@ legitimately exist for an operator working across many repositories — for
 example a global preference toward proactive subagent delegation, parallel
 task execution, or automatic skill invocation — without that layer being able
 to expand what this specific repository's `approval-boundaries.md` Hard Stops
-or the four typed harness loops (see [loop-engineering.md](./loop-engineering.md))
+or the four typed harness loops (see [loop-engineering.md](./m0010-loop-engineering.md))
 permit here. This reference does not name or quote any such personal
 configuration; it records only the structural fact that this layering exists
 in Claude's own documented precedence and that this repository's governance
@@ -161,7 +166,7 @@ role, function, model, or event is defined; Tier 2 (`.claude/`, `.codex/`,
 `.gemini/`) exposes that definition through a generated, provider-native
 adapter. Five adapter rules (name-set, role, policy, model, and validation
 parity — detailed in
-[provider-implementation-comparison.md](./provider-implementation-comparison.md))
+[provider-implementation-comparison.md](./m0012-provider-implementation-comparison.md))
 make this machine-checkable. The direct consequence for bounded vibe coding:
 a conversational session that hand-edits a Tier 2 file (for example adding a
 tool to `.claude/agents/qa-engineer.md` without a matching Stage 00 change)
@@ -304,8 +309,8 @@ tracked file.
 
 ## Related Documents
 
-- [Provider implementation comparison](./provider-implementation-comparison.md)
-- [Harness engineering](./harness-engineering.md)
-- [Loop engineering](./loop-engineering.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Provider Capability Matrix
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Provider Capability Matrix

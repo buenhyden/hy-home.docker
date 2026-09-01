@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Harness / Agent-first Engineering Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0004
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0004
 parent_ids:
   - SPEC-0094
 created: 2026-06-04

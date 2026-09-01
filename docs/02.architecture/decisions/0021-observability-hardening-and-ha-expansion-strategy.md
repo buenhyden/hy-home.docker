@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Observability Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0021
-artifact_type: adr
 parent_ids:
   - AD-0021
 created: 2026-03-28

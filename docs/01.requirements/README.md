@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: Requirement Packages
+type: common/readme
+layer: requirements
 status: active
+owner: "@buenhyden"
 ---
 
 # Requirement Packages

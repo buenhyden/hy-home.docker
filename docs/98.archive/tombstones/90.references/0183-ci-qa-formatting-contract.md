@@ -1,8 +1,10 @@
 ---
-profile_id: tombstone
+title: "Reference: CI, QA, and Formatting Contract Tombstone"
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0183
-artifact_type: tombstone
+owner: "@buenhyden"
+artifact_id: tomb-AUD-0013
 parent_ids: [SPEC-0158]
 created: 2026-09-01
 updated: 2026-09-01

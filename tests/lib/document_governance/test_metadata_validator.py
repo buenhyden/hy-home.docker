@@ -212,11 +212,11 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             source.write_bytes(PROFILES.read_bytes())
             document = root / "docs/03.specs/0104-example/spec.md"
             document.parent.mkdir(parents=True)
-            document.write_text("---\nstatus: active\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
+            document.write_text("---\nstatus: active\ntype: specs/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
             for args in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")):
                 subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
             findings = validate_repository_contracts(root, metadata.build_registry_profiles(self.registry))
-            self.assertIn("profile-id-mismatch", {item.code for item in findings})
+            self.assertIn("type-mismatch", {item.code for item in findings})
 
     def test_current_profile_envelope_never_loads_legacy_authority(self) -> None:
         from scripts.lib.document_governance import metadata_validator
@@ -277,7 +277,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_profiles_parse_and_publish_exact_incident_selector(self) -> None:
         incident = self.profiles["incident"]
         postmortem = self.profiles["postmortem"]
-        self.assertEqual("inc-{number:4}", incident["artifact_id_pattern"])
+        self.assertEqual(
+            "inc-{year:4}-{number:4}", incident["artifact_id_pattern"]
+        )
         self.assertEqual(
             "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
             incident["path_pattern"],
@@ -339,12 +341,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_allows_only_the_exact_incident_year_route(self) -> None:
         profiles = {
-            "incident": {
-                "id_pattern": r"inc-[0-9]{4}",
+            "operations/incident": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             }
         }
-        metadata = {"artifact_type": "incident", "artifact_id": "inc-0001"}
+        metadata = {"type": "operations/incident", "artifact_id": "inc-2026-0001"}
         accepted = validate_stable_identity(
             pathlib.PurePosixPath(
                 "docs/05.operations/incidents/2026/"
@@ -373,15 +375,15 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_rejects_incident_role_file_swaps(self) -> None:
         profiles = {
-            "incident": {
-                "id_pattern": r"inc-[0-9]{4}",
+            "operations/incident": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             },
-            "postmortem": {
-                "id_pattern": r"postmortem-[0-9]{4}",
+            "operations/postmortem": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}-PM",
                 "path_identity": "inherited",
                 "parent_id_pattern": r"inc-(?P<identity>[0-9]{4})-[a-z0-9-]+",
-                "artifact_id_identity_pattern": r"postmortem-(?P<identity>[0-9]{4})",
+                "artifact_id_identity_pattern": r"inc-[0-9]{4}-(?P<identity>[0-9]{4})-PM",
                 "identity_capture": "identity",
             },
         }
@@ -389,18 +391,18 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         swaps = (
             (
                 pathlib.PurePosixPath(f"{packet}/postmortem.md"),
-                {"artifact_type": "incident", "artifact_id": "inc-0001"},
+                {"type": "operations/incident", "artifact_id": "inc-2026-0001"},
             ),
             (
                 pathlib.PurePosixPath(f"{packet}/incident.md"),
                 {
-                    "artifact_type": "postmortem",
-                    "artifact_id": "postmortem-0001",
+                    "type": "operations/postmortem",
+                    "artifact_id": "inc-2026-0001-PM",
                 },
             ),
         )
         for path, metadata in swaps:
-            with self.subTest(path=path, artifact_type=metadata["artifact_type"]):
+            with self.subTest(path=path, document_type=metadata["type"]):
                 self.assertIn(
                     "incident-path-invalid",
                     {

@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Choice of Spilo/Patroni for PostgreSQL HA
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0004
-artifact_type: adr
 parent_ids:
   - AD-0004
 created: 2026-03-26

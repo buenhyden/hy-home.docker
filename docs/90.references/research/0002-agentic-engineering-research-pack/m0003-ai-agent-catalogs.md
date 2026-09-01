@@ -1,8 +1,13 @@
 ---
+title: "Reference: External AI-Agent Catalogs and Local Intake"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:ai-agent-catalogs
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0003
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-31
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -227,7 +232,7 @@ actually assignable today: `agentic`, `architecture`, `common`, `docs`,
 mapped to an existing scope at all — it would first need an approved
 `agent-catalog.yaml` schema change adding the scope value, before any role
 or function assignment could follow. See
-[Agent model selection: the 8-of-14 scope gap](./agent-model-selection.md#full-role-to-profile-registry-and-the-8-of-14-scope-gap)
+[Agent model selection: the 8-of-14 scope gap](./m0002-agent-model-selection.md#full-role-to-profile-registry-and-the-8-of-14-scope-gap)
 for the full per-scope breakdown; it is not repeated here to keep this leaf
 a router rather than a duplicate policy body.
 
@@ -346,8 +351,8 @@ load-bearing citation.
 
 ## Related Documents
 
-- [Agent instructions](./agent-instructions-vibe-coding.md)
-- [Agent model selection](./agent-model-selection.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Agent model selection](./m0002-agent-model-selection.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

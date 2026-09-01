@@ -1,8 +1,10 @@
 ---
-profile_id: migration
+title: Operations Catalog Convergence Manifest
+type: archive/migration
+layer: archive
 status: completed
-artifact_id: mig-0002
-artifact_type: migration
+owner: "@buenhyden"
+artifact_id: MIG-0002
 parent_ids: [SPEC-0136]
 created: 2026-08-13
 updated: 2026-08-30

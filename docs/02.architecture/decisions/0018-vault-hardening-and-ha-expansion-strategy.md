@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Vault Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0018
-artifact_type: adr
 parent_ids:
   - AD-0018
 created: 2026-03-28

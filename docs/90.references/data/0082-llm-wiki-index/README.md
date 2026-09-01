@@ -1,8 +1,10 @@
 ---
-profile_id: data
+title: LLM Wiki Generated Index
+type: references/data
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: DATA-0082
-artifact_type: data
 parent_ids: []
 created: 2026-08-19
 updated: 2026-08-23
@@ -580,26 +582,26 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/0079-supply-chain-sample-service/README.md](../0079-supply-chain-sample-service/README.md) | folder index |
 | [docs/90.references/data/README.md](../README.md) | folder index |
 | [docs/90.references/research/0002-agentic-engineering-research-pack/README.md](../../research/0002-agentic-engineering-research-pack/README.md) | folder index |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/agent-instructions-vibe-coding.md](../../research/0002-agentic-engineering-research-pack/agent-instructions-vibe-coding.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/agent-model-selection.md](../../research/0002-agentic-engineering-research-pack/agent-model-selection.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/ai-agent-catalogs.md](../../research/0002-agentic-engineering-research-pack/ai-agent-catalogs.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/automation-pipeline-workflow.md](../../research/0002-agentic-engineering-research-pack/automation-pipeline-workflow.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/docker-compose-infrastructure.md](../../research/0002-agentic-engineering-research-pack/docker-compose-infrastructure.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/document-metadata-lifecycle.md](../../research/0002-agentic-engineering-research-pack/document-metadata-lifecycle.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/documentation-architecture.md](../../research/0002-agentic-engineering-research-pack/documentation-architecture.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/harness-engineering.md](../../research/0002-agentic-engineering-research-pack/harness-engineering.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/llm-wiki-system.md](../../research/0002-agentic-engineering-research-pack/llm-wiki-system.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/loop-engineering.md](../../research/0002-agentic-engineering-research-pack/loop-engineering.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/memory-hierarchy.md](../../research/0002-agentic-engineering-research-pack/memory-hierarchy.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/provider-implementation-comparison.md](../../research/0002-agentic-engineering-research-pack/provider-implementation-comparison.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/provider-model-landscape.md](../../research/0002-agentic-engineering-research-pack/provider-model-landscape.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/quality-ci-formatting.md](../../research/0002-agentic-engineering-research-pack/quality-ci-formatting.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/scope-application-matrix.md](../../research/0002-agentic-engineering-research-pack/scope-application-matrix.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/sdlc-document-roles.md](../../research/0002-agentic-engineering-research-pack/sdlc-document-roles.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md](../../research/0002-agentic-engineering-research-pack/security-governance.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/spec-driven-sdlc.md](../../research/0002-agentic-engineering-research-pack/spec-driven-sdlc.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/verification-validation.md](../../research/0002-agentic-engineering-research-pack/verification-validation.md) | Markdown reference |
-| [docs/90.references/research/0002-agentic-engineering-research-pack/workspace-baseline.md](../../research/0002-agentic-engineering-research-pack/workspace-baseline.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0001-agent-instructions-vibe-coding.md](../../research/0002-agentic-engineering-research-pack/m0001-agent-instructions-vibe-coding.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0002-agent-model-selection.md](../../research/0002-agentic-engineering-research-pack/m0002-agent-model-selection.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md](../../research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md](../../research/0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0005-docker-compose-infrastructure.md](../../research/0002-agentic-engineering-research-pack/m0005-docker-compose-infrastructure.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0006-document-metadata-lifecycle.md](../../research/0002-agentic-engineering-research-pack/m0006-document-metadata-lifecycle.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0007-documentation-architecture.md](../../research/0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0008-harness-engineering.md](../../research/0002-agentic-engineering-research-pack/m0008-harness-engineering.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md](../../research/0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0010-loop-engineering.md](../../research/0002-agentic-engineering-research-pack/m0010-loop-engineering.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0011-memory-hierarchy.md](../../research/0002-agentic-engineering-research-pack/m0011-memory-hierarchy.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md](../../research/0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0013-provider-model-landscape.md](../../research/0002-agentic-engineering-research-pack/m0013-provider-model-landscape.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md](../../research/0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0015-scope-application-matrix.md](../../research/0002-agentic-engineering-research-pack/m0015-scope-application-matrix.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md](../../research/0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0017-security-governance.md](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md](../../research/0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0019-verification-validation.md](../../research/0002-agentic-engineering-research-pack/m0019-verification-validation.md) | Markdown reference |
+| [docs/90.references/research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md](../../research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/0080-roadmap-v1/README.md](../../research/0080-roadmap-v1/README.md) | folder index |
 | [docs/90.references/research/0081-roadmap/README.md](../../research/0081-roadmap/README.md) | folder index |
 | [docs/90.references/research/0084-github-actions-platform/README.md](../../research/0084-github-actions-platform/README.md) | folder index |
@@ -611,18 +613,24 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/README.md](../../../99.templates/templates/README.md) | folder index |
 | [docs/99.templates/templates/architecture/adr.template.md](../../../99.templates/templates/architecture/adr.template.md) | Markdown reference |
 | [docs/99.templates/templates/architecture/architecture-description.template.md](../../../99.templates/templates/architecture/architecture-description.template.md) | Markdown reference |
+| [docs/99.templates/templates/archive/migration.template.md](../../../99.templates/templates/archive/migration.template.md) | Markdown reference |
 | [docs/99.templates/templates/archive/tombstone.template.md](../../../99.templates/templates/archive/tombstone.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/README.md](../../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/readme.template.md](../../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../../99.templates/templates/governance/README.md) | folder index |
+| [docs/99.templates/templates/governance/agent-projection.template.md](../../../99.templates/templates/governance/agent-projection.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/skill-projection.template.md](../../../99.templates/templates/governance/skill-projection.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/README.md](../../../99.templates/templates/operations/README.md) | folder index |
 | [docs/99.templates/templates/operations/guide.template.md](../../../99.templates/templates/operations/guide.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/incident.template.md](../../../99.templates/templates/operations/incident.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/policy.template.md](../../../99.templates/templates/operations/policy.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/postmortem.template.md](../../../99.templates/templates/operations/postmortem.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/runbook.template.md](../../../99.templates/templates/operations/runbook.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/audit-member.template.md](../../../99.templates/templates/references/audit-member.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/audit.template.md](../../../99.templates/templates/references/audit.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/data-member.template.md](../../../99.templates/templates/references/data-member.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/data.template.md](../../../99.templates/templates/references/data.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/research-member.template.md](../../../99.templates/templates/references/research-member.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/research.template.md](../../../99.templates/templates/references/research.template.md) | Markdown reference |
 | [docs/99.templates/templates/requirements/requirement-package.template.md](../../../99.templates/templates/requirements/requirement-package.template.md) | Markdown reference |
 | [docs/99.templates/templates/specs/openapi.template.yaml](../../../99.templates/templates/specs/openapi.template.yaml) | YAML config |

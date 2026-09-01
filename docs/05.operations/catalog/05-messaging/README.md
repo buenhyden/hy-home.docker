@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 05 Messaging
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 05 Messaging

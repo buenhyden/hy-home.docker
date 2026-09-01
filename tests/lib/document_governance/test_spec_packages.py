@@ -35,10 +35,12 @@ def _document_text(
 ) -> str:
     parents = "\n".join(f"  - {parent}" for parent in parent_ids)
     return f"""---
-profile_id: {profile_id}
+title: Fixture {profile_id}
+type: specs/{profile_id}
+layer: specification
 status: {status}
+owner: "@buenhyden"
 artifact_id: {artifact_id}
-artifact_type: {profile_id}
 parent_ids:
 {parents}
 created: 2026-08-22
@@ -101,7 +103,7 @@ def _write_package(
         package.joinpath("plan.md").write_text(
             _document_text(
                 "plan",
-                f"plan-{number}",
+                f"SPEC-{number}-PLAN-0001",
                 (f"SPEC-{number}",),
                 status=plan_status,
             ),
@@ -111,7 +113,7 @@ def _write_package(
         tasks = package / "tasks"
         tasks.mkdir()
         parents = task_parent_ids or (
-            (f"SPEC-{number}", f"plan-{number}")
+            (f"SPEC-{number}", f"SPEC-{number}-PLAN-0001")
             if plan
             else (f"SPEC-{number}",)
         )
@@ -155,7 +157,7 @@ class SpecPackageTests(unittest.TestCase):
         self.assertEqual(1, len(packages))
         package = packages[0]
         self.assertEqual("SPEC-0001", package.spec.artifact_id)
-        self.assertEqual("plan-0001", package.plan.artifact_id)
+        self.assertEqual("SPEC-0001-PLAN-0001", package.plan.artifact_id)
         self.assertEqual("SPEC-0001-TSK-0001", package.tasks[0].artifact_id)
         self.assertEqual(("openapi.yaml",), tuple(path.name for path in package.contracts))
         self.assertTrue(dataclasses.is_dataclass(package))
@@ -358,13 +360,13 @@ class SpecPackageTests(unittest.TestCase):
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, plan=True)
             package.joinpath("plan.md").write_text(
-                _document_text("plan", "plan-0001", ("SPEC-9999",)),
+                _document_text("plan", "SPEC-0001-PLAN-0001", ("SPEC-9999",)),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "plan.*parent"):
                 spec_packages.load_spec_packages(stage)
 
-        for parents in (("SPEC-0001", "plan-0001"), ("SPEC-0001", "SPEC-0001-TSK-9999")):
+        for parents in (("SPEC-0001", "SPEC-0001-PLAN-0001"), ("SPEC-0001", "SPEC-0001-TSK-9999")):
             with self.subTest(parents=parents), tempfile.TemporaryDirectory() as directory:
                 stage = pathlib.Path(directory) / "docs/03.specs"
                 _write_package(stage, task=True, task_parent_ids=parents)

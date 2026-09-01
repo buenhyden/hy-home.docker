@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 05-Messaging Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0020
-artifact_type: architecture-description
 parent_ids:
   - REQ-0017
 created: 2026-03-28

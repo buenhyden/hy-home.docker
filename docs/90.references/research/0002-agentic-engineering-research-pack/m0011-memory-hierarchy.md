@@ -1,8 +1,13 @@
 ---
+title: "Reference: Agent Memory Hierarchy and Lifecycle"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:memory-hierarchy
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0011
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-31
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -392,8 +397,8 @@ changes. Never inspect provider-private stores merely to refresh this leaf.
 
 ## Related Documents
 
-- [Loop engineering](./loop-engineering.md)
-- [Agent instructions](./agent-instructions-vibe-coding.md)
-- [Provider implementation comparison](./provider-implementation-comparison.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

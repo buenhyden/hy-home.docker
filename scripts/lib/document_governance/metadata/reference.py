@@ -26,6 +26,7 @@ from scripts.lib.document_governance.identity_history import (
     validate_identity_history,
 )
 from scripts.lib.document_governance.registry import (
+    document_type,
     DocumentRegistry,
     RegistryError,
     classify_path as classify_registered_path,
@@ -319,7 +320,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             )
         )
         declares_type = "artifact_type" in values
-        declared_type = values.get("artifact_type")
+        declared_type = values.get("type")
         mapped = roles_by_source.get(path.as_posix())
         mapped_type = mapped[1].get("artifact_profile") if mapped else None
         if path.as_posix() in TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES:
@@ -977,15 +978,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         )
                     )
                     continue
-                if values.get("profile_id") != profile_id:
-                    contract_findings.append(
-                        Finding(
-                            source,
-                            "template-profile-mismatch",
-                            f"expected exact profile_id: {profile_id}",
-                        )
-                    )
-                if values.get("artifact_type") != profile_id:
+                if values.get("type") != document_type(profile_id):
                     contract_findings.append(
                         Finding(
                             source,

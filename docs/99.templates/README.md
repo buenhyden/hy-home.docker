@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Stage 99 Document Contracts and Templates
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Stage 99 Document Contracts and Templates
@@ -60,7 +62,50 @@ defines a canonical target artifact.
 
 ## Identity and Lifecycle Rules
 
+### Registered Identity Shapes
+
+| Profile | Identity | Owning container |
+| :--- | :--- | :--- |
+| `requirements-package` | `REQ-####` | — |
+| `architecture-description` / `adr` | `AD-####` / `ADR-####` | — |
+| `spec` | `SPEC-####` | — |
+| `plan` / `task` | `SPEC-####-PLAN-####` / `SPEC-####-TSK-####` | `SPEC-####` |
+| `guide` / `policy` / `runbook` | `GDE-####` / `POL-####` / `RUN-####` | — |
+| `incident` / `postmortem` | `inc-<year>-####` / `inc-<year>-####-PM` | the incident |
+| `research` / `audit` / `data` | `RES-####` / `AUD-####` / `DATA-####` | — |
+| `research-member` / `audit-member` / `generated` | `RES-####-m####` / `AUD-####-m####` / `DATA-####-m####` | its `####` container |
+| `migration` | `MIG-####` | — |
+| `tombstone` | `tomb-<retired artifact_id>` | the retired artifact |
+
+### Required Frontmatter Envelope
+
+Every identity-bearing document declares, in this order:
+
+| Key | Purpose |
+| :--- | :--- |
+| `title` | Human-readable name; never repeats the artifact identity |
+| `type` | `family/kind` document role; replaces `profile_id` and `artifact_type` |
+| `layer` | Governance layer the document belongs to |
+| `status` | Lifecycle state registered for the profile |
+| `owner` | Accountable owner, sourced from `.github/CODEOWNERS` |
+| `artifact_id` | Canonical identity; no domain alias duplicates it |
+| `parent_ids` | Traceability parents |
+| `created`, `updated` | Authoring dates |
+
+Templates additionally guide `version`. Provider-owned runtime projections are
+exempt: they declare `name` and `description` and carry the runtime's own
+`model` and `model_reasoning_effort`.
+
 - Standalone package paths use four numeric digits and omit semantic prefixes.
+- A member identity is its container's identity plus that container's own
+  internal sequence, so the same member number may recur under two containers.
+- Stage 90 package members are named `m####-<slug>.md`;
+  `scripts/lib/document_governance/references.py` owns that rule.
+- Tombstones use `identity_relation: inherited` and reuse the retired
+  document's identity, so the `tombstone` space no longer issues numbers;
+  `scripts/lib/document_governance/archive.py` derives the exact value.
+- Incident numbers restart inside each year partition, so the year belongs to
+  the identity and not only to the path.
 - Stable package IDs retain their registered prefix and case.
 - Requirement children use full owner-qualified IDs:
   `REQ-####-FR-####`, `REQ-####-NFR-####`, and `REQ-####-IF-####`.

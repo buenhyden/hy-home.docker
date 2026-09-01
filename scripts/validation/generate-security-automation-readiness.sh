@@ -592,10 +592,12 @@ else:
 
 lines: list[str] = [
     "---",
-    "profile_id: data",
+    'title: "Reference: Security Automation Readiness"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
     "artifact_id: DATA-0078",
-    "artifact_type: data",
     "parent_ids: []",
     "created: 2026-07-06",
     "updated: 2026-08-23",
@@ -733,7 +735,7 @@ lines.extend(
         "- [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.",
         "- [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.",
         "- [Security framework maturity audit](../../audits/0031-security-framework-maturity/README.md) - framework coverage and gap baseline.",
-        "- [Security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [Security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md) - secure SDLC and supply-chain reference context.",
         "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
         "- [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.",
         "",
@@ -753,7 +755,7 @@ lines.extend(
         "- [reference data index](../README.md)",
         "- [security framework maturity audit](../../audits/0031-security-framework-maturity/README.md)",
         "- [automation candidates](../../audits/0021-automation-candidates/README.md)",
-        "- [security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md)",
+        "- [security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md)",
         "",
     ]
 )

@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Script Surface Ownership Convergence Outcome
+type: specs/spec
+layer: specification
 status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0157
-artifact_type: spec
 parent_ids: [REQ-0024, REQ-0025]
 created: 2026-08-30
 updated: 2026-09-01

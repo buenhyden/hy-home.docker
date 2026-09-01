@@ -1,9 +1,12 @@
 ---
-profile_id: tombstone
+title: <title>
+version: <version>
+type: archive/tombstone
+layer: <layer>
 status: draft
-artifact_id: tombstone-####
-artifact_type: tombstone
-parent_ids: []
+owner: <owner>
+artifact_id: tomb-<retired artifact_id>
+parent_ids: [MIG-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---

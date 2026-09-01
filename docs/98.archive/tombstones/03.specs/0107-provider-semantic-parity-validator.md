@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Provider Semantic Parity Validator Technical Specification Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0107
-artifact_type: tombstone
-parent_ids: [mig-0001]
+owner: "@buenhyden"
+artifact_id: tomb-SPEC-0107
+parent_ids: [MIG-0001]
 created: 2026-08-08
 updated: 2026-08-23
 ---

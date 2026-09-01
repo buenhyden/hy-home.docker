@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Operational Readiness Closure Architecture
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0028
-artifact_type: architecture-description
 parent_ids:
   - REQ-0025
 created: 2026-07-19

@@ -202,10 +202,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertEqual(
                     f"REQ-{match.group('number')}", metadata["artifact_id"]
                 )
-                self.assertEqual("requirements-package", metadata["profile_id"])
-                self.assertEqual(
-                    "requirements-package", metadata["artifact_type"]
-                )
+                self.assertEqual("requirements/package", metadata["type"])
                 self.assertEqual([], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -233,8 +230,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"AD-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("architecture-description", metadata["profile_id"])
-                self.assertEqual("architecture-description", metadata["artifact_type"])
+                self.assertEqual("architecture/description", metadata["type"])
                 self.assertEqual(
                     [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
                 )
@@ -261,8 +257,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"ADR-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("adr", metadata["profile_id"])
-                self.assertEqual("adr", metadata["artifact_type"])
+                self.assertEqual("architecture/decision", metadata["type"])
                 self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -373,7 +368,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             path,
             {
                 "artifact_id": "AD-0001",
-                "artifact_type": "architecture-description",
+                "type": "architecture-description",
             },
             {
                 "architecture-description": {
@@ -392,7 +387,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             ),
             {
                 "artifact_id": "task-0999-01",
-                "artifact_type": "task",
+                "type": "task",
             },
             {
                 "task": {
@@ -417,7 +412,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             ),
             {
                 "artifact_id": "task-9999-01",
-                "artifact_type": "task",
+                "type": "task",
             },
             {
                 "task": {
@@ -443,7 +438,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             PurePosixPath("docs/03.specs/temporary-task/task.md"),
             {
                 "artifact_id": "task-0136-01",
-                "artifact_type": "task",
+                "type": "task",
             },
             {
                 "task": {

@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Local-Isolated Readiness Evidence
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0028
-artifact_type: adr
 parent_ids:
   - AD-0028
 created: 2026-07-19

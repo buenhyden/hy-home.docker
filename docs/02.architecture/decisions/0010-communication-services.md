@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Communication Services Selection and Configuration
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0010
-artifact_type: adr
 parent_ids:
   - AD-0010
 created: 2026-03-26

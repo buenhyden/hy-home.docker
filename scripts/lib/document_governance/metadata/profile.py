@@ -1082,7 +1082,7 @@ def _legacy_spec_relation_alias(record: Record) -> str | None:
 
     if (
         record.artifact_type != "spec"
-        or record.metadata.get("artifact_type") != "spec"
+        or record.metadata.get("type") != "specs/spec"
     ):
         return None
     path_match = LEGACY_SPEC_RELATION_PATH.fullmatch(record.path.as_posix())
@@ -1227,7 +1227,11 @@ def build_current_manifest(root: pathlib.Path, records: Sequence[Record]) -> dic
                     continue
                 text = HistoricalDocument(root, row["recovery_commit"], source).read_text()
                 values = _parse_frontmatter_text(text)
-                if values.get("artifact_id") != row["artifact_id"] or values.get("artifact_type") != "spec":
+                # Read at its recovery commit, where the role key was still
+                # `artifact_type`; the blob is frozen and never re-typed.
+                if values.get("artifact_id") != row["artifact_id"] or values.get(
+                    "artifact_type"
+                ) != "spec":
                     raise ValueError("retired Spec identity does not match recovery")
                 retired.append(Record(pathlib.Path(source), {**values, "status": "retired"}, "spec"))
         return build_manifest(records, retired_records=retired)
@@ -2829,8 +2833,8 @@ def build_registry_transition_profiles(
         raise ProfileError("legacy transition profiles require common and profiles")
     for key in ("typed_keys", "frontmatter_order"):
         values = common.get(key)
-        if isinstance(values, list) and "profile_id" not in values:
-            common[key] = ["profile_id", *values]
+        if isinstance(values, list) and "type" not in values:
+            common[key] = ["type", *values]
     translated = dict(legacy_map)
     legacy_spec = translated.get("spec")
     if isinstance(legacy_spec, dict):
@@ -2864,6 +2868,7 @@ def build_registry_transition_profiles(
             else {}
         )
         translated[profile_id] = {
+            "type": profile.get("type"),
             "required": list(profile.get("required_frontmatter", ())),
             "optional": list(profile.get("optional_frontmatter", ())),
             "forbidden": [],

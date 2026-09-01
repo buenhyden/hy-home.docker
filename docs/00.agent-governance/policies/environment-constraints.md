@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Environment Constraints
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Environment Constraints

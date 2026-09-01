@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Kafka Cluster Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0036
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0036
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11

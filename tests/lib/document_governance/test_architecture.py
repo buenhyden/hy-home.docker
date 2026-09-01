@@ -67,10 +67,12 @@ def _document_text(
     )
     superseded_by_value = "null" if superseded_by is None else superseded_by
     return f"""---
-profile_id: {profile_id}
+title: Fixture {artifact_id}
+type: {"architecture/description" if profile_id == "architecture-description" else "architecture/decision"}
+layer: architecture
 status: {status}
+owner: "@buenhyden"
 artifact_id: {artifact_id}
-artifact_type: {profile_id if profile_id == "architecture-description" else "adr"}
 parent_ids:
 {parent_lines}
 created: 2026-08-22

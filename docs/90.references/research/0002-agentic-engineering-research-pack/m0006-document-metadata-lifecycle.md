@@ -1,8 +1,13 @@
 ---
+title: "Reference: Document Metadata and Lifecycle"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:document-metadata-lifecycle
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0006
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -325,8 +330,8 @@ unexercised template/profile without changing historical evidence by analogy.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Spec-driven SDLC](./spec-driven-sdlc.md)
-- [SDLC document roles](./sdlc-document-roles.md)
-- [Workspace baseline](./workspace-baseline.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

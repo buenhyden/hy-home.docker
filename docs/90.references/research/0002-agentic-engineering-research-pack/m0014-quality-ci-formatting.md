@@ -1,8 +1,13 @@
 ---
+title: "Reference: Quality, CI, and Formatting"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:quality-ci-formatting
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0014
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-31
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -402,11 +407,11 @@ enforcement, runtime acceptance, and deployment evidence in separate fields.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Automation pipeline and workflow topology](./automation-pipeline-workflow.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
-- [Spec-driven SDLC](./spec-driven-sdlc.md)
-- [Document metadata lifecycle](./document-metadata-lifecycle.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Automation pipeline and workflow topology](./m0004-automation-pipeline-workflow.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
 - [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

@@ -31,7 +31,11 @@ from scripts.lib.document_governance.operations_catalog import read_bounded_regu
 
 CATEGORIES = ("audits", "data", "research")
 PREFIX_BY_CATEGORY = {"audits": "AUD-", "data": "DATA-", "research": "RES-"}
-PROFILE_BY_CATEGORY = {"audits": "audit", "data": "data", "research": "research"}
+PROFILE_BY_CATEGORY = {
+    "audits": "references/audit",
+    "data": "references/data",
+    "research": "references/research",
+}
 DATA_PAYLOAD_NAME = "data.yaml"
 PACKAGE_PATH = re.compile(r"(?:audits|data|research)/[0-9]{4}-[a-z0-9][a-z0-9-]*")
 _DATED_PACKAGE = re.compile(r"(?:^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-|$)")
@@ -398,7 +402,7 @@ def _load_package(
             category=category,
             relative_package=relative_package,
             artifact_id=str(metadata.get("artifact_id", "")),
-            profile_id=str(metadata.get("profile_id", "")),
+            profile_id=str(metadata.get("type", "")),
             text=readme_text,
             documents=tuple(documents),
         ),

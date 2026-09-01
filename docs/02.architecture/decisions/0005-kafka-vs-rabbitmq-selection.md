@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: "Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)"
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0005
-artifact_type: adr
 parent_ids:
   - AD-0005
 created: 2026-03-26

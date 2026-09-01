@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: SeaweedFS Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0024
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0024
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

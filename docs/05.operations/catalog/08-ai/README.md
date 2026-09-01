@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 08 AI
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 08 AI

@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Performance Testing Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0064
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0064
 parent_ids:
   - SPEC-0010
 created: 2026-05-10

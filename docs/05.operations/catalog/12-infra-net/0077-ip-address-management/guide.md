@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: 0012 Standardize Infra Net Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0077
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0077
 parent_ids: []
 created: 2026-05-17
 updated: 2026-09-01

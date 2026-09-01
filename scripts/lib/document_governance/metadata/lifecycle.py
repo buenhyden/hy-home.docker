@@ -17,7 +17,9 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.git_provenance import resolve_git_provenance
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    RegistryError,
     classify_path as classify_registered_path,
+    document_type,
 )
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 from scripts.lib.document_governance.metadata.heading import _validate_template_source
@@ -69,6 +71,15 @@ from scripts.lib.document_governance.metadata.profile import (
     readme_frontmatter_consumer,
     registered_generated_owner,
 )
+
+def _expected_document_type(profile_id: str) -> str:
+    """Return the Registry family/kind type, falling back to the profile id."""
+
+    try:
+        return document_type(profile_id)
+    except (KeyError, RegistryError):
+        return profile_id
+
 
 def validate_record(
     record: Record,
@@ -318,40 +329,28 @@ def validate_record(
         paths = ", ".join(path.as_posix() for path in typed_manifest.duplicates[artifact_id.strip()])
         findings.append(_finding(record, "duplicate-artifact-id", f"artifact_id occurs at: {paths}"))
 
-    declared_type = record.metadata.get("artifact_type")
+    declared_type = record.metadata.get("type")
+    expected_profile = (
+        specialization_type
+        if isinstance(specialization_type, str)
+        else record.artifact_type
+    )
+    expected_type = _expected_document_type(expected_profile)
     if declared_type is not None:
-        expected_type = (
-            specialization_type
-            if isinstance(specialization_type, str)
-            else record.artifact_type
-        )
         if not isinstance(declared_type, str) or declared_type != expected_type:
             findings.append(
                 _finding(
                     record,
-                    "artifact-type-mismatch",
-                    f"declared artifact_type does not match inferred profile {record.artifact_type}",
+                    "type-mismatch",
+                    f"declared type does not match inferred profile {record.artifact_type}",
                 )
             )
 
     active_registry = profiles.get("_registry")
-    if isinstance(active_registry, DocumentRegistry) and (
-        classify_registered_path(record.path.as_posix(), active_registry)
-        == record.artifact_type
-    ):
-        profile_id = record.metadata.get("profile_id")
-        if not isinstance(profile_id, str) or profile_id != record.artifact_type:
-            findings.append(
-                _finding(
-                    record,
-                    "profile-id-mismatch",
-                    "profile_id must equal the Registry-classified profile",
-                )
-            )
 
     if (
         isinstance(declared_type, str)
-        and declared_type == record.artifact_type
+        and declared_type == _expected_document_type(record.artifact_type)
         and (
             (
                 isinstance(raw_profile.get("id_pattern"), str)

@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Harness / Agent-first Engineering Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0004
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0004
 parent_ids:
   - SPEC-0094
 created: 2026-06-04

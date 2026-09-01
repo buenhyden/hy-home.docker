@@ -1,8 +1,10 @@
 ---
-profile_id: plan
+title: Document Governance Lifecycle Convergence Implementation Plan
+type: specs/plan
+layer: specification
 status: active
-artifact_id: plan-0158
-artifact_type: plan
+owner: "@buenhyden"
+artifact_id: SPEC-0158-PLAN-0001
 parent_ids: [SPEC-0158]
 created: 2026-08-31
 updated: 2026-09-01
@@ -246,7 +248,7 @@ profile_id: task
 status: active
 artifact_id: SPEC-0158-TSK-0001
 artifact_type: task
-parent_ids: [SPEC-0158, plan-0158]
+parent_ids: [SPEC-0158, SPEC-0158-PLAN-0001]
 created: 2026-08-31
 updated: 2026-08-31
 ---
@@ -260,7 +262,7 @@ authority, simplify validation, and close the packet with observed evidence.
 
 ## Inputs
 
-- SPEC-0158 and plan-0158.
+- SPEC-0158 and SPEC-0158-PLAN-0001.
 - Completed SPEC-0157 evidence.
 - Current Stage 00, Stage 99, manifest, workflow, and Git recovery authorities.
 

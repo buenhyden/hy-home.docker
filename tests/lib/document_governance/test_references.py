@@ -71,7 +71,7 @@ class ReferencePackageTests(unittest.TestCase):
             self.assertNotIn("__historical_snapshot_link__.md", output.getvalue())
 
     def test_delegation_validates_exact_members_and_their_content(self) -> None:
-        member = "docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md"
+        member = "docs/90.references/research/0002-agentic-engineering-research-pack/m0017-security-governance.md"
         for mutation, expected in (
             ("missing", "protected-research-missing"),
             ("extra", "unregistered-reference-file"),

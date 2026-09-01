@@ -1,8 +1,11 @@
 ---
-profile_id: requirements-package
+title: <title>
+version: <version>
+type: requirements/package
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: REQ-####
-artifact_type: requirements-package
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

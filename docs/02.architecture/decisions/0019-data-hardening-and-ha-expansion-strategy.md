@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: 04-Data Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0019
-artifact_type: adr
 parent_ids:
   - AD-0019
 created: 2026-03-28

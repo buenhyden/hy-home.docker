@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Release Management Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0009
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0009
 parent_ids:
   - SPEC-0097
 created: 2026-06-04

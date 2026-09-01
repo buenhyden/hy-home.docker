@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: infra_net IP Management Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0077
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0077
 parent_ids: []
 created: 2026-04-01
 updated: 2026-09-01

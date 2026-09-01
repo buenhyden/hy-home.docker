@@ -53,6 +53,7 @@
         "profile_id",
         "frontmatter_policy",
         "path_pattern",
+        "type",
         "artifact_id_pattern",
         "identity_relation",
         "template_id",
@@ -71,9 +72,10 @@
         },
         "path_pattern": {"type": "string", "minLength": 1},
         "additional_paths": {"$ref": "#/$defs/stringList"},
+        "type": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"},
         "artifact_id_pattern": {"type": ["string", "null"]},
         "identity_relation": {
-          "enum": ["direct", "package-member", "subject-member", "none"]
+          "enum": ["direct", "package-member", "subject-member", "inherited", "none"]
         },
         "template_id": {"type": ["string", "null"]},
         "required_frontmatter": {"$ref": "#/$defs/stringList"},

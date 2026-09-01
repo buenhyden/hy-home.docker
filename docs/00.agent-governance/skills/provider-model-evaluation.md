@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: provider-model-evaluation
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: provider-model-evaluation
 scope: qa
-status: active
 owner_agent: eval-engineer
 ---
 

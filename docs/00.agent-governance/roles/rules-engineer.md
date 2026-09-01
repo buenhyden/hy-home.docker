@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: rules-engineer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: rules-engineer
 scope: agentic
 tier: worker
-status: active
 work_profile: adversarial-review
 permission_profile: read-only
 skill_ids:

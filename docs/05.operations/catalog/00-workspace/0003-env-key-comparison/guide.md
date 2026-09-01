@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: "`.env.example` vs `.env` Key Comparison"
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0003
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0003
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-14

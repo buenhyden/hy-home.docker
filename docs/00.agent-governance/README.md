@@ -1,7 +1,9 @@
 ---
-profile_id: readme
+title: AI Agent Governance
+type: common/readme
 layer: agentic
 status: active
+owner: "@buenhyden"
 ---
 
 # AI Agent Governance

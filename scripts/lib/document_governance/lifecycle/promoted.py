@@ -1541,7 +1541,7 @@ def validate_migration_manifest(
                         )
                         if (
                             target_type != "archive"
-                            or target_metadata.get("artifact_type") != "archive"
+                            or target_metadata.get("type") != "archive/migration"
                             or any(
                                 key not in target_metadata
                                 or target_metadata.get(key) in (None, "")

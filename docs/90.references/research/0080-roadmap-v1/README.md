@@ -1,8 +1,10 @@
 ---
-profile_id: research
+title: "Reference: CS, CE & SE Self-Learning Roadmap (v1)"
+type: references/research
+layer: reference
 status: superseded
+owner: "@buenhyden"
 artifact_id: RES-0080
-artifact_type: research
 parent_ids: []
 created: '2026-08-23'
 updated: '2026-08-23'

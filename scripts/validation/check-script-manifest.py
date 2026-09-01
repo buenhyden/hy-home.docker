@@ -860,7 +860,7 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
                 metadata = yaml.safe_load(text.split("---\n", 2)[1]) or {}
             except yaml.YAMLError:
                 metadata = {}
-        if not isinstance(metadata, dict) or metadata.get("status") != "active" or metadata.get("artifact_type") != "runbook":
+        if not isinstance(metadata, dict) or metadata.get("status") != "active" or metadata.get("type") != "operations/runbook":
             findings.append(_finding("runtime-authority-inactive", row["path"], f"{authority} is not a current typed Runbook"))
         if not _reference_proves_use(authority, text, row["path"], is_test=False):
             findings.append(_finding("runtime-authority-unproven", row["path"], f"{authority} does not semantically govern the runtime script"))

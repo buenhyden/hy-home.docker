@@ -1,7 +1,9 @@
 ---
-profile_id: governance-sdlc
+title: Software Development Lifecycle
+type: governance/sdlc
 layer: agentic
 status: active
+owner: "@buenhyden"
 ---
 
 # Software Development Lifecycle

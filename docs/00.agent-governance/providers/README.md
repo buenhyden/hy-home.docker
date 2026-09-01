@@ -1,7 +1,9 @@
 ---
-profile_id: governance-provider-index
+title: Provider Adapters
+type: governance/provider-index
 layer: agentic
 status: active
+owner: "@buenhyden"
 ---
 
 # Provider Adapters

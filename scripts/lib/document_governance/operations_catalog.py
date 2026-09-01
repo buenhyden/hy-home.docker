@@ -17,6 +17,7 @@ from collections.abc import Mapping, Sequence
 
 from scripts.lib.document_governance.frontmatter import FrontmatterError, parse_frontmatter_text
 from scripts.lib.document_governance.registry import (
+    document_type,
     RegistryError,
     load_registry_document,
     path_matches_pattern,
@@ -631,7 +632,7 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             or not all(
                 isinstance(item, str) and item for item in required_frontmatter
             )
-            or not {"profile_id", "status", "artifact_id", "artifact_type"}
+            or not {"title", "type", "layer", "status", "owner", "artifact_id"}
             <= set(required_frontmatter)
             or not isinstance(required_sections, list)
             or not required_sections
@@ -904,13 +905,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     not _matches_artifact_pattern(
                         profile.get("artifact_id_pattern"), artifact
                     )
-                    or metadata.get("artifact_type") != role
+                    or metadata.get("type") != document_type(role)
                 ):
                     findings.append(
                         _finding("role-identity-invalid", role_relative, str(artifact))
                     )
-                if metadata.get("profile_id") != role:
-                    findings.append(_finding("role-profile-invalid", role_relative, role))
                 required_metadata = set(_string_items(profile.get("required_frontmatter")))
                 if not required_metadata <= set(metadata):
                     findings.append(_finding("role-profile-invalid", role_relative, "required metadata missing"))
@@ -1027,8 +1026,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     required_metadata = set(_string_items(profile.get("required_frontmatter")))
                     if (
                         not required_metadata <= set(metadata)
-                        or metadata.get("profile_id") != role
-                        or metadata.get("artifact_type") != role
+                        or metadata.get("type") != document_type(role)
                     ):
                         findings.append(_finding("incident-profile-invalid", child_relative, role))
                     allowed_statuses = _profile_statuses(registry, profile)

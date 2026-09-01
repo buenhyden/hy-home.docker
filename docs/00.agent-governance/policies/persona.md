@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: AI Agent Identity Routing
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # AI Agent Identity Routing

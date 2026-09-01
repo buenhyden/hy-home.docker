@@ -1,8 +1,13 @@
 ---
+title: "Reference: SDLC Document Roles"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:sdlc-document-roles
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0016
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -323,8 +328,8 @@ and, where it matters more, what it does not.
 
 ## Architecture Practice Composition Links
 
-- [Documentation architecture](./documentation-architecture.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Documentation architecture](./m0007-documentation-architecture.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 
 ## Maintenance
 
@@ -339,8 +344,8 @@ first.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Spec-driven SDLC](./spec-driven-sdlc.md)
-- [Document metadata lifecycle](./document-metadata-lifecycle.md)
-- [Workspace baseline](./workspace-baseline.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

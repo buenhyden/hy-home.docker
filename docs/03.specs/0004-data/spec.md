@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Data Capability Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0004
-artifact_type: spec
 parent_ids:
   - AD-0019
 created: 2026-07-05

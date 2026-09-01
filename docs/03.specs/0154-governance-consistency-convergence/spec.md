@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Governance Consistency Convergence Outcome
+type: specs/spec
+layer: specification
 status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0154
-artifact_type: spec
 parent_ids: [REQ-0024, ADR-0027, ADR-0029]
 created: 2026-08-30
 updated: 2026-09-01

@@ -650,7 +650,7 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
         values = _frontmatter(text, relative)
         if "agent_id" not in values:
             continue
-        if values.get("profile_id") != "governance-role":
+        if values.get("type") != "governance/role":
             raise ContractLoadError(f"AGC-ROLE-PROFILE path={relative}")
         agent_id = _identifier(values, "agent_id", relative)
         if file_path.stem != agent_id:
@@ -680,7 +680,7 @@ def _load_skills(root: pathlib.Path) -> tuple[SkillRecord, ...]:
         text = _read_text(root, relative)
         values = _frontmatter(text, relative)
         skill_id = _identifier(values, "function_id", relative)
-        if file_path.stem != skill_id or values.get("profile_id") != "governance-skill":
+        if file_path.stem != skill_id or values.get("type") != "governance/skill":
             raise ContractLoadError(f"AGC-SKILL-IDENTITY path={relative}")
         records.append(
             SkillRecord(

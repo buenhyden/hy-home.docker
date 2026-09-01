@@ -108,17 +108,24 @@ class CheckerCliTests(unittest.TestCase):
         records = [
             metadata.Record(
                 pathlib.Path("docs/03.specs/README.md"),
-                {"profile_id": "readme", "status": "active"},
+                {"type": "common/readme", "status": "active"},
                 "readme",
                 frontmatter_present=True,
             ),
             metadata.Record(
                 pathlib.Path(
-                    "docs/90.references/data/0001-generated/generated.md"
+                    "docs/90.references/data/0001-generated/m0001-generated.md"
                 ),
                 {
-                    "profile_id": "generated",
+                    "title": "Generated Data Member",
+                    "type": "references/data-member",
+                    "layer": "reference",
                     "status": "active",
+                    "owner": "@buenhyden",
+                    "artifact_id": "DATA-0001-m0001",
+                    "parent_ids": ["DATA-0001"],
+                    "created": "2026-08-01",
+                    "updated": "2026-08-01",
                     "generated_by": "scripts/example.py",
                 },
                 "generated",

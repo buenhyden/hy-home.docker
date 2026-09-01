@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Harness and Agent-first Engineering Outcome
+type: specs/spec
+layer: specification
 status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0094
-artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05

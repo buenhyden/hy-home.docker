@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Portainer Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0075
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0075
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11

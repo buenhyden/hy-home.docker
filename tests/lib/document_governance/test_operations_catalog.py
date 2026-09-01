@@ -328,7 +328,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
             role.write_text(
-                text.replace(f"profile_id: {role_name}\n", "", 1),
+                text.replace(f"type: operations/{role_name}\n", "", 1),
                 encoding="utf-8",
             )
             self.assertIn("role-profile-invalid", finding_codes(root))
@@ -343,8 +343,8 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role.write_text(
                 text.replace(
-                    f"profile_id: {role_name}\n",
-                    f"profile_id: {role_name}\nprofile_id: {role_name}\n",
+                    f"type: operations/{role_name}\n",
+                    f"type: operations/{role_name}\ntype: operations/{role_name}\n",
                     1,
                 ),
                 encoding="utf-8",
@@ -367,7 +367,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)
         metadata = (
-            f"---\nprofile_id: incident\nstatus: {status}\n"
+            f"---\ntype: operations/incident\nstatus: {status}\n"
             f"artifact_id: {artifact_id}\nartifact_type: incident\nparent_ids: []\n"
             "created: 2026-08-23\nupdated: 2026-08-23\n"
             f"occurred_at: {occurred_at}\nresolved_at: {resolved_at}\n---\n"

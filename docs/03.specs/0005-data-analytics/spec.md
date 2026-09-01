@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Analytics Tier Technical Specification (Spec)
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0005
-artifact_type: spec
 parent_ids:
   - AD-0012
 created: 2026-07-05

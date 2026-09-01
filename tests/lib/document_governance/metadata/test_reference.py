@@ -80,9 +80,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         cases = (
             (
                 "profile",
-                "profile_id: requirements-package",
-                "profile_id: spec",
-                "template-profile-mismatch",
+                "type: requirements/package",
+                "type: specs/spec",
+                "template-artifact-type-mismatch",
             ),
             (
                 "heading",

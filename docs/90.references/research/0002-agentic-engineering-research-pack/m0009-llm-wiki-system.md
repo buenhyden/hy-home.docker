@@ -1,8 +1,13 @@
 ---
+title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:llm-wiki-system
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0009
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -305,15 +310,15 @@ consolidates that subject's guide, policy, and runbook into a single
 directory with the role carried by the file name. Re-resolve this link, and any
 generated route that indexes it, when that convergence merges. See the
 operations path convergence entry in
-[SDLC document roles](./sdlc-document-roles.md) for the full mapping.
+[SDLC document roles](./m0016-sdlc-document-roles.md) for the full mapping.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Documentation architecture](./documentation-architecture.md)
-- [Document metadata lifecycle](./document-metadata-lifecycle.md)
-- [Agent instructions and vibe coding](./agent-instructions-vibe-coding.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Documentation architecture](./m0007-documentation-architecture.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [Agent instructions and vibe coding](./m0001-agent-instructions-vibe-coding.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - [LLM Wiki category](../../data/0082-llm-wiki-index/README.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

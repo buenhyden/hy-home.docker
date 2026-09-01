@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "BLOCKED: direct push to main"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: block-direct-main-push
 enabled: true
 event: bash

@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Agent Governance Canonical Adapter Architecture
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0027
-artifact_type: architecture-description
 parent_ids:
   - REQ-0024
 created: 2026-06-01

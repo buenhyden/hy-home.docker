@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Agent Quality and Security Standards
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Agent Quality and Security Standards

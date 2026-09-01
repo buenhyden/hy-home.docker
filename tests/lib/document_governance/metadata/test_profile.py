@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.metadata import profile as profile_module
+from scripts.lib.document_governance.registry import document_type
 from tests.lib.document_governance.metadata._support import (
     REGISTRY,
     ROOT,
@@ -89,6 +90,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "task_number": "0001",
             "subject_number": "0901",
             "year": "2026",
+            "member_number": "0001",
             "domain": "00-workspace",
             "stage": "03.specs",
             "slug": "fixture",
@@ -280,7 +282,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 if source.suffix != ".md":
                     continue
                 values = metadata.parse_frontmatter(source)
-                self.assertEqual(role["profile_id"], values.get("profile_id"))
+                self.assertEqual(document_type(str(role["profile_id"])), values.get("type"))
                 text = source.read_text(encoding="utf-8")
                 for target_prefix in (
                     "docs/01.requirements/",
@@ -325,9 +327,8 @@ class TemplateMetadataTests(unittest.TestCase):
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual(
             {
-                "profile_id": "readme",
+                "type": "common/readme",
                 "status": "draft",
-                "artifact_type": "readme",
             },
             values,
         )

@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Gateway Tier (01-gateway) Technical Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0001
-artifact_type: spec
 parent_ids:
   - AD-0001
 created: 2026-07-05

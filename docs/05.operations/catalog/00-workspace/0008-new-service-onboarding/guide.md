@@ -1,10 +1,12 @@
 ---
-profile_id: guide
+title: New Service Onboarding Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0008
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0008
 parent_ids:
-  - runbook-0009
+  - RUN-0009
 created: 2026-06-04
 updated: 2026-08-11
 ---

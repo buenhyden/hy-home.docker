@@ -1,8 +1,13 @@
 ---
+title: "Reference: Security Governance and Secure Delivery"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:security-governance
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0017
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -455,12 +460,12 @@ Security, QA, Infra, and Operations review.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Docker Compose and infrastructure](./docker-compose-infrastructure.md)
-- [Automation pipeline and workflow](./automation-pipeline-workflow.md)
-- [Quality, CI, and formatting](./quality-ci-formatting.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
+- [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - [Data index](../../data/README.md)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

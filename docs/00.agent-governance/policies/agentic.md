@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Agentic Engineering Policy
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Agentic Engineering Policy

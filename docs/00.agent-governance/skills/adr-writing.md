@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: adr-writing
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: adr-writing
 scope: architecture
-status: active
 owner_agent: doc-writer
 ---
 

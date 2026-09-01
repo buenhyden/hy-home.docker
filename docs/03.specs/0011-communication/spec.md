@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Communication Tier Technical Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0011
-artifact_type: spec
 parent_ids:
   - AD-0010
 created: 2026-07-05

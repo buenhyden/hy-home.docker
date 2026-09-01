@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "BLOCKED: floating reference"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: block-unpinned-gha-action
 enabled: true
 event: file

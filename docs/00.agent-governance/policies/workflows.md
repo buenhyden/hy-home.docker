@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Workflows
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Workflows

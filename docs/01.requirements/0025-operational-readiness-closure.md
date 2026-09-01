@@ -1,8 +1,10 @@
 ---
-profile_id: requirements-package
+title: Operational Readiness Closure Requirements
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0025
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-07-19
 updated: 2026-09-01

@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Agentic Engineering Implementation Overview"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0026
-artifact_type: audit
 parent_ids:
 - AUD-0019
 created: '2026-07-05'

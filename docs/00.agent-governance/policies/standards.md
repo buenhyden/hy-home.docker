@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: AI Agent Standards
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # AI Agent Standards

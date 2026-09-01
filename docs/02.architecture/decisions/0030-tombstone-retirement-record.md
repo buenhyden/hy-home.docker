@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: 은퇴 기록으로서의 Tombstone
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0030
-artifact_type: adr
 parent_ids:
   - AD-0030
 created: 2026-09-01

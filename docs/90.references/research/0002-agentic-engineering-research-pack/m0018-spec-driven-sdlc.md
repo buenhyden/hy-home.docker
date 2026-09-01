@@ -1,8 +1,13 @@
 ---
+title: "Reference: Spec-Driven Development and SDLC"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:spec-driven-sdlc
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0018
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -289,9 +294,9 @@ would understate real upstream drift.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [SDLC document roles](./sdlc-document-roles.md)
-- [Document metadata lifecycle](./document-metadata-lifecycle.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

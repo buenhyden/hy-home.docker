@@ -1,8 +1,10 @@
 ---
-profile_id: data
+title: Github Actions Control Plane Observation
+type: references/data
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: DATA-0071
-artifact_type: data
 parent_ids: []
 created: 2026-08-23
 updated: 2026-08-23

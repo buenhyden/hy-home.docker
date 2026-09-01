@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: knowledge-map-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: knowledge-map-agent
 scope: docs
-status: active
 owner_agent: doc-writer
 ---
 

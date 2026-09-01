@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: Architecture Descriptions
+type: common/readme
+layer: architecture
 status: active
+owner: "@buenhyden"
 ---
 
 # Architecture Descriptions

@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: LLM Wiki Maintenance Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0007
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0007
 parent_ids:
   - SPEC-0096
 created: 2026-07-04

@@ -1,8 +1,13 @@
 ---
+title: "Reference: Documentation Architecture and Diataxis Reader Modes"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:documentation-architecture
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0007
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -277,9 +282,9 @@ and, where it matters more, what it does not.
 | [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
 | [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
 | README profile contract (retired path: `../../../99.templates/support/readme-profile-contract.md`)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
-| [SDLC document roles](./sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
-| [Metadata lifecycle](./document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |
-| [Scope application matrix](./scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
+| [SDLC document roles](./m0016-sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
+| [Metadata lifecycle](./m0006-document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |
+| [Scope application matrix](./m0015-scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                  | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; not used as proof.                                                                                                        |
 
 ## Architecture Practice Delta Claims
@@ -315,8 +320,8 @@ and, where it matters more, what it does not.
 
 ## Architecture Practice Composition Links
 
-- [SDLC document roles](./sdlc-document-roles.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 
 ## Maintenance
 
@@ -331,10 +336,10 @@ persists, and always record the actual HTTP outcome observed at fetch time.
 
 ## Related Documents
 
-- [Spec-driven SDLC](./spec-driven-sdlc.md)
-- [SDLC document roles](./sdlc-document-roles.md)
-- [Document metadata lifecycle](./document-metadata-lifecycle.md)
-- [LLM Wiki system](./llm-wiki-system.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [LLM Wiki system](./m0009-llm-wiki-system.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

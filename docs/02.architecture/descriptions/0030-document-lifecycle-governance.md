@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 문서 Lifecycle 거버넌스 아키텍처
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0030
-artifact_type: architecture-description
 parent_ids:
   - REQ-0026
 created: 2026-09-01

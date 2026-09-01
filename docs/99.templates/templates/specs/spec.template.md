@@ -1,8 +1,11 @@
 ---
-profile_id: spec
+title: <title>
+version: <version>
+type: specs/spec
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: SPEC-####
-artifact_type: spec
 parent_ids: [REQ-####, AD-####, ADR-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

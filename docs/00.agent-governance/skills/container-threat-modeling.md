@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: container-threat-modeling
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: container-threat-modeling
 scope: security
-status: active
 owner_agent: security-auditor
 ---
 

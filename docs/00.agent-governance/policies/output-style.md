@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Output Style
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Output Style

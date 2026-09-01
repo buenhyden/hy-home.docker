@@ -42,10 +42,12 @@ def _package_text(
     non_functional = "" if non_functional is None else non_functional
     interface = "" if interface is None else interface
     return f"""---
-profile_id: requirements-package
+title: Fixture Requirement Package
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-{number}
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-08-22
 updated: 2026-08-22

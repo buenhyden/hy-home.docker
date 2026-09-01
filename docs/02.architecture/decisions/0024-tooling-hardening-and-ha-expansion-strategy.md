@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Tooling Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0024
-artifact_type: adr
 parent_ids:
   - AD-0024
 created: 2026-03-28

@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: incident-response
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: incident-response
 scope: ops
-status: active
 owner_agent: incident-responder
 ---
 

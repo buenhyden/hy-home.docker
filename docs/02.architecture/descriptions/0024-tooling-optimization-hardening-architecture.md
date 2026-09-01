@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 09-Tooling Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0024
-artifact_type: architecture-description
 parent_ids:
   - REQ-0021
 created: 2026-03-28

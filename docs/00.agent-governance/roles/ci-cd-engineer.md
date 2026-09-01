@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: ci-cd-engineer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: ci-cd-engineer
 scope: ops
 tier: worker
-status: active
 work_profile: complex-implementation
 permission_profile: workspace-write
 skill_ids:

@@ -1,8 +1,10 @@
 ---
-profile_id: tombstone
+title: Template Application Gaps Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0181
-artifact_type: tombstone
+owner: "@buenhyden"
+artifact_id: tomb-AUD-0011
 parent_ids: [SPEC-0158]
 created: 2026-09-01
 updated: 2026-09-01

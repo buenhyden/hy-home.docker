@@ -77,8 +77,45 @@ _TASK10_ROW_FIELDS = frozenset(
     }
 )
 _TOMBSTONE_FIELDS = frozenset(
-    {"profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"}
+    {
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+    }
 )
+# A tombstone inherits the retired document's identity under a `tomb-` prefix.
+# Retired paths that predate four-digit identity fall back to the archive
+# sequence number carried by the tombstone filename.
+_RETIRED_IDENTITY_ROOTS = (
+    ("docs/03.specs/", re.compile(r"docs/03\.specs/(?P<number>[0-9]{3,4})-"), "SPEC"),
+    ("docs/90.references/research/",
+     re.compile(r"docs/90\.references/research/(?P<number>[0-9]{4})-"), "RES"),
+    ("docs/90.references/audits/",
+     re.compile(r"docs/90\.references/audits/(?P<number>[0-9]{4})-"), "AUD"),
+    ("docs/90.references/data/",
+     re.compile(r"docs/90\.references/data/(?P<number>[0-9]{4})-"), "DATA"),
+)
+_RETIRED_ROLE_PREFIXES = (("/policies/", "POL"), ("/runbooks/", "RUN"))
+
+
+def tombstone_identity(retired: str, number: str) -> str:
+    """Derive the inherited `tomb-<retired artifact id>` tombstone identity."""
+
+    for root, pattern, prefix in _RETIRED_IDENTITY_ROOTS:
+        if retired.startswith(root):
+            match = pattern.match(retired)
+            if match is not None:
+                return f"tomb-{prefix}-{int(match.group('number')):04d}"
+    for marker, prefix in _RETIRED_ROLE_PREFIXES:
+        if marker in retired:
+            return f"tomb-{prefix}-{number}"
+    return f"tomb-GDE-{number}"
 APPROVED_BASELINE_RECOVERY_PATHS = frozenset(
     pathlib.PurePosixPath(path)
     for path in (
@@ -641,10 +678,12 @@ def _parse_tombstone_text(
     number = number_match.group("number") if number_match else ""
     minimal = bool(
         set(metadata) == _TOMBSTONE_FIELDS
-        and metadata.get("profile_id") == "tombstone"
+        and metadata.get("type") == "archive/tombstone"
         and metadata.get("status") == "completed"
-        and metadata.get("artifact_id") == f"tombstone-{number}"
-        and metadata.get("artifact_type") == "tombstone"
+        and metadata.get("artifact_id")
+        == tombstone_identity(
+            retired.as_posix() if retired is not None else "", number
+        )
         and isinstance(metadata.get("parent_ids"), list)
         and headings == ("Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability")
         and retired is not None

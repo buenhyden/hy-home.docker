@@ -1165,7 +1165,7 @@ def _surface_artifact_types(
 ) -> tuple[str | None, str | None]:
     profile_map = profiles.get("profiles")
     registered = set(profile_map) if isinstance(profile_map, dict) else set()
-    declared = frontmatter.get("artifact_type")
+    declared = frontmatter.get("type")
     declared_type = declared if isinstance(declared, str) and declared in registered else None
     if surface_class == "content-archive":
         return ("archive" if declared_type == "archive" else None), "archive"
@@ -1556,7 +1556,7 @@ def _baseline_merge_owner_findings(
                 "merge replacement baseline owner is not a regular tracked blob",
             )
         ]
-    declared_owner_type = owner.metadata.get("artifact_type")
+    declared_owner_type = owner.metadata.get("type")
     baseline_status = owner.metadata.get("status")
     current_status = replacement.metadata.get("status")
     if (
@@ -2004,7 +2004,7 @@ def _surface_partition_plan_findings(
         plan_record.parse_error is not None
         or not plan_record.frontmatter_present
         or plan_record.artifact_type != "plan"
-        or plan_record.metadata.get("artifact_type") != "plan"
+        or plan_record.metadata.get("type") != "specs/plan"
         or plan_record.metadata.get("status") not in {"active", "completed"}
         or profile_errors
     ):
@@ -2189,7 +2189,7 @@ def _surface_result_state_findings(
     registered_types = (
         set(registered_profiles) if isinstance(registered_profiles, dict) else set()
     )
-    declared_type = target_metadata.get("artifact_type")
+    declared_type = target_metadata.get("type")
     target_artifact_type = (
         declared_type
         if isinstance(declared_type, str)
@@ -2502,7 +2502,7 @@ def _partition_plan_findings(
         plan_record.parse_error is not None
         or not plan_record.frontmatter_present
         or plan_record.artifact_type != "plan"
-        or values.get("artifact_type") != "plan"
+        or values.get("type") != "specs/plan"
         or plan_errors
     ):
         return [

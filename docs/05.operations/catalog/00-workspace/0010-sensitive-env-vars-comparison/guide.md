@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0010
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0010
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-14

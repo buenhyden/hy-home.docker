@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
+import functools
 import json
 import os
 import pathlib
@@ -130,6 +131,33 @@ class DocumentRegistry:
     lifecycles: Mapping[str, tuple[str, ...]]
     identity_spaces: Mapping[str, IdentitySpace]
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
+
+
+@functools.lru_cache(maxsize=1)
+def _registered_types() -> Mapping[str, str]:
+    """Cache the Registry-declared family/kind document type per profile."""
+
+    return MappingProxyType({
+        profile_id: str(profile["type"])
+        for profile_id, profile in load_registry().profiles.items()
+        if isinstance(profile.get("type"), str)
+    })
+
+
+def document_type(profile_id: str) -> str:
+    """Return the canonical `family/kind` document type for a Registry profile."""
+
+    return _registered_types()[profile_id]
+
+
+def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
+    """A provider runtime owns this surface, so the document type system defers."""
+
+    exceptions = profile.get("exceptions")
+    return isinstance(exceptions, list) and any(
+        isinstance(item, Mapping) and item.get("kind") == "provider-owned-binding"
+        for item in exceptions
+    )
 
 
 def _trusted_requirement_path_match(path: str) -> re.Match[str] | None:
@@ -358,6 +386,10 @@ def validate_registry(
                 or not isinstance(right_pattern, str)
             ):
                 continue
+            if _declares_provider_binding(left) or _declares_provider_binding(right):
+                # A provider-owned binding is a narrower runtime-owned surface
+                # inside a generic document route; its runtime owner resolves it.
+                continue
             if _path_patterns_overlap(left_pattern, right_pattern):
                 findings.append(
                     RegistryFinding(
@@ -486,18 +518,18 @@ def validate_registry(
                     "canonical Markdown profiles must require frontmatter",
                 )
             )
-        if frontmatter_policy == "required":
+        if frontmatter_policy == "required" and not _declares_provider_binding(profile):
             if (
                 not isinstance(required_frontmatter, list)
-                or "profile_id" not in required_frontmatter
+                or "type" not in required_frontmatter
                 or isinstance(optional_frontmatter, list)
-                and "profile_id" in optional_frontmatter
+                and "type" in optional_frontmatter
             ):
                 findings.append(
                     RegistryFinding(
-                        "profile-id-contract-invalid",
+                        "type-contract-invalid",
                         f"profiles.{index}",
-                        "frontmatter-required profiles must require exact profile_id",
+                        "frontmatter-required profiles must require exact type",
                     )
                 )
         elif frontmatter_policy == "absent" and (
@@ -530,6 +562,11 @@ def validate_registry(
         )
         relation_valid = (
             identity_relation == "none" and artifact_pattern is None
+        ) or (
+            # A tombstone reuses the retired document's identity instead of
+            # allocating a new one; its owner script derives the exact value.
+            identity_relation == "inherited"
+            and "retired_artifact_id" in artifact_tokens
         ) or (
             identity_relation == "direct"
             and "number" in path_tokens
@@ -1390,11 +1427,12 @@ def validate_requirement_allocation_transition(
 
 
 _TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
     r"|\{(?:slug|hook_slug|domain|stage)\}"
 )
 _ARTIFACT_TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
+    r"|\{retired_artifact_id\}"
 )
 
 
@@ -1439,13 +1477,22 @@ def _safe_template_source(value: str) -> bool:
     )
 
 
+# Artifact patterns may also carry the inherited-identity token, which never
+# appears in a path pattern.
+_RENDER_TOKEN_PATTERN = re.compile(
+    _TOKEN_PATTERN.pattern + r"|\{retired_artifact_id\}"
+)
+
+
 def _path_regex(pattern: str) -> re.Pattern[str]:
     cursor = 0
     rendered: list[str] = ["^"]
-    for match in _TOKEN_PATTERN.finditer(pattern):
+    for match in _RENDER_TOKEN_PATTERN.finditer(pattern):
         rendered.append(re.escape(pattern[cursor : match.start()]))
         token = match.group(0)
-        if token.endswith(":4}"):
+        if token == "{retired_artifact_id}":
+            rendered.append(r"[A-Za-z][A-Za-z0-9]*-[0-9]{4}")
+        elif token.endswith(":4}"):
             rendered.append(r"[0-9]{4}")
         elif token == "{hook_slug}":
             rendered.append(r"[a-z0-9][a-z0-9.-]*")

@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Mail Recovery Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0070
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0070
 parent_ids:
   - SPEC-0011
 created: 2026-05-17

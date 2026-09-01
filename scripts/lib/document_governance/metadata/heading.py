@@ -13,6 +13,7 @@ from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.registry import (
+    document_type,
     DocumentRegistry,
     classify_path as classify_registered_path,
 )
@@ -105,7 +106,7 @@ def _validate_template_source(
         findings.append(_finding(record, "type-inappropriate-key", f"key is not declared for target {target_type}: {key}"))
     if record.metadata.get("status") != "draft":
         findings.append(_finding(record, "invalid-template-status", "template sources must keep status: draft"))
-    if record.metadata.get("artifact_type") != target_type:
+    if record.metadata.get("type") != document_type(target_type):
         findings.append(
             _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
         )
@@ -853,9 +854,8 @@ def _native_migration_compaction_witness(
         or record.path.as_posix() != "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         or record.previous_status != "archived"
         or record.artifact_type != "migration"
-        or record.metadata.get("artifact_type") != "migration"
-        or record.metadata.get("artifact_id") != "mig-0003"
-        or record.metadata.get("profile_id") != "migration"
+        or record.metadata.get("type") != "archive/migration"
+        or record.metadata.get("artifact_id") != "MIG-0003"
         or record.metadata.get("status") != "completed"
     ):
         return None

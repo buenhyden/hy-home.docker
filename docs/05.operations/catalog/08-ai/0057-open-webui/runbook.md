@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Open WebUI Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0057
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0057
 parent_ids: []
 created: 2026-05-17
 updated: 2026-09-01

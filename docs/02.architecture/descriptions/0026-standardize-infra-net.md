@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: infra_net Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0026
-artifact_type: architecture-description
 parent_ids:
   - REQ-0023
 created: 2026-04-01

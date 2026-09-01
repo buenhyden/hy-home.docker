@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Security Optimization and Hardening Architecture
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0018
-artifact_type: architecture-description
 parent_ids:
   - REQ-0015
 created: 2026-03-28

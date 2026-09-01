@@ -1,8 +1,13 @@
 ---
+title: "Reference: Loop Engineering"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:loop-engineering
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0010
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -166,7 +171,7 @@ than the contract prose:
    would block a third attempt.
 2. **`PreToolUse` can repeat the same advisory guidance indefinitely.**
    Because the repository dispatcher treats `PreToolUse` as advisory only
-   (see [harness-engineering.md](./harness-engineering.md)), a session that
+   (see [harness-engineering.md](./m0008-harness-engineering.md)), a session that
    keeps triggering the same changed-path pattern (for example repeatedly
    editing a target-stage doc without fixing the template violation) receives
    the same reminder text on every call with no escalation, count, or
@@ -248,7 +253,7 @@ shared dispatcher output.
 
 The two Hookify rules scoped to `event: stop`
 (`require-logical-commits-before-stop`, `warn-docker-infra-stop` — see
-[harness-engineering.md](./harness-engineering.md) for the full catalog) name
+[harness-engineering.md](./m0008-harness-engineering.md) for the full catalog) name
 the same completion behavior already hard-coded in
 `logical_commit_stop_gate`. They add no additional retry ceiling or stop
 condition of their own; they exist as human-readable policy text with no
@@ -259,7 +264,7 @@ verified runtime execution path in this worktree.
 Each rule below restates a fact established earlier in this leaf; none
 introduces a new claim or copies a policy body from a canonical owner. The
 companion harness-side list is
-[harness-engineering.md](./harness-engineering.md).
+[harness-engineering.md](./m0008-harness-engineering.md).
 
 1. Name all nine loop-anatomy elements before the first attempt. An
    unstated trigger, owner, exit gate, attempt ceiling, or failure route is
@@ -337,7 +342,7 @@ contract's exit and escalation fields, not the taxonomy, remain operative.
 ## Scope Implications
 
 The status and owner basis comes from the
-[scope application matrix](./scope-application-matrix.md); every row below is
+[scope application matrix](./m0015-scope-application-matrix.md); every row below is
 the loop-specific implication.
 
 | Scope          | Loop implication                                                                         | Disposition / exit route                                                |
@@ -407,9 +412,9 @@ change.
 
 ## Related Documents
 
-- [Harness engineering](./harness-engineering.md)
-- [Provider implementation comparison](./provider-implementation-comparison.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

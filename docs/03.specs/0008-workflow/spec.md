@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Workflow Capability Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0008
-artifact_type: spec
 parent_ids:
   - AD-0022
 created: 2026-07-05

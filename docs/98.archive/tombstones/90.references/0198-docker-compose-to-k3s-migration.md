@@ -1,8 +1,10 @@
 ---
-profile_id: tombstone
+title: "Reference: Docker Compose to k3s/k3d Migration Tombstone"
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0198
-artifact_type: tombstone
+owner: "@buenhyden"
+artifact_id: tomb-DATA-0077
 parent_ids: [SPEC-0158]
 created: 2026-09-01
 updated: 2026-09-01

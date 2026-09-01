@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Infrastructure, Secrets, and Documentation Refresh Outcome
+type: specs/spec
+layer: specification
 status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0095
-artifact_type: spec
 parent_ids:
   - AD-0028
 created: 2026-07-05

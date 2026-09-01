@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: 09-Tooling Optimization Hardening Technical Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0010
-artifact_type: spec
 parent_ids:
   - AD-0024
 created: 2026-07-05

@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Stage 00 Canonical Adapter Model
+type: architecture/decision
+layer: architecture
 status: superseded
+owner: "@buenhyden"
 artifact_id: ADR-0027
-artifact_type: adr
 parent_ids:
   - AD-0027
 created: 2026-06-01

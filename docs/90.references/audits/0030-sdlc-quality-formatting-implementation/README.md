@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: SDLC Quality Formatting Implementation"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0030
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'

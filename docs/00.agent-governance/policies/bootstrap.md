@@ -1,7 +1,9 @@
 ---
-profile_id: governance-policy
+title: Agent Bootstrap Policy
+type: governance/policy
 layer: agentic
 status: active
+owner: "@buenhyden"
 ---
 
 # Agent Bootstrap Policy

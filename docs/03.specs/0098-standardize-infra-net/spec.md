@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: infra_net Standardization Outcome
+type: specs/spec
+layer: specification
 status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0098
-artifact_type: spec
 parent_ids:
   - AD-0026
 created: 2026-07-05

@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: 08-AI Optimization Hardening Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0058
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0058
 parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11

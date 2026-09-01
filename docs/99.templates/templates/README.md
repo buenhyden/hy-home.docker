@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Template Catalog
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Template Catalog

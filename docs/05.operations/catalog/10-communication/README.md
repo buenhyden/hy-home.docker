@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 10 Communication
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 10 Communication

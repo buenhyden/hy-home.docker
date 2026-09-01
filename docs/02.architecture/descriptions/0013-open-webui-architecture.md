@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Open WebUI Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0013
-artifact_type: architecture-description
 parent_ids:
   - REQ-0013
 created: 2026-03-27

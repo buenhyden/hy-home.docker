@@ -1,8 +1,13 @@
 ---
+title: "Reference: Provider Model Landscape at the Evidence Cutoff"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:provider-model-landscape
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0013
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -429,8 +434,8 @@ observation rather than rewriting history.
 
 ## Related Documents
 
-- [Agent model selection](./agent-model-selection.md)
-- [Provider implementation comparison](./provider-implementation-comparison.md)
-- [Agent instructions](./agent-instructions-vibe-coding.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Agent model selection](./m0002-agent-model-selection.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

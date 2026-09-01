@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: 03.specs
+type: common/readme
+layer: specification
 status: active
+owner: "@buenhyden"
 ---
 
 # 03.specs

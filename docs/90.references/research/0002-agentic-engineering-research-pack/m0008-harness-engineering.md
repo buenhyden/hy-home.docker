@@ -1,8 +1,13 @@
 ---
+title: "Reference: Harness Engineering"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:harness-engineering
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0008
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -21,8 +26,8 @@ source for the others.
 
 This reference satisfies REQ-01 and REQ-03 at tracked baseline
 `9a6e09ca06d99ae8234199443974c978640f3ae6`. It uses the
-[workspace baseline](./workspace-baseline.md) for the corpus inventory and the
-[scope matrix](./scope-application-matrix.md) for the normative fourteen-scope
+[workspace baseline](./m0020-workspace-baseline.md) for the corpus inventory and the
+[scope matrix](./m0015-scope-application-matrix.md) for the normative fourteen-scope
 axis.
 
 ## Purpose
@@ -261,7 +266,7 @@ the model above, while its local runtime presence is the least verified of
 the three — a concrete instance of this reference's central distinction
 between configuration and execution. Deep two-way Claude/Codex construction
 comparison remains the dedicated subject of
-[`provider-implementation-comparison.md`](./provider-implementation-comparison.md);
+[`provider-implementation-comparison.md`](./m0012-provider-implementation-comparison.md);
 this leaf records the third-provider fact only so the harness element model
 above does not silently understate what "canonical authority" currently
 spans.
@@ -333,7 +338,7 @@ pre-check, rollback, post-check, and a redacted record. None was sought here.
 ## Scope Implications
 
 Every row uses the disposition and evidence owners in the
-[scope application matrix](./scope-application-matrix.md); this table states
+[scope application matrix](./m0015-scope-application-matrix.md); this table states
 the harness-specific implication so no scope is inherited silently.
 
 | Scope          | Harness implication                                                                                           | Current disposition / route                                                                    |
@@ -412,9 +417,9 @@ their canonical Stage 00/03/04 owner.
 
 ## Related Documents
 
-- [Loop engineering](./loop-engineering.md)
-- [Provider implementation comparison](./provider-implementation-comparison.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

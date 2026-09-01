@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 11-Laboratory Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0025
-artifact_type: architecture-description
 parent_ids:
   - REQ-0022
 created: 2026-03-28

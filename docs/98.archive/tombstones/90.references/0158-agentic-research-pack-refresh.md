@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Agentic Research Pack Refresh Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0158
-artifact_type: tombstone
-parent_ids: [mig-0003]
+owner: "@buenhyden"
+artifact_id: tomb-RES-0001
+parent_ids: [MIG-0003]
 created: 2026-08-30
 updated: 2026-08-30
 ---

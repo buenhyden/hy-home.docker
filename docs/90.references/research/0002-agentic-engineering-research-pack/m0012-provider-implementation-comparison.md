@@ -1,8 +1,13 @@
 ---
+title: "Reference: Claude and Codex Implementation Comparison"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:provider-implementation-comparison
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0012
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -258,7 +263,7 @@ and, where it matters more, what it does not.
 
 ## Scope Implications
 
-This table applies the [scope application matrix](./scope-application-matrix.md)
+This table applies the [scope application matrix](./m0015-scope-application-matrix.md)
 to provider construction explicitly.
 
 | Scope          | Provider-comparison implication                                                                      | Disposition / route                                                                            |
@@ -332,10 +337,10 @@ provider limitations.
 
 ## Related Documents
 
-- [Harness engineering](./harness-engineering.md)
-- [Loop engineering](./loop-engineering.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

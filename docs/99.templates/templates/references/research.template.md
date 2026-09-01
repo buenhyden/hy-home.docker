@@ -1,8 +1,11 @@
 ---
-profile_id: research
+title: <title>
+version: <version>
+type: references/research
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: RES-####
-artifact_type: research
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

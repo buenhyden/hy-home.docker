@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: 0012 Standardize Infra Net Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0077
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0077
 parent_ids: []
 created: 2026-05-10
 updated: 2026-09-01

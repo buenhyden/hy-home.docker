@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: Architecture Decision Records
+type: common/readme
+layer: architecture
 status: active
+owner: "@buenhyden"
 ---
 
 # Architecture Decision Records

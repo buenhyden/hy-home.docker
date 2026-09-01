@@ -93,10 +93,12 @@ class CurrentBodyContractTests(unittest.TestCase):
                 "0001-common-optimizations-template-exceptions/policy.md"
             ),
             {
-                "profile_id": "policy",
+                "title": "Common Optimizations Template Exceptions",
+                "type": "operations/policy",
+                "layer": "operations",
                 "status": "active",
-                "artifact_id": "policy-0001",
-                "artifact_type": "policy",
+                "owner": "@buenhyden",
+                "artifact_id": "POL-0001",
                 "parent_ids": [],
                 "created": "2026-08-01",
                 "updated": "2026-08-01",
@@ -118,10 +120,12 @@ class CurrentBodyContractTests(unittest.TestCase):
 
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
         base = {
-            "profile_id": "policy",
+            "title": "Common Optimizations Template Exceptions",
+            "type": "operations/policy",
+            "layer": "operations",
             "status": "active",
-            "artifact_id": "policy-0001",
-            "artifact_type": "policy",
+            "owner": "@buenhyden",
+            "artifact_id": "POL-0001",
             "parent_ids": [],
             "created": "2026-08-01",
             "updated": "2026-08-01",
@@ -146,7 +150,7 @@ class CurrentBodyContractTests(unittest.TestCase):
         self.assertEqual([], findings({"reviewed_at": "2026-08-02"}))
         self.assertIn(
             "type-inappropriate-key",
-            {item.code for item in findings({"owner": "undeclared"})},
+            {item.code for item in findings({"undeclared_key": "value"})},
         )
 
     def test_commonmark_code_hides_template_residue(self) -> None:

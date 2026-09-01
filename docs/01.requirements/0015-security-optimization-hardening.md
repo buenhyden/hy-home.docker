@@ -1,8 +1,10 @@
 ---
-profile_id: requirements-package
+title: "03-Security (Vault) Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0015
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
 updated: 2026-09-01

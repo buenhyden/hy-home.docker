@@ -1,8 +1,13 @@
 ---
+title: "Reference: Automation Pipeline and Workflow Topology"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:automation-pipeline-workflow
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0004
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-08-30
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -448,12 +453,12 @@ target and timestamp; never promote tracked intent to applied state.
 
 ## Related Documents
 
-- [Verification and validation](./verification-validation.md)
-- [Quality, CI, and formatting](./quality-ci-formatting.md)
-- [Workspace baseline](./workspace-baseline.md)
-- [Scope application matrix](./scope-application-matrix.md)
-- [Harness engineering](./harness-engineering.md)
-- [Loop engineering](./loop-engineering.md)
-- [Spec-driven SDLC](./spec-driven-sdlc.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
 - [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

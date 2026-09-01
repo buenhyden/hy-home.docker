@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0020
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'

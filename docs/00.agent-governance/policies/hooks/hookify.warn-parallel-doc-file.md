@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "WARNING: parallel replacement document file"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: warn-parallel-doc-file
 enabled: true
 event: file

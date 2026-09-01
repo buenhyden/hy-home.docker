@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0002
-artifact_type: adr
 parent_ids:
   - AD-0002
 created: 2026-03-26

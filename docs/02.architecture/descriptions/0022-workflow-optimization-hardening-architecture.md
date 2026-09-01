@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 07-Workflow Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0022
-artifact_type: architecture-description
 parent_ids:
   - REQ-0019
 created: 2026-03-28

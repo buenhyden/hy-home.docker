@@ -704,10 +704,8 @@ def parse_requirement_package(
         raise RequirementPackageError(
             f"path requires {expected_artifact}, found {artifact_id!r}"
         )
-    if record.metadata.get("profile_id") != "requirements-package":
-        raise RequirementPackageError("requirement package has the wrong profile_id")
-    if record.metadata.get("artifact_type") != "requirements-package":
-        raise RequirementPackageError("requirement package has the wrong artifact_type")
+    if record.metadata.get("type") != "requirements/package":
+        raise RequirementPackageError("requirement package has the wrong type")
     status = record.metadata.get("status")
     if not isinstance(status, str) or not status:
         raise RequirementPackageError("requirement package status is missing")

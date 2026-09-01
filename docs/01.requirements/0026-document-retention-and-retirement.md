@@ -1,8 +1,10 @@
 ---
-profile_id: requirements-package
+title: 문서 보존 및 은퇴 요구사항
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0026
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-09-01
 updated: 2026-09-01

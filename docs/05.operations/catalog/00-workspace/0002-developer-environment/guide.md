@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Developer Environment Operations
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0002
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0002
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-14

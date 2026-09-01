@@ -1,8 +1,10 @@
 ---
-profile_id: tombstone
+title: Frontmatter Inventory Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0175
-artifact_type: tombstone
+owner: "@buenhyden"
+artifact_id: tomb-AUD-0005
 parent_ids: [SPEC-0158]
 created: 2026-09-01
 updated: 2026-09-01

@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Common Templates
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Common Templates

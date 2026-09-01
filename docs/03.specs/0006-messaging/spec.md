@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Messaging Capability Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0006
-artifact_type: spec
 parent_ids:
   - AD-0020
 created: 2026-07-05

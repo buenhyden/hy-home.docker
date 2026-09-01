@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Harness / Agent-first Engineering Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0004
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0004
 parent_ids:
   - SPEC-0094
 created: 2026-06-04

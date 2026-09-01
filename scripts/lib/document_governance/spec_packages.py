@@ -17,7 +17,7 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
-from scripts.lib.document_governance.registry import DocumentRegistry, load_registry
+from scripts.lib.document_governance.registry import document_type, DocumentRegistry, load_registry
 
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
@@ -36,8 +36,8 @@ _TASK_PATH = re.compile(
     r"tsk-(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md"
 )
 _SPEC_ID = re.compile(r"SPEC-[0-9]{4}")
-_PLAN_ID = re.compile(r"plan-[0-9]{4}")
-_TASK_ID = re.compile(r"task-[0-9]{4}-[0-9]{4}")
+_PLAN_ID = re.compile(r"SPEC-[0-9]{4}-PLAN-[0-9]{4}")
+_TASK_ID = re.compile(r"SPEC-[0-9]{4}-TSK-[0-9]{4}")
 _EXTERNAL_PARENT_ID = re.compile(r"(?:REQ|AD|ADR|SPEC)-[0-9]{4}")
 _RECOVERY_COMMIT = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
 _FORBIDDEN_PACKAGE_ROLES = frozenset({"design.md", "tests.md", "task.md"})
@@ -55,7 +55,7 @@ _EXPECTED_PROFILES = {
     ),
     "plan": (
         "docs/03.specs/{package_number:4}-{slug}/plan.md",
-        "plan-{package_number:4}",
+        "SPEC-{package_number:4}-PLAN-{member_number:4}",
         "package-member",
         "execution",
     ),
@@ -404,10 +404,10 @@ def _parse_document(
         record = frontmatter_record_from_text(display_path, text)
     except FrontmatterError as error:
         raise SpecPackageError(str(error)) from error
-    if record.metadata.get("profile_id") != profile_id:
-        raise SpecPackageError(f"{relative} must declare profile_id: {profile_id}")
-    if record.metadata.get("artifact_type") != profile_id:
-        raise SpecPackageError(f"{relative} must declare artifact_type: {profile_id}")
+    if record.metadata.get("type") != document_type(profile_id):
+        raise SpecPackageError(
+            f"{relative} must declare type: {document_type(profile_id)}"
+        )
     artifact_id = record.metadata.get("artifact_id")
     if artifact_id != expected_artifact_id:
         raise SpecPackageError(
@@ -642,7 +642,7 @@ def _load_package(
                 package / "plan.md",
                 relative_package / "plan.md",
                 profile_id="plan",
-                expected_artifact_id=f"plan-{number}",
+                expected_artifact_id=f"SPEC-{number}-PLAN-0001",
                 registry=registry,
                 budget=current,
             )
@@ -957,7 +957,7 @@ def _snapshot_document(
         artifact_id = f"SPEC-{number}"
     elif len(path.parts) == 4 and path.name == "plan.md":
         profile_id = "plan"
-        artifact_id = f"plan-{number}"
+        artifact_id = f"SPEC-{number}-PLAN-0001"
     elif len(path.parts) == 5 and path.parts[3] == "tasks":
         match = _TASK_PATH.fullmatch(path.name)
         if match is None:

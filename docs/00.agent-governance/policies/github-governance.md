@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: GitHub Governance Policy
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # GitHub Governance Policy

@@ -1,8 +1,11 @@
 ---
-profile_id: incident
+title: <title>
+version: <version>
+type: operations/incident
+layer: <layer>
 status: open
-artifact_id: inc-####
-artifact_type: incident
+owner: <owner>
+artifact_id: inc-<year>-####
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

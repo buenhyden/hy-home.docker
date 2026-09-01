@@ -1,7 +1,6 @@
 ---
-profile_id: readme
+type: common/readme
 status: draft
-artifact_type: readme
 ---
 
 # {{title}}

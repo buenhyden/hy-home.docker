@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Documentation Protocol
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Documentation Protocol
@@ -33,9 +35,20 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 3. Keep dates in frontmatter; the incident year directory is the only path exception.
 4. Store incident packets only at `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md` and `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
 5. Link canonical IDs in full and never reuse an issued ID.
-6. Update cross-links in the same logical change.
-7. Record execution evidence in the co-located Stage 03 Task.
-8. Validate metadata, links, and stage-specific contracts before completion.
+6. Give a member document its container identity plus that container's internal
+   sequence: `SPEC-####-PLAN-####`, `SPEC-####-TSK-####`, `RES-####-m####`,
+   `AUD-####-m####`, `DATA-####-m####`, and `inc-<year>-####-PM`.
+7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
+   `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
+8. Give a tombstone the retired document's identity under a `tomb-` prefix
+   instead of allocating a new number.
+9. Declare `title`, `type`, `layer`, `status`, `owner`, `artifact_id`,
+   `parent_ids`, `created`, and `updated` in that frontmatter order. `type`
+   carries the `family/kind` document role; `profile_id` and `artifact_type`
+   are retired, and `title` never repeats the artifact identity.
+10. Update cross-links in the same logical change.
+11. Record execution evidence in the co-located Stage 03 Task.
+12. Validate metadata, links, and stage-specific contracts before completion.
 
 Governance and internal technical authority is written in English. User-facing
 guidance may follow the audience language when its template permits it.

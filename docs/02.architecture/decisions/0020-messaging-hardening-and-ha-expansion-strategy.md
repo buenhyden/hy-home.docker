@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Messaging Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0020
-artifact_type: adr
 parent_ids:
   - AD-0020
 created: 2026-03-28

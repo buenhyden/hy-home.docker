@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: AI Capability Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0009
-artifact_type: spec
 parent_ids:
   - AD-0013
   - AD-0023

@@ -233,10 +233,12 @@ rows = [
 ]
 lines = [
     "---",
-    "profile_id: data",
+    "title: Provider Hook Parity Matrix",
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
     "artifact_id: DATA-0072",
-    "artifact_type: data",
     "parent_ids: []",
     "created: '2026-08-21'",
     "updated: '2026-08-28'",

@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Retention and Performance Policies
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0048
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0048
 parent_ids:
   - SPEC-0007
 created: 2026-03-25

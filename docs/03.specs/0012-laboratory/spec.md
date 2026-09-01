@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: 11-Laboratory Optimization Hardening Technical Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0012
-artifact_type: spec
 parent_ids:
   - AD-0025
 created: 2026-07-05

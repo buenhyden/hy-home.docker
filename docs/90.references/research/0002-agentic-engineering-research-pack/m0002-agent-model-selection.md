@@ -1,8 +1,13 @@
 ---
+title: "Reference: Task-Aware Agent Model Selection"
+type: references/research-member
+layer: reference
 status: active
-artifact_id: reference:agentic-engineering-research:agent-model-selection
-artifact_type: reference
-parent_ids: []
+owner: "@buenhyden"
+artifact_id: RES-0002-m0002
+parent_ids: [RES-0002]
+created: 2026-08-23
+updated: 2026-09-01
 reviewed_at: 2026-08-28
 review_cycle: on-source-change
 ---
@@ -178,7 +183,7 @@ conversation's model. `effort` in subagent frontmatter is a separate control
 that "overrides the session effort level" and defaults to inheriting from
 the session; its allowed values (`low`, `medium`, `high`, `xhigh`, `max`)
 are the same five-value Claude ladder documented in
-[Provider model landscape](./provider-model-landscape.md#effort-mechanics-per-model-family),
+[Provider model landscape](./m0013-provider-model-landscape.md#effort-mechanics-per-model-family),
 not a distinct subagent-only vocabulary.
 
 Extended thinking is documented as inherited, not independently
@@ -198,7 +203,7 @@ configuration reference (`minimal`/`low`/`medium`/`high`/`xhigh`) does not
 match the six-value set recorded in `provider-models.yaml`'s
 `supported_reasoning_controls` for the Codex work-profile defaults (adds
 `max`/`none`, omits `minimal`). See
-[Provider model landscape: Reasoning-control value drift](./provider-model-landscape.md#reasoning-control-value-drift-codex-unverified)
+[Provider model landscape: Reasoning-control value drift](./m0013-provider-model-landscape.md#reasoning-control-value-drift-codex-unverified)
 for the full `UNVERIFIED` analysis; the practical selection consequence here
 is that `agent-catalog.yaml`'s Codex-routed roles (all `complex-implementation`,
 `adversarial-review`, and `long-horizon-supervision` workers) inherit
@@ -285,7 +290,7 @@ classifier, but no such field exists today.
   request naming the owning role, permission profile, and work profile for
   any of these scopes before a role is added.
 - The Codex `model_reasoning_effort` supported-value drift (`UNVERIFIED`,
-  detailed in [Provider model landscape](./provider-model-landscape.md#reasoning-control-value-drift-codex-unverified))
+  detailed in [Provider model landscape](./m0013-provider-model-landscape.md#reasoning-control-value-drift-codex-unverified))
   has not been revalidated against the exact `reasoning_source_url` cited
   per Codex model row; until it is, treat the registry's stated Codex
   reasoning-control superset as unconfirmed even though today's four
@@ -388,10 +393,10 @@ validators change. Never update a generated adapter alone.
 
 ## Related Documents
 
-- [Provider model landscape](./provider-model-landscape.md)
-- [AI agent catalogs](./ai-agent-catalogs.md)
-- [Agent instructions](./agent-instructions-vibe-coding.md)
-- [Scope application matrix](./scope-application-matrix.md)
+- [Provider model landscape](./m0013-provider-model-landscape.md)
+- [AI agent catalogs](./m0003-ai-agent-catalogs.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
 - Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
 - [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

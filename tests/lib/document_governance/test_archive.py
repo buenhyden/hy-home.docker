@@ -688,9 +688,14 @@ class ArchiveMinimizationTests(unittest.TestCase):
                     self.archive.load_archive(archive_root)
 
     def test_frozen_migration_is_byte_identical_at_prefixless_path(self) -> None:
+        # Repinned 2026-09-02. The artifact-identity convergence moved this
+        # ledger's own frontmatter to the `type`/`artifact_id` envelope
+        # (`MIG-0003`). The fenced evidence block is byte-identical to its
+        # predecessor and `archive._migration_document` still reverifies it
+        # against the approved Git blob; only frontmatter moved.
         path = ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         self.assertEqual(
-            "0f895f395360a4b33456c7fb5a651f71efb22b566c7b74dd1aacd0884f9abb95",
+            "33be9ffe500b1edc8af6c0a76feaa4466a97dc9aff29669124a339bf5550ffdb",
             self.archive.sha256_file(path),
         )
         self.assertFalse((ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md").exists())

@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Approval Boundaries
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Approval Boundaries

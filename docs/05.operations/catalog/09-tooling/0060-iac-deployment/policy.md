@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: IaC Deployment Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0060
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0060
 parent_ids:
   - SPEC-0010
 created: 2026-03-25

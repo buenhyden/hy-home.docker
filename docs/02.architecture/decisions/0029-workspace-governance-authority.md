@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Workspace Governance Authority
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0029
-artifact_type: adr
 parent_ids:
   - AD-0027
 created: 2026-08-20

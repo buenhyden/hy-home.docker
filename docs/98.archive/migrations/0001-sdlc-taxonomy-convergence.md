@@ -1,8 +1,10 @@
 ---
-profile_id: migration
+title: SDLC Taxonomy Convergence Migration Ledger
+type: archive/migration
+layer: archive
 status: completed
-artifact_id: mig-0001
-artifact_type: migration
+owner: "@buenhyden"
+artifact_id: MIG-0001
 parent_ids: [SPEC-0136]
 created: 2026-08-10
 updated: 2026-08-30
