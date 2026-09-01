@@ -569,14 +569,15 @@ class DocumentRegistryTests(unittest.TestCase):
 
         advanced = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         advanced_requirement = advanced["identity_spaces"]["requirement"]
-        advanced_requirement["high_water"] = 26
-        advanced_requirement["next_number"] = 27
+        allocated = advanced_requirement["high_water"] + 1
+        advanced_requirement["high_water"] = allocated
+        advanced_requirement["next_number"] = allocated + 1
         for kind in ("FR", "NFR", "IF"):
             child = json.loads(
                 json.dumps(advanced_requirement["child_spaces"][f"REQ-0001.{kind}"])
             )
-            child["prefix"] = f"REQ-0026-{kind}-"
-            advanced_requirement["child_spaces"][f"REQ-0026.{kind}"] = child
+            child["prefix"] = f"REQ-{allocated:04d}-{kind}-"
+            advanced_requirement["child_spaces"][f"REQ-{allocated:04d}.{kind}"] = child
         self.assertEqual(
             (),
             validate_registry(
@@ -706,7 +707,10 @@ class DocumentRegistryTests(unittest.TestCase):
             )
 
             self.assertEqual(oid, baseline.source)
-            self.assertEqual(25, baseline.package_high_water)
+            self.assertEqual(
+                load_registry().identity_spaces["requirement"].high_water,
+                baseline.package_high_water,
+            )
 
     def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(self) -> None:
         registry = load_registry()

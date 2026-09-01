@@ -416,9 +416,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         identities = tuple(
             requirement_package_identity(path.relative_to(ROOT)) for path in paths
         )
-        self.assertEqual(25, len(paths))
+        self.assertTrue(paths)
         self.assertTrue(all(identity is not None for identity in identities))
-        self.assertEqual(25, len(set(identities)))
+        self.assertEqual(len(paths), len(set(identities)))
         self.assertIsNone(
             requirement_package_identity(
                 pathlib.PurePosixPath("docs/01.requirements/prd-0001-legacy.md")

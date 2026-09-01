@@ -34,6 +34,7 @@ docs/02.architecture/descriptions/
 ├── ...
 ├── 0027-agent-governance-canonical-adapter.md
 ├── 0028-operational-readiness-closure.md
+├── 0030-document-lifecycle-governance.md
 └── README.md
 ```
 
@@ -45,6 +46,8 @@ docs/02.architecture/descriptions/
   Stage 00 adapter architecture.
 - [`AD-0028`](./0028-operational-readiness-closure.md):
   local-isolated readiness evidence architecture.
+- [`AD-0030`](./0030-document-lifecycle-governance.md):
+  문서 lifecycle 거버넌스 아키텍처.
 
 ## How to Work in This Area
 

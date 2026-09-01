@@ -44,6 +44,14 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "graphify-out/",
 )
 
+def _requirement_high_water() -> int:
+    """Stage 99 owns the corpus size; a test never pins it."""
+
+    from scripts.lib.document_governance.registry import load_registry
+
+    return load_registry().identity_spaces["requirement"].high_water
+
+
 AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0001": "REQ-0001",
     "AD-0002": "REQ-0002",
@@ -70,6 +78,7 @@ AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0026": "REQ-0023",
     "AD-0027": "REQ-0024",
     "AD-0028": "REQ-0025",
+    "AD-0030": "REQ-0026",
 }
 
 ADR_TO_AD = {
@@ -99,6 +108,7 @@ ADR_TO_AD = {
     "ADR-0027": "AD-0027",
     "ADR-0028": "AD-0028",
     "ADR-0029": "AD-0027",
+    "ADR-0030": "AD-0030",
 }
 
 
@@ -174,9 +184,11 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(25, len(paths))
         self.assertEqual(
-            {f"REQ-{number:04d}" for number in range(1, 26)},
+            {
+                f"REQ-{number:04d}"
+                for number in range(1, _requirement_high_water() + 1)
+            },
             {metadata_for(path)["artifact_id"] for path in paths},
         )
         for path in paths:
@@ -207,7 +219,6 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(25, len(paths))
         self.assertEqual(
             set(AD_TO_REQUIREMENT_PACKAGE),
             {metadata_for(path)["artifact_id"] for path in paths},
@@ -239,7 +250,6 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(26, len(paths))
         self.assertEqual(set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths})
         for path in paths:
             with self.subTest(path=path):

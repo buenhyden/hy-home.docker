@@ -391,7 +391,10 @@ class RequirementPackageTests(unittest.TestCase):
         baseline = registry_module.load_trusted_requirement_allocation_baseline(":")
         registry = requirements.load_registry()
         requirement = registry.identity_spaces["requirement"]
-        regressed = dataclasses.replace(requirement, high_water=24, next_number=25)
+        current = requirement.high_water
+        regressed = dataclasses.replace(
+            requirement, high_water=current - 1, next_number=current
+        )
         identity_spaces = dict(registry.identity_spaces)
         identity_spaces["requirement"] = regressed
         candidate_registry = dataclasses.replace(
@@ -427,13 +430,13 @@ class RequirementPackageTests(unittest.TestCase):
             child_spaces = dict(requirement.child_spaces)
             for kind in ("FR", "NFR", "IF"):
                 source_space = child_spaces[f"REQ-0001.{kind}"]
-                child_spaces[f"REQ-0026.{kind}"] = dataclasses.replace(
-                    source_space, prefix=f"REQ-0026-{kind}-"
+                child_spaces[f"REQ-{current + 1:04d}.{kind}"] = dataclasses.replace(
+                    source_space, prefix=f"REQ-{current + 1:04d}-{kind}-"
                 )
             advanced_requirement = dataclasses.replace(
                 requirement,
-                high_water=26,
-                next_number=27,
+                high_water=current + 1,
+                next_number=current + 2,
                 child_spaces=child_spaces,
             )
             identity_spaces["requirement"] = advanced_requirement
@@ -450,8 +453,8 @@ class RequirementPackageTests(unittest.TestCase):
                     )
             self._write_package(
                 stage,
-                name="0026-new.md",
-                text=_package_text(number="0026"),
+                name=f"{current + 1:04d}-new.md",
+                text=_package_text(number=f"{current + 1:04d}"),
             )
             packages = requirements.load_requirement_packages(
                 stage,
@@ -459,7 +462,7 @@ class RequirementPackageTests(unittest.TestCase):
                 trusted_requirement_baseline=baseline,
                 allow_requirement_allocation_transition=True,
             )
-            self.assertEqual("REQ-0026", packages[-1].artifact_id)
+            self.assertEqual(f"REQ-{current + 1:04d}", packages[-1].artifact_id)
 
     def test_parser_rejects_unbounded_non_utf8_and_symlink_inputs(self) -> None:
         requirements = _requirements_module()
@@ -657,13 +660,15 @@ class RequirementPackageTests(unittest.TestCase):
                 ):
                     requirements.parse_requirement_package(path, registry=registry)
 
-    def test_current_stage_contains_exactly_25_canonical_packages(self) -> None:
+    def test_current_stage_holds_the_canonical_package_run(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
         requirements = _requirements_module()
         stage = ROOT / "docs/01.requirements"
         packages = requirements.load_requirement_packages(stage)
-        self.assertEqual(25, len(packages))
+        high_water = load_registry().identity_spaces["requirement"].high_water
         self.assertEqual(
-            [f"REQ-{number:04d}" for number in range(1, 26)],
+            [f"REQ-{number:04d}" for number in range(1, high_water + 1)],
             [package.artifact_id for package in packages],
         )
         self.assertFalse(tuple(stage.glob("prd-*.md")))

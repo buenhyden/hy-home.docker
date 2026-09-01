@@ -38,6 +38,7 @@ docs/01.requirements/
 ├── ...
 ├── 0024-agent-governance-standardization.md
 ├── 0025-operational-readiness-closure.md
+├── 0026-document-retention-and-retirement.md
 └── README.md
 ```
 
@@ -82,3 +83,4 @@ Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호�
 - [Operations](../05.operations/README.md)
 - [Agent Governance Standardization Requirements](./0024-agent-governance-standardization.md)
 - [Operational Readiness Closure Requirements](./0025-operational-readiness-closure.md)
+- [문서 보존 및 은퇴 요구사항](./0026-document-retention-and-retirement.md)
