@@ -699,6 +699,33 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "aggregate byte limit"):
                     self.archive.load_archive(archive_root)
 
+    def test_every_frozen_migration_is_byte_identical(self) -> None:
+        """0001 and 0002 had no integrity control until 2026-09-02.
+
+        Only 0003 was digest-tripwired. The action-count maps in
+        `lifecycle/promoted.py` were the sole thing standing between 0001 and a
+        silent edit, and a count cannot see a changed path or commit. All three
+        retained ledgers are frozen evidence, so all three are pinned here.
+        """
+
+        for name, digest in (
+            (
+                "0001-sdlc-taxonomy-convergence.md",
+                "08275f2a4a9f4ac60114af382d9da1de90425e2b28510f327425a10d3a7b4729",
+            ),
+            (
+                "0002-operations-catalog-convergence.md",
+                "060c455eb0a2ed78aef419834ea99dd84f911668739d14ed3c7bbcd3e188ac12",
+            ),
+        ):
+            with self.subTest(migration=name):
+                self.assertEqual(
+                    digest,
+                    self.archive.sha256_file(
+                        ROOT / "docs/98.archive/migrations" / name
+                    ),
+                )
+
     def test_frozen_migration_is_byte_identical_at_prefixless_path(self) -> None:
         # Repinned 2026-09-02. The artifact-identity convergence moved this
         # ledger's own frontmatter to the `type`/`artifact_id` envelope

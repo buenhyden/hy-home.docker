@@ -59,6 +59,14 @@ from scripts.lib.document_governance.lifecycle.contract import (
 TASK5_MIGRATION_LEDGER = pathlib.PurePosixPath(
     "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 )
+# Retained deliberately against SPEC-0158 Task 7 Step 6, which asks to remove
+# persistent digest and count ledgers. These maps describe frozen Migration
+# evidence, not a living corpus, so they never drift with legitimate change.
+# Until 2026-09-02 they were also the only integrity control on Migrations 0001
+# and 0002; `test_archive` now digest-pins all three, which makes these a second
+# layer rather than the sole one. They are kept because an action-count
+# mismatch names which action class changed, while a digest only says the file
+# differs.
 TASK5_LEDGER_ACTION_COUNTS = {
     "archive": 28,
     "delete": 38,
