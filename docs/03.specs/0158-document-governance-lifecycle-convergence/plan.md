@@ -244,13 +244,15 @@ Use this exact frontmatter and required section envelope:
 
 ```markdown
 ---
-profile_id: task
+title: Converge Document Governance by Lifecycle
+type: specs/task
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0158-TSK-0001
-artifact_type: task
 parent_ids: [SPEC-0158, SPEC-0158-PLAN-0001]
-created: 2026-08-31
-updated: 2026-08-31
+created: 2026-09-01
+updated: 2026-09-01
 ---
 
 # Converge Document Governance by Lifecycle
