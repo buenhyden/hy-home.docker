@@ -14,7 +14,6 @@ evidence.
 
 - [CI quality workflow](./workflows/ci-quality.yml)
 - [Typed workflow and gate registry](./workflow-contract.yml)
-- [Document corpus lifecycle workflow](./workflows/document-corpus-lifecycle.yml)
 - [Contributor greeting workflow](./workflows/greetings.yml)
 - [Pull request labeler workflow](./workflows/pr-labeler.yml)
 - [Stale-thread workflow](./workflows/stale.yml)

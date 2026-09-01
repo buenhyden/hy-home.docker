@@ -98,14 +98,6 @@ push it, enable it remotely, or change GitHub checks, rulesets, branch
 protection, environments, deployments, or releases without separate explicit
 approval for that repository and remote surface.
 
-`.github/workflows/document-corpus-lifecycle.yml` is read-only quality
-automation. Its scheduled and manual job blocks lifecycle contract and promoted
-manifest failures while reporting bounded full-corpus debt and duplicate
-candidates advisory-only. It does not upload corpus or snapshot payloads, add a
-required status check, or replace the existing `repo-contracts` pull-request
-and push consumer. Local validation of this tracked definition must be reported
-separately from unverified remote execution state.
-
 ### 5.2 Evidence Boundary by Change Type
 
 Agents must align local checks, CI-only gates, and skipped-check rationale with
@@ -178,7 +170,6 @@ runner.
 | `stale.yml`              | manage stale issues and PRs |
 | `pr-labeler.yml`         | apply PR labels            |
 | `generate-changelog.yml` | generate release changelog |
-| `document-corpus-lifecycle.yml` | report read-only scheduled/manual lifecycle debt and duplicate candidates |
 | `tech-stack-version-sync.yml` | check curated version-registry drift for governed Compose/version changes |
 
 Agent all-files execution remains limited to the separately approved controlled

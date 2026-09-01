@@ -42,7 +42,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `872`
+- Safe tracked source paths: `871`
 - Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -53,7 +53,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: | --- |
 | `.claude` | 47 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | `.codex` | 15 | [.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml)<br>[.codex/agents/doc-writer.toml](../../../../.codex/agents/doc-writer.toml) |
-| `.github` | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
+| `.github` | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
 | `docs/00.agent-governance` | 77 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md)<br>[docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) |
 | `docs/01.requirements` | 27 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | `docs/02.architecture` | 56 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
@@ -81,7 +81,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Reference and template docs | 96 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
 | Infrastructure source | 251 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 39 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
-| GitHub workflow surface | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
+| GitHub workflow surface | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
 | Other tracked source | 4 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md)<br>[docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) |
 
@@ -91,7 +91,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: |
 | JSON registry | 77 |
 | Markdown reference | 462 |
-| YAML config | 109 |
+| YAML config | 108 |
 | folder index | 140 |
 | script | 53 |
 | source path | 27 |

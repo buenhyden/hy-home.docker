@@ -66,14 +66,11 @@ class CurrentPublicContractTests(unittest.TestCase):
         path.write_text(text, encoding="utf-8")
         return path
 
-    def test_cli_defaults_to_registry_and_exposes_only_four_modes(self) -> None:
+    def test_cli_defaults_to_the_registry_and_has_no_mode_inventory(self) -> None:
         parser = lifecycle._parser()
         self.assertEqual(REGISTRY.resolve(), parser.parse_args([]).profiles.resolve())
-        self.assertEqual("check-public", parser.parse_args([]).mode)
-        self.assertEqual(
-            ("check-public", "check-contract", "check-promoted", "check-recovery"),
-            lifecycle.MODES,
-        )
+        self.assertFalse(hasattr(parser.parse_args([]), "mode"))
+        self.assertFalse(hasattr(lifecycle, "MODES"))
 
     def test_public_dataclasses_are_frozen_and_tuple_backed(self) -> None:
         row = self.valid_row()
@@ -156,16 +153,18 @@ class CurrentPublicContractTests(unittest.TestCase):
         self.assertEqual("spec", manifest.entries[0].artifact_type_after)
         self.assertEqual("typed-example", manifest.entries[0].surface_class)
 
-    def test_current_public_mode_does_not_load_a_legacy_contract(self) -> None:
+    def test_default_route_does_not_load_a_legacy_contract(self) -> None:
         with mock.patch.object(
             lifecycle,
             "load_migration_contract",
             side_effect=AssertionError("legacy authority loaded"),
         ), contextlib.redirect_stdout(io.StringIO()):
-            self.assertEqual(0, lifecycle.main(["--mode", "check-public"]))
+            self.assertEqual(0, lifecycle.main([]))
 
-    def test_recovery_mode_performs_only_archive_recovery_validation(self) -> None:
+    def test_default_route_reports_lifecycle_and_archive_recovery(self) -> None:
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(0, lifecycle.main(["--mode", "check-recovery"]))
-        self.assertIn("archive recovery:", output.getvalue())
+            self.assertEqual(0, lifecycle.main([]))
+        rendered = output.getvalue()
+        self.assertIn("document corpus lifecycle:", rendered)
+        self.assertIn("archive recovery:", rendered)

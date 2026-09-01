@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Thin CLI dispatch for the four current document-corpus lifecycle modes."""
+"""One complete document-corpus lifecycle route with no mode inventory."""
 
 from __future__ import annotations
 
@@ -21,7 +21,6 @@ from scripts.lib.document_governance.lifecycle.contract import (
     DEFAULT_PROFILES,
     HISTORICAL_CONTRACT,
     LEGACY_MIGRATION_PROFILES,
-    MODES,
     ROOT,
     SAFETY_FINDING_CODES,
     Finding,
@@ -90,23 +89,6 @@ def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
         )
 
 
-def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
-    requirements: dict[str, tuple[set[str], set[str]]] = {
-        "check-public": (set(), {"wave", "manifest", "exceptions", "output"}),
-        "check-contract": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-        "check-promoted": (set(), {"base_ref", "manifest", "exceptions", "output"}),
-        "check-recovery": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-    }
-    required, forbidden = requirements[args.mode]
-    for name in sorted(required):
-        if getattr(args, name) is None:
-            parser.error(f"--{name.replace('_', '-')} is required for --mode {args.mode}")
-    for name in sorted(forbidden):
-        if getattr(args, name) is not None:
-            parser.error(f"--{name.replace('_', '-')} is forbidden for --mode {args.mode}")
-
-
-
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
@@ -118,103 +100,42 @@ def _parser() -> argparse.ArgumentParser:
         default=DEFAULT_PROFILES,
         help="Stage 99 registry (legacy --profiles remains a transition alias)",
     )
-    parser.add_argument("--contract", type=pathlib.Path, default=DEFAULT_CONTRACT)
-    parser.add_argument("--mode", default="check-public", choices=MODES)
-    parser.add_argument("--wave")
     parser.add_argument("--base-ref")
-    parser.add_argument("--manifest", type=pathlib.Path)
-    parser.add_argument("--exceptions", type=pathlib.Path)
-    parser.add_argument("--output", type=pathlib.Path)
     return parser
 
 
-
-
 def main(argv: collections.abc.Sequence[str] | None = None) -> int:
+    """Validate the complete current document-corpus lifecycle in one route.
+
+    The four retired modes contributed three finding sources. `check-contract`
+    was the Spec Package source alone; `check-public` and `check-promoted` were
+    that source plus the promoted source; `check-recovery` was the disjoint
+    archive-recovery source. This route emits all three, so it is the union of
+    what the modes produced and nothing is lost by their removal.
+    """
+
     parser = _parser()
     args = parser.parse_args(argv)
-    _validate_cli_shape(parser, args)
     try:
         root = args.root.resolve()
-        if args.mode == "check-recovery":
-            return run_recovery(root)
-
         _ensure_metadata_loaded()
         profiles_path = _rooted(root, args.profiles).resolve()
-        if (
-            args.contract is None
-            and profiles_path.suffix.lower() == ".json"
-            and args.mode in {"check-public", "check-contract", "check-promoted"}
-        ):
+        if profiles_path.suffix.lower() != ".json":
+            raise ProfileError("Stage 99 registry must be the JSON registry")
+        try:
             registry = metadata.load_registry(profiles_path)
-            profiles = metadata.build_registry_profiles(registry)
-            findings = _spec_package_lifecycle_findings(
-                root,
-                profiles,
-                args.base_ref,
-            )
-            if args.mode != "check-contract":
-                findings.extend(_historical_promoted_findings(root))
-            _print_findings(findings)
-            print(f"public document lifecycle: violations={len(findings)}")
-            return 1 if findings else 0
+        except metadata.RegistryError as error:
+            raise ProfileError("Stage 99 registry is invalid") from error
+        profiles = metadata.build_registry_profiles(registry)
 
-        contract_path = (
-            _rooted(root, args.contract).resolve()
-            if args.contract is not None
-            else HISTORICAL_CONTRACT
-        )
-        contract = load_migration_contract(contract_path)
-        if profiles_path.suffix.lower() == ".json":
-            try:
-                registry = metadata.load_registry(profiles_path)
-            except metadata.RegistryError as error:
-                raise ProfileError("Stage 99 registry is invalid") from error
-            profiles = metadata.build_registry_transition_profiles(
-                registry,
-                metadata.load_profiles(LEGACY_MIGRATION_PROFILES),
-            )
-        else:
-            profiles = metadata.load_profiles(profiles_path)
-
-        if args.mode == "check-contract":
-            findings = _spec_package_lifecycle_findings(root, profiles)
-            _print_findings(findings)
-            print(
-                "document corpus lifecycle contract: "
-                f"violations={len(findings)}"
-            )
-            return 3 if any(_is_safety_finding(item) for item in findings) else (
-                1 if findings else 0
-            )
-        if args.mode == "check-public":
-            findings = _spec_package_lifecycle_findings(root, profiles)
-            _, promoted_findings = _load_declared_manifests(
-                root,
-                profiles,
-                contract,
-                promoted_only=True,
-                selected_wave=None,
-            )
-            findings.extend(promoted_findings)
-            _print_findings(findings)
-            print(f"public document lifecycle: violations={len(findings)}")
-            return 3 if any(_is_safety_finding(item) for item in findings) else (
-                1 if findings else 0
-            )
-        if args.mode == "check-promoted":
-            _, findings = _load_declared_manifests(
-                root,
-                profiles,
-                contract,
-                promoted_only=True,
-                selected_wave=args.wave,
-            )
-            _print_findings(findings)
-            print(f"promoted lifecycle manifests: violations={len(findings)}")
-            return 3 if any(_is_safety_finding(item) for item in findings) else (
-                1 if findings else 0
-            )
+        findings = _spec_package_lifecycle_findings(root, profiles, args.base_ref)
+        findings.extend(_historical_promoted_findings(root))
+        _print_findings(findings)
+        print(f"document corpus lifecycle: violations={len(findings)}")
+        recovery_code = run_recovery(root)
+        if any(_is_safety_finding(item) for item in findings):
+            return 3
+        return 1 if findings or recovery_code else 0
     except _CorpusSafetyError as error:
         print(
             f"{error.code}: {_safe_diagnostic_path(error.path)}: "
@@ -234,7 +155,6 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     except Exception:
         print("internal-error: lifecycle operation failed safely", file=sys.stderr)
         return 3
-    raise AssertionError(f"unhandled lifecycle mode: {args.mode}")
 
 
 if __name__ != "__main__":

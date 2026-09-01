@@ -21,7 +21,7 @@ class SharedProvenanceTests(unittest.TestCase):
             with mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": override}):
                 result = run(sys.executable, str(SCRIPT), "--help", cwd=ROOT)
                 self.assertEqual(0, result.returncode, result.stderr)
-                self.assertIn("--mode", result.stdout)
+                self.assertIn("--registry", result.stdout)
                 unrelated = run(
                     sys.executable,
                     "-c",

@@ -689,7 +689,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/workflows/document-corpus-lifecycle.yml
+  - .github/workflows/ci-quality.yml
   disposition: retain
   successor: null
   tests: []
@@ -838,15 +838,11 @@ files:
   public_suites:
   - document-lifecycle
   execution_contexts: [local, pull_request, push, workflow_dispatch]
-  execution_argv:
-  - --mode
-  - check-public
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  - .github/workflows/document-corpus-lifecycle.yml
   disposition: retain
   successor: null
   tests:

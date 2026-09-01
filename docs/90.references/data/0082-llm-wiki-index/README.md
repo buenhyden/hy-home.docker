@@ -956,7 +956,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Markdown reference |
 | [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) | YAML config |
 | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | YAML config |
-| [.github/workflows/document-corpus-lifecycle.yml](../../../../.github/workflows/document-corpus-lifecycle.yml) | YAML config |
 | [.github/workflows/generate-changelog.yml](../../../../.github/workflows/generate-changelog.yml) | YAML config |
 | [.github/workflows/greetings.yml](../../../../.github/workflows/greetings.yml) | YAML config |
 | [.github/workflows/pr-labeler.yml](../../../../.github/workflows/pr-labeler.yml) | YAML config |

@@ -43,7 +43,6 @@ COMPLETE_CAPABILITY_ARGV = MappingProxyType(
     {
         "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
         "check-agent-governance-contract.py": ("--mode", "repository", "--section", "all"),
-        "check-document-corpus-lifecycle.py": ("--mode", "check-public"),
         "check-document-links.py": ("--mode", "all"),
         "check-document-metadata.py": ("--mode", "check-changed"),
         "check-operations-catalog.py": ("--mode", "complete"),

@@ -43,34 +43,6 @@
         }
       }
     },
-    ".github/workflows/document-corpus-lifecycle.yml": {
-      "name": "Document Corpus Lifecycle",
-      "classification": "non-gating",
-      "triggers": {
-        "schedule": [
-          {
-            "cron": "17 17 * * 1"
-          }
-        ],
-        "workflow_dispatch": null
-      },
-      "permissions": {
-        "contents": "read"
-      },
-      "concurrency": {
-        "group": "document-corpus-lifecycle-${{ github.ref }}",
-        "cancel-in-progress": true
-      },
-      "jobs": {
-        "document-corpus-lifecycle": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 15
-        }
-      }
-    },
     ".github/workflows/generate-changelog.yml": {
       "name": "Release Changelog Check",
       "classification": "non-gating",
@@ -994,25 +966,6 @@
       "suite_key": "local-diff-hygiene"
     },
     {
-      "gate_id": "leaf.local-document-corpus-contract",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
-      "argv": [
-        "--mode",
-        "check-contract"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
-      "opaque": true,
-      "suite_key": "local-document-corpus-contract"
-    },
-    {
       "gate_id": "leaf.local-hook-rule-tests",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1031,6 +984,22 @@
       ],
       "opaque": true,
       "suite_key": "local-hook-rule-tests"
+    },
+    {
+      "gate_id": "leaf.local-document-corpus-lifecycle",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "local-document-corpus-lifecycle"
     },
     {
       "gate_id": "leaf.local-document-metadata-tests",
@@ -1064,6 +1033,7 @@
         "run-unittest",
         "tests.validation.lifecycle.test_contract",
         "tests.validation.lifecycle.test_promoted",
+        "tests.validation.lifecycle.test_equivalence",
         "tests.validation.lifecycle.test_public",
         "tests.validation.lifecycle.test_recovery",
         "-v"
@@ -1078,44 +1048,6 @@
       ],
       "opaque": true,
       "suite_key": "local-document-corpus-lifecycle-tests"
-    },
-    {
-      "gate_id": "leaf.local-document-corpus-promoted",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
-      "argv": [
-        "--mode",
-        "check-promoted"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
-      "opaque": true,
-      "suite_key": "local-document-corpus-promoted"
-    },
-    {
-      "gate_id": "leaf.local-document-corpus-recovery",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
-      "argv": [
-        "--mode",
-        "check-recovery"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
-      "opaque": true,
-      "suite_key": "local-document-corpus-recovery"
     },
     {
       "gate_id": "leaf.local-llm-wiki-freshness",
@@ -1669,9 +1601,7 @@
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-metadata-tests",
         "leaf.local-hook-rule-tests",
-        "leaf.local-document-corpus-contract",
-        "leaf.local-document-corpus-promoted",
-        "leaf.local-document-corpus-recovery",
+        "leaf.local-document-corpus-lifecycle",
         "leaf.document-lifecycle-regressions",
         "leaf.document-governance-library-regressions"
       ]
@@ -2107,7 +2037,6 @@
       "retrieved_at": "2026-07-28",
       "consumers": [
         ".github/workflows/ci-quality.yml",
-        ".github/workflows/document-corpus-lifecycle.yml",
         ".github/workflows/generate-changelog.yml",
         ".github/workflows/tech-stack-version-sync.yml"
       ],
@@ -2149,8 +2078,7 @@
       "manifest_url": "https://raw.githubusercontent.com/actions/setup-python/5fda3b95a4ea91299a34e894583c3862153e4b97/action.yml",
       "retrieved_at": "2026-07-28",
       "consumers": [
-        ".github/workflows/ci-quality.yml",
-        ".github/workflows/document-corpus-lifecycle.yml"
+        ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },

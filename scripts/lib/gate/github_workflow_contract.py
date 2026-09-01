@@ -139,13 +139,6 @@ _WORKFLOW_PERMISSION_BASELINES: Final = (
         ),
     ),
     (
-        ".github/workflows/document-corpus-lifecycle.yml",
-        _WorkflowPermissionBaseline(
-            top_level=_CONTENTS_READ,
-            jobs=(("document-corpus-lifecycle", _CONTENTS_READ),),
-        ),
-    ),
-    (
         ".github/workflows/generate-changelog.yml",
         _WorkflowPermissionBaseline(
             top_level=_CONTENTS_READ,

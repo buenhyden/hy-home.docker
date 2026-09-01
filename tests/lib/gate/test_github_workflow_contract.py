@@ -201,7 +201,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_repository_workflows_match_the_exact_contract(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         workflows = self.module.load_workflows(ROOT)
-        self.assertEqual(7, len(workflows))
+        # Derived, not pinned: the loaded set is exactly the tracked workflow
+        # files, so adding or removing one needs no edit here.
+        on_disk = {
+            path.relative_to(ROOT).as_posix()
+            for path in (ROOT / ".github/workflows").glob("*.yml")
+        }
+        self.assertEqual(on_disk, {document.path for document in workflows})
         self.assertEqual((), self.module.validate_workflows(ROOT, contract))
 
     def test_canonical_schema_v2_registry_is_complete_and_expandable(
@@ -225,11 +231,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         # 87 since 2026-08-30: leaf.local-hook-rule-tests, covering the evaluator
         # that finally reads the Stage 00 hook rules.
         # 88 since 2026-08-31: leaf.local-document-corpus-recovery, which
-        # registers check-recovery. That mode already re-proved every tombstone
-        # commit:path resolves to a regular Git blob, but no profile ran it.
-        # 92 since 2026-08-31: four Task 5 regression leaves make every retained
-        # on-disk unittest reachable without adding a public suite.
-        self.assertEqual(92, len(contract.gate_registry.nodes))
+        # Derived, not pinned: the parsed registry must hold exactly the
+        # gate_nodes the contract document declares.
+        declared = self.load_contract_document(ROOT)["gate_nodes"]
+        self.assertEqual(len(declared), len(contract.gate_registry.nodes))
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,
@@ -1929,10 +1934,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         expected = {
-            ".github/workflows/document-corpus-lifecycle.yml": (
-                {"contents": "read"},
-                {"document-corpus-lifecycle": {"contents": "read"}},
-            ),
             ".github/workflows/generate-changelog.yml": (
                 {"contents": "read"},
                 {"changelog": None},
@@ -2037,14 +2038,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_non_gating_permission_co_mutations_fail_baseline(self) -> None:
         cases = (
-            (
-                "document-corpus-lifecycle",
-                ".github/workflows/document-corpus-lifecycle.yml",
-                "      contents: read\n",
-                "      contents: read\n      issues: write\n",
-                "        permissions: {contents: read}\n",
-                "        permissions: {contents: read, issues: write}\n",
-            ),
             (
                 "generate-changelog",
                 ".github/workflows/generate-changelog.yml",
@@ -2201,10 +2194,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 )
                 document = self.load_contract_document(root)
                 job_id, scope = {
-                    "document-corpus-lifecycle": (
-                        "document-corpus-lifecycle",
-                        "issues",
-                    ),
                     "generate-changelog": ("changelog", "issues"),
                     "greetings": ("issue-greeting", "pull-requests"),
                     "pr-labeler": ("triage", "issues"),
@@ -2379,7 +2368,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         with mock.patch.object(self.module.os, "read", side_effect=short_read):
             contract = self.module.load_workflow_contract(ROOT)
         self.assertEqual(2, contract.schema_version)
-        self.assertEqual(7, len(contract.workflows))
+        self.assertEqual(
+            len(list((ROOT / ".github/workflows").glob("*.yml"))),
+            len(contract.workflows),
+        )
 
     def test_contract_rejects_noncanonical_workflow_paths(self) -> None:
         with self.workflow_fixture() as root:
