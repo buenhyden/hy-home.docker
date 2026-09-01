@@ -65,11 +65,11 @@ class OperationsAuthorityTests(unittest.TestCase):
                     "See docs/05.operations/catalog/00-workspace/"
                     "ops-####-historical/guide.md.\n"
                 ),
-                "docs/03.specs/0136-history/plan.md": (
+                "docs/03.specs/0998-history/plan.md": (
                     "See docs/05.operations/catalog/00-workspace/"
                     "ops-####-execution/guide.md.\n"
                 ),
-                "docs/03.specs/0137-retired/spec.md": (
+                "docs/03.specs/0997-retired/spec.md": (
                     "---\nprofile_id: spec\nstatus: superseded\n---\n"
                     "See docs/05.operations/catalog/00-workspace/"
                     "ops-####-retired/guide.md.\n"

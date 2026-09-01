@@ -378,10 +378,10 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_accepts_inherited_task_role_identity(self):
         findings = validate_stable_identity(
             PurePosixPath(
-                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+                "docs/03.specs/spec-0999-example-change/task.md"
             ),
             {
-                "artifact_id": "task-0136-01",
+                "artifact_id": "task-0999-01",
                 "artifact_type": "task",
             },
             {
@@ -403,7 +403,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_rejects_inherited_task_role_with_mismatched_identity(self):
         findings = validate_stable_identity(
             PurePosixPath(
-                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+                "docs/03.specs/spec-0999-example-change/task.md"
             ),
             {
                 "artifact_id": "task-9999-01",

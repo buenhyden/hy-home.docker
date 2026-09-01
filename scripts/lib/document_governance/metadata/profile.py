@@ -405,20 +405,6 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
         },
     },
 }
-TARGET_SURFACE_COMPLETION_PATH = (
-    "docs/03.specs/0133-target-surface-contract-convergence/spec.md"
-)
-SDLC_TAXONOMY_EVIDENCE_PATHS = (
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md",
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md",
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md",
-)
-SDLC_TAXONOMY_BOUNDED_README_INPUTS = frozenset(
-    {
-        "docs/03.specs/README.md",
-        "docs/03.specs/0153-workspace-governance-simplification/README.md",
-    }
-)
 TARGET_SURFACE_SOURCE_ROOTS = (
     ".github",
     "archive",
@@ -442,10 +428,7 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
     "docs/03.specs/0005-data-analytics/README.md",
     "docs/03.specs/0005-data-analytics/spec.md",
-    "docs/03.specs/0133-target-surface-contract-convergence/spec.md",
     "docs/03.specs/README.md",
-    "docs/03.specs/0137-agentic-research-pack-rebuild/plan.md",
-    "docs/03.specs/0137-agentic-research-pack-rebuild/tasks/tsk-0001-rebuild.md",
     "docs/05.operations/" "guides/04-data/analytics/README.md",
     "docs/05.operations/" "guides/04-data/analytics/influxdb.md",
     "docs/05.operations/" "guides/04-data/lake-and-object/seaweedfs.md",

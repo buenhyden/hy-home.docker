@@ -600,7 +600,7 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/00.agent-governance/policies/postflight-checklist.md",
             "docs/00.agent-governance/policies/task-checklists.md",
-            "docs/03.specs/0154-governance-consistency-convergence/tasks/tsk-0004-retired-taxonomy-removal.md",
+            "docs/03.specs/0154-governance-consistency-convergence/spec.md",
         ),
         (
             Criterion(

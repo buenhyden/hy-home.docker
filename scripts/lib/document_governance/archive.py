@@ -444,13 +444,28 @@ def _mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
 def _compact_mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
     """Project reviewed routes, omitting three superseded unexecuted plans."""
 
-    from scripts.lib.document_governance.spec_packages import _SINGULAR_TASK_FINALS
-
     selected = _mapping_selection(document)
+    task_targets = {
+        "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md":
+            "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
+            "tsk-0001-research-pack-extension.md",
+        "docs/03.specs/0134-agent-governance-canonical-convergence/task.md":
+            "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
+            "tsk-0001-canonical-convergence.md",
+        "docs/03.specs/0135-target-surface-delta-convergence/task.md":
+            "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
+            "tsk-0001-delta-convergence.md",
+        "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md":
+            "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
+            "tsk-0001-taxonomy-convergence.md",
+        "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md":
+            "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
+            "tsk-0001-reference-disposition.md",
+    }
     row_ids = {f"mig-0003-r{number:04d}" for number in (233, 239, 242, 245, 248)}
     for original, row in zip(document["rows"], selected, strict=True):
         if original["row_id"] in row_ids:
-            row["target_path"] = _SINGULAR_TASK_FINALS[row["target_path"]]
+            row["target_path"] = task_targets[row["target_path"]]
     omitted = {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
     return [row for original, row in zip(document["rows"], selected, strict=True)
             if original["row_id"] not in omitted]

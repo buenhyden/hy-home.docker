@@ -83,7 +83,6 @@ from scripts.lib.document_governance.metadata.profile import (
     DEFAULT_PROFILES,
     EXPECTED_PROFILE_TYPES,
     ROOT,
-    SDLC_TAXONOMY_BOUNDED_README_INPUTS,
     TARGET_MARKDOWN_PREFIXES,
     TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES,
     BaseSelection,
@@ -211,8 +210,6 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     classified_readmes: list[Record] = []
     for path in tracked_markdown:
         if path.name != "README.md":
-            continue
-        if path.as_posix() in SDLC_TAXONOMY_BOUNDED_README_INPUTS:
             continue
         try:
             text = (root / path).read_text(encoding="utf-8")

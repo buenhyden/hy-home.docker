@@ -675,10 +675,14 @@ class ScriptManifestTests(unittest.TestCase):
             "docs/05.operations/runbooks/03-security/vault.md",
             "docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md",
         }
-        migration_authority = "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 authority = row["authority"]
+                self.assertFalse(
+                    authority.startswith("docs/03.specs/"),
+                    "script authority must be a current policy, architecture, "
+                    "operations, registry, or workflow owner",
+                )
                 authority_text = (ROOT / authority).read_text(encoding="utf-8")
                 basename = PurePosixPath(row["path"]).name
                 if authority in unrelated and basename not in authority_text and row["path"] not in authority_text:
@@ -691,7 +695,7 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                 elif row["mutation"] == "runtime" and not is_runbook_authority(authority):
                     self.assertNotEqual("retain", row["disposition"])
-                    self.assertEqual(migration_authority, authority)
+                    self.assertEqual(row["path"], row["successor"])
 
     def test_operations_implementation_and_gate_use_the_registry_authority(self) -> None:
         for path in OPERATIONS_MANIFEST_PATHS:

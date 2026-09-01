@@ -2,7 +2,7 @@ schema_version: 1
 files:
 - path: scripts/README.md
   kind: contract
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
   lifecycle: active
   mutation: none
   consumers:
@@ -446,7 +446,7 @@ files:
   public_suites:
   - repository-integrity
   execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -464,7 +464,7 @@ files:
   public_suites:
   - repository-integrity
   execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -519,7 +519,7 @@ files:
   public_suites:
   - repository-integrity
   execution_contexts: []
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: active
   mutation: none
   consumers:
@@ -560,7 +560,7 @@ files:
   - tests/lib/target_surface/test_target_surface_delta_contracts.py
 - path: scripts/manifest.yaml
   kind: contract
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
   lifecycle: active
   mutation: none
   consumers:
@@ -571,7 +571,7 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/descriptions/0018-security-optimization-hardening-architecture.md
   lifecycle: transition
   mutation: runtime
   consumers:
@@ -664,7 +664,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: none
   consumers:
@@ -712,7 +712,7 @@ files:
   - docs/90.references/data/0079-supply-chain-sample-service/README.md
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: transition
   mutation: runtime
   consumers: []
@@ -722,7 +722,7 @@ files:
   - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/security/verify-sample-service-supply-chain.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: transition
   mutation: runtime
   consumers:
@@ -1029,7 +1029,7 @@ files:
   - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/ci_gate_runner.py
   kind: runner
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -1043,7 +1043,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/compose-core-readiness.lib.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -1127,7 +1127,7 @@ files:
   - docs/90.references/data/0072-provider-hook-parity-matrix/README.md
 - path: scripts/validation/run-agent-output-eval-fixtures.sh
   kind: runner
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/00.agent-governance/skills/provider-model-evaluation.md
   lifecycle: active
   mutation: none
   consumers:
@@ -1176,7 +1176,7 @@ files:
   - tests/validation/test_run_ci_precommit.sh
 - path: scripts/validation/run-compose-core-readiness.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
   lifecycle: active
   mutation: runtime
   consumers: []
@@ -1198,7 +1198,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/validate-docker-compose.sh
   kind: operations
-  authority: docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md
+  authority: .github/workflow-contract.yml
   lifecycle: transition
   mutation: runtime
   consumers:
