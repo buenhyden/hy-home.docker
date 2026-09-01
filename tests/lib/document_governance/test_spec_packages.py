@@ -118,7 +118,7 @@ def _write_package(
         tasks.joinpath("tsk-0001-implement.md").write_text(
             _document_text(
                 "task",
-                f"task-{number}-0001",
+                f"SPEC-{number}-TSK-0001",
                 parents,
                 status=task_status,
             ),
@@ -156,7 +156,7 @@ class SpecPackageTests(unittest.TestCase):
         package = packages[0]
         self.assertEqual("SPEC-0001", package.spec.artifact_id)
         self.assertEqual("plan-0001", package.plan.artifact_id)
-        self.assertEqual("task-0001-0001", package.tasks[0].artifact_id)
+        self.assertEqual("SPEC-0001-TSK-0001", package.tasks[0].artifact_id)
         self.assertEqual(("openapi.yaml",), tuple(path.name for path in package.contracts))
         self.assertTrue(dataclasses.is_dataclass(package))
         with self.assertRaises(dataclasses.FrozenInstanceError):
@@ -335,7 +335,7 @@ class SpecPackageTests(unittest.TestCase):
             tasks = package / "tasks"
             tasks.mkdir()
             tasks.joinpath("task-0001.md").write_text(
-                _document_text("task", "task-0001-0001", ("SPEC-0001",)),
+                _document_text("task", "SPEC-0001-TSK-0001", ("SPEC-0001",)),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "task.*path"):
@@ -346,10 +346,10 @@ class SpecPackageTests(unittest.TestCase):
             package = _write_package(stage, task=True)
             task = package / "tasks/tsk-0001-implement.md"
             task.write_text(
-                _document_text("task", "task-0002-0001", ("SPEC-0001",)),
+                _document_text("task", "SPEC-0002-TSK-0001", ("SPEC-0001",)),
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(spec_packages.SpecPackageError, "task-0001-0001"):
+            with self.assertRaisesRegex(spec_packages.SpecPackageError, "SPEC-0001-TSK-0001"):
                 spec_packages.load_spec_packages(stage)
 
     def test_dangling_plan_and_task_parents_fail_closed(self) -> None:
@@ -364,7 +364,7 @@ class SpecPackageTests(unittest.TestCase):
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "plan.*parent"):
                 spec_packages.load_spec_packages(stage)
 
-        for parents in (("SPEC-0001", "plan-0001"), ("SPEC-0001", "task-0001-9999")):
+        for parents in (("SPEC-0001", "plan-0001"), ("SPEC-0001", "SPEC-0001-TSK-9999")):
             with self.subTest(parents=parents), tempfile.TemporaryDirectory() as directory:
                 stage = pathlib.Path(directory) / "docs/03.specs"
                 _write_package(stage, task=True, task_parent_ids=parents)

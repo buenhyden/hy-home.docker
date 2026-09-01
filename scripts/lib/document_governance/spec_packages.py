@@ -62,7 +62,7 @@ _EXPECTED_PROFILES = {
     "task": (
         "docs/03.specs/{package_number:4}-{slug}/tasks/"
         "tsk-{task_number:4}-{slug}.md",
-        "task-{package_number:4}-{task_number:4}",
+        "SPEC-{package_number:4}-TSK-{task_number:4}",
         "package-member",
         "execution",
     ),
@@ -567,7 +567,7 @@ def _load_tasks(
                 package_path / "tasks" / name,
                 relative,
                 profile_id="task",
-                expected_artifact_id=f"task-{package_number}-{task_number}",
+                expected_artifact_id=f"SPEC-{package_number}-TSK-{task_number}",
                 registry=registry,
                 budget=current,
             )
@@ -963,7 +963,7 @@ def _snapshot_document(
         if match is None:
             raise SpecPackageError(f"base Task path is not canonical: {path}")
         profile_id = "task"
-        artifact_id = f"task-{number}-{match.group('number')}"
+        artifact_id = f"SPEC-{number}-TSK-{match.group('number')}"
     else:
         return None
     try:

@@ -143,7 +143,7 @@
       "profile_id": "task",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
-      "artifact_id_pattern": "task-{package_number:4}-{task_number:4}",
+      "artifact_id_pattern": "SPEC-{package_number:4}-TSK-{task_number:4}",
       "identity_relation": "package-member",
       "template_id": "specs/task",
       "required_frontmatter": ["profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"],

@@ -1,7 +1,7 @@
 ---
 profile_id: task
 status: active
-artifact_id: task-0158-0001
+artifact_id: SPEC-0158-TSK-0001
 artifact_type: task
 parent_ids: [SPEC-0158, plan-0158]
 created: 2026-09-01

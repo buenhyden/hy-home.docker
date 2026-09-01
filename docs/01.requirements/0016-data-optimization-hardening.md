@@ -93,7 +93,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../03.specs/0004-data/spec.md)
-- **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
+- **ADR**: [../02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../05.operations/guides/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
 - **Policy**: [../05.operations/policies/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/runbook.md)

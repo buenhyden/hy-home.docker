@@ -257,7 +257,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0016-open-webui-implementation.md](../../../02.architecture/decisions/0016-open-webui-implementation.md) | Markdown reference |
 | [docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../../../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md) | Markdown reference |
 | [docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md) | Markdown reference |
-| [docs/02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md) | Markdown reference |
+| [docs/02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md) | Markdown reference |
