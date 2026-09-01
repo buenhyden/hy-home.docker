@@ -730,12 +730,16 @@ The final read-only verdicts are GREEN and do not grant approval:
    index and coverage outputs do not move to another evidence package.
 4. All non-protected Stage 90 packages migrate unique current meaning and
    consumers, then delete. Category indexes are structural, not packages.
-5. All Stage 98 Tombstones have zero measured live recovery-navigation
-   consumers. Migration consumers move to current owners; all Migration and
-   Tombstone leaves then delete. Only the structural README remains.
+5. Superseded 2026-09-01 by the Stage 00 document retention and retirement
+   policy. Tombstones are not measured by live recovery-navigation consumers
+   and are not deleted: one Tombstone per retired package is the tracked
+   pointer that keeps deleted content findable, and
+   `validate_spec_package_lifecycle` now rejects an unrecorded retirement.
+   The temporary Migration documents remain scheduled for deletion once their
+   consumers move to current owners.
 6. Current stages never link to a Stage 98 file. One-way recovery may point
-   from a retained archive record to a current owner, but no such leaf currently
-   has a proven retention need.
+   from a retained archive record to a current owner. Stage 98 retains one
+   Tombstone for every retired package under the Stage 00 policy.
 7. Generated provider projections cannot define policy. Neutral workflow,
    evidence, retry, and stop rules belong to Stage 00; the Provider Registry
    retains only runtime translation facts.

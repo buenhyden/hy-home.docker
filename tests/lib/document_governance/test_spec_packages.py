@@ -392,7 +392,7 @@ class SpecPackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
                     spec_packages.load_spec_packages(stage)
 
-    def test_whole_package_retirement_needs_no_recovery_ledger(self) -> None:
+    def test_recorded_terminal_retirement_needs_no_recovery_ledger(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -413,10 +413,13 @@ class SpecPackageTests(unittest.TestCase):
                 spec_packages.validate_spec_package_lifecycle(
                     spec_packages.load_spec_packages(before_stage),
                     spec_packages.load_spec_packages(after_stage),
+                    retired_paths=frozenset(
+                        {pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")}
+                    ),
                 ),
             )
 
-    def test_retired_package_with_non_terminal_members_is_approved_as_a_whole(self) -> None:
+    def test_unrecorded_retirement_fails_closed_whatever_the_status(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -426,11 +429,14 @@ class SpecPackageTests(unittest.TestCase):
             _write_package(after_stage, number="0002", slug="keeper")
             _write_package(before_stage, number="0002", slug="keeper")
             self.assertEqual(
-                (),
-                spec_packages.validate_spec_package_lifecycle(
-                    spec_packages.load_spec_packages(before_stage),
-                    spec_packages.load_spec_packages(after_stage),
-                ),
+                {("package-retirement-unrecorded", "docs/03.specs/0001-example")},
+                {
+                    (finding.code, finding.path)
+                    for finding in spec_packages.validate_spec_package_lifecycle(
+                        spec_packages.load_spec_packages(before_stage),
+                        spec_packages.load_spec_packages(after_stage),
+                    )
+                },
             )
 
     def test_retained_package_keeps_non_terminal_execution_evidence(self) -> None:
@@ -487,6 +493,44 @@ class SpecPackageTests(unittest.TestCase):
                 ),
             )
 
+    def test_whole_package_retirement_requires_a_tombstone(self) -> None:
+        """Stage 00 retires a package with a Tombstone, not by silent deletion."""
+
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            before_stage = root / "before/docs/03.specs"
+            after_stage = root / "after/docs/03.specs"
+            _write_package(
+                before_stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            _write_package(before_stage, number="0002", slug="keeper")
+            _write_package(after_stage, number="0002", slug="keeper")
+            before = spec_packages.load_spec_packages(before_stage)
+            after = spec_packages.load_spec_packages(after_stage)
+            self.assertEqual(
+                {("package-retirement-unrecorded", "docs/03.specs/0001-example")},
+                {
+                    (finding.code, finding.path)
+                    for finding in spec_packages.validate_spec_package_lifecycle(before, after)
+                },
+            )
+            self.assertEqual(
+                (),
+                spec_packages.validate_spec_package_lifecycle(
+                    before,
+                    after,
+                    retired_paths=frozenset(
+                        {pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")}
+                    ),
+                ),
+            )
+
     def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(self) -> None:
         spec_packages = _spec_packages_module()
         source = ROOT.joinpath(
@@ -502,7 +546,9 @@ class SpecPackageTests(unittest.TestCase):
             self.assertNotIn(token, source)
         self.assertIsNone(re.search(r"!=\s*(?:49|46)\b", source))
         signature = inspect.signature(spec_packages.validate_spec_package_lifecycle)
-        self.assertEqual(["previous", "current"], list(signature.parameters))
+        self.assertEqual(
+            ["previous", "current", "retired_paths"], list(signature.parameters)
+        )
 
     def test_public_repository_validator_enforces_snapshot_lifecycle(self) -> None:
         spec_packages = _spec_packages_module()

@@ -937,8 +937,8 @@ create empty commits.
   `docs/98.archive/migrations/0002-operations-catalog-convergence.md`, and
   `docs/98.archive/migrations/0003-workspace-governance-simplification.md`.
 - Remove the empty `docs/98.archive/migrations/` directory.
-- Delete or retain explicitly reviewed paths under
-  `docs/98.archive/tombstones/`.
+- Retain every Tombstone: the Stage 00 retention policy makes one Tombstone
+  per retired package the tracked recovery pointer.
 - Modify: `docs/90.references/README.md`, `docs/98.archive/README.md`
 - Modify:
   `docs/90.references/research/0002-agentic-engineering-research-pack/README.md`
@@ -1004,8 +1004,8 @@ for-byte or hash comparison is permitted.
 Extend `test_archive.py` to prove the completion shape:
 
 - `docs/98.archive/migrations/` is absent;
-- Stage 98 contains only its structural README and the archive/Tombstone paths
-  selected by the Task 2 explicit-preservation and live-consumer inventory;
+- Stage 98 contains its structural README and one Tombstone for every retired
+  package, as required by the Stage 00 retention policy;
 - every retained record has only its registered minimal sections plus an
   optional Related Documents section, uses safe paths, and has no Migration
   parent or link;
@@ -1049,10 +1049,9 @@ Regenerated or retained Stage 90 indexes must not enumerate or link Stage 98.
   lifecycle binding, and allocation surface after the final consumer moves.
 - Delete all three Migration documents and remove `migrations/` only after the
   consumer inventory reaches zero.
-- Reclassify every existing Stage 98 record by explicit preservation need and
-  live recovery-navigation consumer. Delete records with neither; retain only
-  the registered minimal shape for a proven need and remove all Migration
-  parents and links.
+- Keep every Tombstone in its registered minimal shape and remove only its
+  Migration parent and links. A Tombstone is retained because it records a
+  retirement, not because a live consumer navigates to it.
 - Never place retired bodies, redirects, raw ledgers, snapshots, digests, frozen
   membership, or historical topology in a retained record or README.
 

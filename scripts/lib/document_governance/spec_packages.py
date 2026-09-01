@@ -787,27 +787,56 @@ def _documents(
     return result
 
 
+_TERMINAL_STATUSES = frozenset({"completed", "cancelled", "superseded", "retired"})
+
+
 def validate_spec_package_lifecycle(
     previous: Sequence[SpecPackage],
     current: Sequence[SpecPackage],
+    *,
+    retired_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
 ) -> tuple[SpecPackageFinding, ...]:
-    """Reject gutting a retained package; Git owns whole-package recovery."""
+    """Enforce the Stage 00 retention contract on Spec Package removals.
+
+    A retained package keeps its non-terminal members. A package removed in
+    whole is a retirement, and Stage 00 requires one Stage 98 Tombstone for it.
+    Git stores the content; the Tombstone is the tracked pointer that keeps it
+    findable, so an unrecorded removal fails closed even when nothing links to
+    the package.
+
+    The Spec's terminal status is an authoring obligation recorded in the
+    Tombstone's `Reason`, not a predicate here: the comparison base is the
+    branch point, so a package that is `active` there can never be observed as
+    terminal by the change that retires it.
+    """
 
     previous_documents = _documents(previous)
     current_documents = _documents(current)
-    retained_packages = frozenset(
-        package.spec.path.parts[2] for package in current
-    )
+    retained_packages = frozenset(package.spec.path.parts[2] for package in current)
     findings: list[SpecPackageFinding] = []
+    retired_packages: dict[str, SpecPackage] = {}
+    for package in previous:
+        if package.spec.path.parts[2] in retained_packages:
+            continue
+        retired_packages[package.spec.path.parts[2]] = package
     for path, document in sorted(previous_documents.items()):
         if path in current_documents or path.parts[2] not in retained_packages:
             continue
-        if document.status not in {"completed", "cancelled"}:
+        if document.status not in _TERMINAL_STATUSES:
             findings.append(
                 SpecPackageFinding(
                     "execution-evidence-deletion-forbidden",
                     path.as_posix(),
                     "a retained package keeps non-terminal Spec Package members",
+                )
+            )
+    for name, package in sorted(retired_packages.items()):
+        if package.spec.path not in retired_paths:
+            findings.append(
+                SpecPackageFinding(
+                    "package-retirement-unrecorded",
+                    f"docs/03.specs/{name}",
+                    "retirement requires one Stage 98 Tombstone",
                 )
             )
     return tuple(findings)
@@ -1066,7 +1095,25 @@ def validate_repository_spec_package_lifecycle(
         root,
         base_ref=resolve_lifecycle_base(root, base_ref),
     )
-    return validate_spec_package_lifecycle(previous, current)
+    return validate_spec_package_lifecycle(
+        previous,
+        current,
+        retired_paths=_recorded_retirements(root),
+    )
+
+
+def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
+    """Stage 98 Tombstones are the tracked record of an approved retirement."""
+
+    from scripts.lib.document_governance.archive import load_archive
+
+    try:
+        inventory = load_archive(pathlib.Path(root) / "docs/98.archive")
+    except (OSError, ValueError):
+        # Stage 98 has its own gate. An unreadable archive grants no exemption:
+        # every removal is judged as unrecorded until the archive is valid.
+        return frozenset()
+    return frozenset(record.retired_path for record in inventory.tombstones)
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

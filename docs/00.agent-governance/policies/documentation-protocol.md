@@ -66,6 +66,60 @@ evidence; surrounding instructions remain current and validated normally.
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
+## Document Retention and Retirement
+
+Retention follows lifecycle and ownership. Age and document count are never
+retention criteria. A document is retained while it owns current behavior,
+structure, decision, or procedure. It is retired when its status is terminal
+and its still-current meaning has moved to a canonical owner.
+
+### Retention by status
+
+| Status | Stage 03 Spec Package | Stage 01 / Stage 02 document |
+| --- | --- | --- |
+| `draft` | keep every member | keep |
+| `active` | keep every member | keep |
+| `completed` | keep `spec.md`; remove `plan.md` and Tasks only after their outcomes reach a canonical owner | not reachable in the `living` lifecycle |
+| `superseded` | keep `spec.md` with `superseded_by`; execution members may be removed | keep with `superseded_by` |
+| `retired` | remove the package and record one Tombstone | remove and record one Tombstone |
+
+### Retirement preconditions
+
+Retire a package or a standalone document only when all of these hold.
+
+1. Its status is terminal: `completed`, `cancelled`, `superseded`, or `retired`.
+2. Every still-current obligation, decision, structure, or procedure it owns is
+   written to its canonical Stage 00, 01, 02, or 05 owner.
+3. Every inbound consumer is updated in the same logical change.
+4. One Stage 98 Tombstone records the retirement.
+
+A package is never retired because it is old, because a count was exceeded, or
+because nothing currently links to it. Missing inbound links are a defect to
+investigate, not permission to delete.
+
+Preconditions 1 to 3 are authoring obligations and are recorded in the
+Tombstone's `Reason`. Precondition 4 is the enforced one: the comparison base
+of a change is its branch point, so a package that is `active` there can never
+be observed as terminal by the same change that retires it. The Tombstone is
+therefore the tracked evidence that the other three were met.
+
+Age may trigger a disposition review. It never triggers a deletion.
+
+### Tombstone scope
+
+One Tombstone records one retired package or one retired standalone document,
+never one per member. It carries the retired path, the replacement or `none`,
+the reason, and the recovery commit. Git stores the content; the Tombstone is
+the tracked pointer that keeps the content findable.
+
+### Implementation coverage
+
+Every capability implemented in this workspace has one Stage 01 Requirement
+owner for its obligation and one Stage 02 Description or ADR owner for its
+structure and durable decision. Retiring a Stage 03 package never removes that
+coverage: the package's implemented outcome moves to those owners before the
+package is retired.
+
 ## Related Documents
 
 - [Stage authoring matrix](stage-authoring-matrix.md)
