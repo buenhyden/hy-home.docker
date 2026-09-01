@@ -296,6 +296,41 @@ entitlement gaps are not promoted.
 5. metadata, traceability, repository contract, deterministic coverage check를 실행하고
    실패와 `UNVERIFIED` 상태를 그대로 기록합니다.
 
+## Preservation Declaration
+
+SPEC-0158은 이 package를 보호 대상으로 지정합니다. 아래에 선언된 파일은
+모두 protected research evidence이며, consumer가 하나도 없더라도 유지됩니다.
+선언된 파일은 삭제, archive, tombstone, checksum 고정, 또는 body/source/claim의
+축소 대상이 될 수 없습니다. stale한 현재 경로, metadata, owner, link는 수정할 수
+있으나 substantive research 내용은 제거할 수 없습니다.
+
+이 목록이 durable protection oracle입니다. 경로만 선언하며 count, hash,
+expected commit, byte equality를 고정하지 않습니다. leaf를 추가하거나
+제거하려면 같은 변경 안에서 이 목록도 함께 수정해야 합니다. 경로는 이
+package root 기준 상대 경로입니다.
+
+- `README.md`
+- `agent-instructions-vibe-coding.md`
+- `agent-model-selection.md`
+- `ai-agent-catalogs.md`
+- `automation-pipeline-workflow.md`
+- `docker-compose-infrastructure.md`
+- `document-metadata-lifecycle.md`
+- `documentation-architecture.md`
+- `harness-engineering.md`
+- `llm-wiki-system.md`
+- `loop-engineering.md`
+- `memory-hierarchy.md`
+- `provider-implementation-comparison.md`
+- `provider-model-landscape.md`
+- `quality-ci-formatting.md`
+- `scope-application-matrix.md`
+- `sdlc-document-roles.md`
+- `security-governance.md`
+- `spec-driven-sdlc.md`
+- `verification-validation.md`
+- `workspace-baseline.md`
+
 ## Migration State
 
 - 이 2026-08-08 pack은 Task 9부터 agentic-engineering research의 canonical human

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import pathlib
+import re
 import os
 import contextlib
 import io
 import json
 import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -23,10 +25,6 @@ def reference_api():
 
 
 class ReferencePackageTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.fixture_migration = reference_api().load_task9_migration(ROOT)
-
     def test_generated_ownership_is_exact_unique_bounded_and_safe(self) -> None:
         entry = {"path": "scripts/example.sh", "kind": "generator", "mutation": "check-write", "lifecycle": "active", "disposition": "retain", "outputs": ["docs/90.references/data/0065-example/README.md"]}
         with tempfile.TemporaryDirectory() as directory:
@@ -58,10 +56,9 @@ class ReferencePackageTests(unittest.TestCase):
         from scripts.lib.document_governance import metadata_validator
         from scripts.lib.document_governance import archive
 
-        migration = self.references.load_task9_migration(ROOT)
         native_migration = archive._migration_document(ROOT)
         context, root = self._fixture()
-        with context, mock.patch.object(self.references, "load_task9_migration", return_value=migration), mock.patch.object(archive, "_migration_document", return_value=native_migration):
+        with context, mock.patch.object(archive, "_migration_document", return_value=native_migration):
             generated = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
             historical = root / "docs/90.references/audits/0031-security-framework-maturity/README.md"
             generated.write_text(generated.read_text() + "\n[Broken current](../../../../__missing_generated_link__.md)\n")
@@ -74,16 +71,15 @@ class ReferencePackageTests(unittest.TestCase):
             self.assertNotIn("__historical_snapshot_link__.md", output.getvalue())
 
     def test_delegation_validates_exact_members_and_their_content(self) -> None:
-        migration = reference_api().load_task9_migration(ROOT)
         member = "docs/90.references/research/0002-agentic-engineering-research-pack/security-governance.md"
         for mutation, expected in (
-            ("missing", "migration-target-missing"),
+            ("missing", "protected-research-missing"),
             ("extra", "unregistered-reference-file"),
             ("invalid", "reference-member-frontmatter-invalid"),
         ):
             with self.subTest(mutation=mutation):
                 context, root = self._fixture()
-                with context, mock.patch.object(self.references, "load_task9_migration", return_value=migration):
+                with context:
                     path = root / member
                     if mutation == "missing":
                         path.unlink()
@@ -103,7 +99,6 @@ class ReferencePackageTests(unittest.TestCase):
             "scripts/manifest.yaml",
             "docs/90.references",
             "docs/99.templates/registry.json",
-            "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
         ):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -113,7 +108,6 @@ class ReferencePackageTests(unittest.TestCase):
                 shutil.copy2(ROOT / source, target)
         context = contextlib.ExitStack()
         context.enter_context(directory)
-        context.enter_context(mock.patch.object(self.references, "load_task9_migration", return_value=self.fixture_migration))
         self.addCleanup(context.close)
         return context, root
 
@@ -122,45 +116,6 @@ class ReferencePackageTests(unittest.TestCase):
             finding.code
             for finding in self.references.validate_current_references(root)
         }
-
-    def test_current_reference_topology_matches_the_frozen_migration(self) -> None:
-        from scripts.lib.document_governance.archive import _approved_migration_document
-
-        migration = self.references.load_task9_migration(ROOT)
-        approved = [row for row in _approved_migration_document(ROOT)["rows"] if row["owner_task"] == 9]
-        self.assertEqual(tuple(f"mig-0003-r{n:04d}" for n in range(450, 566)), tuple(row["row_id"] for row in approved))
-        self.assertEqual(
-            [(row["source_path"], row["target_path"], row["artifact_id"], row["action"]) for row in approved],
-            [(str(row.source_path), str(row.target_path) if row.target_path else None, row.artifact_id, row.action) for row in migration.rows],
-        )
-        self.assertEqual(105, sum(row.action == "rename" for row in migration.rows))
-        self.assertEqual(11, sum(row.action == "delete" for row in migration.rows))
-        self.assertEqual(set(), self.finding_codes())
-
-    def test_migration_target_retired_by_a_tombstone_is_not_missing(self) -> None:
-        """A renamed target may later be deleted; the tombstone is that record.
-
-        The frozen ledger records what the migration did, and a rename it
-        performed stays a rename forever. Deletion is a separate later event,
-        and Stage 98 already owns it. Reading the ledger as a permanence
-        guarantee forced a completed migration to be rewritten every time a
-        document it moved was retired, which falsifies the record it exists to
-        keep.
-        """
-
-        retired = "docs/90.references/research/0001-agentic-research-pack-refresh"
-        tombstoned = self.references.tombstoned_paths(ROOT)
-        self.assertIn(pathlib.PurePosixPath(retired), tombstoned)
-        self.assertNotIn(
-            pathlib.PurePosixPath("docs/90.references/research/0002-agentic-engineering-research-pack"),
-            tombstoned,
-        )
-
-    def test_a_target_missing_without_a_tombstone_is_still_reported(self) -> None:
-        """The rule narrows to retired paths; an unrecorded loss still fails."""
-
-        with mock.patch.object(self.references, "tombstoned_paths", return_value=frozenset()):
-            self.assertIn("migration-target-missing", self.finding_codes())
 
     def test_reference_roots_and_package_paths_are_exact(self) -> None:
         corpus = self.references.load_reference_packages(ROOT / "docs/90.references")
@@ -509,6 +464,118 @@ class ReferencePackageTests(unittest.TestCase):
                 (pathlib.PurePosixPath("scripts/validation/current.py"),),
             )
             self.assertEqual({"retired-active-reference-path"}, {item.code for item in findings})
+
+
+class ProtectedResearchDeclarationTests(unittest.TestCase):
+    """The package README, not a transient Task, is the protection oracle."""
+
+    PACKAGE = "docs/90.references/research/0002-agentic-engineering-research-pack"
+
+    def _references(self):
+        return reference_api()
+
+    def test_declaration_equals_the_tracked_package_files(self) -> None:
+        references = self._references()
+        declared = references.protected_research_paths(ROOT)
+        tracked = frozenset(
+            subprocess.run(
+                ("git", "ls-files", "-z", "--", self.PACKAGE),
+                cwd=ROOT,
+                capture_output=True,
+                check=True,
+            ).stdout.decode("utf-8").split("\0")
+        ) - {""}
+        self.assertEqual(tracked, declared)
+        for relative in sorted(declared):
+            self.assertTrue((ROOT / relative).is_file(), relative)
+
+    def test_declaration_pins_no_count_hash_or_commit(self) -> None:
+        """Every declared value is a path, so no digest or count can hide here."""
+
+        references = self._references()
+        section = references.protected_research_declaration(ROOT)
+        self.assertNotRegex(section, r"\b[0-9a-f]{7,64}\b")
+        declared = references.protected_research_paths(ROOT)
+        spans = re.findall(r"`([^`]+)`", section)
+        self.assertTrue(spans)
+        for span in spans:
+            with self.subTest(span=span):
+                self.assertIn(
+                    (references.PROTECTED_RESEARCH_PACKAGE / span).as_posix(),
+                    declared,
+                )
+
+    def test_protection_survives_a_zero_consumer_package(self) -> None:
+        references = self._references()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            package = root / self.PACKAGE
+            package.mkdir(parents=True)
+            for relative in sorted(references.protected_research_paths(ROOT)):
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            declared = references.protected_research_paths(root)
+            self.assertEqual(references.protected_research_paths(ROOT), declared)
+            self.assertEqual(
+                (),
+                references.validate_protected_research(root, consumers=()),
+            )
+
+    def test_missing_declared_leaf_fails_closed(self) -> None:
+        references = self._references()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for relative in sorted(references.protected_research_paths(ROOT)):
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            victim = next(
+                path
+                for path in sorted(references.protected_research_paths(ROOT))
+                if not path.endswith("/README.md")
+            )
+            (root / victim).unlink()
+            self.assertEqual(
+                {"protected-research-missing"},
+                {item.code for item in references.validate_protected_research(root, consumers=())},
+            )
+
+    def test_undeclared_package_file_fails_closed(self) -> None:
+        references = self._references()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for relative in sorted(references.protected_research_paths(ROOT)):
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            (root / self.PACKAGE / "undeclared.md").write_text("# stray\n", encoding="utf-8")
+            self.assertEqual(
+                {"protected-research-undeclared"},
+                {item.code for item in references.validate_protected_research(root, consumers=())},
+            )
+
+    def test_declared_leaves_keep_substantive_research_shape(self) -> None:
+        references = self._references()
+        for relative in sorted(references.protected_research_paths(ROOT)):
+            if relative.endswith("/README.md"):
+                continue
+            with self.subTest(leaf=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                for section in (
+                    "## Definitions / Facts",
+                    "## Sources",
+                    "## Scope Implications",
+                ):
+                    self.assertIn(section, text)
+                self.assertRegex(text, r"https?://")
+
+    def test_current_reference_topology_ignores_the_archive_migration(self) -> None:
+        references = self._references()
+        source = pathlib.Path(references.__file__).read_text(encoding="utf-8")
+        for token in ("load_task9_migration", "Task9Migration", "migration_rows_for_task"):
+            self.assertNotIn(token, source)
+        self.assertNotIn("98.archive", source)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 """Current-authority validation for Stage 90 reference packages.
 
-Stage 99 defines the three package profiles and frozen Migration 0003 defines
-the Task 9 source/target inventory.  Stage 90 is evidence only; it never owns
-normative lifecycle policy.
+Stage 99 defines the three package profiles and the current tree defines the
+package set.  Stage 90 is evidence only; it never owns normative lifecycle
+policy, and no archive record decides which package exists.
 """
 
 from __future__ import annotations
@@ -29,17 +29,12 @@ from scripts.lib.document_governance.links import (
 from scripts.lib.document_governance.operations_catalog import read_bounded_regular
 
 
-MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-)
-MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
-TASK9_ROW_IDS = tuple(f"mig-0003-r{number:04d}" for number in range(450, 566))
 CATEGORIES = ("audits", "data", "research")
 PREFIX_BY_CATEGORY = {"audits": "AUD-", "data": "DATA-", "research": "RES-"}
 PROFILE_BY_CATEGORY = {"audits": "audit", "data": "data", "research": "research"}
+DATA_PAYLOAD_NAME = "data.yaml"
 PACKAGE_PATH = re.compile(r"(?:audits|data|research)/[0-9]{4}-[a-z0-9][a-z0-9-]*")
 _DATED_PACKAGE = re.compile(r"(?:^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-|$)")
-_ROW = re.compile(r"^- \{row_id: (mig-0003-r[0-9]{4}), .+\}$")
 _RETIRED_ROOTS = ("learning", "llm-wiki")
 _NORMATIVE_STAGES = ("stage 00", "stage 01", "stage 02", "stage 03", "stage 05")
 _ACTIVE_CONSUMER_PATHS = (
@@ -70,34 +65,6 @@ MAX_ACTIVE_CONSUMER_BYTES = 4 * 1024 * 1024
 
 class ReferenceCorpusError(ValueError):
     """Raised when Stage 90 cannot be enumerated as a trusted corpus."""
-
-
-@dataclasses.dataclass(frozen=True)
-class Task9Row:
-    row_id: str
-    source_path: pathlib.PurePosixPath
-    target_path: pathlib.PurePosixPath | None
-    artifact_id: str | None
-    action: str
-
-
-@dataclasses.dataclass(frozen=True)
-class ReferenceMapping:
-    source_path: pathlib.PurePosixPath
-    target_path: pathlib.PurePosixPath | None
-    artifact_id: str | None
-    action: str
-
-
-@dataclasses.dataclass(frozen=True)
-class Task9Migration:
-    rows: tuple[Task9Row | ReferenceMapping, ...]
-
-    @property
-    def row_ids(self) -> tuple[str, ...]:
-        if not all(isinstance(row, Task9Row) for row in self.rows):
-            raise ValueError("row identity is execution evidence only")
-        return tuple(row.row_id for row in self.rows)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -135,70 +102,75 @@ class Finding:
     detail: str
 
 
-def load_task9_migration(root: pathlib.Path) -> Task9Migration:
-    from scripts.lib.document_governance.archive import migration_rows_for_task
-
-    selected = migration_rows_for_task(root, 9)
-    rows = tuple(
-        Task9Row(row["row_id"], pathlib.PurePosixPath(row["source_path"]),
-                 pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
-                 row["artifact_id"], row["action"])
-        if "row_id" in row else ReferenceMapping(
-            pathlib.PurePosixPath(row["source_path"]),
-            pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
-            row["artifact_id"], row["action"],
-        ) for row in selected
-    )
-    if len(rows) != 116 or sum(row.action == "rename" for row in rows) != 105:
-        raise ValueError("Task 9 migration must contain exactly 105 renames and 11 deletions")
-    return Task9Migration(rows)
+PROTECTED_RESEARCH_PACKAGE = pathlib.PurePosixPath(
+    "docs/90.references/research/0002-agentic-engineering-research-pack"
+)
+_DECLARATION_HEADING = "## Preservation Declaration"
+_DECLARED_LEAF = re.compile(r"^- `([^`/][^`]*)`$")
 
 
-def _is_retired(
-    path: pathlib.PurePosixPath,
-    retired: frozenset[pathlib.PurePosixPath],
-) -> bool:
-    """A tombstone retires a path, and everything beneath it when it is a pack.
+def protected_research_declaration(root: pathlib.Path) -> str:
+    """The package README owns protection; no Task or archive record does."""
 
-    A pack is retired as a directory, so its twenty leaves are covered by the
-    one tombstone rather than twenty. Matching is on whole path components, so
-    a tombstone for `.../0001-pack` never covers `.../0001-pack-notes`.
+    text = read_bounded_regular(
+        pathlib.Path(root),
+        PROTECTED_RESEARCH_PACKAGE / "README.md",
+    ).decode("utf-8")
+    start = text.find(_DECLARATION_HEADING)
+    if start < 0:
+        raise ValueError("protected research package declares no preservation section")
+    end = text.find("\n## ", start + len(_DECLARATION_HEADING))
+    return text[start:] if end < 0 else text[start:end]
+
+
+def protected_research_paths(root: pathlib.Path) -> frozenset[str]:
+    """Repository-relative paths the declaration protects, derived not pinned."""
+
+    declared: set[str] = set()
+    for line in protected_research_declaration(root).splitlines():
+        match = _DECLARED_LEAF.fullmatch(line.strip())
+        if match is None:
+            continue
+        relative = pathlib.PurePosixPath(match.group(1))
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError(f"protected research declaration path is unsafe: {relative}")
+        declared.add((PROTECTED_RESEARCH_PACKAGE / relative).as_posix())
+    if not declared:
+        raise ValueError("protected research declaration lists no path")
+    return frozenset(declared)
+
+
+def validate_protected_research(
+    root: pathlib.Path,
+    *,
+    consumers: Sequence[pathlib.PurePosixPath] | None = None,
+) -> tuple[Finding, ...]:
+    """Declared set equals the on-disk set, whatever the consumer set is.
+
+    Consumers are accepted so a caller can show what it measured; an empty set
+    is not a retirement signal, because this package is retained at zero
+    consumers by SPEC-0158.
     """
 
-    if path in retired:
-        return True
-    return any(record in path.parents for record in retired)
-
-
-def tombstoned_paths(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
-    """Paths Stage 98 records as retired, so a missing target is accounted for.
-
-    The frozen Task 9 ledger records what the migration did. A rename it
-    performed stays a rename; a later deletion of the renamed document is a
-    separate event, and the tombstone is the record the archive keeps of it.
-    Without this the ledger would have to be rewritten to call a rename a
-    deletion, which would falsify the history it exists to preserve.
-    """
-
-    from scripts.lib.document_governance.archive import load_archive
-
-    try:
-        inventory = load_archive(root / "docs/98.archive")
-    except (OSError, ValueError):
-        # Stage 98 is validated by its own gate. A reader that cannot resolve
-        # it grants no exemption here, so every target is judged as present-or-
-        # missing exactly as it was before.
-        return frozenset()
-    retired: set[pathlib.PurePosixPath] = set()
-    for record in inventory.tombstones:
-        retired.add(record.retired_path)
-        if record.retired_path.name == "README.md":
-            # A recovery tuple must resolve to a regular blob, so a pack is
-            # tombstoned through the README that carries its identity rather
-            # than through its directory, which resolves to a tree. Retiring
-            # that README retires the package it names.
-            retired.add(record.retired_path.parent)
-    return frozenset(retired)
+    del consumers
+    root = pathlib.Path(root)
+    declared = protected_research_paths(root)
+    package = root / PROTECTED_RESEARCH_PACKAGE
+    observed: set[str] = set()
+    for path in package.rglob("*"):
+        if path.is_symlink() or not path.is_file():
+            continue
+        observed.add(path.relative_to(root).as_posix())
+    findings: list[Finding] = []
+    for relative in sorted(declared - observed):
+        findings.append(
+            _finding("protected-research-missing", pathlib.PurePosixPath(relative), "declared but absent")
+        )
+    for relative in sorted(observed - declared):
+        findings.append(
+            _finding("protected-research-undeclared", pathlib.PurePosixPath(relative), "present but undeclared")
+        )
+    return tuple(findings)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -782,7 +754,6 @@ def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
 def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     findings: list[Finding] = []
     references_root = root / "docs/90.references"
-    migration = load_task9_migration(root)
 
     try:
         generated_paths = frozenset(map(pathlib.PurePosixPath, generated_reference_owners(root)))
@@ -807,41 +778,39 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
                 )
             )
 
-    expected_packages = {
-        row.target_path.parent.relative_to(pathlib.PurePosixPath("docs/90.references")).as_posix()
-        for row in migration.rows
-        if row.target_path is not None
-        and row.target_path.parts[:2] == ("docs", "90.references")
-    }
+    # The current tree is the package set. A package exists because its
+    # README is here and satisfies the Stage 99 profile, not because a
+    # retired archive ledger once listed it.
     observed_packages = {item.relative_package for item in corpus.packages}
-    observed_directories = {item.relative_package for item in corpus.packages}
-    for relative in sorted(expected_packages - observed_packages):
-        package = pathlib.PurePosixPath("docs/90.references") / relative
-        if _is_retired(package, tombstoned_paths(root)):
-            continue
-        findings.append(_finding("package-missing", f"docs/90.references/{relative}", "missing README"))
-    for relative in sorted(observed_packages - expected_packages):
-        findings.append(_finding("redirect-document-present", f"docs/90.references/{relative}/README.md", "unregistered package"))
-    for relative in sorted(observed_directories - expected_packages):
-        findings.append(_finding("package-path-invalid", f"docs/90.references/{relative}", "unregistered or empty package directory"))
+    findings.extend(validate_protected_research(root))
 
     allowed_files = {
         pathlib.PurePosixPath("README.md"),
         *(pathlib.PurePosixPath(category) / "README.md" for category in CATEGORIES),
-        *(row.target_path.relative_to(pathlib.PurePosixPath("docs/90.references"))
-          for row in migration.rows
-          if row.target_path is not None
-          and row.target_path.parts[:2] == ("docs", "90.references")),
+        *(
+            pathlib.PurePosixPath(relative).relative_to("docs/90.references")
+            for relative in protected_research_paths(root)
+        ),
+        *(
+            pathlib.PurePosixPath(relative).relative_to("docs/90.references")
+            for relative in generated_paths
+            if pathlib.PurePosixPath(relative).is_relative_to("docs/90.references")
+        ),
     }
-    # Structured Data payloads carry a package README beside their registered
-    # machine file; generated LLM Wiki packages are registered by their owner.
+    # Structured Data payloads carry a package README beside one machine file;
+    # generated packages are registered by their manifest owner.
     allowed_files.update(
         pathlib.PurePosixPath(item.relative_package) / "README.md"
         for item in corpus.packages
     )
+    allowed_files.update(
+        pathlib.PurePosixPath(item.relative_package) / DATA_PAYLOAD_NAME
+        for item in corpus.packages
+        if item.category == "data"
+    )
     for relative in corpus.files:
         if relative not in allowed_files:
-            findings.append(_finding("unregistered-reference-file", pathlib.PurePosixPath("docs/90.references") / relative, "not declared by the frozen Task 9 topology"))
+            findings.append(_finding("unregistered-reference-file", pathlib.PurePosixPath("docs/90.references") / relative, "not a package README, protected leaf, or generated owner"))
 
     for item in corpus.packages:
         path = pathlib.PurePosixPath("docs/90.references") / item.relative_package / "README.md"
@@ -878,31 +847,21 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
                 _finding("generated-data-link-missing", document.path, target)
             )
 
-    retired = tombstoned_paths(root)
-    for row in migration.rows:
-        source = root / row.source_path
-        if source.exists() or source.is_symlink():
-            findings.append(_finding("migration-source-present", row.source_path, row.source_path.as_posix()))
-        if row.target_path is not None:
-            relative_target = row.target_path.relative_to(
-                pathlib.PurePosixPath("docs/90.references")
-            )
-            if relative_target not in corpus.files and not _is_retired(row.target_path, retired):
-                findings.append(_finding("migration-target-missing", row.target_path, row.source_path.as_posix()))
-
     findings.extend(validate_active_reference_consumers(root))
 
     return tuple(findings)
 
 
 def delegated_member_paths(root: pathlib.Path) -> frozenset[str]:
-    """Exact mapped payloads and category indexes; package READMEs stay typed."""
+    """Category indexes and current package payloads; package READMEs stay typed."""
 
-    migration = load_task9_migration(root)
     prefix = pathlib.PurePosixPath("docs/90.references")
+    corpus = load_reference_packages(pathlib.Path(root) / prefix)
     return frozenset({
         *((prefix / category / "README.md").as_posix() for category in CATEGORIES),
-        *(row.target_path.as_posix() for row in migration.rows
-          if row.target_path is not None and row.target_path.is_relative_to(prefix)
-          and row.target_path.suffix == ".md" and row.target_path.name != "README.md"),
+        *(
+            (prefix / relative).as_posix()
+            for relative in corpus.files
+            if relative.suffix == ".md" and relative.name != "README.md"
+        ),
     })

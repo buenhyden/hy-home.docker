@@ -196,7 +196,6 @@ class MigrationStateTests(unittest.TestCase):
             self.read(candidate)
 
     def test_native_compact_rows_reach_remaining_archive_consumers(self):
-        from scripts.lib.document_governance import references
 
         approved = self.archive._approved_migration_document(ROOT)
         compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [
@@ -205,8 +204,6 @@ class MigrationStateTests(unittest.TestCase):
             for row in approved["rows"]
         ]}
         with mock.patch.object(self.archive, "_migration_document", return_value=compact):
-            self.assertEqual(116, len(references.load_task9_migration(ROOT).rows))
-            self.assertFalse(hasattr(references.load_task9_migration(ROOT).rows[0], "row_id"))
             self.assertEqual(275, len(self.archive.task10_rows(ROOT)))
 
 
