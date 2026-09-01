@@ -724,6 +724,32 @@ outside `RES-0002` remains a convergence target.
   `last-updated`, `audit_id`, `research_id`, `incident_id`, and `stage` all
   return zero matches.
 
+### 2026-09-02 Task 6 observed evidence
+
+Task 6 closes on its amended scope. Its convergence target set is empty:
+`classify_path` resolves all 37 Stage 90 package roots to a registered profile,
+so zero unregistered packages remain and no deletion is due.
+
+- `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_references`:
+  `Ran 23 tests ... OK`, including the declaration-equality, no-pinned-count,
+  zero-consumer-override, fail-closed, substantive-shape, and
+  Migration-independence relations.
+- `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive`:
+  `Ran 22 tests ... OK`.
+- `PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'`:
+  `Ran 13 tests ... OK`.
+- `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-recovery`:
+  `migrations=3 tombstones=83 decisions=229 recovery_rows=317 violations=0`.
+- `python3 scripts/validation/check-document-links.py --mode all`: `failures=0`.
+- Stage 90 package-root registration sweep: 37 roots, 0 unregistered.
+
+Steps 1 and 2 were already satisfied on the merged tree: the `RES-0002` README
+carries its `## Preservation Declaration`, `references.py` derives protection
+from that declaration rather than from Migration 0003, and `test_archive.py`
+holds the archive-shape relations. Steps 3 and 4 are withdrawn by the
+2026-09-02 amendment ruling above.
+
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -810,6 +836,8 @@ The final read-only verdicts are GREEN and do not grant approval:
 | Correct stale evidence references | `25a38723` | links `failures=0`, generated LLM Wiki fresh, protected pack body unchanged |
 | Converge artifact identity and the frontmatter envelope | `e0b3fbf6` | 1099 tests OK, gate exit 0, check-active `396/0`, links `4376/0`, frozen ledger blocks byte-identical |
 | Correct two claims that contradict the tracked workspace | `38f30006` | `plan.md` instruction matches its Task; Codex hook coverage re-read from `.codex/hooks.json` |
+| Record the identity convergence in this Task | `f43ab765` | Work Log, observed evidence, and two ledger rows added |
+| Amend SPEC-0158 where it contradicts the registered profiles | `7cbcdfa5` | gate exit 0, links PASS; Spec acceptance 7/8 and Plan Task 6/8 amended together |
 
 ## Rulings
 
