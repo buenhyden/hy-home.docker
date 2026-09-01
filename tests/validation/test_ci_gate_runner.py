@@ -173,30 +173,28 @@ class PublicSuiteModelTests(unittest.TestCase):
                 }
                 self.assertEqual(expected, actual & task5_modules)
 
-    def test_task11_retained_validator_ownership_is_immutable(self) -> None:
+    def test_validator_ownership_is_derived_from_the_manifest(self) -> None:
+        """Ownership is whatever the manifest declares, checked by shape not by count."""
+
         registry = contract.load_public_suite_registry()
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        # 30 since 2026-08-30. Gate 4, the old-path gate, was retired with the
-        # rest of SPEC-0137: `check-old-path-gate.py` and its
-        # `old_path_gate_contract.py` module. Its allowlist lived in that Spec
-        # Package's `tsk-0001-rebuild.md`, a cancelled Task, and the pack it
-        # guarded, RES-0001, is deleted, so the gate had no subject left.
-        # Previously 32, when the three other SPEC-0137 gate modules went:
-        # `agentic-research-gate9-evidence.py`, `gate2_claim_review_contract.py`,
-        # and `carry_owner_contract.py`, 13,504 lines with their tests. The note
-        # that one replaced already recorded why the second could never run, that
-        # the Gate 2 evidence sections it reads had never been authored so it
-        # failed closed on a subject that did not exist, and raised the count
-        # rather than removing the module. Previously 35 since 2026-08-29. This
-        # count is the guard that makes adding a validator deliberate; lowering
-        # it records a removal that the owning Spec Package has dispositioned.
-        self.assertEqual(30, len(actual))
-        self.assertEqual(
-            dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
-            actual,
+
+        document = yaml.safe_load(
+            pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
         )
+        declared = {
+            pathlib.PurePosixPath(row["path"]): row["public_suites"][0]
+            for row in document["files"]
+            if row.get("kind") == "validator"
+        }
+        self.assertEqual(declared, actual)
+        self.assertTrue(actual)
+        self.assertLessEqual(
+            set(actual.values()), set(registry.public_names)
+        )
+        self.assertEqual(len(actual), len(set(actual)))
 
         document = yaml.safe_load(
             pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
@@ -222,12 +220,27 @@ class PublicSuiteModelTests(unittest.TestCase):
                 rows.pop(index)
             mutations.append((mode, mutated))
 
+        target = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_contract.py")
         for mode, mutated in mutations:
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 path = pathlib.Path(directory) / "manifest.yaml"
                 path.write_text(yaml.safe_dump(mutated), encoding="utf-8")
-                with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
-                    runner.public_suite_registry.load(path)
+                if mode == "context":
+                    # execution_contexts remain a retained safety policy.
+                    with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                        runner.public_suite_registry.load(path)
+                    continue
+                # kind, suite, and missing are legal manifest edits: they must
+                # change the loaded membership rather than raise.
+                reloaded = {
+                    item.path: item.public_suites[0]
+                    for item in runner.public_suite_registry.load(path).validators
+                }
+                self.assertNotEqual(actual, reloaded)
+                if mode == "suite":
+                    self.assertEqual("operations", reloaded[target])
+                else:
+                    self.assertNotIn(target, reloaded)
 
 
 REAL_SUBPROCESS_RUN = subprocess.run

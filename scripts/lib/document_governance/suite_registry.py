@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import os
 from pathlib import Path, PurePosixPath
+import re
 import stat
 from types import MappingProxyType
 from typing import Mapping
@@ -28,49 +29,18 @@ EXECUTION_CONTEXT_NAMES = (
     "push",
     "workflow_dispatch",
 )
-IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP = MappingProxyType(
-    {
-        PurePosixPath("scripts/hardening/check-all-hardening.sh"): "repository-integrity",
-        PurePosixPath("scripts/lib/agent_governance/agent_governance_contract.py"): "agent-governance",
-        PurePosixPath("scripts/validation/agent_output_eval.py"): "agent-governance",
-        PurePosixPath("scripts/validation/audit_criterion_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-agent-governance-contract.py"): "agent-governance",
-        PurePosixPath("scripts/validation/check-agentic-audit-semantic-freshness.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-doc-implementation-alignment.sh"): "document-graph",
-        PurePosixPath("scripts/validation/check-doc-traceability.sh"): "document-graph",
-        PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"): "document-lifecycle",
-        PurePosixPath("scripts/validation/check-document-links.py"): "document-graph",
-        PurePosixPath("scripts/validation/check-document-metadata.py"): "document-contract",
-        PurePosixPath("scripts/validation/check-github-workflow-contract.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-operations-catalog.py"): "operations",
-        PurePosixPath("scripts/validation/check-quickwin-baseline.sh"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-script-manifest.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-storybook-contract.sh"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-supply-chain-policy.py"): "repository-integrity",
-        PurePosixPath("scripts/validation/check-target-surface-contract.py"): "document-contract",
-        PurePosixPath("scripts/validation/check-target-surface-delta-contract.py"): "document-contract",
-        PurePosixPath("scripts/validation/check-template-security-baseline.sh"): "repository-integrity",
-        PurePosixPath("scripts/lib/gate/ci_gate_adapters.py"): "repository-integrity",
-        PurePosixPath("scripts/lib/gate/ci_gate_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/lib/gate/github_workflow_contract.py"): "repository-integrity",
-        PurePosixPath("scripts/lib/supply_chain/grype_db_seed.py"): "repository-integrity",
-        PurePosixPath("scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"): "operations",
-        PurePosixPath("scripts/validation/report-audit-pack-coverage.sh"): "document-lifecycle",
-        PurePosixPath("scripts/validation/report-provider-hook-parity.sh"): "agent-governance",
-        PurePosixPath("scripts/lib/target_surface/target_surface_contract.py"): "document-contract",
-        PurePosixPath("scripts/lib/target_surface/target_surface_delta_contract.py"): "document-contract",
-        PurePosixPath("scripts/lib/ops/validate-harness.sh"): "agent-governance",
-    }
-)
 _MIRRORED_TEST_ROOT = PurePosixPath("tests/lib/document_governance")
 MAX_MANIFEST_BYTES = 1_048_576
 MAX_MANIFEST_DEPTH = 64
 
 
-def validate_execution_argv(path: PurePosixPath, argv: tuple[str, ...]) -> None:
-    """Admit complete validation capabilities, never arbitrary CLI arguments."""
-
-    required = {
+MAX_EXECUTION_ARGV = 8
+MAX_ARGUMENT_LENGTH = 64
+_LONG_OPTION = re.compile(r"^--[a-z][a-z0-9-]*$")
+_ARGUMENT_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
+_REJECTED_OPTIONS = frozenset({"--help"})
+COMPLETE_CAPABILITY_ARGV = MappingProxyType(
+    {
         "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
         "check-agent-governance-contract.py": ("--mode", "repository", "--section", "all"),
         "check-document-corpus-lifecycle.py": ("--mode", "check-public"),
@@ -82,8 +52,54 @@ def validate_execution_argv(path: PurePosixPath, argv: tuple[str, ...]) -> None:
         "report-audit-pack-coverage.sh": ("--check",),
         "report-provider-hook-parity.sh": ("--check",),
     }
-    if path not in IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP or argv != required.get(path.name, ()):
-        raise SuiteRegistryError(f"{path}: execution arguments must preserve the complete validation capability")
+)
+
+
+def validate_execution_argv(path: PurePosixPath, argv: tuple[str, ...]) -> None:
+    """Admit a bounded argument shape and the complete capability of a modal CLI.
+
+    Membership is manifest data, so this rule no longer consults a validator
+    inventory. Shape admission is generic: bounded length, a restricted
+    character set, long options only, and at most one value each.
+
+    `COMPLETE_CAPABILITY_ARGV` is a separate safety control, not a membership
+    list. A validator whose CLI accepts a narrower mode can be silently weakened
+    by a manifest edit alone -- `check-document-links.py --mode traceability`
+    passes while checking far less than `--mode all` -- and generic shape rules
+    cannot see that. Those validators pin their complete capability here. A
+    validator that fails closed without arguments needs no entry.
+    """
+
+    if len(argv) > MAX_EXECUTION_ARGV:
+        raise SuiteRegistryError(
+            f"{path}: execution arguments must not exceed {MAX_EXECUTION_ARGV} tokens"
+        )
+    seen: set[str] = set()
+    expects_value = False
+    for token in argv:
+        if not token or len(token) > MAX_ARGUMENT_LENGTH:
+            raise SuiteRegistryError(f"{path}: execution argument has an unbounded length")
+        if token.startswith("--"):
+            if not _LONG_OPTION.match(token) or token in _REJECTED_OPTIONS:
+                raise SuiteRegistryError(f"{path}: {token!r} is not an admitted long option")
+            if token in seen:
+                raise SuiteRegistryError(f"{path}: {token!r} is repeated")
+            seen.add(token)
+            expects_value = True
+            continue
+        if token.startswith("-"):
+            raise SuiteRegistryError(f"{path}: short options are not admitted")
+        if not expects_value:
+            raise SuiteRegistryError(f"{path}: {token!r} does not follow a long option")
+        if not _ARGUMENT_VALUE.match(token):
+            raise SuiteRegistryError(f"{path}: {token!r} is not a safe argument value")
+        expects_value = False
+
+    complete = COMPLETE_CAPABILITY_ARGV.get(path.name)
+    if complete is not None and argv != complete:
+        raise SuiteRegistryError(
+            f"{path}: execution arguments must preserve the complete validation capability"
+        )
 
 
 class SuiteRegistryError(ValueError):
@@ -262,14 +278,6 @@ def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
     for module in modules:
         if not module.has_mirrored_test:
             raise SuiteRegistryError(f"{module.path}: requires a mirrored library test")
-
-    actual_ownership = {
-        item.path: item.public_suites[0] for item in validators
-    }
-    if actual_ownership != IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP:
-        raise SuiteRegistryError(
-            "validator ownership must match the immutable Task 11 retained inventory"
-        )
 
     return SuiteRegistry(
         public_names=PUBLIC_SUITE_NAMES,

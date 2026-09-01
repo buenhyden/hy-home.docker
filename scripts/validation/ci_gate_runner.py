@@ -646,10 +646,6 @@ def validate_public_execution_parity(
         len(selected) != len(selected_suites)
         or not selected.issubset(suite_model.public_names)
         or len(ownership_paths) != len(set(ownership_paths))
-        or {
-            item.path: item.public_suites[0] for item in suite_model.validators
-        }
-        != public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP
     ):
         raise GateContractError(
             "ci-gate-public-execution-parity",
