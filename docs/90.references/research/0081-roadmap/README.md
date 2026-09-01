@@ -182,7 +182,6 @@ This section is a learning-idea reference, not an implementation plan or task ba
 
 - [Learning reference index](README.md)
 - [90.references](../../README.md)
-- [stable reference terms](../../data/0062-stable-reference-terms/README.md)
 - [docs index](../../README.md)
 
 ## Question

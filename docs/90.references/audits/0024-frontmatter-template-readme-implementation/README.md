@@ -175,8 +175,6 @@ unrelated historical findings remain advisory.
 - [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - target-stage status, template, and numbering rules
 - [Reference template](../../../99.templates/templates/references/research.template.md) - active report profile
-- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated syntax baseline
-- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated profile baseline
 
 ## Maintenance
 

@@ -10,53 +10,23 @@ Point-in-time gap, implementation, and conformance assessments. Audit packages a
 
 The Stage 90 authority boundary and package lifecycle rules are defined by the [References index](../README.md) and Stage 99 Registry.
 
-**This category admits no net-new package, recorded 2026-08-29.**
-`scripts/lib/document_governance/references.py:763` derives the admitted Stage
-90 file set entirely from the Task 9 migration rows, and every such row
-describes a move from a real predecessor path. An audit with no predecessor to
-name therefore cannot be registered here: authoring one raises
-`package-path-invalid: unregistered`, and the identity it consumed from the
-Stage 99 Registry is burned whether or not the document survives, because
-`identity-history-regression` forbids reissuing it.
+SPEC-0158 retires this category. The current tree defines the Stage 90 package
+set: a package exists because its README is present and satisfies its Stage 99
+profile, and it is retired by deleting it in the same change that migrates its
+needed meaning to a canonical owner, updates every inbound consumer, and
+removes its row below. No archive ledger decides membership, so retiring a
+package is no longer a Stage 99 amendment.
 
-**Nor does it release a superseded one, recorded 2026-08-30.** The same
-derivation runs in both directions. `expected_packages` is the set of Task 9
-migration targets — 66 of them — and a package in that set whose README is
-absent raises `package-missing`. A package therefore cannot be retired by
-deleting it, regardless of its `status`.
+Stage 99 identity is still consumed once. A retired package's `AUD-` number is
+never reissued, because `identity-history-regression` forbids it.
 
-Measured: `RES-0001` is `status: superseded`, all 20 of its files have same-named counterparts in `RES-0002`, and all 20 are
-registered Task 9 rows. It is the corpus's only true duplicate package and it
-cannot be removed. Retiring a Stage 90 package means amending the frozen Task 9
-migration, which is a Stage 99 decision and has not been taken.
-
-A cross-stage audit that is not the successor of an existing package belongs in
-a Task under its governing Spec, where `task` is a `package-member` profile and
-so allocates no global identity. Changing this is a Stage 99 decision and has
-not been taken.
+A cross-stage audit belongs in a Task under its governing Spec, where `task` is
+a `package-member` profile and so allocates no global identity.
 
 ## Packages
 
 | Stable ID | Package | Status |
 | :--- | :--- | :--- |
-| [AUD-0001](./0001-readme/README.md) | Reference: Document Contract Audit References | active |
-| [AUD-0002](./0002-automation-coverage-map/README.md) | Automation Coverage Map | active |
-| [AUD-0003](./0003-ci-qa-parser-graphify-decision/README.md) | Reference: CI, QA, Parser, and Graphify Decision | active |
-| [AUD-0004](./0004-contract-governance-map/README.md) | Contract Governance Map | active |
-| [AUD-0005](./0005-frontmatter-inventory/README.md) | Frontmatter Inventory | active |
-| [AUD-0006](./0006-frontmatter-routing-profile/README.md) | Reference: Frontmatter Routing Profile | active |
-| [AUD-0007](./0007-gap-register/README.md) | Gap Register | active |
-| [AUD-0008](./0008-historical-evidence-preservation/README.md) | Reference: Historical Evidence Preservation | active |
-| [AUD-0009](./0009-readme-profile-inventory/README.md) | README Profile Inventory | active |
-| [AUD-0010](./0010-section-profile-inventory/README.md) | Section Profile Inventory | active |
-| [AUD-0011](./0011-template-application-gaps/README.md) | Template Application Gaps | active |
-| [AUD-0012](./0012-readme/README.md) | Reference: Document Restructure Audit References | active |
-| [AUD-0013](./0013-ci-qa-formatting-contract/README.md) | Reference: CI, QA, and Formatting Contract | active |
-| [AUD-0014](./0014-frontmatter-profile-inventory/README.md) | Reference: Frontmatter Profile Inventory | active |
-| [AUD-0015](./0015-operations-bucket-restructure/README.md) | Reference: Operations Bucket Restructure | active |
-| [AUD-0016](./0016-restructure-gap-register/README.md) | Reference: Restructure Gap Register | active |
-| [AUD-0017](./0017-sdlc-spec-archive-candidates/README.md) | Reference: SDLC Spec Archive Candidates | active |
-| [AUD-0018](./0018-template-contract-drift/README.md) | Reference: Template Contract Drift | active |
 | [AUD-0019](./0019-readme/README.md) | Reference: Agentic Engineering Implementation Audit References | active |
 | [AUD-0020](./0020-agent-instructions-catalog-vibe-models/README.md) | Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing | active |
 | [AUD-0021](./0021-automation-candidates/README.md) | Reference: Agentic Engineering Automation Candidates | active |
@@ -72,11 +42,6 @@ not been taken.
 | [AUD-0031](./0031-security-framework-maturity/README.md) | Reference: Security Framework Maturity Coverage | active |
 | [AUD-0032](./0032-workspace-rules-environment-implementation/README.md) | Reference: Workspace Rules and Environment Implementation | active |
 | [AUD-0033](./0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
-| [AUD-0034](./0034-agent-catalog-audit/README.md) | Reference: Superseded Agent Catalog Audit Mapping | superseded |
-| [AUD-0035](./0035-automation-candidates/README.md) | Reference: Superseded Automation Candidate Mapping | superseded |
-| [AUD-0036](./0036-harness-loop-audit/README.md) | Reference: Superseded Harness and Loop Audit Mapping | superseded |
-| [AUD-0037](./0037-implementation-overview/README.md) | Reference: Superseded 2026-07-07 Implementation Overview Mapping | superseded |
-| [AUD-0038](./0038-sdlc-qa-security-audit/README.md) | Reference: Superseded SDLC, QA, and Security Audit Mapping | superseded |
 
 ## Canonical Current Audit
 

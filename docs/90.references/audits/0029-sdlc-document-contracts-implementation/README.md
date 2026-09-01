@@ -184,8 +184,6 @@ active until promotion and final closure reviews pass.
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - naming, template, status, and routing contracts
 - [Lifecycle status](../../../99.templates/README.md) - current status meanings and supersession rule
 - Release management runbook (retired path: `05.operations/00-workspace/ops-0009-release-management/runbook.md`) - release readiness procedure
-- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated 930-file evidence
-- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated 948-file evidence
 
 ## Maintenance
 

@@ -8,8 +8,6 @@ parent_ids:
 created: '2026-07-05'
 updated: '2026-08-23'
 observed_at: '2026-07-05'
-supersedes:
-- AUD-0038
 reviewed_at: 2026-07-27
 ---
 
