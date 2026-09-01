@@ -76,8 +76,6 @@ class MigrationStateTests(unittest.TestCase):
         self.assertEqual(self.compact(), self.read(self.compact()))
 
     def test_compact_projection_normalizes_only_five_approved_singular_targets(self):
-        from scripts.lib.document_governance.spec_packages import _SINGULAR_TASK_FINALS
-
         approved = self.archive._approved_migration_document(ROOT)
         projected = self.archive._compact_mapping_selection(approved)
         retained = [row for row in approved["rows"] if row["row_id"] not in {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}]
@@ -85,10 +83,21 @@ class MigrationStateTests(unittest.TestCase):
         changed = [row["row_id"] for row, result in zip(retained, projected, strict=True)
                    if row["target_path"] != result["target_path"]]
         self.assertEqual([f"mig-0003-r{n:04d}" for n in (233, 239, 242, 245, 248)], changed)
+        expected_targets = {
+            "mig-0003-r0233": "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
+            "mig-0003-r0239": "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/tsk-0001-canonical-convergence.md",
+            "mig-0003-r0242": "docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md",
+            "mig-0003-r0245": "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md",
+            "mig-0003-r0248": "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md",
+        }
         for row, result in zip(retained, projected, strict=True):
-            self.assertEqual(result, {key: (_SINGULAR_TASK_FINALS.get(row[key], row[key])
-                                           if key == "target_path" else row[key])
-                                      for key in ("source_path", "target_path", "artifact_id", "action")})
+            expected = {
+                key: row[key]
+                for key in ("source_path", "target_path", "artifact_id", "action")
+            }
+            if row["row_id"] in expected_targets:
+                expected["target_path"] = expected_targets[row["row_id"]]
+            self.assertEqual(result, expected)
 
     def test_exact_905_compact_projection_has_real_recovery_and_no_retained_owner_deletion(self):
         approved = self.archive._approved_migration_document(ROOT)
@@ -187,7 +196,7 @@ class MigrationStateTests(unittest.TestCase):
             self.read(candidate)
 
     def test_native_compact_rows_reach_remaining_archive_consumers(self):
-        from scripts.lib.document_governance import references, spec_packages
+        from scripts.lib.document_governance import references
 
         approved = self.archive._approved_migration_document(ROOT)
         compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [
@@ -199,7 +208,6 @@ class MigrationStateTests(unittest.TestCase):
             self.assertEqual(116, len(references.load_task9_migration(ROOT).rows))
             self.assertFalse(hasattr(references.load_task9_migration(ROOT).rows[0], "row_id"))
             self.assertEqual(275, len(self.archive.task10_rows(ROOT)))
-            self.assertEqual(46, len(spec_packages._read_migration_authority(ROOT)[0]))
 
 
 class ArchiveMinimizationTests(unittest.TestCase):

@@ -67,33 +67,6 @@ _EXPECTED_PROFILES = {
         "execution",
     ),
 }
-_MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-)
-_SINGULAR_TASK_FINALS = {
-    "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md": (
-        "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
-        "tsk-0001-research-pack-extension.md"
-    ),
-    "docs/03.specs/0134-agent-governance-canonical-convergence/task.md": (
-        "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
-        "tsk-0001-canonical-convergence.md"
-    ),
-    "docs/03.specs/0135-target-surface-delta-convergence/task.md": (
-        "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
-        "tsk-0001-delta-convergence.md"
-    ),
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md": (
-        "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
-        "tsk-0001-taxonomy-convergence.md"
-    ),
-    "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md": (
-        "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
-        "tsk-0001-reference-disposition.md"
-    ),
-}
-
-
 class SpecPackageError(ValueError):
     """Raised when the Stage 03 package surface cannot be trusted."""
 
@@ -489,6 +462,28 @@ def _validate_task_parents(
         )
 
 
+def _validate_execution_states(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+) -> None:
+    for task in tasks:
+        if task.status != "active":
+            continue
+        if spec.status != "active":
+            raise SpecPackageError(
+                f"{task.path} active Task requires active Spec"
+            )
+        if plan is not None and plan.status != "active":
+            raise SpecPackageError(
+                f"{task.path} active Task requires active Plan"
+            )
+    if plan is not None and plan.status == "active" and spec.status != "active":
+        raise SpecPackageError(
+            f"{plan.path} active Plan requires active Spec"
+        )
+
+
 def _load_contracts(
     package_descriptor: int,
     package_path: pathlib.Path,
@@ -672,6 +667,7 @@ def _load_package(
                 plan_id=None if plan is None else plan.artifact_id,
                 task_ids=task_ids,
             )
+        _validate_execution_states(spec, plan, tasks)
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
         if "contracts" in entries:
             contracts, current = _load_contracts(
@@ -791,74 +787,27 @@ def _documents(
     return result
 
 
-def _has_recovery(
-    path: pathlib.PurePosixPath,
-    recovery_commits: Mapping[pathlib.PurePosixPath, str | None],
-) -> bool:
-    value = recovery_commits.get(path)
-    return isinstance(value, str) and _RECOVERY_COMMIT.fullmatch(value) is not None
-
-
 def validate_spec_package_lifecycle(
     previous: Sequence[SpecPackage],
     current: Sequence[SpecPackage],
-    *,
-    recovery_commits: Mapping[pathlib.PurePosixPath, str | None] | None = None,
-    one_time_package_ids: frozenset[str] = frozenset(),
 ) -> tuple[SpecPackageFinding, ...]:
-    """Validate removals without treating Git history as implicit approval."""
+    """Reject gutting a retained package; Git owns whole-package recovery."""
 
-    recoveries = {} if recovery_commits is None else recovery_commits
     previous_documents = _documents(previous)
     current_documents = _documents(current)
-    current_spec_ids = frozenset(package.spec.artifact_id for package in current)
-    previous_spec_paths = {
-        package.spec.artifact_id: package.spec.path for package in previous
-    }
+    retained_packages = frozenset(
+        package.spec.path.parts[2] for package in current
+    )
     findings: list[SpecPackageFinding] = []
     for path, document in sorted(previous_documents.items()):
-        if path in current_documents:
+        if path in current_documents or path.parts[2] not in retained_packages:
             continue
-        if document.profile_id == "spec":
-            if document.artifact_id not in one_time_package_ids:
-                findings.append(
-                    SpecPackageFinding(
-                        "living-spec-deletion-forbidden",
-                        path.as_posix(),
-                        "living completed Specs retain spec.md",
-                    )
-                )
-            elif not _has_recovery(path, recoveries):
-                findings.append(
-                    SpecPackageFinding(
-                        "one-time-package-recovery-missing",
-                        path.as_posix(),
-                        "one-time package deletion requires an approved recovery commit",
-                    )
-                )
-            continue
-        package_spec_id = (
-            f"SPEC-{document.artifact_id.split('-')[1]}"
-            if document.profile_id in {"plan", "task"}
-            else ""
-        )
-        deleting_one_time_package = package_spec_id in one_time_package_ids
-        whole_package_retirement_proven = (
-            deleting_one_time_package
-            and package_spec_id not in current_spec_ids
-            and package_spec_id in previous_spec_paths
-            and _has_recovery(previous_spec_paths[package_spec_id], recoveries)
-        )
-        if whole_package_retirement_proven:
-            continue
-        if document.status not in {"completed", "cancelled"} or not _has_recovery(
-            path, recoveries
-        ):
+        if document.status not in {"completed", "cancelled"}:
             findings.append(
                 SpecPackageFinding(
-                    "execution-evidence-recovery-missing",
+                    "execution-evidence-deletion-forbidden",
                     path.as_posix(),
-                    "completed Plan/Task removal requires terminal state and approved recovery",
+                    "a retained package keeps non-terminal Spec Package members",
                 )
             )
     return tuple(findings)
@@ -954,72 +903,6 @@ def _bounded_git(
             stream.close()
 
 
-def _read_migration_authority(
-    root: pathlib.Path,
-) -> tuple[
-    dict[str, str],
-    dict[pathlib.PurePosixPath, str | None],
-    frozenset[str],
-]:
-    from scripts.lib.document_governance.archive import (
-        _approved_migration_document, _migration_document,
-    )
-
-    try:
-        document = _migration_document(root)
-        approved = _approved_migration_document(root)
-    except ValueError as error:
-        raise SpecPackageError(f"Task 7 Migration authority is invalid: {error}") from error
-    rows = document["rows"]
-    task7_sources = {row["source_path"] for row in approved["rows"] if row["owner_task"] == 7}
-    source_to_final: dict[str, str] = {}
-    recovery_commits: dict[pathlib.PurePosixPath, str | None] = {}
-    one_time_package_ids: set[str] = set()
-    task7_rows = 0
-    for row in rows:
-        if not isinstance(row, Mapping):
-            raise SpecPackageError("Task 7 Migration row is malformed")
-        source = row.get("source_path")
-        target = row.get("target_path")
-        action = row.get("action")
-        recovery = row.get("recovery_commit")
-        if not isinstance(source, str) or not _safe_repository_path(source):
-            raise SpecPackageError("Task 7 Migration source path is unsafe")
-        if target is not None and (
-            not isinstance(target, str) or not _safe_repository_path(target)
-        ):
-            raise SpecPackageError("Task 7 Migration target path is unsafe")
-        if recovery is not None and (
-            not isinstance(recovery, str) or _RECOVERY_COMMIT.fullmatch(recovery) is None
-        ):
-            raise SpecPackageError("Task 7 Migration recovery is malformed")
-        final = target
-        if final is not None:
-            final = _SINGULAR_TASK_FINALS.get(final, final)
-            recovery_commits[pathlib.PurePosixPath(final)] = recovery
-        if source in task7_sources:
-            task7_rows += 1
-            if action == "rename" and final is not None:
-                if source in source_to_final:
-                    raise SpecPackageError("Task 7 Migration source is duplicated")
-                source_to_final[source] = final
-        if action == "delete":
-            match = re.fullmatch(
-                r"docs/03\.specs/(?:spec-)?(?P<number>[0-9]{4})-[^/]+/spec\.md",
-                source,
-            )
-            if match is not None:
-                package_id = f"SPEC-{match.group('number')}"
-                one_time_package_ids.add(package_id)
-                canonical = pathlib.PurePosixPath(
-                    re.sub(r"/spec-([0-9]{4})-", r"/\1-", source)
-                )
-                recovery_commits[canonical] = recovery
-    if task7_rows != 49 or len(source_to_final) != 46:
-        raise SpecPackageError("Task 7 Migration authority row set is incomplete")
-    return source_to_final, recovery_commits, frozenset(one_time_package_ids)
-
-
 def _safe_repository_path(value: str) -> bool:
     path = pathlib.PurePosixPath(value)
     return (
@@ -1072,7 +955,6 @@ def _load_base_spec_packages(
     root: pathlib.Path,
     *,
     base_ref: str,
-    source_to_final: Mapping[str, str],
 ) -> tuple[SpecPackage, ...]:
     commit = _bounded_git(
         root,
@@ -1105,8 +987,7 @@ def _load_base_spec_packages(
             source = raw_path.decode("utf-8")
         except (ValueError, UnicodeDecodeError) as error:
             raise SpecPackageError("Spec Package base tree is malformed") from error
-        final = source_to_final.get(source, source)
-        path = pathlib.PurePosixPath(final)
+        path = pathlib.PurePosixPath(source)
         if not (
             len(path.parts) >= 4
             and path.parts[:2] == ("docs", "03.specs")
@@ -1178,22 +1059,14 @@ def validate_repository_spec_package_lifecycle(
     *,
     base_ref: str | None = None,
 ) -> tuple[SpecPackageFinding, ...]:
-    """Validate current removals against a bounded Git/Migration snapshot."""
+    """Validate current removals against a bounded Git snapshot."""
 
     root = pathlib.Path(root)
-    base_ref = resolve_lifecycle_base(root, base_ref)
-    source_to_final, recoveries, one_time_ids = _read_migration_authority(root)
     previous = _load_base_spec_packages(
         root,
-        base_ref=base_ref,
-        source_to_final=source_to_final,
+        base_ref=resolve_lifecycle_base(root, base_ref),
     )
-    return validate_spec_package_lifecycle(
-        previous,
-        current,
-        recovery_commits=recoveries,
-        one_time_package_ids=one_time_ids,
-    )
+    return validate_spec_package_lifecycle(previous, current)
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

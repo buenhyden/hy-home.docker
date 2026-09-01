@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import importlib.util
+import inspect
 import pathlib
 import re
 import subprocess
@@ -11,8 +12,6 @@ import tempfile
 import time
 import unittest
 from unittest import mock
-
-import yaml
 
 from scripts.lib.document_governance.registry import load_registry
 
@@ -82,7 +81,9 @@ def _write_package(
     spec_id: str | None = None,
     spec_status: str = "active",
     plan: bool = False,
+    plan_status: str = "active",
     task: bool = False,
+    task_status: str = "active",
     task_parent_ids: tuple[str, ...] | None = None,
 ) -> pathlib.Path:
     package = stage / f"{number}-{slug}"
@@ -98,7 +99,12 @@ def _write_package(
     )
     if plan:
         package.joinpath("plan.md").write_text(
-            _document_text("plan", f"plan-{number}", (f"SPEC-{number}",)),
+            _document_text(
+                "plan",
+                f"plan-{number}",
+                (f"SPEC-{number}",),
+                status=plan_status,
+            ),
             encoding="utf-8",
         )
     if task:
@@ -110,7 +116,12 @@ def _write_package(
             else (f"SPEC-{number}",)
         )
         tasks.joinpath("tsk-0001-implement.md").write_text(
-            _document_text("task", f"task-{number}-0001", parents),
+            _document_text(
+                "task",
+                f"task-{number}-0001",
+                parents,
+                status=task_status,
+            ),
             encoding="utf-8",
         )
     return package
@@ -360,123 +371,144 @@ class SpecPackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(spec_packages.SpecPackageError, "parent"):
                     spec_packages.load_spec_packages(stage)
 
-    def test_lifecycle_rejects_illegal_evidence_and_living_spec_deletion(self) -> None:
+    def test_current_execution_states_require_consistent_parents(self) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            ("completed", "active", "active", "active Task requires active Spec"),
+            ("active", "completed", "active", "active Task requires active Plan"),
+            ("completed", "active", "completed", "active Plan requires active Spec"),
+        )
+        for spec_status, plan_status, task_status, message in cases:
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as directory:
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                _write_package(
+                    stage,
+                    spec_status=spec_status,
+                    plan=True,
+                    plan_status=plan_status,
+                    task=True,
+                    task_status=task_status,
+                )
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages.load_spec_packages(stage)
+
+    def test_whole_package_retirement_needs_no_recovery_ledger(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             before_stage = root / "before/docs/03.specs"
             after_stage = root / "after/docs/03.specs"
-            package = _write_package(before_stage, plan=True, task=True)
-            package.joinpath("plan.md").write_text(
-                _document_text(
-                    "plan",
-                    "plan-0001",
-                    ("SPEC-0001",),
-                    status="completed",
-                ),
-                encoding="utf-8",
+            _write_package(
+                before_stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
             )
-            task = package / "tasks/tsk-0001-implement.md"
-            task.write_text(
-                _document_text(
-                    "task",
-                    "task-0001-0001",
-                    ("SPEC-0001", "plan-0001"),
-                    status="completed",
-                ),
-                encoding="utf-8",
-            )
-            _write_package(after_stage)
-            before = spec_packages.load_spec_packages(before_stage)
-            after = spec_packages.load_spec_packages(after_stage)
-            findings = spec_packages.validate_spec_package_lifecycle(before, after)
+            _write_package(before_stage, number="0002", slug="keeper")
+            _write_package(after_stage, number="0002", slug="keeper")
             self.assertEqual(
-                {"execution-evidence-recovery-missing"},
-                {finding.code for finding in findings},
+                (),
+                spec_packages.validate_spec_package_lifecycle(
+                    spec_packages.load_spec_packages(before_stage),
+                    spec_packages.load_spec_packages(after_stage),
+                ),
             )
 
-            recovered = spec_packages.validate_spec_package_lifecycle(
-                before,
-                after,
-                recovery_commits={
-                    pathlib.PurePosixPath(
-                        "docs/03.specs/0001-example/plan.md"
-                    ): "a" * 40,
-                    pathlib.PurePosixPath(
-                        "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
-                    ): "b" * 40,
-                },
-            )
-            self.assertFalse(recovered)
-
-            empty_stage = root / "empty/docs/03.specs"
-            empty_stage.mkdir(parents=True)
-            empty = spec_packages.load_spec_packages(empty_stage)
-            spec_findings = spec_packages.validate_spec_package_lifecycle(before, empty)
-            self.assertIn(
-                "living-spec-deletion-forbidden",
-                {finding.code for finding in spec_findings},
-            )
-            migration_findings = spec_packages.validate_spec_package_lifecycle(
-                before,
-                empty,
-                one_time_package_ids=frozenset({"SPEC-0001"}),
-            )
-            self.assertIn(
-                "one-time-package-recovery-missing",
-                {finding.code for finding in migration_findings},
-            )
-
-    def test_one_time_exception_requires_whole_package_retirement_proof(self) -> None:
+    def test_retired_package_with_non_terminal_members_is_approved_as_a_whole(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             before_stage = root / "before/docs/03.specs"
             after_stage = root / "after/docs/03.specs"
             _write_package(before_stage, plan=True, task=True)
-            _write_package(after_stage)
-            before = spec_packages.load_spec_packages(before_stage)
-            after = spec_packages.load_spec_packages(after_stage)
-            partial = spec_packages.validate_spec_package_lifecycle(
-                before,
-                after,
-                one_time_package_ids=frozenset({"SPEC-0001"}),
-            )
+            _write_package(after_stage, number="0002", slug="keeper")
+            _write_package(before_stage, number="0002", slug="keeper")
             self.assertEqual(
-                {
-                    "docs/03.specs/0001-example/plan.md",
-                    "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
-                },
-                {
-                    finding.path
-                    for finding in partial
-                    if finding.code == "execution-evidence-recovery-missing"
-                },
+                (),
+                spec_packages.validate_spec_package_lifecycle(
+                    spec_packages.load_spec_packages(before_stage),
+                    spec_packages.load_spec_packages(after_stage),
+                ),
             )
 
-            empty_stage = root / "empty/docs/03.specs"
-            empty_stage.mkdir(parents=True)
-            retired = spec_packages.validate_spec_package_lifecycle(
-                before,
-                spec_packages.load_spec_packages(empty_stage),
-                recovery_commits={
-                    pathlib.PurePosixPath(
-                        "docs/03.specs/0001-example/spec.md"
-                    ): "c" * 40,
-                },
-                one_time_package_ids=frozenset({"SPEC-0001"}),
+    def test_retained_package_keeps_non_terminal_execution_evidence(self) -> None:
+        spec_packages = _spec_packages_module()
+        for plan_status, task_status, removed in (
+            ("active", "active", "docs/03.specs/0001-example/plan.md"),
+            ("active", "active", "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"),
+        ):
+            with self.subTest(removed=removed), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                before_stage = root / "before/docs/03.specs"
+                after_stage = root / "after/docs/03.specs"
+                _write_package(
+                    before_stage,
+                    plan=True,
+                    plan_status=plan_status,
+                    task=True,
+                    task_status=task_status,
+                )
+                _write_package(
+                    after_stage,
+                    plan=removed.endswith("tsk-0001-implement.md"),
+                    task=removed.endswith("plan.md"),
+                )
+                findings = spec_packages.validate_spec_package_lifecycle(
+                    spec_packages.load_spec_packages(before_stage),
+                    spec_packages.load_spec_packages(after_stage),
+                )
+                self.assertEqual(
+                    {("execution-evidence-deletion-forbidden", removed)},
+                    {(finding.code, finding.path) for finding in findings},
+                )
+
+    def test_retained_package_may_drop_terminal_execution_evidence(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            before_stage = root / "before/docs/03.specs"
+            after_stage = root / "after/docs/03.specs"
+            _write_package(
+                before_stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
             )
-            self.assertFalse(retired)
+            _write_package(after_stage, spec_status="completed")
+            self.assertEqual(
+                (),
+                spec_packages.validate_spec_package_lifecycle(
+                    spec_packages.load_spec_packages(before_stage),
+                    spec_packages.load_spec_packages(after_stage),
+                ),
+            )
+
+    def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(self) -> None:
+        spec_packages = _spec_packages_module()
+        source = ROOT.joinpath(
+            "scripts/lib/document_governance/spec_packages.py"
+        ).read_text(encoding="utf-8")
+        for token in (
+            "_read_migration_authority",
+            "_approved_migration_document",
+            "one_time_package_ids",
+            "recovery_commits",
+            "source_to_final",
+        ):
+            self.assertNotIn(token, source)
+        self.assertIsNone(re.search(r"!=\s*(?:49|46)\b", source))
+        signature = inspect.signature(spec_packages.validate_spec_package_lifecycle)
+        self.assertEqual(["previous", "current"], list(signature.parameters))
 
     def test_public_repository_validator_enforces_snapshot_lifecycle(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            subprocess.run(
-                ("git", "init", "--quiet"),
-                cwd=root,
-                check=True,
-            )
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
             stage = root / "docs/03.specs"
             _write_package(stage, plan=True)
             subprocess.run(["git", "add", "-A"], cwd=root, check=True)
@@ -495,19 +527,13 @@ class SpecPackageTests(unittest.TestCase):
                 check=True,
             )
             stage.joinpath("0001-example/plan.md").unlink()
-            current = spec_packages.load_spec_packages(stage)
-            with mock.patch.object(
-                spec_packages,
-                "_read_migration_authority",
-                return_value=({}, {}, frozenset()),
-            ):
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    current,
-                    base_ref="HEAD",
-                )
-            self.assertIn(
-                "execution-evidence-recovery-missing",
+            findings = spec_packages.validate_repository_spec_package_lifecycle(
+                root,
+                spec_packages.load_spec_packages(stage),
+                base_ref="HEAD",
+            )
+            self.assertEqual(
+                {"execution-evidence-deletion-forbidden"},
                 {finding.code for finding in findings},
             )
 
@@ -610,7 +636,6 @@ class SpecPackageTests(unittest.TestCase):
             packages = spec_packages._load_base_spec_packages(
                 ROOT,
                 base_ref="HEAD",
-                source_to_final={},
             )
         self.assertEqual(1, len(packages))
 
@@ -622,7 +647,6 @@ class SpecPackageTests(unittest.TestCase):
             spec_packages._load_base_spec_packages(
                 ROOT,
                 base_ref="HEAD",
-                source_to_final={},
             )
 
     def test_restored_stage04_fails_closed(self) -> None:
