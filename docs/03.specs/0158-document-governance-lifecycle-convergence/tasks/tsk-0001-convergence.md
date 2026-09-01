@@ -750,6 +750,62 @@ holds the archive-shape relations. Steps 3 and 4 are withdrawn by the
 2026-09-02 amendment ruling above.
 
 
+### 2026-09-02 Task 7 observed evidence
+
+Steps 1 through 7 are complete. Step 8's three-commit split is satisfied by
+committing each Step separately, which is finer than the Plan asked for.
+
+- `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_suite_registry`:
+  `Ran 9 tests ... OK`.
+- `PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner`:
+  `Ran 31 tests ... OK`.
+- `PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_adapters`:
+  `Ran 15 tests ... OK`.
+- `PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'`:
+  `Ran 15 tests ... OK`.
+- `PYTHONPATH=. python3 scripts/validation/check-script-manifest.py`:
+  `PASS: script manifest is valid`.
+- `python3 scripts/validation/check-document-corpus-lifecycle.py`:
+  `document corpus lifecycle: violations=0` and
+  `archive recovery: ... violations=0`.
+- `python3 scripts/validation/check-operations-catalog.py`: `operations-catalog: PASS`.
+- `python3 scripts/validation/run-ci-gate.py --profile changed`: exit 0.
+- `python3 scripts/validation/run-ci-gate.py --profile full`: exit 0.
+
+Stable public interface, asserted separately as the Plan requires: the six
+`PUBLIC_SUITE_NAMES` fixed by ADR-0029 are unchanged; `--profile` still admits
+`changed` and `full` and rejects anything else; and the `operations` suite still
+owns exactly `rehearse-postgres-logical-upgrade.sh` and
+`check-operations-catalog.py`.
+
+### 2026-09-02 Task 7 rulings
+
+Two Plan instructions were not followed as written, both because measurement
+showed they would remove a control that nothing else replaces.
+
+Step 1 asked to replace every filename-specific `validate_execution_argv` row
+with generic shape validation. `check-document-links.py --mode traceability` is
+shape-valid and exits 0 while checking far less than `--mode all`, so a manifest
+edit alone could narrow coverage silently. Membership and capability are
+different controls: the 30-row membership map is deleted and membership now
+comes only from the manifest, while `COMPLETE_CAPABILITY_ARGV` is retained for
+the validators whose CLI admits a narrower mode. A validator that fails closed
+without arguments needs no entry.
+
+Step 6 asked to remove persistent digest and count ledgers. Classification found
+that only Migration 0003 was digest-tripwired; 0001 and 0002 had no integrity
+control at all, and the action-count maps in `lifecycle/promoted.py` were their
+only guard. All three ledgers are now digest-pinned, and the count maps are kept
+as a second layer because a count mismatch names which action class changed
+while a digest only reports that the file differs.
+
+Every other commit and digest was classified and retained under Step 6's own
+list: GitHub Action pins and supply-chain rehearsal digests are supply-chain
+integrity, the archive baseline and recovery commits are Stage 98 regular-blob
+recovery, the null SHA is a CI sentinel, and `TASK7_IMMUTABLE_MANIFEST_SHA256`
+guards a hand-authored `data.yaml` that no generator writes.
+
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -838,6 +894,12 @@ The final read-only verdicts are GREEN and do not grant approval:
 | Correct two claims that contradict the tracked workspace | `38f30006` | `plan.md` instruction matches its Task; Codex hook coverage re-read from `.codex/hooks.json` |
 | Record the identity convergence in this Task | `f43ab765` | Work Log, observed evidence, and two ledger rows added |
 | Amend SPEC-0158 where it contradicts the registered profiles | `7cbcdfa5` | gate exit 0, links PASS; Spec acceptance 7/8 and Plan Task 6/8 amended together |
+| Derive validation ownership from the manifest | `e9ef7c19` | test_suite_registry 9 OK, test_ci_gate_runner 31 OK, manifest PASS |
+| Move adapter admission to a grammar | `57ba8f13` | 117-line inventory removed; exactly-once and package-name relations added |
+| Collapse the duplicate document lifecycle modes | `fce4e5af` | equivalence test with injected sentinels; changed and full profiles exit 0 |
+| Collapse the operations catalog modes | `9ef0b089` | five modes to one route; leaf renamed off the deleted mode |
+| Derive the archive counts instead of pinning them | `c77d241c` | 900/905/275/14 replaced by derivations; test_archive 22 OK |
+| Pin the two frozen migrations that had no integrity control | `3477a3c3` | 0001 and 0002 digest-tripwired; test_archive 23 OK |
 
 ## Rulings
 
