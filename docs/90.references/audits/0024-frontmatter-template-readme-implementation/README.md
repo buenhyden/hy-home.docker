@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Frontmatter, Template, and README Implementation Audit"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0024
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'
@@ -175,8 +177,6 @@ unrelated historical findings remain advisory.
 - [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - target-stage status, template, and numbering rules
 - [Reference template](../../../99.templates/templates/references/research.template.md) - active report profile
-- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated syntax baseline
-- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated profile baseline
 
 ## Maintenance
 
@@ -190,7 +190,6 @@ unrelated historical findings remain advisory.
 - [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md)
 - [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
 - [Implementation overview](../0026-implementation-overview/README.md)
-- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective
 

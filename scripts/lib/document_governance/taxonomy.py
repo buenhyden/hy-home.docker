@@ -268,8 +268,15 @@ def _matches_path_identity(
         return True
     path_identity = str(profile.get("path_identity", "direct"))
     if path_identity == "direct":
+        # An incident identity carries its year partition, which the packet
+        # directory does not repeat: `inc-<year>-####` owns `inc-####-<slug>`.
+        candidates = [artifact_id]
+        incident = re.fullmatch(r"inc-(?P<year>[0-9]{4})-(?P<number>[0-9]{4})", artifact_id)
+        if incident is not None and incident.group("year") in path.parts:
+            candidates.append(f"inc-{incident.group('number')}")
         return any(
-            part == artifact_id or part.startswith(artifact_id + "-")
+            part == candidate or part.startswith(candidate + "-")
+            for candidate in candidates
             for part in path.parts
         )
     if path_identity == "inherited":
@@ -306,9 +313,19 @@ def validate_stable_identity(
     """Validate the metadata ID and stable identity represented by ``path``."""
 
     findings: list[TaxonomyFinding] = []
-    artifact_type = str(metadata.get("artifact_type", ""))
+    artifact_type = str(metadata.get("type", ""))
     artifact_id = str(metadata.get("artifact_id", ""))
     profile = profiles.get(artifact_type)
+    if profile is None:
+        # Documents declare the family/kind type; profiles are keyed by id.
+        profile = next(
+            (
+                item
+                for item in profiles.values()
+                if isinstance(item, Mapping) and item.get("type") == artifact_type
+            ),
+            None,
+        )
     if profile is None:
         return [TaxonomyFinding("profile-missing", str(path), artifact_type)]
 
@@ -329,7 +346,9 @@ def validate_stable_identity(
         )
     identity_relation = profile.get("identity_relation")
     path_matches = (
-        identity_relation == "none"
+        # An inherited identity is derived from the retired document by the
+        # archive owner, so path numbers are not equated here.
+        identity_relation in {"none", "inherited"}
         or (
             isinstance(profile.get("path_pattern"), str)
             and isinstance(artifact_pattern, str)
@@ -347,11 +366,11 @@ def validate_stable_identity(
         findings.append(
             TaxonomyFinding("path-id-mismatch", str(path), artifact_id)
         )
-    incident_role = artifact_type in {"incident", "postmortem"}
+    incident_role = artifact_type in {"operations/incident", "operations/postmortem"}
     role_filename_valid = (
-        artifact_type == "incident" and path.name == "incident.md"
+        artifact_type == "operations/incident" and path.name == "incident.md"
     ) or (
-        artifact_type == "postmortem" and path.name == "postmortem.md"
+        artifact_type == "operations/postmortem" and path.name == "postmortem.md"
     )
     valid_incident_route = (
         incident_role and role_filename_valid and is_valid_incident_path(path)
@@ -383,9 +402,9 @@ def _numeric_identity_matches(
     if path_match is None or artifact_match is None:
         return False
     if identity_relation == "subject-member":
-        # The Operations migration manifest owns exact role-to-subject
-        # membership. Registry validation establishes each identity shape
-        # independently and must never equate their four-digit numbers.
+        # Current subject-directory containment owns role membership. Registry
+        # validation establishes each identity shape independently and must
+        # never equate their four-digit numbers.
         return "subject_number" in path_match.groupdict()
     required = "number" if identity_relation == "direct" else next(
         (
@@ -409,7 +428,7 @@ def _numeric_identity_matches(
 
 
 _IDENTITY_TOKEN_PATTERN = re.compile(
-    r"\{(number|package_number|task_number|subject_number|year):4\}"
+    r"\{(number|package_number|task_number|member_number|subject_number|year):4\}"
     r"|\{(slug|domain|stage)\}"
 )
 

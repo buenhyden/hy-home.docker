@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Alertmanager Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0039
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0039
 parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11

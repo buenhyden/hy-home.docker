@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: drift-detector
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: drift-detector
 scope: infra
 tier: worker
-status: active
 work_profile: routine-validation
 permission_profile: read-only
 skill_ids: []

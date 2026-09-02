@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: PostgreSQL Cluster Health and Recovery Triage Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0031
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0031
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

@@ -1,12 +1,14 @@
 ---
-profile_id: spec
+title: Analytics Tier Technical Specification (Spec)
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0005
-artifact_type: spec
 parent_ids:
   - AD-0012
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 # Analytics Tier Technical Specification (Spec)
 
@@ -112,8 +114,6 @@ mysql -h starrocks-fe -P 9030 -u root -e "SHOW FRONTENDS;"
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md
-- **Tasks**: ../../04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md
 - **Guide**: [../../05.operations/catalog/04-data/0017-influxdb/guide.md](../../05.operations/catalog/04-data/0017-influxdb/guide.md)
 - **Policy**: [../../05.operations/catalog/04-data/0017-influxdb/policy.md](../../05.operations/catalog/04-data/0017-influxdb/policy.md)
 - **Runbook**: [../../05.operations/catalog/04-data/0017-influxdb/runbook.md](../../05.operations/catalog/04-data/0017-influxdb/runbook.md)

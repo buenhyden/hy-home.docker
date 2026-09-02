@@ -1,11 +1,13 @@
 ---
-profile_id: runbook
+title: 0012 Standardize Infra Net Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0077
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0077
 parent_ids: []
 created: 2026-05-10
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 <!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md -->
 
@@ -25,12 +27,10 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [../../../02.architecture/descriptions/0026-standardize-infra-net.md](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-- [../../../02.architecture/decisions/0026-standardize-infra-net.md](../../../../02.architecture/decisions/0026-standardize-infra-net.md)
-- [../../../03.specs/098-standardize-infra-net/spec.md](../../../../03.specs/0098-standardize-infra-net/spec.md)
-- ../../../04.execution/plans/2026-04-01-standardize-infra-net.md
-- [../../policies/12-infra-net/standardize-infra-net.md](policy.md)
-- [../../guides/12-infra-net/standardize-infra-net.md](guide.md)
+- [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- [infra_net architecture decision](../../../../02.architecture/decisions/0026-standardize-infra-net.md)
+- [IP management policy](policy.md)
+- [IP management guide](guide.md)
 
 ## When to Use
 
@@ -43,13 +43,13 @@ updated: 2026-08-11
 ### Checklist
 
 - [ ] 대상 서비스의 `infra/` 내 `docker-compose.yml` 경로 확인.
-- [ ] 현재 서브넷(`172.19.0.0/16`) 내 가용 IP 대역 확인 (Plan/Spec 참조).
+- [ ] 현재 서브넷(`172.19.0.0/16`) 내 가용 IP 대역 확인 (AD-0026 참조).
 - [ ] 중복 사용 여부 사전 검증 (`rg -n "ipv4_address:" infra docker-compose.yml`).
 - [ ] 런타임 환경을 조회하거나 변경해야 하는 경우 승인된 test/staging 대상인지 확인.
 
 ### Steps
 
-1. **IP 선정**: `docs/03.specs/0098-standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)**에서 비어있는 영역을 선택함.
+1. **IP 선정**: `docs/02.architecture/descriptions/0026-standardize-infra-net.md`의 **Components** 표에서 비어있는 영역을 선택함.
 2. **Compose 파일 수정**:
 
    ```yaml
@@ -107,4 +107,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
-- [infra_net spec](../../../../03.specs/0098-standardize-infra-net/spec.md)
+- [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)

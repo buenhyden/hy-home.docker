@@ -1,8 +1,11 @@
 ---
-profile_id: guide
+title: <title>
+version: <version>
+type: operations/guide
+layer: <layer>
 status: draft
-artifact_id: guide-####
-artifact_type: guide
+owner: <owner>
+artifact_id: GDE-####
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

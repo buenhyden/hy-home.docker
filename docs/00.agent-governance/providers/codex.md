@@ -1,8 +1,10 @@
 ---
-profile_id: governance-provider
+title: Codex Provider Adapter
+type: governance/provider
 layer: agentic
-runtime: codex
 status: active
+owner: "@buenhyden"
+runtime: codex
 ---
 
 # Codex Provider Adapter

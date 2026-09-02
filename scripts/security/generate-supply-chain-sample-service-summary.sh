@@ -43,10 +43,12 @@ for tool in registry["tools"]:
 
 lines = [
     "---",
-    "profile_id: data",
+    'title: "Reference: Sample-service Local Supply-chain Verification"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
     "artifact_id: DATA-0079",
-    "artifact_type: data",
     "parent_ids: []",
     "created: 2026-07-19",
     "updated: 2026-08-23",

@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "03-Security (Vault) Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0015
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 
@@ -64,7 +66,7 @@ No separately numbered solution-independent external interface requirement was i
 - **In Scope**:
   - `infra/03-security/vault/*` 구성 하드닝
   - `scripts/hardening/check-all-hardening.sh 03-security`, CI job 추가
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 03-security 문서/인덱스 동기화
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` 03-security 문서/인덱스 동기화
 - **Out of Scope**:
   - 즉시 auto-unseal 실구현(KMS/HSM 연동)
   - 즉시 원격 audit sink 실구현
@@ -90,9 +92,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../03.specs/0003-security/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/03-security/vault.md](../05.operations/catalog/03-security/0016-vault/guide.md)
 - **Policy**: [../05.operations/policies/03-security/vault.md](../05.operations/catalog/03-security/0016-vault/policy.md)
 - **Runbook**: [../05.operations/runbooks/03-security/vault.md](../05.operations/catalog/03-security/0016-vault/runbook.md)

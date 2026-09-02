@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Tooling Tier Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0009
-artifact_type: architecture-description
 parent_ids:
   - REQ-0010
 created: 2026-03-26

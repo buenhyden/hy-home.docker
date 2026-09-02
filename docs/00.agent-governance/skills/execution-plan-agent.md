@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: execution-plan-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: execution-plan-agent
 scope: agentic
-status: active
 owner_agent: workflow-supervisor
 ---
 

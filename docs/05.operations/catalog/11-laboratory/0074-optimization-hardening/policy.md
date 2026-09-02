@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: 11-Laboratory Optimization Hardening Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0074
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0074
 parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11

@@ -1,9 +1,12 @@
 ---
-profile_id: task
+title: <title>
+version: <version>
+type: specs/task
+layer: <layer>
 status: draft
-artifact_id: task-####-####
-artifact_type: task
-parent_ids: [SPEC-####, plan-####]
+owner: <owner>
+artifact_id: SPEC-####-TSK-####
+parent_ids: [SPEC-####, SPEC-####-PLAN-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---

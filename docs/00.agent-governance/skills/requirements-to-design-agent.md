@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: requirements-to-design-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: requirements-to-design-agent
 scope: architecture
-status: active
 owner_agent: rules-engineer
 ---
 

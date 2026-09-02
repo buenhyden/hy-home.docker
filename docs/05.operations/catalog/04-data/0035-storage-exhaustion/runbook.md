@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: 04-Data Storage Exhaustion Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0035
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0035
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-11

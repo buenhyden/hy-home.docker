@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Edge Routing Stack Operations
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0012
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0012
 parent_ids: []
 created: 2026-07-06
 updated: 2026-08-14

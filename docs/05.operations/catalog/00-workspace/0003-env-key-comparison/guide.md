@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: "`.env.example` vs `.env` Key Comparison"
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0003
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0003
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-14
@@ -137,6 +139,5 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 ## Related Documents
 
 - [Secrets Key Comparison](../0010-sensitive-env-vars-comparison/guide.md)
-- [Historical audit recovery](../../../../98.archive/migrations/0003-workspace-governance-simplification.md)
 - [secrets/README.md](../../../../../secrets/README.md)
 - [Stage Authoring Matrix](../../../../00.agent-governance/policies/stage-authoring-matrix.md)

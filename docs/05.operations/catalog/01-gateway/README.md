@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 01 Gateway
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 01 Gateway
@@ -9,7 +12,7 @@ profile_id: operations-domain-readme
 ## Overview
 
 The gateway domain keeps each existing Nginx, setup, and Traefik document in
-one `ops-` subject folder. Roles remain separate and no missing role is added.
+one four-digit subject folder. Roles remain separate and no missing role is added.
 
 ## Audience
 

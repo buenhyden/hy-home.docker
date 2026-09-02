@@ -7,7 +7,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.validation.target_surface_delta_contract import main  # noqa: E402
+from scripts.lib.target_surface.target_surface_delta_contract import main  # noqa: E402
 
 
 if __name__ == "__main__":

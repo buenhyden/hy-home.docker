@@ -1,4 +1,5 @@
 ---
+type: common/readme
 status: draft
 ---
 

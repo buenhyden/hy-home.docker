@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: "Archive Tombstone: Airflow DAG Development Guide"
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0088
-artifact_type: tombstone
-parent_ids: [mig-0001]
+owner: "@buenhyden"
+artifact_id: tomb-GDE-0088
+parent_ids: [MIG-0001]
 created: 2026-06-04
 updated: 2026-08-23
 ---

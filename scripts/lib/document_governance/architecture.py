@@ -13,7 +13,7 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
-from scripts.lib.document_governance.registry import DocumentRegistry, load_registry
+from scripts.lib.document_governance.registry import document_type, DocumentRegistry, load_registry
 from scripts.lib.document_governance.taxonomy import architecture_identity
 
 
@@ -228,13 +228,9 @@ def parse_architecture_document(
         record = frontmatter_record_from_text(path, text)
     except FrontmatterError as error:
         raise ArchitectureDocumentError(str(error)) from error
-    if record.metadata.get("profile_id") != artifact_type:
+    if record.metadata.get("type") != document_type(artifact_type):
         raise ArchitectureDocumentError(
-            f"architecture document has the wrong profile_id: {artifact_type}"
-        )
-    if record.metadata.get("artifact_type") != artifact_type:
-        raise ArchitectureDocumentError(
-            f"architecture document has the wrong artifact_type: {artifact_type}"
+            f"architecture document has the wrong type: {artifact_type}"
         )
     relative_path = pathlib.PurePosixPath(
         "docs/02.architecture", directory, path.name

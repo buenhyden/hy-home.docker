@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "02-Auth Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0014
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 02-Auth Optimization & Hardening Product Requirements
 
@@ -40,7 +42,7 @@ updated: 2026-08-13
 - **REQ-0014-FR-0001**: OAuth2 Proxy 시크릿 주입은 엔트리포인트 스크립트 기반으로 표준화해야 한다.
 - **REQ-0014-FR-0002**: OAuth2 Proxy 컨테이너는 비루트(non-root) 실행을 기본값으로 해야 한다.
 - **REQ-0014-FR-0003**: Keycloak, root-active OAuth2 Proxy dev leaf, local/full OAuth2 Proxy leaf의 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
-- **REQ-0014-FR-0004**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
+- **REQ-0014-FR-0004**: `docs/{01.requirements,02.architecture,03.specs,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
 - **REQ-0014-FR-0005**: OIDC 장애 시 degraded-mode 운영 판단 및 복구 절차를 문서화해야 한다.
 
 ## Non-functional Requirements
@@ -88,5 +90,4 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/002-auth/spec.md](../03.specs/0002-auth/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md)

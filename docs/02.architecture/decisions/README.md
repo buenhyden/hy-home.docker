@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: Architecture Decision Records
+type: common/readme
+layer: architecture
 status: active
+owner: "@buenhyden"
 ---
 
 # Architecture Decision Records
@@ -33,6 +36,7 @@ docs/02.architecture/decisions/
 ├── 0027-stage-00-canonical-adapter-model.md
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0029-workspace-governance-authority.md
+├── 0030-tombstone-retirement-record.md
 └── README.md
 ```
 
@@ -46,6 +50,8 @@ docs/02.architecture/decisions/
   local-isolated readiness evidence strategy.
 - [`ADR-0029`](./0029-workspace-governance-authority.md):
   active workspace governance authority decision; ADR-0027을 supersede한다.
+- [`ADR-0030`](./0030-tombstone-retirement-record.md):
+  은퇴 기록으로서의 Tombstone decision.
 
 ## How to Work in This Area
 

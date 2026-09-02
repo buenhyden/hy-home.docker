@@ -1,15 +1,15 @@
 ---
-profile_id: audit
+title: "Reference: Agentic Engineering Automation Candidates"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0021
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'
 updated: '2026-08-23'
 observed_at: '2026-07-05'
-supersedes:
-- AUD-0035
 reviewed_at: 2026-07-27
 ---
 
@@ -103,7 +103,7 @@ treated as execution evidence.
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [Compose profile coverage reference](../../data/0059-compose-profile-service-coverage/README.md), `scripts/operations/generate-compose-profile-service-coverage.sh` | Profile-to-service coverage snapshot is now generated and freshness-checked locally; future work can publish grouped summaries into CI or audit reports if useful. |
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/0061-tech-stack-version-provenance/README.md) | Drift severity and source provenance are generated and freshness-checked locally. |
 | Agent-output eval | Synthetic Repository Eval Implemented / Live Comparison Unproved | `loop research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf), Stage 04 evidence patterns, [agent-output eval fixtures](../../data/0064-agent-output-eval-fixtures/README.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, `.github/workflows/ci-quality.yml` | Eleven exact fixtures, sixteen synthetic regressions, calibrated deterministic scorers, exact thresholds, local routing, and CI markers implement the repository semantic loop at depth 4; live or comparative model-quality scoring remains separately approval-gated. |
-| Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), [gap routing reference](../../data/0070-gap-to-stage-routing/README.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
+| Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
 | Audit implementation matrix | Implemented | [audit implementation matrix](../../data/0065-audit-implementation-matrix/README.md), `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/check-repo-contracts.sh` | Audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals are generated and freshness-checked locally. |
 | Security maturity | Mapped / Readiness Snapshot Implemented / Partially Implemented | `.github/workflows/ci-quality.yml`, `security research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf), [security framework maturity coverage](../0031-security-framework-maturity/README.md), [security automation readiness](../../data/0078-security-automation-readiness/README.md) | SSDF/SLSA/OpenSSF Scorecard coverage and repo-local readiness are mapped; the scoped Storybook Next.js `npm audit` gate satisfies `SEC-AUTO-008`, while broad dependency SCA and container/image scanning remain separate gaps. |
 | Remote required-check configuration | Needs Revalidation / Dated Public Observation | GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [main protection historical record](../../../../.github/rulesets/main-protection.md) | The latest public observation records a failed run with 15 observed jobs at default commit `a897978f`; current authenticated protection, ruleset, environment, secret, and variable state is unknown. |
@@ -139,7 +139,7 @@ treated as execution evidence.
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Implemented by QA gate recommendation CI summary spec, task evidence, `.github/workflows/ci-quality.yml`, and `scripts/validation/check-repo-contracts.sh`. |
 | AEA-AUTO-002 | Provider semantic role-scope parity validator | Implemented by Provider semantic parity validator spec and task evidence; deeper free-text clause comparison remains optional future work. |
 | AEA-AUTO-003 | Agent-output eval fixture pack | Implemented by Agent output eval fixtures spec, task evidence, and [fixture reference](../../data/0064-agent-output-eval-fixtures/README.md). |
-| AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by Gap routing recommendation spec, task evidence, [gap routing reference](../../data/0070-gap-to-stage-routing/README.md), and `scripts/validation/recommend-gap-routing.sh`. |
+| AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by Gap routing recommendation spec, task evidence, and `scripts/validation/recommend-gap-routing.sh`. |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Implemented by Compose profile service coverage snapshot spec, task evidence, [generated Docker data reference](../../data/0059-compose-profile-service-coverage/README.md), and `scripts/operations/generate-compose-profile-service-coverage.sh`. |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Implemented by [Security framework maturity coverage](../0031-security-framework-maturity/README.md); follow-up security tooling remains future Stage 03/04 work. |
 | AEA-AUTO-007 | Audit-pack implementation-status coverage output | Implemented by Audit pack coverage report spec, task evidence, `scripts/validation/report-audit-pack-coverage.sh`, and repo-contract `--check` coverage. |

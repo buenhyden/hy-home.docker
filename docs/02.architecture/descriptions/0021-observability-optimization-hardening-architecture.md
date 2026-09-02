@@ -1,12 +1,14 @@
 ---
-profile_id: architecture-description
+title: 06-Observability Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0021
-artifact_type: architecture-description
 parent_ids:
   - REQ-0018
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 06-Observability Optimization Hardening Architecture Description
 
@@ -107,9 +109,7 @@ updated: 2026-08-10
 
 - **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0018-observability-optimization-hardening.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)
 - **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)

@@ -1,181 +1,69 @@
 ---
-profile_id: spec
+title: Observability Capability Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0007
-artifact_type: spec
 parent_ids:
   - AD-0021
 created: 2026-07-05
-updated: 2026-08-14
+updated: 2026-09-01
 ---
-# 06-Observability Optimization Hardening Specification
+# Observability Capability Specification
 
 ## Overview
 
-This document defines the optimization/hardening implementation contract for the `infra/06-observability` tier. Its core scope covers gateway boundaries (security headers/SSO), health-based dependencies, host collector health signals, custom image runtime hardening, and CI baseline verification.
-
-## Strategic Boundaries & Non-goals
-
-- This specification owns the management-path hardening and operations/documentation traceability contract for observability infrastructure.
-- Application code instrumentation (OTel SDK) changes are out of scope.
-
-## Related Inputs
-
-- **PRD**: [../../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0018-observability-optimization-hardening.md)
-- **ARD**: [../../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md)
-- **Related ADRs**:
-  - [../../02.architecture/decisions/0006-lgtm-stack-selection.md](../../02.architecture/decisions/0006-lgtm-stack-selection.md)
-  - [../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-
-## Contracts
-
-- **Config Contract**:
-  - Observability public routers apply `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
-  - Alloy/Grafana depend on Loki/Tempo with `service_healthy`.
-  - cAdvisor has a `/healthz` healthcheck and independent `cadvisor` Traefik route/service labels.
-  - Pyroscope must render as the `pyroscope:4040` service in both the root-included dev compose and the local obs compose.
-- **Data / Interface Contract**:
-  - Collection/storage/query traffic keeps `infra_net` internal boundaries by default.
-  - External access to management paths is controlled through the Traefik `websecure` entrypoint.
-- **Governance Contract**:
-  - Enforce `scripts/hardening/check-all-hardening.sh 06-observability` through the CI `infrastructure-hardening` job.
-  - The Stage 01-05 document set keeps reciprocal links across the optimization-hardening document set.
-
-## Core Design
-
-- **Component Boundary**:
-  - `infra/06-observability/docker-compose.yml`
-  - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
-  - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-- **Key Dependencies**:
-  - `infra/common-optimizations.yml`
-  - Traefik dynamic middleware (`gateway-standard-chain`, `sso-*`)
-  - Keycloak SSO
-  - MinIO object storage for Loki/Tempo
-- **Tech Stack**:
-  - Prometheus `v3.13.0`, Grafana `13.1.0`, Loki `3.7.3-custom`, Tempo `3.0.2-custom`, Alloy `1.17.1`, Alertmanager `0.33.0`, Pushgateway `1.11.3`, Pyroscope `2.1.0`, cAdvisor `0.55.1`
-
-## Data Modeling & Storage Strategy
-
-- **Schema / Entity Strategy**:
-  - Metrics/logs/traces/profiles operate with service-specific retention policies.
-- **Migration / Transition Plan**:
-  - Phase 1: gateway/health/container hardening + CI gate + docs traceability
-  - Phase 2: refine scrape budget/cardinality/sampling policies
-  - Phase 3: apply a long-term retention and scalable HA operating model
-
-## Interfaces & Data Structures
-
-### Core Interfaces
-
-```yaml
-observability_gateway_contract:
-  routers:
-    - prometheus
-    - alloy
-    - grafana
-    - alertmanager
-    - pushgateway
-    - loki
-    - tempo
-    - pyroscope
-    - cadvisor
-  required_middlewares:
-    - gateway-standard-chain@file
-    - sso-errors@file
-    - sso-auth@file
-```
-
-## Catalog-aligned Expansion Targets
-
-- Prometheus:
-  - scrape budget, evaluation delay budget, remote_write tiering
-- Loki:
-  - label cardinality budget, separated retention/compactor operations
-- Tempo:
-  - service/endpoint-specific sampling policies and span surge protection
-- Alloy:
-  - collection module templating and standardized onboarding for new services
-
-## Edge Cases & Error Handling
-
-- Applying the SSO chain to only some routers creates inconsistent management-path exposure.
-- `service_started` dependencies can cause boot races and downstream service errors.
-- Running custom images as root increases security baseline violations and runtime risk.
-
-## Failure Modes & Fallback / Human Escalation
-
-- **Failure Mode**: UI/API access failure after middleware/depends_on changes
-- **Fallback**: roll back to the previous stable Compose contract, then rerun the hardening script
-- **Human Escalation**: apply a policy exception with SRE and Gateway Operator approval
-
-## Verification
-
-```bash
-HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
-bash scripts/hardening/check-all-hardening.sh 06-observability
-bash scripts/validation/check-template-security-baseline.sh
-python3 scripts/validation/check-document-links.py --mode traceability
-```
-
-Service-local `docker compose -f infra/06-observability/docker-compose.yml config` requires the root network and Docker Secret context, or a local validation overlay that declares `infra_net`, `k3d-hyhome`, and the referenced secret files.
-
-Runtime verification where the environment allows:
-
-```bash
-docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d
-docker inspect --format '{{json .State.Health}}' infra-prometheus
-docker inspect --format '{{json .State.Health}}' infra-grafana
-docker inspect --format '{{json .State.Health}}' cadvisor
-```
-
-## Success Criteria & Verification Plan
-
-- **VAL-SPC-OBS-001**: `check-all-hardening.sh 06-observability` has zero failures.
-- **VAL-SPC-OBS-002**: root profile or overlay-backed observability Compose static validation passes.
-- **VAL-SPC-OBS-003**: public router middleware chain contract is satisfied.
-- **VAL-SPC-OBS-004**: Stage 01-05 optimization-hardening documents keep reciprocal links synchronized.
-
-## Agent Role & IO Contract (If Applicable)
-
-- **Agent Role**: N/A
-- **Inputs**: N/A
-- **Outputs**: N/A
-- **Success Definition**: N/A
-
-## Related Documents
-
-- **Plan**: ../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
-- **Tasks**: ../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)
-- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md)
+This specification defines the current metrics, logs, traces, profiles,
+dashboards, and alerting capability under infra/06-observability/.
 
 ## Boundaries and Inputs
 
-The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+- Input architecture: AD-0021 and observability decisions.
+- In scope: Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope,
+  Alertmanager, Pushgateway, their configurations, and Compose integration.
+- Out of scope: application instrumentation code and external managed
+  observability services.
 
 ## Behavior Contract
 
-The behaviors and invariants already specified above remain the package behavior contract.
+- Telemetry components expose explicit health, storage, network, and
+  configuration boundaries.
+- Grafana consumes the tracked data-source and dashboard definitions.
+- Alert routing and retention settings remain versioned and reviewable.
+- Secret values and raw sensitive telemetry are not copied into documentation
+  evidence.
 
 ## Technical Approach
 
-The implementation and component design recorded above remain the technical approach.
+The standard and development Compose variants assemble the same responsibility
+groups with environment-appropriate service sets. Static validators check
+configuration and hardening; runtime verification is performed only in an
+approved environment through Stage 05 procedures.
 
 ## Interfaces and Data
 
-The interfaces, configuration, and data shapes recorded above remain authoritative.
+Prometheus-compatible metrics, Loki logs, Tempo traces, Pyroscope profiles,
+Grafana dashboards, and Alertmanager notifications use their tracked internal
+endpoints and data-source contracts. Persistent retention belongs to the
+declared component volumes and policies.
 
 ## Failure Modes and Guardrails
 
-The safety, validation, and operational constraints above remain the package guardrails.
+Invalid data-source routing, unbounded retention, missing health signals,
+secret-bearing logs, or configuration that only renders outside the declared
+profile blocks acceptance.
 
 ## Acceptance Contract
 
-The verification and success conditions above remain the acceptance contract.
+- Observability Compose variants render under their documented profile.
+- The tier hardening and template security checks pass.
+- Current retention, alerting, and recovery Operations documents agree with
+  tracked configuration.
+- No future scale target is described as already deployed.
 
 ## Traceability
 
-The requirement, architecture, operations, and evidence links above provide traceability.
+- [REQ-0018](../../01.requirements/0018-observability-optimization-hardening.md)
+- [AD-0021](../../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md)
+- [Observability Operations catalog](../../05.operations/catalog/06-observability/README.md)

@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Workspace Documentation Consistency 2026-05 Technical Specification Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0155
-artifact_type: tombstone
-parent_ids: [mig-0003]
+owner: "@buenhyden"
+artifact_id: tomb-SPEC-0091
+parent_ids: [MIG-0003]
 created: 2026-08-29
 updated: 2026-08-29
 ---

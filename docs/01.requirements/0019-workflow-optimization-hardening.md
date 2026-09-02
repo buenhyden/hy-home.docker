@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "07-Workflow Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0019
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 07-Workflow Optimization & Hardening Product Requirements
 
@@ -44,7 +46,7 @@ updated: 2026-08-13
 - **REQ-0019-FR-0003**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 service-local compose에서 n8n/valkey health 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
 - **REQ-0019-FR-0004**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
 - **REQ-0019-FR-0005**: `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-0019-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0019-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-0019-FR-0007**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준과 n8n Git backup/Vault 연계를 정의해야 한다.
 
 ## Non-functional Requirements
@@ -68,7 +70,7 @@ No separately numbered solution-independent external interface requirement was i
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
   - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서 및 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` workflow optimization-hardening 문서 및 README 인덱스
 - **Out of Scope**:
   - 개별 DAG/워크플로 비즈니스 로직 구현
   - 신규 workflow service 컨테이너/compose 도입
@@ -93,9 +95,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../03.specs/0008-workflow/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md)
 - **Operation**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/07-workflow/optimization-hardening.md](../05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md)

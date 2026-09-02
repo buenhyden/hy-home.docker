@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: workflow-supervisor
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: workflow-supervisor
 scope: agentic
 tier: supervisor
-status: active
 work_profile: long-horizon-supervision
 permission_profile: read-only
 skill_ids:

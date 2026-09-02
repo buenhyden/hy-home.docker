@@ -1,12 +1,14 @@
 ---
-profile_id: adr
+title: Vault Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0018
-artifact_type: adr
 parent_ids:
   - AD-0018
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0018: Vault Hardening and HA Expansion Strategy
 
@@ -82,6 +84,4 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0015-security-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../descriptions/0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/0003-security/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
-- **Tasks**: ../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md
 - **Related ADR**: [ADR-0003](0003-vault-as-secrets-manager.md)

@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: LGTM Stack and Grafana Alloy Selection
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0006
-artifact_type: adr
 parent_ids:
   - AD-0006
 created: 2026-03-26

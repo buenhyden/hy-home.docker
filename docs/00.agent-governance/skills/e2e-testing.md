@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: e2e-testing
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: e2e-testing
 scope: qa
-status: active
 owner_agent: qa-engineer
 ---
 

@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: deployment-pipeline-design
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: deployment-pipeline-design
 scope: ops
-status: active
 owner_agent: ci-cd-engineer
 ---
 

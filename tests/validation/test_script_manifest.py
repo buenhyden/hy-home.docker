@@ -26,13 +26,6 @@ OPERATIONS_MANIFEST_PATHS = (
     "scripts/lib/document_governance/operations_catalog.py",
     "scripts/validation/check-operations-catalog.py",
 )
-OPERATIONS_CURRENT_AUTHORITIES = (
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
-    "docs/99.templates/registry.json",
-)
-OPERATIONS_SEMANTIC_WITNESSES = (
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
-)
 MIGRATION_ROOTS = (
     "docs/01.requirements",
     "docs/02.architecture",
@@ -105,14 +98,14 @@ MUTATION_OVERRIDES = {
     "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
     "scripts/validation/generate-security-automation-readiness.sh": "check-write",
     "scripts/validation/report-provider-hook-parity.sh": "check-write",
-    "scripts/validation/rehearse-postgres-logical-upgrade.sh": "runtime",
+    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/validation/run-compose-core-readiness.sh": "runtime",
     "scripts/validation/compose-core-readiness.lib.sh": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
 MANDATORY_DISPOSITIONS = {
-    "scripts/hooks/post-tool-validate.sh": "rewrite",
+    "scripts/hooks/post-tool-validate.sh": "retain",
     "scripts/knowledge/generate-llm-wiki.py": "retain",
 }
 TASK12_RETIRED_SCRIPTS = frozenset(
@@ -462,6 +455,7 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 inputs = {script}
+                fixture_sources: dict[str, Path] = {}
                 if "tech-stack" in script:
                     (root / "infra").mkdir()
                     (root / "infra/tech-stack.versions.json").write_text(json.dumps({"entries": [{"component": "fixture", "images": ["fixture:1"], "compose_files": ["infra/docker-compose.fixture.yml"]}]}))
@@ -472,9 +466,12 @@ class ScriptManifestTests(unittest.TestCase):
                     semantic = json.loads((ROOT / "scripts/validation/agentic-audit-semantic-contract.json").read_text())
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "docs/90.references/audits").rglob("*.md"))
                     inputs.add(semantic["task_evidence"])
+                    fixture_sources[semantic["task_evidence"]] = (
+                        ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
+                    )
                     inputs.update(path for assertion in semantic["assertions"] for path in assertion["required_evidence_paths"])
                 elif "supply-chain" in script:
-                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/validation/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
+                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/lib/supply_chain/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "infra").glob("supply-chain*.json"))
                     inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "tests/fixtures/supply-chain").rglob("*") if path.is_file())
                 elif "hook-parity" in script:
@@ -482,7 +479,8 @@ class ScriptManifestTests(unittest.TestCase):
                     copy_fixture(root)
                 self.assertLess(len(inputs), 180, "fixture must remain a bounded producer input set")
                 for relative in sorted(inputs):
-                    source, target = ROOT / relative, root / relative
+                    source = fixture_sources.get(relative, ROOT / relative)
+                    target = root / relative
                     self.assertTrue(source.is_file(), relative)
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(source, target)
@@ -532,11 +530,6 @@ class ScriptManifestTests(unittest.TestCase):
                 and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
-            if row["path"] in OPERATIONS_MANIFEST_PATHS:
-                expected_fields = expected_fields | {
-                    "current_authorities",
-                    "semantic_witnesses",
-                }
             if row["kind"] == "validator":
                 expected_fields = expected_fields | {
                     "public_suites",
@@ -603,7 +596,10 @@ class ScriptManifestTests(unittest.TestCase):
         row = self.rows_by_path["scripts/lib/document_governance/taxonomy.py"]
         self.assertEqual("retain", row["disposition"])
         self.assertEqual(
-            ["scripts/lib/document_governance/metadata_validator.py"],
+            [
+                "scripts/lib/document_governance/metadata/lifecycle.py",
+                "scripts/lib/document_governance/metadata/profile.py",
+            ],
             row["consumers"],
         )
         self.assertEqual(
@@ -628,7 +624,7 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertFalse(
             _python_imports_target(
                 adapter,
-                "scripts/validation/target_surface_contract.py",
+                "scripts/lib/target_surface/target_surface_contract.py",
             )
         )
 
@@ -645,22 +641,6 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(disposition, self.rows_by_path[path]["disposition"])
 
-        postgres = self.rows_by_path[
-            "scripts/validation/rehearse-postgres-logical-upgrade.sh"
-        ]
-        self.assertEqual("retain", postgres["disposition"])
-        self.assertEqual(
-            "docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
-            postgres["authority"],
-        )
-        self.assertEqual(
-            [postgres["authority"]],
-            postgres["consumers"],
-        )
-        self.assertEqual(
-            ["tests/validation/test_postgres_logical_upgrade_rehearsal.py"],
-            postgres["tests"],
-        )
         for path in (
             "scripts/operations/gen-secrets.sh",
             "scripts/security/seed-grype-db-cache.sh",
@@ -672,15 +652,37 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertTrue(row["tests"])
                     self.assertTrue(is_runbook_authority(row["authority"]))
 
+    def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
+        postgres = self.rows_by_path[
+            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+        ]
+        self.assertEqual("retain", postgres["disposition"])
+        self.assertEqual(
+            "docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
+            postgres["authority"],
+        )
+        self.assertEqual(
+            [postgres["authority"]],
+            postgres["consumers"],
+        )
+        self.assertEqual(
+            ["tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py"],
+            postgres["tests"],
+        )
+
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
             "docs/05.operations/runbooks/03-security/vault.md",
             "docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md",
         }
-        migration_authority = "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 authority = row["authority"]
+                self.assertFalse(
+                    authority.startswith("docs/03.specs/"),
+                    "script authority must be a current policy, architecture, "
+                    "operations, registry, or workflow owner",
+                )
                 authority_text = (ROOT / authority).read_text(encoding="utf-8")
                 basename = PurePosixPath(row["path"]).name
                 if authority in unrelated and basename not in authority_text and row["path"] not in authority_text:
@@ -693,25 +695,15 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                 elif row["mutation"] == "runtime" and not is_runbook_authority(authority):
                     self.assertNotEqual("retain", row["disposition"])
-                    self.assertEqual(migration_authority, authority)
+                    self.assertEqual(row["path"], row["successor"])
 
-    def test_operations_implementation_and_gate_declare_current_and_witness_authority(self) -> None:
+    def test_operations_implementation_and_gate_use_the_registry_authority(self) -> None:
         for path in OPERATIONS_MANIFEST_PATHS:
             with self.subTest(path=path):
                 row = self.rows_by_path[path]
                 self.assertEqual("docs/99.templates/registry.json", row["authority"])
-                self.assertEqual(
-                    list(OPERATIONS_CURRENT_AUTHORITIES),
-                    row["current_authorities"],
-                )
-                self.assertEqual(
-                    list(OPERATIONS_SEMANTIC_WITNESSES),
-                    row["semantic_witnesses"],
-                )
-                self.assertNotIn(
-                    OPERATIONS_SEMANTIC_WITNESSES[0],
-                    row["current_authorities"],
-                )
+                self.assertNotIn("current_authorities", row)
+                self.assertNotIn("semantic_witnesses", row)
 
     def test_runbook_authority_accepts_only_canonical_catalog_leaf_shape(self) -> None:
         self.assertTrue(
@@ -1202,25 +1194,13 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn("authority-invalid", self.codes(self.row(authority="")))
         self.assertIn("authority-untracked", self.codes(self.row(authority="docs/unknown.md")))
 
-    def test_operations_rows_reject_semantic_witness_as_current_authority(self) -> None:
-        tracked = self.tracked | set(OPERATIONS_CURRENT_AUTHORITIES) | set(
-            OPERATIONS_SEMANTIC_WITNESSES
-        )
-        valid = self.row(
-            path=OPERATIONS_MANIFEST_PATHS[0],
-            authority="docs/99.templates/registry.json",
-            current_authorities=list(OPERATIONS_CURRENT_AUTHORITIES),
-            semantic_witnesses=list(OPERATIONS_SEMANTIC_WITNESSES),
-        )
-        self.assertNotIn("operations-authority-invalid", self.codes(valid, tracked))
-        mutated = {
-            **valid,
-            "current_authorities": [
-                OPERATIONS_SEMANTIC_WITNESSES[0],
-                "docs/99.templates/registry.json",
-            ],
-        }
-        self.assertIn("operations-authority-invalid", self.codes(mutated, tracked))
+    def test_manifest_rejects_retired_operations_authority_fields(self) -> None:
+        for field in ("current_authorities", "semantic_witnesses"):
+            with self.subTest(field=field):
+                self.assertIn(
+                    "fields-unknown",
+                    self.codes(self.row(**{field: ["docs/authority.md"]})),
+                )
 
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
         self.assertIn("disposition-invalid", self.codes(self.row(disposition="deprecated")))
@@ -1234,6 +1214,18 @@ class ScriptManifestValidationTests(unittest.TestCase):
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(self) -> None:
         self.assertIn("tests-missing", self.codes(self.row(tests=[])))
         self.assertIn("mutation-invalid", self.codes(self.row(mutation="default-write")))
+
+    def test_manifest_rejects_retired_placeholder_test_roots(self) -> None:
+        for root in ("docs", "qa", "setup"):
+            test_path = f"tests/{root}/test_example.py"
+            with self.subTest(root=root):
+                self.assertIn(
+                    "tests-location-invalid",
+                    self.codes(
+                        self.row(tests=[test_path]),
+                        self.tracked | {test_path},
+                    ),
+                )
 
     def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(self) -> None:
         library = self.row(

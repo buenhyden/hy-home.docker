@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: AI Infrastructure Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0008
-artifact_type: architecture-description
 parent_ids:
   - REQ-0009
 created: 2026-03-26

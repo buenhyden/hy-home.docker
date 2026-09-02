@@ -1,8 +1,11 @@
 ---
-profile_id: adr
+title: <title>
+version: <version>
+type: architecture/decision
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: ADR-####
-artifact_type: adr
 parent_ids: [AD-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: incident-responder
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: incident-responder
 scope: ops
 tier: worker
-status: active
 work_profile: complex-implementation
 permission_profile: workspace-write
 skill_ids:

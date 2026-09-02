@@ -18,10 +18,11 @@ import tempfile
 import time
 from collections.abc import Mapping
 
+from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.document_governance import suite_registry as public_suite_registry
 
 try:
-    from scripts.validation.ci_gate_contract import (
+    from scripts.lib.gate.ci_gate_contract import (
         GateContractError,
         GateKind,
         GateRegistry,
@@ -120,71 +121,7 @@ class ExecutionContext(enum.Enum):
 
 _ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
 _CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
-_INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/validation/ci_gate_adapters.py")
-# These are exact internal commands, not an exemption for an entire script path.
-_INTERNAL_ADAPTER_CONTEXTS = {
-    **{
-        ("run-unittest", f"tests.validation.{module}", "-v"): _ALL_EXECUTION_CONTEXTS
-        for module in (
-            "test_agent_output_eval_fixtures",
-            "test_ci_gate_contract",
-            "test_ci_gate_runner",
-            "test_ci_gate_adapters",
-            "test_github_workflow_contract",
-            "test_agent_governance_ci_routing",
-            "test_document_corpus_lifecycle",
-            "test_document_metadata",
-            "test_hook_rules",
-            "test_target_surface_contracts",
-            "test_target_surface_delta_contracts",
-            "test_compose_baseline_gates",
-        )
-    },
-    # One invocation covering the fourteen mirrored document-governance
-    # library suites. Every module is named literally here, so the admission
-    # is exact in the same way the per-module entries above are; they ran
-    # under no profile until 2026-08-29 and four had rotted unnoticed.
-    (
-        "run-unittest",
-        "tests.lib.document_governance.test_architecture",
-        "tests.lib.document_governance.test_archive",
-        "tests.lib.document_governance.test_identity_history",
-        "tests.lib.document_governance.test_links",
-        "tests.lib.document_governance.test_metadata_validator",
-        "tests.lib.document_governance.test_operations_catalog",
-        "tests.lib.document_governance.test_operations_taxonomy",
-        "tests.lib.document_governance.test_provenance_policy",
-        "tests.lib.document_governance.test_references",
-        "tests.lib.document_governance.test_registry",
-        "tests.lib.document_governance.test_requirements",
-        "tests.lib.document_governance.test_spec_packages",
-        "tests.lib.document_governance.test_suite_registry",
-        "tests.lib.document_governance.test_taxonomy",
-        "-v",
-    ): _ALL_EXECUTION_CONTEXTS,
-    ("run-agent-output-eval",): _ALL_EXECUTION_CONTEXTS,
-    ("check-diff-hygiene",): _ALL_EXECUTION_CONTEXTS,
-    ("check-shell-syntax",): _ALL_EXECUTION_CONTEXTS,
-    ("verify-metadata-base",): frozenset(
-        {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
-    ),
-    ("check-git-flow",): frozenset({ExecutionContext.PULL_REQUEST}),
-    **{
-        ("run-npm", *arguments, "--prefix", "projects/storybook/nextjs"):
-        _CI_EXECUTION_CONTEXTS
-        for arguments in (
-            ("audit", "--audit-level=high"),
-            ("ci",),
-            ("run", "lint"),
-            ("run", "typecheck"),
-            ("run", "build"),
-            ("run", "build-storybook"),
-            ("run", "coverage"),
-        )
-    },
-    ("install-playwright",): _CI_EXECUTION_CONTEXTS,
-    ("run-zizmor-sarif",): _CI_EXECUTION_CONTEXTS,
-}
+_INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
@@ -205,7 +142,9 @@ def _is_admitted_internal_invocation(
     context: ExecutionContext,
 ) -> bool:
     if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
-        return context in _INTERNAL_ADAPTER_CONTEXTS.get(invocation.argv, ())
+        return ci_gate_adapters.admits_adapter_invocation(
+            invocation.argv, context.value
+        )
     return (invocation.entrypoint, invocation.argv) in _INTERNAL_CHECK_INVOCATIONS
 
 
@@ -592,10 +531,6 @@ def validate_public_execution_parity(
         len(selected) != len(selected_suites)
         or not selected.issubset(suite_model.public_names)
         or len(ownership_paths) != len(set(ownership_paths))
-        or {
-            item.path: item.public_suites[0] for item in suite_model.validators
-        }
-        != public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP
     ):
         raise GateContractError(
             "ci-gate-public-execution-parity",

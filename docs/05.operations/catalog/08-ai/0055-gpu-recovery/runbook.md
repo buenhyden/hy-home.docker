@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: AI GPU Recovery Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0055
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0055
 parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11

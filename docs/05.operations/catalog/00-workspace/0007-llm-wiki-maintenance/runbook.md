@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: LLM Wiki Maintenance Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0007
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0007
 parent_ids:
   - SPEC-0096
 created: 2026-07-04

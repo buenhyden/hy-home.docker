@@ -1,8 +1,11 @@
 ---
-profile_id: audit
+title: <title>
+version: <version>
+type: references/audit
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: AUD-####
-artifact_type: audit
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

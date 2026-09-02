@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: security-audit
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: security-audit
 scope: security
-status: active
 owner_agent: security-auditor
 ---
 

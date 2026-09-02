@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Template Catalog
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Template Catalog
@@ -20,14 +22,14 @@ This directory contains copyable sources registered by
 | Specs | `specs/` | Spec, Plan, Task, OpenAPI, GraphQL, Proto |
 | Operations | `operations/` | Guide, Policy, Runbook, Incident, Postmortem |
 | References | `references/` | Research, Audit, Data |
-| Archive | `archive/` | Migration, Tombstone |
+| Archive | `archive/` | Tombstone |
 | Governance | `governance/` | Stage 00 authoring guidance |
 | Common | `common/` | navigation README |
 
 ## Structure
 
-The category directories mirror the final documentation responsibilities.
-Registry-replaced sources are recoverable through Migration 0003 Git evidence.
+The category directories mirror the current documentation responsibilities.
+Replaced sources are recoverable through Git history.
 
 ## How to Work in This Area
 

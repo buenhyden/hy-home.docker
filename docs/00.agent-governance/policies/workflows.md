@@ -1,12 +1,44 @@
 ---
-profile_id: governance-policy
+title: Workflows
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Workflows
 
 This document owns repeatable provider-neutral workflow order. Provider
 adapters may map native controls but may not redefine these states.
+
+## Change Lifecycle
+
+Every repository change follows one lifecycle:
+
+1. **Discover** — `workflow-supervisor` identifies the objective, current
+   owners, protected boundaries, and repository state without mutation.
+2. **Design/plan** — an approved contributor records the bounded approach,
+   acceptance contract, recovery, and smallest meaningful checks in the active
+   Spec Package and Task.
+3. **Approval** — required human approval and read-only `rules-engineer` policy
+   review are resolved before a protected mutation begins.
+4. **Implement** — the assigned contributor changes only approved scope.
+5. **Validate** — `qa-engineer` runs focused checks and any applicable
+   repository Gate; a configured hook is supporting evidence, not approval.
+6. **Independent review** — a read-only reviewer who did not implement the
+   change evaluates the exact diff and verification evidence.
+7. **Evidence** — the Task records commands, results, recovery, skipped checks
+   with rationale, review disposition, and remaining uncertainty.
+8. **Handoff** — `workflow-supervisor` reports the next owner or completion
+   without broadening scope.
+
+An implementation that fails validation or independent review may receive one
+narrower retry, for at most two implementation attempts. A retry may correct
+the approved change but may not infer approval, add scope, change owners, or
+weaken a Gate. Stop and escalate after the bound, on unknown ownership, on an
+unresolved policy conflict, or when required evidence is unavailable.
+
+Evidence is value-free and sanitized. Never record auth files, credentials,
+private keys, raw logs, secret values, shell history, or tokens.
 
 ## SDLC Workflow
 

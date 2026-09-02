@@ -9,7 +9,7 @@ umask 077
 BASE_DIR="$(git rev-parse --show-toplevel)"
 SERVICE_DIR="$BASE_DIR/examples/sample-web-service"
 CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
-GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
+GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/lib/supply_chain/grype_db_seed.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 POLICY="$BASE_DIR/infra/supply-chain.sample-service-policy.json"
 COSIGN_OFFLINE_SIGNING_CONFIG="$BASE_DIR/infra/supply-chain.cosign-offline-signing-config.json"

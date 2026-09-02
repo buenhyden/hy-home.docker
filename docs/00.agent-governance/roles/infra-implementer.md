@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: infra-implementer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: infra-implementer
 scope: infra
 tier: worker
-status: active
 work_profile: complex-implementation
 permission_profile: workspace-write
 skill_ids:

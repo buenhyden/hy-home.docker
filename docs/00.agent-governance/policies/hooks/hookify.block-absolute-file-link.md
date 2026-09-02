@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "<title>"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: block-absolute-file-link
 enabled: true
 event: file

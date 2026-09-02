@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Kafka Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0036
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0036
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11

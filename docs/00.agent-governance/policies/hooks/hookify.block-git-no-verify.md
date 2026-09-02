@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "BLOCKED: git commit --no-verify"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: block-git-no-verify
 enabled: true
 event: bash

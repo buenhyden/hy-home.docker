@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Agentic Engineering Policy
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Agentic Engineering Policy
@@ -40,8 +42,9 @@ delivery and hook events are neither approval nor completion evidence.
 The sequence is discovery, applicability, approved execution, focused
 verification, independent review, and completion evidence. Failed verification
 returns to implementation; rejected design stays in planning; missing authority
-stops at approval. Retry bounds and provider controls come from the provider
-registry, not prompt-local policy.
+stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
+controls come from the provider registry. Neither may be replaced by
+prompt-local policy.
 
 ## Related Documents
 

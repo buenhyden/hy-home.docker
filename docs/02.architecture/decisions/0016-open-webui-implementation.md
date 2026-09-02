@@ -1,12 +1,14 @@
 ---
-profile_id: adr
+title: Open WebUI as Primary AI/RAG Interface
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0016
-artifact_type: adr
 parent_ids:
   - AD-0013
 created: 2026-03-27
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0016: Open WebUI as Primary AI/RAG Interface
 
@@ -72,4 +74,3 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
 - **Architecture Description**: [../descriptions/0013-open-webui-architecture.md](../descriptions/0013-open-webui-architecture.md)
 - **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/0009-ai/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md

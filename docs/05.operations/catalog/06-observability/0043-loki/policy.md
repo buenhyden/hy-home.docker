@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Loki Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0043
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0043
 parent_ids:
   - SPEC-0007
 created: 2026-05-17

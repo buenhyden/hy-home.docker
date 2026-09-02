@@ -1,8 +1,11 @@
 ---
-profile_id: data
+title: <title>
+version: <version>
+type: references/data
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: DATA-####
-artifact_type: data
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

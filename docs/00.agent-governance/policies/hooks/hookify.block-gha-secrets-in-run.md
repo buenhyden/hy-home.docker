@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "BLOCKED: prints a secret to logs"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: block-gha-secrets-in-run
 enabled: true
 event: file

@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: CouchDB Cluster Triage Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0026
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0026
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

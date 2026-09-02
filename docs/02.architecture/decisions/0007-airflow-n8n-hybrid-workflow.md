@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: "Airflow & n8n Hybrid Workflow Strategy"
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0007
-artifact_type: adr
 parent_ids:
   - AD-0007
 created: 2026-03-26

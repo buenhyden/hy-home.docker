@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "<title>"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: warn-hook-parity-edit
 enabled: true
 event: file
@@ -14,36 +17,33 @@ action: warn
 
 **Hook file edit detected; parity contract review required (project rule)**
 
-`docs/00.agent-governance/providers/claude.md` — Hook Parity Contract:
-
-> "Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event."
-
 **When changing hook files, confirm:**
 
-| Check | Claude | Codex |
-| ----- | ------ | ----- |
-| Config file | `.claude/settings.json` | `.codex/hooks.json` |
-| Event coverage | SessionStart, PreToolUse, PostToolUse, SessionEnd, Stop, PreCompact | same |
-| File edit matcher | `Write\|Edit\|MultiEdit\|apply_patch\|ApplyPatch` | same |
-| Shared dispatcher | `.claude/hooks/*.sh` thin wrapper to `scripts/hooks/agent-event-hook.sh` | `scripts/hooks/agent-event-hook.sh` |
-| README guidance | target-stage template guidance plus README folder/service-leaf guidance | same |
+| Contract | Claude | Codex |
+| --- | --- | --- |
+| Registry owner | `providers/registry.yaml` `semantic_events.claude` and `hook_contracts.claude` | `providers/registry.yaml` `semantic_events.codex` and `hook_contracts.codex` |
+| Native consumer | `.claude/settings.json` | `.codex/hooks.json` |
+| Dispatch | `.claude/hooks/*.sh` thin wrappers | `scripts/hooks/agent-event-hook.sh` |
 
 **Parity checklist:**
 
-- [ ] Event added or removed: apply the same change to the other runtime file.
-- [ ] Timeout changed: keep both runtime files aligned.
-- [ ] New event matcher: add the handler in `agent-event-hook.sh`.
-- [ ] README edit guidance: preserve the folder index vs. infra service leaf readiness contract.
-- [ ] `.codex/README.md`: update the Current Hook Contract if behavior changed.
+- [ ] Change the Provider Registry contract and matching native consumer in the
+      same approved unit.
+- [ ] Preserve provider-specific unsupported events instead of claiming false
+      parity.
+- [ ] Bind each command to its registered executable and semantic event.
+- [ ] Keep Claude wrappers thin and route shared behavior through
+      `scripts/hooks/agent-event-hook.sh`.
 
 **After completion, verify:**
 
 ```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 -m json.tool .claude/settings.json >/dev/null && echo "Claude JSON valid"
-python3 -m json.tool .codex/hooks.json >/dev/null && echo "Codex JSON valid"
+bash scripts/validation/report-provider-hook-parity.sh --validate-only
+bash scripts/validation/report-provider-hook-parity.sh --check
+python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
 ```
 
 ## Related Documents
 
 - `docs/00.agent-governance/README.md`
+- `docs/00.agent-governance/providers/registry.yaml`

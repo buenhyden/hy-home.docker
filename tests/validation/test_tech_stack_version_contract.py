@@ -7,7 +7,8 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.validation.ci_gate_contract import load_public_suite_registry
+from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -140,6 +141,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             check=False,
             capture_output=True,
             text=True,
+            pass_fds=gate_root_pass_fds(ROOT),
         )
         self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
 
@@ -160,6 +162,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             check=False,
             capture_output=True,
             text=True,
+            pass_fds=gate_root_pass_fds(ROOT),
         )
 
     @classmethod
@@ -295,7 +298,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             1,
             operations.validators.count(
                 pathlib.PurePosixPath(
-                    "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 )
             ),
         )

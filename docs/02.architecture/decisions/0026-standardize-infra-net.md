@@ -1,8 +1,10 @@
 ---
-profile_id: adr
+title: Standardize infra_net Subnet and Static IP Assignment
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0026
-artifact_type: adr
 parent_ids:
   - AD-0026
 created: 2026-04-01

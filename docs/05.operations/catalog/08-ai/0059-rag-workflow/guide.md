@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: RAG Workflow Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0059
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0059
 parent_ids: []
 created: 2026-03-25
 updated: 2026-08-11

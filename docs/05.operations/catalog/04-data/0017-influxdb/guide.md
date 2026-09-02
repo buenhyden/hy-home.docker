@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: InfluxDB Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0017
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0017
 parent_ids:
   - SPEC-0005
 created: 2026-05-10

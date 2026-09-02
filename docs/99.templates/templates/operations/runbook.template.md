@@ -1,8 +1,11 @@
 ---
-profile_id: runbook
+title: <title>
+version: <version>
+type: operations/runbook
+layer: <layer>
 status: draft
-artifact_id: runbook-####
-artifact_type: runbook
+owner: <owner>
+artifact_id: RUN-####
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

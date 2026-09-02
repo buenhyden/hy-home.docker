@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Workspace Governance and SDLC Simplification Specification Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0157
-artifact_type: tombstone
-parent_ids: [mig-0003]
+owner: "@buenhyden"
+artifact_id: tomb-SPEC-0153
+parent_ids: [MIG-0003]
 created: 2026-08-29
 updated: 2026-08-29
 ---
@@ -20,7 +22,7 @@ none
 
 ## Reason
 
-Stage 03 specification retired by `38fc89c5` on completion of the governance simplification it specifies, together with the plan, README and thirteen Task files in the same directory, which `mig-0003` records as sixteen delete rows under one recovery commit. `mig-0003` is the executed record of that work and this specification is superseded by its own result.
+Stage 03 specification retired by `38fc89c5` on completion of the governance simplification it specifies, together with the plan, README and thirteen Task files in the same directory, which `MIG-0003` records as sixteen delete rows under one recovery commit. `MIG-0003` is the executed record of that work and this specification is superseded by its own result.
 
 ## Recovery Commit
 

@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: "Operations: Terraform Policy Usage Guide"
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0068
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0068
 parent_ids:
   - SPEC-0010
 created: 2026-05-10

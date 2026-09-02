@@ -1,8 +1,11 @@
 ---
-profile_id: migration
+title: <title>
+version: <version>
+type: archive/migration
+layer: <layer>
 status: draft
-artifact_id: mig-####
-artifact_type: migration
+owner: <owner>
+artifact_id: MIG-####
 parent_ids: [SPEC-####, ADR-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
@@ -20,11 +23,11 @@ updated: YYYY-MM-DD
 
 ## Path Mapping
 
-{{minimal_path_mapping}}
+{{path_mapping}}
 
 ## Recovery
 
-{{recovery_commits}}
+{{recovery}}
 
 ## Approval
 
@@ -32,8 +35,4 @@ updated: YYYY-MM-DD
 
 ## Traceability
 
-{{current_authority_links}}
-
-## Execution Evidence
-
-{{execution_evidence}}
+{{traceability_links}}

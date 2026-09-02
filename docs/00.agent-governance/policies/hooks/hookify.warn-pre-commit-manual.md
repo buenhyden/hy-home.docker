@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "WARNING: manual pre-commit execution"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: warn-pre-commit-manual
 enabled: true
 event: bash

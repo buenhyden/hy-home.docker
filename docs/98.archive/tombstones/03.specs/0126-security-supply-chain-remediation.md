@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Security Supply-Chain Remediation Technical Specification (Spec) Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0126
-artifact_type: tombstone
-parent_ids: [mig-0001]
+owner: "@buenhyden"
+artifact_id: tomb-SPEC-0126
+parent_ids: [MIG-0001]
 created: 2026-08-08
 updated: 2026-08-23
 ---

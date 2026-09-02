@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: 02-Auth OAuth2 Proxy Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0015
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0015
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11
