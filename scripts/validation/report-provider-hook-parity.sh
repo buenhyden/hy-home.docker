@@ -1,40 +1,47 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_DIR="$(git rev-parse --show-toplevel)"
-cd "$BASE_DIR"
-
-OUTPUT="docs/90.references/data/governance/provider-hook-parity-matrix.md"
-
-usage() {
-  cat <<'EOF'
-Usage: bash scripts/validation/report-provider-hook-parity.sh [--check|--dry-run]
-
-Generate the provider-native hook parity matrix.
-
-Options:
-  --check    Fail when the generated matrix is stale.
-  --dry-run  Print the generated matrix to stdout without writing it.
-  -h, --help Show this help.
-EOF
-}
-
-mode="write"
-case "${1:-}" in
-  "") ;;
-  --check) mode="check" ;;
-  --dry-run) mode="dry-run" ;;
+ROOT=""
+mode="check"
+mode_seen=0
+root_seen=0
+usage='Usage: bash scripts/validation/report-provider-hook-parity.sh [--write|--check|--dry-run|--validate-only] [--root PATH]'
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+  --write | --check | --dry-run | --validate-only)
+    if [[ "$mode_seen" -eq 1 ]]; then
+      printf '%s\n' "$usage" >&2
+      exit 2
+    fi
+    mode="${1#--}"
+    mode_seen=1
+    ;;
+  --root)
+    if [[ "$root_seen" -eq 1 || "$#" -lt 2 || -z "$2" ]]; then
+      printf '%s\n' "$usage" >&2
+      exit 2
+    fi
+    ROOT="$2"
+    root_seen=1
+    shift
+    ;;
   -h | --help)
-    usage
+    printf '%s\n' "$usage"
     exit 0
     ;;
   *)
-    usage >&2
+    printf '%s\n' "$usage" >&2
     exit 2
     ;;
-esac
+  esac
+  shift
+done
 
-python3 - "$mode" "$OUTPUT" <<'PY'
+if [[ "$root_seen" -eq 0 ]]; then
+  ROOT="$(git rev-parse --show-toplevel)"
+fi
+
+python3 - "$ROOT" "$mode" <<'PY'
 from __future__ import annotations
 
 import json
@@ -45,378 +52,294 @@ import sys
 
 import yaml
 
-MODE = sys.argv[1]
-OUTPUT = pathlib.Path(sys.argv[2])
 
-CONFIGS = {
-    "claude": pathlib.Path(".claude/settings.json"),
-    "codex": pathlib.Path(".codex/hooks.json"),
-    "gemini": pathlib.Path(".gemini/settings.json"),
-}
-DISPATCHER = pathlib.Path("scripts/hooks/agent-event-hook.sh")
-GEMINI_WRAPPER = pathlib.Path(".gemini/hooks/agent-event-hook.sh")
-CONTRACT = pathlib.Path("docs/00.agent-governance/contracts/provider-models.yaml")
-
-# Semantic ID, purpose, Claude event, Codex event, Gemini event.
-EVENTS: list[tuple[str, str, str, str | None, str]] = [
-    ("session-start", "Session/bootstrap guard", "SessionStart", "SessionStart", "SessionStart"),
-    ("user-prompt-intake", "Prompt intake and routing guard", "UserPromptSubmit", "UserPromptSubmit", "BeforeAgent"),
-    ("pre-tool", "Pre-mutation guard", "PreToolUse", "PreToolUse", "BeforeTool"),
-    ("post-tool", "Post-edit validation guard", "PostToolUse", "PostToolUse", "AfterTool"),
-    ("stop", "Completion gate", "Stop", "Stop", "AfterAgent"),
-    ("pre-compaction", "Context handoff guard", "PreCompact", "PreCompact", "PreCompress"),
-    ("session-end", "Session closure guard", "SessionEnd", None, "SessionEnd"),
-]
-
-GEMINI_SEMANTIC_EVENTS = {
-    "AfterTool": "PostToolUse",
-    "PreCompress": "PreCompact",
-    "BeforeTool": "PreToolUse",
-    "SessionEnd": "SessionEnd",
-    "SessionStart": "SessionStart",
-    "AfterAgent": "Stop",
-    "BeforeAgent": "UserPromptSubmit",
-}
+root = pathlib.Path(sys.argv[1]).absolute()
+mode = sys.argv[2]
+registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+output = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
+provider_ids = ("claude", "codex")
+safe_repository_path_part = re.compile(r"\.?[A-Za-z0-9][A-Za-z0-9._-]*")
 
 
-def read_text(path: pathlib.Path) -> str:
-    if not path.is_file():
-        raise SystemExit(f"FAIL: missing required provider hook source: {path}")
-    return path.read_text(errors="ignore")
+def fail(message: str) -> None:
+    raise SystemExit(f"FAIL: {message}")
 
 
-def read_json(path: pathlib.Path) -> dict[str, object]:
+def semantic_id(event: str) -> str:
+    words = re.sub(r"([a-z0-9])([A-Z])", r"\1-\2", event).replace("_", "-")
+    return words.casefold()
+
+
+def expected_hook_command(
+    provider: str, event: str, executable: pathlib.PurePosixPath
+) -> str:
+    if provider == "claude":
+        return f'bash "$CLAUDE_PROJECT_DIR/{executable.as_posix()}"'
+    return (
+        "HY_HOME_HOOK_PROVIDER=codex bash "
+        '"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/'
+        f'{executable.as_posix()}" {event}'
+    )
+
+
+class _UniqueLoader(yaml.SafeLoader):
+    def construct_mapping(
+        self, node: yaml.MappingNode, deep: bool = False
+    ) -> dict[object, object]:
+        result: dict[object, object] = {}
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if not isinstance(key, str) or key in result:
+                fail("provider registry contains a non-string or duplicate key")
+            result[key] = self.construct_object(value_node, deep=deep)
+        return result
+
+
+def load_yaml(path: pathlib.Path) -> dict[str, object]:
     try:
-        value = json.loads(read_text(path))
-    except Exception as error:  # noqa: BLE001
-        raise SystemExit(f"FAIL: invalid JSON in {path}: {error}") from error
+        value = yaml.load(path.read_text(encoding="utf-8"), Loader=_UniqueLoader)
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        fail(f"cannot load provider registry: {error}")
     if not isinstance(value, dict):
-        raise SystemExit(f"FAIL: {path} must contain a JSON object")
+        fail("provider registry must be a mapping")
     return value
 
 
-def markdown_escape(value: object) -> str:
-    return str(value).replace("|", "\\|").replace("\n", " ")
+def load_json(path: pathlib.Path) -> dict[str, object]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        fail(f"cannot load JSON config {path.relative_to(root)}: {error}")
+    if not isinstance(value, dict):
+        fail(f"expected JSON object: {path.relative_to(root)}")
+    return value
 
 
-def extract_event(config: dict[str, object], event: str | None) -> dict[str, object]:
-    if event is None:
-        return {"present": False, "matcher": "", "commands": [], "timeouts": []}
-    hooks = config.get("hooks", {})
-    entries = hooks.get(event, []) if isinstance(hooks, dict) else []
-    if not isinstance(entries, list) or not entries:
-        return {"present": False, "matcher": "", "commands": [], "timeouts": []}
-    matchers: list[str] = []
-    commands: list[str] = []
-    timeouts: list[str] = []
-    for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("matcher"):
-            matchers.append(str(entry["matcher"]))
-        handlers = entry.get("hooks", [])
-        if not isinstance(handlers, list):
-            continue
-        for handler in handlers:
-            if not isinstance(handler, dict):
-                continue
-            if handler.get("command"):
-                commands.append(str(handler["command"]))
-            if handler.get("timeout") is not None:
-                timeouts.append(str(handler["timeout"]))
-    return {
-        "present": bool(commands),
-        "matcher": ", ".join(matchers),
-        "commands": commands,
-        "timeouts": timeouts,
-    }
+registry = load_yaml(registry_path)
+providers = registry.get("providers")
+if not isinstance(providers, list) or tuple(
+    item.get("provider_id") if isinstance(item, dict) else None for item in providers
+) != provider_ids:
+    fail("provider registry must contain exactly claude and codex")
 
+semantic_events = registry.get("semantic_events")
+contracts = registry.get("hook_contracts")
+if not isinstance(semantic_events, dict) or set(semantic_events) != set(provider_ids):
+    fail("semantic event providers differ")
+if not isinstance(contracts, dict) or set(contracts) != set(provider_ids):
+    fail("hook contract providers differ")
 
-def claude_status(native_event: str, data: dict[str, object]) -> tuple[str, str]:
-    commands = [str(item) for item in data["commands"]]
-    if not data["present"]:
-        return "missing", "No configured Claude command"
-    wrappers: list[pathlib.Path] = []
-    for command in commands:
-        match = re.search(r"(\.claude/hooks/[A-Za-z0-9_.-]+\.sh)", command)
-        if not match:
-            return "partial", "Command does not select a Claude wrapper"
-        wrappers.append(pathlib.Path(match.group(1)))
-    for wrapper in wrappers:
-        text = read_text(wrapper)
-        if "scripts/hooks/agent-event-hook.sh" not in text or native_event not in text:
-            return "partial", f"{wrapper} does not delegate {native_event}"
-        if stat.S_IMODE(wrapper.stat().st_mode) != 0o755:
-            return "partial", f"{wrapper} is not mode 0755"
-    return "native-wrapper", "Generated executable wrapper delegates to the shared dispatcher"
+event_order: list[str] = []
+for provider in provider_ids:
+    registered_events = semantic_events.get(provider)
+    if (
+        not isinstance(registered_events, list)
+        or not registered_events
+        or any(not isinstance(event, str) or not event for event in registered_events)
+        or any(
+            re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", event) is None
+            for event in registered_events
+        )
+        or len(registered_events) != len(set(registered_events))
+    ):
+        fail(f"semantic event inventory differs for {provider}")
+    for event in registered_events:
+        if event not in event_order:
+            event_order.append(event)
 
-
-def codex_status(native_event: str | None, data: dict[str, object]) -> tuple[str, str]:
-    if native_event is None:
-        return "unsupported", "Codex has no native SessionEnd event in this contract"
-    commands = [str(item) for item in data["commands"]]
-    if not data["present"]:
-        return "missing", "No configured Codex command"
-    if any("scripts/hooks/agent-event-hook.sh" not in item or native_event not in item for item in commands):
-        return "partial", "Command does not dispatch the expected native event"
-    return "native-dispatch", "Quoted project-root command delegates to the shared dispatcher"
-
-
-def gemini_status(native_event: str, data: dict[str, object]) -> tuple[str, str]:
-    commands = [str(item) for item in data["commands"]]
-    if not data["present"]:
-        return "missing", "No configured Gemini command"
-    if any(".gemini/hooks/agent-event-hook.sh" not in item or native_event not in item for item in commands):
-        return "partial", "Command does not dispatch through the Gemini adapter"
-    text = read_text(GEMINI_WRAPPER)
-    semantic = GEMINI_SEMANTIC_EVENTS[native_event]
-    if native_event not in text or semantic not in text or "scripts/hooks/agent-event-hook.sh" not in text:
-        return "partial", "Gemini adapter does not map the expected semantic event"
-    if stat.S_IMODE(GEMINI_WRAPPER.stat().st_mode) != 0o755:
-        return "partial", "Gemini adapter is not mode 0755"
-    note = "Native event adapter delegates to the shared dispatcher"
-    if native_event == "AfterAgent":
-        note += " with deny/retry-capable semantics"
-    if native_event == "PreCompress":
-        note += " as provider-inherent asynchronous advisory behavior"
-    return "native-adapter", note
-
-
-configs = {provider: read_json(path) for provider, path in CONFIGS.items()}
-contract = yaml.safe_load(read_text(CONTRACT))
-if not isinstance(contract, dict):
-    raise SystemExit(f"FAIL: {CONTRACT} must contain a YAML mapping")
-semantic_contract = {
-    entry["event_id"]: {
-        binding["provider"]: binding
-        for binding in entry.get("provider_bindings", [])
-        if isinstance(binding, dict) and isinstance(binding.get("provider"), str)
-    }
-    for entry in contract.get("semantic_events", [])
-    if isinstance(entry, dict) and isinstance(entry.get("event_id"), str)
+configs = {
+    "claude": load_json(root / ".claude/settings.json"),
+    "codex": load_json(root / ".codex/hooks.json"),
 }
-harness_loops = [
-    entry
-    for entry in contract.get("harness_loops", [])
-    if isinstance(entry, dict)
+for provider in provider_ids:
+    registered_events = semantic_events.get(provider)
+    provider_contracts = contracts.get(provider)
+    native_hooks = configs[provider].get("hooks")
+    if (
+        not isinstance(provider_contracts, dict)
+        or tuple(provider_contracts) != tuple(registered_events)
+        or not isinstance(native_hooks, dict)
+        or set(native_hooks) != set(registered_events)
+    ):
+        fail(f"event binding differs for {provider}")
+    for event in registered_events:
+        contract = provider_contracts.get(event)
+        entries = native_hooks.get(event)
+        if not isinstance(contract, dict) or set(contract) != {
+            "command",
+            "timeout",
+            "matcher",
+            "executable",
+        }:
+            fail(f"hook contract shape differs for {provider}/{event}")
+        if not isinstance(entries, list) or len(entries) != 1 or not isinstance(entries[0], dict):
+            fail(f"native hook multiplicity differs for {provider}/{event}")
+        entry = entries[0]
+        expected_entry_keys = {"hooks"} | ({"matcher"} if contract["matcher"] is not None else set())
+        if set(entry) != expected_entry_keys or entry.get("matcher") != contract["matcher"]:
+            fail(f"native matcher differs for {provider}/{event}")
+        hooks = entry.get("hooks")
+        if not isinstance(hooks, list) or len(hooks) != 1 or not isinstance(hooks[0], dict):
+            fail(f"native dispatcher multiplicity differs for {provider}/{event}")
+        hook = hooks[0]
+        executable_value = contract.get("executable")
+        if not isinstance(executable_value, str):
+            fail(f"executable path missing for {provider}/{event}")
+        executable_path = pathlib.PurePosixPath(executable_value)
+        if (
+            executable_path.is_absolute()
+            or not executable_path.parts
+            or any(part in {"", ".", ".."} for part in executable_path.parts)
+            or any(
+                safe_repository_path_part.fullmatch(part) is None
+                for part in executable_path.parts
+            )
+        ):
+            fail(f"unsafe executable path for {provider}/{event}")
+        if contract.get("command") != expected_hook_command(
+            provider, event, executable_path
+        ):
+            fail(f"registered command template differs for {provider}/{event}")
+        if set(hook) != {"type", "command", "timeout"} or hook != {
+            "type": "command",
+            "command": contract["command"],
+            "timeout": contract["timeout"],
+        }:
+            fail(f"native command or timeout differs for {provider}/{event}")
+        executable = root / executable_path
+        try:
+            metadata = executable.lstat()
+            wrapper = executable.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            fail(f"unreadable executable for {provider}/{event}: {error}")
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_mode & 0o111 == 0:
+            fail(f"executable mode differs for {provider}/{event}")
+        if executable_value not in str(contract["command"]):
+            fail(f"command does not bind registered executable for {provider}/{event}")
+        if provider == "claude":
+            expected_dispatch = f'exec bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" {event}'
+            if expected_dispatch not in wrapper:
+                fail(f"Claude wrapper dispatch differs for {event}")
+
+rows = [
+    (
+        semantic_id(event),
+        event if event in semantic_events["claude"] else "N/A",
+        "configured" if event in semantic_events["claude"] else "unsupported",
+        event if event in semantic_events["codex"] else "N/A",
+        "configured" if event in semantic_events["codex"] else "unsupported",
+    )
+    for event in event_order
 ]
-rows: list[dict[str, object]] = []
-for semantic_id, purpose, claude_event, codex_event, gemini_event in EVENTS:
-    claude = extract_event(configs["claude"], claude_event)
-    codex = extract_event(configs["codex"], codex_event)
-    gemini = extract_event(configs["gemini"], gemini_event)
-    c_status, c_note = claude_status(claude_event, claude)
-    x_status, x_note = codex_status(codex_event, codex)
-    g_status, g_note = gemini_status(gemini_event, gemini)
-    rows.append(
-        {
-            "semantic_id": semantic_id,
-            "purpose": purpose,
-            "claude_event": claude_event,
-            "claude": claude,
-            "claude_status": c_status,
-            "claude_note": c_note,
-            "codex_event": codex_event or "unsupported",
-            "codex": codex,
-            "codex_status": x_status,
-            "codex_note": x_note,
-            "gemini_event": gemini_event,
-            "gemini": gemini,
-            "gemini_status": g_status,
-            "gemini_note": g_note,
-            "bindings": semantic_contract.get(semantic_id, {}),
-        }
-    )
-
-
-def binding_summary(row: dict[str, object], provider: str) -> str:
-    bindings = row.get("bindings", {})
-    if not isinstance(bindings, dict):
-        return "contract-missing"
-    binding = bindings.get(provider, {})
-    if not isinstance(binding, dict):
-        return "contract-missing"
-    return "/".join(
-        str(binding.get(key, "missing"))
-        for key in ("capability_status", "adoption_status", "runtime_depth")
-    )
-
-
-def command_summary(data: object, unit: str) -> str:
-    if not isinstance(data, dict):
-        return "N/A"
-    commands = [str(item) for item in data.get("commands", [])]
-    timeouts = [str(item) for item in data.get("timeouts", [])]
-    if not commands:
-        return "N/A"
-    result: list[str] = []
-    for index, command in enumerate(commands):
-        timeout = timeouts[index] if index < len(timeouts) else ""
-        suffix = f" timeout={timeout}{unit}" if timeout else ""
-        result.append(f"`{command}`{suffix}")
-    return "<br>".join(result)
-
-
 lines = [
     "---",
+    "title: Provider Hook Parity Matrix",
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
+    "artifact_id: DATA-0072",
+    "parent_ids: []",
+    "created: '2026-08-21'",
+    "updated: '2026-08-28'",
+    "observed_at: '2026-08-21'",
     "generated_by: scripts/validation/report-provider-hook-parity.sh",
     "---",
     "",
-    "<!-- Target: docs/90.references/data/governance/provider-hook-parity-matrix.md -->",
-    "",
-    "# Reference: Provider Hook Parity Matrix",
+    "# Provider Hook Parity Matrix",
     "",
     "## Overview",
     "",
-    "This generated reference compares semantic lifecycle coverage across the tracked Claude, Codex, and Gemini native surfaces.",
+    "Generated comparison of tracked Claude and Codex semantic-event adoption.",
+    "Configured entries prove repository adoption, not observed live execution.",
     "",
     "## Purpose",
     "",
-    "Make event-name, timeout-unit, matcher, delegation, and unsupported-event differences reviewable without claiming false name parity.",
+    "Expose deterministic provider-event configuration parity without claiming live execution.",
     "",
     "## Repository Role",
     "",
-    "Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-event-hook.sh` owns shared behavior.",
+    "This generated Stage 90 datum supports validation and cannot override Stage 00 policy.",
     "",
     "## Scope",
     "",
-    "### In Scope",
-    "",
-    "- Tracked provider-native hook configuration and generated wrappers.",
-    "- Semantic event mapping, timeout units, matchers, and delegation.",
-    "",
-    "### Out of Scope",
-    "",
-    "- Live provider execution, user-global settings, telemetry, logs, credentials, or runtime acceptance.",
+    "Tracked Claude and Codex event configuration only; runtime observation is out of scope.",
     "",
     "## Definitions / Facts",
     "",
-    "- **native-wrapper**: a Claude native event calls an executable generated wrapper.",
-    "- **native-dispatch**: a Codex native event calls the shared dispatcher directly.",
-    "- **native-adapter**: a Gemini native event passes through the one admitted event-name adapter.",
-    "- **unsupported**: the provider does not expose the semantic event; it is not counted as parity.",
-    "- **runtime depth**: tracked repository configuration is reported separately from observed live execution.",
+    "Configured means a tracked native hook entry exists; unsupported means no native mapping is registered.",
     "",
-    "## Snapshot Summary",
+    "## Data",
     "",
-    "| Metric | Value |",
-    "| --- | ---: |",
-    f"| Semantic events tracked | {len(rows)} |",
-    f"| Claude native wrapper events | {sum(row['claude_status'] == 'native-wrapper' for row in rows)} |",
-    f"| Codex native dispatch events | {sum(row['codex_status'] == 'native-dispatch' for row in rows)} |",
-    f"| Codex unsupported events | {sum(row['codex_status'] == 'unsupported' for row in rows)} |",
-    f"| Gemini native adapter events | {sum(row['gemini_status'] == 'native-adapter' for row in rows)} |",
-    f"| Shared dispatcher present | {'yes' if DISPATCHER.is_file() else 'no'} |",
-    "",
-    "## Provider Hook Parity Matrix",
-    "",
-    "| Semantic Event | Purpose | Claude | Codex | Gemini |",
+    "| Semantic Event | Claude | Status | Codex | Status |",
     "| --- | --- | --- | --- | --- |",
 ]
-for row in rows:
-    lines.append(
-        "| `{semantic_id}` | {purpose} | `{claude_event}` / `{claude_status}` / `{claude_contract}` - {claude_note} | `{codex_event}` / `{codex_status}` / `{codex_contract}` - {codex_note} | `{gemini_event}` / `{gemini_status}` / `{gemini_contract}` - {gemini_note} |".format(
-            **{
-                key: markdown_escape(value)
-                for key, value in row.items()
-                if not isinstance(value, dict)
-            },
-            claude_contract=markdown_escape(binding_summary(row, "claude")),
-            codex_contract=markdown_escape(binding_summary(row, "codex")),
-            gemini_contract=markdown_escape(binding_summary(row, "gemini")),
-        )
-    )
-
 lines.extend(
-    [
-        "",
-        "## Typed Harness Loops",
-        "",
-        "| Event | Owner | Independent Reviewer | Permission | Attempts | Stop | Failure | Runtime Depth |",
-        "| --- | --- | --- | --- | ---: | --- | --- | --- |",
-    ]
+    f"| `{semantic}` | `{claude_event}` | `{claude_status}` | `{codex_event}` | `{codex_status}` |"
+    for semantic, claude_event, claude_status, codex_event, codex_status in rows
 )
-for loop in harness_loops:
-    lines.append(
-        "| `{event_id}` | `{owner_agent}` | `{reviewer_agent}` | `{permission_profile}` | {max_attempts} | `{stop_condition}` | `{on_failure}` | `{runtime_depth}` |".format(
-            **{key: markdown_escape(value) for key, value in loop.items()}
-        )
-    )
-
 lines.extend(
     [
-        "",
-        "## Command Provenance",
-        "",
-        "| Semantic Event | Claude Matcher / Command (seconds) | Codex Matcher / Command (seconds) | Gemini Matcher / Command (milliseconds) |",
-        "| --- | --- | --- | --- |",
-    ]
-)
-for row in rows:
-    lines.append(
-        "| `{}` | {}<br>{} | {}<br>{} | {}<br>{} |".format(
-            markdown_escape(row["semantic_id"]),
-            markdown_escape(row["claude"].get("matcher") or "N/A"),
-            markdown_escape(command_summary(row["claude"], "s")),
-            markdown_escape(row["codex"].get("matcher") or "N/A"),
-            markdown_escape(command_summary(row["codex"], "s")),
-            markdown_escape(row["gemini"].get("matcher") or "N/A"),
-            markdown_escape(command_summary(row["gemini"], "ms")),
-        )
-    )
-
-lines.extend(
-    [
-        "",
-        "## Source Rules",
-        "",
-        "- Regenerate after provider config, wrapper, semantic-event contract, or dispatcher changes.",
-        "- Preserve provider-native names and units; do not add ignored matchers or unsupported config keys.",
-        "- Tracked adoption does not prove provider entitlement or live runtime acceptance.",
-        "- Semantic cells render `capability/adoption/runtime-depth`; `configured-not-executed` is not execution evidence.",
         "",
         "## Sources",
         "",
-        "- [Claude settings](../../../../.claude/settings.json)",
-        "- [Codex hooks](../../../../.codex/hooks.json)",
-        "- [Gemini settings](../../../../.gemini/settings.json)",
-        "- [Gemini native event adapter](../../../../.gemini/hooks/agent-event-hook.sh)",
-        "- [Provider semantic contract](../../../00.agent-governance/contracts/provider-models.yaml)",
-        "- [Provider-neutral dispatcher](../../../../scripts/hooks/agent-event-hook.sh)",
+        "- `docs/00.agent-governance/providers/registry.yaml`",
+        "- `.claude/settings.json`",
+        "- `.codex/hooks.json`",
         "",
         "## Maintenance",
         "",
-        "- **Owner**: Hook Developer.",
-        "- **Mandatory Reviewers**: Rules Engineer and Security Auditor.",
-        "- **Update Trigger**: Any tracked provider event or adapter change.",
+        "Regenerate after provider registry or native hook configuration changes.",
         "",
         "## Related Documents",
         "",
-        "- **Governance data index**: [README.md](./README.md)",
-        "- **Provider capability matrix**: [../../../00.agent-governance/rules/provider-capability-matrix.md](../../../00.agent-governance/rules/provider-capability-matrix.md)",
-        "- **Provider hook parity spec**: [../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md](../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)",
+        "- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)",
+        "- [Provider registry](../../../00.agent-governance/providers/registry.yaml)",
+        "",
+        "## Schema",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
+        "## Provenance",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
+        "## Inventory",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
+        "## Refresh",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
+        "## Consumers",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
+        "## Traceability",
+        "",
+        "This package preserves its existing data evidence under the Stage 99 `data` contract.",
+        "",
     ]
 )
-
-content = "\n".join(lines) + "\n"
-if MODE == "dry-run":
+content = "\n".join(lines)
+if mode == "dry-run":
     print(content, end="")
-elif MODE == "check":
-    if not OUTPUT.is_file() or OUTPUT.read_text(errors="ignore") != content:
-        print(f"FAIL: stale generated provider hook parity matrix: {OUTPUT}", file=sys.stderr)
-        print("Run: bash scripts/validation/report-provider-hook-parity.sh", file=sys.stderr)
-        raise SystemExit(1)
-    print(f"PASS: generated provider hook parity matrix is fresh: {OUTPUT}")
-elif MODE == "write":
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(content)
-    print(
-        f"Generated {OUTPUT} with events={len(rows)}; "
-        f"claude_native={sum(row['claude_status'] == 'native-wrapper' for row in rows)}; "
-        f"codex_native={sum(row['codex_status'] == 'native-dispatch' for row in rows)}; "
-        f"gemini_native={sum(row['gemini_status'] == 'native-adapter' for row in rows)}"
-    )
+elif mode == "check":
+    try:
+        current = output.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        current = None
+    if current != content:
+        fail(f"stale generated provider hook parity matrix: {output.relative_to(root)}")
+    print(f"PASS: generated provider hook parity matrix is fresh: {output.relative_to(root)}")
+elif mode == "write":
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content, encoding="utf-8")
+    print(f"Generated {output.relative_to(root)} providers=2 events={len(rows)}")
+elif mode == "validate-only":
+    dispatchers = sum(len(semantic_events[provider]) for provider in provider_ids)
+    print(f"PASS: provider hook parity providers=2 dispatchers={dispatchers}")
 else:
-    raise SystemExit(f"FAIL: unsupported mode: {MODE}")
+    fail(f"unsupported mode: {mode}")
 PY

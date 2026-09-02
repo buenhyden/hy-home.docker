@@ -1,0 +1,46 @@
+---
+title: adr-writing
+type: governance/skill
+layer: agentic
+status: active
+owner: "@buenhyden"
+function_id: adr-writing
+scope: architecture
+owner_agent: doc-writer
+---
+
+# adr-writing
+
+## Preconditions
+
+Use only when a material architecture choice has approved context, explicit drivers, and at least one viable alternative.
+
+## Inputs
+
+- Approved architecture context and decision drivers.
+- Alternatives, quality attributes, constraints, and affected parent artifacts.
+
+## Procedure
+
+1. Frame one decision, its status, scope, and traceable drivers without mixing implementation evidence into the record.
+2. Compare credible alternatives against the named quality attributes and document consequences, risks, and reversibility.
+3. Link the selected outcome to its parent ARD/PRD and the downstream Spec or superseded ADR.
+
+## Outputs
+
+- One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
+
+## Gates
+
+- Architecture traceability resolves upstream and downstream links.
+- Decision status and supersession semantics match the metadata contract.
+
+## Failure Handling
+
+If the choice, authority, or alternatives are not decision-ready, return a decision-gap report instead of fabricating an accepted ADR.
+
+## Related Documents
+
+- [Documentation protocol](../policies/documentation-protocol.md)
+- [Documentation scope](../policies/documentation-protocol.md)
+- [Agent catalog](../README.md)

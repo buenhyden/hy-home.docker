@@ -1,9 +1,15 @@
 ---
+title: Laboratory Services Selection and Configuration
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0011
+parent_ids:
+  - AD-0011
+created: 2026-03-26
+updated: 2026-08-10
 ---
-
-<!-- Target: docs/02.architecture/decisions/0011-laboratory-services.md -->
-
 # ADR-0011: Laboratory Services Selection and Configuration
 
 ## Overview
@@ -38,12 +44,20 @@ status: active
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
-## Alternatives
+## Options Considered
 
 Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/012-laboratory.md](../../01.requirements/012-laboratory.md)
-- **ARD**: [../requirements/0011-laboratory-architecture.md](../requirements/0011-laboratory-architecture.md)
-- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/012-laboratory/spec.md)
+- **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
+- **Architecture Description**: [../descriptions/0011-laboratory-architecture.md](../descriptions/0011-laboratory-architecture.md)
+- **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -15,6 +16,9 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
 CONTRACT = pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json")
+TASK_EVIDENCE_FIXTURE = (
+    ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
+)
 sys.path.insert(0, str(SCRIPT.parent))
 
 spec = importlib.util.spec_from_file_location(
@@ -30,76 +34,54 @@ spec.loader.exec_module(module)
 def _assert_task5_integration_contract(
     case: unittest.TestCase,
     workflow: str,
-    repo_contracts: str,
+    workflow_contract: str,
+    manifest: str,
     generator: str,
     matrix: str,
 ) -> None:
-    command = "python3 scripts/validation/check-agentic-audit-semantic-freshness.py"
-    semantic_step = {
-        "name": "Check canonical audit semantic freshness",
-        "run": command,
-    }
+    changed_command = (
+        "python3 scripts/validation/run-ci-gate.py --profile changed"
+    )
+    full_command = "python3 scripts/validation/run-ci-gate.py --profile full"
+    semantic_command = (
+        "python3 scripts/validation/check-agentic-audit-semantic-freshness.py"
+    )
     workflow_data = yaml.safe_load(workflow)
     jobs = workflow_data["jobs"]
-    semantic_name_matches: list[tuple[str, dict[str, object]]] = []
-    semantic_command_matches: list[tuple[str, dict[str, object]]] = []
-    for job_name, job in jobs.items():
-        for step in job.get("steps", []):
-            if not isinstance(step, dict):
-                continue
-            if step.get("name") == semantic_step["name"]:
-                semantic_name_matches.append((job_name, step))
-            if step.get("run") == command:
-                semantic_command_matches.append((job_name, step))
-    expected_ci_match = [("repo-contracts", semantic_step)]
-    case.assertEqual(expected_ci_match, semantic_name_matches)
-    case.assertEqual(expected_ci_match, semantic_command_matches)
-
-    repo_steps = jobs["repo-contracts"]["steps"]
-    step_names = [
-        step.get("name") if isinstance(step, dict) else None for step in repo_steps
+    case.assertEqual(
+        ("validation-changed", "validation-full"),
+        tuple(jobs),
+    )
+    commands = [
+        step.get("run")
+        for job in jobs.values()
+        for step in job.get("steps", ())
+        if isinstance(step, dict) and isinstance(step.get("run"), str)
     ]
-    metadata_name = "Check changed and new document metadata"
-    repository_contracts_name = "Check repository contracts"
-    case.assertEqual(1, step_names.count(metadata_name))
-    case.assertEqual(1, step_names.count(semantic_step["name"]))
-    case.assertEqual(1, step_names.count(repository_contracts_name))
-    case.assertLess(
-        step_names.index(metadata_name), step_names.index(semantic_step["name"])
-    )
-    case.assertLess(
-        step_names.index(semantic_step["name"]),
-        step_names.index(repository_contracts_name),
-    )
+    case.assertEqual(1, workflow.count(changed_command))
+    case.assertEqual(1, workflow.count(full_command))
+    case.assertEqual(0, workflow.count(semantic_command))
+    case.assertIn(changed_command, commands)
+    case.assertIn(full_command, commands)
 
-    section_heading = 'section "Agentic audit semantic freshness"'
-    case.assertEqual(1, repo_contracts.count(section_heading))
-    section_start = repo_contracts.index(section_heading)
-    section_end = repo_contracts.index('\nsection "', section_start + 1)
-    section = repo_contracts[section_start:section_end]
-    marker = "audit_semantic_freshness: PASS assertions=11 failures=0"
-    mktemp_line = (
-        'semantic_audit_output="$(mktemp "${TMPDIR:-/tmp}/'
-        'check-repo-contracts-agentic-audit-semantic.XXXXXX")"'
-    )
-    required_fragments = [
-        mktemp_line,
-        'rm -f -- "$semantic_audit_output"',
-        f'if ! {command} >"$semantic_audit_output" 2>&1; then',
-        'fail "agentic audit semantic freshness failed"',
-        f"elif ! grep -Fxq '{marker}' \"$semantic_audit_output\"; then",
-        'fail "agentic audit semantic validator did not print the exact pass marker"',
-        "trap cleanup_semantic_audit_output EXIT",
-        "trap 'handle_semantic_audit_signal 129' HUP",
-        "trap 'handle_semantic_audit_signal 130' INT",
-        "trap 'handle_semantic_audit_signal 143' TERM",
-        "trap - EXIT HUP INT TERM",
+    contract_data = json.loads(workflow_contract)
+    public_gate = contract_data["public_gate"]
+    case.assertEqual(["changed", "full"], public_gate["profiles"])
+    integrity_roots = public_gate["suite_roots"]["repository-integrity"]
+    case.assertEqual(1, integrity_roots.count("local.workflow-harness"))
+
+    manifest_data = yaml.safe_load(manifest)
+    semantic_rows = [
+        row
+        for row in manifest_data["files"]
+        if row.get("path")
+        == "scripts/validation/check-agentic-audit-semantic-freshness.py"
     ]
-    for fragment in required_fragments:
-        case.assertIn(fragment, section)
-    case.assertEqual(1, repo_contracts.count(mktemp_line))
-    case.assertEqual(1, section.count(command))
-    case.assertEqual(2, section.count('cat "$semantic_audit_output" >&2'))
+    case.assertEqual(1, len(semantic_rows))
+    case.assertEqual(
+        ["repository-integrity"],
+        semantic_rows[0].get("public_suites"),
+    )
 
     build_start = generator.index("def build_output() -> tuple[str, list[str]]:")
     validate_call = generator.index(
@@ -142,17 +124,13 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         required_paths = {
             pathlib.Path(contract["audit_index"]),
             pathlib.Path(contract["overview"]),
-            pathlib.Path(contract["task_evidence"]),
-            pathlib.Path(contract["canonical_pack"]) / "README.md",
-            pathlib.Path(
-                "docs/90.references/audits/"
-                "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
-            ),
+            pathlib.Path(contract["canonical_pack"]) / "0019-readme/README.md",
+            pathlib.Path(contract["canonical_pack"]) / "0033-readme/README.md",
             CONTRACT,
         }
         required_paths.update(
             path.relative_to(ROOT)
-            for path in (ROOT / contract["canonical_pack"]).glob("*.md")
+            for path in (ROOT / contract["canonical_pack"]).glob("*/README.md")
         )
         for assertion in contract["assertions"]:
             required_paths.add(pathlib.Path(assertion["report"]))
@@ -164,6 +142,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             destination = self.repo / relative_path
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / relative_path, destination)
+
+        task_evidence = self.repo / contract["task_evidence"]
+        task_evidence.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(TASK_EVIDENCE_FIXTURE, task_evidence)
 
         self.contract = json.loads(self.contract_path.read_text(encoding="utf-8"))
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
@@ -215,61 +197,28 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         result = module.validate_semantics(ROOT, CONTRACT)
         self.assertEqual(11, result.assertion_count)
 
-    def integration_surfaces(self) -> tuple[str, str, str, str]:
-        repo_contracts = (
-            ROOT / "scripts/validation/check-repo-contracts.sh"
-        ).read_text(encoding="utf-8")
+    def integration_surfaces(self) -> tuple[str, str, str, str, str]:
         workflow = (ROOT / ".github/workflows/ci-quality.yml").read_text(
             encoding="utf-8"
         )
+        workflow_contract = (
+            ROOT / ".github/workflow-contract.yml"
+        ).read_text(encoding="utf-8")
+        manifest = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         generator = (
             ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
         ).read_text(encoding="utf-8")
         matrix = (
-            ROOT / "docs/90.references/data/governance/audit-implementation-matrix.md"
+            ROOT / "docs/90.references/data/0065-audit-implementation-matrix/README.md"
         ).read_text(encoding="utf-8")
-        return workflow, repo_contracts, generator, matrix
+        return workflow, workflow_contract, manifest, generator, matrix
 
     def test_task5_integration_contract_is_exact(self) -> None:
         _assert_task5_integration_contract(self, *self.integration_surfaces())
 
     def test_task5_integration_contract_rejects_regressions(self) -> None:
-        workflow, repo_contracts, generator, matrix = self.integration_surfaces()
-        semantic_step = (
-            "      - name: Check canonical audit semantic freshness\n"
-            "        run: python3 scripts/validation/"
-            "check-agentic-audit-semantic-freshness.py\n"
-        )
-        ordered_steps = (
-            "      - name: Check changed and new document metadata\n"
-            "        run: python3 scripts/validation/check-document-metadata.py "
-            "--mode check-changed\n"
-            "      - name: Check agent governance routing and eval regressions\n"
-            "        run: python3 -m unittest "
-            "tests.validation.test_agent_governance_ci_routing "
-            "tests.validation.test_agent_output_eval_fixtures "
-            "tests.validation.test_target_surface_contracts -v\n"
-            "      - name: Check target surface contracts\n"
-            "        run: python3 scripts/validation/"
-            "check-target-surface-contract.py\n"
-            f"{semantic_step}"
-            "      - name: Check typed agent governance repository contract\n"
-            "        run: python3 scripts/validation/"
-            "check-agent-governance-contract.py --mode repository --section all\n"
-            "      - name: Check repository contracts\n"
-            "        run: bash scripts/validation/check-repo-contracts.sh\n"
-        )
-        reordered_steps = ordered_steps.replace(
-            semantic_step,
-            "",
-            1,
-        ).replace(
-            "      - name: Check repository contracts\n"
-            "        run: bash scripts/validation/check-repo-contracts.sh\n",
-            "      - name: Check repository contracts\n"
-            "        run: bash scripts/validation/check-repo-contracts.sh\n"
-            f"{semantic_step}",
-            1,
+        workflow, workflow_contract, manifest, generator, matrix = (
+            self.integration_surfaces()
         )
         semantic_call = (
             "    semantic_result = validate_semantics(\n"
@@ -283,60 +232,89 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             f'{semantic_call}\n    return "\\n".join(lines), failures\n',
             1,
         )
+        semantic_row = (
+            "- path: scripts/validation/check-agentic-audit-semantic-freshness.py\n"
+            "  kind: validator\n"
+            "  public_suites:\n"
+            "  - repository-integrity\n"
+        )
+        missing_workflow_root = json.loads(workflow_contract)
+        missing_workflow_root["public_gate"]["suite_roots"]["repository-integrity"].remove(
+            "local.workflow-harness"
+        )
         mutations = {
-            "duplicate CI step": (
-                workflow.replace(semantic_step, semantic_step * 2, 1),
-                repo_contracts,
+            "duplicate changed workflow route": (
+                workflow
+                + "\n# python3 scripts/validation/run-ci-gate.py --profile changed\n",
+                workflow_contract,
+                manifest,
                 generator,
                 matrix,
             ),
-            "misordered CI step": (
-                workflow.replace(ordered_steps, reordered_steps, 1),
-                repo_contracts,
+            "copied atomic workflow command": (
+                workflow
+                + "\n# python3 scripts/validation/"
+                "check-agentic-audit-semantic-freshness.py\n",
+                workflow_contract,
+                manifest,
                 generator,
                 matrix,
             ),
-            "unguarded validator exit": (
+            "missing public workflow root": (
                 workflow,
-                repo_contracts.replace(
-                    "if ! python3 scripts/validation/"
-                    "check-agentic-audit-semantic-freshness.py",
-                    "python3 scripts/validation/"
-                    "check-agentic-audit-semantic-freshness.py",
+                json.dumps(missing_workflow_root),
+                manifest,
+                generator,
+                matrix,
+            ),
+            "missing validator ownership": (
+                workflow,
+                workflow_contract,
+                manifest.replace(
+                    "scripts/validation/check-agentic-audit-semantic-freshness.py",
+                    "scripts/validation/missing-agentic-audit-semantic.py",
                     1,
                 ),
                 generator,
                 matrix,
             ),
-            "non-exact pass marker": (
+            "duplicate validator ownership": (
                 workflow,
-                repo_contracts.replace(
-                    "elif ! grep -Fxq 'audit_semantic_freshness: PASS "
-                    "assertions=11 failures=0'",
-                    "elif ! grep -q 'audit_semantic_freshness: PASS "
-                    "assertions=11 failures=0'",
-                    1,
-                ),
+                workflow_contract,
+                manifest + semantic_row,
                 generator,
                 matrix,
             ),
-            "missing signal cleanup": (
+            "wrong validator suite": (
                 workflow,
-                repo_contracts.replace(
-                    "trap 'handle_semantic_audit_signal 130' INT\n", "", 1
+                workflow_contract,
+                manifest.replace(
+                    "- path: scripts/validation/"
+                    "check-agentic-audit-semantic-freshness.py\n"
+                    "  kind: validator\n"
+                    "  public_suites:\n"
+                    "  - repository-integrity\n",
+                    "- path: scripts/validation/"
+                    "check-agentic-audit-semantic-freshness.py\n"
+                    "  kind: validator\n"
+                    "  public_suites:\n"
+                    "  - operations\n",
+                    1,
                 ),
                 generator,
                 matrix,
             ),
             "semantic validation after rendering": (
                 workflow,
-                repo_contracts,
+                workflow_contract,
+                manifest,
                 late_generator,
                 matrix,
             ),
             "generated metric drift": (
                 workflow,
-                repo_contracts,
+                workflow_contract,
+                manifest,
                 generator,
                 matrix.replace(
                     "| Semantic closure assertions passed | 11 |",
@@ -345,11 +323,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
                 ),
             ),
         }
+        canonical = (workflow, workflow_contract, manifest, generator, matrix)
         for name, surfaces in mutations.items():
             with self.subTest(name=name):
-                self.assertNotEqual(
-                    (workflow, repo_contracts, generator, matrix), surfaces
-                )
+                self.assertNotEqual(canonical, surfaces)
                 with self.assertRaises(AssertionError):
                     _assert_task5_integration_contract(self, *surfaces)
 
@@ -383,6 +360,31 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         task_path.write_text(text.replace("T-AER-009", "T-AER-X09"), encoding="utf-8")
         self.assert_failure("QAF-12", "completed task T-AER-009")
 
+    def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(self) -> None:
+        from scripts.lib.document_governance import archive
+
+        task_path = self.repo / self.contract["task_evidence"]
+        expected = task_path.read_text(encoding="utf-8")
+        subprocess.run(["git", "add", "--", self.contract["task_evidence"]], cwd=self.repo, check=True)
+        subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "task evidence"], cwd=self.repo, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.repo, text=True).strip()
+        task_path.unlink()
+        row = {"source_path": self.contract["task_evidence"], "target_path": None,
+               "artifact_id": None, "action": "delete", "recovery_commit": commit}
+        compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [row]}
+        with mock.patch.object(archive, "_migration_document", return_value=compact):
+            errors = []
+            self.assertEqual(expected, module._read_task_evidence(self.repo, self.contract, errors))
+            self.assertEqual([], errors)
+            for key, value in (("action", "rename"), ("recovery_commit", None),
+                               ("recovery_commit", "0" * 40), ("source_path", "../outside")):
+                original = row[key]; row[key] = value
+                with self.subTest(field=key):
+                    errors = []
+                    self.assertIsNone(module._read_task_evidence(self.repo, self.contract, errors))
+                    self.assertTrue(errors)
+                row[key] = original
+
     def test_wrong_lifecycle_heading_fails(self) -> None:
         path = self.repo / self.contract["audit_index"]
         text = path.read_text(encoding="utf-8")
@@ -393,7 +395,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("audit index", "required heading")
 
     def test_non_active_canonical_readme_fails(self) -> None:
-        path = self.repo / self.contract["canonical_pack"] / "README.md"
+        path = self.repo / self.contract["canonical_pack"] / "0019-readme/README.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: active", "status: superseded", 1), encoding="utf-8"
@@ -401,10 +403,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("canonical README", "status: active")
 
     def test_non_superseded_2026_07_07_readme_fails(self) -> None:
-        path = self.repo / (
-            "docs/90.references/audits/"
-            "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
-        )
+        path = self.repo / self.contract["canonical_pack"] / "0033-readme/README.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: superseded", "status: active", 1), encoding="utf-8"

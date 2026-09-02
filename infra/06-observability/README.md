@@ -58,18 +58,18 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
 | Secret refs | names: `opensearch_exporter_password`, `vault_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/vault_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
-| Operations | [Guide index](../../docs/05.operations/guides/06-observability/README.md), [Policy index](../../docs/05.operations/policies/06-observability/README.md), [Runbook index](../../docs/05.operations/runbooks/06-observability/README.md) |
-| Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide index](../../docs/05.operations/catalog/06-observability/README.md), [Policy index](../../docs/05.operations/catalog/06-observability/README.md), [Runbook index](../../docs/05.operations/catalog/06-observability/README.md) |
+| Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Follow the [LGTM Stack Guide](../../docs/05.operations/guides/06-observability/lgtm-stack.md).
-2. Refer to the [Alloy Collector Guide](../../docs/05.operations/guides/06-observability/alloy.md) for data piping.
-3. Check the [Operations Policy](../../docs/05.operations/policies/06-observability/README.md) for retention.
-4. Consult the [Observability Runbook](../../docs/05.operations/runbooks/06-observability/README.md) for recovery.
+1. Follow the [LGTM Stack Guide](../../docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md).
+2. Refer to the [Alloy Collector Guide](../../docs/05.operations/catalog/06-observability/0040-alloy/guide.md) for data piping.
+3. Check the [Operations Policy](../../docs/05.operations/catalog/06-observability/README.md) for retention.
+4. Consult the [Observability Runbook](../../docs/05.operations/catalog/06-observability/README.md) for recovery.
 
 5. Always use `Alloy` as the primary entry point for telemetry data (OTLP).
 6. Dashboards MUST be provisioned via code in `grafana/provisioning/dashboards`.

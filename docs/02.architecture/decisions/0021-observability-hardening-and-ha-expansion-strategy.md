@@ -1,7 +1,15 @@
 ---
+title: Observability Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0021
+parent_ids:
+  - AD-0021
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md -->
 # ADR-0021: Observability Hardening and HA Expansion Strategy
 
 ## Overview
@@ -38,7 +46,7 @@ status: active
   - SSO 강화로 일부 자동화 접근은 조정이 필요할 수 있다.
   - 카탈로그 확장은 단계 적용이므로 단기 가시 효과는 하드닝 중심이다.
 
-## Alternatives
+## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현
 
@@ -59,11 +67,17 @@ status: active
 - Tool gating: `check-all-hardening.sh 06-observability`를 PR 필수 게이트로 사용
 - Guardrail strategy: 공개 라우터 보안 체인 필수, non-root/secret guard 필수
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/018-observability-optimization-hardening.md](../../01.requirements/018-observability-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../requirements/0021-observability-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Related ADR**: [./0006-lgtm-stack-selection.md](./0006-lgtm-stack-selection.md)
+- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0018-observability-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../descriptions/0021-observability-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)
+- **Related ADR**: [ADR-0006](0006-lgtm-stack-selection.md)

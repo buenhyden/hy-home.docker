@@ -51,17 +51,17 @@ warehouses/
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `starrocks-fe`, `starrocks-be` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0020-starrocks/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0020-starrocks/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0020-starrocks/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network context or a local validation overlay. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)를 참조한다.
-2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)을 확인한다.
-3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)을 사용한다.
+1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/catalog/04-data/0020-starrocks/guide.md)를 참조한다.
+2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/catalog/04-data/0020-starrocks/policy.md)을 확인한다.
+3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/catalog/04-data/0020-starrocks/runbook.md)을 사용한다.
 
 4. StarRocks 노드(FE/BE)를 수정하기 전에 메타데이터 저장 경로와 영속성 설정을 확인한다.
 5. BE 노드 확장 시 FE 노드에서의 등록 절차를 런북에서 먼저 찾아본다.
@@ -69,8 +69,8 @@ warehouses/
 
 ## Validation
 
-- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect warehouse services.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect warehouse services.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
@@ -79,9 +79,9 @@ warehouses/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
-- **Policy**: [docs/05.operations/policies/04-data/analytics/warehouses.md](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)
-- **Runbook**: [docs/05.operations/runbooks/04-data/analytics/warehouses.md](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)
+- **System Guide**: [docs/05.operations/catalog/04-data/analytics/warehouses.md](../../../../docs/05.operations/catalog/04-data/0020-starrocks/guide.md)
+- **Policy**: [docs/05.operations/catalog/04-data/0020-starrocks/policy.md](../../../../docs/05.operations/catalog/04-data/0020-starrocks/policy.md)
+- **Runbook**: [docs/05.operations/catalog/04-data/0020-starrocks/runbook.md](../../../../docs/05.operations/catalog/04-data/0020-starrocks/runbook.md)
 - **Health**: FE/BE healthchecks in `docker-compose.yml`
 
 ---

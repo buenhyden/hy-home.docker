@@ -55,13 +55,13 @@ nginx/
 | Labels | Not declared |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `nginx` |
-| Operations | [Guide](../../../docs/05.operations/guides/01-gateway/nginx.md), [Policy](../../../docs/05.operations/policies/01-gateway/nginx.md), [Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/01-gateway/0011-nginx/guide.md), [Policy](../../../docs/05.operations/catalog/01-gateway/0011-nginx/policy.md), [Runbook](../../../docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with static hardening checks; inspect service logs only when an approved Nginx runtime context is already running. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. Review `config/nginx.conf` to understand current `location` blocks and `upstream` definitions.
 2. When adding a new path-based route, ensure it is added to the main `server` block in `nginx.conf`.
@@ -70,7 +70,7 @@ nginx/
 
 5. Always run `nginx -t` in the approved running context before reloading configuration.
 6. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
-7. Update specific path guides in `docs/05.operations/guides/01-gateway/nginx.md` when adding new routing logic.
+7. Update specific path guides in `docs/05.operations/catalog/01-gateway/0011-nginx/guide.md` when adding new routing logic.
 
 ## Configuration
 
@@ -97,7 +97,7 @@ healthcheck:
 | `docker compose exec nginx nginx -s reload` | Runtime reload only after `nginx -t` passes in the approved running context |
 
 - Run `bash scripts/hardening/check-all-hardening.sh 01-gateway` after README, compose, or config changes that affect this service.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking the service documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking the service documentation ready.
 - Treat service-local standalone compose rendering as insufficient evidence because `nginx` depends on the root `infra_net` and backend services.
 
 ## Troubleshooting
@@ -108,7 +108,7 @@ healthcheck:
 ## Related Documents
 
 - [01-gateway Root README](../README.md)
-- [Nginx Guide](../../../docs/05.operations/guides/01-gateway/nginx.md)
-- [Gateway Operations Policy](../../../docs/05.operations/policies/01-gateway/nginx.md)
-- [Nginx Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md)
-- [SSO Setup Guide](../../../docs/05.operations/guides/02-auth/README.md)
+- [Nginx Guide](../../../docs/05.operations/catalog/01-gateway/0011-nginx/guide.md)
+- [Gateway Operations Policy](../../../docs/05.operations/catalog/01-gateway/0011-nginx/policy.md)
+- [Nginx Runbook](../../../docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md)
+- [SSO Setup Guide](../../../docs/05.operations/catalog/02-auth/README.md)

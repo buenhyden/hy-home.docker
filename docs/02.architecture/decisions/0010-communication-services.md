@@ -1,9 +1,15 @@
 ---
+title: Communication Services Selection and Configuration
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0010
+parent_ids:
+  - AD-0010
+created: 2026-03-26
+updated: 2026-08-10
 ---
-
-<!-- Target: docs/02.architecture/decisions/0010-communication-services.md -->
-
 # ADR-0010: Communication Services Selection and Configuration
 
 ## Context
@@ -48,13 +54,21 @@ Accepted (2026-03-26)
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
-## Alternatives
+## Options Considered
 
 Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- [Communication PRD](../../01.requirements/011-communication.md)
-- [Communication ARD](../requirements/0010-communication-architecture.md)
-- [Communication spec](../../03.specs/011-communication/spec.md)
-- [Communication standardization plan](../../04.execution/plans/2026-03-26-10-communication-standardization.md)
+- [Communication PRD](../../01.requirements/0011-communication.md)
+- [Communication Architecture Description](../descriptions/0010-communication-architecture.md)
+- [Communication spec](../../03.specs/0011-communication/spec.md)
+- Communication standardization plan

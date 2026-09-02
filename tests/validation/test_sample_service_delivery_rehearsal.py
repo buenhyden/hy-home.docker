@@ -23,8 +23,8 @@ DIGEST_MISMATCH = FIXTURES / "spec126-verdict.candidate.digest-mismatch.json"
 COMPOSE = ROOT / "examples/sample-web-service/docker-compose.yml"
 OVERRIDE = FIXTURES / "compose.delivery.override.yml"
 POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
-READINESS = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
-RECOVERY = ROOT / "_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
+READINESS = FIXTURES / "readiness-verdict.json"
+RECOVERY = FIXTURES / "recovery-verdict.json"
 REAL_BASELINE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
 REAL_CANDIDATE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
 REAL_PAIR_MANIFEST = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
@@ -108,6 +108,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         env: dict[str, str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         merged = os.environ.copy()
+        merged.setdefault("DRE_READINESS_PATH", str(READINESS))
+        merged.setdefault("DRE_RECOVERY_PATH", str(RECOVERY))
         if env:
             merged.update(env)
         return subprocess.run(
@@ -126,6 +128,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         merged = os.environ.copy()
         merged["DRE_SOURCE_TEST_BOUNDARY"] = "1"
+        merged.setdefault("DRE_READINESS_PATH", str(READINESS))
+        merged.setdefault("DRE_RECOVERY_PATH", str(RECOVERY))
         if env:
             merged.update(env)
         return subprocess.run(
@@ -1513,7 +1517,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
 
     def test_readiness_requires_exact_passing_schema_and_cleanup(self) -> None:
-        canonical = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
+        canonical = READINESS
         result = self.run_sourced(f"validate_readiness_verdict {canonical!s}")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         with tempfile.TemporaryDirectory() as raw:
@@ -1526,7 +1530,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual(10, rejected.returncode, rejected.stdout + rejected.stderr)
 
     def test_recovery_requires_exact_synthetic_boundary_schema(self) -> None:
-        canonical = ROOT / "_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
+        canonical = RECOVERY
         result = self.run_sourced(f"validate_recovery_boundary {canonical!s}")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         with tempfile.TemporaryDirectory() as raw:

@@ -1,9 +1,15 @@
 ---
+title: HashiCorp Vault as Centralized Secrets Manager
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0003
+parent_ids:
+  - AD-0003
+created: 2026-03-26
+updated: 2026-08-10
 ---
-
-<!-- Target: docs/02.architecture/decisions/0003-vault-as-secrets-manager.md -->
-
 # ADR-0003: HashiCorp Vault as Centralized Secrets Manager
 
 ## Overview
@@ -43,7 +49,7 @@ status: active
 - Vault 서버의 초기 Unseal 등 운영 복잡도 증가.
 - Vault 서버 장애가 전체 서비스의 "Single Point of Failure"가 될 수 있으므로 HA 구성이 필수적임.
 
-## Alternatives Considered
+## Options Considered
 
 1. **Docker Secrets**: 사용이 간편하나 기능이 부족하고 유연성이 낮음.
 2. **SOPS**: 파일 기반 암호화에는 좋으나 동적 주입 및 API 기반 관리가 어려움.
@@ -55,9 +61,17 @@ status: active
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- [Security PRD](../../01.requirements/003-security.md)
-- [Security ARD](../requirements/0003-security-architecture.md)
-- [Security spec](../../03.specs/003-security/spec.md)
-- [Security standardization plan](../../04.execution/plans/2026-03-26-03-security-standardization.md)
+- [Security PRD](../../01.requirements/0003-security.md)
+- [Security Architecture Description](../descriptions/0003-security-architecture.md)
+- [Security spec](../../03.specs/0003-security/spec.md)
+- Security standardization plan

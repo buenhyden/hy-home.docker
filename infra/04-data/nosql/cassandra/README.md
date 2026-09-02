@@ -61,8 +61,8 @@ cassandra/
 | Labels | `hy-home.tier` |
 | Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
 | Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md), [Policy](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0025-cassandra/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0025-cassandra/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0025-cassandra/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -104,9 +104,9 @@ cassandra/
 
 ## Related Documents
 
-- **Guide**: [Cassandra Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
-- **Policy**: [Cassandra Operation](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md)
-- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md)
+- **Guide**: [Cassandra Guide](../../../../docs/05.operations/catalog/04-data/0025-cassandra/guide.md)
+- **Policy**: [Cassandra Operation](../../../../docs/05.operations/catalog/04-data/0025-cassandra/policy.md)
+- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/catalog/04-data/0025-cassandra/runbook.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

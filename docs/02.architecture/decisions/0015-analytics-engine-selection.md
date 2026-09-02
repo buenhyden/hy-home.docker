@@ -1,7 +1,15 @@
 ---
+title: Specialized Analytics Engines Selection
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0015
+parent_ids:
+  - AD-0012
+created: 2026-03-26
+updated: 2026-08-10
 ---
-<!-- Target: docs/02.architecture/decisions/0015-analytics-engine-selection.md -->
 # ADR-0015: Specialized Analytics Engines Selection
 
 > This Architecture Decision Record (ADR) formalizes the selection of specialized analytics engines over a unified "one-size-fits-all" database approach for the `hy-home.docker` platform.
@@ -48,7 +56,7 @@ current curated image registry is `infra/tech-stack.versions.json`.
   - 인프라 리소스(CPU/RAM) 추가 요구량 증가.
   - 엔진 간 데이터 동기화(CDC/Stream) 로직 구축 오버헤드.
 
-## Alternatives
+## Options Considered
 
 ### Alternative 01: PostgreSQL 확장 (TimescaleDB, pg_search 등 사용)
 
@@ -60,9 +68,17 @@ current curated image registry is `infra/tech-stack.versions.json`.
 - **Good**: 운영 오버헤드 제로, 무한 확장성.
 - **Bad**: 로컬 도커 환경 구축 불가, 데이터 주권 및 보안 우려.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [005-data-analytics.md](../../01.requirements/005-data-analytics.md)
-- **ARD**: [0012-data-analytics-architecture.md](../requirements/0012-data-analytics-architecture.md)
-- **Spec**: [spec.md](../../03.specs/005-data-analytics/spec.md)
-- **Guide**: [README.md](../../05.operations/guides/04-data/analytics/README.md)
+- **PRD**: [005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
+- **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
+- **Spec**: [spec.md](../../03.specs/0005-data-analytics/spec.md)
+- **Guide**: [README.md](../../05.operations/catalog/04-data/README.md)

@@ -15,12 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── Documentation Traceability ──────────────────────────────
-  docs-traceability:
+  validation-changed:
+    if: github.event_name == 'pull_request'
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
+    env:
+      EVENT_NAME: ${{ github.event_name }}
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      HEAD_REF: ${{ github.head_ref }}
     steps:
       - &checkout
         name: Checkout repository
@@ -28,227 +33,53 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Check docs traceability sync
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.docs-traceability
-
-  # ── Documentation Implementation Alignment ─────────────────
-  docs-implementation-alignment:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-      PUSH_BEFORE_SHA: ${{ github.event.before }}
-    steps:
-      - *checkout
-      - name: Check docs against tracked implementation surfaces
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate leaf.docs-implementation-alignment
-      - name: Publish QA gate recommendations
-        if: always()
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate leaf.docs-qa-gate-recommendations
-
-  # ── Repository Contract Validation ──────────────────────
-  repo-contracts:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      TEMPLATE_GATE_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event_name == 'push' && github.event.before || '' }}
-    steps:
-      - *checkout
-      - name: Set up Python for repository contracts
+      - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Check repository contracts
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts
-
-  # ── Agent Output Eval Fixture Gate ─────────────────────────
-  agent-output-eval-fixture-gate:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - *checkout
-      - name: Check agent-output eval fixture gate
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.agent-output-eval-fixture-gate
-
-  # ── Supply-chain Fixture Policy ────────────────────────────
-  supply-chain-fixture-policy:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - *checkout
-      - name: Set up Python for supply-chain fixture policy
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.12'
-      - name: Check supply-chain fixture policy
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.supply-chain-fixture-policy
-
-  # ── Dependency Vulnerability Audit ─────────────────────────
-  dependency-vulnerability-audit:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-      - name: Set up Node.js for dependency audit
+      - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Audit Storybook Next.js dependencies
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.dependency-vulnerability-audit
+      - name: Install validation dependencies
+        # The runner imports the declared libraries before planning any gate.
+        # Bootstrap is CI-only; local gate execution never installs packages.
+        run: python3 -m pip install -r scripts/requirements.txt
+      - name: Run changed public validation suites
+        run: python3 scripts/validation/run-ci-gate.py --profile changed
 
-  # ── Git Flow Contract ───────────────────────────────────────
-  git-flow-contract:
-    if: github.event_name == 'pull_request'
+  validation-full:
+    if: github.event_name != 'pull_request'
     permissions:
+      actions: read
       contents: read
+      security-events: write
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     env:
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      HEAD_REF: ${{ github.head_ref }}
-    steps:
-      - *checkout
-      - name: Check PR title and source branch
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.git-flow-contract
-
-  # ── Compose Contract Validation ───────────────────────────────
-  compose-validation:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-      - name: Validate Docker Compose config
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.compose-validation
-
-  # ── Full Profile Compose Contract Validation ────────────────
-  compose-all-profiles-validation:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
+      EVENT_NAME: ${{ github.event_name }}
+      PUSH_BEFORE_SHA: ${{ github.event.before }}
       HYHOME_COMPOSE_PROFILES: core data obs workflow ai tooling messaging security communication service storage admin iac registry sast sync testing graph mng ksql nginx
-    steps:
-      - *checkout
-      - name: Validate all Docker Compose profiles
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.compose-all-profiles-validation
-
-  # ── Infrastructure Hardening Baseline ──────────────────────────
-  infrastructure-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-      - name: Check all tiers hardening baseline
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.infrastructure-hardening
-
-  # ── Template/Security Baseline ──────────────────────────────
-  template-security-baseline:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-      - name: Check template adoption + security baseline
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.template-security-baseline
-
-  # ── QuickWin Baseline ───────────────────────────────────────
-  quickwin-baseline:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-      - name: Check QuickWin baseline
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.quickwin-baseline
-
-  # ── Pre-commit Hooks ──────────────────────────────────────────
-  pre-commit:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
       - *checkout
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Run pre-commit hooks
-        env:
-          SKIP: eslint-nextjs
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.pre-commit
-
-  # ── Frontend Build and Typecheck ───────────────────────────
-  frontend-quality:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - *checkout
-      - name: Set up Node.js for frontend quality
+      - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Run frontend quality
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.frontend-quality
-
-  # ── Storybook Coverage ───────────────────────────────────────
-  storybook-coverage:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - *checkout
-      - name: Set up Node.js for Storybook coverage
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Run Storybook coverage
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.storybook-coverage
-
-  # ── GitHub Actions Security Analysis ─────────────────────────
-  zizmor:
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - *checkout
-
       - name: Install uv
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990
-
-      - name: Run zizmor
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.zizmor
-
+      - name: Install validation dependencies
+        run: python3 -m pip install -r scripts/requirements.txt
+      - name: Run all public validation suites
+        run: python3 scripts/validation/run-ci-gate.py --profile full
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
         with:

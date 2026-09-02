@@ -52,8 +52,8 @@ mng-db/
 | Labels | `hy-home.tier`, `traefik.enable` |
 | Secret refs | names: `mng_valkey_password`, `mng_postgres_password`, `service_postgres_password`, `n8n_db_password`, `keycloak_db_password`, `airflow_db_password`, `terrakube_db_password`, `sonarqube_db_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/mng_postgres_password`, `/run/secrets/service_postgres_password`, `/run/secrets/n8n_db_password`, `/run/secrets/keycloak_db_password`, `/run/secrets/airflow_db_password`, `/run/secrets/terrakube_db_password`, `/run/secrets/sonarqube_db_password` |
 | Healthcheck | Compose healthcheck declared for `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-exporter`; not declared for `mng-pg-init` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/operational/mng-db.md), [Policy](../../../../docs/05.operations/policies/04-data/operational/mng-db.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/operational/mng-db.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0028-management-database/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0028-management-database/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0028-management-database/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -94,11 +94,11 @@ mng-db/
 
 ## Related Documents
 
-- **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)
-- **Spec**: [spec.md](../../../../docs/03.specs/004-data/spec.md)
-- **Guide**: [mng-db.md](../../../../docs/05.operations/guides/04-data/operational/mng-db.md)
-- **Policy**: [mng-db.md](../../../../docs/05.operations/policies/04-data/operational/mng-db.md)
-- **Runbook**: [mng-db.md](../../../../docs/05.operations/runbooks/04-data/operational/mng-db.md)
+- **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/descriptions/0004-data-architecture.md)
+- **Spec**: [spec.md](../../../../docs/03.specs/0004-data/spec.md)
+- **Guide**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/0028-management-database/guide.md)
+- **Policy**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/0028-management-database/policy.md)
+- **Runbook**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/0028-management-database/runbook.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

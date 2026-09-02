@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import io
-import json
 import os
 import pathlib
 import select
@@ -16,8 +15,232 @@ import traceback
 import unittest
 from unittest import mock
 
-from scripts.validation import ci_gate_contract as contract
+import yaml
+
+from scripts.lib.gate import ci_gate_contract as contract
+from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.validation import ci_gate_runner as runner
+
+
+class PublicSuiteModelTests(unittest.TestCase):
+    def test_supply_chain_full_plan_and_explain_preserve_check_capability(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        suites = contract.load_public_suite_registry()
+        public = contract.parse_public_gate_contract(document, suites)
+        selected = ("repository-integrity",)
+        plan = runner.build_public_validation_plan(gates, contract.public_root_gate_ids(public, selected), suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+        path = pathlib.PurePosixPath("scripts/validation/check-supply-chain-policy.py")
+        actual = next(item for item in plan if item.entrypoint == path)
+        expected = next(item for item in gates.nodes if item.gate_id == "leaf.supply-chain-deterministic-policy")
+        self.assertEqual(("--check",), actual.argv)
+        self.assertEqual(expected.argv, actual.argv)
+        self.assertTrue(any(str(path) in line for line in runner.render_public_validation_plan(plan, suites, selected, runner.ExecutionContext.LOCAL, profile="full")))
+        for argv in ((), ("--help",), ("--write",), ("--oci-archive-config-digest", "archive")):
+            with self.subTest(argv=argv):
+                changed = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item for item in plan)
+                with self.assertRaises(contract.GateContractError):
+                    runner.render_public_validation_plan(changed, suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+
+    def test_ci_bootstraps_declared_dependencies_before_runner_import(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())["jobs"]
+        for name, job in jobs.items():
+            steps = job["steps"]
+            runner_index = next(i for i, step in enumerate(steps)
+                                if "scripts/validation/run-ci-gate.py" in step.get("run", ""))
+            bootstrap = [i for i, step in enumerate(steps)
+                         if step.get("run") == "python3 -m pip install -r scripts/requirements.txt"]
+            self.assertEqual(len(bootstrap), 1, name)
+            self.assertLess(bootstrap[0], runner_index)
+        # No package installation: explicitly expose the already-installed site
+        # dependencies to an otherwise clean interpreter, then import the runner.
+        result = subprocess.run(
+            ["python3", "-B", "-S", "-c",
+             "import site, sys; site.main(); sys.path.insert(0, sys.argv[1]); "
+             "import scripts.validation.ci_gate_runner", str(root)],
+            cwd=root, capture_output=True, text=True, timeout=10,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_validator_argument_rebinding_fails_loader_plan_and_explain(self) -> None:
+        suites = contract.load_public_suite_registry()
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        public = contract.parse_public_gate_contract(document, suites)
+        path = pathlib.PurePosixPath("scripts/validation/check-document-links.py")
+        original_plan = _real_public_plan(("document-graph",), {})
+        manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
+        for argv in (("--help",), ("--root", "/tmp"), ("--write",), ("--mode", "traceability"), ()):
+            with self.subTest(argv=argv), tempfile.TemporaryDirectory() as directory:
+                row = next(row for row in manifest["files"] if row["path"] == str(path))
+                row["execution_argv"] = list(argv)
+                source = pathlib.Path(directory) / "manifest.yaml"
+                source.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+                with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                    runner.public_suite_registry.load(source)
+                rebound = dataclasses.replace(suites, validators=tuple(
+                    dataclasses.replace(item, execution_argv=argv) if item.path == path else item
+                    for item in suites.validators
+                ))
+                with self.assertRaises(contract.GateContractError):
+                    runner.build_public_validation_plan(
+                        gates, contract.public_root_gate_ids(public, ("document-graph",)),
+                        rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                    )
+                plan = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item
+                             for item in original_plan)
+                with self.assertRaises(contract.GateContractError):
+                    runner.render_public_validation_plan(
+                        plan, rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                    )
+
+    def test_runner_reads_the_closed_public_suite_model(self) -> None:
+        self.assertEqual(
+            (
+                "agent-governance",
+                "document-contract",
+                "document-graph",
+                "document-lifecycle",
+                "operations",
+                "repository-integrity",
+            ),
+            runner.public_suite_names(),
+        )
+
+    def test_full_explain_maps_each_atomic_validator_exactly_once(self) -> None:
+        registry = contract.load_public_suite_registry()
+        plan = _real_public_plan(registry.public_names, {})
+        lines = runner.render_public_validation_plan(
+            plan,
+            registry,
+            registry.public_names,
+            runner.ExecutionContext.LOCAL,
+        )
+        rendered_paths = tuple(line.split("\t", 1)[1] for line in lines)
+        expected_paths = tuple(
+            validator.path.as_posix()
+            for validator in registry.validators
+            if "local" in validator.execution_contexts
+        )
+        self.assertCountEqual(expected_paths, rendered_paths)
+        self.assertEqual(len(expected_paths), len(set(rendered_paths)))
+
+    def test_full_plan_routes_task5_regressions_through_their_public_owner(self) -> None:
+        expected_by_suite = {
+            "agent-governance": {
+                "tests.lib.agent_governance.test_agent_governance_contract",
+                "tests.validation.test_provider_hook_parity",
+                "tests.validation.test_provider_native_surfaces",
+                "tests.validation.test_provider_surface_renderer",
+                "tests.validation.test_stop_gate_deferred_paths",
+            },
+            "document-lifecycle": {
+                "tests.validation.test_generate_llm_wiki",
+                "tests.validation.test_security_automation_readiness",
+                "tests.validation.test_workspace_governance_migration",
+            },
+            "operations": {
+                "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+                "tests.lib.supply_chain.test_grype_db_seed",
+                "tests.validation.test_compose_core_readiness",
+                "tests.validation.test_sample_service_delivery_rehearsal",
+                "tests.validation.test_supply_chain_policy",
+            },
+            "repository-integrity": {
+                "tests.lib.test_surface_ownership",
+                "tests.validation.test_agentic_audit_semantic_freshness",
+                "tests.validation.test_audit_criterion_contract",
+                "tests.validation.test_reference_stage_repo_contract",
+                "tests.validation.test_script_manifest",
+                "tests.validation.test_tech_stack_version_contract",
+                "tests.validation.test_validator_entrypoints",
+            },
+        }
+        task5_modules = set().union(*expected_by_suite.values())
+        for suite, expected in expected_by_suite.items():
+            with self.subTest(suite=suite):
+                plan = _real_public_plan((suite,), {})
+                actual = {
+                    module
+                    for invocation in plan
+                    if invocation.entrypoint == runner._INTERNAL_ADAPTER_PATH
+                    and invocation.argv[:1] == ("run-unittest",)
+                    and invocation.argv[-1:] == ("-v",)
+                    for module in invocation.argv[1:-1]
+                }
+                self.assertEqual(expected, actual & task5_modules)
+
+    def test_validator_ownership_is_derived_from_the_manifest(self) -> None:
+        """Ownership is whatever the manifest declares, checked by shape not by count."""
+
+        registry = contract.load_public_suite_registry()
+        actual = {
+            item.path: item.public_suites[0] for item in registry.validators
+        }
+
+        document = yaml.safe_load(
+            pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
+        )
+        declared = {
+            pathlib.PurePosixPath(row["path"]): row["public_suites"][0]
+            for row in document["files"]
+            if row.get("kind") == "validator"
+        }
+        self.assertEqual(declared, actual)
+        self.assertTrue(actual)
+        self.assertLessEqual(
+            set(actual.values()), set(registry.public_names)
+        )
+        self.assertEqual(len(actual), len(set(actual)))
+
+        document = yaml.safe_load(
+            pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
+        )
+        mutations = []
+        for mode in ("kind", "suite", "missing", "context"):
+            mutated = yaml.safe_load(yaml.safe_dump(document))
+            rows = mutated["files"]
+            index = next(
+                index
+                for index, row in enumerate(rows)
+                if row["path"] == "scripts/lib/gate/ci_gate_contract.py"
+            )
+            if mode == "kind":
+                rows[index]["kind"] = "library"
+                rows[index].pop("public_suites")
+                rows[index].pop("execution_contexts")
+            elif mode == "suite":
+                rows[index]["public_suites"] = ["operations"]
+            elif mode == "context":
+                rows[index]["execution_contexts"] = ["local"]
+            else:
+                rows.pop(index)
+            mutations.append((mode, mutated))
+
+        target = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_contract.py")
+        for mode, mutated in mutations:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                path = pathlib.Path(directory) / "manifest.yaml"
+                path.write_text(yaml.safe_dump(mutated), encoding="utf-8")
+                if mode == "context":
+                    # execution_contexts remain a retained safety policy.
+                    with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                        runner.public_suite_registry.load(path)
+                    continue
+                # kind, suite, and missing are legal manifest edits: they must
+                # change the loaded membership rather than raise.
+                reloaded = {
+                    item.path: item.public_suites[0]
+                    for item in runner.public_suite_registry.load(path).validators
+                }
+                self.assertNotEqual(actual, reloaded)
+                if mode == "suite":
+                    self.assertEqual("operations", reloaded[target])
+                else:
+                    self.assertNotIn(target, reloaded)
 
 
 REAL_SUBPROCESS_RUN = subprocess.run
@@ -110,6 +333,43 @@ def _invocation(
         cwd=pathlib.PurePosixPath(cwd),
         allowed_env_keys=allowed_env_keys,
         timeout_seconds=60,
+    )
+
+
+def _real_public_plan(
+    selected_suites: tuple[str, ...],
+    environ: dict[str, str],
+) -> tuple[
+    runner.GateInvocation,
+    ...,
+]:
+    root = pathlib.Path(__file__).resolve().parents[2]
+    document = contract.load_contract_document(root)
+    gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+    suites = contract.load_public_suite_registry(root / "scripts/manifest.yaml")
+    public = contract.parse_public_gate_contract(document, suites)
+    return runner.build_public_validation_plan(
+        gates,
+        contract.public_root_gate_ids(public, selected_suites),
+        suites,
+        selected_suites,
+        runner.derive_execution_context(environ),
+    )
+
+
+def _rebind_diff_gate(
+    gates: contract.GateRegistry,
+    entrypoint: pathlib.PurePosixPath,
+    argv: tuple[str, ...] = (),
+) -> contract.GateRegistry:
+    return dataclasses.replace(
+        gates,
+        nodes=tuple(
+            dataclasses.replace(node, entrypoint=entrypoint, argv=argv)
+            if node.gate_id == "leaf.local-diff-hygiene"
+            else node
+            for node in gates.nodes
+        ),
     )
 
 
@@ -225,102 +485,534 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
         self.assertNotIn("hostile-secret-value", "\n".join(rendered))
 
-    def test_cli_rejects_mutually_exclusive_gate_and_all(self) -> None:
+    def test_cli_rejects_obsolete_and_unknown_arguments(self) -> None:
+        for arguments in (
+            ["--profile", "full", "--gate", "leaf.repo-contracts"],
+            ["--profile", "full", "--all"],
+            ["--profile", "full", "--list"],
+            ["--profile", "full", "--dry-run"],
+        ):
+            with self.subTest(arguments=arguments):
+                stderr = io.StringIO()
+                with mock.patch("sys.stderr", stderr):
+                    result = runner.main(arguments)
+                self.assertEqual(2, result)
+                self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
         stderr = io.StringIO()
-        with mock.patch("sys.stderr", stderr):
-            result = runner.main(
-                [
-                    "--profile",
-                    "local-harness",
-                    "--gate",
-                    "leaf.repo-contracts",
-                    "--all",
-                ]
-            )
-        self.assertEqual(2, result)
-        self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with (
+            mock.patch("sys.stderr", stderr),
+            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
+        ):
+            self.assertEqual(1, runner.main(["--profile", "local-harness"]))
+        self.assertIn("ci-gate-profile-unknown", stderr.getvalue())
 
-    def test_cli_list_and_dry_run_use_strict_json_without_execution(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = pathlib.Path(temporary)
-            contract_path = root / ".github/workflow-contract.yml"
-            contract_path.parent.mkdir()
-            contract_path.write_text(
-                json.dumps(
-                    {
-                        "schema_version": 2,
-                        "workflows": {},
-                        "gate_nodes": [
-                            {
-                                "gate_id": "leaf.repo-contracts",
-                                "kind": "leaf",
-                                "suite_key": "repo-contracts",
-                                "entrypoint": "scripts/validation/leaf.py",
-                                "argv": [],
-                                "cwd": ".",
-                                "allowed_env_keys": [],
-                                "timeout_minutes": 1,
-                                "profiles": ["local-harness"],
-                                "opaque": True,
-                            }
-                        ],
-                        "job_roots": [],
-                        "profile_roots": [
-                            {
-                                "profile": "local-harness",
-                                "root_gate_ids": ["leaf.repo-contracts"],
-                                "classification": "local",
-                            }
-                        ],
-                        "actions": {},
-                    },
-                    sort_keys=True,
-                ),
-                encoding="utf-8",
-            )
-            with (
-                mock.patch.dict(
-                    os.environ,
-                    {
-                        "HYHOME_CI_GATE_ROOT": str(root),
-                        "PATH": "/usr/bin",
-                    },
-                    clear=True,
-                ),
-                mock.patch.object(
-                    runner,
-                    "validate_gate_registry",
-                    return_value=(),
-                    create=True,
-                ),
-                mock.patch.object(
-                    runner,
-                    "execute_execution_plan",
-                ) as execute,
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            ):
-                self.assertEqual(
-                    0,
-                    runner.main(["--profile", "local-harness", "--list"]),
+    def test_full_explain_is_deterministic_and_does_not_execute(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        registry = contract.load_public_suite_registry()
+        plan = _real_public_plan(registry.public_names, {})
+        expected = runner.render_public_validation_plan(
+            plan,
+            registry,
+            registry.public_names,
+            runner.ExecutionContext.LOCAL,
+        )
+        with (
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
+        ):
+            self.assertEqual(0, runner.main(["--profile", "full", "--explain"]))
+        execute.assert_not_called()
+        self.assertEqual(expected, tuple(stdout.getvalue().splitlines()))
+
+    def test_standalone_validator_explain_and_fake_execution_have_exact_parity(
+        self,
+    ) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        suites = contract.load_public_suite_registry()
+        selected = ("agent-governance",)
+        plan = _real_public_plan(selected, {})
+        explained = runner.render_public_validation_plan(
+            plan, suites, selected, runner.ExecutionContext.LOCAL
+        )
+        explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
+        executed: list[pathlib.PurePosixPath] = []
+        result = runner.execute_execution_plan(
+            root,
+            plan,
+            {"PATH": os.defpath},
+            executor=lambda invocation: executed.append(invocation.entrypoint) or 0,
+        )
+        validator_paths = {
+            item.path
+            for item in suites.validators
+            if item.public_suites[0] in selected
+            and "local" in item.execution_contexts
+        }
+        executed_validators = tuple(
+            path.as_posix() for path in executed if path in validator_paths
+        )
+        self.assertEqual(0, result)
+        self.assertEqual(explained_paths, executed_validators)
+        self.assertEqual(
+            1,
+            executed_validators.count(
+                "scripts/validation/check-agent-governance-contract.py"
+            ),
+        )
+
+    def test_public_validator_missing_or_duplicate_invocation_fails_closed(self) -> None:
+        suites = contract.load_public_suite_registry()
+        selected = suites.public_names
+        plan = _real_public_plan(selected, {})
+        validator_path = next(
+            item.path for item in suites.validators if "local" in item.execution_contexts
+        )
+        invocation = next(
+            item for item in plan if item.entrypoint == validator_path
+        )
+        mutations = (
+            tuple(item for item in plan if item is not invocation),
+            (*plan, invocation),
+        )
+        for mutated in mutations:
+            with self.subTest(size=len(mutated)), self.assertRaises(
+                contract.GateContractError
+            ) as raised:
+                runner.validate_public_execution_parity(
+                    suites,
+                    selected,
+                    mutated,
+                    runner.ExecutionContext.LOCAL,
                 )
-                self.assertEqual(
-                    0,
-                    runner.main(
-                        [
-                            "--profile",
-                            "local-harness",
-                            "--dry-run",
-                            "--all",
-                        ]
-                    ),
-                )
-            execute.assert_not_called()
             self.assertEqual(
-                2,
-                stdout.getvalue().count(
-                    "leaf.repo-contracts\tscripts/validation/leaf.py"
+                "ci-gate-public-execution-parity", raised.exception.code
+            )
+        duplicate_ownership = dataclasses.replace(
+            suites,
+            validators=(*suites.validators, suites.validators[0]),
+        )
+        with self.assertRaises(contract.GateContractError) as raised:
+            runner.validate_public_execution_parity(
+                duplicate_ownership,
+                selected,
+                plan,
+                runner.ExecutionContext.LOCAL,
+            )
+        self.assertEqual(
+            "ci-gate-public-execution-parity", raised.exception.code
+        )
+
+    def test_real_execution_contexts_filter_only_their_admitted_leaves(self) -> None:
+        suites = contract.load_public_suite_registry()
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        public = contract.parse_public_gate_contract(document, suites)
+        changed = contract.select_public_suites(
+            public, "changed", ("scripts/validation/example.py",)
+        )
+        full = contract.select_public_suites(public, "full", ())
+        contexts = {
+            "local-changed": (changed, {}),
+            "local-full": (full, {}),
+            "pull_request": (
+                changed,
+                {
+                    "CI": "true",
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "pull_request",
+                    "PR_BASE_SHA": "a" * 40,
+                    "PR_TITLE": "Task 12",
+                    "HEAD_REF": "task-12",
+                },
+            ),
+            "push": (
+                full,
+                {
+                    "CI": "true",
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "push",
+                    "PUSH_BEFORE_SHA": "b" * 40,
+                },
+            ),
+            "initial_push": (
+                full,
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "push",
+                    "PUSH_BEFORE_SHA": "0" * 40,
+                },
+            ),
+            "workflow_dispatch": (
+                full,
+                {
+                    "CI": "true",
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "workflow_dispatch",
+                },
+            ),
+        }
+        plans = {
+            name: _real_public_plan(selected, environ)
+            for name, (selected, environ) in contexts.items()
+        }
+        suites = contract.load_public_suite_registry()
+        for name, (selected, environ) in contexts.items():
+            context = runner.derive_execution_context(environ)
+            explained = runner.render_public_validation_plan(
+                plans[name], suites, selected, context
+            )
+            executed: list[pathlib.PurePosixPath] = []
+            self.assertEqual(
+                0,
+                runner.execute_execution_plan(
+                    root,
+                    plans[name],
+                    {"PATH": os.defpath},
+                    executor=lambda invocation: executed.append(
+                        invocation.entrypoint
+                    )
+                    or 0,
                 ),
             )
+            explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
+            # Count every validator path, not only eligible paths: otherwise a
+            # hidden ineligible invocation can evade this explain comparison.
+            validator_paths = {
+                item.path
+                for item in suites.validators
+                if item.path
+                != pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
+            }
+            self.assertEqual(
+                explained_paths,
+                tuple(
+                    path.as_posix() for path in executed if path in validator_paths
+                ),
+            )
+        manual_only = {
+            item.path.as_posix()
+            for item in suites.validators
+            if not item.execution_contexts
+        }
+        self.assertIn(
+            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh",
+            manual_only,
+        )
+        self.assertIn("scripts/lib/ops/validate-harness.sh", manual_only)
+        gates = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        node_by_id = {node.gate_id: node for node in gates.nodes}
+        for name in ("local-changed", "local-full"):
+            gate_ids = {item.gate_id for item in plans[name]}
+            with self.subTest(context=name):
+                self.assertFalse(any(item.startswith("setup.") for item in gate_ids))
+                self.assertFalse(gate_ids & runner._LOCAL_EXCLUDED_GATE_IDS)
+                self.assertNotIn(
+                    pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh"),
+                    {item.entrypoint for item in plans[name]},
+                )
+                self.assertFalse(
+                    any(
+                        node_by_id[gate_id].profiles == ("ci",)
+                        for gate_id in gate_ids
+                        if gate_id in node_by_id
+                    )
+                )
+        self.assertIn(
+            "leaf.git-flow-contract",
+            {item.gate_id for item in plans["pull_request"]},
+        )
+        for name in ("push", "initial_push", "workflow_dispatch"):
+            self.assertNotIn(
+                "leaf.git-flow-contract",
+                {item.gate_id for item in plans[name]},
+            )
+
+    def test_local_full_plan_excludes_ci_only_hardening(self) -> None:
+        suites = contract.load_public_suite_registry()
+        plan = _real_public_plan(suites.public_names, {})
+        self.assertNotIn(
+            pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh"),
+            {item.entrypoint for item in plan},
+        )
+
+    def test_base_plan_rejects_runtime_validator_rebind(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        suites = contract.load_public_suite_registry()
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        public = contract.parse_public_gate_contract(document, suites)
+        manual_paths = tuple(
+            item.path for item in suites.validators if not item.execution_contexts
+        )
+        # 9 since 2026-08-30: `old_path_gate_contract.py` declared no execution
+        # context and went with the rest of Gate 4. Previously 10, when the
+        # three other SPEC-0137 gate modules were retired; two of those, the
+        # gate-9 evidence helper and the ported gate-2 claim-review contract,
+        # were also context-free. Previously 12 since 2026-08-29.
+        self.assertEqual(9, len(manual_paths))
+        forbidden_paths = (
+            *manual_paths,
+            pathlib.PurePosixPath("scripts/operations/rehearse-sample-service-delivery.sh"),
+            pathlib.PurePosixPath("scripts/validation/run-ci-gate.py"),
+            pathlib.PurePosixPath("scripts/validation/run-local-qa-gates.sh"),
+            pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
+            pathlib.PurePosixPath("scripts/validation/run-agent-precommit-all-files.sh"),
+        )
+        for context in runner.ExecutionContext:
+            for path in forbidden_paths:
+                for argv in ((), ("check-diff-hygiene",)):
+                    if path == runner._INTERNAL_ADAPTER_PATH and argv:
+                        continue  # This exact internal adapter is admitted.
+                    with self.subTest(context=context, path=path, argv=argv):
+                        with self.assertRaises(contract.GateContractError) as raised:
+                            runner.build_public_validation_plan(
+                                _rebind_diff_gate(gates, path, argv),
+                                contract.public_root_gate_ids(public, suites.public_names),
+                                suites,
+                                suites.public_names,
+                                context,
+                            )
+                        self.assertEqual(
+                            "ci-gate-public-execution-parity", raised.exception.code
+                        )
+
+    def test_internal_adapters_require_exact_argv_and_context(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        suites = contract.load_public_suite_registry()
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        public = contract.parse_public_gate_contract(document, suites)
+        roots = contract.public_root_gate_ids(public, suites.public_names)
+        for context, argv in (
+            (runner.ExecutionContext.LOCAL, ("check-diff-hygiene", "--write")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-zizmor-sarif",)),
+            (runner.ExecutionContext.LOCAL, ("install-playwright",)),
+            (runner.ExecutionContext.PUSH, ("check-git-flow",)),
+            (runner.ExecutionContext.WORKFLOW_DISPATCH, ("verify-metadata-base",)),
+            (runner.ExecutionContext.PULL_REQUEST, ("publish-qa-recommendations",)),
+        ):
+            with self.subTest(context=context, argv=argv):
+                with self.assertRaises(contract.GateContractError) as raised:
+                    runner.build_public_validation_plan(
+                        _rebind_diff_gate(gates, runner._INTERNAL_ADAPTER_PATH, argv),
+                        roots, suites, suites.public_names, context,
+                    )
+                self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
+        for context, argv in (
+            (runner.ExecutionContext.LOCAL, ("check-diff-hygiene",)),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_ci_gate_runner", "-v")),
+            # A single well-shaped module is admitted by the grammar. Splitting
+            # a batch cannot hide a module: test_surface_ownership proves the
+            # full profile runs every on-disk module exactly once.
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
+            (runner.ExecutionContext.PULL_REQUEST, ("check-git-flow",)),
+            (runner.ExecutionContext.PUSH, ("run-zizmor-sarif",)),
+            (runner.ExecutionContext.WORKFLOW_DISPATCH, ("install-playwright",)),
+        ):
+            with self.subTest(context=context, argv=argv):
+                plan = runner.build_public_validation_plan(
+                    _rebind_diff_gate(gates, runner._INTERNAL_ADAPTER_PATH, argv),
+                    roots, suites, suites.public_names, context,
+                )
+                self.assertIn(
+                    ("leaf.local-diff-hygiene", runner._INTERNAL_ADAPTER_PATH, argv),
+                    {(item.gate_id, item.entrypoint, item.argv) for item in plan},
+                )
+
+    def test_final_parity_and_explain_reject_hidden_or_mutated_invocations(self) -> None:
+        suites = contract.load_public_suite_registry()
+        plan = _real_public_plan(suites.public_names, {})
+        forbidden = [
+            _invocation("leaf.injected", item.path.as_posix())
+            for item in suites.validators
+            if "local" not in item.execution_contexts
+        ]
+        forbidden.extend(
+            dataclasses.replace(
+                _invocation("leaf.injected", path), argv=argv
+            )
+            for path, argv in (
+                ("scripts/validation/run-ci-gate.py", ("--profile", "full")),
+                ("scripts/operations/rehearse-sample-service-delivery.sh", ("rehearse",)),
+                ("scripts/knowledge/generate-llm-wiki.py", ("--write",)),
+                ("scripts/validation/report-provider-hook-parity.sh", ()),
+                ("scripts/lib/gate/ci_gate_adapters.py", ("run-zizmor-sarif",)),
+            )
+        )
+        for invocation in forbidden:
+            for validate in (
+                lambda candidate: runner.validate_public_execution_parity(
+                    suites, suites.public_names, candidate, runner.ExecutionContext.LOCAL
+                ),
+                lambda candidate: runner.render_public_validation_plan(
+                    candidate, suites, suites.public_names, runner.ExecutionContext.LOCAL
+                ),
+            ):
+                with self.subTest(invocation=invocation, validate=validate):
+                    with self.assertRaises(contract.GateContractError) as raised:
+                        validate((*plan, invocation))
+                    self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
+
+    def test_runtime_rebind_fails_before_cli_execution(self) -> None:
+        document = contract.load_contract_document(pathlib.Path.cwd())
+        for node in document["gate_nodes"]:
+            if node["gate_id"] == "leaf.local-diff-hygiene":
+                node["entrypoint"] = "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                node["argv"] = []
+        with (
+            mock.patch.object(runner, "load_contract_document", return_value=document),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch.dict(os.environ, {"PATH": os.defpath}, clear=True),
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            self.assertEqual(1, runner.main(["--profile", "full"]))
+        execute.assert_not_called()
+        self.assertIn("ci-gate-public-execution-parity", stderr.getvalue())
+
+    def test_malformed_execution_context_fails_closed(self) -> None:
+        invalid = (
+            {"EVENT_NAME": "push"},
+            {"GITHUB_ACTIONS": "true", "EVENT_NAME": "schedule"},
+            {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "a" * 40,
+            },
+            {"GITHUB_ACTIONS": "true", "EVENT_NAME": "push"},
+            {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "0" * 40,
+                "PR_TITLE": "Task 12",
+                "HEAD_REF": "task-12",
+            },
+            {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "push",
+                "PUSH_BEFORE_SHA": "invalid",
+            },
+            {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "workflow_dispatch",
+                "PUSH_BEFORE_SHA": "a" * 40,
+            },
+        )
+        for environ in invalid:
+            with self.subTest(environ=environ), self.assertRaises(
+                contract.GateContractError
+            ) as raised:
+                runner.derive_execution_context(environ)
+            self.assertEqual("ci-gate-execution-context", raised.exception.code)
+
+    def test_metadata_base_policy_reaches_the_real_adapter(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        for label, environ, expected_base in (
+            (
+                "pull_request",
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "pull_request",
+                    "PR_BASE_SHA": "a" * 40,
+                    "PR_TITLE": "Task 12",
+                    "HEAD_REF": "task-12",
+                    "PATH": os.defpath,
+                },
+                "a" * 40,
+            ),
+            (
+                "push",
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "push",
+                    "PUSH_BEFORE_SHA": "b" * 40,
+                    "PATH": os.defpath,
+                },
+                "b" * 40,
+            ),
+        ):
+            with self.subTest(label=label):
+                plan = _real_public_plan(
+                    contract.load_public_suite_registry().public_names,
+                    environ,
+                )
+                invocation = next(
+                    item
+                    for item in plan
+                    if item.gate_id == "leaf.repo-metadata-base"
+                )
+                with tempfile.TemporaryDirectory(dir="/tmp") as directory:
+                    child = runner._child_environment(
+                        root,
+                        pathlib.Path(directory),
+                        invocation,
+                        "python",
+                        environ,
+                        python_bootstrap=pathlib.Path(directory),
+                    )
+                self.assertEqual(expected_base, child["TEMPLATE_GATE_BASE"])
+                for name in ("check-document-metadata.py", "check-document-corpus-lifecycle.py"):
+                    validator = next(item for item in plan if item.entrypoint.name == name)
+                    with tempfile.TemporaryDirectory(dir="/tmp") as directory:
+                        validator_child = runner._child_environment(
+                            root, pathlib.Path(directory), validator, "python", environ,
+                            python_bootstrap=pathlib.Path(directory),
+                        )
+                    self.assertEqual(expected_base, validator_child["TEMPLATE_GATE_BASE"])
+                with mock.patch.object(
+                    adapters,
+                    "_run_child",
+                    return_value=subprocess.CompletedProcess((), 0),
+                ) as run_child:
+                    self.assertEqual(
+                        0,
+                        adapters.run_adapter(
+                            root, ("verify-metadata-base",), child
+                        ),
+                    )
+                self.assertEqual(2, run_child.call_count)
+
+        for label, environ in (
+            (
+                "initial_push",
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "push",
+                    "PUSH_BEFORE_SHA": "0" * 40,
+                },
+            ),
+            (
+                "workflow_dispatch",
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "EVENT_NAME": "workflow_dispatch",
+                },
+            ),
+        ):
+            with self.subTest(label=label):
+                plan = _real_public_plan(
+                    contract.load_public_suite_registry().public_names,
+                    environ,
+                )
+                self.assertNotIn(
+                    "leaf.repo-metadata-base",
+                    {item.gate_id for item in plan},
+                )
+                metadata = next(
+                    item
+                    for item in plan
+                    if item.entrypoint
+                    == pathlib.PurePosixPath(
+                        "scripts/validation/check-document-metadata.py"
+                    )
+                )
+                self.assertEqual(("--mode", "check-active"), metadata.argv)
+                self.assertEqual((), metadata.allowed_env_keys)
 
 
 class DescriptorExecutionTests(unittest.TestCase):
@@ -668,11 +1360,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         original_root = self.root.with_name(f"{self.root.name}-original")
@@ -702,7 +1394,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                             dataclasses.replace(
                                 _invocation(
                                     "setup.compose-env",
-                                    "scripts/validation/ci_gate_adapters.py",
+                                    "scripts/lib/gate/ci_gate_adapters.py",
                                 ),
                                 argv=("prepare-compose-env",),
                             ),
@@ -729,11 +1421,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         fake_bin = self.root / "fake-bin-isolation"
@@ -747,7 +1439,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         invocation = dataclasses.replace(
             _invocation(
                 "leaf.zizmor",
-                "scripts/validation/ci_gate_adapters.py",
+                "scripts/lib/gate/ci_gate_adapters.py",
             ),
             argv=("run-zizmor-sarif",),
         )
@@ -772,11 +1464,11 @@ class DescriptorExecutionTests(unittest.TestCase):
         (self.root / "results.sarif").unlink()
 
     def _assert_registered_adapter_integrations(self) -> None:
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         (self.root / ".env.example").write_text(
@@ -800,14 +1492,14 @@ class DescriptorExecutionTests(unittest.TestCase):
             dataclasses.replace(
                 _invocation(
                     "setup.compose-env",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("prepare-compose-env",),
             ),
             dataclasses.replace(
                 _invocation(
                     "leaf.zizmor",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("run-zizmor-sarif",),
             ),
@@ -887,7 +1579,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         harness = (
             "#!/usr/bin/env python3\n"
             "import pathlib,subprocess,sys,time\n"
-            "from scripts.validation import ci_gate_adapters as adapters\n"
+            "from scripts.lib.gate import ci_gate_adapters as adapters\n"
             "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             f"source={child_source!r}\n"
             "command=(sys.executable,'-c',source,mode,ready,ack,release,trigger)\n"
@@ -914,11 +1606,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             "    raise SystemExit(2)\n"
             "raise SystemExit(result.returncode)\n"
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         self.add_entrypoint("scripts/validation/tree-harness.py", harness)

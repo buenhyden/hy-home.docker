@@ -6,15 +6,14 @@ cd "$BASE_DIR"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/validation/run-local-qa-gates.sh [--help|--list|--script-backed|--all-profiles|--harness]
+Usage: bash scripts/validation/run-local-qa-gates.sh [--help|--changed|--full|--explain]
 
-Run the typed local QA profile selected from .github/workflow-contract.yml.
+Run a public validation profile selected from .github/workflow-contract.yml.
 
 Modes:
-  --script-backed  Default. Execute the local-script-backed profile once.
-  --all-profiles   Execute the local-all-profiles profile once.
-  --harness        Execute the local-harness profile once.
-  --list           List the local-script-backed profile without execution.
+  --changed  Default. Execute suites impacted by local changes.
+  --full     Execute all six public suites.
+  --explain  Explain changed suite-to-validator selection without execution.
 
 Remote-only gates such as SARIF upload, protected-branch enforcement, and
 GitHub-hosted required-check status are not executed. Approved Agent all-files
@@ -29,29 +28,15 @@ if [[ "$#" -gt 1 ]]; then
   exit 2
 fi
 
-case "${1:---script-backed}" in
---script-backed)
-  exec python3 scripts/validation/run-ci-gate.py \
-    --profile local-script-backed \
-    --all
+case "${1:---changed}" in
+--changed)
+  exec python3 scripts/validation/run-ci-gate.py --profile changed
   ;;
---all-profiles)
-  exec python3 scripts/validation/run-ci-gate.py \
-    --profile local-all-profiles \
-    --all
+--full)
+  exec python3 scripts/validation/run-ci-gate.py --profile full
   ;;
---harness)
-  exec python3 scripts/validation/run-ci-gate.py \
-    --profile local-harness \
-    --all
-  ;;
---list)
-  usage
-  echo
-  echo "Registered local-script-backed execution order:"
-  exec python3 scripts/validation/run-ci-gate.py \
-    --profile local-script-backed \
-    --list
+--explain)
+  exec python3 scripts/validation/run-ci-gate.py --profile changed --explain
   ;;
 --help | -h)
   usage

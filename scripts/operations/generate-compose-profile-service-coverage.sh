@@ -4,11 +4,11 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/docker/compose-profile-service-coverage.md"
+OUTPUT="docs/90.references/data/0059-compose-profile-service-coverage/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/operations/generate-compose-profile-service-coverage.sh [--check|--dry-run]
+Usage: bash scripts/operations/generate-compose-profile-service-coverage.sh [--write|--check|--dry-run]
 
 Generate the Docker Compose profile-to-service coverage snapshot.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)
@@ -156,10 +161,18 @@ def compact_refs(items: list[dict[str, object]], limit: int = 18) -> str:
 
 lines: list[str] = [
     "---",
+    'title: "Reference: Docker Compose Profile Service Coverage"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
+    "artifact_id: DATA-0059",
+    "parent_ids: []",
+    "created: '2026-08-23'",
+    "updated: '2026-08-28'",
+    "observed_at: '2026-08-28'",
+    "generated_by: scripts/operations/generate-compose-profile-service-coverage.sh",
     "---",
-    "",
-    "<!-- Target: docs/90.references/data/docker/compose-profile-service-coverage.md -->",
     "",
     "# Reference: Docker Compose Profile Service Coverage",
     "",
@@ -197,7 +210,7 @@ lines: list[str] = [
     "- Runtime service health, container state, secrets, or environment values.",
     "- Deployment guidance or rollback procedures.",
     "",
-    "## Definitions / Facts",
+    "## Schema",
     "",
     "- **default**: service has no Compose `profiles` key and is active whenever its",
     "  Compose file is included.",
@@ -206,7 +219,7 @@ lines: list[str] = [
     "- **snapshot**: deterministic parse of tracked Compose files, not live runtime",
     "  evidence.",
     "",
-    "## Snapshot Summary",
+    "## Inventory",
     "",
     "| Metric | Value |",
     "| --- | ---: |",
@@ -267,24 +280,28 @@ lines.extend(
         "- Do not include secret values, `.env` values, container logs, or runtime",
         "  inspection output.",
         "",
-        "## Sources",
+        "## Provenance",
         "",
         "- [root Compose entrypoint](../../../../docker-compose.yml) - root Compose",
         "  include boundary when tracked.",
         "- [infra directory](../../../../infra/) - tracked service-local Compose files.",
         "- [coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh) - deterministic snapshot generator.",
         "",
-        "## Maintenance",
+        "## Refresh",
         "",
         "- **Owner**: Infra/DevOps Engineer / Documentation Specialist.",
         "- **Review Cadence**: Review after Compose service/profile changes.",
         "- **Update Trigger**: Run the generator after tracked Compose files change.",
         "",
-        "## Related Documents",
+        "## Consumers",
+        "",
+        "Maintainers and static documentation validators consume this inventory.",
+        "",
+        "## Traceability",
         "",
         "- **Docker data index**: [README.md](./README.md)",
-        "- **Docker image/version interpretation**: [image-version-interpretation.md](./image-version-interpretation.md)",
-        "- **Automation candidates**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
+        "- **Docker image/version interpretation**: [Image/version interpretation](../0060-image-version-interpretation/README.md)",
+        "- **Automation candidates**: [Automation candidates](../../audits/0021-automation-candidates/README.md)",
         "- **Compose validation script**: [../../../../scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh)",
     ]
 )

@@ -1136,9 +1136,9 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `05-Messaging Optimization Hardening Runbook` --references--> `Doc Traceability Check`  [EXTRACTED]
-  docs/05.operations/runbooks/05-messaging/optimization-hardening.md → scripts/validation/check-doc-traceability.sh
+  docs/05.operations/05-messaging/ops-0037-optimization-hardening/runbook.md → scripts/validation/check-doc-traceability.sh
 - `05-Messaging Optimization Hardening Runbook` --references--> `Template Security Baseline Check`  [EXTRACTED]
-  docs/05.operations/runbooks/05-messaging/optimization-hardening.md → scripts/validation/check-template-security-baseline.sh
+  docs/05.operations/05-messaging/ops-0037-optimization-hardening/runbook.md → scripts/validation/check-template-security-baseline.sh
 - `AGENTS.md Universal Entry Shim` --references--> `Agent-First Governance`  [EXTRACTED]
   AGENTS.md → README.md
 - `Modular Docker Compose Infrastructure` --implements--> `hy-home-infra Compose Project`  [INFERRED]

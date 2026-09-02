@@ -1,21 +1,20 @@
 ---
+title: Architecture Decision Records
+type: common/readme
+layer: architecture
 status: active
+owner: "@buenhyden"
 ---
-<!-- Target: docs/02.architecture/decisions/README.md -->
 
-# Architecture Decision Records (ADR)
-
-> 중요한 아키텍처 선택의 배경, 대안, 결과를 남기는 ADR 문서 공간
+# Architecture Decision Records
 
 ## Overview
 
-`docs/02.architecture/decisions`는 프로젝트 전반의 아키텍처 및 기술 스택 선택을 기록한다. ADR은 선택 자체만이 아니라 왜 그 선택을 했는지, 어떤 대안을 버렸는지, 그 결과로 어떤 trade-off가 생겼는지를 보존한다.
-
-ADR은 구현 명세가 아니다. 결정이 내려진 뒤의 상세 인터페이스, 설정, 검증 기준은 후속 Spec, Plan, Task, Operations 문서에서 관리한다.
+`docs/02.architecture/decisions`는 중요한 아키텍처 선택의 맥락과 동인,
+고려한 대안, 선택, 근거, 결과, 확인 방법과 supersession을 보존한다.
+ADR은 구현 명세나 운영 절차가 아니다.
 
 ## Audience
-
-이 README의 주요 독자:
 
 - System Architects
 - Developers
@@ -24,21 +23,8 @@ ADR은 구현 명세가 아니다. 결정이 내려진 뒤의 상세 인터페�
 
 ## Scope
 
-### In Scope
-
-- 주요 프레임워크, 플랫폼, 런타임 서비스 선정 결정
-- 시스템 통신 프로토콜과 경계 결정
-- 데이터베이스, 메시징, 관측성, 워크플로, AI, tooling 계층의 기술 선택
-- 네트워크 표준화 정책 결정
-- 관련 PRD, ARD, Spec, Plan 문서로의 추적성
-
-### Out of Scope
-
-- 아키텍처 참조 모델과 품질 속성 정의 (`docs/02.architecture/requirements` 담당)
-- 상세 기술 명세와 구현 계약 (`docs/03.specs` 담당)
-- 단순 코드 변경 로그
-- 일반 사용 가이드나 운영 절차
-- 일시적인 트러블슈팅 기록
+이 디렉터리는 현재 26개의 ADR을 보유한다. 각 ADR은 하나의 material
+choice를 소유하고 실제 Architecture Description을 parent로 연결한다.
 
 ## Structure
 
@@ -47,51 +33,54 @@ docs/02.architecture/decisions/
 ├── 0001-traefik-nginx-hybrid.md
 ├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
-├── 0026-standardize-infra-net.md        # Canonical infra_net ADR
-├── 0027-stage-00-canonical-adapter-model.md # Canonical agent governance adapter ADR
-├── 0028-local-isolated-readiness-evidence.md # Local-isolated readiness evidence strategy
-└── README.md                            # This file
+├── 0027-stage-00-canonical-adapter-model.md
+├── 0028-local-isolated-readiness-evidence.md
+├── 0029-workspace-governance-authority.md
+├── 0030-tombstone-retirement-record.md
+└── README.md
 ```
 
 ## Current Inventory
 
-- 25 ADR leaf documents are present.
-- `0001` through `0011` cover base service and tier selection decisions.
-- `0015` through `0026` cover analytics, hardening/HA, and network decisions.
-- [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ADR for this stage.
-- [`0027-stage-00-canonical-adapter-model.md`](./0027-stage-00-canonical-adapter-model.md) is the canonical Stage 00 adapter decision for this stage.
-- [`0028-local-isolated-readiness-evidence.md`](./0028-local-isolated-readiness-evidence.md) is the canonical local-isolated readiness evidence decision for Specs 124-127.
+- `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
+- `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
+- [`ADR-0027`](./0027-stage-00-canonical-adapter-model.md):
+  ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
+- [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
+  local-isolated readiness evidence strategy.
+- [`ADR-0029`](./0029-workspace-governance-authority.md):
+  active workspace governance authority decision; ADR-0027을 supersede한다.
+- [`ADR-0030`](./0030-tombstone-retirement-record.md):
+  은퇴 기록으로서의 Tombstone decision.
 
 ## How to Work in This Area
 
-1. 결정을 제안하기 전에 상위 PRD와 관련 ARD를 먼저 읽는다.
-2. 새 ADR을 추가하기 전에 기존 ADR을 확인한다.
-3. 새 ADR은 [`../../99.templates/templates/sdlc/adr.template.md`](../../99.templates/templates/sdlc/adr.template.md)에서 시작한다.
-4. 모든 링크는 이 폴더 아래의 대상 ADR 위치 기준으로 다시 계산한다.
-5. 하나의 ADR은 하나의 결정을 다룬다.
-6. accepted decision은 관련 ARD와 Spec에 반영한다.
+1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
+2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
+3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/architecture/adr.template.md)를 사용한다.
+4. 선택, alternatives, rationale와 consequences를 보존한다.
+5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
+   supersession을 명시한다.
 
 ## Documentation Standards
 
-- ADR은 implementation step이 아니라 decision을 기록한다.
-- 각 ADR은 context, decision, non-goals, consequences, alternatives, related documents를 포함한다.
-- 번호가 부여된 canonical ADR이 있으면 같은 목적의 dated duplicate를 만들지 않는다.
-- accepted ADR과 충돌하는 새 결정은 새 ADR 또는 명시적인 supersession 경로가 필요하다.
+- `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
+  `artifact_type: adr`을 일치시킨다.
+- `parent_ids`는 실제 Architecture Description만 포함한다.
+- 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
+- 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.
 
 ## AI Agent Guidance
 
-1. ADR을 수정하기 전에 이 README를 먼저 읽는다.
-2. 대체 파일을 추가하지 말고 canonical ADR을 in-place로 수정한다.
-3. `infra_net` decision reference는 [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md)를 canonical로 본다.
-4. secret 값을 문서화하지 않고, untracked local state에서 runtime truth를 추론하지 않는다.
+Agent는 결정 내용을 요약하면서 alternatives, rationale, consequences 또는
+supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 ADR을 덮어쓰지
+말고 별도 승인된 ADR과 명시적 supersession을 사용한다.
 
 ## Related Documents
 
-- **Architecture Stage**: [Architecture index](../README.md)
-- **PRD**: [Product requirements](../../01.requirements/README.md)
-- **ARD**: [Architecture reference documents](../requirements/README.md)
-- **Stage 00 Adapter ADR**: [0027-stage-00-canonical-adapter-model](./0027-stage-00-canonical-adapter-model.md)
-- **Operational Readiness ADR**: [0028-local-isolated-readiness-evidence](./0028-local-isolated-readiness-evidence.md)
-- **Spec**: [Technical specifications](../../03.specs/README.md)
-- **Plan**: [Execution plans](../../04.execution/plans/README.md)
-- **Template**: [ADR template](../../99.templates/templates/sdlc/adr.template.md)
+- [Architecture](../README.md)
+- [Architecture Descriptions](../descriptions/README.md)
+- [Product Requirements](../../01.requirements/README.md)
+- [Specifications](../../03.specs/README.md)
+- [Operations](../../05.operations/README.md)
+- [ADR Template](../../99.templates/templates/architecture/adr.template.md)

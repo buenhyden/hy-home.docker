@@ -1,0 +1,7 @@
+openapi: 3.1.0
+info:
+  title: __API_TITLE__
+  version: __API_VERSION__
+paths: {}
+components:
+  schemas: {}

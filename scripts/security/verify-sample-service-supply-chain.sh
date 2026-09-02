@@ -9,12 +9,16 @@ umask 077
 BASE_DIR="$(git rev-parse --show-toplevel)"
 SERVICE_DIR="$BASE_DIR/examples/sample-web-service"
 CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
-GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
+GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/lib/supply_chain/grype_db_seed.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 POLICY="$BASE_DIR/infra/supply-chain.sample-service-policy.json"
 COSIGN_OFFLINE_SIGNING_CONFIG="$BASE_DIR/infra/supply-chain.cosign-offline-signing-config.json"
 COSIGN_OFFLINE_TRUSTED_ROOT="$BASE_DIR/infra/supply-chain.cosign-offline-trusted-root.json"
-TASK_DOC="$BASE_DIR/docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md"
+# The approval surface. It sits beside the policy files this script
+# already reads because its previous Stage 04 home was removed with that
+# stage, taking the approval line with it and leaving this script failing
+# on a missing contract surface rather than a missing approval.
+APPROVAL_DOC="$BASE_DIR/infra/supply-chain.network-approvals.md"
 OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
 OUTPUT_DIR="$BASE_DIR/$OUTPUT_RELATIVE"
 GRYPE_DB_SEED_RELATIVE="_workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed"
@@ -119,7 +123,7 @@ load_tool_registry() {
 }
 
 validate_policy_and_exceptions() {
-  [[ -f "$POLICY" && -f "$COSIGN_OFFLINE_SIGNING_CONFIG" && -f "$COSIGN_OFFLINE_TRUSTED_ROOT" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "policy-task-or-cosign-config-boundary-missing"
+  [[ -f "$POLICY" && -f "$COSIGN_OFFLINE_SIGNING_CONFIG" && -f "$COSIGN_OFFLINE_TRUSTED_ROOT" && -f "$APPROVAL_DOC" ]] || fail "$EXIT_POLICY" "policy-task-or-cosign-config-boundary-missing"
   python3 "$CHECKER" --check >/dev/null || fail "$EXIT_POLICY" "policy-or-exception-invalid"
 }
 
@@ -759,7 +763,7 @@ run_advisory() {
 
 run_scorecard_advisory() {
   run_preflight
-  if ! grep -Fqx 'Scorecard network approval: confirmed' "$TASK_DOC"; then
+  if ! grep -Fqx 'Scorecard network approval: confirmed' "$APPROVAL_DOC"; then
     printf 'scorecard_advisory=skipped reason=task-read-only-network-approval-not-confirmed\n'
     return 0
   fi

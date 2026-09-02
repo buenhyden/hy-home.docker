@@ -56,16 +56,16 @@ hy-home.docker/
 - [`docs/05.operations/`](./docs/05.operations) - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - [`docs/90.references/`](./docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- [`docs/90.references/llm-wiki/`](./docs/90.references/llm-wiki) - tracked source files 기반 LLM Wiki entrypoint
-- [`docs/90.references/llm-wiki/repository-map.md`](./docs/90.references/llm-wiki/repository-map.md) - curated repository map
-- [`docs/90.references/llm-wiki/llm-wiki-index.md`](./docs/90.references/llm-wiki/llm-wiki-index.md) - generated tracked path index
+- [`docs/90.references/data/0082-llm-wiki-index/`](./docs/90.references/data/0082-llm-wiki-index) - tracked source files 기반 LLM Wiki entrypoint
+- [`docs/90.references/data/0083-repository-map/README.md`](docs/90.references/data/0083-repository-map/README.md) - curated repository map
+- [`docs/90.references/data/0082-llm-wiki-index/README.md`](docs/90.references/data/0082-llm-wiki-index/README.md) - generated tracked path index
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
-- [`.github/workflows/`](.github/workflows) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- [`docs/90.references/data/docker/`](./docs/90.references/data/docker) - Docker image/version drift 기준과 참고 규칙
-- [`docs/03.specs/095-infra-secrets-docs-refresh/`](./docs/03.specs/095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
+- [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
+- [`docs/90.references/data/`](./docs/90.references/data) - Docker image/version drift 기준과 참고 규칙
+- [`docs/03.specs/0095-infra-secrets-docs-refresh/`](./docs/03.specs/0095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
 
@@ -136,7 +136,7 @@ bash scripts/validation/validate-docker-compose.sh
 ### 5. Repository contract 검증
 
 ```bash
-bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/run-ci-gate.py --profile full
 ```
 
 이 검증은 docs taxonomy, required README, template inventory, GitHub Actions YAML, duplicate workflow step, script reference, runtime agent/function catalog, Docker image tag policy, tech-stack version drift를 함께 확인합니다.
@@ -173,9 +173,9 @@ docker compose --profile core up -d
 | `docs/01.requirements/**` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
 | `docs/02.architecture/**` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
 | `docs/03.specs/**` | English-only technical contracts |
-| `docs/04.execution/plans/**` | English-only implementation plans |
-| `docs/04.execution/tasks/**` | English-only task evidence |
-| `docs/05.operations/{guides,policies,runbooks,incidents}/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
+| `docs/03.specs/####-*/plan.md` | English-only implementation plans |
+| `docs/03.specs/####-*/tasks/tsk-####-*.md` | English-only task evidence |
+| `docs/05.operations/catalog/**`, `docs/05.operations/incidents/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
 | `docs/90.references/**` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
 | `docs/98.archive/**` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
 | `docs/99.templates/**` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
@@ -189,7 +189,7 @@ docker compose --profile core up -d
 | [`docs/01.requirements/`](./docs/01.requirements) | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
 | [`docs/02.architecture/`](./docs/02.architecture) | 아키텍처 요구사항과 결정 기록 |
 | [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세, 인터페이스, 구현 계약 |
-| [`docs/04.execution/`](./docs/04.execution) | 실행 계획과 작업 evidence |
+| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세와 co-located Plan/Task evidence |
 | [`docs/05.operations/`](./docs/05.operations) | 운영 가이드, 정책, 런북, 사고 기록 |
 | [`docs/90.references/`](./docs/90.references) | 느리게 변하는 참고 지식, 용어, source-backed reference |
 | [`docs/99.templates/`](./docs/99.templates) | 새 문서와 README의 canonical template |
@@ -200,13 +200,13 @@ docker compose --profile core up -d
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
-| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `bash scripts/validation/check-repo-contracts.sh` |
-| 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `bash scripts/validation/check-repo-contracts.sh` |
-| 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `bash scripts/validation/check-repo-contracts.sh` |
-| 실행 계획/작업 evidence 갱신 | [`docs/04.execution/README.md`](./docs/04.execution/README.md) | Plan과 Task를 분리하고 검증 evidence 기록 | `bash scripts/validation/check-doc-traceability.sh` |
-| 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `bash scripts/validation/check-repo-contracts.sh` |
-| 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `bash scripts/validation/check-repo-contracts.sh` |
-| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `bash scripts/validation/check-repo-contracts.sh` |
+| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 실행 계획/작업 evidence 갱신 | [`docs/03.specs/README.md`](docs/03.specs/README.md) | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
+| 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
@@ -214,7 +214,7 @@ docker compose --profile core up -d
 
 - 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.
 - Bootstrap 순서는 `bootstrap.md` → `persona.md` → `task-checklists.md` → `agentic.md` → `memory/README.md`와 `memory/progress.md` review → 해당 scope 순서를 따릅니다.
-- 문서 작성/갱신 작업은 [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성합니다.
+- 문서 작성/갱신 작업은 [`docs/00.agent-governance/policies/stage-authoring-matrix.md`](./docs/00.agent-governance/policies/stage-authoring-matrix.md)를 기준으로 작성합니다.
 - 공식 stage 문서는 기본적으로 읽기 전용이며, 명시적 사용자 지시가 있을 때만 수정합니다.
 
 ## Verification and Quality Gates
@@ -222,43 +222,31 @@ docker compose --profile core up -d
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
-- `bash scripts/validation/run-local-qa-gates.sh` - 로컬에서 재현 가능한 script-backed QA/CI 게이트 묶음 실행
-- `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
+- `bash scripts/validation/run-local-qa-gates.sh --changed` - 변경 경로가 영향을 주는 public suite 실행
+- `python3 scripts/validation/run-ci-gate.py --profile full` - six public validation suites 전체 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
-- `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` - LLM Wiki generated path index freshness 검사
+- `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
+- `python3 scripts/validation/check-document-links.py --mode alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사
+- `python3 scripts/knowledge/generate-llm-wiki.py --check` - LLM Wiki generated index and coverage freshness 검사
 - `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
 - `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
 - `bash scripts/hardening/check-all-hardening.sh` - 계층별 하드닝 기준 검사
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.
 
-GitHub Actions에서는 다음 품질 게이트를 사용합니다.
-
-- `docs-traceability` - 문서 추적성 검사
-- `docs-implementation-alignment` - active docs와 tracked implementation surface 정렬 검사
-- `repo-contracts` - docs taxonomy, GitHub workflow, script reference, image/version drift, runtime catalog 검사
-- `git-flow-contract` - PR 제목 Conventional Commits와 source branch prefix 검사
-- `compose-validation` - Docker Compose 구조 검사
-- `compose-all-profiles-validation` - 전체 Compose profile 구조 검사
-- `infrastructure-hardening` - 계층별 하드닝 baseline 검사
-- `template-security-baseline` - 템플릿/보안 baseline 검사
-- `quickwin-baseline` - QuickWin baseline 검사
-- `pre-commit` - hook 기반 포맷/린트/품질 검사
-- `frontend-quality` - Storybook Next.js lint/typecheck/build/build-storybook 검사
-- `storybook-coverage` - Storybook Next.js coverage 검사
-- `zizmor` - GitHub Actions 보안 분석
+GitHub Actions 품질 게이트는 PR에서 `validation-changed`, push와 manual
+dispatch에서 `validation-full`을 사용합니다. 두 job은 각각 public
+`changed` 또는 `full` profile만 선택하며 validator 명령을 복사하지 않습니다.
 
 추가로 `v*.*.*` 태그 push에는 `Release Changelog Check`가 실행되어
 `CHANGELOG.md`에 해당 release tag 항목이 있는지 확인합니다. 이는 tag-only
 release visibility gate이며, remote required-check enforcement 증거로
 간주하지 않습니다.
 
-`pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
-GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
+`validation-full` job은 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
-로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --list`로 실행 가능한
-script-backed gate와 원격 전용 gate를 구분합니다.
+로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --explain`으로
+선택된 suite와 validator 매핑을 실행 없이 확인합니다.
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 
@@ -266,28 +254,28 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme.template.md`](./docs/99.templates/templates/common/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme.template.md`](./docs/99.templates/templates/common/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
-5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
+5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/policies/github-governance.md`](./docs/00.agent-governance/policies/github-governance.md)와 [`docs/00.agent-governance/policies/git-workflow.md`](./docs/00.agent-governance/policies/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
 ## Related Documents
 
 - [`docs/README.md`](./docs/README.md)
 - [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md)
-- [`docs/00.agent-governance/scopes/docs.md`](./docs/00.agent-governance/scopes/docs.md)
-- [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)
-- [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)
-- [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)
-- [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)
+- [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)
+- [`docs/00.agent-governance/policies/documentation-protocol.md`](./docs/00.agent-governance/policies/documentation-protocol.md)
+- [`docs/00.agent-governance/policies/github-governance.md`](./docs/00.agent-governance/policies/github-governance.md)
+- [`docs/00.agent-governance/policies/git-workflow.md`](./docs/00.agent-governance/policies/git-workflow.md)
+- [`docs/00.agent-governance/policies/stage-authoring-matrix.md`](./docs/00.agent-governance/policies/stage-authoring-matrix.md)
 - [`docs/05.operations/README.md`](./docs/05.operations/README.md)
 - [`docs/90.references/README.md`](./docs/90.references/README.md)
-- [`docs/90.references/data/docker/README.md`](./docs/90.references/data/docker/README.md)
-- [`docs/90.references/llm-wiki/README.md`](./docs/90.references/llm-wiki/README.md)
-- [`docs/90.references/llm-wiki/llm-wiki-index.md`](./docs/90.references/llm-wiki/llm-wiki-index.md)
+- [`docs/90.references/data/README.md`](./docs/90.references/data/README.md)
+- [`docs/90.references/data/0082-llm-wiki-index/README.md`](./docs/90.references/data/0082-llm-wiki-index/README.md)
+- [`docs/90.references/data/0082-llm-wiki-index/README.md`](docs/90.references/data/0082-llm-wiki-index/README.md)
 - [`llms.txt`](./llms.txt)
-- [`docs/03.specs/095-infra-secrets-docs-refresh/spec.md`](./docs/03.specs/095-infra-secrets-docs-refresh/spec.md)
-- [`docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md`](./docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md)
+- [`docs/03.specs/0095-infra-secrets-docs-refresh/spec.md`](docs/03.specs/0095-infra-secrets-docs-refresh/spec.md)
+- Historical execution evidence: `plan-0028` (retained through the typed change ledger)
 - [`infra/README.md`](./infra/README.md)
 - [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)
 - [`scripts/README.md`](./scripts/README.md)

@@ -1,0 +1,1201 @@
+schema_version: 1
+files:
+- path: scripts/README.md
+  kind: contract
+  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-security-automation-readiness.sh
+  - tests/validation/test_script_manifest.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+- path: scripts/hardening/check-all-hardening.sh
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - docs/05.operations/catalog/01-gateway/0011-nginx/guide.md
+  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/hooks/agent-event-hook.sh
+  kind: hook
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/hooks/hook_rules.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/hooks/agent-event-hook.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_hook_rules.py
+- path: scripts/hooks/post-tool-validate.sh
+  kind: hook
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/knowledge/generate-llm-wiki.py
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  - README.md
+  - docs/00.agent-governance/policies/quality-standards.md
+  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
+  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
+  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_generate_llm_wiki.py
+  - tests/validation/test_validator_entrypoints.py
+  check_command:
+  - python3
+  - scripts/knowledge/generate-llm-wiki.py
+  - --check
+  outputs:
+  - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
+  - docs/90.references/data/0082-llm-wiki-index/README.md
+- path: scripts/knowledge/report-graphify-health.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md
+  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_contracts.py
+- path: scripts/lib/agent_governance/agent_governance_contract.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: []
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-agent-governance-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/agent_governance/test_agent_governance_contract.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/document_governance/__init__.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: none
+  consumers: []
+  disposition: rewrite
+  successor: scripts/lib/document_governance/__init__.py
+  tests: []
+- path: scripts/lib/document_governance/architecture.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/reference.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_architecture.py
+- path: scripts/lib/document_governance/archive.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/lifecycle/recovery.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_archive.py
+- path: scripts/lib/document_governance/frontmatter.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/links.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+- path: scripts/lib/document_governance/git_provenance.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/contract.py
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/profile.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+- path: scripts/lib/document_governance/identity_history.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_identity_history.py
+- path: scripts/lib/document_governance/lifecycle/contract.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/lifecycle/public.py
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_contract.py
+- path: scripts/lib/document_governance/lifecycle/promoted.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_promoted.py
+- path: scripts/lib/document_governance/lifecycle/public.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_public.py
+- path: scripts/lib/document_governance/lifecycle/recovery.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/validation/lifecycle/test_recovery.py
+- path: scripts/lib/document_governance/links.py
+  kind: library
+  authority: docs/00.agent-governance/policies/documentation-protocol.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-links.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+- path: scripts/lib/document_governance/metadata/heading.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/identity.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_heading.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/identity.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_identity.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/lifecycle.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_lifecycle.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/profile.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/heading.py
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/reference.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_profile.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata/reference.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_reference.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata_contract.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/contract.py
+  - scripts/validation/check-document-metadata.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/metadata_validator.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/lib/document_governance/metadata_contract.py
+  - scripts/validation/check-document-metadata.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/test_reference.py
+  - tests/lib/document_governance/test_metadata_validator.py
+- path: scripts/lib/document_governance/operations_catalog.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/references.py
+  - scripts/validation/check-operations-catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_operations_catalog.py
+  - tests/lib/document_governance/test_operations_taxonomy.py
+- path: scripts/lib/document_governance/references.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_references.py
+- path: scripts/lib/document_governance/registry.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/identity_history.py
+  - scripts/lib/document_governance/metadata_contract.py
+  - scripts/lib/document_governance/metadata_validator.py
+  - scripts/lib/document_governance/taxonomy.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_identity_history.py
+  - tests/lib/document_governance/test_registry.py
+- path: scripts/lib/document_governance/requirements.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/reference.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_requirements.py
+- path: scripts/lib/document_governance/spec_packages.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/lifecycle/public.py
+  - scripts/lib/document_governance/metadata/identity.py
+  - scripts/lib/document_governance/metadata/reference.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_spec_packages.py
+- path: scripts/lib/document_governance/suite_registry.py
+  kind: library
+  authority: scripts/manifest.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/gate/ci_gate_contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_suite_registry.py
+- path: scripts/lib/document_governance/taxonomy.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/lifecycle.py
+  - scripts/lib/document_governance/metadata/profile.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_taxonomy.py
+- path: scripts/lib/gate/ci_gate_adapters.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_ci_gate_adapters.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/gate/ci_gate_contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/gate/github_workflow_contract.py
+  - scripts/lib/target_surface/target_surface_delta_contract.py
+  - scripts/validation/ci_gate_runner.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_ci_gate_contract.py
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/gate/github_workflow_contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/lib/gate/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_github_workflow_contract.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/hardening-lib.sh
+  kind: library
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/hardening/check-all-hardening.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_hardening_lib.sh
+- path: scripts/lib/ops/rehearse-postgres-logical-upgrade.sh
+  kind: validator
+  public_suites:
+  - operations
+  execution_contexts: []
+  authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py
+- path: scripts/lib/ops/validate-harness.sh
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/supply_chain/grype_db_seed.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: []
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/security/seed-grype-db-cache.sh
+  - scripts/security/verify-sample-service-supply-chain.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/supply_chain/test_grype_db_seed.py
+- path: scripts/lib/target_surface/target_surface_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-target-surface-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_contracts.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/target_surface/target_surface_delta_contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: []
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-target-surface-delta-contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
+- path: scripts/manifest.yaml
+  kind: contract
+  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+- path: scripts/operations/gen-secrets.sh
+  kind: operations
+  authority: docs/02.architecture/descriptions/0018-security-optimization-hardening-architecture.md
+  lifecycle: transition
+  mutation: runtime
+  consumers:
+  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
+  disposition: rewrite
+  successor: scripts/operations/gen-secrets.sh
+  tests: []
+- path: scripts/operations/generate-compose-profile-service-coverage.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+  check_command:
+  - bash
+  - scripts/operations/generate-compose-profile-service-coverage.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
+- path: scripts/operations/generate-tech-stack-version-provenance.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+  check_command:
+  - bash
+  - scripts/operations/generate-tech-stack-version-provenance.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0061-tech-stack-version-provenance/README.md
+- path: scripts/operations/provider_surface_renderer.py
+  kind: operations
+  authority: docs/00.agent-governance/providers/registry.yaml
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - scripts/operations/sync-provider-surfaces.sh
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_provider_native_surfaces.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/rehearse-sample-service-delivery.sh
+  kind: operations
+  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  lifecycle: transition
+  mutation: runtime
+  consumers:
+  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+- path: scripts/operations/sync-provider-surfaces.sh
+  kind: operations
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_provider_surface_renderer.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/sync-tech-stack-versions.sh
+  kind: operations
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  - .github/workflows/tech-stack-version-sync.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/use-qa-ci-tools.sh
+  kind: operations
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/hooks/post-tool-validate.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/requirements-pre-commit.txt
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests: []
+- path: scripts/requirements.txt
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflows/ci-quality.yml
+  disposition: retain
+  successor: null
+  tests: []
+- path: scripts/security/generate-supply-chain-sample-service-summary.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_tech_stack_version_contract.py
+  check_command:
+  - bash
+  - scripts/security/generate-supply-chain-sample-service-summary.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0079-supply-chain-sample-service/README.md
+- path: scripts/security/seed-grype-db-cache.sh
+  kind: operations
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  lifecycle: transition
+  mutation: runtime
+  consumers: []
+  disposition: rewrite
+  successor: scripts/security/seed-grype-db-cache.sh
+  tests:
+  - tests/lib/supply_chain/test_grype_db_seed.py
+- path: scripts/security/verify-sample-service-supply-chain.sh
+  kind: operations
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  lifecycle: transition
+  mutation: runtime
+  consumers:
+  - scripts/security/generate-supply-chain-sample-service-summary.sh
+  disposition: rewrite
+  successor: scripts/security/verify-sample-service-supply-chain.sh
+  tests:
+  - tests/lib/supply_chain/test_grype_db_seed.py
+  - tests/validation/test_supply_chain_policy.py
+- path: scripts/validation/agent_output_eval.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --check-fixtures
+  - --check-regressions
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/agentic-audit-semantic-contract.json
+  kind: contract
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agentic_audit_semantic_freshness.py
+- path: scripts/validation/audit_criterion_contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - scripts/validation/report-audit-pack-coverage.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_audit_criterion_contract.py
+- path: scripts/validation/check-agent-governance-contract.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --mode
+  - repository
+  - --section
+  - all
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-agentic-audit-semantic-freshness.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agentic_audit_semantic_freshness.py
+- path: scripts/validation/check-doc-implementation-alignment.sh
+  kind: validator
+  public_suites:
+  - document-graph
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: none
+  consumers: []
+  disposition: rewrite
+  successor: scripts/validation/check-document-links.py
+  tests: []
+- path: scripts/validation/check-doc-traceability.sh
+  kind: validator
+  public_suites:
+  - document-graph
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: docs/99.templates/registry.json
+  lifecycle: transition
+  mutation: none
+  consumers: []
+  disposition: rewrite
+  successor: scripts/validation/check-document-links.py
+  tests: []
+- path: scripts/validation/check-document-corpus-lifecycle.py
+  kind: validator
+  public_suites:
+  - document-lifecycle
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/lifecycle/_support.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-document-links.py
+  kind: validator
+  public_suites:
+  - document-graph
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --mode
+  - all
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_links.py
+- path: scripts/validation/check-document-metadata.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --mode
+  - check-changed
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/metadata/_support.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-github-workflow-contract.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/INDEX.md
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-operations-catalog.py
+  kind: validator
+  public_suites:
+  - operations
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-quickwin-baseline.sh
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_compose_baseline_gates.py
+- path: scripts/validation/check-script-manifest.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: scripts/manifest.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+- path: scripts/validation/check-storybook-contract.sh
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_github_workflow_contract.py
+- path: scripts/validation/check-supply-chain-policy.py
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_argv: [--check]
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - scripts/security/generate-supply-chain-sample-service-summary.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_supply_chain_policy.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-target-surface-contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_contracts.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-target-surface-delta-contract.py
+  kind: validator
+  public_suites:
+  - document-contract
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --mode
+  - advisory
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
+- path: scripts/validation/check-template-security-baseline.sh
+  kind: validator
+  public_suites:
+  - repository-integrity
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - docs/05.operations/catalog/03-security/0016-vault/guide.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_compose_baseline_gates.py
+- path: scripts/validation/ci_gate_runner.py
+  kind: runner
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/target_surface/target_surface_delta_contract.py
+  - tests/validation/test_ci_gate_runner.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/target_surface/test_target_surface_delta_contracts.py
+  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/compose-core-readiness.lib.sh
+  kind: operations
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/validation/run-compose-core-readiness.sh
+  disposition: rewrite
+  successor: scripts/validation/compose-core-readiness.lib.sh
+  tests:
+  - tests/validation/test_compose_core_readiness.py
+- path: scripts/validation/generate-audit-implementation-matrix.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agentic_audit_semantic_freshness.py
+  - tests/validation/test_audit_criterion_contract.py
+  check_command:
+  - bash
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0065-audit-implementation-matrix/README.md
+- path: scripts/validation/generate-security-automation-readiness.sh
+  kind: generator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_security_automation_readiness.py
+  check_command:
+  - bash
+  - scripts/validation/generate-security-automation-readiness.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0078-security-automation-readiness/README.md
+- path: scripts/validation/report-audit-pack-coverage.sh
+  kind: validator
+  public_suites:
+  - document-lifecycle
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --check
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_audit_criterion_contract.py
+- path: scripts/validation/report-provider-hook-parity.sh
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --check
+  authority: docs/00.agent-governance/providers/registry.yaml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - tests/validation/test_provider_hook_parity.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_provider_hook_parity.py
+  check_command:
+  - bash
+  - scripts/validation/report-provider-hook-parity.sh
+  - --check
+  outputs:
+  - docs/90.references/data/0072-provider-hook-parity-matrix/README.md
+- path: scripts/validation/run-agent-output-eval-fixtures.sh
+  kind: runner
+  authority: docs/00.agent-governance/skills/provider-model-evaluation.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - tests/validation/test_agent_output_eval_fixtures.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/run-agent-precommit-all-files.sh
+  kind: runner
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/validation/agentic-audit-semantic-contract.json
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_run_agent_precommit_all_files.sh
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/run-ci-gate.py
+  kind: runner
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/INDEX.md
+  - .github/workflows/ci-quality.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/run-ci-precommit.sh
+  kind: runner
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_run_ci_precommit.sh
+- path: scripts/validation/run-compose-core-readiness.sh
+  kind: operations
+  authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
+  lifecycle: active
+  mutation: runtime
+  consumers: []
+  disposition: rewrite
+  successor: scripts/validation/run-compose-core-readiness.sh
+  tests:
+  - tests/validation/test_compose_core_readiness.py
+- path: scripts/validation/run-local-qa-gates.sh
+  kind: runner
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/INDEX.md
+  - docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/validate-docker-compose.sh
+  kind: operations
+  authority: .github/workflow-contract.yml
+  lifecycle: transition
+  mutation: runtime
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: rewrite
+  successor: scripts/validation/validate-docker-compose.sh
+  tests: []

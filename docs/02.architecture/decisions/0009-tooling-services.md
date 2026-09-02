@@ -1,9 +1,15 @@
 ---
+title: Tooling Services Selection and Configuration
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0009
+parent_ids:
+  - AD-0009
+created: 2026-03-26
+updated: 2026-08-10
 ---
-
-<!-- Target: docs/02.architecture/decisions/0009-tooling-services.md -->
-
 # ADR-0009: Tooling Services Selection and Configuration
 
 ## Context
@@ -55,13 +61,21 @@ Accepted (2026-03-26)
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
-## Alternatives
+## Options Considered
 
 Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- [Tooling PRD](../../01.requirements/010-tooling.md)
-- [Tooling ARD](../requirements/0009-tooling-architecture.md)
-- [Tooling spec](../../03.specs/010-tooling/spec.md)
-- [Tooling standardization plan](../../04.execution/plans/2026-03-26-09-tooling-standardization.md)
+- [Tooling PRD](../../01.requirements/0010-tooling.md)
+- [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
+- [Tooling spec](../../03.specs/0010-tooling/spec.md)
+- Tooling standardization plan

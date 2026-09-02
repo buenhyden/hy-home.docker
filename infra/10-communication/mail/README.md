@@ -44,7 +44,7 @@ mail/
 | Command | Description |
 | --- | --- |
 | `bash scripts/hardening/check-all-hardening.sh 10-communication` | mail leaf hardening baseline 확인 |
-| `bash scripts/validation/check-repo-contracts.sh` | stale 문서/계약 재유입 방지 확인 |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | stale 문서/계약 재유입 방지 확인 |
 | `docker logs --tail 100 stalwart` | 실행 중인 Stalwart 컨테이너 로그 tail 확인 |
 | `docker logs --tail 100 mailhog` | 실행 중인 MailHog 컨테이너 로그 tail 확인 |
 
@@ -67,7 +67,7 @@ mail/
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 10-communication` after Compose reference changes that affect mail services.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking mail documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking mail documentation ready.
 - Service-local standalone `docker compose config` is not readiness evidence because this leaf depends on root `infra_net`, Docker Secrets, and common template context.
 
 ## Troubleshooting
@@ -77,9 +77,9 @@ mail/
 
 ## Related Documents
 
-- **Guide**: [Mail usage guide](../../../docs/05.operations/guides/10-communication/mail.md)
-- **Policy**: [Mail operations policy](../../../docs/05.operations/policies/10-communication/mail.md)
-- **Runbook**: [Mail recovery runbook](../../../docs/05.operations/runbooks/10-communication/mail.md)
+- **Guide**: [Mail usage guide](../../../docs/05.operations/catalog/10-communication/0070-mail/guide.md)
+- **Policy**: [Mail operations policy](../../../docs/05.operations/catalog/10-communication/0070-mail/policy.md)
+- **Runbook**: [Mail recovery runbook](../../../docs/05.operations/catalog/10-communication/0070-mail/runbook.md)
 
 ## Service Readiness
 
@@ -95,8 +95,8 @@ mail/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.stalwart-ui.rule`, `traefik.http.routers.stalwart-ui.entrypoints`, `traefik.http.routers.stalwart-ui.tls`, `traefik.http.routers.stalwart-ui.middlewares`, `traefik.http.services.stalwart-ui.loadbalancer.server.port`, `traefik.http.routers.mailhog.rule`, plus 4 more |
 | Secret refs | names: `stalwart_password`; mounts: `/run/secrets/stalwart_password` |
 | Healthcheck | Compose healthcheck declared for `stalwart`, `mailhog` |
-| Operations | [Guide](../../../docs/05.operations/guides/10-communication/mail.md), [Policy](../../../docs/05.operations/policies/10-communication/mail.md), [Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `10-communication`; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/10-communication/0070-mail/guide.md), [Policy](../../../docs/05.operations/catalog/10-communication/0070-mail/policy.md), [Runbook](../../../docs/05.operations/catalog/10-communication/0070-mail/runbook.md) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `10-communication`; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area

@@ -1,0 +1,45 @@
+---
+title: Operations — 10 Communication
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
+---
+
+# Operations — 10 Communication
+
+> Mail and communication operations grouped by stable subject and role.
+
+## Overview
+
+This domain co-locates the current Stalwart and MailHog guide, policy, and
+runbook under the stable `0070-mail` identity. Its role membership follows the
+current subject tree.
+
+## Audience
+
+- Operators, SREs, platform engineers, developers, and AI agents.
+
+## Scope
+
+- Optional communication-stack use, DNS/TLS and access controls, hardening,
+  evidence collection, recovery, and escalation.
+- No service restart, DNS mutation, credential access, or deployment action is
+  authorized by this index.
+
+## Structure
+
+| Subject | Available documents |
+| --- | --- |
+| [Mail](0070-mail/guide.md) | [Guide](0070-mail/guide.md), [Policy](0070-mail/policy.md), [Runbook](0070-mail/runbook.md) |
+
+## How to Work in This Area
+
+Use the guide for routine context and non-destructive checks, the policy for
+mandatory controls and exceptions, and the runbook for ordered recovery. The
+guide hands off to the sibling runbook only because that runbook exists.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Communication infrastructure](../../../../infra/10-communication/README.md)
+- [Incident records](../../incidents/README.md)

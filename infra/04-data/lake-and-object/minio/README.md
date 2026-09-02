@@ -56,8 +56,8 @@ minio/
 | Labels | `hy-home.tier`, Traefik API route `minio.${DEFAULT_URL}`, Traefik console route `minio-console.${DEFAULT_URL}` |
 | Secret refs | `minio_root_username`, `minio_root_password`, `minio_app_username`, `minio_app_user_password`; mounted under `/run/secrets/` |
 | Healthcheck | Compose healthcheck declared for `minio`; not declared for `minio-create-buckets` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md), [Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/minio.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/minio.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0023-minio/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0023-minio/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0023-minio/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -94,10 +94,10 @@ minio/
 
 ## Related Documents
 
-- **Guide**: [Technical Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md)
-- **Policy**: [Operations Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/minio.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/minio.md)
-- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/004-data/spec.md)
+- **Guide**: [Technical Guide](../../../../docs/05.operations/catalog/04-data/0023-minio/guide.md)
+- **Policy**: [Operations Policy](../../../../docs/05.operations/catalog/04-data/0023-minio/policy.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/0023-minio/runbook.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/0004-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

@@ -1,85 +1,173 @@
 ---
+title: Stage 99 Document Contracts and Templates
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
-# 99.templates
-
-> stage 문서와 README 작성을 위한 canonical template entrypoint
+# Stage 99 Document Contracts and Templates
 
 ## Overview
 
-`docs/99.templates`는 워크스페이스 문서 템플릿의 canonical source입니다.
-복사 가능한 템플릿은 `templates/`에 두고, 템플릿을 어떻게 선택하고 관리할지에
-대한 contract와 governance는 `support/`에 둡니다.
+Stage 99 is the sole authority for document paths, profiles, identifiers,
+sections, lifecycle states and transitions, traceability shapes, and copyable
+templates. The machine authority is [`registry.json`](./registry.json); the two
+schemas under `contracts/` validate the registry and document
+frontmatter. Human and AI-agent policy remains in Stage 00, and executable gate
+behavior remains in registered `scripts/` modules.
 
-이 README는 catalog와 routing entrypoint만 담당합니다. 상세 lifecycle,
-frontmatter, cross-link, stale document, deviation, README profile 규칙은
-support 문서를 기준으로 확인합니다.
-
-## Audience
-
-이 README의 주요 독자:
-
-- Documentation Writers
-- AI Agents
-- Repository Maintainers
+Predecessor contracts are recoverable through Git history; they are not current
+authoring or validation inputs.
 
 ## Scope
 
-### In Scope
+Stage 99 owns:
 
-- `docs/01`부터 `docs/05`, `docs/90`, `docs/98` stage 문서 템플릿
-- `docs/00.agent-governance/memory/`의 memory note와 progress log 템플릿
-- `docs/03.specs/NNN-<feature-id>/`에서 사용하는 child contract 템플릿
-- repository-wide README와 folder README 템플릿
-- template contract, frontmatter contract, lifecycle/status, selection guide
+- the Requirement Package and Architecture Description profiles;
+- the Guide, Policy, Runbook, Incident, and Postmortem profiles;
+- the Research, Audit, Data, and Tombstone profiles plus a transition-only
+  Migration profile for the temporary records being retired by SPEC-0158;
+- canonical path and stable-ID patterns;
+- profile-specific frontmatter and section contracts;
+- lifecycle states and allowed forward transitions;
+- monotonic identity allocation state, including Requirement child spaces;
+- template role-to-profile registration;
+- reusable Markdown and executable interface-contract templates;
+- exact Stage 03 package-index and contract-payload filenames and media types;
+- the four-digit Operations subject route shape.
 
-### Out of Scope
+Stage 99 does not own agent behavior, product truth, architecture decisions,
+implementation evidence, operating policy, or reference findings.
 
-- 실제 요구사항, 설계, 계획, 작업, 운영, 사고 기록 본문
-- 런타임 설정 원문이나 secret 값
-- 템플릿을 벗어난 임의 문서 유형
-- Stage 00 governance rule 본문을 대체하는 별도 정책 원천
+## Authority Model
 
-## Category Catalog
+| Surface | Authority | Purpose |
+| :--- | :--- | :--- |
+| [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
+| [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
+| [`contracts/frontmatter.schema.json`](./contracts/frontmatter.schema.json) | machine | typed frontmatter value shape |
+| [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
-| Category | Path | Role |
-| --- | --- | --- |
-| SDLC templates | [templates/sdlc/](./templates/sdlc/) | PRD, ARD, ADR, Spec, Plan, Task |
-| Spec contract templates | [templates/spec-contracts/](./templates/spec-contracts/) | API spec, agent design, data model, service, tests, OpenAPI, GraphQL, Proto |
-| Operations templates | [templates/operations/](./templates/operations/) | Guide, policy, runbook, incident, postmortem, Release |
-| Governance templates | [templates/governance/](./templates/governance/) | Memory note, progress log |
-| Common templates | [templates/common/](./templates/common/) | README, reference, Audit, archive |
-| Support governance | [support/](./support/) | Template contract, governance, frontmatter, lifecycle, selection, external-source rationale |
+Consumers must load the Registry through
+`scripts.lib.document_governance.registry`. They must not reinterpret README
+prose or template bodies as machine policy.
+
+Every profile declares one `frontmatter_policy`. `required` means the canonical
+Markdown artifact must carry a `profile_id` equal to its Registry-classified
+profile; this also applies to package, domain, subject, stage, governance,
+generated, and repository-support Markdown without a dedicated copy template.
+`absent` is reserved for executable machine contracts that do not use Markdown
+frontmatter. `unmanaged` is reserved for the unsupported fallback and never
+defines a canonical target artifact.
+
+## Identity and Lifecycle Rules
+
+### Registered Identity Shapes
+
+| Profile | Identity | Owning container |
+| :--- | :--- | :--- |
+| `requirements-package` | `REQ-####` | — |
+| `architecture-description` / `adr` | `AD-####` / `ADR-####` | — |
+| `spec` | `SPEC-####` | — |
+| `plan` / `task` | `SPEC-####-PLAN-####` / `SPEC-####-TSK-####` | `SPEC-####` |
+| `guide` / `policy` / `runbook` | `GDE-####` / `POL-####` / `RUN-####` | — |
+| `incident` / `postmortem` | `inc-<year>-####` / `inc-<year>-####-PM` | the incident |
+| `research` / `audit` / `data` | `RES-####` / `AUD-####` / `DATA-####` | — |
+| `research-member` / `audit-member` / `generated` | `RES-####-m####` / `AUD-####-m####` / `DATA-####-m####` | its `####` container |
+| `migration` | `MIG-####` | — |
+| `tombstone` | `tomb-<retired artifact_id>` | the retired artifact |
+
+### Required Frontmatter Envelope
+
+Every identity-bearing document declares, in this order:
+
+| Key | Purpose |
+| :--- | :--- |
+| `title` | Human-readable name; never repeats the artifact identity |
+| `type` | `family/kind` document role; replaces `profile_id` and `artifact_type` |
+| `layer` | Governance layer the document belongs to |
+| `status` | Lifecycle state registered for the profile |
+| `owner` | Accountable owner, sourced from `.github/CODEOWNERS` |
+| `artifact_id` | Canonical identity; no domain alias duplicates it |
+| `parent_ids` | Traceability parents |
+| `created`, `updated` | Authoring dates |
+
+Templates additionally guide `version`. Provider-owned runtime projections are
+exempt: they declare `name` and `description` and carry the runtime's own
+`model` and `model_reasoning_effort`.
+
+- Standalone package paths use four numeric digits and omit semantic prefixes.
+- A member identity is its container's identity plus that container's own
+  internal sequence, so the same member number may recur under two containers.
+- Stage 90 package members are named `m####-<slug>.md`;
+  `scripts/lib/document_governance/references.py` owns that rule.
+- Tombstones use `identity_relation: inherited` and reuse the retired
+  document's identity, so the `tombstone` space no longer issues numbers;
+  `scripts/lib/document_governance/archive.py` derives the exact value.
+- Incident numbers restart inside each year partition, so the year belongs to
+  the identity and not only to the path.
+- Stable package IDs retain their registered prefix and case.
+- Requirement children use full owner-qualified IDs:
+  `REQ-####-FR-####`, `REQ-####-NFR-####`, and `REQ-####-IF-####`.
+- FR, NFR, and IF counters are package-owned. Registry allocation keys include
+  the full owner (for example `REQ-0001.FR`), so the same child number may be
+  issued independently in two Requirement Packages.
+- Issued numbers are never reused. `high_water` never decreases and
+  `next_number` is always greater than `high_water`.
+- Operations subjects and role artifacts have independent stable IDs. The
+  Registry validates the four-digit subject route and each role ID shape but
+  never equates their numbers. The current catalog directory containment owns
+  role-to-subject membership.
+- Incident year directories are the only date-path exception.
+- A lifecycle transition is valid only when registered for the profile's
+  lifecycle. Terminal states have no outgoing transition.
+
+Full Git-history allocation validation belongs to the full document-contract
+profile. Changed validation uses the persisted Registry allocation state.
+
+## Template Rules
+
+- Copy the source registered by `template_id`/template role.
+- Markdown template frontmatter declares `profile_id` and contains no concrete
+  target path.
+- Replace every placeholder before promotion to a target document.
+- Executable OpenAPI, GraphQL, and Proto contracts belong to the owning Stage 03
+  Spec package. Their deterministic filenames and media types are Registry
+  profiles; Stage 01 retains implementation-independent interface needs.
+- `DESIGN.md` remains the root UI/design-system authority and is not a Stage 03
+  design artifact.
 
 ## Structure
 
 ```text
-99.templates/
-├── README.md        # This file
-├── support/         # Non-copyable template rules and governance
-└── templates/       # Copyable template artifacts
+docs/99.templates/
+├── README.md
+├── registry.json
+├── contracts/
+│   ├── frontmatter.schema.json
+│   └── document-profile.schema.json
+└── templates/
+    ├── governance/
+    ├── requirements/
+    ├── architecture/
+    ├── specs/
+    ├── operations/
+    ├── references/
+    ├── archive/
+    └── common/
 ```
 
 ## How to Work in This Area
 
-이 섹션은 Stage 99 작업 경로를 찾기 위한 routing map입니다.
-
-- Template 선택: [template selection guide](./support/template-selection.md)
-- 복사 가능한 template catalog: [templates README](./templates/README.md)
-- 실제 release event 기록: [Release template](./templates/operations/release.template.md)
-- Frontmatter와 lifecycle status: [frontmatter contract](./support/frontmatter-contract.md), [lifecycle status](./support/lifecycle-status.md)
-- Template 변경과 검토: [template governance](./support/template-governance.md)
-- Durable support rule surface: [support README](./support/README.md)
+1. Select a registered profile and template role.
+2. Copy the registered source without changing its `profile_id` contract.
+3. Allocate an ID above the persisted high-water mark.
+4. Replace placeholders and add full traceability IDs.
+5. Run the document-contract validator and the owning stage gate.
+6. Change Registry, schemas, templates, consumers, and tests in one reviewed
+   logical unit when the contract itself changes.
 
 ## Related Documents
 
-- [templates README](./templates/README.md)
-- [support README](./support/README.md)
-- [template contract](./support/template-contract.md)
-- [template governance](./support/template-governance.md)
-- [frontmatter contract](./support/frontmatter-contract.md)
-- [template selection guide](./support/template-selection.md)
-- [docs index](../README.md)
-- [Documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Template catalog](./templates/README.md)
+- [Workspace governance authority ADR](../02.architecture/decisions/0029-workspace-governance-authority.md)

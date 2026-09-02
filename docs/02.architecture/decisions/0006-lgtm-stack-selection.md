@@ -1,7 +1,15 @@
 ---
+title: LGTM Stack and Grafana Alloy Selection
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0006
+parent_ids:
+  - AD-0006
+created: 2026-03-26
+updated: 2026-08-10
 ---
-<!-- Target: docs/02.architecture/decisions/0006-lgtm-stack-selection.md -->
 # ADR-0006: LGTM Stack and Grafana Alloy Selection
 
 > Selection of Grafana LGTM Stack and Alloy for Unified Observability.
@@ -35,7 +43,7 @@ status: active
   - **학습 곡선**: Grafana Alloy의 새로운 설정 언어(HCL-like)에 대한 숙련도 필요.
   - **추가 인프라**: MinIO 등의 백엔드 인프라 운영 부담.
 
-## Alternatives
+## Options Considered
 
 ### Alternative 1: ELK Stack (Elasticsearch, Logstash, Kibana)
 
@@ -47,8 +55,16 @@ status: active
 - **Good**: 업계 표준이며 벤더 중립적임.
 - **Bad**: Grafana 생태계(Loki/Prometheus 등)와의 밀접한 연동 기능(Discovery 등)이 Alloy에 비해 부족함.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/007-observability.md](../../01.requirements/007-observability.md)
-- **ARD**: [../requirements/0006-observability-architecture.md](../requirements/0006-observability-architecture.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
+- **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
+- **Architecture Description**: [../descriptions/0006-observability-architecture.md](../descriptions/0006-observability-architecture.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)
