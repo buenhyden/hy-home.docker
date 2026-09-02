@@ -26,7 +26,7 @@ runbook.
 This policy applies to the current `infra/06-observability/prometheus` compose,
 config, and alert-rule surfaces.
 
-- **Systems**: compose service `prometheus`, container `infra-prometheus`, image `prom/prometheus:v3.13.1`, config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
+- **Systems**: compose service `prometheus`, container `infra-prometheus`, image `prom/prometheus:v3.14.0`, config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -34,7 +34,7 @@ config, and alert-rule surfaces.
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
-    `prom/prometheus:v3.13.1`, tmpfs `/tmp` and `/etc/prometheus:size=10M`,
+    `prom/prometheus:v3.14.0`, tmpfs `/tmp` and `/etc/prometheus:size=10M`,
     read-only config/rules mounts, persistent `prometheus-data` volume을
     유지한다.
   - Runtime command는 `--config.file=/etc/prometheus/prometheus.yml`,
@@ -91,7 +91,7 @@ config, and alert-rule surfaces.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:v3.13.1|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:v3.14.0|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
 - Prometheus config:
   `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/vault_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:

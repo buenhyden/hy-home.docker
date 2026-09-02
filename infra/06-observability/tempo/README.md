@@ -41,7 +41,7 @@ tempo/
 | :--- | :--- | :--- | :--- |
 | Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | v3.0.2-custom | Distributed Tracing Backend |
 | Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | latest | S3-Compatible Object Store |
-| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.18.0 | OTLP Receiver & Forwarder |
+| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.19.2 | OTLP Receiver & Forwarder |
 
 ## Available Scripts
 

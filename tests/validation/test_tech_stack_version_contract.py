@@ -28,12 +28,12 @@ DRIFT_COMPONENTS = (
     "Ollama",
 )
 STALE_IMAGES = {
-    "Traefik": "traefik:v3.7.6",
-    "Keycloak": "quay.io/keycloak/keycloak:26.6.4-1",
-    "Prometheus": "prom/prometheus:v3.13.0",
-    "Alloy": "grafana/alloy:v1.17.1",
-    "Ollama": "ollama/ollama:0.31.1",
-    "Dozzle": "amir20/dozzle:v10.6.6",
+    "Traefik": "traefik:v3.7.8",
+    "Keycloak": "quay.io/keycloak/keycloak:26.7.0-0",
+    "Prometheus": "prom/prometheus:v3.13.1",
+    "Alloy": "grafana/alloy:v1.18.0",
+    "Ollama": "ollama/ollama:0.32.1",
+    "Dozzle": "amir20/dozzle:v10.6.11",
 }
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")

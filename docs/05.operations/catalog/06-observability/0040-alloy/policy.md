@@ -25,7 +25,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 이 정책은 current `infra/06-observability/alloy` compose와
 `config/config.alloy`에 선언된 Alloy 운영 기준을 다룬다.
 
-- **Systems**: compose service `alloy`, container `infra-alloy`, image `grafana/alloy:v1.18.0`, config `infra/06-observability/alloy/config/config.alloy`, volume `alloy-data`, Docker socket/container log read-only mounts
+- **Systems**: compose service `alloy`, container `infra-alloy`, image `grafana/alloy:v1.19.2`, config `infra/06-observability/alloy/config/config.alloy`, volume `alloy-data`, Docker socket/container log read-only mounts
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -34,7 +34,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 - **Required**:
   - Alloy configuration은
     `infra/06-observability/alloy/config/config.alloy`에서 관리한다.
-  - Alloy service는 `template-infra-med`, image `grafana/alloy:v1.18.0`,
+  - Alloy service는 `template-infra-med`, image `grafana/alloy:v1.19.2`,
     tmpfs `/tmp` and `/run`, read-only config mount, read-only Docker
     container/socket mounts, persistent `alloy-data` volume을 유지한다.
   - OTLP ingress는 gRPC `4317`과 HTTP `4318`을 사용한다.
@@ -81,7 +81,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-infra-med|image: grafana/alloy:v1.18.0|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-infra-med|image: grafana/alloy:v1.19.2|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Alloy pipeline config:
   `rg -n 'discovery.docker|project_net\\|infra_net|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
 - Repository contracts:

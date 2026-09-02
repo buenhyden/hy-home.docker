@@ -65,7 +65,7 @@ dozzle/
 
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |
-| Image      | amir20/dozzle | v10.6.11                 |
+| Image      | amir20/dozzle | v10.8.0                 |
 | Interface  | Web UI       | Real-time streaming       |
 | Monitoring | Docker Logs  | via `/var/run/docker.sock`|
 
