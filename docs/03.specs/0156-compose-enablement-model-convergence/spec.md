@@ -1,8 +1,10 @@
 ---
-profile_id: spec
+title: Compose Enablement Model Convergence Specification
+type: specs/spec
+layer: specification
 status: draft
+owner: "@buenhyden"
 artifact_id: SPEC-0156
-artifact_type: spec
 parent_ids: [REQ-0023, REQ-0025, ADR-0026]
 created: 2026-08-30
 updated: 2026-08-30

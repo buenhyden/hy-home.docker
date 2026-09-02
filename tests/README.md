@@ -4,9 +4,10 @@
 
 ## Overview
 
-`tests/`는 개별 서비스 디렉터리에 묶이지 않는 전역 테스트와 검증 자산을 두는 공간입니다. 현재 이 저장소의 주요 품질 게이트는 `scripts/`와 GitHub Actions에 정의되어 있으며, 이 README는 테스트 관련 파일을 추가할 때의 위치와 검증 경계를 설명합니다.
-
-구현 코드와 가까운 단위 테스트가 필요한 경우에는 해당 소스 또는 서비스 디렉터리 근처에 두고, 여러 계층을 가로지르는 통합, smoke, contract 성격의 테스트만 이 폴더에 둡니다.
+`tests/`는 저장소 전역 테스트와 검증 자산을 두는 공간입니다. 주요 품질
+게이트는 `scripts/`와 GitHub Actions에 정의되어 있으며, 이 트리는
+`scripts/lib/<domain>/`의 library-unit 소유권과 validation/entrypoint 소유권을
+서로 분리합니다.
 
 ## Audience
 
@@ -38,23 +39,26 @@
 tests/
 ├── README.md  # This file
 ├── fixtures/          # 검증기 입력 fixture
-├── lib/               # scripts/lib/ 모듈과 1:1 대응
-├── validation/        # scripts/validation/ 진입점 테스트
-├── docs/              # 문서 지향 command contract
-├── qa/                # 집계 QA adapter
-└── setup/             # bounded setup adapter
+├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
+└── validation/        # validation/entrypoint 및 실행-context 테스트
 ```
 
 ## How to Work in This Area
 
 1. 새 테스트 자산을 만들기 전에 같은 검증이 이미 `scripts/` 또는 하위 프로젝트 package script에 있는지 확인합니다.
 2. repository contract, doc traceability, Compose validation처럼 전역 검증에 가까운 항목은 [`../scripts/README.md`](../scripts/README.md)에 있는 기존 진입점을 우선 사용합니다.
-3. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
-4. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
+3. `scripts/lib/<domain>/`의 주 책임을 검증하는 테스트는 같은 이름의
+   `tests/lib/<domain>/`에 두고, CLI·entrypoint·실행 context 검증은
+   `tests/validation/`에 둡니다.
+4. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
+5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
 문서 메타데이터 검증 테스트는
-`PYTHONPATH=. python3 -m unittest tests.validation.test_document_metadata`로
-실행합니다. 이 테스트는 advisory inventory와 profile semantics를 함께 검증합니다.
+`PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'`로
+실행합니다. lifecycle entrypoint 검증은
+`PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'`로
+실행합니다. 두 inventory는 각각 5개 production 책임과 4개 등록 mode를
+mirroring하며, 공통 fixture는 discovery 대상이 아닌 `_support.py`만 사용합니다.
 
 changed/new blocking gate는 활성 상태입니다. `check-document-metadata.py
 --mode check-changed --base-ref "$(git merge-base main HEAD)"`가 CI가 강제하는

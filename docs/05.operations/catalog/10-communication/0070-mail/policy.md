@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Mail Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0070
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0070
 parent_ids:
   - SPEC-0011
 created: 2026-05-17

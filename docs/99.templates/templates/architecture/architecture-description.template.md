@@ -1,8 +1,11 @@
 ---
-profile_id: architecture-description
+title: <title>
+version: <version>
+type: architecture/description
+layer: <layer>
 status: draft
+owner: <owner>
 artifact_id: AD-####
-artifact_type: architecture-description
 parent_ids: [REQ-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

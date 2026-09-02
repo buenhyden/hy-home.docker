@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: infra-cross-validate
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: infra-cross-validate
 scope: infra
-status: active
 owner_agent: iac-reviewer
 ---
 

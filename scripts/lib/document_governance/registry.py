@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
+import functools
 import json
 import os
 import pathlib
@@ -132,6 +133,34 @@ class DocumentRegistry:
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
 
 
+@functools.lru_cache(maxsize=1)
+def _registered_types() -> Mapping[str, str]:
+    """Cache the Registry-declared family/kind document type per profile."""
+
+    return MappingProxyType({
+        profile_id: str(profile["type"])
+        for profile_id, profile in load_registry().profiles.items()
+        if isinstance(profile.get("type"), str)
+    })
+
+
+def document_type(profile_id: str) -> str:
+    """Return the canonical `family/kind` document type for a Registry profile."""
+
+    return _registered_types()[profile_id]
+
+
+def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
+    """A provider runtime owns this surface, so the document type system defers."""
+
+    exceptions = profile.get("exceptions")
+    # The registry freeze turns declared lists into tuples, so accept both.
+    return isinstance(exceptions, (list, tuple)) and any(
+        isinstance(item, Mapping) and item.get("kind") == "provider-owned-binding"
+        for item in exceptions
+    )
+
+
 def _trusted_requirement_path_match(path: str) -> re.Match[str] | None:
     """Match current or immutable predecessor Requirement Package paths."""
 
@@ -149,9 +178,35 @@ def _read_regular_file(path: pathlib.Path, maximum: int) -> bytes:
         raise RegistryError("registry input must be a regular non-symlink file")
     if metadata.st_size > maximum:
         raise RegistryError("registry input exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
+    absolute = pathlib.Path(os.path.abspath(path))
+    directory_flags = (
+        os.O_RDONLY
+        | os.O_DIRECTORY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    file_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | os.O_NONBLOCK
+    )
+    directory_descriptor = -1
     try:
-        descriptor = os.open(path, flags)
+        directory_descriptor = os.open(absolute.anchor, directory_flags)
+        for component in absolute.parts[1:-1]:
+            next_descriptor = os.open(
+                component,
+                directory_flags,
+                dir_fd=directory_descriptor,
+            )
+            os.close(directory_descriptor)
+            directory_descriptor = next_descriptor
+        descriptor = os.open(
+            absolute.name,
+            file_flags,
+            dir_fd=directory_descriptor,
+        )
         try:
             opened = os.fstat(descriptor)
             if not stat.S_ISREG(opened.st_mode):
@@ -161,6 +216,9 @@ def _read_regular_file(path: pathlib.Path, maximum: int) -> bytes:
             os.close(descriptor)
     except OSError as error:
         raise RegistryError(f"cannot read registry input: {error}") from error
+    finally:
+        if directory_descriptor >= 0:
+            os.close(directory_descriptor)
     if len(data) > maximum:
         raise RegistryError("registry input exceeds the byte limit")
     return data
@@ -182,9 +240,20 @@ def _parse_json(path: pathlib.Path, maximum: int) -> object:
         raise RegistryError("registry input must be UTF-8") from error
     try:
         raw = json.loads(source, object_pairs_hook=_unique_object)
-    except (json.JSONDecodeError, RegistryError) as error:
+    except (json.JSONDecodeError, RecursionError, RegistryError) as error:
         raise RegistryError(f"invalid registry JSON: {error}") from error
     _require_bounded_depth(raw)
+    return raw
+
+
+def load_registry_document(
+    path: pathlib.Path = DEFAULT_REGISTRY,
+) -> Mapping[str, object]:
+    """Load one bounded Registry JSON document without interpreting its contract."""
+
+    raw = _parse_json(path, MAX_REGISTRY_BYTES)
+    if not isinstance(raw, Mapping):
+        raise RegistryError("registry document must be a mapping")
     return raw
 
 
@@ -257,6 +326,11 @@ def validate_registry(
     for error in sorted(validator.iter_errors(raw), key=lambda item: tuple(map(str, item.path))):
         location = ".".join(map(str, error.path)) or "$"
         findings.append(RegistryFinding("schema-invalid", location, error.message))
+    if findings:
+        spaces = raw.get("identity_spaces")
+        if isinstance(spaces, Mapping):
+            _validate_identity_space_bounds(spaces, "identity_spaces", findings)
+        return tuple(sorted(set(findings)))
     profiles = raw.get("profiles")
     profile_ids: list[str] = []
     profile_lifecycles: dict[str, object] = {}
@@ -312,6 +386,10 @@ def validate_registry(
                 or right_id in FALLBACK_PROFILE_IDS
                 or not isinstance(right_pattern, str)
             ):
+                continue
+            if _declares_provider_binding(left) or _declares_provider_binding(right):
+                # A provider-owned binding is a narrower runtime-owned surface
+                # inside a generic document route; its runtime owner resolves it.
                 continue
             if _path_patterns_overlap(left_pattern, right_pattern):
                 findings.append(
@@ -441,18 +519,18 @@ def validate_registry(
                     "canonical Markdown profiles must require frontmatter",
                 )
             )
-        if frontmatter_policy == "required":
+        if frontmatter_policy == "required" and not _declares_provider_binding(profile):
             if (
                 not isinstance(required_frontmatter, list)
-                or "profile_id" not in required_frontmatter
+                or "type" not in required_frontmatter
                 or isinstance(optional_frontmatter, list)
-                and "profile_id" in optional_frontmatter
+                and "type" in optional_frontmatter
             ):
                 findings.append(
                     RegistryFinding(
-                        "profile-id-contract-invalid",
+                        "type-contract-invalid",
                         f"profiles.{index}",
-                        "frontmatter-required profiles must require exact profile_id",
+                        "frontmatter-required profiles must require exact type",
                     )
                 )
         elif frontmatter_policy == "absent" and (
@@ -486,6 +564,11 @@ def validate_registry(
         relation_valid = (
             identity_relation == "none" and artifact_pattern is None
         ) or (
+            # A tombstone reuses the retired document's identity instead of
+            # allocating a new one; its owner script derives the exact value.
+            identity_relation == "inherited"
+            and "retired_artifact_id" in artifact_tokens
+        ) or (
             identity_relation == "direct"
             and "number" in path_tokens
             and "number" in artifact_tokens
@@ -500,9 +583,6 @@ def validate_registry(
             identity_relation == "subject-member"
             and "subject_number" in path_tokens
             and "number" in artifact_tokens
-            and isinstance(traceability, Mapping)
-            and traceability.get("membership_authority")
-            == "operations-migration-manifest"
         )
         if not relation_valid:
             findings.append(
@@ -1348,11 +1428,12 @@ def validate_requirement_allocation_transition(
 
 
 _TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
     r"|\{(?:slug|hook_slug|domain|stage)\}"
 )
 _ARTIFACT_TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
+    r"|\{retired_artifact_id\}"
 )
 
 
@@ -1397,13 +1478,22 @@ def _safe_template_source(value: str) -> bool:
     )
 
 
+# Artifact patterns may also carry the inherited-identity token, which never
+# appears in a path pattern.
+_RENDER_TOKEN_PATTERN = re.compile(
+    _TOKEN_PATTERN.pattern + r"|\{retired_artifact_id\}"
+)
+
+
 def _path_regex(pattern: str) -> re.Pattern[str]:
     cursor = 0
     rendered: list[str] = ["^"]
-    for match in _TOKEN_PATTERN.finditer(pattern):
+    for match in _RENDER_TOKEN_PATTERN.finditer(pattern):
         rendered.append(re.escape(pattern[cursor : match.start()]))
         token = match.group(0)
-        if token.endswith(":4}"):
+        if token == "{retired_artifact_id}":
+            rendered.append(r"[A-Za-z][A-Za-z0-9]*-[0-9]{4}")
+        elif token.endswith(":4}"):
             rendered.append(r"[0-9]{4}")
         elif token == "{hook_slug}":
             rendered.append(r"[a-z0-9][a-z0-9.-]*")
@@ -1419,6 +1509,18 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
     return re.compile("".join(rendered))
 
 
+def path_matches_pattern(
+    path: str | pathlib.PurePosixPath,
+    pattern: object,
+) -> bool:
+    """Return whether one repository path matches a Registry path pattern."""
+
+    if not isinstance(pattern, str):
+        return False
+    normalized = pathlib.PurePosixPath(path).as_posix()
+    return _path_regex(pattern).fullmatch(normalized) is not None
+
+
 def classify_path(
     path: str | pathlib.PurePosixPath,
     registry: DocumentRegistry | None = None,
@@ -1431,10 +1533,20 @@ def classify_path(
         profile_id
         for profile_id, profile in active.profiles.items()
         if normalized in profile.get("additional_paths", ())
-        or isinstance(profile.get("path_pattern"), str)
-        and _path_regex(str(profile["path_pattern"])).fullmatch(normalized)
+        or path_matches_pattern(normalized, profile.get("path_pattern"))
     ]
     specific = [item for item in matches if item not in FALLBACK_PROFILE_IDS]
+    if len(specific) > 1:
+        # Same rule the overlap validation already applies: a provider-owned
+        # binding is a narrower runtime-owned surface inside a generic document
+        # route, so it wins rather than leaving the path unclassified.
+        owned = [
+            item
+            for item in specific
+            if _declares_provider_binding(active.profiles[item])
+        ]
+        if len(owned) == 1:
+            return owned[0]
     if specific:
         return specific[0] if len(specific) == 1 else None
     return matches[0] if len(matches) == 1 else None
@@ -1448,10 +1560,7 @@ def load_registry(
 ) -> DocumentRegistry:
     """Load, validate, and deeply freeze the sole Stage 99 machine authority."""
 
-    candidate = path.resolve(strict=False) if not path.is_symlink() else path
-    raw = _parse_json(candidate, MAX_REGISTRY_BYTES)
-    if not isinstance(raw, Mapping):
-        raise RegistryError("registry document must be a mapping")
+    raw = load_registry_document(path)
     findings = validate_registry(
         raw,
         trusted_requirement_baseline=trusted_requirement_baseline,

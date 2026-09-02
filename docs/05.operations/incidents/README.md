@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: 05.operations/incidents
+type: common/readme
+layer: operations
 status: active
+owner: "@buenhyden"
 ---
 
 <!-- README Target: docs/05.operations/incidents/README.md -->

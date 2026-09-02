@@ -14,7 +14,6 @@ evidence.
 
 - [CI quality workflow](./workflows/ci-quality.yml)
 - [Typed workflow and gate registry](./workflow-contract.yml)
-- [Document corpus lifecycle workflow](./workflows/document-corpus-lifecycle.yml)
 - [Contributor greeting workflow](./workflows/greetings.yml)
 - [Pull request labeler workflow](./workflows/pr-labeler.yml)
 - [Stale-thread workflow](./workflows/stale.yml)
@@ -28,7 +27,6 @@ evidence.
 
 - [Canonical GitHub governance](../docs/00.agent-governance/policies/github-governance.md)
 - [Local main-protection proposal](./rulesets/main-protection.md)
-- [Dated GitHub Actions observation](../docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml)
 
 ## Verification
 
@@ -40,4 +38,4 @@ evidence.
 
 - [Agent governance overview](../docs/00.agent-governance/README.md)
 - [Current Stage 00 task checklist](../docs/00.agent-governance/policies/task-checklists.md)
-- [Active convergence task](../docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md)
+- [Workspace governance authority](../docs/02.architecture/decisions/0029-workspace-governance-authority.md)

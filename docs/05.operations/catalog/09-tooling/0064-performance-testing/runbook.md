@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Performance Testing Incident Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0064
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0064
 parent_ids:
   - SPEC-0010
 created: 2026-05-17

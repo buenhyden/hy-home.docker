@@ -1,8 +1,10 @@
 ---
-profile_id: requirements-package
+title: Tooling Tier (09-tooling) Product Requirements
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0010
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-26
 updated: 2026-08-13

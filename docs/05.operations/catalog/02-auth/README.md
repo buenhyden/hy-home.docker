@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 02 Auth
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 02 Auth
@@ -9,7 +12,7 @@ profile_id: operations-domain-readme
 ## Overview
 
 The authentication domain preserves the existing Keycloak and OAuth2 Proxy
-roles in domain-first `ops-` subject folders; no new role is inferred.
+roles in domain-first four-digit subject folders; no new role is inferred.
 
 ## Audience
 

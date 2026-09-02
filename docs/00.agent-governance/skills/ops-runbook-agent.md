@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: ops-runbook-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: ops-runbook-agent
 scope: ops
-status: active
 owner_agent: doc-writer
 ---
 

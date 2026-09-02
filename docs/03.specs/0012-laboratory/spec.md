@@ -1,12 +1,14 @@
 ---
-profile_id: spec
+title: 11-Laboratory Optimization Hardening Technical Specification
+type: specs/spec
+layer: specification
 status: active
+owner: "@buenhyden"
 artifact_id: SPEC-0012
-artifact_type: spec
 parent_ids:
   - AD-0025
 created: 2026-07-05
-updated: 2026-08-14
+updated: 2026-09-01
 ---
 # 11-Laboratory Optimization Hardening Technical Specification
 
@@ -139,8 +141,6 @@ common template context.
 
 ## Related Documents
 
-- **Plan**: ../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
-- **Tasks**: ../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
 - **Policy**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)

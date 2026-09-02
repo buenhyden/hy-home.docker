@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: References
+type: common/readme
+layer: reference
 status: active
+owner: "@buenhyden"
 ---
 
 # References

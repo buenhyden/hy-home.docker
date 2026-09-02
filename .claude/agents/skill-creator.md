@@ -1,16 +1,16 @@
 ---
-name: skill-creator
-description: Canonical agentic role for skill-creator; owned by Stage 00.
+name: "skill-creator"
+description: "Canonical agentic role for skill-creator; owned by Stage 00."
 tools:
-- Read
-- Grep
-- Glob
-- Edit
-- Write
-- Bash
-model: claude-sonnet-5
-effort: high
-permissionMode: acceptEdits
+- "Read"
+- "Grep"
+- "Glob"
+- "Edit"
+- "Write"
+- "Bash"
+model: "claude-sonnet-5"
+effort: "high"
+permissionMode: "acceptEdits"
 skills:
 ---
 

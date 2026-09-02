@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Terrakube Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0069
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0069
 parent_ids:
   - SPEC-0010
 created: 2026-05-17

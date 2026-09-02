@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: provider-model-evaluation
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: provider-model-evaluation
 scope: qa
-status: active
 owner_agent: eval-engineer
 ---
 
@@ -55,4 +57,4 @@ acceptance, entitlement, quality, cost, or latency.
 - [Evaluation engineer role](../roles/eval-engineer.md)
 - [Provider model contract](../providers/registry.yaml)
 - [Agent output evaluation fixtures](../../90.references/data/0064-agent-output-eval-fixtures/README.md)
-- [Spec 134](../../03.specs/0134-agent-governance-canonical-convergence/spec.md)
+- [Workspace governance authority](../../02.architecture/decisions/0029-workspace-governance-authority.md)

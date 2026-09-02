@@ -4,10 +4,11 @@
   "title": "Document frontmatter",
   "type": "object",
   "properties": {
-    "profile_id": {"type": "string", "minLength": 1},
     "status": {"type": "string", "minLength": 1},
     "artifact_id": {"type": "string", "minLength": 1},
-    "artifact_type": {"type": "string", "minLength": 1},
+    "type": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "owner": {"type": "string", "minLength": 1},
     "parent_ids": {
       "type": "array",
       "items": {"type": "string", "minLength": 1},

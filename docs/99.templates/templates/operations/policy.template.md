@@ -1,8 +1,11 @@
 ---
-profile_id: policy
+title: <title>
+version: <version>
+type: operations/policy
+layer: <layer>
 status: draft
-artifact_id: policy-####
-artifact_type: policy
+owner: <owner>
+artifact_id: POL-####
 parent_ids: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

@@ -1,9 +1,12 @@
 ---
-profile_id: tombstone
+title: <title>
+version: <version>
+type: archive/tombstone
+layer: <layer>
 status: draft
-artifact_id: tombstone-####
-artifact_type: tombstone
-parent_ids: [mig-####]
+owner: <owner>
+artifact_id: tomb-<retired artifact_id>
+parent_ids: [MIG-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -28,4 +31,4 @@ updated: YYYY-MM-DD
 
 ## Traceability
 
-{{archive_readme_or_migration_link}}
+{{archive_index_or_current_owner_link}}

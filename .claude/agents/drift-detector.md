@@ -1,12 +1,12 @@
 ---
-name: drift-detector
-description: Canonical infra role for drift-detector; owned by Stage 00.
+name: "drift-detector"
+description: "Canonical infra role for drift-detector; owned by Stage 00."
 tools:
-- Read
-- Grep
-- Glob
-model: claude-haiku-4-5-20251001
-permissionMode: plan
+- "Read"
+- "Grep"
+- "Glob"
+model: "claude-haiku-4-5-20251001"
+permissionMode: "plan"
 skills:
 ---
 

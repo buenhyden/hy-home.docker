@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: ci-cd-patterns
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: ci-cd-patterns
 scope: ops
-status: active
 owner_agent: ci-cd-engineer
 ---
 

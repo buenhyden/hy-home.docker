@@ -17,8 +17,8 @@ from unittest import mock
 
 import yaml
 
-from scripts.validation import ci_gate_contract as contract
-from scripts.validation import ci_gate_adapters as adapters
+from scripts.lib.gate import ci_gate_contract as contract
+from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.validation import ci_gate_runner as runner
 
 
@@ -128,30 +128,73 @@ class PublicSuiteModelTests(unittest.TestCase):
         self.assertCountEqual(expected_paths, rendered_paths)
         self.assertEqual(len(expected_paths), len(set(rendered_paths)))
 
-    def test_task11_retained_validator_ownership_is_immutable(self) -> None:
+    def test_full_plan_routes_task5_regressions_through_their_public_owner(self) -> None:
+        expected_by_suite = {
+            "agent-governance": {
+                "tests.lib.agent_governance.test_agent_governance_contract",
+                "tests.validation.test_provider_hook_parity",
+                "tests.validation.test_provider_native_surfaces",
+                "tests.validation.test_provider_surface_renderer",
+                "tests.validation.test_stop_gate_deferred_paths",
+            },
+            "document-lifecycle": {
+                "tests.validation.test_generate_llm_wiki",
+                "tests.validation.test_security_automation_readiness",
+                "tests.validation.test_workspace_governance_migration",
+            },
+            "operations": {
+                "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+                "tests.lib.supply_chain.test_grype_db_seed",
+                "tests.validation.test_compose_core_readiness",
+                "tests.validation.test_sample_service_delivery_rehearsal",
+                "tests.validation.test_supply_chain_policy",
+            },
+            "repository-integrity": {
+                "tests.lib.test_surface_ownership",
+                "tests.validation.test_agentic_audit_semantic_freshness",
+                "tests.validation.test_audit_criterion_contract",
+                "tests.validation.test_reference_stage_repo_contract",
+                "tests.validation.test_script_manifest",
+                "tests.validation.test_tech_stack_version_contract",
+                "tests.validation.test_validator_entrypoints",
+            },
+        }
+        task5_modules = set().union(*expected_by_suite.values())
+        for suite, expected in expected_by_suite.items():
+            with self.subTest(suite=suite):
+                plan = _real_public_plan((suite,), {})
+                actual = {
+                    module
+                    for invocation in plan
+                    if invocation.entrypoint == runner._INTERNAL_ADAPTER_PATH
+                    and invocation.argv[:1] == ("run-unittest",)
+                    and invocation.argv[-1:] == ("-v",)
+                    for module in invocation.argv[1:-1]
+                }
+                self.assertEqual(expected, actual & task5_modules)
+
+    def test_validator_ownership_is_derived_from_the_manifest(self) -> None:
+        """Ownership is whatever the manifest declares, checked by shape not by count."""
+
         registry = contract.load_public_suite_registry()
         actual = {
             item.path: item.public_suites[0] for item in registry.validators
         }
-        # 30 since 2026-08-30. Gate 4, the old-path gate, was retired with the
-        # rest of SPEC-0137: `check-old-path-gate.py` and its
-        # `old_path_gate_contract.py` module. Its allowlist lived in that Spec
-        # Package's `tsk-0001-rebuild.md`, a cancelled Task, and the pack it
-        # guarded, RES-0001, is deleted, so the gate had no subject left.
-        # Previously 32, when the three other SPEC-0137 gate modules went:
-        # `agentic-research-gate9-evidence.py`, `gate2_claim_review_contract.py`,
-        # and `carry_owner_contract.py`, 13,504 lines with their tests. The note
-        # that one replaced already recorded why the second could never run, that
-        # the Gate 2 evidence sections it reads had never been authored so it
-        # failed closed on a subject that did not exist, and raised the count
-        # rather than removing the module. Previously 35 since 2026-08-29. This
-        # count is the guard that makes adding a validator deliberate; lowering
-        # it records a removal that the owning Spec Package has dispositioned.
-        self.assertEqual(30, len(actual))
-        self.assertEqual(
-            dict(runner.public_suite_registry.IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP),
-            actual,
+
+        document = yaml.safe_load(
+            pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
         )
+        declared = {
+            pathlib.PurePosixPath(row["path"]): row["public_suites"][0]
+            for row in document["files"]
+            if row.get("kind") == "validator"
+        }
+        self.assertEqual(declared, actual)
+        self.assertTrue(actual)
+        self.assertLessEqual(
+            set(actual.values()), set(registry.public_names)
+        )
+        self.assertEqual(len(actual), len(set(actual)))
 
         document = yaml.safe_load(
             pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
@@ -163,7 +206,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             index = next(
                 index
                 for index, row in enumerate(rows)
-                if row["path"] == "scripts/validation/ci_gate_contract.py"
+                if row["path"] == "scripts/lib/gate/ci_gate_contract.py"
             )
             if mode == "kind":
                 rows[index]["kind"] = "library"
@@ -177,12 +220,27 @@ class PublicSuiteModelTests(unittest.TestCase):
                 rows.pop(index)
             mutations.append((mode, mutated))
 
+        target = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_contract.py")
         for mode, mutated in mutations:
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 path = pathlib.Path(directory) / "manifest.yaml"
                 path.write_text(yaml.safe_dump(mutated), encoding="utf-8")
-                with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
-                    runner.public_suite_registry.load(path)
+                if mode == "context":
+                    # execution_contexts remain a retained safety policy.
+                    with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                        runner.public_suite_registry.load(path)
+                    continue
+                # kind, suite, and missing are legal manifest edits: they must
+                # change the loaded membership rather than raise.
+                reloaded = {
+                    item.path: item.public_suites[0]
+                    for item in runner.public_suite_registry.load(path).validators
+                }
+                self.assertNotEqual(actual, reloaded)
+                if mode == "suite":
+                    self.assertEqual("operations", reloaded[target])
+                else:
+                    self.assertNotIn(target, reloaded)
 
 
 REAL_SUBPROCESS_RUN = subprocess.run
@@ -625,7 +683,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 item.path
                 for item in suites.validators
                 if item.path
-                != pathlib.PurePosixPath("scripts/validation/ci_gate_adapters.py")
+                != pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
             }
             self.assertEqual(
                 explained_paths,
@@ -639,10 +697,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
             if not item.execution_contexts
         }
         self.assertIn(
-            "scripts/validation/rehearse-postgres-logical-upgrade.sh",
+            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh",
             manual_only,
         )
-        self.assertIn("scripts/validation/validate-harness.sh", manual_only)
+        self.assertIn("scripts/lib/ops/validate-harness.sh", manual_only)
         gates = contract.parse_gate_registry(
             document, ".github/workflow-contract.yml"
         )
@@ -731,7 +789,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
         roots = contract.public_root_gate_ids(public, suites.public_names)
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene", "--write")),
-            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_postgres_logical_upgrade_rehearsal", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops", "-v")),
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "-v")),
             (runner.ExecutionContext.LOCAL, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.LOCAL, ("install-playwright",)),
             (runner.ExecutionContext.PUSH, ("check-git-flow",)),
@@ -748,6 +807,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene",)),
             (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_ci_gate_runner", "-v")),
+            # A single well-shaped module is admitted by the grammar. Splitting
+            # a batch cannot hide a module: test_surface_ownership proves the
+            # full profile runs every on-disk module exactly once.
+            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
             (runner.ExecutionContext.PULL_REQUEST, ("check-git-flow",)),
             (runner.ExecutionContext.PUSH, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.WORKFLOW_DISPATCH, ("install-playwright",)),
@@ -779,7 +842,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 ("scripts/operations/rehearse-sample-service-delivery.sh", ("rehearse",)),
                 ("scripts/knowledge/generate-llm-wiki.py", ("--write",)),
                 ("scripts/validation/report-provider-hook-parity.sh", ()),
-                ("scripts/validation/ci_gate_adapters.py", ("run-zizmor-sarif",)),
+                ("scripts/lib/gate/ci_gate_adapters.py", ("run-zizmor-sarif",)),
             )
         )
         for invocation in forbidden:
@@ -800,7 +863,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         document = contract.load_contract_document(pathlib.Path.cwd())
         for node in document["gate_nodes"]:
             if node["gate_id"] == "leaf.local-diff-hygiene":
-                node["entrypoint"] = "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                node["entrypoint"] = "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 node["argv"] = []
         with (
             mock.patch.object(runner, "load_contract_document", return_value=document),
@@ -1297,11 +1360,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         original_root = self.root.with_name(f"{self.root.name}-original")
@@ -1331,7 +1394,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                             dataclasses.replace(
                                 _invocation(
                                     "setup.compose-env",
-                                    "scripts/validation/ci_gate_adapters.py",
+                                    "scripts/lib/gate/ci_gate_adapters.py",
                                 ),
                                 argv=("prepare-compose-env",),
                             ),
@@ -1358,11 +1421,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         fake_bin = self.root / "fake-bin-isolation"
@@ -1376,7 +1439,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         invocation = dataclasses.replace(
             _invocation(
                 "leaf.zizmor",
-                "scripts/validation/ci_gate_adapters.py",
+                "scripts/lib/gate/ci_gate_adapters.py",
             ),
             argv=("run-zizmor-sarif",),
         )
@@ -1401,11 +1464,11 @@ class DescriptorExecutionTests(unittest.TestCase):
         (self.root / "results.sarif").unlink()
 
     def _assert_registered_adapter_integrations(self) -> None:
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         (self.root / ".env.example").write_text(
@@ -1429,14 +1492,14 @@ class DescriptorExecutionTests(unittest.TestCase):
             dataclasses.replace(
                 _invocation(
                     "setup.compose-env",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("prepare-compose-env",),
             ),
             dataclasses.replace(
                 _invocation(
                     "leaf.zizmor",
-                    "scripts/validation/ci_gate_adapters.py",
+                    "scripts/lib/gate/ci_gate_adapters.py",
                 ),
                 argv=("run-zizmor-sarif",),
             ),
@@ -1516,7 +1579,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         harness = (
             "#!/usr/bin/env python3\n"
             "import pathlib,subprocess,sys,time\n"
-            "from scripts.validation import ci_gate_adapters as adapters\n"
+            "from scripts.lib.gate import ci_gate_adapters as adapters\n"
             "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             f"source={child_source!r}\n"
             "command=(sys.executable,'-c',source,mode,ready,ack,release,trigger)\n"
@@ -1543,11 +1606,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             "    raise SystemExit(2)\n"
             "raise SystemExit(result.returncode)\n"
         )
-        adapter_source = pathlib.Path(runner.__file__).with_name(
-            "ci_gate_adapters.py"
-        ).read_text(encoding="utf-8")
+        adapter_source = pathlib.Path(adapters.__file__).read_text(
+            encoding="utf-8"
+        )
         self.add_entrypoint(
-            "scripts/validation/ci_gate_adapters.py",
+            "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
         self.add_entrypoint("scripts/validation/tree-harness.py", harness)

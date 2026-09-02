@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: Prefer --force-with-lease over --force.
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: warn-force-push
 enabled: true
 event: bash

@@ -1,9 +1,11 @@
 ---
-profile_id: migration
+title: SDLC Taxonomy Convergence Migration Ledger
+type: archive/migration
+layer: archive
 status: completed
-artifact_id: mig-0001
-artifact_type: migration
-parent_ids: [SPEC-0136]
+owner: "@buenhyden"
+artifact_id: MIG-0001
+parent_ids: [SPEC-0158]
 created: 2026-08-10
 updated: 2026-08-30
 archived_from: docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md
@@ -5652,6 +5654,4 @@ records:
 
 ## Related Documents
 
-- [Approved specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
-- [Approved plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
 - Archive retention contract (retired path: `99.templates/support/archive-retention-contract.md`)

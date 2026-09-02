@@ -1,147 +1,86 @@
 ---
-profile_id: adr
+title: Workspace Governance Authority
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0029
-artifact_type: adr
 parent_ids:
   - AD-0027
 created: 2026-08-20
-updated: 2026-08-22
+updated: 2026-09-01
 supersedes:
   - ADR-0027
 superseded_by: null
 ---
-
 # ADR-0029: Workspace Governance Authority
 
 ## Context
 
-The repository currently distributes document-shape rules across Stage 00,
-Stage 99 support files, templates, validators, generated provider surfaces, and
-aggregate gates. That distribution permits a validator, template, provider
-adapter, or historical reference to conflict with the current SDLC taxonomy.
-Parallel handoff files and unsupported provider experiments also kept obsolete
-policy surfaces active after their purpose had ended.
-
-The successor must make authority resolvable before the corpus moves, retain
-recoverable stable identities, support Claude and Codex without provider-owned
-policy, and expose comprehensible validation entrypoints without replacing
-focused validators with a new monolith.
-
-## Options Considered
-
-### Retain the distributed control plane
-
-This would reduce immediate file movement, but it would preserve conflicting
-machine authorities and make the intended document contract dependent on which
-validator or provider surface is read first.
-
-### Make Stage 00 the authority for both policy and document mechanics
-
-This would centralize rules, but it would mix human and AI-agent governance with
-machine document profiles, schemas, lifecycle transitions, and templates. It
-would also keep validators dependent on prose interpretation.
-
-### Make generated provider surfaces authoritative
-
-This would place instructions close to their runtimes, but Claude- and
-Codex-specific formats would become competing policy sources. Regeneration
-could silently change repository governance.
-
-### Separate normative governance from typed document authority
-
-Stage 00 owns policy, roles, provider differences, reusable skills, and the SDLC
-flow. Stage 99 owns paths, profiles, identifiers, sections, lifecycle,
-templates, and exceptions through one registry and its schemas. Scripts execute
-those authorities, while provider directories remain generated or native
-adapters. This option gives each concern one owner and is independently
-testable.
-
-## Decision
-
-Adopt the separated authority model.
-
-- Stage 00 is the sole normative authority for policies, roles, provider
-  differences, reusable skills, handoff, and the Requirements -> Architecture
-  -> Specification -> Implementation -> Operations flow.
-- Stage 99 `registry.json` and its two schemas are the sole machine authority
-  for document paths, profiles, stable identity spaces, required sections,
-  lifecycle transitions, templates, traceability, and registered exceptions.
-- Claude and Codex are the only supported providers. Root shims and provider
-  runtime files adapt Stage 00 without defining policy. Unsupported provider
-  experiments are historical evidence only and have no active surface.
-- `.agents/skills/` is a generated compatibility projection of canonical Stage
-  00 skills and cannot become a source authority.
-- Migration 0003 is the review boundary for structural source dispositions.
-  Git history remains the default full-content archive.
-- Validation has exactly six public responsibility suites:
-  `document-contract`, `document-graph`, `document-lifecycle`, `operations`,
-  `agent-governance`, and `repository-integrity`. Each suite composes focused
-  validators and contains no validation logic of its own.
-- Root `DESIGN.md` remains the UI and design-system authority only.
-
-This decision supersedes ADR-0027 for the two-provider target. ADR-0027 remains
-in the Stage 02 decision log with the reciprocal supersession relationship
-under the canonical identity contract.
-
-## Consequences
-
-### Positive
-
-- Authority conflicts can be resolved by concern instead of by file precedence
-  guesswork.
-- Providers can evolve their native mechanics without creating new policy.
-- Document moves fail closed against one registry and a reviewed migration
-  selection.
-- Public gates become navigable while focused validators retain single
-  responsibilities.
-- Retired bodies can be removed without losing recovery through Git and minimal
-  Stage 98 evidence.
-
-### Trade-offs
-
-- Stage 99 must be installed before the corpus can adopt prefixless target
-  paths and uppercase IDs.
-- Generated projections require freshness validation.
-- The migration ledger must distinguish structural dispositions from generated
-  creations and multi-step lifecycle transitions; an ambiguous ledger cannot
-  be approved or executed.
-- The initial transition requires coordinated link, metadata, provider, and
-  gate rewrites across several logical commits.
-
-## Traceability
-
-Confirmation requires all of the following after implementation:
-
-1. Stage 99 registry/schema tests prove one machine authority and monotonic ID
-   allocation.
-2. Stage 00 contract tests prove the exact two-provider simplified taxonomy and
-   generated projection parity.
-3. Migration validation proves deterministic, collision-free, recoverable
-   source dispositions before corpus mutation.
-4. Each documentation stage passes its focused contract and link tests.
-5. The six public suites select every atomic validator exactly once in their
-   declared profile.
-6. The full profile, metadata, lifecycle, link, Operations, agent-governance,
-   and script-manifest gates exit zero before closure.
-
-No runtime, deployment, remote, or secret state is asserted by this ADR.
-
-## Follow-up Decisions
-
-- Stage 99 defines the typed representation for create-only outputs and any
-  intermediate migration state before those records can enter Migration 0003.
-- Stage 02 retains the reciprocal ADR-0029/ADR-0027 supersession relationship
-  under the canonical uppercase identity contract.
-- Any change to the six public suite responsibilities requires a new ADR rather
-  than an unreviewed manifest edit.
+Agent 정책, 문서 형식, provider runtime mechanics, validator routing이 서로의
+규칙을 중복 소유하면 읽는 경로에 따라 다른 결론이 나온다. 현재 구조에는
+정책과 machine contract를 분리하면서도 하나의 SDLC와 검증 interface를
+유지하는 명시적 권한 모델이 필요하다.
 
 ## Decision Drivers
 
-The decision context above records the applicable drivers and evidence.
+- 각 규칙은 정확히 하나의 current owner를 가져야 한다.
+- Provider별 형식은 공통 정책을 재정의하지 않아야 한다.
+- 문서 profile, lifecycle, template은 prose가 아닌 typed contract로 검증되어야
+  한다.
+- Historical evidence와 branch SHA는 current 규칙의 입력이 되어서는 안 된다.
+- 공개 Gate는 작고 안정적인 interface를 유지해야 한다.
 
-## Related Documents
+## Options Considered
 
-- [Governance migration execution and recovery](../../98.archive/migrations/0003-workspace-governance-simplification.md)
-- [Agent Governance Canonical Adapter Architecture Description](../descriptions/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027: Stage 00 Canonical Adapter Model](0027-stage-00-canonical-adapter-model.md)
+### Distributed authority 유지
+
+변경량은 작지만 adapter, template, validator, historical document 사이의
+충돌을 계속 허용한다.
+
+### Stage 00이 모든 문서 mechanics까지 소유
+
+한 위치에 모이지만 AI Agent 정책과 문서 schema/lifecycle이 결합된다.
+
+### Normative policy와 typed document authority 분리
+
+Stage 00은 Agent 거버넌스를, Stage 99는 문서 machine contract를 소유하고
+scripts와 provider surface는 각각의 consumer가 된다.
+
+## Decision
+
+분리된 권한 모델을 채택한다.
+
+- Stage 00은 AI Agent 정책, workflow, canonical roles/skills, provider
+  boundary의 유일한 규범적 권한이다.
+- Stage 99 Registry와 schema는 docs path, profile, stable ID, required section,
+  lifecycle, traceability, template의 유일한 machine authority다.
+- `.agents/`, `.claude/`, `.codex/`는 generated projection 또는 native runtime
+  mechanics이며 정책 소스가 아니다.
+- Git의 regular-blob history가 삭제된 본문의 recovery mechanism이다. Current
+  authority는 Stage 98 historical record를 입력이나 필수 링크로 사용하지
+  않는다.
+- validation public interface는 `document-contract`, `document-graph`,
+  `document-lifecycle`, `operations`, `agent-governance`,
+  `repository-integrity` 여섯 책임 suite다. Manifest가 atomic validator
+  inventory를, workflow contract가 CI routing을 소유한다.
+- 일반 변경 완료에는 branch SHA pin, corpus snapshot, migration ledger,
+  duplicate digest가 필요하지 않다. Current Task와 검토된 Git diff가 실행
+  증거와 recovery boundary를 제공한다.
+
+## Consequences
+
+- 충돌은 파일 우선순위가 아니라 concern owner로 판정할 수 있다.
+- Provider mechanics와 document schema가 독립적으로 진화할 수 있다.
+- Registry와 projection freshness validator는 fail closed해야 한다.
+- suite는 focused validator를 조합할 뿐 동일 predicate를 다시 구현할 수
+  없다.
+- 새로운 public suite 책임이나 authority owner 변경은 별도 ADR이 필요하다.
+
+## Traceability
+
+- [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
+- [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0027 superseded decision](0027-stage-00-canonical-adapter-model.md)
+- [Stage 99 document authority](../../99.templates/README.md)
+- [SPEC-0158 lifecycle convergence](../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)

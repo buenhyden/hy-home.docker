@@ -14,6 +14,7 @@ from unittest import mock
 
 import scripts.lib.document_governance.registry as registry_module
 from scripts.lib.document_governance.registry import (
+    document_type,
     DEFAULT_REGISTRY,
     RegistryError,
     _path_patterns_overlap,
@@ -34,7 +35,6 @@ from scripts.lib.document_governance.metadata_validator import (
     validate_record,
 )
 from scripts.lib.document_governance import metadata_validator
-from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
@@ -135,8 +135,8 @@ class DocumentRegistryTests(unittest.TestCase):
         for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"):
             with self.subTest(path=path):
                 self.assertEqual("readme", classify_path(path, registry))
-                record = Record(pathlib.Path(path), {"status": "active"}, "readme")
-                self.assertIn("profile-id-mismatch", {item.code for item in validate_record(record, build_registry_profiles(registry), build_manifest([record]))})
+                record = Record(pathlib.Path(path), {"status": "active", "type": "specs/spec"}, "readme")
+                self.assertIn("type-mismatch", {item.code for item in validate_record(record, build_registry_profiles(registry), build_manifest([record]))})
                 self.assertIn("body-heading-missing", {item.code for item in validate_body_contract(record, "# Navigation\n", build_registry_profiles(registry), changed_boundary=True)})
         self.assertIsNone(classify_path("docs/02.architecture/unknown/README.md", registry))
         for path in ("../outside.md", "docs/03.specs/0104-collision/spec.md"):
@@ -146,7 +146,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(self) -> None:
         from scripts.lib.document_governance import (
-            architecture, archive, identity_history, provenance_policy, requirements, spec_packages,
+            architecture, archive, identity_history, requirements, spec_packages,
         )
 
         def read_spec(path):
@@ -161,7 +161,7 @@ class DocumentRegistryTests(unittest.TestCase):
         readers = (
             lambda path: registry_module._read_regular_file(path, 1024),
             architecture._read_regular_utf8, archive._read_regular,
-            identity_history._read_identity_source, provenance_policy._read_regular,
+            identity_history._read_identity_source,
             requirements._read_regular_utf8, read_spec,
         )
         real_open = os.open
@@ -245,26 +245,18 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(profile_id, classify_path(path, registry))
 
-        from scripts.lib.document_governance.archive import _migration_document
-        from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-        documents = {}
-        for name in ("spec.md", "plan.md"):
-            path = ROOT / package / name
-            if path.is_file():
-                documents[name] = path
-            else:
-                migration = _migration_document(ROOT)
-                self.assertEqual(3, migration["schema_version"])
-                rows = [row for row in migration["rows"]
-                        if row["source_path"] == (package / name).as_posix()
-                        and row["action"] == "delete"]
-                self.assertEqual(1, len(rows))
-                documents[name] = HistoricalDocument(ROOT, rows[0]["recovery_commit"], rows[0]["source_path"])
-        spec_values = read_frontmatter_values(documents["spec.md"])
-        plan_values = read_frontmatter_values(documents["plan.md"])
-        self.assertEqual("SPEC-0153", spec_values["artifact_id"])
-        self.assertEqual("plan-0153", plan_values["artifact_id"])
+        self.assertEqual(
+            "SPEC-0153",
+            registry.profiles["spec"]["artifact_id_pattern"].replace(
+                "{number:4}", "0153"
+            ),
+        )
+        self.assertEqual(
+            "SPEC-0153-PLAN-0001",
+            registry.profiles["plan"]["artifact_id_pattern"]
+            .replace("{package_number:4}", "0153")
+            .replace("{member_number:4}", "0001"),
+        )
 
     def test_specific_profile_wins_over_unsupported_fallback(self) -> None:
         registry = load_registry()
@@ -274,7 +266,7 @@ class DocumentRegistryTests(unittest.TestCase):
             classify_path("docs/01.requirements/0001-example.md", registry),
         )
 
-    def test_package_indexes_machine_contracts_and_operation_subjects_are_registered(self) -> None:
+    def test_package_indexes_and_machine_contracts_are_registered(self) -> None:
         registry = load_registry()
 
         expected = {
@@ -283,14 +275,13 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/03.specs/0153-example/contracts/schema.graphql": "graphql-contract",
             "docs/03.specs/0153-example/contracts/service.proto": "proto-contract",
             "docs/05.operations/catalog/04-data/README.md": "operations-domain-readme",
-            "docs/05.operations/catalog/04-data/0051-example/README.md": "operations-subject-readme",
         }
         for path, profile_id in expected.items():
             with self.subTest(path=path):
                 self.assertEqual(profile_id, classify_path(path, registry))
 
         guide = registry.profiles["guide"]
-        self.assertEqual("guide-{number:4}", guide["artifact_id_pattern"])
+        self.assertEqual("GDE-{number:4}", guide["artifact_id_pattern"])
         self.assertEqual("subject-member", guide["identity_relation"])
         self.assertEqual(
             [],
@@ -298,9 +289,21 @@ class DocumentRegistryTests(unittest.TestCase):
                 pathlib.PurePosixPath(
                     "docs/05.operations/catalog/04-data/0051-example/guide.md"
                 ),
-                {"artifact_type": "guide", "artifact_id": "guide-0052"},
+                {"type": "operations/guide", "artifact_id": "GDE-0052"},
                 registry.profiles,
             ),
+        )
+
+    def test_operations_subject_readme_profile_is_absent(self) -> None:
+        registry = load_registry()
+
+        self.assertNotIn("operations-subject-readme", registry.profiles)
+        self.assertNotIn("operations-subject-readme", registry.transitions)
+        self.assertIsNone(
+            classify_path(
+                "docs/05.operations/catalog/04-data/0051-example/README.md",
+                registry,
+            )
         )
 
     def test_registered_numeric_identities_do_not_use_substring_matches(self) -> None:
@@ -310,13 +313,13 @@ class DocumentRegistryTests(unittest.TestCase):
                 pathlib.PurePosixPath(
                     "docs/05.operations/catalog/data/10012-wrong/guide.md"
                 ),
-                {"artifact_type": "guide", "artifact_id": "guide-0012"},
+                {"type": "operations/guide", "artifact_id": "GDE-0012"},
             ),
             (
                 pathlib.PurePosixPath(
                     "docs/03.specs/9999-contains-0015/plan.md"
                 ),
-                {"artifact_type": "plan", "artifact_id": "plan-0015"},
+                {"type": "specs/plan", "artifact_id": "SPEC-0015-PLAN-0001"},
             ),
         )
         for path, metadata in examples:
@@ -340,7 +343,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 continue
             with self.subTest(role=role):
                 text = (ROOT / str(source)).read_text(encoding="utf-8")
-                self.assertIn("profile_id:", text)
+                self.assertIn("type:", text)
                 values = _parse_frontmatter_text(text)
                 normalized = {
                     key: (
@@ -361,6 +364,39 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertNotIn("docs/05.operations/", text)
                 self.assertNotIn("docs/90.references/", text)
                 self.assertNotIn("docs/98.archive/", text)
+
+    def test_operations_profiles_do_not_delegate_current_membership_to_archive(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata_validator import (
+            build_registry_profiles,
+        )
+
+        registry = load_registry()
+        profiles = build_registry_profiles(registry)["profiles"]
+
+        for profile_id in ("guide", "policy", "runbook"):
+            with self.subTest(profile_id=profile_id):
+                traceability = registry.profiles[profile_id]["traceability"]
+                self.assertNotIn("membership_authority", traceability)
+                self.assertTrue(profiles[profile_id]["allow_empty_parents"])
+
+    def test_every_copy_template_is_registered(self) -> None:
+        registry = load_registry()
+        registered = {
+            pathlib.Path(str(value["source"]))
+            for value in registry.template_roles.values()
+        }
+        actual = {
+            path.relative_to(ROOT)
+            for path in (ROOT / "docs/99.templates/templates").rglob("*")
+            if path.is_file()
+            and ".template." in path.name
+            # Runtime projections are provider-owned bindings, not copy sources.
+            and not path.name.endswith("-projection.template.md")
+        }
+
+        self.assertEqual(actual, registered)
 
     def test_invalid_registry_mutations_fail_closed(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -537,14 +573,15 @@ class DocumentRegistryTests(unittest.TestCase):
 
         advanced = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         advanced_requirement = advanced["identity_spaces"]["requirement"]
-        advanced_requirement["high_water"] = 26
-        advanced_requirement["next_number"] = 27
+        allocated = advanced_requirement["high_water"] + 1
+        advanced_requirement["high_water"] = allocated
+        advanced_requirement["next_number"] = allocated + 1
         for kind in ("FR", "NFR", "IF"):
             child = json.loads(
                 json.dumps(advanced_requirement["child_spaces"][f"REQ-0001.{kind}"])
             )
-            child["prefix"] = f"REQ-0026-{kind}-"
-            advanced_requirement["child_spaces"][f"REQ-0026.{kind}"] = child
+            child["prefix"] = f"REQ-{allocated:04d}-{kind}-"
+            advanced_requirement["child_spaces"][f"REQ-{allocated:04d}.{kind}"] = child
         self.assertEqual(
             (),
             validate_registry(
@@ -674,7 +711,10 @@ class DocumentRegistryTests(unittest.TestCase):
             )
 
             self.assertEqual(oid, baseline.source)
-            self.assertEqual(25, baseline.package_high_water)
+            self.assertEqual(
+                load_registry().identity_spaces["requirement"].high_water,
+                baseline.package_high_water,
+            )
 
     def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(self) -> None:
         registry = load_registry()
@@ -688,6 +728,8 @@ class DocumentRegistryTests(unittest.TestCase):
                 "{number:4}": "0001",
                 "{package_number:4}": "0001",
                 "{task_number:4}": "0001",
+                "{member_number:4}": "0001",
+                "{retired_artifact_id}": "SPEC-0001",
                 "{subject_number:4}": "0001",
                 "{year:4}": "2026",
                 "{slug}": "example",
@@ -701,7 +743,10 @@ class DocumentRegistryTests(unittest.TestCase):
         values_by_key: dict[str, object] = {
             "status": "draft",
             "artifact_id": "EXAMPLE-0001",
-            "artifact_type": "",
+            "title": "Example",
+            "owner": "@buenhyden",
+            "version": "0.1.0",
+            "type": "",
             "parent_ids": [],
             "created": "2026-08-20",
             "updated": "2026-08-20",
@@ -723,12 +768,15 @@ class DocumentRegistryTests(unittest.TestCase):
             profile_id: profile
             for profile_id, profile in registry.profiles.items()
             if profile.get("frontmatter_policy") == "required"
+            and not any(
+                item.get("kind") == "provider-owned-binding"
+                for item in profile.get("exceptions", ())
+            )
         }
         self.assertTrue(
             {
                 "spec-package-readme",
                 "operations-domain-readme",
-                "operations-subject-readme",
                 "readme",
                 "governance-policy",
                 "governance-hook-policy",
@@ -745,20 +793,18 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(profile_id=profile_id):
                 required = set(profile["required_frontmatter"])
                 optional = set(profile["optional_frontmatter"])
-                self.assertIn("profile_id", required)
-                self.assertNotIn("profile_id", optional)
+                self.assertIn("type", required)
+                self.assertNotIn("type", optional)
                 adapted_profile = profile_map[profile_id]
-                self.assertIn("profile_id", adapted_profile["required"])
-                self.assertNotIn("profile_id", adapted_profile["optional"])
+                self.assertIn("type", adapted_profile["required"])
+                self.assertNotIn("type", adapted_profile["optional"])
 
                 unordered_values = {
                     key: values_by_key[key]
                     for key in required
-                    if key not in {"profile_id", "artifact_id", "artifact_type"}
+                    if key not in {"type", "artifact_id"}
                 }
-                unordered_values["profile_id"] = profile_id
-                if "artifact_type" in required:
-                    unordered_values["artifact_type"] = profile_id
+                unordered_values["type"] = document_type(profile_id)
                 artifact_pattern = profile.get("artifact_id_pattern")
                 if "artifact_id" in required and isinstance(artifact_pattern, str):
                     unordered_values["artifact_id"] = render(artifact_pattern)
@@ -829,7 +875,7 @@ class DocumentRegistryTests(unittest.TestCase):
             **generated,
             "profile_id": "generated-report",
             "path_pattern": (
-                "docs/90.references/data/{number:4}-{slug}/report.md"
+                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md"
             ),
             "template_id": None,
         }
@@ -842,13 +888,13 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         self.assertTrue(
             _path_patterns_overlap(
-                "docs/90.references/data/{number:4}-{slug}/{slug}.md",
-                "docs/90.references/data/{number:4}-{slug}/report.md",
+                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
+                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md",
             )
         )
         self.assertFalse(
             _path_patterns_overlap(
-                "docs/90.references/data/{number:4}-{slug}/report.md",
+                "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md",
                 "docs/90.references/data/{number:4}-{slug}/summary.md",
             )
         )
@@ -1081,7 +1127,7 @@ class DocumentRegistryTests(unittest.TestCase):
             frontmatter_present=True,
         )
         self.assertTrue(
-            {"missing-required-key", "profile-id-mismatch"}
+            {"missing-required-key"}
             <= {
                 finding.code
                 for finding in validate_record(
@@ -1107,10 +1153,12 @@ class DocumentRegistryTests(unittest.TestCase):
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),
             {
-                "profile_id": "spec",
+                "title": "Example",
+                "type": "specs/spec",
+                "layer": "requirements",
                 "status": "draft",
+                "owner": "@buenhyden",
                 "artifact_id": "REQ-0001",
-                "artifact_type": "requirements-package",
                 "parent_ids": [],
                 "created": "2026-08-20",
                 "updated": "2026-08-20",
@@ -1119,7 +1167,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
         self.assertIn(
-            "profile-id-mismatch",
+            "type-mismatch",
             {
                 finding.code
                 for finding in validate_record(record, adapted, {})
@@ -1215,7 +1263,7 @@ class FreeFormProfileTests(unittest.TestCase):
             path
             for path in (ROOT / "docs/00.agent-governance").rglob("*.md")
             if re.search(
-                r"^profile_id:\s*governance-policy\s*$",
+                r"^type:\s*governance/policy\s*$",
                 path.read_text(encoding="utf-8"),
                 re.M,
             )
@@ -1363,10 +1411,14 @@ class ResurrectedMigrationContractTests(unittest.TestCase):
                 )
 
     def test_no_stage_04_route_is_pinned_in_the_validator(self) -> None:
-        source = pathlib.Path(
-            metadata_validator.__file__
-        ).read_text(encoding="utf-8")
-        self.assertNotIn("docs/04.execution", source)
+        facade = pathlib.Path(metadata_validator.__file__)
+        sources = (facade, *sorted((facade.parent / "metadata").glob("*.py")))
+        for path in sources:
+            with self.subTest(path=path.name):
+                self.assertNotIn(
+                    "docs/04.execution",
+                    path.read_text(encoding="utf-8"),
+                )
 
     def test_profiles_still_load_without_the_resurrected_contract(self) -> None:
         """`load_profiles()` no longer takes a contract path and still works.

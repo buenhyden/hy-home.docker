@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: 09-Tooling Optimization Hardening Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0063
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0063
 parent_ids:
   - SPEC-0010
 created: 2026-05-10

@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: "Archive Tombstone: Airbyte Usage Guide"
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0089
-artifact_type: tombstone
-parent_ids: [mig-0001]
+owner: "@buenhyden"
+artifact_id: tomb-GDE-0089
+parent_ids: [MIG-0001]
 created: 2026-06-02
 updated: 2026-08-23
 ---

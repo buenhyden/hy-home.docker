@@ -57,14 +57,14 @@ from dataclasses import dataclass
 # The shell selected and entered the Git root; import only its own package.
 sys.path.insert(0, str(pathlib.Path.cwd()))
 
-from scripts.validation.ci_gate_contract import (
+from scripts.lib.gate.ci_gate_contract import (
     GateContractError,
     load_contract_document,
     load_public_suite_registry,
     parse_public_gate_contract,
     public_root_gate_ids,
 )
-from scripts.validation.github_workflow_contract import (
+from scripts.lib.gate.github_workflow_contract import (
     WorkflowContractError,
     WorkflowDocument,
     load_workflow_contract,
@@ -592,10 +592,12 @@ else:
 
 lines: list[str] = [
     "---",
-    "profile_id: data",
+    'title: "Reference: Security Automation Readiness"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
     "artifact_id: DATA-0078",
-    "artifact_type: data",
     "parent_ids: []",
     "created: 2026-07-06",
     "updated: 2026-08-23",
@@ -733,7 +735,7 @@ lines.extend(
         "- [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.",
         "- [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.",
         "- [Security framework maturity audit](../../audits/0031-security-framework-maturity/README.md) - framework coverage and gap baseline.",
-        "- [Security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [Security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md) - secure SDLC and supply-chain reference context.",
         "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
         "- [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.",
         "",
@@ -753,7 +755,7 @@ lines.extend(
         "- [reference data index](../README.md)",
         "- [security framework maturity audit](../../audits/0031-security-framework-maturity/README.md)",
         "- [automation candidates](../../audits/0021-automation-candidates/README.md)",
-        "- [security governance research](../../research/0002-agentic-engineering-research-pack/security-governance.md)",
+        "- [security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md)",
         "",
     ]
 )

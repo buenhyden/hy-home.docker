@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: 02-Auth Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0002
-artifact_type: architecture-description
 parent_ids:
   - REQ-0002
 created: 2026-03-26

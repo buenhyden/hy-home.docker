@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Mail Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0070
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0070
 parent_ids:
   - SPEC-0011
 created: 2026-05-10

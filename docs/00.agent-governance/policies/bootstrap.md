@@ -1,7 +1,9 @@
 ---
-profile_id: governance-policy
+title: Agent Bootstrap Policy
+type: governance/policy
 layer: agentic
 status: active
+owner: "@buenhyden"
 ---
 
 # Agent Bootstrap Policy
@@ -13,8 +15,10 @@ Provide the sole repository bootstrap sequence for supported agents.
 ## Canonical Load Order
 
 1. Enter through root `AGENTS.md` or `CLAUDE.md`.
-2. Load this policy and the matching adapter in `providers/`.
-3. Resolve only the policies, role, and skills needed for the request.
+2. Load this policy, the matching adapter in `providers/`, and only the
+   provider facts required from `providers/registry.yaml`.
+3. Resolve only the Stage 00 policies, canonical role, and skills needed for
+   the request.
 4. For repository changes, load the governing Requirements, Architecture, and
    Spec Package plus its current Task.
 5. Execute the applicable registered gates and record evidence in that Task.
@@ -24,14 +28,21 @@ Root shims and adapters route to this sequence and do not define alternatives.
 ## Authority and Precedence
 
 1. Direct system and user instructions.
-2. Stage 00 policies and roles.
-3. Stage 99 document authority.
-4. Current stage documents according to their registered roles.
-5. Provider adapters and runtime mechanics.
-6. Stage 90 evidence and Stage 98 history.
+2. Stage 00 policies, including workflow and approval behavior.
+3. Canonical Stage 00 roles and skills, which implement but cannot override
+   policy.
+4. Current stage documents under Stage 99 path, profile, identifier, and
+   lifecycle contracts.
+5. Provider Registry translation facts, provider adapters, and native runtime
+   mechanics.
+6. Stage 90 evidence and non-authoritative historical material.
 
-Generated projections are never policy sources. Execution progress and handoff
-state belong to the current Task; Git history is the recovery mechanism.
+The Provider Registry owns provider identities, projection routes, model and
+permission translations, and hook/event bindings only. Stage 99 owns document
+paths and profiles. Neither namespace may redefine Stage 00 policy. Generated
+and tracked native runtime controls are consumers, never policy sources.
+Execution progress and handoff state belong to the current Task; Git history is
+the recovery mechanism.
 
 ## Hard Constraints
 

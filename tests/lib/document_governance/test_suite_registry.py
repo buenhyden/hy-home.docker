@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 import os
+import subprocess
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,14 +19,100 @@ MANIFEST = Path("scripts/manifest.yaml")
 
 class SuiteRegistryTests(unittest.TestCase):
     def test_supply_chain_owner_requires_the_exact_check_capability(self) -> None:
+        """The predicate, not the registry, enforces its complete capability."""
+
         path = "scripts/validation/check-supply-chain-policy.py"
         owner = next(item for item in load(MANIFEST).validators if str(item.path) == path)
         self.assertEqual(("--check",), owner.execution_argv)
-        for argv in ([], ["--help"], ["--write"], ["--oci-archive-config-digest", "archive"], ["--check", "--help"]):
+        for argv in ([], ["--write"], ["--oci-archive-config-digest", "archive"]):
+            with self.subTest(argv=argv):
+                result = subprocess.run(
+                    [sys.executable, path, *argv],
+                    capture_output=True,
+                    text=True,
+                    cwd=Path.cwd(),
+                )
+                self.assertNotEqual(
+                    0,
+                    result.returncode,
+                    "the supply-chain validator must fail closed without --check",
+                )
+
+    def test_membership_is_data_not_a_python_inventory(self) -> None:
+        """A manifest edit alone changes membership; no Python map mirrors it."""
+
+        import scripts.lib.document_governance.suite_registry as module
+
+        self.assertFalse(
+            hasattr(module, "IMMUTABLE_RETAINED_VALIDATOR_OWNERSHIP"),
+            "validator ownership must be derived from the manifest, not duplicated in Python",
+        )
+
+        path = "scripts/validation/check-supply-chain-policy.py"
+        baseline = {
+            item.path.as_posix(): item.public_suites[0]
+            for item in load(MANIFEST).validators
+        }
+        self.assertEqual("repository-integrity", baseline[path])
+
+        document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+        next(row for row in document["files"] if row["path"] == path)[
+            "public_suites"
+        ] = ["document-contract"]
+        moved = {
+            item.path.as_posix(): item.public_suites[0]
+            for item in self._load(document).validators
+        }
+        self.assertEqual("document-contract", moved[path])
+
+        document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+        document["files"] = [
+            row for row in document["files"] if row["path"] != path
+        ]
+        dropped = {
+            item.path.as_posix() for item in self._load(document).validators
+        }
+        self.assertNotIn(path, dropped)
+        self.assertEqual(len(baseline) - 1, len(dropped))
+
+    def test_execution_argv_shape_is_generic_for_an_unpinned_validator(self) -> None:
+        """Shape admission is a generic rule, not a per-file argument table."""
+
+        path = "scripts/validation/check-script-manifest.py"
+        for argv in ([], ["--mode", "all"], ["--root", "docs"]):
+            with self.subTest(argv=argv, accepted=True):
+                document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+                next(row for row in document["files"] if row["path"] == path)[
+                    "execution_argv"
+                ] = argv
+                self._load(document)
+        for argv in (
+            ["--help"],
+            ["-h"],
+            ["--check; rm -rf /"],
+            ["--check", "--check"],
+            ["--mode"] * 9,
+            ["not-an-option"],
+        ):
+            with self.subTest(argv=argv, accepted=False):
+                document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+                next(row for row in document["files"] if row["path"] == path)[
+                    "execution_argv"
+                ] = argv
+                with self.assertRaises(SuiteRegistryError):
+                    self._load(document)
+
+    def test_a_modal_validator_cannot_be_narrowed_by_a_manifest_edit(self) -> None:
+        """A shape-valid but narrower mode still weakens the gate, so it is pinned."""
+
+        path = "scripts/validation/check-document-links.py"
+        for argv in (["--mode", "traceability"], ["--mode", "alignment"], []):
             with self.subTest(argv=argv):
                 document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
-                next(row for row in document["files"] if row["path"] == path)["execution_argv"] = argv
-                with self.assertRaises(SuiteRegistryError):
+                next(row for row in document["files"] if row["path"] == path)[
+                    "execution_argv"
+                ] = argv
+                with self.assertRaisesRegex(SuiteRegistryError, "complete validation capability"):
                     self._load(document)
 
     def test_manifest_input_rejects_ambiguous_unbounded_and_nonregular_bytes(self) -> None:
@@ -123,7 +211,7 @@ class SuiteRegistryTests(unittest.TestCase):
         duplicate["path"] = "scripts/lib/document_governance/duplicate.py"
         duplicate["kind"] = "library"
         duplicate.pop("public_suites")
-        duplicate["consumers"] = ["scripts/validation/ci_gate_contract.py"] * 2
+        duplicate["consumers"] = ["scripts/lib/gate/ci_gate_contract.py"] * 2
         document["files"].append(duplicate)
         with self.assertRaisesRegex(SuiteRegistryError, "duplicates"):
             self._load(document)

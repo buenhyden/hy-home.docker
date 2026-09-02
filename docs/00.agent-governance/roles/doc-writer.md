@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: doc-writer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: doc-writer
 scope: docs
 tier: worker
-status: active
 work_profile: evidence-research
 permission_profile: workspace-write
 skill_ids:

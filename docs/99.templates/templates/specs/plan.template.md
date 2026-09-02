@@ -1,8 +1,11 @@
 ---
-profile_id: plan
+title: <title>
+version: <version>
+type: specs/plan
+layer: <layer>
 status: draft
-artifact_id: plan-####
-artifact_type: plan
+owner: <owner>
+artifact_id: SPEC-####-PLAN-####
 parent_ids: [SPEC-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

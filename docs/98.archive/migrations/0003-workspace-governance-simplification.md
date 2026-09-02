@@ -1,8 +1,10 @@
 ---
-profile_id: migration
+title: Workspace Governance Simplification Migration
+type: archive/migration
+layer: archive
 status: completed
-artifact_id: mig-0003
-artifact_type: migration
+owner: "@buenhyden"
+artifact_id: MIG-0003
 parent_ids: [ADR-0029]
 created: 2026-08-20
 updated: 2026-08-28

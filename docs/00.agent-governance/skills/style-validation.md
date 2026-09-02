@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: style-validation
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: style-validation
 scope: qa
-status: active
 owner_agent: qa-engineer
 ---
 

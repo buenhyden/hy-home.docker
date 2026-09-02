@@ -1,12 +1,14 @@
 ---
-profile_id: architecture-description
+title: 11-laboratory Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0011
-artifact_type: architecture-description
 parent_ids:
   - REQ-0012
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 11-laboratory Architecture Description
 
@@ -102,5 +104,4 @@ graph TD
 
 - **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-11-laboratory-standardization.md
 - **ADR**: [../decisions/0011-laboratory-services.md](../decisions/0011-laboratory-services.md)

@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 04 Data
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 04 Data
@@ -8,9 +11,8 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates each existing guide, policy, and runbook under its frozen
-`ops-0017` through `ops-0035` identity without adding a role that did not exist
-in the migration ledger.
+This domain co-locates each current guide, policy, and runbook under its stable
+four-digit subject identity. Role membership follows the current subject tree.
 
 ## Audience
 

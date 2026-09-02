@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Locust Recovery Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0062
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0062
 parent_ids:
   - SPEC-0010
 created: 2026-05-17

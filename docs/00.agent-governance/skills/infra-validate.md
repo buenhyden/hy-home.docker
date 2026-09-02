@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: infra-validate
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: infra-validate
 scope: infra
-status: active
 owner_agent: infra-implementer
 ---
 

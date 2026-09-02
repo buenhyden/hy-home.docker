@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: compose-stack-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: compose-stack-agent
 scope: infra
-status: active
 owner_agent: infra-implementer
 ---
 

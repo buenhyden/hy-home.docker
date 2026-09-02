@@ -1,6 +1,9 @@
 ---
-profile_id: readme
+title: Operations Catalog
+type: common/readme
+layer: operations
 status: active
+owner: "@buenhyden"
 ---
 
 <!-- README Target: docs/05.operations/catalog/README.md -->

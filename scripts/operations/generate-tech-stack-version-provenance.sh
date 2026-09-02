@@ -256,10 +256,12 @@ floating_rows = [row for row in image_rows if row["status"] in {"floating-except
 
 lines: list[str] = [
     "---",
-    "profile_id: data",
+    'title: "Reference: Tech-Stack Version Provenance"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
     "artifact_id: DATA-0061",
-    "artifact_type: data",
     "parent_ids: []",
     "created: '2026-08-23'",
     "updated: '2026-08-23'",

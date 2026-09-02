@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Task Checklists
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Task Checklists

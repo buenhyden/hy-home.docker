@@ -17,7 +17,7 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
-from scripts.lib.document_governance.registry import DocumentRegistry, load_registry
+from scripts.lib.document_governance.registry import document_type, DocumentRegistry, load_registry
 
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
@@ -36,8 +36,8 @@ _TASK_PATH = re.compile(
     r"tsk-(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md"
 )
 _SPEC_ID = re.compile(r"SPEC-[0-9]{4}")
-_PLAN_ID = re.compile(r"plan-[0-9]{4}")
-_TASK_ID = re.compile(r"task-[0-9]{4}-[0-9]{4}")
+_PLAN_ID = re.compile(r"SPEC-[0-9]{4}-PLAN-[0-9]{4}")
+_TASK_ID = re.compile(r"SPEC-[0-9]{4}-TSK-[0-9]{4}")
 _EXTERNAL_PARENT_ID = re.compile(r"(?:REQ|AD|ADR|SPEC)-[0-9]{4}")
 _RECOVERY_COMMIT = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
 _FORBIDDEN_PACKAGE_ROLES = frozenset({"design.md", "tests.md", "task.md"})
@@ -55,45 +55,18 @@ _EXPECTED_PROFILES = {
     ),
     "plan": (
         "docs/03.specs/{package_number:4}-{slug}/plan.md",
-        "plan-{package_number:4}",
+        "SPEC-{package_number:4}-PLAN-{member_number:4}",
         "package-member",
         "execution",
     ),
     "task": (
         "docs/03.specs/{package_number:4}-{slug}/tasks/"
         "tsk-{task_number:4}-{slug}.md",
-        "task-{package_number:4}-{task_number:4}",
+        "SPEC-{package_number:4}-TSK-{task_number:4}",
         "package-member",
         "execution",
     ),
 }
-_MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-)
-_SINGULAR_TASK_FINALS = {
-    "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md": (
-        "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
-        "tsk-0001-research-pack-extension.md"
-    ),
-    "docs/03.specs/0134-agent-governance-canonical-convergence/task.md": (
-        "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
-        "tsk-0001-canonical-convergence.md"
-    ),
-    "docs/03.specs/0135-target-surface-delta-convergence/task.md": (
-        "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
-        "tsk-0001-delta-convergence.md"
-    ),
-    "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md": (
-        "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
-        "tsk-0001-taxonomy-convergence.md"
-    ),
-    "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md": (
-        "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
-        "tsk-0001-reference-disposition.md"
-    ),
-}
-
-
 class SpecPackageError(ValueError):
     """Raised when the Stage 03 package surface cannot be trusted."""
 
@@ -431,10 +404,10 @@ def _parse_document(
         record = frontmatter_record_from_text(display_path, text)
     except FrontmatterError as error:
         raise SpecPackageError(str(error)) from error
-    if record.metadata.get("profile_id") != profile_id:
-        raise SpecPackageError(f"{relative} must declare profile_id: {profile_id}")
-    if record.metadata.get("artifact_type") != profile_id:
-        raise SpecPackageError(f"{relative} must declare artifact_type: {profile_id}")
+    if record.metadata.get("type") != document_type(profile_id):
+        raise SpecPackageError(
+            f"{relative} must declare type: {document_type(profile_id)}"
+        )
     artifact_id = record.metadata.get("artifact_id")
     if artifact_id != expected_artifact_id:
         raise SpecPackageError(
@@ -486,6 +459,28 @@ def _validate_task_parents(
     ):
         raise SpecPackageError(
             f"{document.path} task parent is dangling or outside its owning package"
+        )
+
+
+def _validate_execution_states(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+) -> None:
+    for task in tasks:
+        if task.status != "active":
+            continue
+        if spec.status != "active":
+            raise SpecPackageError(
+                f"{task.path} active Task requires active Spec"
+            )
+        if plan is not None and plan.status != "active":
+            raise SpecPackageError(
+                f"{task.path} active Task requires active Plan"
+            )
+    if plan is not None and plan.status == "active" and spec.status != "active":
+        raise SpecPackageError(
+            f"{plan.path} active Plan requires active Spec"
         )
 
 
@@ -572,7 +567,7 @@ def _load_tasks(
                 package_path / "tasks" / name,
                 relative,
                 profile_id="task",
-                expected_artifact_id=f"task-{package_number}-{task_number}",
+                expected_artifact_id=f"SPEC-{package_number}-TSK-{task_number}",
                 registry=registry,
                 budget=current,
             )
@@ -647,7 +642,7 @@ def _load_package(
                 package / "plan.md",
                 relative_package / "plan.md",
                 profile_id="plan",
-                expected_artifact_id=f"plan-{number}",
+                expected_artifact_id=f"SPEC-{number}-PLAN-0001",
                 registry=registry,
                 budget=current,
             )
@@ -672,6 +667,7 @@ def _load_package(
                 plan_id=None if plan is None else plan.artifact_id,
                 task_ids=task_ids,
             )
+        _validate_execution_states(spec, plan, tasks)
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
         if "contracts" in entries:
             contracts, current = _load_contracts(
@@ -791,74 +787,56 @@ def _documents(
     return result
 
 
-def _has_recovery(
-    path: pathlib.PurePosixPath,
-    recovery_commits: Mapping[pathlib.PurePosixPath, str | None],
-) -> bool:
-    value = recovery_commits.get(path)
-    return isinstance(value, str) and _RECOVERY_COMMIT.fullmatch(value) is not None
+_TERMINAL_STATUSES = frozenset({"completed", "cancelled", "superseded", "retired"})
 
 
 def validate_spec_package_lifecycle(
     previous: Sequence[SpecPackage],
     current: Sequence[SpecPackage],
     *,
-    recovery_commits: Mapping[pathlib.PurePosixPath, str | None] | None = None,
-    one_time_package_ids: frozenset[str] = frozenset(),
+    retired_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
 ) -> tuple[SpecPackageFinding, ...]:
-    """Validate removals without treating Git history as implicit approval."""
+    """Enforce the Stage 00 retention contract on Spec Package removals.
 
-    recoveries = {} if recovery_commits is None else recovery_commits
+    A retained package keeps its non-terminal members. A package removed in
+    whole is a retirement, and Stage 00 requires one Stage 98 Tombstone for it.
+    Git stores the content; the Tombstone is the tracked pointer that keeps it
+    findable, so an unrecorded removal fails closed even when nothing links to
+    the package.
+
+    The Spec's terminal status is an authoring obligation recorded in the
+    Tombstone's `Reason`, not a predicate here: the comparison base is the
+    branch point, so a package that is `active` there can never be observed as
+    terminal by the change that retires it.
+    """
+
     previous_documents = _documents(previous)
     current_documents = _documents(current)
-    current_spec_ids = frozenset(package.spec.artifact_id for package in current)
-    previous_spec_paths = {
-        package.spec.artifact_id: package.spec.path for package in previous
-    }
+    retained_packages = frozenset(package.spec.path.parts[2] for package in current)
     findings: list[SpecPackageFinding] = []
+    retired_packages: dict[str, SpecPackage] = {}
+    for package in previous:
+        if package.spec.path.parts[2] in retained_packages:
+            continue
+        retired_packages[package.spec.path.parts[2]] = package
     for path, document in sorted(previous_documents.items()):
-        if path in current_documents:
+        if path in current_documents or path.parts[2] not in retained_packages:
             continue
-        if document.profile_id == "spec":
-            if document.artifact_id not in one_time_package_ids:
-                findings.append(
-                    SpecPackageFinding(
-                        "living-spec-deletion-forbidden",
-                        path.as_posix(),
-                        "living completed Specs retain spec.md",
-                    )
-                )
-            elif not _has_recovery(path, recoveries):
-                findings.append(
-                    SpecPackageFinding(
-                        "one-time-package-recovery-missing",
-                        path.as_posix(),
-                        "one-time package deletion requires an approved recovery commit",
-                    )
-                )
-            continue
-        package_spec_id = (
-            f"SPEC-{document.artifact_id.split('-')[1]}"
-            if document.profile_id in {"plan", "task"}
-            else ""
-        )
-        deleting_one_time_package = package_spec_id in one_time_package_ids
-        whole_package_retirement_proven = (
-            deleting_one_time_package
-            and package_spec_id not in current_spec_ids
-            and package_spec_id in previous_spec_paths
-            and _has_recovery(previous_spec_paths[package_spec_id], recoveries)
-        )
-        if whole_package_retirement_proven:
-            continue
-        if document.status not in {"completed", "cancelled"} or not _has_recovery(
-            path, recoveries
-        ):
+        if document.status not in _TERMINAL_STATUSES:
             findings.append(
                 SpecPackageFinding(
-                    "execution-evidence-recovery-missing",
+                    "execution-evidence-deletion-forbidden",
                     path.as_posix(),
-                    "completed Plan/Task removal requires terminal state and approved recovery",
+                    "a retained package keeps non-terminal Spec Package members",
+                )
+            )
+    for name, package in sorted(retired_packages.items()):
+        if package.spec.path not in retired_paths:
+            findings.append(
+                SpecPackageFinding(
+                    "package-retirement-unrecorded",
+                    f"docs/03.specs/{name}",
+                    "retirement requires one Stage 98 Tombstone",
                 )
             )
     return tuple(findings)
@@ -954,72 +932,6 @@ def _bounded_git(
             stream.close()
 
 
-def _read_migration_authority(
-    root: pathlib.Path,
-) -> tuple[
-    dict[str, str],
-    dict[pathlib.PurePosixPath, str | None],
-    frozenset[str],
-]:
-    from scripts.lib.document_governance.archive import (
-        _approved_migration_document, _migration_document,
-    )
-
-    try:
-        document = _migration_document(root)
-        approved = _approved_migration_document(root)
-    except ValueError as error:
-        raise SpecPackageError(f"Task 7 Migration authority is invalid: {error}") from error
-    rows = document["rows"]
-    task7_sources = {row["source_path"] for row in approved["rows"] if row["owner_task"] == 7}
-    source_to_final: dict[str, str] = {}
-    recovery_commits: dict[pathlib.PurePosixPath, str | None] = {}
-    one_time_package_ids: set[str] = set()
-    task7_rows = 0
-    for row in rows:
-        if not isinstance(row, Mapping):
-            raise SpecPackageError("Task 7 Migration row is malformed")
-        source = row.get("source_path")
-        target = row.get("target_path")
-        action = row.get("action")
-        recovery = row.get("recovery_commit")
-        if not isinstance(source, str) or not _safe_repository_path(source):
-            raise SpecPackageError("Task 7 Migration source path is unsafe")
-        if target is not None and (
-            not isinstance(target, str) or not _safe_repository_path(target)
-        ):
-            raise SpecPackageError("Task 7 Migration target path is unsafe")
-        if recovery is not None and (
-            not isinstance(recovery, str) or _RECOVERY_COMMIT.fullmatch(recovery) is None
-        ):
-            raise SpecPackageError("Task 7 Migration recovery is malformed")
-        final = target
-        if final is not None:
-            final = _SINGULAR_TASK_FINALS.get(final, final)
-            recovery_commits[pathlib.PurePosixPath(final)] = recovery
-        if source in task7_sources:
-            task7_rows += 1
-            if action == "rename" and final is not None:
-                if source in source_to_final:
-                    raise SpecPackageError("Task 7 Migration source is duplicated")
-                source_to_final[source] = final
-        if action == "delete":
-            match = re.fullmatch(
-                r"docs/03\.specs/(?:spec-)?(?P<number>[0-9]{4})-[^/]+/spec\.md",
-                source,
-            )
-            if match is not None:
-                package_id = f"SPEC-{match.group('number')}"
-                one_time_package_ids.add(package_id)
-                canonical = pathlib.PurePosixPath(
-                    re.sub(r"/spec-([0-9]{4})-", r"/\1-", source)
-                )
-                recovery_commits[canonical] = recovery
-    if task7_rows != 49 or len(source_to_final) != 46:
-        raise SpecPackageError("Task 7 Migration authority row set is incomplete")
-    return source_to_final, recovery_commits, frozenset(one_time_package_ids)
-
-
 def _safe_repository_path(value: str) -> bool:
     path = pathlib.PurePosixPath(value)
     return (
@@ -1045,13 +957,13 @@ def _snapshot_document(
         artifact_id = f"SPEC-{number}"
     elif len(path.parts) == 4 and path.name == "plan.md":
         profile_id = "plan"
-        artifact_id = f"plan-{number}"
+        artifact_id = f"SPEC-{number}-PLAN-0001"
     elif len(path.parts) == 5 and path.parts[3] == "tasks":
         match = _TASK_PATH.fullmatch(path.name)
         if match is None:
             raise SpecPackageError(f"base Task path is not canonical: {path}")
         profile_id = "task"
-        artifact_id = f"task-{number}-{match.group('number')}"
+        artifact_id = f"SPEC-{number}-TSK-{match.group('number')}"
     else:
         return None
     try:
@@ -1072,7 +984,6 @@ def _load_base_spec_packages(
     root: pathlib.Path,
     *,
     base_ref: str,
-    source_to_final: Mapping[str, str],
 ) -> tuple[SpecPackage, ...]:
     commit = _bounded_git(
         root,
@@ -1105,8 +1016,7 @@ def _load_base_spec_packages(
             source = raw_path.decode("utf-8")
         except (ValueError, UnicodeDecodeError) as error:
             raise SpecPackageError("Spec Package base tree is malformed") from error
-        final = source_to_final.get(source, source)
-        path = pathlib.PurePosixPath(final)
+        path = pathlib.PurePosixPath(source)
         if not (
             len(path.parts) >= 4
             and path.parts[:2] == ("docs", "03.specs")
@@ -1178,22 +1088,32 @@ def validate_repository_spec_package_lifecycle(
     *,
     base_ref: str | None = None,
 ) -> tuple[SpecPackageFinding, ...]:
-    """Validate current removals against a bounded Git/Migration snapshot."""
+    """Validate current removals against a bounded Git snapshot."""
 
     root = pathlib.Path(root)
-    base_ref = resolve_lifecycle_base(root, base_ref)
-    source_to_final, recoveries, one_time_ids = _read_migration_authority(root)
     previous = _load_base_spec_packages(
         root,
-        base_ref=base_ref,
-        source_to_final=source_to_final,
+        base_ref=resolve_lifecycle_base(root, base_ref),
     )
     return validate_spec_package_lifecycle(
         previous,
         current,
-        recovery_commits=recoveries,
-        one_time_package_ids=one_time_ids,
+        retired_paths=_recorded_retirements(root),
     )
+
+
+def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
+    """Stage 98 Tombstones are the tracked record of an approved retirement."""
+
+    from scripts.lib.document_governance.archive import load_archive
+
+    try:
+        inventory = load_archive(pathlib.Path(root) / "docs/98.archive")
+    except (OSError, ValueError):
+        # Stage 98 has its own gate. An unreadable archive grants no exemption:
+        # every removal is judged as unrecorded until the archive is valid.
+        return frozenset()
+    return frozenset(record.retired_path for record in inventory.tombstones)
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

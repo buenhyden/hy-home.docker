@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Git Workflow Governance
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Git Workflow Governance

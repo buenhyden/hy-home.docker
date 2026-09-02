@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: task-breakdown-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: task-breakdown-agent
 scope: agentic
-status: active
 owner_agent: workflow-supervisor
 ---
 

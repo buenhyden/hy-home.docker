@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "08-AI Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0020
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 08-AI Optimization & Hardening Product Requirements
 
@@ -45,7 +47,7 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
 - **REQ-0020-FR-0003**: Open WebUI는 stateful 템플릿 계약을 사용해야 한다.
 - **REQ-0020-FR-0004**: `ollama-exporter`는 health 기반 dependency와 metrics healthcheck를 제공해야 한다.
 - **REQ-0020-FR-0005**: `scripts/hardening/check-all-hardening.sh 08-ai`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-0020-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-0020-FR-0006**: `docs/{01.requirements,02.architecture,03.specs,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-0020-FR-0007**: 카탈로그 기준으로 모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책을 Plan/Tasks/Operations에 반영해야 한다.
 
 ## Non-functional Requirements
@@ -69,7 +71,7 @@ No separately numbered solution-independent external interface requirement was i
   - `infra/08-ai/open-webui/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 08-ai`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` AI optimization-hardening 문서 및 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` AI optimization-hardening 문서 및 README 인덱스
 - **Out of Scope**:
   - 실제 모델 학습/파인튜닝 파이프라인 구축
   - Qdrant 자체 인프라 아키텍처 변경
@@ -94,9 +96,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../03.specs/0009-ai/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/08-ai/optimization-hardening.md](../05.operations/catalog/08-ai/0058-optimization-hardening/guide.md)
 - **Operation**: [../05.operations/policies/08-ai/optimization-hardening.md](../05.operations/catalog/08-ai/0058-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/08-ai/optimization-hardening.md](../05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md)

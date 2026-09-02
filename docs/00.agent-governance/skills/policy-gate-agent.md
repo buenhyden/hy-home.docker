@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: policy-gate-agent
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: policy-gate-agent
 scope: agentic
-status: active
 owner_agent: rules-engineer
 ---
 

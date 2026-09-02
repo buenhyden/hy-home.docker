@@ -1,8 +1,10 @@
 ---
-profile_id: requirements-package
+title: Standardize infra_net Network Product Requirements
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0023
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-04-01
 updated: 2026-08-13

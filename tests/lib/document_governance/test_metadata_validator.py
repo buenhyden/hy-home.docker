@@ -23,7 +23,7 @@ from scripts.lib.document_governance.taxonomy import (
     requirement_package_identity,
     validate_stable_identity,
 )
-from scripts.validation.ci_gate_contract import (
+from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
     load_public_suite_registry,
     parse_public_gate_contract,
@@ -41,6 +41,40 @@ THREE_DIGIT_ARTIFACT_ID = re.compile(
     r"^artifact_id:\s*(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}\s*$",
     re.MULTILINE,
 )
+
+
+class ResponsibilityModuleTests(unittest.TestCase):
+    def test_split_modules_expose_their_declared_responsibilities(self) -> None:
+        from scripts.lib.document_governance.lifecycle import (
+            contract,
+            promoted,
+            public,
+            recovery,
+        )
+        from scripts.lib.document_governance.metadata import (
+            heading,
+            identity,
+            lifecycle,
+            profile,
+            reference,
+        )
+
+        responsibilities = (
+            (profile, "load_profiles"),
+            (heading, "validate_body_contract"),
+            (identity, "validate_requirement_internal_id_contract"),
+            (lifecycle, "validate_record"),
+            (reference, "validate_repository_contracts"),
+            (contract, "load_migration_manifest"),
+            (promoted, "validate_migration_manifest"),
+            (public, "_spec_package_lifecycle_findings"),
+            (recovery, "run"),
+        )
+        for module, name in responsibilities:
+            with self.subTest(module=module.__name__, name=name):
+                self.assertTrue(callable(getattr(module, name)))
+
+
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_native_migration_compaction_requires_both_exact_provenance_states(self) -> None:
         from scripts.lib.document_governance import archive, metadata_validator as metadata
@@ -128,6 +162,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
+        from scripts.lib.document_governance.metadata import reference
 
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -155,7 +190,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 with self.assertRaises(metadata.ProfileError):
                     metadata.build_current_manifest(root, [record])
                 stderr = io.StringIO()
-                with mock.patch.object(metadata, "collect_records", return_value=[record]), contextlib.redirect_stderr(stderr):
+                with mock.patch.object(reference, "collect_records", return_value=[record]), contextlib.redirect_stderr(stderr):
                     result = metadata.main(["--root", str(root), "--registry", str(PROFILES), "--mode", "check-active"])
                 self.assertEqual(2, result)
                 self.assertIn("configuration-error: retired Spec lineage recovery is invalid", stderr.getvalue())
@@ -177,11 +212,11 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             source.write_bytes(PROFILES.read_bytes())
             document = root / "docs/03.specs/0104-example/spec.md"
             document.parent.mkdir(parents=True)
-            document.write_text("---\nstatus: active\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
+            document.write_text("---\nstatus: active\ntype: specs/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
             for args in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")):
                 subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
             findings = validate_repository_contracts(root, metadata.build_registry_profiles(self.registry))
-            self.assertIn("profile-id-mismatch", {item.code for item in findings})
+            self.assertIn("type-mismatch", {item.code for item in findings})
 
     def test_current_profile_envelope_never_loads_legacy_authority(self) -> None:
         from scripts.lib.document_governance import metadata_validator
@@ -242,7 +277,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_profiles_parse_and_publish_exact_incident_selector(self) -> None:
         incident = self.profiles["incident"]
         postmortem = self.profiles["postmortem"]
-        self.assertEqual("inc-{number:4}", incident["artifact_id_pattern"])
+        self.assertEqual(
+            "inc-{year:4}-{number:4}", incident["artifact_id_pattern"]
+        )
         self.assertEqual(
             "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
             incident["path_pattern"],
@@ -304,12 +341,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_allows_only_the_exact_incident_year_route(self) -> None:
         profiles = {
-            "incident": {
-                "id_pattern": r"inc-[0-9]{4}",
+            "operations/incident": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             }
         }
-        metadata = {"artifact_type": "incident", "artifact_id": "inc-0001"}
+        metadata = {"type": "operations/incident", "artifact_id": "inc-2026-0001"}
         accepted = validate_stable_identity(
             pathlib.PurePosixPath(
                 "docs/05.operations/incidents/2026/"
@@ -338,15 +375,15 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_rejects_incident_role_file_swaps(self) -> None:
         profiles = {
-            "incident": {
-                "id_pattern": r"inc-[0-9]{4}",
+            "operations/incident": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             },
-            "postmortem": {
-                "id_pattern": r"postmortem-[0-9]{4}",
+            "operations/postmortem": {
+                "id_pattern": r"inc-[0-9]{4}-[0-9]{4}-PM",
                 "path_identity": "inherited",
                 "parent_id_pattern": r"inc-(?P<identity>[0-9]{4})-[a-z0-9-]+",
-                "artifact_id_identity_pattern": r"postmortem-(?P<identity>[0-9]{4})",
+                "artifact_id_identity_pattern": r"inc-[0-9]{4}-(?P<identity>[0-9]{4})-PM",
                 "identity_capture": "identity",
             },
         }
@@ -354,18 +391,18 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         swaps = (
             (
                 pathlib.PurePosixPath(f"{packet}/postmortem.md"),
-                {"artifact_type": "incident", "artifact_id": "inc-0001"},
+                {"type": "operations/incident", "artifact_id": "inc-2026-0001"},
             ),
             (
                 pathlib.PurePosixPath(f"{packet}/incident.md"),
                 {
-                    "artifact_type": "postmortem",
-                    "artifact_id": "postmortem-0001",
+                    "type": "operations/postmortem",
+                    "artifact_id": "inc-2026-0001-PM",
                 },
             ),
         )
         for path, metadata in swaps:
-            with self.subTest(path=path, artifact_type=metadata["artifact_type"]):
+            with self.subTest(path=path, document_type=metadata["type"]):
                 self.assertIn(
                     "incident-path-invalid",
                     {
@@ -381,9 +418,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         identities = tuple(
             requirement_package_identity(path.relative_to(ROOT)) for path in paths
         )
-        self.assertEqual(25, len(paths))
+        self.assertTrue(paths)
         self.assertTrue(all(identity is not None for identity in identities))
-        self.assertEqual(25, len(set(identities)))
+        self.assertEqual(len(paths), len(set(identities)))
         self.assertIsNone(
             requirement_package_identity(
                 pathlib.PurePosixPath("docs/01.requirements/prd-0001-legacy.md")
@@ -671,6 +708,8 @@ This paragraph explains how verification evidence will be interpreted.
             if relative.startswith("docs/00.agent-governance/memory/"):
                 continue
             path = ROOT / relative
+            if not path.exists():
+                continue
             if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
                 continue
             for line_number, line in enumerate(

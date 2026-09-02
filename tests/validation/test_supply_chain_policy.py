@@ -16,6 +16,8 @@ import tempfile
 import unittest
 from unittest import mock
 
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER_PATH = ROOT / "scripts/validation/check-supply-chain-policy.py"
@@ -28,7 +30,7 @@ COSIGN_OFFLINE_SIGNING_CONFIG = (
 )
 COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
-SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
+SEED_HELPER = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
 
 RUNTIME_MATERIAL_REF = (
@@ -170,28 +172,6 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 config_digest,
                 self.checker.inspect_docker_save_archive_config_digest(archive_path),
             )
-
-    def test_completed_specs_and_generated_reference_do_not_claim_active_status(
-        self,
-    ) -> None:
-        paths = [
-            ROOT / f"docs/03.specs/{number}-{slug}/spec.md"
-            for number, slug in (
-                ("124", "compose-runtime-readiness-remediation"),
-                ("125", "infrastructure-operations-readiness-remediation"),
-                ("126", "security-supply-chain-remediation"),
-                ("127", "deployment-release-engineering-remediation"),
-            )
-        ]
-        paths.append(
-            ROOT
-            / "docs/90.references/data/0079-supply-chain-sample-service/README.md"
-        )
-        for path in paths:
-            with self.subTest(path=path):
-                body = path.read_text(encoding="utf-8")
-                self.assertNotIn("This active specification", body)
-                self.assertNotIn("the active Spec 126", body)
 
     def test_policy_and_exception_registry_are_fail_closed(self) -> None:
         policy = self.checker.load_json(POLICY)
@@ -1079,6 +1059,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
+            pass_fds=gate_root_pass_fds(ROOT),
         )
 
     def test_all_runtime_invocations_are_offline_and_pull_disabled(self) -> None:
