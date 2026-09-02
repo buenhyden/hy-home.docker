@@ -917,6 +917,45 @@ The final read-only verdicts are GREEN and do not grant approval:
   plus focused metadata and archive/taxonomy suites. These review verdicts are
   evidence and do not substitute for user approval.
 
+### 2026-09-02 Task 8 Step 2 review record
+
+No independent reviewer agent was dispatched for this Task. The active session
+instruction forbids unrequested agent invocation, and the user did not request
+one, so the Step 2 reviews were performed directly and are recorded here as
+self-review rather than as independent verdicts. This is a recorded deviation
+from the Step 2 method, not a substitute for user approval.
+
+Reviewed against the four Step 2 axes on the exact final diff:
+
+- Rule ownership: every membership decision resolves to one owner. Suite
+  membership derives from `scripts/manifest.yaml` alone after the retained
+  ownership table was removed; adapter admission derives from
+  `ADAPTER_CONTEXTS` in `scripts/lib/gate/ci_gate_adapters.py` alone after the
+  runner inventory was removed.
+- Stage 90/98 current authority: one Critical fail-open was found and fixed.
+  `_spec_package_lifecycle_findings` in
+  `scripts/lib/document_governance/lifecycle/public.py` returned an empty
+  finding list unless `docs/98.archive/migrations/0003-workspace-governance-simplification.md`
+  existed on disk, so archived evidence gated a current Stage 03 control and
+  its removal would have silently passed every Spec Package. Verified
+  empirically by moving the archived file aside: the check now evaluates and
+  reports `0` instead of returning early. Fixed in `34518c8f`.
+- CI and workflow security: injection payloads
+  (`tests.validation.test_x; rm -rf /`, `$(id)`) are rejected by
+  `validate_adapter_argv`; `run-npm run postinstall` is rejected as outside the
+  allowed script set; `install-python-requirements` and `prepare-compose-env`
+  are never admitted as gate leaves; `check-git-flow` stays pull-request only
+  and `verify-metadata-base` stays pull-request and push only.
+- Provider-owned exemption blast radius: the new
+  `_path_profile_declares_provider_binding` branch matches exactly the two
+  runtime projection templates under `docs/99.templates/templates/` and zero
+  live documents.
+
+Measurement note: `--mode check-changed --base-ref origin/main` reports
+`selected=0` because `origin/main` advanced past this work, which makes that
+reading vacuous. Re-measured against the merge baseline `bd0b0e8a`:
+`selected=564 violations=0`.
+
 ## Commit Ledger
 
 | Logical change | Commit | Verification |
@@ -1010,3 +1049,33 @@ Runtime, deployment, remote, secret, credential, infrastructure, and
 user-global provider state remain out of scope. Stage 90/98 deletion and
 terminal Plan/Task retirement occur only in their planned later Tasks after
 consumer handoff and focused verification.
+
+### 2026-09-02 external blocker outside this Spec Package
+
+`origin/main` merged three Dependabot GitHub Action bumps
+(`dd8bb2cb`, and the `actions/stale` bump in `bd42be84`) that update the
+`uses:` pins in `.github/workflows/ci-quality.yml` and
+`.github/workflows/stale.yml` without updating the two places that must agree
+with them: the `actions` registry in `.github/workflow-contract.yml` and
+`_ACTION_REGISTRY_BASELINE` in
+`scripts/lib/gate/github_workflow_contract.py`.
+
+Observed drift:
+
+| Action | Workflow pin | Registry and baseline pin |
+| --- | --- | --- |
+| `actions/stale` | `4391f3da665fdf50b6810c1a66712fb9ba21aa93` | `1e223db275d687790206a7acac4d1a11bd6fe629` |
+| `astral-sh/setup-uv` | `20cfd1bf945f4377ade1205e4dbc17946fc9a30d` | `11f9893b081a58869d3b5fccaea48c9e9e46f990` |
+| `github/codeql-action/upload-sarif` | `cdf488f595d80d6e07e03d4674febd5ab45fa938` | `7188fc363630916deb702c7fdcf4e481b751f97a` |
+
+`validate_workflows` therefore reports `action-unregistered` and
+`action-consumer-mismatch`, `resolve_typed_workflow_evidence` fails closed to
+zero reachable typed gates, and the generated `DATA-0078` readiness reference
+drops from `Implemented 11` to `Implemented 7`, failing four tests in
+`tests/validation/test_security_automation_readiness.py`.
+
+The drift is present on `bd42be84` on its own, so `origin/main` carries it
+independently of this work. Restoring only the two pre-merge workflow files
+returns that suite to `OK`, which isolates the cause to the bumps and not to
+this Spec Package. Accepting the three new pins is a supply-chain disposition
+outside this Spec Package's target surface and is left to its owner.
