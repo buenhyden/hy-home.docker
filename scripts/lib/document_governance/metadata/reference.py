@@ -102,7 +102,6 @@ from scripts.lib.document_governance.metadata.profile import (
     build_manifest,
     build_registry_profiles,
     infer_artifact_type,
-    load_profiles,
     registered_generated_owner,
 )
 
@@ -891,7 +890,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         f"{finding.code}: {finding.path}: {finding.message}"
                     )
         else:
-            profiles = load_profiles(args.profiles.resolve())
+            raise ProfileError("profiles must be the Stage 99 JSON registry")
     except (
         ArchitectureDocumentError,
         ProfileError,

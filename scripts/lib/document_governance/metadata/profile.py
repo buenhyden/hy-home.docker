@@ -78,12 +78,6 @@ parse_frontmatter = read_frontmatter_values
 
 
 DEFAULT_PROFILES = DEFAULT_REGISTRY
-LEGACY_TRANSITION_PROFILES = (
-    HistoricalDocument(
-        ROOT, "494065806794980080b081439298d7b534d10803",
-        "docs/99.templates/support/document-metadata-profiles.yaml",
-    )
-)
 DEFAULT_AGENT_GOVERNANCE_REGISTRY = ROOT / "docs/99.templates/registry.json"
 OPERATIONS_CATALOG_DOMAINS = frozenset(
     {
@@ -640,48 +634,11 @@ EXPECTED_ARCHIVE_CONDITIONS = {
     },
 }
 EXPECTED_ARCHIVE_SOURCE_PREFIXES = ("docs/", "archive/")
-README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
 TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
 TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
     "spec:126-security-supply-chain-remediation",
     "spec:127-deployment-release-engineering-remediation",
-)
-TEMPLATE_ROLE_KEYS = frozenset(
-    {
-        "source",
-        "artifact_profile",
-        "target_globs",
-        "required_headings",
-        "conditional_headings",
-        "forbidden_headings",
-    }
-)
-EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
-    {
-        "adr",
-        "agent-design",
-        "api-spec",
-        "archive",
-        "architecture-description",
-        "audit",
-        "data-model",
-        "guide",
-        "incident",
-        "plan",
-        "policy",
-        "postmortem",
-        "prd",
-        "readme",
-        "reference",
-        "runbook",
-        "srs",
-        "service",
-        "spec",
-        "task",
-        "interface-requirement",
-        "tests",
-    }
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
@@ -722,30 +679,6 @@ APPROVED_MIGRATION_PATHS = frozenset(
 )
 LEGACY_EXCEPTION_CODES = frozenset(
     {"missing-required-key", "replacement-free-supersession", "stale-active"}
-)
-EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
-    {
-        "artifact_id",
-        "parent_id",
-        "created",
-        "updated",
-        "completed_at",
-        "reviewed_at",
-        "next_review_at",
-        "occurred_at",
-        "resolved_at",
-        "archived_from",
-        "archived_at",
-        "archive_reason",
-        "archive_disposition",
-        "archived_commit",
-        "archived_blob",
-        "preservation_class",
-        "current_replacement",
-        "snapshot_path",
-        "content_sha256",
-        "snapshot_reason",
-    }
 )
 MARKDOWN_BODY_TOKEN = re.compile(r"{{[a-z][a-z0-9_]*}}")
 MACHINE_TEMPLATE_TOKEN = re.compile(r"__[A-Z][A-Z0-9_]*__")
@@ -2167,263 +2100,17 @@ def validate_static_exception_document(
 
 
 
-def _load_legacy_profiles(
-    path: pathlib.Path = DEFAULT_PROFILES,
-) -> dict[str, object]:
-    """Load and structurally validate the typed metadata profile contract."""
-
-    try:
-        source = path.read_text(encoding="utf-8")
-        loaded = _safe_load_unique(source)
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
-        raise ProfileError(f"cannot load profile YAML: {error}") from error
-    if not isinstance(loaded, dict):
-        raise ProfileError("profile document must be a mapping")
-    schema_version = loaded.get("schema_version")
-    if type(schema_version) is not int or schema_version != 2:
-        raise ProfileError("schema_version must be the integer 2")
-    common, profile_map = _profile_mapping(loaded)
-    if not all(isinstance(name, str) for name in profile_map):
-        raise ProfileError("profile names must be strings")
-    actual_types = set(profile_map)
-    if actual_types != EXPECTED_PROFILE_TYPES:
-        missing = ", ".join(sorted(EXPECTED_PROFILE_TYPES - actual_types)) or "none"
-        unexpected = ", ".join(sorted(actual_types - EXPECTED_PROFILE_TYPES)) or "none"
-        raise ProfileError(f"profile type mismatch; missing={missing}; unexpected={unexpected}")
-    common_list_names = (
-        "allowed_statuses",
-        "terminal_statuses",
-        "globally_forbidden",
-        "typed_keys",
-        "inventory_excludes",
-        "archive_source_prefixes",
-    )
-    common_lists: dict[str, list[str]] = {}
-    for key in common_list_names:
-        value = common.get(key)
-        if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
-            raise ProfileError(f"common.{key} must be a list of non-empty strings")
-        if len(value) != len(set(value)):
-            raise ProfileError(f"common.{key} must not contain duplicates")
-        common_lists[key] = value
-    if tuple(common_lists["archive_source_prefixes"]) != EXPECTED_ARCHIVE_SOURCE_PREFIXES:
-        raise ProfileError(
-            "common.archive_source_prefixes must define the exact historical archive source roots"
-        )
-    frontmatter_order = common.get("frontmatter_order")
-    if not isinstance(frontmatter_order, list) or not all(
-        isinstance(item, str) and item for item in frontmatter_order
-    ):
-        raise ProfileError("common.frontmatter_order must be a list of non-empty strings")
-    if len(frontmatter_order) != len(set(frontmatter_order)):
-        raise ProfileError("common.frontmatter_order must not contain duplicates")
-    if tuple(frontmatter_order) != EXPECTED_FRONTMATTER_ORDER:
-        raise ProfileError("common.frontmatter_order must define the exact canonical typed-key order")
-    template_placeholders = common.get("template_placeholders")
-    if not isinstance(template_placeholders, dict) or set(template_placeholders) != EXPECTED_TEMPLATE_PLACEHOLDER_KEYS:
-        raise ProfileError("common.template_placeholders must define the exact Stage 99 placeholder keys")
-    if not all(isinstance(value, str) and value.strip() for value in template_placeholders.values()):
-        raise ProfileError("common.template_placeholders values must be non-empty strings")
-    root_exceptions = common.get("root_exceptions")
-    if not isinstance(root_exceptions, dict):
-        raise ProfileError("common.root_exceptions must be a path-to-reason mapping")
-    for root_path, reason in root_exceptions.items():
-        if not isinstance(root_path, str) or _normalized_target_path(root_path) is None:
-            raise ProfileError("common.root_exceptions keys must be canonical target Markdown paths")
-        if not isinstance(reason, str) or not reason.strip():
-            raise ProfileError("common.root_exceptions reasons must be non-empty strings")
-    generated_outputs = common.get("generated_outputs")
-    if not isinstance(generated_outputs, dict) or not generated_outputs:
-        raise ProfileError("common.generated_outputs must be a non-empty exact-path-to-generator mapping")
-    for output_path, owner in generated_outputs.items():
-        normalized_output = (
-            _normalized_target_path(output_path) if isinstance(output_path, str) else None
-        )
-        generated_package_readme = bool(
-            isinstance(output_path, str)
-            and re.fullmatch(
-                r"docs/90\.references/data/[0-9]{4}-[a-z0-9][a-z0-9-]*/README\.md",
-                output_path,
-            )
-        )
-        if (
-            normalized_output is None
-            or (normalized_output.name == "README.md" and not generated_package_readme)
-            or any(character in output_path for character in "*?[]")
-        ):
-            raise ProfileError(
-                "common.generated_outputs keys must be exact canonical target Markdown paths"
-            )
-        if not _safe_repo_path(owner, "scripts/"):
-            raise ProfileError(
-                "common.generated_outputs values must be safe canonical scripts/ generator paths"
-            )
-    allowed_statuses = set(common_lists["allowed_statuses"])
-    terminal_statuses = set(common_lists["terminal_statuses"])
-    if not terminal_statuses <= allowed_statuses:
-        raise ProfileError("common.terminal_statuses must be a subset of allowed_statuses")
-    transitions = common.get("transitions")
-    if not isinstance(transitions, dict) or not all(isinstance(key, str) for key in transitions):
-        raise ProfileError("common.transitions must be a mapping")
-    if set(transitions) != allowed_statuses:
-        raise ProfileError("common.transitions must define every and only allowed status")
-    for state, targets in transitions.items():
-        if not isinstance(targets, list) or not all(isinstance(item, str) and item for item in targets):
-            raise ProfileError(f"common.transitions.{state} must be a list of non-empty strings")
-        if len(targets) != len(set(targets)):
-            raise ProfileError(f"common.transitions.{state} must not contain duplicates")
-        unknown_targets = set(targets) - allowed_statuses
-        if unknown_targets:
-            raise ProfileError(
-                f"common.transitions.{state} has unknown statuses: {', '.join(sorted(unknown_targets))}"
-            )
-        if state in terminal_statuses and targets:
-            raise ProfileError(f"terminal status {state} must not have outgoing transitions")
-    for name, raw_profile in sorted(profile_map.items()):
-        if not isinstance(raw_profile, dict):
-            raise ProfileError(f"profile {name} must be a mapping")
-        if name == "archive":
-            archive_profile_keys = {
-                "required",
-                "optional",
-                "forbidden",
-                "allowed_statuses",
-                "allowed_parent_types",
-                "allow_empty_parents",
-                "disposition",
-                "conditions",
-            }
-            if set(raw_profile) != archive_profile_keys:
-                raise ProfileError("profile archive must define the exact v2 contract members")
-            if tuple(raw_profile.get("required", ())) != EXPECTED_ARCHIVE_REQUIRED:
-                raise ProfileError("profile archive required must define the exact v2 fields")
-            if tuple(raw_profile.get("optional", ())) != EXPECTED_ARCHIVE_OPTIONAL:
-                raise ProfileError("profile archive optional must define the exact v2 fields")
-            if raw_profile.get("conditions") != EXPECTED_ARCHIVE_CONDITIONS:
-                raise ProfileError("profile archive conditions must define the exact v2 rules")
-        required = raw_profile.get("required")
-        optional = raw_profile.get("optional")
-        forbidden = raw_profile.get("forbidden")
-        if not all(
-            isinstance(value, list) and all(isinstance(item, str) and item for item in value)
-            for value in (required, optional, forbidden)
-        ):
-            raise ProfileError(f"profile {name} required/optional/forbidden must be string lists")
-        if any(len(value) != len(set(value)) for value in (required, optional, forbidden)):
-            raise ProfileError(f"profile {name} key disposition lists must not contain duplicates")
-        overlap = (set(required) & set(optional)) | (set(required) & set(forbidden)) | (set(optional) & set(forbidden))
-        if overlap:
-            raise ProfileError(f"profile {name} has overlapping key dispositions: {', '.join(sorted(overlap))}")
-        profile_statuses = raw_profile.get("allowed_statuses")
-        if not isinstance(profile_statuses, list) or not all(
-            isinstance(item, str) and item for item in profile_statuses
-        ):
-            raise ProfileError(f"profile {name} allowed_statuses must be a string list")
-        if len(profile_statuses) != len(set(profile_statuses)):
-            raise ProfileError(f"profile {name} allowed_statuses must not contain duplicates")
-        unknown_statuses = set(profile_statuses) - allowed_statuses
-        if unknown_statuses:
-            raise ProfileError(f"profile {name} has unknown statuses: {', '.join(sorted(unknown_statuses))}")
-        parent_types = raw_profile.get("allowed_parent_types")
-        if not isinstance(parent_types, list) or not all(isinstance(item, str) and item for item in parent_types):
-            raise ProfileError(f"profile {name} allowed_parent_types must be a string list")
-        if len(parent_types) != len(set(parent_types)):
-            raise ProfileError(f"profile {name} allowed_parent_types must not contain duplicates")
-        unknown_parents = set(parent_types) - EXPECTED_PROFILE_TYPES
-        if unknown_parents:
-            raise ProfileError(f"profile {name} has unknown parent types: {', '.join(sorted(unknown_parents))}")
-        if type(raw_profile.get("allow_empty_parents")) is not bool:
-            raise ProfileError(f"profile {name} allow_empty_parents must be boolean")
-        if "allow_additional" in raw_profile and type(raw_profile["allow_additional"]) is not bool:
-            raise ProfileError(f"profile {name} allow_additional must be boolean")
-        disposition = raw_profile.get("disposition")
-        if not isinstance(disposition, str) or not disposition.strip():
-            raise ProfileError(f"profile {name} disposition must be a non-empty string")
-    template_roles = loaded.get("template_roles")
-    if not isinstance(template_roles, dict) or set(template_roles) != EXPECTED_TEMPLATE_ROLE_NAMES:
-        raise ProfileError("template_roles must define the exact canonical role names")
-    declared_sources: dict[str, str] = {}
-    declared_target_globs: dict[str, str] = {}
-    declared_matchers: list[tuple[str, str, str]] = []
-    for role_name, role in sorted(template_roles.items()):
-        if not isinstance(role, dict) or set(role) != TEMPLATE_ROLE_KEYS:
-            raise ProfileError(f"template role {role_name} must define the exact contract members")
-        source_path = role.get("source")
-        if (
-            not isinstance(source_path, str)
-            or not _safe_repo_path(source_path, "docs/99.templates/templates/")
-            or not source_path.endswith(".template.md")
-        ):
-            raise ProfileError(f"template role {role_name} source must be a safe canonical Markdown template path")
-        if source_path in declared_sources:
-            raise ProfileError(
-                f"template roles must have unique sources: {declared_sources[source_path]} and {role_name}"
-            )
-        declared_sources[source_path] = role_name
-        artifact_profile = role.get("artifact_profile")
-        if artifact_profile not in actual_types:
-            raise ProfileError(f"template role {role_name} has unknown artifact profile: {artifact_profile}")
-        target_globs = role.get("target_globs")
-        if not isinstance(target_globs, list) or not target_globs or not all(
-            _safe_target_glob(pattern) for pattern in target_globs
-        ):
-            raise ProfileError(f"template role {role_name} target_globs must be safe Markdown target patterns")
-        if len(target_globs) != len(set(target_globs)):
-            raise ProfileError(f"template role {role_name} target_globs must not contain duplicates")
-        for pattern in sorted(target_globs):
-            if pattern in declared_target_globs:
-                raise ProfileError(
-                    "template role target globs overlap: "
-                    f"{declared_target_globs[pattern]}:{pattern} and {role_name}:{pattern}"
-                )
-            declared_target_globs[pattern] = role_name
-            for other_role, other_profile, other_pattern in declared_matchers:
-                if (
-                    other_role == role_name
-                    or other_profile != artifact_profile
-                    or _target_glob_specificity(other_pattern)
-                    != _target_glob_specificity(pattern)
-                ):
-                    continue
-                witness = _target_glob_intersection_witness(other_pattern, pattern)
-                if witness is not None:
-                    raise ProfileError(
-                        "template role target globs overlap at equal specificity: "
-                        f"{other_role}:{other_pattern} and {role_name}:{pattern}; "
-                        f"witness={witness}"
-                    )
-            declared_matchers.append((role_name, artifact_profile, pattern))
-        heading_sets: list[set[str]] = []
-        for heading_key in ("required_headings", "conditional_headings", "forbidden_headings"):
-            headings = role.get(heading_key)
-            if not isinstance(headings, list) or not headings or not all(
-                isinstance(heading, str)
-                and heading.startswith("## ")
-                and heading.strip() == heading
-                for heading in headings
-            ):
-                raise ProfileError(
-                    f"template role {role_name} {heading_key} must be a non-empty H2 heading list"
-                )
-            if len(headings) != len(set(headings)):
-                raise ProfileError(f"template role {role_name} {heading_key} must not contain duplicates")
-            heading_sets.append(set(headings))
-        if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
-            raise ProfileError(f"template role {role_name} heading contracts must not overlap")
-    return loaded
-
-
 def load_profiles(
     path: pathlib.Path = DEFAULT_PROFILES,
-) -> Mapping[str, Mapping[str, object]] | dict[str, object]:
-    """Return the Registry profile map; accept legacy YAML only as transition input."""
+) -> Mapping[str, Mapping[str, object]]:
+    """Return the Registry profile map. The Registry is the only profile input."""
 
-    if path.suffix.lower() == ".json":
-        try:
-            return load_registry(path).profiles
-        except RegistryError as error:
-            raise ProfileError(str(error)) from error
-    return _load_legacy_profiles(path)
+    if path.suffix.lower() != ".json":
+        raise ProfileError("profiles must be the Stage 99 JSON registry")
+    try:
+        return load_registry(path).profiles
+    except RegistryError as error:
+        raise ProfileError(str(error)) from error
 
 
 def _thaw(value: object) -> object:
