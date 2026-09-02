@@ -640,34 +640,6 @@ EXPECTED_ARCHIVE_CONDITIONS = {
     },
 }
 EXPECTED_ARCHIVE_SOURCE_PREFIXES = ("docs/", "archive/")
-EXPECTED_DOCUMENT_FAMILIES = {
-    "sdlc": (
-        "prd",
-        "srs",
-        "interface-requirement",
-        "architecture-description",
-        "adr",
-        "spec",
-        "plan",
-        "task",
-        "guide",
-        "policy",
-        "runbook",
-        "incident",
-        "postmortem",
-    ),
-    "common": (
-        "reference",
-        "audit",
-        "archive",
-        "readme",
-        "governance",
-        "generated",
-        "template-source",
-        "repo-support",
-        "unsupported",
-    ),
-}
 README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
 TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
@@ -1524,24 +1496,40 @@ def classify_template_role(
     return matches[0]
 
 
-def _typed_target_types(profiles: dict[str, object]) -> set[str]:
-    families = profiles.get("document_families", {})
-    if not isinstance(families, dict):
-        return set()
-    # Stage 00 governance profiles are not SDLC targets. Their section contract
-    # is enforced from the Registry profile directly, whether or not the profile
-    # also registers a copyable Stage 99 template.
-    excluded = {"readme", "governance", "generated", "template-source", "repo-support", "unsupported"} | {
-        "governance-policy", "governance-hook-policy", "governance-role",
-        "governance-skill", "governance-provider", "governance-provider-index",
-        "governance-sdlc", "runtime-projection-claude", "runtime-projection-codex",
+NON_TARGET_PROFILE_IDS = frozenset(
+    {
+        "generated",
+        "governance-hook-policy",
+        "governance-policy",
+        "governance-provider",
+        "governance-provider-index",
+        "governance-role",
+        "governance-sdlc",
+        "governance-skill",
+        "readme",
+        "runtime-projection-claude",
+        "runtime-projection-codex",
+        "template-source",
+        "unsupported",
     }
+)
+
+
+def _typed_target_types(profiles: dict[str, object]) -> set[str]:
+    """Registry profiles that own a typed authoring target.
+
+    Stage 00 governance profiles and the provider-owned runtime projections are
+    not SDLC targets: their section contract is enforced from the Registry
+    profile directly, whether or not the profile also registers a template.
+    """
+
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry):
+        return set()
     return {
-        item
-        for members in families.values()
-        if isinstance(members, list)
-        for item in members
-        if isinstance(item, str) and item not in excluded
+        profile_id
+        for profile_id in registry.profiles
+        if profile_id not in NON_TARGET_PROFILE_IDS
     }
 
 
@@ -2351,27 +2339,6 @@ def _load_legacy_profiles(
         disposition = raw_profile.get("disposition")
         if not isinstance(disposition, str) or not disposition.strip():
             raise ProfileError(f"profile {name} disposition must be a non-empty string")
-    document_families = loaded.get("document_families")
-    if not isinstance(document_families, dict) or set(document_families) != set(EXPECTED_DOCUMENT_FAMILIES):
-        raise ProfileError("document_families must define exactly sdlc and common")
-    family_members: list[str] = []
-    for family_name, expected_members in EXPECTED_DOCUMENT_FAMILIES.items():
-        members = document_families.get(family_name)
-        if not isinstance(members, list) or not all(isinstance(item, str) and item for item in members):
-            raise ProfileError(f"document_families.{family_name} must be a list of non-empty strings")
-        if len(members) != len(set(members)):
-            raise ProfileError(f"document_families.{family_name} must not contain duplicates")
-        unknown_members = set(members) - actual_types
-        if unknown_members:
-            raise ProfileError(
-                f"document_families.{family_name} has unknown profiles: {', '.join(sorted(unknown_members))}"
-            )
-        if tuple(members) != expected_members:
-            raise ProfileError(f"document_families.{family_name} must define the exact canonical members")
-        family_members.extend(members)
-    if len(family_members) != len(set(family_members)):
-        raise ProfileError("document_families members must be unique across families")
-
     template_roles = loaded.get("template_roles")
     if not isinstance(template_roles, dict) or set(template_roles) != EXPECTED_TEMPLATE_ROLE_NAMES:
         raise ProfileError("template_roles must define the exact canonical role names")
@@ -2472,7 +2439,6 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
         "common": {"typed_keys": keys, "frontmatter_order": []},
         "profiles": {},
         "template_roles": {},
-        "document_families": {"sdlc": []},
     })
     del profiles["_legacy_profiles"]
     return profiles
@@ -2586,32 +2552,6 @@ def build_registry_transition_profiles(
             "forbidden_headings": [],
         }
     adapted["template_roles"] = projected_roles
-    families = adapted.get("document_families")
-    if isinstance(families, dict):
-        existing = [
-            member
-            for members in families.values()
-            if isinstance(members, list)
-            for member in members
-            if isinstance(member, str)
-        ]
-        canonical = [
-            profile_id
-            for profile_id in registry.profiles
-            if profile_id
-            not in {
-                "readme",
-                "governance",
-                "template-source",
-                "generated",
-                "repo-support",
-                "unsupported",
-            }
-            and profile_id not in existing
-        ]
-        sdlc = families.get("sdlc")
-        if isinstance(sdlc, list):
-            families["sdlc"] = [*sdlc, *canonical]
     adapted["_registry"] = registry
     return adapted
 

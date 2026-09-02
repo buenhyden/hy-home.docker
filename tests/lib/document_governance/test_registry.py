@@ -1203,7 +1203,6 @@ class FreeFormProfileTests(unittest.TestCase):
                 "common": {"typed_keys": [], "frontmatter_order": []},
                 "profiles": {},
                 "template_roles": {},
-                "document_families": {"sdlc": []},
             },
         )
 
@@ -1344,7 +1343,6 @@ class InvalidPreviousStatusTests(unittest.TestCase):
                 "common": {"typed_keys": [], "frontmatter_order": []},
                 "profiles": {},
                 "template_roles": {},
-                "document_families": {"sdlc": []},
             },
         )
 
