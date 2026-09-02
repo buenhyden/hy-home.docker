@@ -806,6 +806,48 @@ recovery, the null SHA is a CI sentinel, and `TASK7_IMMUTABLE_MANIFEST_SHA256`
 guards a hand-authored `data.yaml` that no generator writes.
 
 
+### 2026-09-02 Task 8 Step 1 observed evidence
+
+Running the Plan's command list exposed a validation surface the local gate
+never exercises: `--mode check-changed` compares against a base ref, and with a
+clean working tree its changed set is empty, so it validates nothing. Against
+`origin/main` it reported 30 violations on files this branch touches. All 30
+are now closed and the cause of each is recorded in its commit.
+
+- `python3 scripts/validation/check-document-metadata.py --mode check-active`:
+  `selected=396 violations=0`.
+- `... --mode check-contracts`: `violations=0`.
+- `... --mode check-changed --base-ref=origin/main`:
+  `selected=564 violations=0`.
+- `python3 scripts/validation/check-document-links.py --mode all` and
+  `--mode alignment`: both PASS.
+- `python3 scripts/validation/check-document-corpus-lifecycle.py`:
+  `violations=0` for both the lifecycle and the archive-recovery line.
+- `python3 scripts/validation/check-operations-catalog.py`: PASS.
+- `python3 scripts/validation/check-agent-governance-contract.py --mode
+  repository --section all`: `failures=0`.
+- `bash scripts/operations/sync-provider-surfaces.sh --check`:
+  `providers=2 drift=0`.
+- `PYTHONPATH=. python3 -m unittest <52 modules>`:
+  `Ran 1105 tests ... OK (skipped=11)`.
+- `python3 scripts/validation/run-ci-gate.py --profile full`: exit 0.
+- `git diff --check`: exit 0.
+
+Preservation declaration, read from the `RES-0002` README rather than any
+transient Task body: 21 declared paths, 21 tracked files under the package
+root, sets equal, every declared path present on disk, and
+`validate_protected_research` reports no findings.
+
+Stage 90 disposition, re-derived from the current tree under the amended
+acceptance: 37 package roots, 0 unregistered. Every remaining root resolves to
+a registered Stage 99 profile, so unresolved and pending unregistered
+dispositions are zero.
+
+Frozen evidence: the fenced ledger blocks of all three Stage 98 Migrations are
+byte-identical to `origin/main`; only frontmatter parents moved, and the digest
+tripwires are repinned with that reason.
+
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -900,6 +942,10 @@ The final read-only verdicts are GREEN and do not grant approval:
 | Collapse the operations catalog modes | `9ef0b089` | five modes to one route; leaf renamed off the deleted mode |
 | Derive the archive counts instead of pinning them | `c77d241c` | 900/905/275/14 replaced by derivations; test_archive 22 OK |
 | Pin the two frozen migrations that had no integrity control | `3477a3c3` | 0001 and 0002 digest-tripwired; test_archive 23 OK |
+| Close SPEC-0158 Task 7 with its observed evidence | `07f57636` | Steps 1-7 recorded with the stable public interface |
+| Stop the template placeholder check firing on every parent | `caf48b6c` | 30 to 16 violations; frozen evidence byte-identical |
+| Let a provider-owned profile win its overlapping path | `d4984051` | 16 to 7; classify_path and the frozen-sequence test fixed |
+| Validate templates against their own contract | `516fbff0` | 7 to 0; free-form template-source, provider-owned sources, lifecycle-initial status |
 
 ## Rulings
 
