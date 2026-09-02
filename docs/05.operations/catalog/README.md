@@ -60,5 +60,5 @@ canonical catalog다. Incident event record는 이 catalog에 속하지
 
 - [Operations](../README.md)
 - [Incidents](../incidents/README.md)
-- [Operations templates](../../99.templates/templates/operations/README.md)
+- [Template catalog](../../99.templates/templates/README.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

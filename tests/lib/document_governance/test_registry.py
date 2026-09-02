@@ -134,7 +134,7 @@ class DocumentRegistryTests(unittest.TestCase):
         from scripts.lib.document_governance.metadata_validator import build_registry_profiles
 
         registry = load_registry()
-        for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"):
+        for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md"):
             with self.subTest(path=path):
                 self.assertEqual("readme", classify_path(path, registry))
                 record = Record(pathlib.Path(path), {"status": "active", "type": "sdlc/spec"}, "readme")

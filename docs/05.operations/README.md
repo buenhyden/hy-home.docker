@@ -89,6 +89,6 @@ owner: "@buenhyden"
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Specs, Plans, and Tasks](../03.specs/README.md)
-- [Operations templates](../99.templates/templates/operations/README.md)
+- [Template catalog](../99.templates/templates/README.md)
 - [Documentation protocol](../00.agent-governance/policies/documentation-protocol.md)
 - [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)

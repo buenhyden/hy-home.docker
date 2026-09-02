@@ -230,7 +230,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/00.agent-governance/policies/task-checklists.md",
             "docs/99.templates/README.md",
             "docs/99.templates/registry.json",
-            "docs/99.templates/templates/governance/README.md",
+            "docs/99.templates/templates/README.md",
         )
         for relative_path in active_route_files:
             with self.subTest(path=relative_path):

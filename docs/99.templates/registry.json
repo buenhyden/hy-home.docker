@@ -1073,9 +1073,7 @@
         "docs/02.architecture/descriptions/README.md",
         "docs/05.operations/catalog/README.md",
         "docs/05.operations/incidents/README.md",
-        "docs/99.templates/templates/README.md",
-        "docs/99.templates/templates/common/README.md",
-        "docs/99.templates/templates/operations/README.md"
+        "docs/99.templates/templates/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
