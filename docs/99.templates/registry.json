@@ -543,7 +543,7 @@
       "optional_sections": [
         "Audience"
       ],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -831,7 +831,7 @@
         "Dated Historical Snapshots",
         "Supersession Ledgers"
       ],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -1216,7 +1216,7 @@
         "Routing",
         "Template Usage"
       ],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -1264,7 +1264,7 @@
         "Utilities & Automation",
         "Verification and Quality Gates"
       ],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -1336,7 +1336,7 @@
         "Usage Instructions",
         "Validation"
       ],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -1363,7 +1363,7 @@
       ],
       "required_sections": [],
       "optional_sections": [],
-      "lifecycle_id": null,
+      "lifecycle_id": "living",
       "traceability": {},
       "exceptions": []
     },
@@ -3252,36 +3252,42 @@
     }
   },
   "transitions": {
-    "requirements-package": "living",
-    "architecture-description": "living",
     "adr": "adr",
-    "spec": "spec-package",
-    "data-model-contract": "living",
-    "plan": "execution",
-    "task": "execution",
-    "guide": "living",
-    "policy": "living",
-    "runbook": "living",
-    "incident": "incident",
-    "postmortem": "point-in-time",
-    "research": "living",
+    "architecture-description": "living",
     "audit": "point-in-time",
-    "data": "living",
-    "research-member": "living",
     "audit-member": "living",
-    "migration": "historical",
-    "tombstone": "historical",
-    "readme": "living",
-    "governance-policy": "living",
+    "data": "living",
+    "data-model-contract": "living",
+    "documentation-readme": "living",
+    "generated": "living",
     "governance-hook-policy": "living",
-    "governance-role": "living",
-    "governance-skill": "living",
+    "governance-policy": "living",
     "governance-provider": "living",
     "governance-provider-index": "living",
+    "governance-role": "living",
     "governance-sdlc": "living",
+    "governance-skill": "living",
+    "guide": "living",
+    "incident": "incident",
+    "migration": "historical",
+    "operations-domain-readme": "living",
+    "package-readme": "living",
+    "plan": "execution",
+    "policy": "living",
+    "postmortem": "point-in-time",
+    "readme": "living",
+    "reference-category-readme": "living",
+    "repository-readme": "living",
+    "requirements-package": "living",
+    "research": "living",
+    "research-member": "living",
+    "runbook": "living",
+    "runtime-governance-readme": "living",
     "runtime-projection-claude": "living",
     "runtime-projection-codex": "living",
+    "spec": "spec-package",
+    "task": "execution",
     "template-source": "living",
-    "generated": "living"
+    "tombstone": "historical"
   }
 }
