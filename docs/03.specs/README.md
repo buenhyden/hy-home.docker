@@ -69,9 +69,12 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0098 | [infra_net Standardization](./0098-standardize-infra-net/spec.md) | completed outcome Spec |
 | SPEC-0154 | [Governance Consistency Convergence](./0154-governance-consistency-convergence/spec.md) | completed outcome Spec |
 | SPEC-0155 | [Validation Surface Reduction](./0155-validation-surface-reduction/spec.md) | completed outcome Spec |
-| SPEC-0156 | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | draft Spec |
+| SPEC-0156 | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | active Spec with [Plan](./0156-compose-enablement-model-convergence/plan.md) and [Task](./0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) |
 | SPEC-0157 | [Script Surface Ownership Convergence](./0157-script-surface-ownership-convergence/spec.md) | completed outcome Spec |
 | SPEC-0158 | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | completed outcome Spec with retained [Plan](./0158-document-governance-lifecycle-convergence/plan.md) and [Task](./0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md) |
+| SPEC-0159 | [Document Taxonomy and Identity Convergence](./0159-document-taxonomy-identity-convergence/spec.md) | completed outcome Spec with retained [Plan](./0159-document-taxonomy-identity-convergence/plan.md) and [Task](./0159-document-taxonomy-identity-convergence/tasks/tsk-0001-taxonomy-convergence.md) |
+| SPEC-0160 | [README Entrypoint Form Registration](./0160-readme-entrypoint-form-registration/spec.md) | completed outcome Spec with retained [Plan](./0160-readme-entrypoint-form-registration/plan.md) and [Task](./0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md) |
+| SPEC-0161 | [Legacy Profile Layer Retirement](./0161-legacy-profile-layer-retirement/spec.md) | completed outcome Spec with retained [Plan](./0161-legacy-profile-layer-retirement/plan.md) and [Task](./0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md) |
 
 ## Role Contract
 
