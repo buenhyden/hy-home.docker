@@ -61,7 +61,7 @@ def _validate_template_source(
     ]
     if not matching_roles:
         return None
-    role_name, role = matching_roles[0]
+    _, role = matching_roles[0]
     target_type = role.get("artifact_profile")
     if not isinstance(target_type, str):
         return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
@@ -83,13 +83,6 @@ def _validate_template_source(
         )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
-    if target_type == "archive":
-        archive_profiles = profiles.get("archive_profiles", {})
-        selected_archive_profile = (
-            archive_profiles.get(role_name) if isinstance(archive_profiles, dict) else None
-        )
-        if isinstance(selected_archive_profile, dict):
-            target_profile = selected_archive_profile
     if not isinstance(target_profile, dict):
         return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
     placeholders = _template_placeholder_values(profiles)

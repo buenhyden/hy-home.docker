@@ -64,8 +64,6 @@ from scripts.lib.document_governance.metadata.profile import (
     _valid_lowercase_object_id,
     _valid_lowercase_sha256,
     _valid_metadata_artifact_id,
-    archive_identity_profile,
-    classify_archive_profile,
     classify_readme_profile,
     infer_artifact_type,
     readme_frontmatter_consumer,
@@ -106,27 +104,10 @@ def validate_record(
         if isinstance(legacy_profile, dict):
             raw_profile = legacy_profile
     profile_label = record.artifact_type
-    archive_profile_error: ProfileError | None = None
-    if record.artifact_type == "archive":
-        try:
-            profile_label = classify_archive_profile(record.path, profiles)
-        except ProfileError as error:
-            archive_profile_error = error
-            profile_label = archive_identity_profile(record.path, profiles) or "archive"
-        archive_profiles = profiles.get("archive_profiles", {})
-        raw_profile = (
-            archive_profiles.get(profile_label)
-            if isinstance(archive_profiles, dict)
-            else None
-        )
     if not isinstance(raw_profile, dict):
-        if archive_profile_error is not None:
-            return [_finding(record, "archive-profile", str(archive_profile_error))]
         return [_finding(record, "unknown-profile", f"profile is not configured: {record.artifact_type}")]
     typed_manifest = manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
     findings: list[Finding] = []
-    if archive_profile_error is not None:
-        findings.append(_finding(record, "archive-profile", str(archive_profile_error)))
     if record.parse_error:
         parse_code = record.parse_error_code or "malformed-yaml"
         findings.append(_finding(record, f"frontmatter-{parse_code}", record.parse_error))
