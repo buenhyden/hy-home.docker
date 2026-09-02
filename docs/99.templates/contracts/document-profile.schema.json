@@ -10,40 +10,60 @@
     "template_roles",
     "lifecycles",
     "identity_spaces",
-    "transitions"
+    "transitions",
+    "common"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {
+      "const": 1
+    },
+    "common": {
+      "type": "object"
+    },
     "profiles": {
       "type": "array",
       "minItems": 1,
-      "items": {"$ref": "#/$defs/profile"}
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
     },
     "template_roles": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": {"$ref": "#/$defs/templateRole"}
+      "additionalProperties": {
+        "$ref": "#/$defs/templateRole"
+      }
     },
     "lifecycles": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": {"$ref": "#/$defs/lifecycle"}
+      "additionalProperties": {
+        "$ref": "#/$defs/lifecycle"
+      }
     },
     "identity_spaces": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": {"$ref": "#/$defs/identitySpace"}
+      "additionalProperties": {
+        "$ref": "#/$defs/identitySpace"
+      }
     },
     "transitions": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": {"type": "string", "minLength": 1}
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
     }
   },
   "$defs": {
     "stringList": {
       "type": "array",
-      "items": {"type": "string", "minLength": 1},
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
     "profile": {
@@ -66,84 +86,191 @@
         "exceptions"
       ],
       "properties": {
-        "profile_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "profile_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
         "frontmatter_policy": {
-          "enum": ["required", "absent", "unmanaged"]
+          "enum": [
+            "required",
+            "absent",
+            "unmanaged"
+          ]
         },
-        "path_pattern": {"type": "string", "minLength": 1},
-        "additional_paths": {"$ref": "#/$defs/stringList"},
-        "type": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"},
-        "artifact_id_pattern": {"type": ["string", "null"]},
+        "path_pattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "additional_paths": {
+          "$ref": "#/$defs/stringList"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"
+        },
+        "artifact_id_pattern": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "identity_relation": {
-          "enum": ["direct", "package-member", "subject-member", "inherited", "none"]
+          "enum": [
+            "direct",
+            "package-member",
+            "subject-member",
+            "inherited",
+            "none"
+          ]
         },
-        "template_id": {"type": ["string", "null"]},
-        "required_frontmatter": {"$ref": "#/$defs/stringList"},
-        "optional_frontmatter": {"$ref": "#/$defs/stringList"},
-        "required_sections": {"$ref": "#/$defs/stringList"},
-        "optional_sections": {"$ref": "#/$defs/stringList"},
-        "free_form_sections": {"type": "boolean"},
-        "lifecycle_id": {"type": ["string", "null"]},
-        "media_type": {"type": "string", "minLength": 1},
-        "traceability": {"$ref": "#/$defs/traceability"},
-        "exceptions": {"type": "array", "items": {"type": "object"}}
+        "template_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required_frontmatter": {
+          "$ref": "#/$defs/stringList"
+        },
+        "optional_frontmatter": {
+          "$ref": "#/$defs/stringList"
+        },
+        "required_sections": {
+          "$ref": "#/$defs/stringList"
+        },
+        "optional_sections": {
+          "$ref": "#/$defs/stringList"
+        },
+        "free_form_sections": {
+          "type": "boolean"
+        },
+        "lifecycle_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "traceability": {
+          "$ref": "#/$defs/traceability"
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
       }
     },
     "traceability": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "allowed_parent_profiles": {"$ref": "#/$defs/stringList"},
-        "internal_id_spaces": {"$ref": "#/$defs/stringList"}
+        "allowed_parent_profiles": {
+          "$ref": "#/$defs/stringList"
+        },
+        "internal_id_spaces": {
+          "$ref": "#/$defs/stringList"
+        }
       }
     },
     "templateRole": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source", "profile_id"],
+      "required": [
+        "source",
+        "profile_id"
+      ],
       "properties": {
-        "source": {"type": "string", "pattern": "^docs/99\\.templates/templates/"},
-        "profile_id": {"type": "string", "minLength": 1}
+        "source": {
+          "type": "string",
+          "pattern": "^docs/99\\.templates/templates/"
+        },
+        "profile_id": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "lifecycle": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["statuses", "transitions"],
+      "required": [
+        "statuses",
+        "transitions"
+      ],
       "properties": {
-        "statuses": {"$ref": "#/$defs/stringList"},
+        "statuses": {
+          "$ref": "#/$defs/stringList"
+        },
         "transitions": {
           "type": "object",
-          "additionalProperties": {"$ref": "#/$defs/stringList"}
+          "additionalProperties": {
+            "$ref": "#/$defs/stringList"
+          }
         }
       }
     },
     "identitySpace": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["prefix", "width", "high_water", "next_number", "child_spaces"],
+      "required": [
+        "prefix",
+        "width",
+        "high_water",
+        "next_number",
+        "child_spaces"
+      ],
       "properties": {
-        "prefix": {"type": "string", "minLength": 1},
-        "width": {"type": "integer", "minimum": 1, "maximum": 12},
-        "high_water": {"type": "integer", "minimum": 0, "maximum": 9999},
-        "next_number": {"type": "integer", "minimum": 1, "maximum": 9999},
+        "prefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "high_water": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "next_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
         "current_issued": {
           "type": "array",
           "maxItems": 9999,
-          "items": {"type": "integer", "minimum": 1, "maximum": 9999},
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9999
+          },
           "uniqueItems": true
         },
         "reserved_history": {
           "description": "Terminal reservations; allocation candidates must be compared with one captured Git index blob snapshot or one resolved commit OID predecessor and may not reclassify these numbers or regress the package high-water.",
           "type": "array",
           "maxItems": 9999,
-          "items": {"type": "integer", "minimum": 1, "maximum": 9999},
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9999
+          },
           "uniqueItems": true
         },
         "child_spaces": {
           "type": "object",
           "maxProperties": 9999,
-          "additionalProperties": {"$ref": "#/$defs/identitySpace"}
+          "additionalProperties": {
+            "$ref": "#/$defs/identitySpace"
+          }
         }
       }
     }

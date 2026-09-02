@@ -1,5 +1,119 @@
 {
   "schema_version": 1,
+  "common": {
+    "allowed_statuses": [
+      "draft",
+      "active",
+      "completed",
+      "superseded",
+      "archived"
+    ],
+    "archive_source_prefixes": [
+      "docs/",
+      "archive/"
+    ],
+    "frontmatter_order": [
+      "status",
+      "artifact_id",
+      "artifact_type",
+      "parent_ids",
+      "created",
+      "updated",
+      "observed_at",
+      "supersedes",
+      "completed_at",
+      "reviewed_at",
+      "next_review_at",
+      "occurred_at",
+      "resolved_at",
+      "generated_by",
+      "archived_from",
+      "archived_at",
+      "archive_reason",
+      "archive_disposition",
+      "archived_commit",
+      "archived_blob",
+      "preservation_class",
+      "current_replacement",
+      "snapshot_path",
+      "content_sha256",
+      "snapshot_reason"
+    ],
+    "generated_outputs": {
+      "docs/90.references/data/0066-foundation-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py",
+      "docs/90.references/data/0068-target-surface-convergence-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py",
+      "docs/90.references/data/0074-target-surface-delta-summary/README.md": "scripts/validation/check-target-surface-delta-contract.py"
+    },
+    "globally_forbidden": [
+      "type",
+      "document_type",
+      "template_type",
+      "owner",
+      "links"
+    ],
+    "inventory_excludes": [
+      "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
+    ],
+    "root_exceptions": {
+      "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md": "Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent."
+    },
+    "template_placeholders": {
+      "artifact_id": "<artifact-id>",
+      "parent_id": "<parent-artifact-id>",
+      "created": "<created-at>",
+      "updated": "<updated-at>",
+      "reviewed_at": "<reviewed-at>",
+      "next_review_at": "<next-review-at>",
+      "completed_at": "<completed-at>",
+      "occurred_at": "<occurred-at>",
+      "resolved_at": "<resolved-at>",
+      "archived_from": "docs/<original-path>.md",
+      "archived_at": "<archived-at>",
+      "archive_reason": "<archive-reason>",
+      "archive_disposition": "<archive-disposition>",
+      "archived_commit": "<archived-commit>",
+      "archived_blob": "<archived-blob>",
+      "preservation_class": "<preservation-class>",
+      "current_replacement": "docs/<replacement-path>.md",
+      "snapshot_path": "docs/98.archive/evidence/<content-sha256>.md.snapshot",
+      "content_sha256": "<content-sha256>",
+      "snapshot_reason": "<snapshot-reason>"
+    },
+    "terminal_statuses": [
+      "superseded",
+      "archived"
+    ],
+    "transitions": {
+      "draft": [
+        "active"
+      ],
+      "active": [
+        "completed",
+        "superseded"
+      ],
+      "completed": [
+        "superseded"
+      ],
+      "superseded": [],
+      "archived": []
+    },
+    "typed_keys": [
+      "status",
+      "artifact_id",
+      "artifact_type",
+      "parent_ids",
+      "created",
+      "updated",
+      "observed_at",
+      "supersedes",
+      "completed_at",
+      "reviewed_at",
+      "next_review_at",
+      "occurred_at",
+      "resolved_at",
+      "archived_at"
+    ]
+  },
   "profiles": [
     {
       "profile_id": "requirements-package",

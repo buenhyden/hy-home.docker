@@ -59,12 +59,6 @@ from scripts.lib.document_governance.git_provenance import (  # noqa: E402
 from scripts.lib.document_governance import metadata_contract  # noqa: E402
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
-LEGACY_MIGRATION_PROFILES = (
-    HistoricalDocument(
-        ROOT, "494065806794980080b081439298d7b534d10803",
-        "docs/99.templates/support/document-metadata-profiles.yaml",
-    )
-)
 HISTORICAL_CONTRACT = HistoricalDocument(
     ROOT, "494065806794980080b081439298d7b534d10803",
     "docs/99.templates/support/document-corpus-migration-contract.yaml",
@@ -1187,11 +1181,7 @@ def _manifest_profiles(
 
     if profiles is not None and isinstance(profiles.get("profiles"), dict):
         return profiles
-    registry = metadata.load_registry(DEFAULT_PROFILES)
-    legacy = metadata.load_profiles(LEGACY_MIGRATION_PROFILES)
-    if not isinstance(legacy, dict):
-        raise ProfileError("legacy migration profiles require a mapping envelope")
-    return metadata.build_registry_transition_profiles(registry, legacy)
+    return metadata.build_registry_profiles(metadata.load_registry(DEFAULT_PROFILES))
 
 
 def _generate_manifest_skeleton(

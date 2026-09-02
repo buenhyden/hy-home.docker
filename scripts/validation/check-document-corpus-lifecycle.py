@@ -20,7 +20,6 @@ from scripts.lib.document_governance.lifecycle.contract import (
     DEFAULT_CONTRACT,
     DEFAULT_PROFILES,
     HISTORICAL_CONTRACT,
-    LEGACY_MIGRATION_PROFILES,
     ROOT,
     SAFETY_FINDING_CODES,
     Finding,

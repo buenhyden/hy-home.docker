@@ -26,10 +26,9 @@ from scripts.lib.document_governance.registry import (
     validate_registry,
 )
 from scripts.lib.document_governance.metadata_validator import (
-    LEGACY_TRANSITION_PROFILES,
     Record,
     _parse_frontmatter_text,
-    build_registry_transition_profiles,
+    build_registry_profiles,
     build_manifest,
     infer_artifact_type,
     load_profiles,
@@ -715,9 +714,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(self) -> None:
         registry = load_registry()
-        adapted = build_registry_transition_profiles(
-            registry, load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+        adapted = build_registry_profiles(registry)
         profile_map = adapted["profiles"]
 
         def render(value: str) -> str:
@@ -1027,38 +1024,36 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("regular non-symlink", result.stderr)
 
     def test_transition_adapter_preserves_profile_lifecycle_graphs(self) -> None:
-        adapted = build_registry_transition_profiles(
-            load_registry(), load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+        adapted = build_registry_profiles(load_registry())
         profile_map = adapted["profiles"]
         self.assertIsInstance(profile_map, dict)
         spec = profile_map["spec"]
         self.assertIn("superseded", spec["transitions"]["active"])
         self.assertEqual([], spec["transitions"]["superseded"])
 
-    def test_transition_adapter_rejects_unregistered_new_target_routes(self) -> None:
-        adapted = build_registry_transition_profiles(
-            load_registry(), load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+    def test_adapter_rejects_every_unregistered_target_route(self) -> None:
+        """A route the Registry does not own is unsupported, with no fallback.
 
-        self.assertEqual(
-            "prd",
-            infer_artifact_type(
-                pathlib.Path("docs/01.requirements/prd-0001-legacy.md"), adapted
-            ),
-        )
-        self.assertEqual(
-            "unsupported",
-            infer_artifact_type(
-                pathlib.Path("docs/01.requirements/not-numbered.md"), adapted
-            ),
-        )
+        The retired legacy envelope classified `prd-####-*.md` as `prd`. That
+        profile owned no document, so the route now fails closed like any other
+        unregistered path.
+        """
+
+        adapted = build_registry_profiles(load_registry())
+
+        for unregistered in (
+            "docs/01.requirements/prd-0001-legacy.md",
+            "docs/01.requirements/not-numbered.md",
+        ):
+            with self.subTest(path=unregistered):
+                self.assertEqual(
+                    "unsupported",
+                    infer_artifact_type(pathlib.Path(unregistered), adapted),
+                )
 
     def test_transition_adapter_projects_registry_body_roles(self) -> None:
         registry = load_registry()
-        adapted = build_registry_transition_profiles(
-            registry, load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+        adapted = build_registry_profiles(registry)
         sections = list(registry.profiles["requirements-package"]["required_sections"])
         body = "# Example\n\n" + "\n\n".join(
             f"## {section}\n\nContract content." for section in sections
@@ -1087,9 +1082,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_null_template_profile_enforces_registry_native_body_sections(self) -> None:
         registry = load_registry()
-        adapted = build_registry_transition_profiles(
-            registry, load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+        adapted = build_registry_profiles(registry)
         path = pathlib.Path("docs/00.agent-governance/sdlc.md")
         valid = Record(
             path,
@@ -1133,20 +1126,8 @@ class DocumentRegistryTests(unittest.TestCase):
             }
         )
 
-    def test_transition_adapter_allows_legacy_spec_reciprocal_link_only(self) -> None:
-        adapted = build_registry_transition_profiles(
-            load_registry(), load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
-
-        self.assertIn(
-            "superseded_by",
-            adapted["_legacy_profiles"]["spec"]["optional"],
-        )
-
     def test_canonical_target_profile_id_must_equal_inferred_profile(self) -> None:
-        adapted = build_registry_transition_profiles(
-            load_registry(), load_profiles(LEGACY_TRANSITION_PROFILES)
-        )
+        adapted = build_registry_profiles(load_registry())
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),
             {
@@ -1197,14 +1178,7 @@ class FreeFormProfileTests(unittest.TestCase):
     """
 
     def _adapted(self):
-        return build_registry_transition_profiles(
-            load_registry(),
-            {
-                "common": {"typed_keys": [], "frontmatter_order": []},
-                "profiles": {},
-                "template_roles": {},
-            },
-        )
+        return build_registry_profiles(load_registry())
 
     def _codes(self, profile_id: str, path: str, headings: tuple[str, ...]):
         record = Record(
@@ -1337,14 +1311,7 @@ class InvalidPreviousStatusTests(unittest.TestCase):
     """
 
     def _profiles(self):
-        return build_registry_transition_profiles(
-            load_registry(),
-            {
-                "common": {"typed_keys": [], "frontmatter_order": []},
-                "profiles": {},
-                "template_roles": {},
-            },
-        )
+        return build_registry_profiles(load_registry())
 
     def _codes(self, previous_status: str, status: str) -> set[str]:
         record = Record(

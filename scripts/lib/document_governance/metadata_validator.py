@@ -34,7 +34,6 @@ from scripts.lib.document_governance.metadata.lifecycle import (
 )
 from scripts.lib.document_governance.metadata.profile import (
     EXPECTED_EXCEPTION_SCHEMA,
-    LEGACY_TRANSITION_PROFILES,
     TARGET_MARKDOWN_PREFIXES,
     Finding,
     ProfileError,
@@ -44,7 +43,6 @@ from scripts.lib.document_governance.metadata.profile import (
     build_current_manifest,
     build_manifest,
     build_registry_profiles,
-    build_registry_transition_profiles,
     classify_template_role,
     infer_artifact_type,
     load_profiles,
@@ -67,7 +65,6 @@ __all__ = (
     "EXPECTED_EXCEPTION_SCHEMA",
     "Finding",
     "FrontmatterError",
-    "LEGACY_TRANSITION_PROFILES",
     "ProfileError",
     "Record",
     "RegistryError",
@@ -83,7 +80,6 @@ __all__ = (
     "build_current_manifest",
     "build_manifest",
     "build_registry_profiles",
-    "build_registry_transition_profiles",
     "collect_issued_identities",
     "collect_records_at_ref",
     "classify_template_role",

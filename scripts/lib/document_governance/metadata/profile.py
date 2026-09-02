@@ -2426,54 +2426,35 @@ def load_profiles(
     return _load_legacy_profiles(path)
 
 
-def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
-    """Project only current Registry profiles into the metadata reader envelope."""
+def _thaw(value: object) -> object:
+    """Return a mutable deep copy of a frozen Registry member.
 
-    keys = list(dict.fromkeys(
-        key
-        for profile in registry.profiles.values()
-        for field in ("required_frontmatter", "optional_frontmatter")
-        for key in profile.get(field, ())
-    ))
-    profiles = build_registry_transition_profiles(registry, {
-        "common": {"typed_keys": keys, "frontmatter_order": []},
-        "profiles": {},
-        "template_roles": {},
-    })
-    del profiles["_legacy_profiles"]
-    return profiles
-
-
-def build_registry_transition_profiles(
-    registry: DocumentRegistry,
-    legacy_profiles: Mapping[str, object],
-) -> dict[str, object]:
-    """Adapt Registry profiles over the bounded legacy corpus envelope.
-
-    The legacy YAML remains an explicit migration input until Task 3 moves the
-    corpus. Canonical target routes are classified and validated by Registry;
-    old routes retain their pre-migration profiles without becoming a second
-    authority for new paths.
+    `load_registry` returns nested `mappingproxy` values, which `copy.deepcopy`
+    cannot pickle, and metadata consumers assign into `common` at run time.
     """
 
-    adapted = copy.deepcopy(dict(legacy_profiles))
-    legacy_map = adapted.get("profiles")
-    common = adapted.get("common")
-    if not isinstance(legacy_map, dict) or not isinstance(common, dict):
-        raise ProfileError("legacy transition profiles require common and profiles")
+    if isinstance(value, Mapping):
+        return {str(key): _thaw(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_thaw(item) for item in value]
+    return value
+
+
+def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
+    """Project the Registry into the envelope the metadata readers consume.
+
+    The Registry is the only authority here: profiles, template roles, and the
+    shared `common` metadata contract all come from `registry.json`.
+    """
+
+    common = _thaw(registry.common)
+    assert isinstance(common, dict)
     for key in ("typed_keys", "frontmatter_order"):
         values = common.get(key)
         if isinstance(values, list) and "type" not in values:
             common[key] = ["type", *values]
-    translated = dict(legacy_map)
-    legacy_spec = translated.get("spec")
-    if isinstance(legacy_spec, dict):
-        legacy_spec = copy.deepcopy(legacy_spec)
-        optional = legacy_spec.get("optional")
-        if isinstance(optional, list) and "superseded_by" not in optional:
-            legacy_spec["optional"] = [*optional, "superseded_by"]
-        translated["spec"] = legacy_spec
-        legacy_map["spec"] = copy.deepcopy(legacy_spec)
+    adapted: dict[str, object] = {"common": common}
+    translated: dict[str, object] = {}
     for profile_id, profile in registry.profiles.items():
         lifecycle_id = profile.get("lifecycle_id")
         statuses = (
@@ -2519,9 +2500,7 @@ def build_registry_transition_profiles(
             "exceptions": profile.get("exceptions", ()),
         }
     adapted["profiles"] = translated
-    adapted["_legacy_profiles"] = copy.deepcopy(legacy_map)
-    legacy_roles = adapted.get("template_roles")
-    projected_roles = dict(legacy_roles) if isinstance(legacy_roles, dict) else {}
+    projected_roles: dict[str, object] = {}
     for role_id, role in registry.template_roles.items():
         profile_id = role.get("profile_id")
         profile = registry.profiles.get(str(profile_id))

@@ -131,6 +131,7 @@ class DocumentRegistry:
     lifecycles: Mapping[str, tuple[str, ...]]
     identity_spaces: Mapping[str, IdentitySpace]
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
+    common: Mapping[str, object]
 
 
 @functools.lru_cache(maxsize=1)
@@ -1687,4 +1688,5 @@ def load_registry(
             }
         ),
         transitions=transitions,
+        common=_freeze(raw.get("common", {})),  # type: ignore[arg-type]
     )
