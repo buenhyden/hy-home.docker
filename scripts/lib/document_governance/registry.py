@@ -154,7 +154,8 @@ def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
     """A provider runtime owns this surface, so the document type system defers."""
 
     exceptions = profile.get("exceptions")
-    return isinstance(exceptions, list) and any(
+    # The registry freeze turns declared lists into tuples, so accept both.
+    return isinstance(exceptions, (list, tuple)) and any(
         isinstance(item, Mapping) and item.get("kind") == "provider-owned-binding"
         for item in exceptions
     )
@@ -1535,6 +1536,17 @@ def classify_path(
         or path_matches_pattern(normalized, profile.get("path_pattern"))
     ]
     specific = [item for item in matches if item not in FALLBACK_PROFILE_IDS]
+    if len(specific) > 1:
+        # Same rule the overlap validation already applies: a provider-owned
+        # binding is a narrower runtime-owned surface inside a generic document
+        # route, so it wins rather than leaving the path unclassified.
+        owned = [
+            item
+            for item in specific
+            if _declares_provider_binding(active.profiles[item])
+        ]
+        if len(owned) == 1:
+            return owned[0]
     if specific:
         return specific[0] if len(specific) == 1 else None
     return matches[0] if len(matches) == 1 else None

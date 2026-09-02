@@ -66,9 +66,8 @@ def _validate_template_source(
         return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
     if target_type == "readme":
         expected = {
-            "profile_id": "readme",
+            "type": document_type("readme"),
             "status": "draft",
-            "artifact_type": "readme",
         }
         return (
             []
