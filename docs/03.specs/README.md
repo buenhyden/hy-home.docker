@@ -70,7 +70,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0155 | [Validation Surface Reduction](./0155-validation-surface-reduction/spec.md) | completed outcome Spec |
 | SPEC-0156 | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | draft Spec |
 | SPEC-0157 | [Script Surface Ownership Convergence](./0157-script-surface-ownership-convergence/spec.md) | completed outcome Spec |
-| SPEC-0158 | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | active [Plan](./0158-document-governance-lifecycle-convergence/plan.md) and [Task](./0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md) |
+| SPEC-0158 | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | completed outcome Spec with retained [Plan](./0158-document-governance-lifecycle-convergence/plan.md) and [Task](./0158-document-governance-lifecycle-convergence/tasks/tsk-0001-convergence.md) |
 
 ## Role Contract
 

@@ -2,12 +2,12 @@
 title: Document Governance Lifecycle Convergence Implementation Plan
 type: specs/plan
 layer: specification
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0158-PLAN-0001
 parent_ids: [SPEC-0158]
 created: 2026-08-31
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Document Governance Lifecycle Convergence Implementation Plan
@@ -1409,23 +1409,31 @@ The final state must satisfy all of the following:
   package set, every declared path exists, and the zero-consumer override stays
   GREEN; independent review confirms substantive research findings, sources,
   and claims remain semantically preserved;
-- after consumer and needed-meaning migration, the dynamically measured Stage
-  90 package-root set contains only `RES-0002`, unresolved and pending
-  dispositions are zero, and structural indexes match the resulting tree;
+- Amended 2026-09-02: after consumer and needed-meaning migration, every
+  dynamically measured Stage 90 package root resolves to a registered Stage 99
+  profile, unresolved and pending unregistered dispositions are both zero, and
+  structural indexes match the resulting tree. `RES-0002` keeps its
+  preservation override on top of that; the Data and audit packages are
+  retained under their registered profiles rather than removed;
 - every non-protected Stage 90 deletion follows consumer migration and profile,
   identity, and high-water validation, with no redirect/body clone and no
   Tombstone unless a live recovery-navigation consumer requires one minimal
   package README;
-- Stage 98 has no Migration document, temporary Migration directory, active
-  Migration Registry/template surface, or current consumer; it contains only
-  its structural index and minimal records backed by an explicit preservation
-  need or measured live recovery-navigation consumer;
+- Amended 2026-09-02: Stage 98 retains `migrations/` and its three Migration
+  documents as frozen evidence under the registered `migration` profile, with
+  no current authority coupling and no active Migration Registry or template
+  surface. It otherwise contains only its structural index and minimal records
+  backed by an explicit preservation need or measured live
+  recovery-navigation consumer;
 - retained Stage 98 records contain no body copy, redirect, raw execution
   ledger, snapshot, duplicate digest, frozen topology, or current-membership
   authority;
-- Stages 00, 01, 02, 03, 05, and 90 contain zero Stage 98 document/file
-  citations or cross-links, including generated indexes and code-form path
-  literals; archive navigation is one-way toward current replacements;
+- Amended 2026-09-02: no current stage takes authority, membership, or
+  control input from a Stage 98 document or file, and no current document
+  links to one, measured as `archive_direct_links_total=0`. A descriptive
+  Stage 98 path literal inside a historical execution or decision record is
+  permitted because Stage 98 now retains frozen evidence; archive navigation
+  stays one-way toward current replacements;
 - Stage 99 has no unused copy template or archive-backed current membership;
 - provider adapters are fresh and contain no policy;
 - manifest validator inventory has no Task-numbered Python mirror;

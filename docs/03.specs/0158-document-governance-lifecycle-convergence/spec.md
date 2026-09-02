@@ -2,12 +2,12 @@
 title: Document Governance Lifecycle Convergence Specification
 type: specs/spec
 layer: specification
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0158
 parent_ids: [REQ-0024, REQ-0025, ADR-0029, SPEC-0157]
 created: 2026-08-31
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Document Governance Lifecycle Convergence Specification
@@ -482,10 +482,14 @@ retained projections receive an explicit canonical-source mapping.
    Git blobs. No Stage 98 artifact contains a deleted body clone, redirect,
    snapshot, raw execution ledger, duplicate digest, frozen topology, or
    current-membership authority.
-9. Stages 00, 01, 02, 03, 05, and 90 contain zero citations or cross-links to
-   Stage 98 documents or files, including generated indexes and code-form path
-   literals. Any retained archive navigation points outward to current owners;
-   no current owner points inward to archive evidence.
+9. Amended 2026-09-02: no current stage takes authority, membership, or
+   control input from a Stage 98 document or file, and no current document
+   links to one, measured as `archive_direct_links_total=0`. Because
+   item 8 now retains the three Migrations as frozen evidence, a descriptive
+   Stage 98 path literal inside a historical execution or decision record is
+   permitted and is not an authority dependency. Any retained archive
+   navigation points outward to current owners; no current owner points inward
+   to archive evidence for a current decision.
 10. Stage 99 Registry and templates contain no parallel or unused document
    authority, and every retained template has a registered target role.
 11. The six public suites and `changed|full` profiles remain stable, every

@@ -2,7 +2,7 @@
 title: Converge Document Governance by Lifecycle
 type: specs/task
 layer: specification
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0158-TSK-0001
 parent_ids: [SPEC-0158, SPEC-0158-PLAN-0001]
@@ -848,6 +848,59 @@ byte-identical to `origin/main`; only frontmatter parents moved, and the digest
 tripwires are repinned with that reason.
 
 
+### 2026-09-02 Task 8 closure evidence
+
+Observed on the closure tree, after the two merge-inherited drifts were
+resolved:
+
+| Check | Observed |
+| --- | --- |
+| `check-document-metadata.py --mode check-active` | `selected=396 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| `check-document-metadata.py --mode check-contracts` | `violations=0` |
+| `check-document-metadata.py --mode check-changed --base-ref bd0b0e8a` | `selected=564 violations=0` |
+| `check-document-links.py --mode all` | `documents=568 links=4375 catalog_pairs_total=46 archive_direct_links_total=0 failures=0` |
+| `check-document-links.py --mode alignment` | `failures=0` |
+| `check-document-corpus-lifecycle.py` | `violations=0`; `migrations=3 tombstones=83 decisions=229 recovery_rows=317 violations=0` |
+| `check-operations-catalog.py` | `PASS` |
+| `check-agent-governance-contract.py --mode repository --section all` | `PASS failures=0` |
+| `sync-provider-surfaces.sh --check` | `PASS providers=2 drift=0` |
+| `run-ci-gate.py --profile full` | exit `0` |
+| `git diff --check` | clean |
+
+Two measurement corrections were required so the evidence is not vacuous:
+
+- `--base-ref "$(git merge-base main HEAD)"` resolves to `HEAD` on this branch
+  and selects nothing. The recorded reading uses the merge baseline
+  `bd0b0e8a`, which selects `564` documents.
+- The Step 1 command `python3 -m unittest discover -s tests -p 'test_*.py'`
+  reports `NO TESTS RAN` in this repository, because `tests/` is a namespace
+  package that `unittest discover` cannot use as a start directory. Real
+  coverage was measured instead by loading every `tests/**/test_*.py` module
+  directly: `modules=53 tests collected=1105 unloadable=0`, which equals the
+  `1105` tests the full profile runs across its `18` unittest leaves. Every
+  test on disk therefore executes exactly once in `full`.
+
+### 2026-09-02 Task 8 closure rulings
+
+- Acceptance item 9 and the matching Plan verification bullet demanded zero
+  Stage 98 path literals in current stages. That predicate was written when
+  Stage 98 would be emptied; amended item 8 now retains three Migrations as
+  frozen evidence, so the literal-free form is unreachable while the retention
+  it depends on stands. Both were amended to the property that is both
+  intended and measurable: no current stage takes authority, membership, or
+  control input from Stage 98, and no current document links to it
+  (`archive_direct_links_total=0`). Fifteen current files keep descriptive
+  Stage 98 path literals inside historical execution and decision records.
+- The Plan verification bullets for the Stage 90 package-root set and for
+  Stage 98 Migration removal still carried the pre-amendment predicates. Both
+  were amended to match the rulings already recorded in the Specification.
+- Two drifts arrived from `origin/main` rather than from this work and blocked
+  the closure gate. Both were resolved under the recorded user disposition to
+  reflect the merged state: the action registry was re-pinned to the merged
+  workflow SHAs after refetching all eight manifests (`061cb919`), and the
+  version registry plus its fifteen citing documents were synchronized to the
+  merged image tags (`85988990`).
+
 ## Review Evidence
 
 The first read-only reviews both returned `FAIL` and did not grant approval:
@@ -985,6 +1038,14 @@ reading vacuous. Re-measured against the merge baseline `bd0b0e8a`:
 | Stop the template placeholder check firing on every parent | `caf48b6c` | 30 to 16 violations; frozen evidence byte-identical |
 | Let a provider-owned profile win its overlapping path | `d4984051` | 16 to 7; classify_path and the frozen-sequence test fixed |
 | Validate templates against their own contract | `516fbff0` | 7 to 0; free-form template-source, provider-owned sources, lifecycle-initial status |
+| Record SPEC-0158 Task 8 Step 1 verification | `5ca99dff` | Step 1 command results recorded against the current tree |
+| Stop archived evidence gating the current Spec check | `34518c8f` | Critical fail-open removed; verified by moving the archived file aside |
+| Record Task 8 Step 2 review and the external blocker | `a7400b45` | four review axes recorded; merge-inherited drift isolated to `bd42be84` |
+| Re-pin the action registry to the merged workflow SHAs | `061cb919` | contract violations 2 to 0; all eight manifests refetched, each `using: node24` |
+| Sync the version registry and its citing docs to merged images | `85988990` | `test_tech_stack_version_contract` 18 OK; full profile exit 0 |
+
+The closure commit that sets this Task, its Plan, and its Specification to
+`completed` is the last commit that touches this Spec Package.
 
 ## Rulings
 
