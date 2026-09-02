@@ -3083,8 +3083,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 159,
-      "next_number": 160,
+      "high_water": 160,
+      "next_number": 161,
       "child_spaces": {}
     },
     "operations-subject": {

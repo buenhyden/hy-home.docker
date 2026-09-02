@@ -328,6 +328,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0159-document-taxonomy-identity-convergence/plan.md](../../../03.specs/0159-document-taxonomy-identity-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0159-document-taxonomy-identity-convergence/spec.md](../../../03.specs/0159-document-taxonomy-identity-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0159-document-taxonomy-identity-convergence/tasks/tsk-0001-taxonomy-convergence.md](../../../03.specs/0159-document-taxonomy-identity-convergence/tasks/tsk-0001-taxonomy-convergence.md) | Markdown reference |
+| [docs/03.specs/0160-readme-entrypoint-form-registration/plan.md](../../../03.specs/0160-readme-entrypoint-form-registration/plan.md) | Markdown reference |
+| [docs/03.specs/0160-readme-entrypoint-form-registration/spec.md](../../../03.specs/0160-readme-entrypoint-form-registration/spec.md) | Markdown reference |
+| [docs/03.specs/0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md](../../../03.specs/0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
