@@ -148,8 +148,10 @@ class CheckerCliTests(unittest.TestCase):
             rendered,
         )
         self.assertIn("allowed-syntax", rendered)
+        # The Registry classifies this README, so the advisory inventory names
+        # its registered profile instead of the retired legacy sub-profile.
         self.assertIn(
-            "README profile=unclassified; consumer=unavailable; role=folder-index",
+            "README profile=readme; consumer=registry; role=folder-index",
             rendered,
         )
         self.assertIn("generated profile; owner=scripts/example.py", rendered)

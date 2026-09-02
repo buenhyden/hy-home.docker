@@ -103,7 +103,6 @@ from scripts.lib.document_governance.metadata.profile import (
     build_registry_profiles,
     infer_artifact_type,
     load_profiles,
-    matching_readme_profiles,
     registered_generated_owner,
 )
 
@@ -243,40 +242,6 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                             )
                         )
             continue
-        record = dataclasses.replace(
-            _record_from_text(path, text, profiles=profiles),
-            artifact_type=infer_artifact_type(path, profiles),
-        )
-        matches = matching_readme_profiles(path, profiles)
-        if not matches:
-            findings.append(Finding(path.as_posix(), "readme-unclassified", "tracked README has no profile"))
-        elif len(matches) > 1:
-            findings.append(
-                Finding(
-                    path.as_posix(),
-                    "readme-ambiguous",
-                    f"tracked README has multiple profiles: {', '.join(matches)}",
-                )
-            )
-        else:
-            classified_readmes.append(record)
-
-    readme_manifest = build_manifest(classified_readmes)
-    for record in classified_readmes:
-        findings.extend(validate_record(record, profiles, readme_manifest))
-        try:
-            text = (root / record.path).read_text(encoding="utf-8")
-        except (OSError, UnicodeError) as error:
-            findings.append(Finding(record.path.as_posix(), "readme-unreadable", str(error)))
-        else:
-            findings.extend(
-                validate_body_contract(
-                    record,
-                    text,
-                    profiles,
-                    changed_boundary=True,
-                )
-            )
 
     template_roles = profiles.get("template_roles", {})
     if not isinstance(template_roles, dict):
@@ -600,20 +565,15 @@ def _exception_context(record: Record, codes: set[str], profiles: dict[str, obje
     if record.parse_error:
         return "unavailable-parser-error"
     if record.artifact_type == "readme":
-        matches = matching_readme_profiles(record.path, profiles)
-        if not matches:
+        active_registry = profiles.get("_registry")
+        profile_name = (
+            classify_registered_path(record.path.as_posix(), active_registry)
+            if isinstance(active_registry, DocumentRegistry)
+            else None
+        )
+        if profile_name is None:
             return "README profile=unclassified; consumer=unavailable; role=folder-index"
-        if len(matches) > 1:
-            return (
-                f"README profile=ambiguous({','.join(matches)}); "
-                "consumer=unavailable; role=folder-index"
-            )
-        profile_name = matches[0]
-        readme_profiles = profiles.get("readme_profiles", {})
-        raw_profile = readme_profiles.get(profile_name, {}) if isinstance(readme_profiles, dict) else {}
-        declared_consumer = raw_profile.get("frontmatter_consumer") if isinstance(raw_profile, dict) else None
-        consumer = declared_consumer if isinstance(declared_consumer, str) and declared_consumer else "not-declared"
-        return f"README profile={profile_name}; consumer={consumer}; role=folder-index"
+        return f"README profile={profile_name}; consumer=registry; role=folder-index"
     if record.artifact_type == "generated":
         owner = record.metadata.get("generated_by") or registered_generated_owner(
             record.path,

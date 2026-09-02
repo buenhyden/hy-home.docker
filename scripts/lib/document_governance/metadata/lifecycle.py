@@ -64,9 +64,7 @@ from scripts.lib.document_governance.metadata.profile import (
     _valid_lowercase_object_id,
     _valid_lowercase_sha256,
     _valid_metadata_artifact_id,
-    classify_readme_profile,
     infer_artifact_type,
-    readme_frontmatter_consumer,
     registered_generated_owner,
 )
 
@@ -155,47 +153,6 @@ def validate_record(
         and isinstance(legacy_map, Mapping)
         and isinstance(legacy_map.get(record.artifact_type), dict)
     )
-    if record.artifact_type == "readme" and registry_classification != "readme":
-        try:
-            readme_profile_name = classify_readme_profile(record.path, profiles)
-        except ProfileError as error:
-            findings.append(_finding(record, "readme-profile", str(error)))
-        else:
-            readme_profiles = profiles.get("readme_profiles", {})
-            readme_profile = (
-                readme_profiles.get(readme_profile_name, {}) if isinstance(readme_profiles, dict) else {}
-            )
-            behavior = readme_profile.get("frontmatter") if isinstance(readme_profile, dict) else None
-            allowed_readme_keys = (
-                set(readme_profile.get("allowed_frontmatter_keys", []))
-                if isinstance(readme_profile, dict)
-                else set()
-            )
-            if record.frontmatter_present and behavior == "forbidden":
-                findings.append(
-                    _finding(
-                        record,
-                        "readme-frontmatter-forbidden",
-                        f"README profile {readme_profile_name} forbids frontmatter",
-                    )
-                )
-            elif record.metadata and readme_frontmatter_consumer(record.path, profiles) is None:
-                findings.append(
-                    _finding(
-                        record,
-                        "readme-consumer-missing",
-                        f"README profile {readme_profile_name} has no declared frontmatter consumer",
-                    )
-                )
-            for key in sorted(set(record.metadata) - allowed_readme_keys):
-                findings.append(
-                    _finding(
-                        record,
-                        "readme-frontmatter-key",
-                        f"README profile {readme_profile_name} does not allow frontmatter key: {key}",
-                    )
-                )
-
     if record.artifact_type in _typed_target_types(profiles):
         frontmatter_order = common.get("frontmatter_order", [])
         if isinstance(frontmatter_order, list):

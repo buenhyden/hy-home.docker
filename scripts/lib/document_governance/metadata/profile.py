@@ -668,19 +668,6 @@ EXPECTED_DOCUMENT_FAMILIES = {
         "unsupported",
     ),
 }
-README_PROFILE_KEYS = frozenset(
-    {
-        "path_globs",
-        "frontmatter",
-        "frontmatter_consumer",
-        "allowed_frontmatter_keys",
-        "required_headings",
-        "optional_headings",
-        "forbidden_headings",
-        "allowed_local_content_role",
-        "canonical_shared_rule_owner",
-    }
-)
 README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
 TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
@@ -973,13 +960,6 @@ def infer_artifact_type(
             return "generated"
         # These are explicit, removable legacy corpus envelopes. Canonical
         # Stage 01/02/03/05 role paths must match Registry above or fail closed.
-        if pathlib.PurePosixPath(normalized).name == "README.md":
-            try:
-                classify_readme_profile(pathlib.Path(normalized), dict(profiles))
-            except ProfileError:
-                pass
-            else:
-                return "readme"
         if normalized.startswith("docs/00.agent-governance/") or normalized.startswith(
             "docs/99.templates/support/"
         ):
@@ -1301,17 +1281,6 @@ def _condition_members(
     return set(values) if isinstance(values, list) else set()
 
 
-def _safe_readme_glob(value: object) -> bool:
-    if not isinstance(value, str) or not value or "\\" in value or "://" in value:
-        return False
-    pure = pathlib.PurePosixPath(value)
-    if pure.is_absolute() or value != pure.as_posix() or pure.name != "README.md":
-        return False
-    if any(part in {"", ".", "..", "**"} for part in pure.parts):
-        return False
-    return all(part == "*" or not any(marker in part for marker in "?[]*") for part in pure.parts)
-
-
 def _readme_globs_overlap(left: str, right: str) -> bool:
     left_parts = pathlib.PurePosixPath(left).parts
     right_parts = pathlib.PurePosixPath(right).parts
@@ -1553,54 +1522,6 @@ def classify_template_role(
             f"template role is ambiguous: {normalized}; roles={','.join(matches)}"
         )
     return matches[0]
-
-
-def matching_readme_profiles(path: pathlib.Path, profiles: dict[str, object]) -> list[str]:
-    """Return every declared README profile matching a repository-relative path."""
-
-    normalized = pathlib.PurePosixPath(path.as_posix())
-    if normalized.is_absolute() or normalized.name != "README.md" or any(
-        part in {"", ".", ".."} for part in normalized.parts
-    ):
-        return []
-    readme_profiles = profiles.get("readme_profiles", {})
-    if not isinstance(readme_profiles, dict):
-        return []
-    matches: list[str] = []
-    for name, raw_profile in sorted(readme_profiles.items()):
-        if not isinstance(name, str) or not isinstance(raw_profile, dict):
-            continue
-        patterns = raw_profile.get("path_globs", [])
-        if isinstance(patterns, list) and any(
-            isinstance(pattern, str) and _readme_glob_matches(normalized, pattern)
-            for pattern in patterns
-        ):
-            matches.append(name)
-    return matches
-
-
-def classify_readme_profile(path: pathlib.Path, profiles: dict[str, object]) -> str:
-    """Classify one README path, failing deterministically on zero or many owners."""
-
-    matches = matching_readme_profiles(path, profiles)
-    normalized = path.as_posix()
-    if not matches:
-        raise ProfileError(f"README path is unclassified: {normalized}")
-    if len(matches) > 1:
-        raise ProfileError(f"README path is ambiguous: {normalized}; profiles={','.join(matches)}")
-    return matches[0]
-
-
-def readme_frontmatter_consumer(path: pathlib.Path, profiles: dict[str, object]) -> str | None:
-    """Return the profile-declared consumer; metadata content never infers one."""
-
-    profile_name = classify_readme_profile(path, profiles)
-    readme_profiles = profiles.get("readme_profiles", {})
-    raw_profile = readme_profiles.get(profile_name, {}) if isinstance(readme_profiles, dict) else {}
-    if not isinstance(raw_profile, dict) or raw_profile.get("frontmatter") != "optional":
-        return None
-    consumer = raw_profile.get("frontmatter_consumer")
-    return consumer if isinstance(consumer, str) and consumer else None
 
 
 def _typed_target_types(profiles: dict[str, object]) -> set[str]:
@@ -2451,75 +2372,6 @@ def _load_legacy_profiles(
     if len(family_members) != len(set(family_members)):
         raise ProfileError("document_families members must be unique across families")
 
-    readme_profiles = loaded.get("readme_profiles")
-    if not isinstance(readme_profiles, dict) or not readme_profiles:
-        raise ProfileError("readme_profiles must be a non-empty mapping")
-    declared_globs: list[tuple[str, str]] = []
-    for profile_name, readme_profile in sorted(readme_profiles.items()):
-        if not isinstance(profile_name, str) or not profile_name.strip():
-            raise ProfileError("readme_profiles names must be non-empty strings")
-        if not isinstance(readme_profile, dict) or set(readme_profile) != README_PROFILE_KEYS:
-            raise ProfileError(f"README profile {profile_name} must define the exact contract members")
-        path_globs = readme_profile.get("path_globs")
-        if not isinstance(path_globs, list) or not path_globs or not all(
-            isinstance(pattern, str) and _safe_readme_glob(pattern) for pattern in path_globs
-        ):
-            raise ProfileError(
-                f"README profile {profile_name} path_globs must be safe repository-relative README patterns"
-            )
-        if len(path_globs) != len(set(path_globs)):
-            raise ProfileError(f"README profile {profile_name} path_globs must not contain duplicates")
-        for pattern in path_globs:
-            for other_name, other_pattern in declared_globs:
-                if _readme_globs_overlap(pattern, other_pattern):
-                    raise ProfileError(
-                        f"README profile globs overlap: {other_name}:{other_pattern} and {profile_name}:{pattern}"
-                    )
-            declared_globs.append((profile_name, pattern))
-
-        behavior = readme_profile.get("frontmatter")
-        if behavior not in {"forbidden", "optional"}:
-            raise ProfileError(f"README profile {profile_name} frontmatter behavior is unknown")
-        allowed_keys = readme_profile.get("allowed_frontmatter_keys")
-        if not isinstance(allowed_keys, list) or not all(
-            isinstance(item, str) and item for item in allowed_keys
-        ):
-            raise ProfileError(f"README profile {profile_name} allowed_keys must be a string list")
-        if len(allowed_keys) != len(set(allowed_keys)):
-            raise ProfileError(f"README profile {profile_name} allowed_keys must not contain duplicates")
-        unknown_keys = set(allowed_keys) - README_FRONTMATTER_ALLOWED_KEYS
-        if unknown_keys:
-            raise ProfileError(
-                f"README profile {profile_name} has unknown frontmatter keys: {', '.join(sorted(unknown_keys))}"
-            )
-        consumer = readme_profile.get("frontmatter_consumer")
-        if behavior == "forbidden":
-            if consumer is not None or allowed_keys:
-                raise ProfileError(
-                    f"README profile {profile_name} forbidden frontmatter cannot declare keys or a consumer"
-                )
-        elif not isinstance(consumer, str) or not _safe_repo_path(consumer, "scripts/"):
-            raise ProfileError(f"README profile {profile_name} optional frontmatter requires a scripts/ consumer")
-
-        heading_sets: list[set[str]] = []
-        for heading_key in ("required_headings", "optional_headings", "forbidden_headings"):
-            headings = readme_profile.get(heading_key)
-            if not isinstance(headings, list) or not all(
-                isinstance(heading, str) and heading.strip() for heading in headings
-            ):
-                raise ProfileError(f"README profile {profile_name} {heading_key} must be a string list")
-            if len(headings) != len(set(headings)):
-                raise ProfileError(f"README profile {profile_name} {heading_key} must not contain duplicates")
-            heading_sets.append(set(headings))
-        if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
-            raise ProfileError(f"README profile {profile_name} heading contracts must not overlap")
-
-        local_role = readme_profile.get("allowed_local_content_role")
-        if not isinstance(local_role, str) or not local_role.strip():
-            raise ProfileError(f"README profile {profile_name} allowed_local_content_role must be non-empty")
-        owner = readme_profile.get("canonical_shared_rule_owner")
-        if not isinstance(owner, str) or not _safe_repo_path(owner):
-            raise ProfileError(f"README profile {profile_name} canonical_shared_rule_owner must be a safe path")
     template_roles = loaded.get("template_roles")
     if not isinstance(template_roles, dict) or set(template_roles) != EXPECTED_TEMPLATE_ROLE_NAMES:
         raise ProfileError("template_roles must define the exact canonical role names")

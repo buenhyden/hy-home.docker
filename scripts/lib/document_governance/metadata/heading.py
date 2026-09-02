@@ -40,7 +40,6 @@ from scripts.lib.document_governance.metadata.profile import (
     _string_list,
     _template_placeholder_values,
     _typed_target_types,
-    classify_readme_profile,
     matching_template_roles,
     registered_generated_owner,
 )
@@ -648,45 +647,6 @@ def validate_body_contract(
             )
         )
         return findings
-    elif record.artifact_type == "readme":
-        if not changed_boundary:
-            return []
-        try:
-            readme_profile_name = classify_readme_profile(record.path, profiles)
-        except ProfileError:
-            return []
-        if readme_profile_name != "template-catalog":
-            return []
-        readme_profiles = profiles.get("readme_profiles", {})
-        readme_profile = (
-            readme_profiles.get(readme_profile_name, {})
-            if isinstance(readme_profiles, dict)
-            else {}
-        )
-        _, h2 = extract_markdown_headings(text)
-        required = readme_profile.get("required_headings", []) if isinstance(readme_profile, dict) else []
-        for heading in required:
-            canonical = f"## {heading}"
-            if canonical not in h2:
-                findings.append(
-                    _finding(
-                        record,
-                        "readme-heading-missing",
-                        f"template-catalog README is missing required heading: {canonical}",
-                    )
-                )
-        forbidden = readme_profile.get("forbidden_headings", []) if isinstance(readme_profile, dict) else []
-        for heading in forbidden:
-            canonical = f"## {heading}"
-            if canonical in h2:
-                findings.append(
-                    _finding(
-                        record,
-                        "readme-heading-forbidden",
-                        f"template-catalog README contains forbidden heading: {canonical}",
-                    )
-                )
-        return sorted(set(findings))
     elif changed_boundary and record.artifact_type in _typed_target_types(profiles):
         matches = matching_template_roles(record.path, record.artifact_type, profiles)
         if not matches:
