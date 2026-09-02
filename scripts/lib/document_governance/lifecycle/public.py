@@ -22,12 +22,10 @@ def _spec_package_lifecycle_findings(
 ) -> list[Finding]:
     findings: list[Finding] = []
     stage03 = root / "docs/03.specs"
-    spec_package_authority = (
-        root
-        / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-    )
-    if not spec_package_authority.is_file():
-        return findings
+    # This check used to return clean unless a Stage 98 Migration file was
+    # present, so archived evidence gated a current control and its removal
+    # would have silently passed every Spec Package. Current Stage 03 validation
+    # derives from the current tree and the Registry alone.
     registry = profiles.get("_registry")
     if not isinstance(registry, metadata.DocumentRegistry):
         return findings
