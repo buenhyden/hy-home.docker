@@ -301,7 +301,7 @@ GIT_DIR="$(git rev-parse --absolute-git-dir)"
 GIT_COMMON_DIR="$(git rev-parse --path-format=absolute --git-common-dir)"
 [[ "$GIT_DIR" != "$GIT_COMMON_DIR" ]] || die "$EXIT_WORKTREE" "an isolated linked worktree is required; primary checkout rejected"
 
-[[ "$TASK_FILE" == docs/04.execution/tasks/* ]] || die "$EXIT_TASK" "--task must be under docs/04.execution/tasks/"
+[[ "$TASK_FILE" =~ ^docs/03\.specs/[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?/tasks/tsk-[0-9]{4}-[a-z0-9]([a-z0-9-]*[a-z0-9])?\.md$ ]] || die "$EXIT_TASK" "--task must name a canonical numbered Task under docs/03.specs/####-<slug>/tasks/"
 [[ ! -L "$TASK_FILE" ]] || die "$EXIT_TASK" "--task must not be a symlink"
 path_has_symlink_component "$TASK_FILE" && die "$EXIT_TASK" "--task path must not contain a symlink component"
 [[ -f "$TASK_FILE" ]] || die "$EXIT_TASK" "tracked task file does not exist: $TASK_FILE"

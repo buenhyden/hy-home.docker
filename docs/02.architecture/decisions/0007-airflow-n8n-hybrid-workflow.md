@@ -1,8 +1,15 @@
 ---
+title: "Airflow & n8n Hybrid Workflow Strategy"
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0007
+parent_ids:
+  - AD-0007
+created: 2026-03-26
+updated: 2026-08-10
 ---
-<!-- Target: docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md -->
-
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy
 
 ## Overview
@@ -39,7 +46,7 @@ status: active
   - 두 종류의 엔진을 관리해야 하므로 운영 오버헤드 발생.
   - 리소스(메모리, CPU) 소비 증가.
 
-## Alternatives
+## Options Considered
 
 ### [Alternative 1: Airflow Only]
 
@@ -51,8 +58,16 @@ status: active
 - Good: 매우 빠른 개발 속도, 직관적인 시각화.
 - Bad: 복잡한 의존성 관리 및 커스텀 Python 로직 적용이 어렵고, 대규모 배치 작업 가시성이 낮음.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [008-workflow.md](../../01.requirements/008-workflow.md)
-- **ARD**: [0007-workflow-architecture.md](../requirements/0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
+- **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
+- **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)

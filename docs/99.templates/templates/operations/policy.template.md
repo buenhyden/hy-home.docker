@@ -1,25 +1,35 @@
 ---
+title: <title>
+version: <version>
+type: operations/policy
+layer: <layer>
 status: draft
-artifact_id: <artifact-id>
-artifact_type: policy
-parent_ids: [<parent-artifact-id>]
-reviewed_at: <reviewed-at>
-review_cycle: <review-cycle>
+owner: <owner>
+artifact_id: POL-####
+parent_ids: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
+next_review_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
-## Overview
+## Purpose
 
-{{overview}}
+{{purpose}}
 
-## Policy Scope
+## Scope
 
 {{scope}}
 
-## Controls
+## Policy Statements
 
-{{controls}}
+{{normative_policy}}
+
+## Enforcement
+
+{{enforcement}}
 
 ## Exceptions
 
@@ -29,14 +39,10 @@ review_cycle: <review-cycle>
 
 {{verification}}
 
-## Review Cadence
+## Traceability
 
-{{review_cadence}}
+{{subject_and_authority_links}}
 
-## Compliance Mapping
+## Definitions
 
-{{compliance_mapping}}
-
-## Related Documents
-
-{{related_documents}}
+{{definitions}}

@@ -68,7 +68,7 @@ Infra layer:
 Key rules:
 - Use `AGENTS.md` and `docs/00.agent-governance/` as governance entry points.
 - Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
-- Run `bash scripts/validation/validate-docker-compose.sh` before deployment-related completion.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before completion.
 """
 
 print(json.dumps({"systemMessage": message.strip()}))
@@ -170,9 +170,7 @@ if not tool_name or tool_name in edit_tools:
             system_messages.append(
                 "Docker Compose file edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "After editing, verify with `bash scripts/validation/validate-docker-compose.sh` "
-                "and check port conflicts, volume paths, missing environment variables, "
-                "and existing network names."
+                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break
     for path in paths:
@@ -188,25 +186,7 @@ if not tool_name or tool_name in edit_tools:
                 "Keep `.agents/` aligned with `docs/00.agent-governance/` and the "
                 "canonical `.claude/` runtime catalog. It must not introduce a "
                 "parallel policy source, unknown skills, or stale runtime paths. "
-                "After editing, run `bash scripts/validation/check-repo-contracts.sh`."
-            )
-            break
-    for path in paths:
-        short_path = path
-        project_prefix = str(project) + "/"
-        if short_path.startswith(project_prefix):
-            short_path = short_path[len(project_prefix):]
-        short_path = short_path.removeprefix("./")
-        if short_path.startswith("docs/00.agent-governance/memory/") and short_path.endswith(".md"):
-            system_messages.append(
-                "Governance memory edit detected.\n\n"
-                f"Path: `{short_path}`\n\n"
-                "Memory notes are advisory retrieval context, not active policy. "
-                "Use `docs/99.templates/templates/governance/memory.template.md` for durable notes, "
-                "do not store transcripts, raw logs, shell history, credentials, "
-                "tokens, private keys, or secret values, and update "
-                "`docs/00.agent-governance/memory/progress.md` when creating or "
-                "materially changing a memory note."
+                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break
     for path in paths:
@@ -222,7 +202,7 @@ if not tool_name or tool_name in edit_tools:
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
                 "target-relative links, and `## Related Documents` section. The PostToolUse and "
-                "Stop hooks run `bash scripts/validation/check-repo-contracts.sh` to enforce the "
+                "Stop hooks run `python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
                 "changed-doc template gate."
             )
             break
@@ -253,6 +233,55 @@ if not tool_name or tool_name in edit_tools:
                     "the README target path rather than from `docs/99.templates/`."
                 )
             break
+
+# Evaluate the Stage 00 hook rules. Their frontmatter is the machine part and
+# their body is the message; before this they were enforced by nothing.
+denials = []
+try:
+    rules_module = project / "scripts" / "hooks" / "hook_rules.py"
+    sys.path.insert(0, str(rules_module.parent))
+    import hook_rules
+
+    command = tool_input.get("command")
+    command = command if isinstance(command, str) else ""
+    project_prefix = str(project) + "/"
+
+    def _short(value):
+        return value[len(project_prefix):] if value.startswith(project_prefix) else value
+
+    replacement = ""
+    for key in ("content", "new_string", "new_text"):
+        value = tool_input.get(key)
+        if isinstance(value, str):
+            replacement = value
+            break
+    edits = [(_short(path), replacement) for path in paths]
+    nested = tool_input.get("edits")
+    if isinstance(nested, list):
+        for edit in nested:
+            if not isinstance(edit, dict):
+                continue
+            target = edit.get("file_path") or edit.get("path")
+            text = edit.get("new_string") or edit.get("new_text")
+            if isinstance(target, str) and isinstance(text, str):
+                edits.append((_short(target), text))
+
+    warnings, blocks = hook_rules.evaluate(
+        hook_rules.load_rules(project), command=command, edits=tuple(edits)
+    )
+    system_messages.extend(rule.message for rule in warnings)
+    denials.extend(blocks)
+except Exception:
+    # A defect in rule evaluation must not break every tool call.
+    denials = []
+
+if denials:
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": "\n\n".join(rule.message for rule in denials),
+    }}))
+    sys.exit(0)
 
 if not system_messages and not additional_context:
     sys.exit(0)
@@ -298,7 +327,7 @@ changed_count = len([line for line in changed.splitlines() if line.strip()]) if 
 
 msg = f"""Session ending — governance reminder:
 
-- Update `docs/00.agent-governance/memory/progress.md` with a work log entry before this session closes.
+- Update the active co-located Stage 03 Task named by the current bootstrap/spec context before this session closes.
 - Record changed files, verification evidence, and any residual risk or open gap.
 - When repository-modifying work is complete, create small Conventional Commits by logical unit before the final response unless the user explicitly asked not to commit, the work is incomplete, or required checks/approvals are missing.
 - Stage only task-owned files or hunks, and leave unrelated untracked files untouched.
@@ -324,7 +353,6 @@ stage_roots = (
     pathlib.Path("docs/01.requirements"),
     pathlib.Path("docs/02.architecture"),
     pathlib.Path("docs/03.specs"),
-    pathlib.Path("docs/04.execution"),
     pathlib.Path("docs/05.operations"),
     pathlib.Path("docs/90.references"),
 )
@@ -376,7 +404,7 @@ template_stop_gate() {
   fi
 
   local output
-  if output="$(bash scripts/validation/check-repo-contracts.sh 2>&1)"; then
+  if output="$(python3 scripts/validation/run-ci-gate.py --profile changed 2>&1)"; then
     return 0
   fi
 
@@ -388,7 +416,7 @@ output = os.environ.get("GATE_OUTPUT", "").strip()
 reason = (
     "Changed target-stage documentation does not satisfy the docs/99.templates "
     "contract. Continue the task, fix the document from the mapped template, "
-    "and rerun `bash scripts/validation/check-repo-contracts.sh`."
+    "and rerun `python3 scripts/validation/run-ci-gate.py --profile changed`."
 )
 if output:
     reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
@@ -425,6 +453,7 @@ logical_commit_stop_gate() {
     python3 - <<'PY'
 from __future__ import annotations
 
+import pathlib
 import subprocess
 
 try:
@@ -438,6 +467,68 @@ try:
 except subprocess.CalledProcessError:
     raise SystemExit(0)
 
+REGISTRY = "docs/00.agent-governance/policies/approval-boundaries.md"
+SCHEMA = "agent-governance/deferred-paths/v1"
+
+
+def deferred_paths() -> set[str]:
+    """Paths tracked governance declares intentionally dirty.
+
+    Fails closed: any missing, untracked, unreadable, or malformed registry
+    yields no exemptions, so the gate keeps blocking exactly as before.
+    """
+    registry = pathlib.Path(REGISTRY)
+    if not registry.is_file():
+        return set()
+
+    # The declaration must itself be committed, so exempting a path is a
+    # reviewable act rather than a local edit the gate would trust blindly.
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", REGISTRY],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if tracked.returncode != 0:
+        return set()
+
+    try:
+        import yaml
+    except ImportError:
+        return set()
+
+    try:
+        document = yaml.safe_load(registry.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return set()
+
+    if not isinstance(document, dict) or document.get("schema") != SCHEMA:
+        return set()
+
+    entries = document.get("deferrals")
+    if not isinstance(entries, list):
+        return set()
+
+    declared: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        path = entry.get("path")
+        reason = entry.get("reason")
+        owning_task = entry.get("owning_task")
+        if not isinstance(path, str) or not path.strip():
+            continue
+        if not isinstance(reason, str) or not reason.strip():
+            continue
+        if not isinstance(owning_task, str) or not owning_task.strip():
+            continue
+        if not pathlib.Path(owning_task).is_file():
+            continue
+        declared.add(path.strip())
+    return declared
+
+
+exempt = deferred_paths()
+
 paths: list[str] = []
 for line in result.stdout.splitlines():
     if not line.strip():
@@ -445,6 +536,8 @@ for line in result.stdout.splitlines():
     path = line[3:]
     if " -> " in path:
         path = path.split(" -> ", 1)[1]
+    if path in exempt:
+        continue
     paths.append(path)
 
 print("\n".join(paths[:80]))
@@ -518,7 +611,7 @@ prompt = str(data.get("prompt", "")).lower()
 FUNCTIONS = [
     {
         "label": "compose-stack-agent",
-        "path": "docs/00.agent-governance/agents/functions/compose-stack-agent.md",
+        "path": "docs/00.agent-governance/skills/compose-stack-agent.md",
         "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
         "keywords": [
             "healthcheck", "health check", "restart policy",
@@ -528,7 +621,7 @@ FUNCTIONS = [
     },
     {
         "label": "requirements-to-design-agent",
-        "path": "docs/00.agent-governance/agents/functions/requirements-to-design-agent.md",
+        "path": "docs/00.agent-governance/skills/requirements-to-design-agent.md",
         "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
         "keywords": [
             "prd", "ard", "requirements to design", "architecture decision",
@@ -537,16 +630,16 @@ FUNCTIONS = [
     },
     {
         "label": "execution-plan-agent",
-        "path": "docs/00.agent-governance/agents/functions/execution-plan-agent.md",
-        "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
+        "path": "docs/00.agent-governance/skills/execution-plan-agent.md",
+        "desc": "Stage 03 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
-            "execution plan", "spec to plan", "stage 03", "stage 04",
-            "03.specs", "04.execution", "plan template", "implementation plan",
+            "execution plan", "spec to plan", "stage 03",
+            "03.specs", "plan template", "implementation plan",
         ],
     },
     {
         "label": "task-breakdown-agent",
-        "path": "docs/00.agent-governance/agents/functions/task-breakdown-agent.md",
+        "path": "docs/00.agent-governance/skills/task-breakdown-agent.md",
         "desc": "플랜→태스크 분해 및 실행 증거 기록",
         "keywords": [
             "task breakdown", "task evidence", "plan to task",
@@ -555,7 +648,7 @@ FUNCTIONS = [
     },
     {
         "label": "ops-runbook-agent",
-        "path": "docs/00.agent-governance/agents/functions/ops-runbook-agent.md",
+        "path": "docs/00.agent-governance/skills/ops-runbook-agent.md",
         "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
         "keywords": [
             "runbook", "stage 05", "05.operations", "backup procedure",
@@ -564,7 +657,7 @@ FUNCTIONS = [
     },
     {
         "label": "knowledge-map-agent",
-        "path": "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
+        "path": "docs/00.agent-governance/skills/knowledge-map-agent.md",
         "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
         "keywords": [
             "graphify", "knowledge graph", "traceability gap", "orphaned doc",
@@ -573,11 +666,11 @@ FUNCTIONS = [
     },
     {
         "label": "policy-gate-agent",
-        "path": "docs/00.agent-governance/agents/functions/policy-gate-agent.md",
+        "path": "docs/00.agent-governance/skills/policy-gate-agent.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
-            "policy gate", "validation suite", "check-quickwin",
-            "check-template-security", "check-repo-contracts",
+            "policy gate", "validation suite", "public gate",
+            "changed profile", "full profile",
             "policy validation",
         ],
     },
@@ -632,9 +725,9 @@ msg = f"""Context compaction imminent — state snapshot:
 - Uncommitted changes: `{changed_count}` files
 
 Before compaction, ensure:
-- Active work is committed or stashed.
-- `docs/00.agent-governance/memory/progress.md` reflects current progress.
-- Any in-flight plan or decision is recorded in a memory note."""
+- Current tracked, staged, and untracked state is preserved without hiding unrelated work.
+- The active co-located Stage 03 Task named by the current bootstrap/spec context reflects current progress.
+- Any in-flight plan or decision is recorded in that Task or its governing Spec/Plan."""
 
 print(json.dumps({
     "hookSpecificOutput": {

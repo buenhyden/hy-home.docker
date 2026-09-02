@@ -1,7 +1,15 @@
 ---
+title: Vault Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0018
+parent_ids:
+  - AD-0018
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md -->
 # ADR-0018: Vault Hardening and HA Expansion Strategy
 
 ## Overview
@@ -41,7 +49,7 @@ status: active
   - auto-unseal/원격 audit 가치 실현은 다음 단계로 이연된다.
   - 단일 노드 raft 운영 리스크는 당분간 유지된다.
 
-## Alternatives
+## Options Considered
 
 ### 즉시 auto-unseal/원격 audit까지 동시 구현
 
@@ -63,11 +71,17 @@ status: active
 - Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
 - Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0018-security-optimization-hardening-architecture.md](../requirements/0018-security-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/003-security/spec.md](../../03.specs/003-security/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
-- **Related ADR**: [./0003-vault-as-secrets-manager.md](./0003-vault-as-secrets-manager.md)
+- **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0015-security-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../descriptions/0018-security-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/003-security/spec.md](../../03.specs/0003-security/spec.md)
+- **Related ADR**: [ADR-0003](0003-vault-as-secrets-manager.md)

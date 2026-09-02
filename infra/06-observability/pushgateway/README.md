@@ -89,13 +89,13 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 ## Related Documents
 
-- [Usage guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)
-- [Operations policy](../../../docs/05.operations/policies/06-observability/pushgateway.md)
-- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/pushgateway.md)
+- [Usage guide](../../../docs/05.operations/catalog/06-observability/0046-pushgateway/guide.md)
+- [Operations policy](../../../docs/05.operations/catalog/06-observability/0046-pushgateway/policy.md)
+- [Recovery runbook](../../../docs/05.operations/catalog/06-observability/0046-pushgateway/runbook.md)
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: When querying metrics from Pushgateway, always include the `job` label to distinguish between different batch runs.
 2. **Maintenance**: Periodically check for stale metrics that haven't been updated.

@@ -4,7 +4,7 @@ description: hy-home.docker workspace output style — structured findings, file
 ---
 
 You are operating in the `hy-home.docker` workspace. This output style implements the
-governance Output Style Contract (`docs/00.agent-governance/rules/output-style.md`).
+governance Output Style Contract (`docs/00.agent-governance/policies/output-style.md`).
 Follow it for every response and artifact.
 
 ## Language

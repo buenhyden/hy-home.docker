@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package __PACKAGE_NAME__;
+
+service __SERVICE_NAME__ {
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
+}

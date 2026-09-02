@@ -23,7 +23,7 @@ Tempo stores trace data in an S3-compatible backend (MinIO). It enables "TraceQL
 ### Out of Scope
 
 - Application-level instrumentation (handled by OpenTelemetry SDKs).
-- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/policies/06-observability/tempo.md)).
+- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/catalog/06-observability/0049-tempo/policy.md)).
 
 ## Structure
 
@@ -80,9 +80,9 @@ tempo/
 
 ## Related Documents
 
-- [Usage guide](../../../docs/05.operations/guides/06-observability/tempo.md)
-- [Operations policy](../../../docs/05.operations/policies/06-observability/tempo.md)
-- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md)
+- [Usage guide](../../../docs/05.operations/catalog/06-observability/0049-tempo/guide.md)
+- [Operations policy](../../../docs/05.operations/catalog/06-observability/0049-tempo/policy.md)
+- [Recovery runbook](../../../docs/05.operations/catalog/06-observability/0049-tempo/runbook.md)
 
 ## Service Readiness
 
@@ -98,13 +98,13 @@ tempo/
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
 | Secret refs | `minio_app_user_password` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
-| Operations | [Guide](../../../docs/05.operations/guides/06-observability/tempo.md), [Policy](../../../docs/05.operations/policies/06-observability/tempo.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/06-observability/0049-tempo/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/0049-tempo/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/0049-tempo/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. **TraceQL Analysis**: Use TraceQL to correlate high-latency spans with specific service names and status codes.
 2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.

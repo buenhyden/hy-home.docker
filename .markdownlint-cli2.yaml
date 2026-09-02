@@ -43,8 +43,8 @@ ignores:
   # Root shim files and templates that intentionally diverge from doc lint norms.
   - "AGENTS.md"
   - "CLAUDE.md"
-  - "GEMINI.md"
-  - "docs/00.agent-governance/memory/progress.md"
+  - "AGENTS.md"
+  - "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md"
   - "docs/00.agent-governance/memory/template.md"
   - "docs/04.execution/plans/"
   - "docs/04.execution/tasks/"

@@ -7,10 +7,14 @@ umask 077
 # generation plus one minimized atomic identity pointer.
 
 BASE_DIR="$(git rev-parse --show-toplevel)"
-HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
+HELPER="$BASE_DIR/scripts/lib/supply_chain/grype_db_seed.py"
 CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
-TASK_DOC="$BASE_DIR/docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md"
+# The approval surface. It sits beside the policy files this script
+# already reads because its previous Stage 04 home was removed with that
+# stage, taking the approval line with it and leaving this script failing
+# on a missing contract surface rather than a missing approval.
+APPROVAL_DOC="$BASE_DIR/infra/supply-chain.network-approvals.md"
 OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed"
 MODE="${1:-}"
 
@@ -139,8 +143,8 @@ PY
 }
 
 run_preflight() {
-  [[ -f "$HELPER" && -f "$CHECKER" && -f "$TOOL_REGISTRY" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "seed-contract-surface-missing"
-  grep -Fqx 'Grype DB network approval: confirmed' "$TASK_DOC" || fail "$EXIT_POLICY" "seed-network-approval-missing"
+  [[ -f "$HELPER" && -f "$CHECKER" && -f "$TOOL_REGISTRY" && -f "$APPROVAL_DOC" ]] || fail "$EXIT_POLICY" "seed-contract-surface-missing"
+  grep -Fqx 'Grype DB network approval: confirmed' "$APPROVAL_DOC" || fail "$EXIT_POLICY" "seed-network-approval-missing"
   python3 "$CHECKER" --check >/dev/null || fail "$EXIT_POLICY" "supply-chain-policy-invalid"
   assert_grype_registry_identity || fail "$EXIT_POLICY" "pinned-grype-registry-identity-invalid"
   command -v docker >/dev/null || fail "$EXIT_POLICY" "docker-unavailable"

@@ -1,28 +1,48 @@
 ---
+title: <title>
+version: <version>
+type: operations/guide
+layer: <layer>
 status: draft
-artifact_id: <artifact-id>
-artifact_type: guide
-parent_ids: [<parent-artifact-id>]
+owner: <owner>
+artifact_id: GDE-####
+parent_ids: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
+next_review_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
+## Purpose
+
+{{purpose}}
+
+## Audience
+
+{{audience}}
+
+## Prerequisites
+
+{{prerequisites}}
+
 ## Usage
 
-{{routine_usage}}
-
-## Common Checks
-
-{{common_checks}}
-
-## Runbook Handoff
-
-{{runbook_handoff}}
+{{usage}}
 
 ## Troubleshooting
 
 {{troubleshooting}}
 
-## Related Documents
+## Verification
 
-{{related_documents}}
+{{verification}}
+
+## Traceability
+
+{{subject_and_authority_links}}
+
+## Examples
+
+{{examples}}

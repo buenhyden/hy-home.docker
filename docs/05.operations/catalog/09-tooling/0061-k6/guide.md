@@ -1,0 +1,90 @@
+---
+title: k6 Usage Guide
+type: operations/guide
+layer: operations
+status: active
+owner: "@buenhyden"
+artifact_id: GDE-0061
+parent_ids:
+  - SPEC-0010
+created: 2026-05-10
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/09-tooling/0061-k6/guide.md -->
+
+# k6 Usage Guide
+
+<!-- [ID:09-tooling:k6] -->
+
+## Usage
+
+### Overview
+
+이 문서는 `infra/09-tooling/k6` leaf의 현재 사용 경계를 설명한다. 현재 compose는 JavaScript k6 engine이 아니라 Locust 기반 wrapper 서비스 `k6-master`를 빌드하며, `k6-data:/mnt/locust:rw` 볼륨을 사용해 테스트 시나리오를 제공한다.
+
+### Usage Type
+
+`system-guide | performance-guide | operational-reference`
+
+### Target Audience
+
+- QA Engineer
+- SRE
+- Performance Engineer
+
+### Purpose
+
+현재 k6 leaf를 사용할 때 실제 서비스명, 시나리오 위치, UI 접근 경계, 검증 경계를 혼동하지 않도록 안내한다.
+
+### Prerequisites
+
+- `infra/09-tooling/k6/docker-compose.yml`와 root [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태 확인.
+- Root `infra_net` context가 제공되는지 확인.
+- 현재 구현은 Locust 시나리오를 사용하므로 Python/Locust 문법을 기준으로 테스트 파일을 작성한다.
+
+### Step-by-step Instructions
+
+1. 현재 leaf의 구현 경계를 확인한다.
+   - 서비스명: `k6-master`
+   - profiles: `tooling`, `testing`
+   - mount: `k6-data:/mnt/locust:rw`
+   - UI port mapping: `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}`
+2. 테스트 시나리오를 `infra/09-tooling/k6/locustfile.py` 기준으로 준비한다.
+
+   ```python
+   from locust import HttpUser, task
+
+   class PlatformUser(HttpUser):
+       @task
+       def visit_homepage(self):
+           self.client.get("/")
+   ```
+
+3. 런타임 실행 전 정적 기준선을 확인한다.
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed`
+4. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`이 해석되는지 확인한다.
+5. 서비스 기동 후 UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
+6. 테스트 중 Locust 요청 통계, target SLI 저하, `k6-master` healthcheck 상태를 evidence로 기록한다.
+
+### Common Pitfalls
+
+- 현재 leaf에는 별도 worker service가 없다. worker scaling 절차가 필요하면 `locust.md`의 `locust-worker` 기준을 사용한다.
+- service-local compose 파일만 단독으로 `docker compose config`하면 root `infra_net` context가 없어 실패할 수 있다.
+- `k6` 이름만 보고 JavaScript k6 script를 투입하면 현재 container command와 맞지 않는다.
+
+## Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 실행 승인 시 root+leaf compose overlay의 rendered service list에 `k6-master`가 포함되는지 확인한다.
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Operations policy](policy.md)
+- [Recovery runbook](runbook.md)

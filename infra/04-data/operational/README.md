@@ -42,7 +42,7 @@ operational/
 
 1. **서비스 기동 순서**: `mng-db`가 먼저 실행되어야 하며, 이후 `supabase` 및 다른 관리 서비스가 실행됩니다.
 2. **권한 관리**: 모든 비밀번호는 `/run/secrets/` 하위의 파일로 관리되어야 합니다.
-3. **문서 동기화**: 인프라 변경 시 `docs/05.operations/guides|policies|runbooks/04-data/operational/`의 관련 문서와 이 README를 함께 갱신합니다.
+3. **문서 동기화**: 인프라 변경 시 `docs/05.operations/catalog/04-data/`의 관련 문서와 이 README를 함께 갱신합니다.
 
 ## Tech Stack
 
@@ -54,9 +54,9 @@ operational/
 
 ## Related Documents
 
-- **Guide**: [Operational Guides](../../../docs/05.operations/guides/04-data/operational/README.md)
-- **Policies**: [Operational Policies](../../../docs/05.operations/policies/04-data/operational/README.md)
-- **Runbooks**: [Operational Runbooks](../../../docs/05.operations/runbooks/04-data/operational/README.md)
+- **Guide**: [Operational Guides](../../../docs/05.operations/catalog/04-data/README.md)
+- **Policies**: [Operational Policies](../../../docs/05.operations/catalog/04-data/README.md)
+- **Runbooks**: [Operational Runbooks](../../../docs/05.operations/catalog/04-data/README.md)
 - **HA PostgreSQL Reference**: [Relational Data Tier](../relational/README.md)
 
 ---

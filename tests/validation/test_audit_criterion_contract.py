@@ -17,6 +17,7 @@ from audit_criterion_contract import (  # noqa: E402
     AuditCriterionContractError,
     DEFAULT_PACK,
     EXPECTED_TOTAL,
+    REPORT_FILES,
     REPORT_PREFIX_COUNTS,
     split_row,
     validate_pack,
@@ -33,7 +34,7 @@ class AuditCriterionContractTests(unittest.TestCase):
         self.tempdir.cleanup()
 
     def _report(self, name: str = "sdlc-quality-formatting-implementation.md") -> pathlib.Path:
-        return self.pack / name
+        return self.pack / REPORT_FILES[name]
 
     def _rewrite_criterion(self, criterion_id: str, mutate) -> None:
         report = self._report()
@@ -121,6 +122,41 @@ class AuditCriterionContractTests(unittest.TestCase):
         )
         self.assertNotEqual(0, result.returncode)
         self.assertIn("empty criterion fields: external criterion", result.stderr)
+
+    def test_coverage_reads_current_overview_direct_and_held(self) -> None:
+        script = ROOT / "scripts/validation/report-audit-pack-coverage.sh"
+        env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+        env["PYTHONSAFEPATH"] = "1"
+        with script.open("rb") as held:
+            for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
+                with self.subTest(path=path):
+                    result = subprocess.run(
+                        ["bash", path, "--pack", str(self.pack), "--check"],
+                        cwd=ROOT, env=env, pass_fds=(held.fileno(),),
+                        capture_output=True, text=True, check=False,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertIn("criterion_rows_total=161", result.stdout)
+                    self.assertIn("overview_categories_found=15", result.stdout)
+                    self.assertIn("coverage_check=pass", result.stdout)
+
+    def test_coverage_rejects_missing_current_overview_category(self) -> None:
+        overview = self.pack / "0026-implementation-overview/README.md"
+        source = overview.read_text(encoding="utf-8")
+        self.assertEqual(1, source.count("| Harness engineering |"))
+        overview.write_text(
+            "\n".join(line for line in source.splitlines()
+                      if not line.startswith("| Harness engineering |")) + "\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            ["bash", "scripts/validation/report-audit-pack-coverage.sh",
+             "--pack", str(self.pack), "--check"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(1, result.returncode)
+        self.assertIn("overview_categories_found=14", result.stdout)
+        self.assertIn("missing implementation-overview category: Harness engineering", result.stderr)
 
 
 if __name__ == "__main__":

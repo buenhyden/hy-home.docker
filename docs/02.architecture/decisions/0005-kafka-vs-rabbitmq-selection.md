@@ -1,7 +1,15 @@
 ---
+title: "Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)"
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0005
+parent_ids:
+  - AD-0005
+created: 2026-03-26
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md -->
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 
 ## Overview
@@ -41,7 +49,7 @@ status: active
   - 두 가지 솔루션을 모두 운영해야 하는 비용(이미지 크기, 메모리 사용량).
   - 개발자가 어떤 도구를 사용할지에 대한 가이드라인 숙지 필요.
 
-## Alternatives
+## Options Considered
 
 ### [Only Apache Kafka]
 
@@ -53,9 +61,16 @@ status: active
 - Good: 뛰어난 라우팅의 유연성과 단순성.
 - Bad: 로그 스트리밍과 같은 대용량 데이터의 수평 확장성 및 리플레이 기능 부족.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/006-messaging.md](../../01.requirements/006-messaging.md)
-- **ARD**: [../requirements/0005-messaging-architecture.md](../requirements/0005-messaging-architecture.md)
-- **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-26-05-messaging-standardization.md](../../04.execution/plans/2026-03-26-05-messaging-standardization.md)
+- **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
+- **Architecture Description**: [../descriptions/0005-messaging-architecture.md](../descriptions/0005-messaging-architecture.md)
+- **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)

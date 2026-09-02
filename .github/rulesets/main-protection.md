@@ -7,7 +7,7 @@ itself.
 ## Observation Boundary
 
 - The dated public snapshot lives in
-  `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`.
+  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`.
 - Authenticated current ruleset, branch-protection, required-check, review,
   environment, and repository-setting readback is unavailable.
 - Control-plane verification is `unverified`; this proposal does not infer
@@ -24,8 +24,11 @@ itself.
 - Block force pushes.
 - Block branch deletion.
 - Require the latest branch head to pass required checks before merge.
-- Prefer squash or rebase merge for a linear `main` history.
-- Enable delete branch on merge after repository owner approval.
+- Preserve referenced recovery commits in delivered history using merge commits
+  or fast-forward. Do not enforce squash/rebase-only or linear-history settings
+  that would discard referenced objects.
+- Delete merged branches only after referenced recovery commits and regular
+  source blobs are verified reachable from `main`, with owner approval.
 
 ## Required Status Checks
 
@@ -34,22 +37,8 @@ Use the CI Quality Gates workflow job names as required checks:
 the focused workflow checker proves that every required job projects its
 registered root DAG exactly once through static typed-gate invocations.
 
-- `docs-traceability`
-- `docs-implementation-alignment`
-- `repo-contracts`
-- `agent-output-eval-fixture-gate`
-- `supply-chain-fixture-policy`
-- `dependency-vulnerability-audit`
-- `git-flow-contract`
-- `compose-validation`
-- `compose-all-profiles-validation`
-- `infrastructure-hardening`
-- `template-security-baseline`
-- `quickwin-baseline`
-- `pre-commit`
-- `frontend-quality`
-- `storybook-coverage`
-- `zizmor`
+- `validation-changed`
+- `validation-full`
 
 ## Application Boundary
 
@@ -59,5 +48,5 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
 
-Until that separately approved readback succeeds, all 16 checks above remain
+Until that separately approved readback succeeds, both checks above remain
 tracked desired state rather than evidence of remote enforcement.

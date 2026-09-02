@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from ci_gate_runner import main
+import pathlib
+import sys
+
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from ci_gate_runner import main  # noqa: E402
 
 
 if __name__ == "__main__":

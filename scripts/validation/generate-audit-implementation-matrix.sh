@@ -4,11 +4,11 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/governance/audit-implementation-matrix.md"
+OUTPUT="docs/90.references/data/0065-audit-implementation-matrix/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/validation/generate-audit-implementation-matrix.sh [--check|--dry-run]
+Usage: bash scripts/validation/generate-audit-implementation-matrix.sh [--write|--check|--dry-run]
 
 Generate the Stage 90 audit implementation matrix snapshot from tracked audit-pack evidence.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)
@@ -46,6 +51,7 @@ import collections
 import importlib.util
 import os
 import pathlib
+import posixpath
 import re
 import subprocess
 import sys
@@ -54,6 +60,7 @@ from dataclasses import dataclass
 sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
 from audit_criterion_contract import (  # noqa: E402
     AuditCriterionContractError,
+    REPORT_FILES,
     REPORT_PREFIX_COUNTS,
     validate_pack,
 )
@@ -74,14 +81,17 @@ validate_semantics = semantic_module.validate_semantics
 
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
-PACK = pathlib.Path(os.environ.get("AUDIT_PACK_DIR", "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"))
+PACK = pathlib.Path(os.environ.get("AUDIT_PACK_DIR", "docs/90.references/audits"))
+OVERVIEW = PACK / "0026-implementation-overview/README.md"
+AUTOMATION_CANDIDATES = PACK / "0021-automation-candidates/README.md"
+SECURITY_MATURITY = PACK / "0031-security-framework-maturity/README.md"
 
 EXPECTED_OVERVIEW_CATEGORIES = [
     "Harness engineering",
     "Loop engineering",
     "Claude provider harness/loop",
     "Codex provider harness/loop",
-    "Gemini provider harness/loop",
+    "Provider harness/loop",
     "Common provider-neutral rules/environment",
     "Agent instructions, catalogs, vibe coding, and model routing",
     "Automation, pipeline, workflow",
@@ -209,9 +219,9 @@ def extract_gap_signals() -> list[str]:
     combined = "\n".join(
         read(path)
         for path in [
-            PACK / "implementation-overview.md",
-            PACK / "automation-candidates.md",
-            PACK / "security-framework-maturity.md",
+            OVERVIEW,
+            AUTOMATION_CANDIDATES,
+            SECURITY_MATURITY,
         ]
     ).lower()
     checks = [
@@ -234,20 +244,20 @@ def build_output() -> tuple[str, list[str]]:
         pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json"),
     )
     contract = validate_pack(PACK)
-    report_paths = [PACK / name for name in REPORT_PREFIX_COUNTS]
+    report_paths = [PACK / REPORT_FILES[name] for name in REPORT_PREFIX_COUNTS]
     all_criteria = list(contract.rows)
     per_report_counts = {
-        PACK / report_name: count
+        PACK / REPORT_FILES[report_name]: count
         for report_name, count in contract.per_report_counts.items()
     }
     criterion_ids = [criterion.criterion_id for criterion in all_criteria]
 
-    overview_categories = extract_overview_categories(PACK / "implementation-overview.md")
+    overview_categories = extract_overview_categories(OVERVIEW)
     for category in EXPECTED_OVERVIEW_CATEGORIES:
         if category not in overview_categories:
             failures.append(f"missing implementation-overview category: {category}")
 
-    candidates = extract_candidates(PACK / "automation-candidates.md")
+    candidates = extract_candidates(AUTOMATION_CANDIDATES)
     for candidate_id in EXPECTED_CANDIDATES:
         if candidate_id not in candidates:
             failures.append(f"missing automation candidate row: {candidate_id}")
@@ -259,21 +269,28 @@ def build_output() -> tuple[str, list[str]]:
 
     expected_generated_surfaces = [
         ("Audit-pack coverage report", "AEA-AUTO-007", pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"), None),
-        ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"), pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md")),
-        ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/docker/tech-stack-version-provenance.md")),
-        ("Provider hook parity matrix", "AEA-AUTO-010", pathlib.Path("scripts/validation/report-provider-hook-parity.sh"), pathlib.Path("docs/90.references/data/governance/provider-hook-parity-matrix.md")),
-        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/governance/agent-output-eval-fixtures.md")),
-        ("Security automation readiness", "AEA-AUTO-012", pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"), pathlib.Path("docs/90.references/data/security/security-automation-readiness.md")),
+        ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki.py"), pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")),
+        ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/0061-tech-stack-version-provenance/README.md")),
+        ("Provider governance contract", "AEA-AUTO-010", pathlib.Path("scripts/validation/check-agent-governance-contract.py"), None),
+        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/0064-agent-output-eval-fixtures/README.md")),
+        ("Security automation readiness", "AEA-AUTO-012", pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"), pathlib.Path("docs/90.references/data/0078-security-automation-readiness/README.md")),
         ("Audit implementation matrix", "AEA-AUTO-013", pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"), OUTPUT),
     ]
 
     lines: list[str] = [
         "---",
+        'title: "Reference: Audit Implementation Matrix"',
+        "type: references/data",
+        "layer: reference",
         "status: active",
+        "owner: \"@buenhyden\"",
+        "artifact_id: DATA-0065",
+        "parent_ids: []",
+        "created: '2026-08-23'",
+        "updated: '2026-08-28'",
+        "observed_at: '2026-08-28'",
         "generated_by: scripts/validation/generate-audit-implementation-matrix.sh",
         "---",
-        "",
-        "<!-- Target: docs/90.references/data/governance/audit-implementation-matrix.md -->",
         "",
         "# Reference: Audit Implementation Matrix",
         "",
@@ -281,7 +298,7 @@ def build_output() -> tuple[str, list[str]]:
         "",
         "This generated reference summarizes the implementation-status audit pack,",
         "automation-candidate closure state, and generated evidence surfaces for the",
-        "`2026-07-05-agentic-engineering-implementation-audit-pack` audit pack.",
+        "the stable Stage 90 agentic-engineering implementation audit references.",
         "",
         "## Purpose",
         "",
@@ -379,6 +396,23 @@ def build_output() -> tuple[str, list[str]]:
     def escape(value: str) -> str:
         return value.replace("|", "\\|").replace("\n", " ")
 
+    def rebase_report_links(value: str, report: pathlib.Path) -> str:
+        """Keep copied report links valid from the generated output directory."""
+
+        def replace(match: re.Match[str]) -> str:
+            label, href = match.groups()
+            if href.startswith("#") or re.match(r"^[a-z][a-z0-9+.-]*:", href, re.I):
+                return match.group(0)
+            path, separator, fragment = href.partition("#")
+            target = posixpath.normpath((report.parent / path).as_posix())
+            if target == "docs/90.references/00.agent-governance/rules/stage-authoring-matrix.md":
+                target = "docs/00.agent-governance/policies/stage-authoring-matrix.md"
+            relative = posixpath.relpath(target, OUTPUT.parent.as_posix())
+            suffix = f"#{fragment}" if separator else ""
+            return f"[{label}]({relative}{suffix})"
+
+        return re.sub(r"\[([^]]+)\]\(([^)\s]+)\)", replace, value)
+
     for criterion in all_criteria:
         lines.append(
             "| "
@@ -388,13 +422,13 @@ def build_output() -> tuple[str, list[str]]:
                     criterion.report.name,
                     criterion.criterion_id,
                     criterion.external_criterion,
-                    criterion.workspace_evidence,
+                    rebase_report_links(criterion.workspace_evidence, criterion.report),
                     criterion.raw_status,
                     criterion.enforcement_depth,
                     criterion.disposition,
-                    criterion.canonical_owner,
-                    criterion.automation_impact,
-                    criterion.verification,
+                    rebase_report_links(criterion.canonical_owner, criterion.report),
+                    rebase_report_links(criterion.automation_impact, criterion.report),
+                    rebase_report_links(criterion.verification, criterion.report),
                     criterion.confidence,
                 ]
             )
@@ -485,9 +519,9 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Sources",
             "",
-            f"- {link(PACK / 'implementation-overview.md', 'implementation overview')} - overview categories and residual cross-category gaps.",
-            f"- {link(PACK / 'automation-candidates.md', 'automation candidates')} - `AEA-AUTO-*` candidate rows and closure evidence.",
-            f"- {link(PACK / 'security-framework-maturity.md', 'security framework maturity')} - residual security automation gap signals.",
+            f"- {link(OVERVIEW, 'implementation overview')} - overview categories and residual cross-category gaps.",
+            f"- {link(AUTOMATION_CANDIDATES, 'automation candidates')} - `AEA-AUTO-*` candidate rows and closure evidence.",
+            f"- {link(SECURITY_MATURITY, 'security framework maturity')} - residual security automation gap signals.",
             f"- {link(pathlib.Path('scripts/validation/report-audit-pack-coverage.sh'), 'audit pack coverage report')} - existing implementation-status coverage parser.",
             f"- {link(pathlib.Path('scripts/validation/audit_criterion_contract.py'), 'audit criterion completeness contract')} - shared exact report/ID/schema/cardinality parser used by both audit scripts.",
             f"- {link(pathlib.Path('scripts/validation/generate-audit-implementation-matrix.sh'), 'audit implementation matrix generator')} - generator for this snapshot.",
@@ -502,10 +536,8 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "- **Governance data index**: [README.md](./README.md)",
             "- **Reference data index**: [../README.md](../README.md)",
-            "- **Audit pack index**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)",
-            "- **Spec**: [../../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md](../../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md)",
-            "- **Plan**: [../../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md)",
-            "- **Task**: [../../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md)",
+            "- **Audit reference index**: [../../audits/0019-readme/README.md](../../audits/0019-readme/README.md)",
+            "- [Archive migration lookup](../../../98.archive/migrations/0003-workspace-governance-simplification.md)",
             "",
         ]
     )

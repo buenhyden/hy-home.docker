@@ -94,10 +94,10 @@ docker compose --profile security exec vault-agent ls -la /vault/out
 
 ## Related Documents
 
-- **System Guide**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
-- **Technical Spec**: [spec.md](../../../docs/03.specs/003-security/spec.md)
-- **Ops Policy**: [vault.md](../../../docs/05.operations/policies/03-security/vault.md)
-- **Runbook**: [vault.md](../../../docs/05.operations/runbooks/03-security/vault.md)
+- **System Guide**: [vault.md](../../../docs/05.operations/catalog/03-security/0016-vault/guide.md)
+- **Technical Spec**: [spec.md](../../../docs/03.specs/0003-security/spec.md)
+- **Ops Policy**: [vault.md](../../../docs/05.operations/catalog/03-security/0016-vault/policy.md)
+- **Runbook**: [vault.md](../../../docs/05.operations/catalog/03-security/0016-vault/runbook.md)
 
 ## Service Readiness
 
@@ -113,13 +113,13 @@ docker compose --profile security exec vault-agent ls -la /vault/out
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.vault.rule`, `traefik.http.routers.vault.entrypoints`, `traefik.http.routers.vault.tls`, `traefik.http.routers.vault.middlewares`, `traefik.http.services.vault.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `vault`, `vault-agent` |
-| Operations | [Guide](../../../docs/05.operations/guides/03-security/vault.md), [Policy](../../../docs/05.operations/policies/03-security/vault.md), [Runbook](../../../docs/05.operations/runbooks/03-security/vault.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/03-security/0016-vault/guide.md), [Policy](../../../docs/05.operations/catalog/03-security/0016-vault/policy.md), [Runbook](../../../docs/05.operations/catalog/03-security/0016-vault/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with root profile validation, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. **Sealed Status Check**: 모든 API 작업 전 `vault status`를 통해 `Sealed: false`임을 확인한다.
 2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.

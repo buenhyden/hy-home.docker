@@ -1,8 +1,15 @@
 ---
+title: Ollama and Open WebUI for Local AI Infrastructure
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0008
+parent_ids:
+  - AD-0008
+created: 2026-03-26
+updated: 2026-08-10
 ---
-<!-- Target: docs/02.architecture/decisions/0008-ollama-openwebui-local-ai.md -->
-
 # ADR-0008: Ollama and Open WebUI for Local AI Infrastructure
 
 ## Overview
@@ -34,7 +41,7 @@ status: active
   - 호스트 OS의 GPU 드라이버와 커널 버전 의존성 발생.
   - 상용 모델 대비 로컬 오픈소스 모델의 성능 및 컨텍스트 길이 한계.
 
-## Alternatives
+## Options Considered
 
 ### vLLM
 
@@ -51,8 +58,16 @@ status: active
 - **Model selection**: 경량 업무는 `llama3.1-8b`, 복잡한 추론은 `qwen2.5-coder` 계열 채택.
 - **Tool gating**: 에이전트는 Open WebUI의 API 엔드포인트를 통해 간접적으로 추론 수행.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [009-ai.md](../../01.requirements/009-ai.md)
-- **ARD**: [0008-ai-architecture.md](../requirements/0008-ai-architecture.md)
-- **Spec**: [009-ai/spec.md](../../03.specs/009-ai/spec.md)
+- **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
+- **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)
+- **Spec**: [009-ai/spec.md](../../03.specs/0009-ai/spec.md)

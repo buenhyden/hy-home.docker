@@ -531,13 +531,16 @@ check_11_laboratory() {
   local open_notebook_compose="infra/11-laboratory/open-notebook/docker-compose.yml"
   local portainer_compose="infra/11-laboratory/portainer/docker-compose.yml"
   local redisinsight_compose="infra/11-laboratory/redisinsight/docker-compose.yml"
+  local dozzle_image
+  local dozzle_compose_image
 
   check_file "$dashboard_compose"
   check_file "$dozzle_compose"
   check_file "$open_notebook_compose"
   check_file "$portainer_compose"
   check_file "$redisinsight_compose"
-  compose_service_image "$dozzle_compose" "dozzle" >/dev/null
+  dozzle_image="$(registry_component_image "Dozzle")"
+  dozzle_compose_image="$(compose_service_image "$dozzle_compose" "dozzle")"
 
   check_contains "$dashboard_compose" "traefik.http.routers.homer.middlewares: gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file" "homer middleware chain mismatch"
   check_not_contains "$dashboard_compose" "ports:" "homer direct host ports must stay removed"
@@ -545,7 +548,9 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.11" "dozzle image tag mismatch"
+  if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
+    fail "dozzle image tag mismatch"
+  fi
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"

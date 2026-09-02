@@ -1,8 +1,15 @@
 ---
+title: Choice of Spilo/Patroni for PostgreSQL HA
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0004
+parent_ids:
+  - AD-0004
+created: 2026-03-26
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0004-postgresql-ha-patroni.md -->
-
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA
 
 ## Overview
@@ -33,7 +40,7 @@ status: active
 - **Positive**: 장애 발생 시 데이터 손실 최소화 및 가동 시간 증대, 자동화된 장애 복구.
 - **Trade-offs**: 3개의 노드 구성으로 인한 리소스 소모 증가, HAProxy(pg-router)를 통한 복잡한 라우팅 설정 필요.
 
-## Alternatives
+## Options Considered
 
 ### Vanilla PostgreSQL with Replication
 
@@ -45,9 +52,16 @@ status: active
 - Good: 쿠버네티스 환경에서 고도로 자동화됨.
 - Bad: 현재 환경이 Docker Compose 기반이므로 도입 오버헤드가 큼.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/004-data.md](../../01.requirements/004-data.md)
-- **ARD**: [../requirements/0004-data-architecture.md](../requirements/0004-data-architecture.md)
-- **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/004-data/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-26-04-data-standardization.md](../../04.execution/plans/2026-03-26-04-data-standardization.md)
+- **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
+- **Architecture Description**: [../descriptions/0004-data-architecture.md](../descriptions/0004-data-architecture.md)
+- **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)

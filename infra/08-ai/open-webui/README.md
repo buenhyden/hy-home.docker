@@ -49,13 +49,13 @@ open-webui/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `open-webui` |
-| Operations | [Guide](../../../docs/05.operations/guides/08-ai/open-webui.md), [Policy](../../../docs/05.operations/policies/08-ai/open-webui.md), [Runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md), [Policy](../../../docs/05.operations/catalog/08-ai/0057-open-webui/policy.md), [Runbook](../../../docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Read the [Open WebUI Interface & RAG Guide](../../../docs/05.operations/guides/08-ai/open-webui.md).
+1. Read the [Open WebUI Interface & RAG Guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md).
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify connection to Ollama and Qdrant before document indexing.
 
@@ -69,15 +69,15 @@ open-webui/
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
-- [Open WebUI usage guide](../../../docs/05.operations/guides/08-ai/open-webui.md)
-- [Open WebUI operations policy](../../../docs/05.operations/policies/08-ai/open-webui.md)
-- [Open WebUI recovery runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md)
+- [Open WebUI usage guide](../../../docs/05.operations/catalog/08-ai/0057-open-webui/guide.md)
+- [Open WebUI operations policy](../../../docs/05.operations/catalog/08-ai/0057-open-webui/policy.md)
+- [Open WebUI recovery runbook](../../../docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md)
 
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 08-ai` after README or Compose reference changes that affect Open WebUI.
 - Run `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` for the current root-active profile surface.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Configuration
 

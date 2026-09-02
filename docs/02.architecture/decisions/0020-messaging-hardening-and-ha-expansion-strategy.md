@@ -1,7 +1,15 @@
 ---
+title: Messaging Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0020
+parent_ids:
+  - AD-0020
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md -->
 # ADR-0020: Messaging Hardening and HA Expansion Strategy
 
 ## Overview
@@ -39,7 +47,7 @@ status: active
   - SSO 체인 적용으로 운영 자동화 스크립트 일부 조정이 필요할 수 있다.
   - 카탈로그 확장은 단계 이행이므로 단기 효과는 하드닝 중심으로 제한된다.
 
-## Alternatives
+## Options Considered
 
 ### 카탈로그 확장 항목을 즉시 전면 구현
 
@@ -60,11 +68,17 @@ status: active
 - Tool gating: `check-all-hardening.sh 05-messaging`를 CI 게이트로 강제
 - Guardrail strategy: 부동 태그 금지, middleware 표준 체인 강제, 문서 링크 무결성 유지
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/017-messaging-optimization-hardening.md](../../01.requirements/017-messaging-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md](../requirements/0020-messaging-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)
-- **Related ADR**: [./0005-kafka-vs-rabbitmq-selection.md](./0005-kafka-vs-rabbitmq-selection.md)
+- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../descriptions/0020-messaging-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
+- **Related ADR**: [ADR-0005](0005-kafka-vs-rabbitmq-selection.md)

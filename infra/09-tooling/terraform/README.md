@@ -56,8 +56,8 @@ terraform/
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Not declared in compose; use service logs and dependent checks |
-| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terraform.md), [Policy](../../../docs/05.operations/policies/09-tooling/terraform.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terraform.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0068-terraform/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0068-terraform/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect Terraform command output and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
@@ -88,7 +88,7 @@ docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Terraform.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking Terraform documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking Terraform documentation ready.
 - Healthcheck decision: this service extends `template-job-low`, sets `restart: 'no'`, and uses a CLI `terraform` entrypoint, so a long-running healthcheck is not applicable unless the service is redesigned as a daemon.
 
 ## Troubleshooting
@@ -99,7 +99,7 @@ docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm
 ## Related Documents
 
 - [Tooling tier README](../README.md)
-- [Terraform guide](../../../docs/05.operations/guides/09-tooling/terraform.md)
-- [IaC operations policy](../../../docs/05.operations/policies/09-tooling/terraform.md)
-- [Terraform recovery runbook](../../../docs/05.operations/runbooks/09-tooling/terraform.md)
+- [Terraform guide](../../../docs/05.operations/catalog/09-tooling/0068-terraform/guide.md)
+- [IaC operations policy](../../../docs/05.operations/catalog/09-tooling/0068-terraform/policy.md)
+- [Terraform recovery runbook](../../../docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md)
 - [Root infra README](../../README.md)

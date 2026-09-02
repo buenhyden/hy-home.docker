@@ -1,7 +1,15 @@
 ---
+title: Tooling Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0024
+parent_ids:
+  - AD-0024
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md -->
 # ADR-0024: Tooling Hardening and HA Expansion Strategy
 
 ## Overview
@@ -44,7 +52,7 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
   - SSO 강화로 일부 기존 테스트 접근 경로 조정이 필요하다.
   - 정책 게이트 추가로 단기 PR 처리 시간이 증가할 수 있다.
 
-## Alternatives
+## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현
 
@@ -65,11 +73,17 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
 - Guardrail strategy: tooling 공개 라우터는 gateway+SSO 체인 필수
 - Tool gating: `check-all-hardening.sh 09-tooling`를 머지 전 필수 정책 게이트로 강제
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/021-tooling-optimization-hardening.md](../../01.requirements/021-tooling-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md](../requirements/0024-tooling-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/010-tooling/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
-- **Related ADR**: [./0009-tooling-services.md](./0009-tooling-services.md)
+- **PRD**: [../01.requirements/0021-tooling-optimization-hardening.md](../../01.requirements/0021-tooling-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../descriptions/0024-tooling-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/0010-tooling/spec.md)
+- **Related ADR**: [ADR-0009](0009-tooling-services.md)

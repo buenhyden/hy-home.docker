@@ -53,13 +53,13 @@ n8n/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | names: `mng_valkey_password`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/n8n_db_password`, `/run/secrets/n8n_encryption_key`, `/run/secrets/n8n_runner_auth_token`, `/run/secrets/n8n_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, and service-local `n8n-valkey`; exporter is dependency-gated |
-| Operations | [Guide](../../../docs/05.operations/guides/07-workflow/n8n.md), [Policy](../../../docs/05.operations/policies/07-workflow/n8n.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/07-workflow/0053-n8n/guide.md), [Policy](../../../docs/05.operations/catalog/07-workflow/0053-n8n/policy.md), [Runbook](../../../docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. Review the linked operations guide, policy, and runbook before changing n8n configuration.
 2. Keep external credentials in n8n's encrypted credentials system or Docker Secrets.
@@ -90,11 +90,11 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Traceability (Golden 5)
 
-- **PRD**: [07-workflow PRD](../../../docs/01.requirements/008-workflow.md)
-- **ARD**: [07-workflow ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
+- **PRD**: [07-workflow PRD](../../../docs/01.requirements/0008-workflow.md)
+- **ARD**: [07-workflow Architecture Description](../../../docs/02.architecture/descriptions/0007-workflow-architecture.md)
 - **ADR**: [N8N Integration ADR](../../../docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
-- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/008-workflow/spec.md)
-- **Plan**: [07-workflow Implementation Plan](../../../docs/04.execution/plans/2026-03-26-07-workflow-standardization.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/0008-workflow/spec.md)
+- **Plan**: 07-workflow Implementation Plan
 
 ## Validation
 
@@ -108,7 +108,7 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Related Documents
 
-- **Guide**: [n8n usage guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Policy**: [n8n operations policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
-- **Runbook**: [n8n recovery runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
-- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/008-workflow/spec.md)
+- **Guide**: [n8n usage guide](../../../docs/05.operations/catalog/07-workflow/0053-n8n/guide.md)
+- **Policy**: [n8n operations policy](../../../docs/05.operations/catalog/07-workflow/0053-n8n/policy.md)
+- **Runbook**: [n8n recovery runbook](../../../docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/0008-workflow/spec.md)

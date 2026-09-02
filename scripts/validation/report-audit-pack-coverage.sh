@@ -13,7 +13,10 @@ import os
 import pathlib
 import sys
 
-sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
+AUDIT_CRITERION_CONTRACT = pathlib.Path(
+    "scripts/validation/audit_criterion_contract.py"
+)
+sys.path.insert(0, str(AUDIT_CRITERION_CONTRACT.parent.resolve()))
 from audit_criterion_contract import (  # noqa: E402
     AuditCriterionContractError,
     DEFAULT_PACK,
@@ -30,7 +33,7 @@ EXPECTED_OVERVIEW_CATEGORIES = [
     "Loop engineering",
     "Claude provider harness/loop",
     "Codex provider harness/loop",
-    "Gemini provider harness/loop",
+    "Provider harness/loop",
     "Common provider-neutral rules/environment",
     "Agent instructions, catalogs, vibe coding, and model routing",
     "Automation, pipeline, workflow",
@@ -108,7 +111,9 @@ def main() -> int:
             print(f"FAIL: {failure}", file=sys.stderr)
         return 1
 
-    overview_categories = extract_overview_categories(pack / "implementation-overview.md")
+    overview_categories = extract_overview_categories(
+        pack / "0026-implementation-overview/README.md"
+    )
     for category in EXPECTED_OVERVIEW_CATEGORIES:
         if category not in overview_categories:
             failures.append(f"missing implementation-overview category: {category}")

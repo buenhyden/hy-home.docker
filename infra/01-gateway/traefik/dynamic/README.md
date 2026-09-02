@@ -63,4 +63,4 @@ infra/01-gateway/traefik/dynamic/
 
 - [infra/README.md](../../../README.md)
 - [Traefik service README](../README.md)
-- [Gateway operations policies](../../../../docs/05.operations/policies/01-gateway/README.md)
+- [Gateway operations policies](../../../../docs/05.operations/catalog/01-gateway/README.md)

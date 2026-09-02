@@ -57,8 +57,8 @@ seaweedfs/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`; not declared for `seaweedfs-mount` |
 | Privilege boundary | `seaweedfs-mount` runs `privileged: true` with `SYS_ADMIN` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md), [Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -96,10 +96,10 @@ seaweedfs/
 
 ## Related Documents
 
-- **Guide**: [Technical Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md)
-- **Policy**: [Operations Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md)
-- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/004-data/spec.md)
+- **Guide**: [Technical Guide](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md)
+- **Policy**: [Operations Policy](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/0004-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

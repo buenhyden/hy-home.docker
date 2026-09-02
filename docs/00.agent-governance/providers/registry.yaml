@@ -1,0 +1,131 @@
+schema_version: 1
+providers:
+  - provider_id: claude
+    capability_status: supported
+    adoption_status: adopted
+    runtime_acceptance: needs_revalidation
+    adapter_path: docs/00.agent-governance/providers/claude.md
+    native_agent_pattern: .claude/agents/{agent_id}.md
+    native_skill_pattern: .claude/skills/{skill_id}/SKILL.md
+    native_config_path: .claude/settings.json
+  - provider_id: codex
+    capability_status: supported
+    adoption_status: adopted
+    runtime_acceptance: needs_revalidation
+    adapter_path: docs/00.agent-governance/providers/codex.md
+    native_agent_pattern: .codex/agents/{agent_id}.toml
+    native_skill_pattern: .agents/skills/{skill_id}/SKILL.md
+    native_config_path: .codex/hooks.json
+compatibility:
+  agent_pattern: .agents/agents/{agent_id}.md
+  skill_pattern: .agents/skills/{skill_id}/SKILL.md
+canonical_sources:
+  role_pattern: docs/00.agent-governance/roles/{agent_id}.md
+  skill_pattern: docs/00.agent-governance/skills/{skill_id}.md
+projections:
+  - provider_id: shared
+    path: .agents/README.md
+    source: docs/00.agent-governance/README.md
+  - provider_id: claude
+    path: .claude/CLAUDE.md
+    source: docs/00.agent-governance/providers/claude.md
+work_profiles:
+  adversarial-review:
+    claude: {model: claude-opus-5, control: effort, value: high}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
+  complex-implementation:
+    claude: {model: claude-sonnet-5, control: effort, value: high}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: high}
+  evidence-research:
+    claude: {model: claude-sonnet-5, control: effort, value: low}
+    codex: {model: gpt-5.6-terra, control: model_reasoning_effort, value: medium}
+  long-horizon-supervision:
+    claude: {model: claude-opus-5, control: effort, value: xhigh}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
+  routine-validation:
+    claude: {model: claude-haiku-4-5-20251001, control: effort, value: null}
+    codex: {model: gpt-5.6-terra, control: model_reasoning_effort, value: low}
+models:
+  claude-haiku-4-5-20251001:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: unsupported
+    work_profiles: [routine-validation]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  claude-opus-5:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: effort
+    supported_values: [high, low, max, medium, xhigh]
+    work_profiles: [adversarial-review, long-horizon-supervision]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  claude-sonnet-5:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: effort
+    supported_values: [high, low, max, medium, xhigh]
+    work_profiles: [complex-implementation, evidence-research]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  gpt-5.6-sol:
+    provider: codex
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: model_reasoning_effort
+    supported_values: [high, low, max, medium, none, xhigh]
+    work_profiles: [adversarial-review, complex-implementation, long-horizon-supervision]
+    source_url: https://developers.openai.com/api/docs/models
+  gpt-5.6-terra:
+    provider: codex
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: model_reasoning_effort
+    supported_values: [high, low, max, medium, none, xhigh]
+    work_profiles: [evidence-research, routine-validation]
+    source_url: https://developers.openai.com/api/docs/models
+model_catalog_policy:
+  active_rows_only: true
+  unselected_rows: external-research-not-active-authority
+  activation_requires: [official-source-revalidation, entitlement-revalidation, runtime-revalidation]
+permissions:
+  read-only: {claude: plan, codex: read-only}
+  workspace-write: {claude: acceptEdits, codex: workspace-write}
+semantic_events:
+  claude: [SessionStart, PreToolUse, PostToolUse, Stop, SessionEnd, PreCompact, UserPromptSubmit]
+  codex: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]
+hook_contracts:
+  claude:
+    SessionStart: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"', timeout: 15, matcher: '*', executable: .claude/hooks/session-start.sh}
+    PreToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"', timeout: 10, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/docker-compose-pre.sh}
+    PostToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"', timeout: 30, matcher: 'Write|Edit|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/post-tool-validate.sh}
+    Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 30, matcher: '*', executable: .claude/hooks/stop.sh}
+    SessionEnd: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/session-end.sh}
+    PreCompact: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/pre-compact.sh}
+    UserPromptSubmit: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/user-prompt-submit.sh}
+  codex:
+    SessionStart: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    PreToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse', timeout: 600, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
+    PostToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PostToolUse', timeout: 600, matcher: 'Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
+    Stop: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
+    PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
+agent_output_eval:
+  fixture_thresholds:
+    AOE-DOC-001: 0.50
+    AOE-PROVIDER-001: 0.50
+    AOE-INFRA-001: 0.50
+    AOE-ROUTING-001: 0.50
+    AOE-ROLE-001: 0.50
+    AOE-CLOSURE-001: 0.50
+    AOE-HOOK-001: 0.50
+    AOE-ADAPTER-001: 0.50
+    AOE-MODEL-001: 0.50
+    AOE-LOOP-001: 0.50
+generated_roots: [.agents/agents, .agents/skills, .claude/agents, .claude/skills, .codex/agents]
