@@ -45,8 +45,8 @@ scripts/
 ├── security/            # Local supply-chain verification and generated summary ownership
 ├── requirements.txt     # Python modules required by repository validation scripts
 ├── requirements-pre-commit.txt # Exact CI-only pre-commit tool pin
-├── lib/
-│   └── hardening-lib.sh # Shared implementation for tier hardening checks
+├── lib/<domain>/        # Importable domain modules; never a public entrypoint
+├── lib/hardening-lib.sh # Shared implementation for tier hardening checks
 └── README.md            # This file
 ```
 
@@ -57,13 +57,19 @@ The canonical script surface is the purpose-folder path. Root-level
 references moved to purpose-folder paths. Do not recreate root duplicate
 wrappers unless a future approved compatibility plan explicitly requires them.
 
+`scripts/lib/<domain>/` owns importable domain behavior and defines no public
+entrypoint. Purpose folders such as `scripts/validation/`, `scripts/security/`,
+and `scripts/operations/` own entrypoints and delegate domain logic to the
+library layer. `tests/lib/<domain>/` mirrors library responsibilities, while
+`tests/validation/` retains CLI, entrypoint, and execution-context tests.
+
 The hardening surface is intentionally consolidated into
 `scripts/hardening/check-all-hardening.sh`. Tier-specific wrapper entrypoints
 were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/run-ci-gate.py`, `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`, and the focused validators registered in `scripts/manifest.yaml` |
+| Validation | `scripts/validation/run-ci-gate.py`, `scripts/validation/run-local-qa-gates.sh`, `scripts/lib/gate/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/lib/gate/ci_gate_adapters.py`, and the focused validators registered in `scripts/manifest.yaml` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki.py`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
@@ -105,17 +111,17 @@ script.
 | Docker Validation                      | [validate-docker-compose.sh](./validation/validate-docker-compose.sh)                       | Validate root compose config                                                                                                                                                                                    |
 | Compose Core Readiness Harness         | [run-compose-core-readiness.sh](./validation/run-compose-core-readiness.sh)                 | Preflight and execute the approved isolated five-service startup, recovery, timeout, typed-evidence, and owned-cleanup contract                                                                                  |
 | Compose Core Readiness Library         | [compose-core-readiness.lib.sh](./validation/compose-core-readiness.lib.sh)                 | Shared fail-closed identity, path, render, readiness, recovery, evidence, redaction, and cleanup functions; source only through the harness or focused tests                                                     |
-| PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./validation/rehearse-postgres-logical-upgrade.sh)   | `scripts/validation/rehearse-postgres-logical-upgrade.sh` checks or runs the pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
-| Harness Validation                     | [validate-harness.sh](./validation/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
+| PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./lib/ops/rehearse-postgres-logical-upgrade.sh)   | `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` checks or runs the pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
+| Harness Validation                     | [validate-harness.sh](./lib/ops/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
 | Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed Stage 00 artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
 | Target Surface Contract Gate           | [check-target-surface-contract.py](./validation/check-target-surface-contract.py)          | Run the thin CLI over the immutable `target_surface_contract.py` finding API for manifest coverage, removed active targets/claims, phantom gitlinks, the sample Service, and reviewed duplicate disposition without rendering bodies or values |
 | Target Surface Delta Contract Gate     | [check-target-surface-delta-contract.py](./validation/check-target-surface-delta-contract.py) | Validate the live six-suite ownership, changed-path impact, profile routing, tracked entrypoints, retired paths, and copied-command absence without branch/SHA snapshots |
-| Typed Gate Contract Library            | [ci_gate_contract.py](./validation/ci_gate_contract.py)                                    | Parse and validate the dependency-free strict-JSON schema-v2 gate DAG, suite ownership, required roots, and local profile roots |
+| Typed Gate Contract Library            | [ci_gate_contract.py](./lib/gate/ci_gate_contract.py)                                    | Parse and validate the dependency-free strict-JSON schema-v2 gate DAG, suite ownership, required roots, and local profile roots |
 | Typed Gate Runner                      | [run-ci-gate.py](./validation/run-ci-gate.py)                                              | Explain or execute the closed `changed` and `full` public profiles through tracked descriptor-bound entrypoints with minimal environments and bounded timeouts |
-| Typed Gate Adapters                    | [ci_gate_adapters.py](./validation/ci_gate_adapters.py)                                    | Implement the closed argument grammar used by typed gate leaves without shell interpolation or ambient secret forwarding |
+| Typed Gate Adapters                    | [ci_gate_adapters.py](./lib/gate/ci_gate_adapters.py)                                    | Implement the closed argument grammar used by typed gate leaves without shell interpolation or ambient secret forwarding |
 | GitHub Workflow Contract Gate          | [check-github-workflow-contract.py](./validation/check-github-workflow-contract.py)          | Validate exact tracked workflow triggers, permissions, concurrency, job identities, the canonical typed gate registry, and locally evidenced full-SHA Action dependencies |
 | CI-only Pre-commit Entry Point         | [run-ci-precommit.sh](./validation/run-ci-precommit.sh)                                      | Run the pinned all-files hook command only inside GitHub Actions with the dedicated frontend-lint skip; this script is not an Agent authorization path |
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
@@ -271,7 +277,7 @@ stable current deficit identities already present at the merge base. Template
 placeholder checks recursively detect registered angle-bracket tokens inside
 composed scalars and lists without treating date-like ID text as a global
 placeholder. Run the focused suite with
-`python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`.
+`python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py' -v`.
 Changed-path review includes tracked, staged, unstaged-new, renamed, and
 explicit existing Markdown paths while treating deletions as non-parseable
 selected paths. The report exposes deterministic semantic states for every
@@ -279,22 +285,23 @@ Task 4 inventory field and normalizes YAML/configuration defects without raw
 tracebacks or unsafe metadata values.
 
 `scripts/validation/check-document-corpus-lifecycle.py` is the focused lifecycle
-companion. Repository contracts always run `--mode check-contract` and
-`--mode check-promoted`, then run `--mode check-impacted` only with a verified
-explicit comparison commit or a resolvable local `HEAD~1`. The scheduled/manual
-workflow keeps full-corpus debt advisory through `--mode report-full`; parser,
-contract, Git, path, redaction, and internal safety failures still fail closed.
+companion. It exposes exactly four modes, each reachable from a registered
+gate: `--mode check-public`, `--mode check-contract`, `--mode check-promoted`,
+and `--mode check-recovery`, which re-proves that every tombstone's
+`commit:path` resolves to a regular Git blob. Any other `--mode` value is an
+argparse error. Parser, contract, Git, path, redaction, and internal safety
+failures still fail closed.
 Run its focused inventory with
-`python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v`.
-The executable test inventory is
-`tests/validation/test_document_corpus_lifecycle.py`.
+`python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py' -v`.
+The executable test inventory is the four responsibility modules under
+`tests/validation/lifecycle/`; no legacy aggregate or redirect remains.
 
 `scripts/validation/check-target-surface-contract.py` is the thin focused gate
 for Spec 133 target convergence. The immutable library finding records expose
 stable codes, safe repository paths, and value-free messages. Metadata,
 archive, Compose, and workflow semantics remain delegated to their existing
 owners. Run its focused suite with
-`python3 -m unittest tests.validation.test_target_surface_contracts -v`.
+`python3 -m unittest tests.lib.target_surface.test_target_surface_contracts -v`.
 
 `scripts/validation/check-target-surface-delta-contract.py` is the live routing
 gate. It validates six exact suites, exact-once manifest and executable route
@@ -302,7 +309,7 @@ ownership, changed-path impact, current tracked entrypoints, profile-surface
 agreement, and retirement absence. Historical predecessor snapshots remain
 Git/Migration evidence and are not regenerated as current gate state.
 Run its focused suite with
-`python3 -m unittest tests.validation.test_target_surface_delta_contracts -v`.
+`python3 -m unittest tests.lib.target_surface.test_target_surface_delta_contracts -v`.
 
 `scripts/validation/run-agent-precommit-all-files.sh` is the only approved
 agent entrypoint for `pre-commit run --all-files`. Use it only at the approved
@@ -407,7 +414,7 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.
 ./scripts/validation/run-local-qa-gates.sh --explain
 
 # Run the harness-change-scoped fast gate
-./scripts/validation/validate-harness.sh
+./scripts/lib/ops/validate-harness.sh
 
 # Report implementation-status coverage for the agentic engineering audit pack
 ./scripts/validation/report-audit-pack-coverage.sh
@@ -422,7 +429,7 @@ bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --che
 
 # Approved final QA only; prefixes must match the task's reviewed scope
 bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/03.specs/0157-script-surface-ownership-convergence/tasks/tsk-0001-example.md \
+  --task docs/03.specs/9999-example-change/tasks/tsk-0001-example.md \
   --allow-prefix docs/ \
   --allow-prefix scripts/
 
@@ -537,6 +544,7 @@ generators; it never invokes runtime-changing rows.
 - [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
 - [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
 - [Public Suite Ownership Manifest](manifest.yaml)
-- [Script Lifecycle Taxonomy Specification](../docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md)
+- [Workspace Governance Authority](../docs/02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Document Profile Registry](../docs/99.templates/registry.json)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

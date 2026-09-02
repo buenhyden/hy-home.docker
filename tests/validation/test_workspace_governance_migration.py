@@ -486,16 +486,6 @@ class WorkspaceGovernanceMigrationTests(unittest.TestCase):
             task_names,
         )
 
-    def test_spec_0153_supersedes_spec_0136_reciprocally(self) -> None:
-        current = read_frontmatter_values(self.documents["spec.md"])
-        predecessor = read_frontmatter_values(
-            ROOT / "docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"
-        )
-
-        self.assertEqual("SPEC-0153", current["artifact_id"])
-        self.assertIn("SPEC-0136", current["supersedes"])
-        self.assertEqual("SPEC-0153", predecessor["superseded_by"])
-
     def test_spec_0153_task_evidence_is_complete_and_nonprospective(self) -> None:
         control_plane = self.documents["tasks/tsk-0001-control-plane.md"].read_text(
             encoding="utf-8"

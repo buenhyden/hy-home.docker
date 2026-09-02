@@ -1,9 +1,12 @@
 ---
-profile_id: incident
+title: <title>
+version: <version>
+type: operations/incident
+layer: <layer>
 status: open
-artifact_id: inc-####
-artifact_type: incident
-parent_ids: []
+owner: <owner>
+artifact_id: inc-<year>-####
+parent_ids: [RUN-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 occurred_at: YYYY-MM-DDTHH:MM:SSZ

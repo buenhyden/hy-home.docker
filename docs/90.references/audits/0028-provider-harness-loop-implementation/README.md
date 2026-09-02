@@ -1,15 +1,15 @@
 ---
-profile_id: audit
+title: "Reference: Provider Harness and Loop Implementation"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0028
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'
 updated: '2026-08-23'
 observed_at: '2026-07-05'
-supersedes:
-- AUD-0036
 reviewed_at: 2026-07-27
 ---
 

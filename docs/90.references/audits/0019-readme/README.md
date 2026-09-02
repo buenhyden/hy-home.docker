@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Agentic Engineering Implementation Audit References"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0019
-artifact_type: audit
 parent_ids: []
 created: '2026-07-05'
 updated: '2026-08-23'
@@ -194,7 +196,6 @@ scope whenever comparing counts.
 
 - [Audit references](README.md)
 - `Agentic engineering research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf)
-- [Audit pack spec](../../../03.specs/0105-agentic-engineering-implementation-audit-pack/spec.md)
 - Audit pack plan
 - Audit pack task evidence
 

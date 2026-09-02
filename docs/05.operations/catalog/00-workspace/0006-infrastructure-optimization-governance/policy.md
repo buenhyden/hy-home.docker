@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Infrastructure Optimization Governance Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0006
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0006
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-14

@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Stage Authoring Matrix
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Stage Authoring Matrix

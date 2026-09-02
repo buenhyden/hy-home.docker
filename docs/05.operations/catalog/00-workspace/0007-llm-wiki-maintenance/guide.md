@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: LLM Wiki Maintenance Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0007
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0007
 parent_ids:
   - SPEC-0096
 created: 2026-07-04

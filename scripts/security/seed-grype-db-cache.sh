@@ -7,7 +7,7 @@ umask 077
 # generation plus one minimized atomic identity pointer.
 
 BASE_DIR="$(git rev-parse --show-toplevel)"
-HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
+HELPER="$BASE_DIR/scripts/lib/supply_chain/grype_db_seed.py"
 CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 # The approval surface. It sits beside the policy files this script

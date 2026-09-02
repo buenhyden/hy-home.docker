@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Common Templates
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Common Templates
@@ -19,7 +21,8 @@ profile selection, required metadata, sections, and lifecycle rules.
 ## Scope
 
 Use the README form for repository navigation. Research, Audit, and Data use
-the registered References forms; Migration and Tombstone use the Archive forms.
+the registered References forms; a necessary minimal recovery record uses the
+Tombstone form.
 
 ## Structure
 
@@ -27,7 +30,7 @@ the registered References forms; Migration and Tombstone use the Archive forms.
 | --- | --- |
 | 경로별 탐색 README 작성 | [readme.template.md](./readme.template.md) |
 | Evidence package | [References templates](../references/) |
-| Recovery record | [Archive templates](../archive/) |
+| Minimal recovery record | [Tombstone template](../archive/tombstone.template.md) |
 
 ## How to Work in This Area
 

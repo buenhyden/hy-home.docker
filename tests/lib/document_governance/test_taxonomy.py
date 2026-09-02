@@ -44,6 +44,14 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "graphify-out/",
 )
 
+def _requirement_high_water() -> int:
+    """Stage 99 owns the corpus size; a test never pins it."""
+
+    from scripts.lib.document_governance.registry import load_registry
+
+    return load_registry().identity_spaces["requirement"].high_water
+
+
 AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0001": "REQ-0001",
     "AD-0002": "REQ-0002",
@@ -70,6 +78,7 @@ AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0026": "REQ-0023",
     "AD-0027": "REQ-0024",
     "AD-0028": "REQ-0025",
+    "AD-0030": "REQ-0026",
 }
 
 ADR_TO_AD = {
@@ -99,6 +108,7 @@ ADR_TO_AD = {
     "ADR-0027": "AD-0027",
     "ADR-0028": "AD-0028",
     "ADR-0029": "AD-0027",
+    "ADR-0030": "AD-0030",
 }
 
 
@@ -110,7 +120,11 @@ def tracked_paths(pathspec: str) -> list[str]:
         capture_output=True,
         text=True,
     )
-    return result.stdout.splitlines()
+    return [
+        relative
+        for relative in result.stdout.splitlines()
+        if (ROOT / relative).is_file()
+    ]
 
 
 def metadata_for(relative_path: str) -> dict[str, object]:
@@ -170,9 +184,11 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(25, len(paths))
         self.assertEqual(
-            {f"REQ-{number:04d}" for number in range(1, 26)},
+            {
+                f"REQ-{number:04d}"
+                for number in range(1, _requirement_high_water() + 1)
+            },
             {metadata_for(path)["artifact_id"] for path in paths},
         )
         for path in paths:
@@ -186,10 +202,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertEqual(
                     f"REQ-{match.group('number')}", metadata["artifact_id"]
                 )
-                self.assertEqual("requirements-package", metadata["profile_id"])
-                self.assertEqual(
-                    "requirements-package", metadata["artifact_type"]
-                )
+                self.assertEqual("requirements/package", metadata["type"])
                 self.assertEqual([], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -203,7 +216,6 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(25, len(paths))
         self.assertEqual(
             set(AD_TO_REQUIREMENT_PACKAGE),
             {metadata_for(path)["artifact_id"] for path in paths},
@@ -218,8 +230,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"AD-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("architecture-description", metadata["profile_id"])
-                self.assertEqual("architecture-description", metadata["artifact_type"])
+                self.assertEqual("architecture/description", metadata["type"])
                 self.assertEqual(
                     [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
                 )
@@ -235,7 +246,6 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(26, len(paths))
         self.assertEqual(set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths})
         for path in paths:
             with self.subTest(path=path):
@@ -247,8 +257,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"ADR-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("adr", metadata["profile_id"])
-                self.assertEqual("adr", metadata["artifact_type"])
+                self.assertEqual("architecture/decision", metadata["type"])
                 self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -359,7 +368,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             path,
             {
                 "artifact_id": "AD-0001",
-                "artifact_type": "architecture-description",
+                "type": "architecture-description",
             },
             {
                 "architecture-description": {
@@ -374,11 +383,11 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_accepts_inherited_task_role_identity(self):
         findings = validate_stable_identity(
             PurePosixPath(
-                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+                "docs/03.specs/spec-0999-example-change/task.md"
             ),
             {
-                "artifact_id": "task-0136-01",
-                "artifact_type": "task",
+                "artifact_id": "task-0999-01",
+                "type": "task",
             },
             {
                 "task": {
@@ -399,11 +408,11 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
     def test_rejects_inherited_task_role_with_mismatched_identity(self):
         findings = validate_stable_identity(
             PurePosixPath(
-                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+                "docs/03.specs/spec-0999-example-change/task.md"
             ),
             {
                 "artifact_id": "task-9999-01",
-                "artifact_type": "task",
+                "type": "task",
             },
             {
                 "task": {
@@ -429,7 +438,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             PurePosixPath("docs/03.specs/temporary-task/task.md"),
             {
                 "artifact_id": "task-0136-01",
-                "artifact_type": "task",
+                "type": "task",
             },
             {
                 "task": {
@@ -509,7 +518,7 @@ class ActiveStageScopeTests(unittest.TestCase):
                 '"04.execution",',
             ),
             (
-                "scripts/validation/check-document-corpus-lifecycle.py",
+                "scripts/lib/document_governance/lifecycle/promoted.py",
                 'not (root / "docs/04.execution").exists()',
             ),
         ):

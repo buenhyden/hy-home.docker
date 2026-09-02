@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: iac-reviewer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: iac-reviewer
 scope: infra
 tier: worker
-status: active
 work_profile: adversarial-review
 permission_profile: read-only
 skill_ids:

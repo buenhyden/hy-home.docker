@@ -1,8 +1,10 @@
 ---
-profile_id: data
+title: Provider Hook Parity Matrix
+type: references/data
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: DATA-0072
-artifact_type: data
 parent_ids: []
 created: '2026-08-21'
 updated: '2026-08-28'
@@ -38,12 +40,12 @@ Configured means a tracked native hook entry exists; unsupported means no native
 | Semantic Event | Claude | Status | Codex | Status |
 | --- | --- | --- | --- | --- |
 | `session-start` | `SessionStart` | `configured` | `SessionStart` | `configured` |
-| `user-prompt-intake` | `UserPromptSubmit` | `configured` | `UserPromptSubmit` | `configured` |
-| `pre-tool` | `PreToolUse` | `configured` | `PreToolUse` | `configured` |
-| `post-tool` | `PostToolUse` | `configured` | `PostToolUse` | `configured` |
+| `pre-tool-use` | `PreToolUse` | `configured` | `PreToolUse` | `configured` |
+| `post-tool-use` | `PostToolUse` | `configured` | `PostToolUse` | `configured` |
 | `stop` | `Stop` | `configured` | `Stop` | `configured` |
-| `pre-compaction` | `PreCompact` | `configured` | `PreCompact` | `configured` |
 | `session-end` | `SessionEnd` | `configured` | `N/A` | `unsupported` |
+| `pre-compact` | `PreCompact` | `configured` | `PreCompact` | `configured` |
+| `user-prompt-submit` | `UserPromptSubmit` | `configured` | `UserPromptSubmit` | `configured` |
 
 ## Sources
 

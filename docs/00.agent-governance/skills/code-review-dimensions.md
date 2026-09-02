@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: code-review-dimensions
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: code-review-dimensions
 scope: common
-status: active
 owner_agent: code-reviewer
 ---
 

@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: PostgreSQL Logical Upgrade and Restore Rehearsal Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0032
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0032
 parent_ids: []
 created: 2026-07-22
 updated: 2026-08-11
@@ -34,9 +36,9 @@ Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652
 
 | Step order | Procedure step | Expected result |
 | --- | --- | --- |
-| 1 | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | Fixture, shell contract, negative cases, cleanup, redaction, and verdict tests pass. |
-| 2 | `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check` | Full machine-readable Compose render, exact pins, anonymous approved targets, fixture SHA-256, exclusive UID/mode/device/inode evidence ownership, 360-second operation budget, and 60-second cleanup reserve pass inside one 420-second deadline without starting a database. |
-| 3 | `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` | Source and target each prove the same authenticated postmaster identity over TCP `127.0.0.1:5432` twice, two seconds apart, while the container remains running and healthy; separate exact-project renders then pass backup, restore, oracle comparison, cleanup, and atomic canonical publication. |
+| 1 | `python3 -m unittest tests.lib.ops.test_postgres_logical_upgrade_rehearsal -v` | Fixture, shell contract, negative cases, cleanup, redaction, and verdict tests pass. |
+| 2 | `bash scripts/lib/ops/rehearse-postgres-logical-upgrade.sh --check` | Full machine-readable Compose render, exact pins, anonymous approved targets, fixture SHA-256, exclusive UID/mode/device/inode evidence ownership, 360-second operation budget, and 60-second cleanup reserve pass inside one 420-second deadline without starting a database. |
+| 3 | `bash scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` | Source and target each prove the same authenticated postmaster identity over TCP `127.0.0.1:5432` twice, two seconds apart, while the container remains running and healthy; separate exact-project renders then pass backup, restore, oracle comparison, cleanup, and atomic canonical publication. |
 | 4 | Run `--negative-case checksum-mismatch`, `partial-state`, `bad-target-major`, and `timeout` separately. | Stable nonzero class `50`, `50`, `10`, and `20`; cleanup passes; canonical handoff is absent after each negative. |
 | 5 | Run the normal command twice consecutively after negative cases when readiness behavior changes. | Both runs pass stable authenticated readiness; the second fresh exact 12-key canonical handoff is published only after verified cleanup. |
 
@@ -64,14 +66,14 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 
 | Automation candidate or invocation | Human or operator judgment boundary |
 | --- | --- |
-| `scripts/validation/rehearse-postgres-logical-upgrade.sh` normal/check/negative envelope | Canonical verdict는 local synthetic rollback boundary일 뿐 deployment gate가 아니다. Pin, data class, storage, cleanup, remote, or live target 변경은 새 승인 없이 자동화하지 않는다. |
+| `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` normal/check/negative envelope | Canonical verdict는 local synthetic rollback boundary일 뿐 deployment gate가 아니다. Pin, data class, storage, cleanup, remote, or live target 변경은 새 승인 없이 자동화하지 않는다. |
 
 ## Related Documents
 
 - Spec 125
 - Infrastructure Plan
 - Infrastructure Task
-- [Rehearsal wrapper](../../../../../scripts/validation/rehearse-postgres-logical-upgrade.sh)
+- [Rehearsal wrapper](../../../../../scripts/lib/ops/rehearse-postgres-logical-upgrade.sh)
 - [Synthetic Compose fixture](../../../../../tests/fixtures/postgres-logical-upgrade/docker-compose.yml)
 - [Relational runbook index](../README.md)
 - [HA cluster triage runbook](../0031-postgresql-cluster/runbook.md)

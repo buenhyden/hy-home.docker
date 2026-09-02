@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: test-authoring
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: test-authoring
 scope: qa
-status: active
 owner_agent: qa-engineer
 ---
 

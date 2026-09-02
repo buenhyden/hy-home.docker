@@ -1,9 +1,11 @@
 ---
-profile_id: migration
+title: Operations Catalog Convergence Manifest
+type: archive/migration
+layer: archive
 status: completed
-artifact_id: mig-0002
-artifact_type: migration
-parent_ids: [SPEC-0136]
+owner: "@buenhyden"
+artifact_id: MIG-0002
+parent_ids: [SPEC-0158]
 created: 2026-08-13
 updated: 2026-08-30
 archived_from: docs/05.operations/README.md
@@ -9620,7 +9622,4 @@ provenance objects, and semantic dispositions above remain unchanged.
 
 ## Related Documents
 
-- [Specification](../../03.specs/0136-sdlc-taxonomy-convergence/spec.md)
-- [Implementation plan](../../03.specs/0136-sdlc-taxonomy-convergence/plan.md)
-- [Task evidence](../../03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md)
 - [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)

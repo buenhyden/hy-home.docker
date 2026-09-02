@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Cassandra Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0025
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0025
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

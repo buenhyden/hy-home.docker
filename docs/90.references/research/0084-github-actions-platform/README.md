@@ -1,8 +1,10 @@
 ---
-profile_id: research
+title: "Reference: GitHub Actions Platform Mechanics"
+type: references/research
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: RES-0084
-artifact_type: research
 parent_ids: []
 created: '2026-07-05'
 updated: '2026-08-23'

@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: change-review-execution
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: change-review-execution
 scope: common
-status: active
 owner_agent: code-reviewer
 ---
 

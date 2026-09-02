@@ -1,12 +1,14 @@
 ---
-profile_id: architecture-description
+title: 08-AI Optimization Hardening Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0023
-artifact_type: architecture-description
 parent_ids:
   - REQ-0020
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # 08-AI Optimization Hardening Architecture Description
 
@@ -118,9 +120,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 
 - **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/0009-ai/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md)

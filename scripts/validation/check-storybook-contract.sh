@@ -15,8 +15,8 @@ import sys
 root = pathlib.Path.cwd()
 sys.path.insert(0, str(root))
 from scripts.lib.document_governance.suite_registry import SuiteRegistryError, load as load_suites
-from scripts.validation.ci_gate_contract import load_contract_document, parse_public_gate_contract
-from scripts.validation.github_workflow_contract import (
+from scripts.lib.gate.ci_gate_contract import load_contract_document, parse_public_gate_contract
+from scripts.lib.gate.github_workflow_contract import (
     GateContractError, WorkflowContractError, expand_gate_ids,
     load_workflow_contract, validate_workflows,
 )
@@ -40,7 +40,7 @@ else:
         failures.append(f"{package_path}: script 'typecheck' must run TypeScript without emitting files")
 
 # The npm invocations moved out of inline workflow shell into typed gate argv
-# declarations executed through scripts/validation/ci_gate_adapters.py. Assert
+# declarations executed through scripts/lib/gate/ci_gate_adapters.py. Assert
 # the declarations, not the retired inline literals.
 contract_path = pathlib.Path(".github/workflow-contract.yml")
 required_gate_argv = {

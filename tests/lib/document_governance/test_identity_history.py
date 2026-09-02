@@ -22,6 +22,23 @@ from scripts.lib.document_governance.registry import load_registry
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_identity_scan_does_not_read_patch_text(self) -> None:
+        """Identity history cost must not grow with every historical diff."""
+
+        source = (
+            pathlib.Path(__file__).resolve().parents[3]
+            / "scripts/lib/document_governance/identity_history.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn('"-p"', source)
+        self.assertNotIn('"--patch"', source)
+        self.assertNotIn('"-G"', source)
+        self.assertNotIn("_record_history_patch", source)
+        self.assertIn("MAX_GIT_OUTPUT_BYTES = 8 * 1024 * 1024", source)
+        self.assertNotIn(
+            "MAX_GIT_OUTPUT_BYTES = 64 * 1024 * 1024",
+            source,
+        )
+
     def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
         from scripts.lib.document_governance.archive import _approved_migration_document
 
@@ -144,6 +161,51 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertGreaterEqual(issued.high_water("requirement.REQ-0043.NFR"), 44)
         self.assertGreaterEqual(issued.high_water("requirement.REQ-0043.IF"), 45)
 
+    def test_stage90_category_not_legacy_ref_filename_owns_identity_space(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            audit = root / "docs/90.references/audits/ref-0023-fixture.md"
+            data = root / "docs/90.references/data/history/ref-0061-fixture.md"
+            audit.parent.mkdir(parents=True)
+            data.parent.mkdir(parents=True)
+            audit.write_text("---\nartifact_id: AUD-0023\n---\n", encoding="utf-8")
+            data.write_text("---\nartifact_id: DATA-0061\n---\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add Stage 90 fixtures")
+
+            issued = collect_issued_identities(root)
+
+        self.assertIn(23, issued.numbers["audit"])
+        self.assertIn(61, issued.numbers["data"])
+        self.assertNotIn(23, issued.numbers.get("research", frozenset()))
+        self.assertNotIn(61, issued.numbers.get("research", frozenset()))
+
+    def test_tombstone_identity_comes_from_frontmatter_not_target_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            tombstone = root / (
+                "docs/98.archive/tombstones/03.specs/"
+                "0153-retired-target.md"
+            )
+            tombstone.parent.mkdir(parents=True)
+            tombstone.write_text(
+                "---\nartifact_id: TOMBSTONE-0131\n---\n",
+                encoding="utf-8",
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add Tombstone fixture")
+
+            issued = collect_issued_identities(root)
+
+        self.assertIn(131, issued.numbers["tombstone"])
+        self.assertNotIn(153, issued.numbers["tombstone"])
+
     def test_registry_high_water_is_not_below_repository_history(self) -> None:
         registry = load_registry()
         started = time.monotonic()
@@ -158,7 +220,7 @@ class IdentityHistoryTests(unittest.TestCase):
             identity_history.MAX_GIT_SCAN_SECONDS + 5,
         )
 
-    def test_history_uses_only_bounded_exact_id_family_pickaxes(self) -> None:
+    def test_history_uses_only_bounded_object_name_scans(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[3]
         commands: list[tuple[str, ...]] = []
         real_run_git = identity_history._run_git
@@ -179,17 +241,32 @@ class IdentityHistoryTests(unittest.TestCase):
             collect_issued_identities(root, refs=("HEAD",))
 
         history_commands = [
-            command for command in commands if command[:1] == ("log",)
+            command
+            for command in commands
+            if command[:2] == ("rev-list", "--objects")
         ]
         self.assertEqual(
-            len(identity_history.GIT_HISTORY_QUERIES),
-            len(history_commands),
+            [
+                ("rev-list", "--objects", "HEAD", "--", pathspec)
+                for pathspec in identity_history.GIT_HISTORY_QUERIES
+            ],
+            history_commands,
         )
-        self.assertTrue(history_commands)
-        self.assertTrue(all("-G" in command for command in history_commands))
-        self.assertTrue(all("-S" not in command for command in history_commands))
+        grep_commands = [
+            command
+            for command in commands
+            if command[:2] == ("grep", "-h")
+        ]
+        self.assertTrue(grep_commands)
         self.assertTrue(
-            all("artifact_id:" not in command for command in history_commands)
+            all(len(command) <= identity_history._GIT_GREP_BATCH_SIZE + 12 for command in grep_commands)
+        )
+        self.assertTrue(
+            all(
+                token not in command
+                for command in commands
+                for token in ("-p", "--patch", "-G", "-S")
+            )
         )
 
     def test_git_output_cap_terminates_stdout_and_stderr_producers_early(self) -> None:

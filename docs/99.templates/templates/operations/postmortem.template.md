@@ -1,9 +1,12 @@
 ---
-profile_id: postmortem
+title: <title>
+version: <version>
+type: operations/postmortem
+layer: <layer>
 status: draft
-artifact_id: postmortem-####
-artifact_type: postmortem
-parent_ids: [inc-####]
+owner: <owner>
+artifact_id: inc-<year>-####-PM
+parent_ids: [inc-<year>-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 reviewed_at: YYYY-MM-DD

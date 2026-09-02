@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Common Optimizations Template Exceptions Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0001
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0001
 parent_ids: []
 created: 2026-06-04
 updated: 2026-08-11

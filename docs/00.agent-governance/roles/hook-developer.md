@@ -1,10 +1,12 @@
 ---
-profile_id: governance-role
+title: hook-developer
+type: governance/role
 layer: agentic
+status: active
+owner: "@buenhyden"
 agent_id: hook-developer
 scope: agentic
 tier: worker
-status: active
 work_profile: complex-implementation
 permission_profile: workspace-write
 skill_ids: []

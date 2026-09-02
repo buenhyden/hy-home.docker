@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "04-Data Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0016
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 04-Data Optimization & Hardening Product Requirements
 
@@ -93,9 +95,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../03.specs/0004-data/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md
-- **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md
+- **ADR**: [../02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../05.operations/guides/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
 - **Policy**: [../05.operations/policies/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/04-data/optimization/optimization-hardening.md](../05.operations/catalog/04-data/0030-optimization-hardening/runbook.md)

@@ -1,12 +1,14 @@
 ---
-profile_id: adr
+title: AI Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0023
-artifact_type: adr
 parent_ids:
   - AD-0023
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0023: AI Hardening and HA Expansion Strategy
 
@@ -82,6 +84,4 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../descriptions/0023-ai-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/0009-ai/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
-- **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
 - **Related ADR**: [ADR-0008](0008-ollama-openwebui-local-ai.md)

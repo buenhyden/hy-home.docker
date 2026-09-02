@@ -1,8 +1,10 @@
 ---
-profile_id: runbook
+title: Valkey Cluster Health Runbook
+type: operations/runbook
+layer: operations
 status: active
-artifact_id: runbook-0022
-artifact_type: runbook
+owner: "@buenhyden"
+artifact_id: RUN-0022
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11

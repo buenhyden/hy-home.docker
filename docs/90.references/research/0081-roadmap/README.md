@@ -1,8 +1,10 @@
 ---
-profile_id: research
+title: "Reference: CS, CE & SE Self-Learning Roadmap (v2)"
+type: references/research
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: RES-0081
-artifact_type: research
 parent_ids: []
 created: '2026-08-23'
 updated: '2026-08-23'
@@ -182,7 +184,6 @@ This section is a learning-idea reference, not an implementation plan or task ba
 
 - [Learning reference index](README.md)
 - [90.references](../../README.md)
-- [stable reference terms](../../data/0062-stable-reference-terms/README.md)
 - [docs index](../../README.md)
 
 ## Question

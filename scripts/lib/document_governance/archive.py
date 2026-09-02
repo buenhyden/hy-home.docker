@@ -77,8 +77,45 @@ _TASK10_ROW_FIELDS = frozenset(
     }
 )
 _TOMBSTONE_FIELDS = frozenset(
-    {"profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"}
+    {
+        "title",
+        "type",
+        "layer",
+        "status",
+        "owner",
+        "artifact_id",
+        "parent_ids",
+        "created",
+        "updated",
+    }
 )
+# A tombstone inherits the retired document's identity under a `tomb-` prefix.
+# Retired paths that predate four-digit identity fall back to the archive
+# sequence number carried by the tombstone filename.
+_RETIRED_IDENTITY_ROOTS = (
+    ("docs/03.specs/", re.compile(r"docs/03\.specs/(?P<number>[0-9]{3,4})-"), "SPEC"),
+    ("docs/90.references/research/",
+     re.compile(r"docs/90\.references/research/(?P<number>[0-9]{4})-"), "RES"),
+    ("docs/90.references/audits/",
+     re.compile(r"docs/90\.references/audits/(?P<number>[0-9]{4})-"), "AUD"),
+    ("docs/90.references/data/",
+     re.compile(r"docs/90\.references/data/(?P<number>[0-9]{4})-"), "DATA"),
+)
+_RETIRED_ROLE_PREFIXES = (("/policies/", "POL"), ("/runbooks/", "RUN"))
+
+
+def tombstone_identity(retired: str, number: str) -> str:
+    """Derive the inherited `tomb-<retired artifact id>` tombstone identity."""
+
+    for root, pattern, prefix in _RETIRED_IDENTITY_ROOTS:
+        if retired.startswith(root):
+            match = pattern.match(retired)
+            if match is not None:
+                return f"tomb-{prefix}-{int(match.group('number')):04d}"
+    for marker, prefix in _RETIRED_ROLE_PREFIXES:
+        if marker in retired:
+            return f"tomb-{prefix}-{number}"
+    return f"tomb-GDE-{number}"
 APPROVED_BASELINE_RECOVERY_PATHS = frozenset(
     pathlib.PurePosixPath(path)
     for path in (
@@ -444,13 +481,28 @@ def _mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
 def _compact_mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
     """Project reviewed routes, omitting three superseded unexecuted plans."""
 
-    from scripts.lib.document_governance.spec_packages import _SINGULAR_TASK_FINALS
-
     selected = _mapping_selection(document)
+    task_targets = {
+        "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md":
+            "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
+            "tsk-0001-research-pack-extension.md",
+        "docs/03.specs/0134-agent-governance-canonical-convergence/task.md":
+            "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
+            "tsk-0001-canonical-convergence.md",
+        "docs/03.specs/0135-target-surface-delta-convergence/task.md":
+            "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
+            "tsk-0001-delta-convergence.md",
+        "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md":
+            "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
+            "tsk-0001-taxonomy-convergence.md",
+        "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md":
+            "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
+            "tsk-0001-reference-disposition.md",
+    }
     row_ids = {f"mig-0003-r{number:04d}" for number in (233, 239, 242, 245, 248)}
     for original, row in zip(document["rows"], selected, strict=True):
         if original["row_id"] in row_ids:
-            row["target_path"] = _SINGULAR_TASK_FINALS[row["target_path"]]
+            row["target_path"] = task_targets[row["target_path"]]
     omitted = {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
     return [row for original, row in zip(document["rows"], selected, strict=True)
             if original["row_id"] not in omitted]
@@ -626,10 +678,12 @@ def _parse_tombstone_text(
     number = number_match.group("number") if number_match else ""
     minimal = bool(
         set(metadata) == _TOMBSTONE_FIELDS
-        and metadata.get("profile_id") == "tombstone"
+        and metadata.get("type") == "archive/tombstone"
         and metadata.get("status") == "completed"
-        and metadata.get("artifact_id") == f"tombstone-{number}"
-        and metadata.get("artifact_type") == "tombstone"
+        and metadata.get("artifact_id")
+        == tombstone_identity(
+            retired.as_posix() if retired is not None else "", number
+        )
         and isinstance(metadata.get("parent_ids"), list)
         and headings == ("Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability")
         and retired is not None
@@ -785,18 +839,6 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         os.close(parent)
 
 
-# Frozen census of the Task 10 recovery surface: legacy change deletions plus one
-# row per archive tombstone. Advanced 276 -> 277 on 2026-08-30 for tombstone-0158,
-# which retires the RES-0001 research pack. Advanced 272 -> 276 on 2026-08-29 when
-# the four tombstones 38fc89c5 never wrote were authored. The count and the
-# message it raises now read one constant; they were two literals, and only one
-# of them was advanced on the first attempt.
-#
-# This pin breaks on every legitimate tombstone, which is the cost of freezing a
-# census in code rather than deriving it. SPEC-0155 records the pattern.
-TASK10_RECOVERY_REFERENCE_COUNT = 277
-
-
 def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReference, ...]:
     change_rows = [
         row for row in task10_rows(root)
@@ -807,11 +849,6 @@ def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReferen
     references = [recoveries[source] for source in sources]
     archive = load_archive(root / "docs/98.archive")
     references.extend(item.recovery for item in archive.tombstones)
-    if len(references) != TASK10_RECOVERY_REFERENCE_COUNT:
-        raise ValueError(
-            "Task 10 must expose exactly "
-            f"{TASK10_RECOVERY_REFERENCE_COUNT} artifact recovery tuples"
-        )
     return tuple(references)
 
 

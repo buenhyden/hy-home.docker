@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Tempo Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0049
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0049
 parent_ids:
   - SPEC-0007
 created: 2026-05-17

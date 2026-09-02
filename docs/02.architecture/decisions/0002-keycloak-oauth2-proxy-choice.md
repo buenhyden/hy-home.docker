@@ -1,12 +1,14 @@
 ---
-profile_id: adr
+title: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: ADR-0002
-artifact_type: adr
 parent_ids:
   - AD-0002
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
 
@@ -78,4 +80,3 @@ The decision context above records the applicable drivers and evidence.
 - **PRD**: [../../01.requirements/0002-auth.md](../../01.requirements/0002-auth.md)
 - **Architecture Description**: [../descriptions/0002-auth-architecture.md](../descriptions/0002-auth-architecture.md)
 - **Spec**: [../../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-02-auth-standardization.md

@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Laboratory Dashboard Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0071
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0071
 parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11

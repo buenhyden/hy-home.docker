@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: PostgreSQL Cluster Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0031
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0031
 parent_ids:
   - SPEC-0004
 created: 2026-05-17

@@ -1,12 +1,14 @@
 ---
-profile_id: policy
+title: Retention and Performance Policies
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0048
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0048
 parent_ids:
   - SPEC-0007
 created: 2026-03-25
-updated: 2026-08-11
+updated: 2026-09-01
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0048-telemetry-retention/policy.md -->
 
@@ -50,7 +52,7 @@ backup 책임 경계를 다룬다.
   - Loki/Tempo MinIO snapshot 또는 replication은 MinIO owning policy와
     runbook evidence가 있을 때 검토한다.
   - Retention, resource, storage 변경은 관련 config diff, capacity impact,
-    rollback evidence를 포함한 Stage 04 task가 있을 때 수행한다.
+    rollback evidence를 포함한 승인된 active Plan과 Task가 있을 때 수행한다.
 - **Disallowed**:
   - 문서만 수정해서 runtime retention이 변경된 것처럼 선언하는 행위
   - 구현되지 않은 external archive를 active control로 표기하는 행위

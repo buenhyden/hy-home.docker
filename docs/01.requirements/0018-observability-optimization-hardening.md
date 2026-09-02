@@ -1,11 +1,13 @@
 ---
-profile_id: requirements-package
+title: "06-Observability Optimization & Hardening Product Requirements"
+type: requirements/package
+layer: requirements
 status: active
+owner: "@buenhyden"
 artifact_id: REQ-0018
-artifact_type: requirements-package
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-13
+updated: 2026-09-01
 ---
 # 06-Observability Optimization & Hardening Product Requirements
 
@@ -69,7 +71,7 @@ No separately numbered solution-independent external interface requirement was i
   - `infra/06-observability/loki/docker-entrypoint.sh`, `infra/06-observability/tempo/docker-entrypoint.sh`
   - `scripts/hardening/check-all-hardening.sh 06-observability`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` observability optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,05.operations}` observability optimization-hardening 문서/README
 - **Out of Scope**:
   - 애플리케이션 OpenTelemetry SDK 코드 변경
   - 장기 저장소/클라우드 관리형 observability 스택 이전
@@ -94,9 +96,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../03.specs/0007-observability/spec.md)
-- **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: ../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/06-observability/optimization-hardening.md](../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)
 - **Policy**: [../05.operations/policies/06-observability/optimization-hardening.md](../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
 - **Runbook**: [../05.operations/runbooks/06-observability/optimization-hardening.md](../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)

@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Frontmatter Semantic Inventory"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0023
-artifact_type: audit
 parent_ids: []
 created: '2026-07-05'
 updated: '2026-08-23'
@@ -1027,7 +1029,6 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 - [Frontmatter contract](../../../99.templates/README.md) - metadata ownership and exception rules
 - [Lifecycle status](../../../99.templates/README.md) - lifecycle vocabulary and transitions
-- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md) - typed metadata and rollout contract
 - [Semantic audit](../0024-frontmatter-template-readme-implementation/README.md) - pre-remediation criteria and baseline
 
 ## Maintenance

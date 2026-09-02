@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: SDLC and Document Contracts Implementation Audit"
+type: references/audit
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: AUD-0029
-artifact_type: audit
 parent_ids:
 - AUD-0026
 created: '2026-07-05'
@@ -184,8 +186,6 @@ active until promotion and final closure reviews pass.
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - naming, template, status, and routing contracts
 - [Lifecycle status](../../../99.templates/README.md) - current status meanings and supersession rule
 - Release management runbook (retired path: `05.operations/00-workspace/ops-0009-release-management/runbook.md`) - release readiness procedure
-- [2026-07-03 frontmatter inventory](../0005-frontmatter-inventory/README.md) - dated 930-file evidence
-- [2026-07-04 frontmatter profile inventory](../0014-frontmatter-profile-inventory/README.md) - dated 948-file evidence
 
 ## Maintenance
 
@@ -199,7 +199,6 @@ active until promotion and final closure reviews pass.
 - [Frontmatter, template, and README audit](../0024-frontmatter-template-readme-implementation/README.md)
 - [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
 - [Implementation overview](../0026-implementation-overview/README.md)
-- [Spec 123](../../../03.specs/0123-agentic-engineering-audit-remediation/spec.md)
 
 ## Objective
 

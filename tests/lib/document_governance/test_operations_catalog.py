@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import contextlib
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -17,16 +18,11 @@ import yaml
 
 from scripts.lib.document_governance import operations_catalog
 from scripts.lib.document_governance.operations_catalog import (
-    EXPECTED_DOMAINS,
-    EXPECTED_ROLE_COUNTS,
-    MIGRATION_PATH,
     REGISTRY_PATH,
     OperationsAuthorityError,
-    Task8Migration,
     _run_git_bounded,
-    extract_task8_consumers,
-    load_task8_migration,
     read_bounded_regular,
+    validate_active_operations_references,
     validate_current_operations,
 )
 
@@ -34,15 +30,26 @@ from scripts.lib.document_governance.operations_catalog import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
+def current_role_paths(root: pathlib.Path = ROOT) -> tuple[pathlib.PurePosixPath, ...]:
+    return tuple(
+        pathlib.PurePosixPath(path.relative_to(root).as_posix())
+        for path in sorted(
+            (root / "docs/05.operations/catalog").glob(
+                "*/[0-9][0-9][0-9][0-9]-*/*.md"
+            )
+        )
+        if path.name in {"guide.md", "policy.md", "runbook.md"}
+    )
+
+
 def finding_codes(root: pathlib.Path = ROOT) -> set[str]:
-    return {finding.code for finding in validate_current_operations(root, include_semantic_witnesses=False)}
+    return {finding.code for finding in validate_current_operations(root)}
 
 
 class OperationsCatalogTopologyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.migration = load_task8_migration(ROOT)
-        cls.mappings = operations_catalog.load_current_operation_mappings(ROOT)
+        cls.role_paths = current_role_paths()
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
         directory = tempfile.TemporaryDirectory()
@@ -52,47 +59,27 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             "docs/99.templates/templates/operations",
         ):
             shutil.copytree(ROOT / source, root / source)
-        for source in (
-            "docs/99.templates/registry.json",
-            str(MIGRATION_PATH),
-            "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
-        ):
+        for source in ("docs/99.templates/registry.json",):
             target = root / source
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / source, target)
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(
+            ["git", "add", "docs/05.operations", "docs/99.templates"],
+            cwd=root,
+            check=True,
+        )
         context = contextlib.ExitStack()
         context.enter_context(directory)
-        context.enter_context(mock.patch.object(operations_catalog, "load_current_operation_mappings", return_value=self.mappings))
         self.addCleanup(context.close)
         return context, root
 
-    def test_current_operations_has_exact_final_topology(self) -> None:
+    def test_current_operations_tree_is_self_authoritative_and_archive_free(self) -> None:
         self.assertEqual(set(), finding_codes())
-        targets = [row.target_path for row in self.migration.rows if row.action == "rename"]
-        self.assertEqual(75, len({path.parent for path in targets if path is not None}))
-        self.assertEqual(
-            EXPECTED_ROLE_COUNTS,
-            {
-                role: sum(path is not None and path.name == f"{role}.md" for path in targets)
-                for role in EXPECTED_ROLE_COUNTS
-            },
-        )
-        self.assertEqual(
-            set(EXPECTED_DOMAINS),
-            {path.parts[3] for path in targets if path is not None},
-        )
-
-    def test_current_operations_preserves_registered_role_ids(self) -> None:
-        for row in self.migration.rows:
-            if row.target_path is None:
-                continue
-            current = ROOT / row.target_path
-            if not current.is_file():
-                current = ROOT / row.source_path
-            text = current.read_text(encoding="utf-8")
-            metadata = yaml.safe_load(text.split("---\n", 2)[1])
-            with self.subTest(path=row.target_path):
-                self.assertEqual(row.artifact_id, metadata["artifact_id"])
+        context, root = self._fixture()
+        with context:
+            self.assertFalse((root / "docs/98.archive").exists())
+            self.assertEqual(set(), finding_codes(root))
 
     def test_prefixed_subject_is_rejected(self) -> None:
         context, root = self._fixture()
@@ -101,24 +88,29 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             subject.rename(subject.with_name(f"ops-{subject.name}"))
             self.assertIn("subject-path-invalid", finding_codes(root))
 
-    def test_domain_subject_ownership_change_is_rejected(self) -> None:
+    def test_invalid_domain_route_is_rejected(self) -> None:
         context, root = self._fixture()
         with context:
             subject = next((root / "docs/05.operations/catalog/00-workspace").glob("0001-*"))
-            subject.rename(root / "docs/05.operations/catalog/01-gateway" / subject.name)
-            self.assertIn("domain-ownership-invalid", finding_codes(root))
+            invalid_domain = root / "docs/05.operations/catalog/workspace"
+            invalid_domain.mkdir()
+            (invalid_domain / "README.md").write_text("invalid\n", encoding="utf-8")
+            subject.rename(invalid_domain / subject.name)
+            self.assertIn("domain-path-invalid", finding_codes(root))
 
     def test_changed_or_duplicate_role_identity_is_rejected(self) -> None:
         context, root = self._fixture()
         with context:
-            targets = [row.target_path for row in self.migration.rows if row.target_path is not None]
-            first, second = targets[:2]
+            first, second = self.role_paths[:2]
             first_text = (root / first).read_text(encoding="utf-8")
             first_id = yaml.safe_load(first_text.split("---\n", 2)[1])["artifact_id"]
             second_path = root / second
+            second_id = yaml.safe_load(
+                second_path.read_text(encoding="utf-8").split("---\n", 2)[1]
+            )["artifact_id"]
             second_path.write_text(
                 second_path.read_text(encoding="utf-8").replace(
-                    f"artifact_id: {self.migration.rows[1].artifact_id}",
+                    f"artifact_id: {second_id}",
                     f"artifact_id: {first_id}",
                     1,
                 ),
@@ -150,12 +142,10 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             )
             self.assertIn("release-authority-present", finding_codes(root))
 
-    def test_registry_operations_profiles_are_duplicate_safe_and_exact(self) -> None:
+    def test_registry_operations_profiles_and_template_roles_are_present(self) -> None:
         mutations = (
             ("profile_id", "guide-copy"),
-            ("identity_relation", "direct"),
             ("template_id", "operations/policy"),
-            ("lifecycle_id", "incident"),
         )
         for key, value in mutations:
             with self.subTest(key=key):
@@ -177,37 +167,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("registry-profile-duplicate", finding_codes(root))
 
-    def test_registry_operations_frontmatter_traceability_and_lifecycle_are_exact(self) -> None:
-        mutations = (
-            ("required_frontmatter", ["status", "artifact_id"]),
-            (
-                "traceability",
-                {
-                    "allowed_parent_profiles": ["spec", "policy", "runbook"],
-                    "membership_authority": "stale-migration",
-                },
-            ),
-            (
-                "traceability",
-                {
-                    "allowed_parent_profiles": ["spec"],
-                    "membership_authority": "operations-migration-manifest",
-                },
-            ),
-        )
-        for key, value in mutations:
-            with self.subTest(key=key, value=value):
-                context, root = self._fixture()
-                with context:
-                    registry_path = root / REGISTRY_PATH
-                    registry = json.loads(registry_path.read_text(encoding="utf-8"))
-                    guide = next(
-                        item for item in registry["profiles"] if item["profile_id"] == "guide"
-                    )
-                    guide[key] = value
-                    registry_path.write_text(json.dumps(registry), encoding="utf-8")
-                    self.assertIn("registry-operations-profile-invalid", finding_codes(root))
-
+    def test_registry_lifecycle_and_required_sections_are_consumed(self) -> None:
         context, root = self._fixture()
         with context:
             registry_path = root / REGISTRY_PATH
@@ -219,14 +179,91 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 if "active" in targets:
                     targets.remove("active")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
-            self.assertIn("registry-operations-lifecycle-invalid", finding_codes(root))
+            self.assertIn("role-status-invalid", finding_codes(root))
 
-    def test_registry_operations_optional_projection_and_transitions_are_exact(self) -> None:
-        profile_mutations = (
-            ("optional_frontmatter", ["reviewed_at", "task8-extra"]),
-            ("optional_sections", ["Examples", "Task 8 Extra"]),
+        context, root = self._fixture()
+        with context:
+            registry_path = root / REGISTRY_PATH
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+            guide["required_sections"].append("New Contract")
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            self.assertIn("role-sections-invalid", finding_codes(root))
+
+    def test_registry_schema_valid_optional_changes_do_not_require_a_python_mirror(self) -> None:
+        context, root = self._fixture()
+        with context:
+            registry_path = root / REGISTRY_PATH
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+            guide["optional_frontmatter"].append("generated_by")
+            guide["optional_sections"].append("Operator Notes")
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            codes = finding_codes(root)
+            self.assertNotIn("registry-operations-profile-invalid", codes)
+            self.assertNotIn("registry-operations-lifecycle-invalid", codes)
+
+    def test_malformed_registry_returns_findings_without_traceback(self) -> None:
+        for mutation in (
+            "missing-artifact-pattern",
+            "object-frontmatter-member",
+            "object-profile-id",
+            "object-lifecycle-id",
+        ):
+            with self.subTest(mutation=mutation):
+                context, root = self._fixture()
+                with context:
+                    registry_path = root / REGISTRY_PATH
+                    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+                    guide = next(
+                        item
+                        for item in registry["profiles"]
+                        if item["profile_id"] == "guide"
+                    )
+                    if mutation == "missing-artifact-pattern":
+                        del guide["artifact_id_pattern"]
+                    elif mutation == "object-frontmatter-member":
+                        guide["required_frontmatter"] = [{"bad": "shape"}]
+                    elif mutation == "object-profile-id":
+                        guide["profile_id"] = {"bad": "shape"}
+                    else:
+                        guide["lifecycle_id"] = {"bad": "shape"}
+                    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+                    codes = finding_codes(root)
+                    self.assertIn("registry-canonical-invalid", codes)
+
+    def test_registry_loader_rejects_excessive_depth_without_traceback(self) -> None:
+        context, root = self._fixture()
+        with context:
+            registry_path = root / REGISTRY_PATH
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            cursor = registry
+            for _ in range(70):
+                child: dict[str, object] = {}
+                cursor["too_deep"] = child
+                cursor = child
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            self.assertIn("registry-invalid", finding_codes(root))
+
+    def test_registry_loader_rejects_symlinked_parent_directory(self) -> None:
+        context, root = self._fixture()
+        with context:
+            registry_root = root / "docs/99.templates"
+            external_root = root / "external-templates"
+            registry_root.rename(external_root)
+            registry_root.symlink_to(external_root, target_is_directory=True)
+            self.assertIn("registry-invalid", finding_codes(root))
+
+    def test_registry_route_and_identity_relation_govern_catalog_leaves(self) -> None:
+        mutations = (
+            (
+                "path_pattern",
+                "docs/05.operations/guides/{number:4}-{slug}.md",
+                "role-path-profile-mismatch",
+            ),
+            ("identity_relation", "direct", "role-identity-relation-invalid"),
         )
-        for key, value in profile_mutations:
+        for key, value, expected in mutations:
             with self.subTest(key=key):
                 context, root = self._fixture()
                 with context:
@@ -237,15 +274,30 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
-                    self.assertIn("registry-operations-profile-invalid", finding_codes(root))
+                    self.assertIn(expected, finding_codes(root))
 
-        context, root = self._fixture()
-        with context:
-            registry_path = root / REGISTRY_PATH
-            registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            registry["lifecycles"]["living"]["transitions"]["active"].append("draft")
-            registry_path.write_text(json.dumps(registry), encoding="utf-8")
-            self.assertIn("registry-operations-lifecycle-invalid", finding_codes(root))
+    def test_registry_route_and_identity_relation_govern_incident_leaves(self) -> None:
+        mutations = (
+            (
+                "path_pattern",
+                "docs/05.operations/incidents/{year:4}/incident-{number:4}-{slug}.md",
+                "incident-path-profile-mismatch",
+            ),
+            ("identity_relation", "subject-member", "incident-identity-relation-invalid"),
+        )
+        for key, value, expected in mutations:
+            with self.subTest(key=key):
+                context, root = self._fixture()
+                with context:
+                    self._write_incident_packet(root)
+                    registry_path = root / REGISTRY_PATH
+                    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+                    incident = next(
+                        item for item in registry["profiles"] if item["profile_id"] == "incident"
+                    )
+                    incident[key] = value
+                    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+                    self.assertIn(expected, finding_codes(root))
 
     def test_registry_required_sections_keep_operations_roles_distinct(self) -> None:
         context, root = self._fixture()
@@ -261,7 +313,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                path for path in self.role_paths
             )
             text = role.read_text(encoding="utf-8")
             role.write_text(text.split("---\n", 2)[0] + "---\n" + text.split("---\n", 2)[1] + "---\n# Arbitrary\n", encoding="utf-8")
@@ -271,12 +323,12 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                path for path in self.role_paths
             )
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
             role.write_text(
-                text.replace(f"profile_id: {role_name}\n", "", 1),
+                text.replace(f"type: operations/{role_name}\n", "", 1),
                 encoding="utf-8",
             )
             self.assertIn("role-profile-invalid", finding_codes(root))
@@ -285,14 +337,14 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(
-                row.target_path for row in self.migration.rows if row.target_path is not None
+                path for path in self.role_paths
             )
             role_name = role.stem
             text = role.read_text(encoding="utf-8")
             role.write_text(
                 text.replace(
-                    f"profile_id: {role_name}\n",
-                    f"profile_id: {role_name}\nprofile_id: {role_name}\n",
+                    f"type: operations/{role_name}\n",
+                    f"type: operations/{role_name}\ntype: operations/{role_name}\n",
                     1,
                 ),
                 encoding="utf-8",
@@ -315,7 +367,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)
         metadata = (
-            f"---\nprofile_id: incident\nstatus: {status}\n"
+            f"---\ntype: operations/incident\nstatus: {status}\n"
             f"artifact_id: {artifact_id}\nartifact_type: incident\nparent_ids: []\n"
             "created: 2026-08-23\nupdated: 2026-08-23\n"
             f"occurred_at: {occurred_at}\nresolved_at: {resolved_at}\n---\n"
@@ -362,7 +414,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     )
 
     def test_role_symlink_and_nonregular_inputs_are_rejected(self) -> None:
-        target = next(row.target_path for row in self.migration.rows if row.target_path is not None)
+        target = self.role_paths[0]
         for mutation in ("symlink", "directory"):
             with self.subTest(mutation=mutation):
                 context, root = self._fixture()
@@ -374,6 +426,45 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     else:
                         path.mkdir()
                     self.assertIn("role-file-invalid", finding_codes(root))
+
+    def test_untracked_valid_subject_is_not_current_membership(self) -> None:
+        context, root = self._fixture()
+        with context:
+            source = root / "docs/05.operations/catalog/01-gateway/0011-nginx"
+            target = source.with_name("0999-untracked")
+            shutil.copytree(source, target)
+            for role in ("guide", "policy", "runbook"):
+                path = target / f"{role}.md"
+                path.write_text(
+                    re.sub(
+                        rf"^artifact_id: {role}-[0-9]{{4}}$",
+                        f"artifact_id: {role}-9999",
+                        path.read_text(encoding="utf-8"),
+                        count=1,
+                        flags=re.MULTILINE,
+                    ),
+                    encoding="utf-8",
+                )
+            self.assertIn("untracked-operations-path", finding_codes(root))
+
+    def test_structural_indexes_must_be_regular_and_symlink_free(self) -> None:
+        for relative, expected in (
+            ("docs/05.operations/README.md", "operations-root-index-invalid"),
+            ("docs/05.operations/incidents/README.md", "incident-index-invalid"),
+        ):
+            for mutation in ("symlink", "directory", "fifo"):
+                with self.subTest(relative=relative, mutation=mutation):
+                    context, root = self._fixture()
+                    with context:
+                        path = root / relative
+                        path.unlink()
+                        if mutation == "symlink":
+                            path.symlink_to(ROOT / relative)
+                        elif mutation == "directory":
+                            path.mkdir()
+                        else:
+                            os.mkfifo(path)
+                        self.assertIn(expected, finding_codes(root))
 
     def test_catalog_enumeration_is_bounded(self) -> None:
         with mock.patch(
@@ -399,69 +490,6 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             self._write_incident_packet(root)
             with mock.patch.object(operations_catalog, "MAX_INCIDENT_ENTRIES", 1):
                 self.assertIn("incident-bounds", finding_codes(root))
-
-
-class Migration0003ContractTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        from scripts.lib.document_governance.archive import APPROVED_MIGRATION_COMMIT, _approved_migration_document
-        from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-        cls.approved = _approved_migration_document(ROOT)
-        cls.execution_source = HistoricalDocument(ROOT, APPROVED_MIGRATION_COMMIT, str(MIGRATION_PATH)).read_text()
-
-    @contextlib.contextmanager
-    def _mutated_migration(self, old: str, new: str):
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            target = root / MIGRATION_PATH
-            target.parent.mkdir(parents=True)
-            text = self.execution_source
-            self.assertIn(old, text)
-            target.write_text(text.replace(old, new, 1), encoding="utf-8")
-            # Only the immutable approved-input boundary is supplied. The
-            # mutated current document still traverses the shared native parser
-            # and exact execution-selection checks.
-            with mock.patch("scripts.lib.document_governance.archive._approved_migration_document", return_value=self.approved):
-                yield directory
-
-    def test_duplicate_yaml_key_is_rejected(self) -> None:
-        old = "row_id: mig-0003-r0257, source_path:"
-        replacement = "row_id: mig-0003-r0257, row_id: mig-0003-r0257, source_path:"
-        with self._mutated_migration(old, replacement) as directory:
-            with self.assertRaisesRegex(OperationsAuthorityError, "duplicate keys"):
-                load_task8_migration(pathlib.Path(directory))
-
-    def test_task8_owner_source_status_and_recovery_contract_is_exact(self) -> None:
-        mutations = (
-            ("owner_task: 8", "owner_task: 9", "owner_task"),
-            ("owner_task: 8", "owner_task: '8'", "owner_task"),
-            ("source_kind: tracked, source_owner_task: null", "source_kind: planned-output, source_owner_task: null", "source_kind"),
-            ("source_kind: tracked, source_owner_task: null", "source_kind: tracked, source_owner_task: 7", "source_owner_task"),
-            ("recovery_commit: null, status: planned", "recovery_commit: deadbeef, status: planned", "recovery"),
-            ("recovery_commit: null, status: planned", "recovery_commit: null, status: completed", "status"),
-        )
-        for old, new, message in mutations:
-            with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                expected = "completed row requires recovery" if message in {"recovery", "status"} else "execution selection differs from approved frozen digest"
-                with self.assertRaisesRegex(OperationsAuthorityError, expected):
-                    load_task8_migration(pathlib.Path(directory))
-
-    def test_full_row_order_uniqueness_and_frozen_digest_are_enforced(self) -> None:
-        row257_source = (
-            "docs/05.operations/catalog/00-workspace/"
-            "ops-0001-common-optimizations-template-exceptions/policy.md"
-        )
-        row258_source = "docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md"
-        mutations = (
-            ("row_id: mig-0003-r0257", "row_id: mig-0003-r0258", "row"),
-            (row258_source, row257_source, "source_path"),
-            ("artifact_id: policy-0001", "artifact_id: policy-review-mutation", "digest"),
-        )
-        for old, new, message in mutations:
-            with self.subTest(message=message), self._mutated_migration(old, new) as directory:
-                with self.assertRaisesRegex(OperationsAuthorityError, "execution selection differs from approved frozen digest"):
-                    load_task8_migration(pathlib.Path(directory))
 
 
 class BoundedRegularReaderTests(unittest.TestCase):
@@ -665,8 +693,8 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
             with self.assertRaisesRegex(OperationsAuthorityError, "stderr"):
                 _run_git_bounded(root, ["show", "HEAD:missing"], max_stderr=8)
 
-    def test_consumer_scan_rejects_absent_broken_symlink_and_nonregular_tracked_paths(self) -> None:
-        mutations = ("absent", "broken-symlink", "directory")
+    def test_active_scan_allows_deletion_but_rejects_nonregular_tracked_paths(self) -> None:
+        mutations = ("broken-symlink", "directory")
         for mutation in mutations:
             with self.subTest(mutation=mutation), self._repo() as directory:
                 root = pathlib.Path(directory)
@@ -680,10 +708,16 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
                 elif mutation == "directory":
                     path.mkdir()
                 with self.assertRaises(OperationsAuthorityError):
-                    extract_task8_consumers(
-                        root,
-                        Task8Migration(rows=(), all_rows=()),
-                    )
+                    validate_active_operations_references(root)
+
+        with self._repo() as directory:
+            root = pathlib.Path(directory)
+            path = root / "tracked.md"
+            path.write_text("tracked", encoding="utf-8")
+            subprocess.run(["git", "add", "tracked.md"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "fixture"], cwd=root, check=True)
+            path.unlink()
+            self.assertEqual((), validate_active_operations_references(root))
 
 
 if __name__ == "__main__":

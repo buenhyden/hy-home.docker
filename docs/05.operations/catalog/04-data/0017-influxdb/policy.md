@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: InfluxDB Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0017
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0017
 parent_ids:
   - SPEC-0005
 created: 2026-05-17

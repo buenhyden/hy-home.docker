@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 12 Infra Net
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 12 Infra Net
@@ -8,8 +11,8 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates the existing guide, policy, and runbook under the frozen
-`0077-ip-address-management` identity. The three roles preserve their
+This domain co-locates the existing guide, policy, and runbook under the current
+`0077-ip-address-management` subject directory. The three roles preserve their
 separate usage, control, and procedure responsibilities.
 
 ## Audience
@@ -39,5 +42,5 @@ Runtime-changing network actions remain separately approval-gated.
 
 - [Operations index](../../README.md)
 - [Infrastructure index](../../../../infra/README.md)
-- [`infra_net` specification](../../../03.specs/0098-standardize-infra-net/spec.md)
+- [`infra_net` architecture and allocation map](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - [Incident records](../../incidents/README.md)

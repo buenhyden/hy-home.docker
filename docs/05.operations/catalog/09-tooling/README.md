@@ -1,5 +1,8 @@
 ---
-profile_id: operations-domain-readme
+title: Operations — 09 Tooling
+type: operations/domain-readme
+layer: operations
+owner: "@buenhyden"
 ---
 
 # Operations — 09 Tooling
@@ -8,9 +11,9 @@ profile_id: operations-domain-readme
 
 ## Overview
 
-This domain co-locates each existing tooling guide, policy, and runbook under
-its frozen `ops-0060` through `ops-0069` identity without adding a role that
-did not exist in the migration ledger.
+This domain co-locates each current tooling guide, policy, and runbook under
+its stable four-digit subject identity. Role membership follows the current
+subject tree.
 
 ## Audience
 

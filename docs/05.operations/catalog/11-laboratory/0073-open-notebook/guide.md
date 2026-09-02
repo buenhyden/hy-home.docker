@@ -1,8 +1,10 @@
 ---
-profile_id: guide
+title: Open Notebook Usage Guide
+type: operations/guide
+layer: operations
 status: active
-artifact_id: guide-0073
-artifact_type: guide
+owner: "@buenhyden"
+artifact_id: GDE-0073
 parent_ids: []
 created: 2026-05-10
 updated: 2026-08-11

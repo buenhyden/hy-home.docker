@@ -1,16 +1,10 @@
-"""Bounded current-authority validation for Stage 05 Operations.
-
-Registry + Migration 0003 own current structure. Migration 0002 is read only
-for body-derived witnesses of its two already-executed role merges.
-"""
+"""Bounded current-tree validation for Stage 05 Operations."""
 
 from __future__ import annotations
 
 import dataclasses
 import datetime as dt
 import errno
-import hashlib
-import json
 import os
 import pathlib
 import re
@@ -19,33 +13,22 @@ import signal
 import stat
 import subprocess
 import time
-from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 
-import yaml
-
 from scripts.lib.document_governance.frontmatter import FrontmatterError, parse_frontmatter_text
-from scripts.lib.document_governance.registry import validate_registry as validate_canonical_registry
+from scripts.lib.document_governance.registry import (
+    document_type,
+    RegistryError,
+    load_registry_document,
+    path_matches_pattern,
+    validate_registry as validate_canonical_registry,
+)
 
 
-TASK8_ROW_IDS = tuple(f"mig-0003-r{number:04d}" for number in range(257, 450))
-EXPECTED_DOMAINS = (
-    "00-workspace", "01-gateway", "02-auth", "03-security", "04-data",
-    "05-messaging", "06-observability", "07-workflow", "08-ai",
-    "09-tooling", "10-communication", "11-laboratory", "12-infra-net",
-)
-EXPECTED_ROLE_COUNTS = {"guide": 66, "policy": 64, "runbook": 62}
-MIGRATION_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-)
-SEMANTIC_WITNESS_PATH = pathlib.PurePosixPath(
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md"
-)
 REGISTRY_PATH = pathlib.PurePosixPath("docs/99.templates/registry.json")
 OPERATIONS_ROOT = pathlib.PurePosixPath("docs/05.operations")
 MAX_FILE_BYTES = 10_000_000
 MAX_TRACKED_FILES = 10_000
-MAX_TRACKED_BYTES = 300_000_000
 MAX_CATALOG_ENTRIES = 1_000
 MAX_DIRECTORY_ENTRIES = 10_000
 MAX_OPERATIONS_ROOT_ENTRIES = 16
@@ -58,154 +41,12 @@ MAX_GIT_SECONDS = 30.0
 MAX_GIT_STDOUT_BYTES = 10_000_000
 MAX_GIT_STDERR_BYTES = 1_000_000
 MAX_GIT_TOTAL_BYTES = 11_000_000
-MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
-_EXPECTED_DELETED_TRACKED_PATHS = frozenset({
-    pathlib.PurePosixPath("docs/05.operations/releases/README.md"),
-    pathlib.PurePosixPath("docs/99.templates/templates/operations/release.template.md"),
-    # Task 12 deletion candidates remain in the index until the controller commits.
-    pathlib.PurePosixPath("scripts/hooks/patch-graphify-post-commit.sh"),
-    pathlib.PurePosixPath("scripts/knowledge/generate-llm-wiki-coverage.sh"),
-    pathlib.PurePosixPath("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.PurePosixPath("scripts/validation/check-repo-contracts.sh"),
-    pathlib.PurePosixPath("scripts/validation/recommend-gap-routing.sh"),
-    pathlib.PurePosixPath("scripts/validation/recommend-qa-gates.sh"),
-    pathlib.PurePosixPath("scripts/validation/report-provider-hook-parity.sh"),
-    pathlib.PurePosixPath("tests/validation/test_provider_hook_parity.py"),
-})
-_ACTIVE_REFERENCE_HISTORY_EXCLUSIONS = frozenset({
-    # This support ledger pins the pre-convergence Task 1 source set.
-    pathlib.PurePosixPath(
-        "docs/99.templates/support/document-corpus-migration-contract.yaml"
-    ),
-})
-
-_ROW_FIELDS = frozenset({
-    "row_id", "source_path", "target_path", "artifact_id", "action",
-    "owner_task", "source_kind", "source_owner_task", "active_consumers",
-    "recovery_commit", "status",
-})
+_DOMAIN = re.compile(r"[0-9]{2}-[a-z0-9][a-z0-9-]*")
 _SUBJECT = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)")
 _YEAR = re.compile(r"[0-9]{4}")
 _INCIDENT = re.compile(r"inc-(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*")
 _ROLE_FILE = {"guide.md": "guide", "policy.md": "policy", "runbook.md": "runbook"}
-_OPERATIONS_PROFILE_CONTRACT = {
-    "guide": {
-        "profile_id": "guide",
-        "frontmatter_policy": "required",
-        "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/guide.md",
-        "artifact_id_pattern": "guide-{number:4}",
-        "identity_relation": "subject-member",
-        "template_id": "operations/guide",
-        "required_frontmatter": ("profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"),
-        "optional_frontmatter": ("reviewed_at", "next_review_at", "supersedes", "superseded_by"),
-        "lifecycle_id": "living",
-        "traceability": {
-            "allowed_parent_profiles": ("spec", "policy", "runbook"),
-            "membership_authority": "operations-migration-manifest",
-        },
-        "required_sections": ("Purpose", "Audience", "Prerequisites", "Usage", "Troubleshooting", "Verification", "Traceability"),
-        "optional_sections": ("Examples", "Related Documents"),
-        "exceptions": (),
-    },
-    "policy": {
-        "profile_id": "policy",
-        "frontmatter_policy": "required",
-        "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/policy.md",
-        "artifact_id_pattern": "policy-{number:4}",
-        "identity_relation": "subject-member",
-        "template_id": "operations/policy",
-        "required_frontmatter": ("profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"),
-        "optional_frontmatter": ("reviewed_at", "next_review_at", "supersedes", "superseded_by"),
-        "lifecycle_id": "living",
-        "traceability": {
-            "allowed_parent_profiles": ("requirements-package", "architecture-description", "adr", "spec"),
-            "membership_authority": "operations-migration-manifest",
-        },
-        "required_sections": ("Purpose", "Scope", "Policy Statements", "Enforcement", "Exceptions", "Verification", "Traceability"),
-        "optional_sections": ("Definitions", "Related Documents"),
-        "exceptions": (),
-    },
-    "runbook": {
-        "profile_id": "runbook",
-        "frontmatter_policy": "required",
-        "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/runbook.md",
-        "artifact_id_pattern": "runbook-{number:4}",
-        "identity_relation": "subject-member",
-        "template_id": "operations/runbook",
-        "required_frontmatter": ("profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated"),
-        "optional_frontmatter": ("reviewed_at", "next_review_at", "supersedes", "superseded_by"),
-        "lifecycle_id": "living",
-        "traceability": {
-            "allowed_parent_profiles": ("spec", "guide", "policy", "task"),
-            "membership_authority": "operations-migration-manifest",
-        },
-        "required_sections": ("Purpose", "Trigger", "Prerequisites", "Procedure", "Verification", "Rollback", "Escalation", "Traceability"),
-        "optional_sections": ("Automation", "Related Documents"),
-        "exceptions": (),
-    },
-    "incident": {
-        "profile_id": "incident",
-        "frontmatter_policy": "required",
-        "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
-        "artifact_id_pattern": "inc-{number:4}",
-        "identity_relation": "direct",
-        "template_id": "operations/incident",
-        "required_frontmatter": ("profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "occurred_at"),
-        "optional_frontmatter": ("resolved_at",),
-        "lifecycle_id": "incident",
-        "traceability": {"allowed_parent_profiles": ("runbook",)},
-        "required_sections": ("Summary", "Impact", "Coordination", "Timeline", "Mitigation", "Current Status", "Corrective Actions", "Traceability"),
-        "optional_sections": ("Communications", "Related Documents"),
-        "exceptions": ({"kind": "year-directory"},),
-    },
-    "postmortem": {
-        "profile_id": "postmortem",
-        "frontmatter_policy": "required",
-        "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
-        "artifact_id_pattern": "postmortem-{number:4}",
-        "identity_relation": "package-member",
-        "template_id": "operations/postmortem",
-        "required_frontmatter": ("profile_id", "status", "artifact_id", "artifact_type", "parent_ids", "created", "updated", "reviewed_at"),
-        "optional_frontmatter": ("supersedes", "superseded_by"),
-        "lifecycle_id": "point-in-time",
-        "traceability": {"allowed_parent_profiles": ("incident",)},
-        "required_sections": ("Summary", "Impact", "Timeline", "Root Cause", "Contributing Factors", "Detection and Response", "Corrective Actions", "Learning", "Traceability"),
-        "optional_sections": ("Follow-up Review", "Related Documents"),
-        "exceptions": ({"kind": "year-directory"},),
-    },
-}
-_OPERATIONS_LIFECYCLE_CONTRACT = {
-    "living": {
-        "statuses": ("draft", "active", "superseded", "retired"),
-        "transitions": {
-            "draft": ("active", "retired"),
-            "active": ("superseded", "retired"),
-            "superseded": (),
-            "retired": (),
-        },
-    },
-    "incident": {
-        "statuses": ("open", "mitigated", "closed"),
-        "transitions": {
-            "open": ("mitigated", "closed"),
-            "mitigated": ("closed",),
-            "closed": (),
-        },
-    },
-    "point-in-time": {
-        "statuses": ("draft", "active", "superseded", "retired"),
-        "transitions": {
-            "draft": ("active", "retired"),
-            "active": ("superseded", "retired"),
-            "superseded": (),
-            "retired": (),
-        },
-    },
-}
-_OPERATIONS_LIFECYCLE_STATUSES = {
-    lifecycle_id: tuple(contract["statuses"])
-    for lifecycle_id, contract in _OPERATIONS_LIFECYCLE_CONTRACT.items()
-}
+_OPERATIONS_PROFILE_IDS = ("guide", "policy", "runbook", "incident", "postmortem")
 _ROLE_SECTION_ALIASES = {
     "guide": {
         "Purpose": {"Purpose", "Overview", "Usage"},
@@ -236,29 +77,6 @@ _ROLE_SECTION_ALIASES = {
         "Traceability": {"Traceability", "Related Documents"},
     },
 }
-_SEMANTIC_MERGE_IDENTITIES = (
-    (
-        "docs/05.operations/" "00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md",
-        "6f2703d8d245cf4e3576bece0bf247dd516b2bf3",
-        "d3da293e44cfc19e47af7169bdd146ae381202a8",
-        "runbook",
-        "docs/05.operations/" "catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md",
-        "docs/05.operations/" "catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md",
-        "docs/05.operations/" "catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md",
-        "docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md",
-    ),
-    (
-        "docs/05.operations/" "07-workflow/ops-0052-dag-deployment/policy.md",
-        "6f2703d8d245cf4e3576bece0bf247dd516b2bf3",
-        "2ef693b98a0cd0ff7fd9aba08adf2163bb486063",
-        "policy",
-        "docs/05.operations/" "catalog/07-workflow/ops-0052-dag-deployment/policy.md",
-        "docs/05.operations/" "catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md",
-        "docs/05.operations/" "catalog/07-workflow/ops-0051-airflow-dag-lifecycle/policy.md",
-        "docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md",
-    ),
-)
-MAX_SEMANTIC_WITNESS_BYTES = 4_096
 _ACTIVE_ROUTE_PATTERNS = (
     re.compile(r"docs/05\.operations/[^\s`)'\"]+/ops-(?:#{4}|\*|[0-9]{4})(?:[-/])"),
     re.compile(
@@ -275,23 +93,6 @@ _RELEASE_NEGATIONS = (
     "no separate release", "remove release", "retired release",
     "a separate release document role",
 )
-_SPEC_IMPLEMENTATION_EVIDENCE_EXCLUSIONS = frozenset(
-    {
-        pathlib.PurePosixPath("docs/03.specs/0136-sdlc-taxonomy-convergence/spec.md"),
-        pathlib.PurePosixPath("docs/03.specs/0136-sdlc-taxonomy-convergence/plan.md"),
-        pathlib.PurePosixPath(
-            "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md"
-        ),
-        pathlib.PurePosixPath(
-            "docs/03.specs/0153-workspace-governance-simplification/spec.md"
-        ),
-        pathlib.PurePosixPath(
-            "docs/03.specs/0153-workspace-governance-simplification/plan.md"
-        ),
-    }
-)
-
-
 class OperationsAuthorityError(ValueError):
     def __init__(self, code: str, message: str) -> None:
         self.code = code
@@ -306,39 +107,6 @@ class CatalogFinding:
     code: str
     path: str
     message: str
-
-
-@dataclasses.dataclass(frozen=True)
-class MigrationRow:
-    row_id: str
-    source_path: pathlib.PurePosixPath
-    target_path: pathlib.PurePosixPath | None
-    artifact_id: str | None
-    action: str
-    owner_task: int
-    source_kind: str
-    source_owner_task: int | None
-    active_consumers: tuple[pathlib.PurePosixPath, ...]
-    recovery_commit: str | None
-    status: str
-
-
-@dataclasses.dataclass(frozen=True)
-class Task8Migration:
-    rows: tuple[MigrationRow, ...]
-    all_rows: tuple[MigrationRow, ...]
-
-
-@dataclasses.dataclass(frozen=True)
-class ConsumerInventory:
-    declared_raw: tuple[pathlib.PurePosixPath, ...]
-    declared_current: tuple[pathlib.PurePosixPath, ...]
-    live: tuple[pathlib.PurePosixPath, ...]
-    live_only: tuple[pathlib.PurePosixPath, ...]
-    union: tuple[pathlib.PurePosixPath, ...]
-    excluded: tuple[pathlib.PurePosixPath, ...]
-    tracked_files: int
-    tracked_bytes: int
 
 
 @dataclasses.dataclass(frozen=True)
@@ -565,15 +333,6 @@ def _open_anchored_regular(
         raise OperationsAuthorityError(code, f"{relative}: {error}") from error
 
 
-def _regular_file_size(root: pathlib.Path, relative: pathlib.PurePosixPath) -> int:
-    directory_descriptor, descriptor, opened = _open_anchored_regular(root, relative)
-    try:
-        return opened.st_size
-    finally:
-        os.close(descriptor)
-        os.close(directory_descriptor)
-
-
 def _directory_entries_bounded(
     root: pathlib.Path,
     relative: pathlib.PurePosixPath,
@@ -711,244 +470,6 @@ def _read_text(root: pathlib.Path, relative: pathlib.PurePosixPath) -> str:
         raise OperationsAuthorityError("utf8-invalid", f"invalid UTF-8: {relative}") from error
 
 
-class _UniqueKeyLoader(yaml.SafeLoader):
-    pass
-
-
-def _construct_unique_mapping(
-    loader: _UniqueKeyLoader,
-    node: yaml.MappingNode,
-    deep: bool = False,
-) -> dict[object, object]:
-    result: dict[object, object] = {}
-    for key_node, value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
-        if key in result:
-            raise yaml.constructor.ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                f"duplicate YAML key: {key}",
-                key_node.start_mark,
-            )
-        result[key] = loader.construct_object(value_node, deep=deep)
-    return result
-
-
-_UniqueKeyLoader.add_constructor(
-    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-    _construct_unique_mapping,
-)
-
-
-def _fenced_yaml(text: str, heading: str) -> Mapping[str, object]:
-    try:
-        value = yaml.load(
-            text.split(heading, 1)[1].split("```yaml", 1)[1].split("```", 1)[0],
-            Loader=_UniqueKeyLoader,
-        )
-    except (IndexError, yaml.YAMLError) as error:
-        raise OperationsAuthorityError(
-            "migration-invalid", f"invalid {heading} YAML: {error}"
-        ) from error
-    if not isinstance(value, Mapping):
-        raise OperationsAuthorityError("migration-invalid", "migration body is not a mapping")
-    return value
-
-
-def _parse_row(value: object) -> MigrationRow:
-    if not isinstance(value, Mapping) or set(value) != _ROW_FIELDS:
-        raise OperationsAuthorityError("migration-row-invalid", "row fields are not exact")
-    consumers_value = value["active_consumers"]
-    if not isinstance(consumers_value, list):
-        raise OperationsAuthorityError("migration-row-invalid", "consumers must be a list")
-    consumers = tuple(_safe_relative(item, "consumer") for item in consumers_value)
-    if consumers != tuple(sorted(set(consumers))):
-        raise OperationsAuthorityError("migration-row-invalid", "consumers must be sorted and unique")
-    target_value = value["target_path"]
-    artifact = value["artifact_id"]
-    if artifact is not None and (not isinstance(artifact, str) or not artifact):
-        raise OperationsAuthorityError("migration-row-invalid", "artifact_id must be text or null")
-    row_id = value["row_id"]
-    action = value["action"]
-    owner_task = value["owner_task"]
-    source_kind = value["source_kind"]
-    source_owner_task = value["source_owner_task"]
-    recovery_commit = value["recovery_commit"]
-    status_value = value["status"]
-    if not isinstance(row_id, str) or not isinstance(action, str):
-        raise OperationsAuthorityError("migration-row-invalid", "row identity/action must be text")
-    if action not in {"rename", "delete"}:
-        raise OperationsAuthorityError("migration-row-invalid", f"action invalid: {row_id}")
-    if (action == "rename") != (target_value is not None):
-        raise OperationsAuthorityError("migration-row-invalid", f"target_path/action invalid: {row_id}")
-    if isinstance(owner_task, bool) or not isinstance(owner_task, int) or owner_task < 1:
-        raise OperationsAuthorityError("migration-row-invalid", f"owner_task invalid: {row_id}")
-    if source_kind not in {"tracked", "planned-output"}:
-        raise OperationsAuthorityError("migration-row-invalid", f"source_kind invalid: {row_id}")
-    if source_kind == "tracked" and source_owner_task is not None:
-        raise OperationsAuthorityError("migration-row-invalid", f"source_owner_task invalid: {row_id}")
-    if source_kind == "planned-output" and (
-        isinstance(source_owner_task, bool)
-        or not isinstance(source_owner_task, int)
-        or source_owner_task < 1
-    ):
-        raise OperationsAuthorityError("migration-row-invalid", f"source_kind owner invalid: {row_id}")
-    if (status_value == "planned" and recovery_commit is not None) or (
-        status_value == "completed" and not isinstance(recovery_commit, str)
-    ):
-        raise OperationsAuthorityError("migration-row-invalid", f"recovery_commit invalid: {row_id}")
-    if status_value not in {"planned", "completed"}:
-        raise OperationsAuthorityError("migration-row-invalid", f"status invalid: {row_id}")
-    return MigrationRow(
-        row_id=row_id,
-        source_path=_safe_relative(value["source_path"], "source_path"),
-        target_path=None if target_value is None else _safe_relative(target_value, "target_path"),
-        artifact_id=artifact,
-        action=action,
-        owner_task=owner_task,
-        source_kind=source_kind,
-        source_owner_task=source_owner_task,
-        active_consumers=consumers,
-        recovery_commit=recovery_commit,
-        status=status_value,
-    )
-
-
-def load_task8_migration(
-    root: pathlib.Path,
-    relative: pathlib.PurePosixPath = MIGRATION_PATH,
-) -> Task8Migration:
-    if relative != MIGRATION_PATH:
-        raise OperationsAuthorityError(
-            "structural-authority-invalid", "current structure must use Migration 0003"
-        )
-    from scripts.lib.document_governance.archive import (
-        _approved_migration_document,
-        _migration_document,
-    )
-
-    try:
-        ledger = _migration_document(root)
-    except ValueError as error:
-        raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
-    # The executed ledger was projected to the compact schema-3 form, which keeps
-    # only source, target, action, artifact and recovery. `active_consumers`,
-    # `owner_task` and `row_id` live on the APPROVED document, which stays at
-    # schema 2 and is the reviewed authority; the compact document is the record
-    # of what executed. This function needs both, so it reads identity and
-    # consumer declarations from the approved rows and cross-checks them against
-    # the executed projection below, which is the same split
-    # `migration_rows_for_task` already uses. Reading only the executed document
-    # made `--mode consumers` fail outright once the projection landed, because
-    # the field the inventory is built from is not in it.
-    if ledger["schema_version"] not in {2, 3}:
-        raise OperationsAuthorityError(
-            "structural-authority-invalid", "unsupported migration schema"
-        )
-    if ledger["schema_version"] == 2:
-        source_document = ledger
-    else:
-        try:
-            source_document = _approved_migration_document(root)
-        except ValueError as error:
-            raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
-        if source_document.get("schema_version") != 2:
-            raise OperationsAuthorityError(
-                "structural-authority-invalid",
-                "approved migration must carry the reviewed schema-2 fields",
-            )
-    raw_rows = source_document.get("rows")
-    if not isinstance(raw_rows, list) or len(raw_rows) != 903:
-        raise OperationsAuthorityError("migration-bounds", "row bound exceeded")
-    all_rows = tuple(_parse_row(value) for value in raw_rows)
-    expected_all_ids = tuple(f"mig-0003-r{number:04d}" for number in range(1, 904))
-    if tuple(row.row_id for row in all_rows) != expected_all_ids:
-        raise OperationsAuthorityError("migration-row-invalid", "full row order is not exact")
-    sources = tuple(row.source_path for row in all_rows)
-    targets = tuple(row.target_path for row in all_rows if row.target_path is not None)
-    if len(set(sources)) != len(sources):
-        raise OperationsAuthorityError("migration-row-invalid", "source_path values are not unique")
-    if len(set(targets)) != len(targets):
-        raise OperationsAuthorityError("migration-row-invalid", "target_path values are not unique")
-    rows_by_id = {row.row_id: row for row in all_rows}
-    if len(rows_by_id) != len(all_rows):
-        raise OperationsAuthorityError("migration-row-invalid", "duplicate row_id")
-    try:
-        rows = tuple(rows_by_id[row_id] for row_id in TASK8_ROW_IDS)
-    except KeyError as error:
-        raise OperationsAuthorityError("task8-rows-invalid", f"missing row: {error}") from error
-    selected = tuple(row.row_id for row in all_rows if row.row_id in set(TASK8_ROW_IDS))
-    if selected != TASK8_ROW_IDS:
-        raise OperationsAuthorityError("task8-rows-invalid", "Task 8 rows are not exact and ordered")
-    if Counter(row.action for row in rows) != Counter({"rename": 192, "delete": 1}):
-        raise OperationsAuthorityError("task8-actions-invalid", "expected 192 rename and one delete")
-    if tuple(row.action for row in rows) != ("rename",) * 192 + ("delete",):
-        raise OperationsAuthorityError("task8-actions-invalid", "Task 8 actions are not ordered")
-    for row in rows:
-        if (
-            row.owner_task != 8
-            or row.source_kind != "tracked"
-            or row.source_owner_task is not None
-            or row.status not in {"planned", "completed"}
-        ):
-            raise OperationsAuthorityError("task8-row-invalid", f"owner_task/source/status: {row.row_id}")
-        if row.action == "rename":
-            if row.target_path is None or row.source_path.name != row.target_path.name:
-                raise OperationsAuthorityError("task8-row-invalid", row.row_id)
-            if not row.source_path.parent.name.startswith("ops-") or (
-                row.target_path.parent.name != row.source_path.parent.name[4:]
-            ):
-                raise OperationsAuthorityError("task8-row-invalid", row.row_id)
-        elif (
-            row.source_path.as_posix() != "docs/05.operations/releases/README.md"
-            or row.target_path is not None
-        ):
-            raise OperationsAuthorityError("task8-row-invalid", row.row_id)
-    if ledger is not source_document:
-        # The approved document supplied identity and consumers; the executed
-        # document is what actually ran. They must agree on every Task 8 route,
-        # or the inventory would describe a migration that did not happen.
-        executed = {
-            row["source_path"]: row
-            for row in ledger["rows"]
-            if isinstance(row, Mapping)
-        }
-        for row in rows:
-            actual = executed.get(row.source_path.as_posix())
-            if actual is None:
-                raise OperationsAuthorityError(
-                    "task8-row-invalid", f"approved row is absent from the executed ledger: {row.row_id}"
-                )
-            target = row.target_path.as_posix() if row.target_path is not None else None
-            if actual.get("action") != row.action or actual.get("target_path") != target:
-                raise OperationsAuthorityError(
-                    "task8-row-invalid", f"executed route differs from the approved row: {row.row_id}"
-                )
-    return Task8Migration(rows=rows, all_rows=all_rows)
-
-
-@dataclasses.dataclass(frozen=True)
-class CurrentOperationMapping:
-    source_path: pathlib.PurePosixPath
-    target_path: pathlib.PurePosixPath | None
-    artifact_id: str | None
-    action: str
-
-
-def load_current_operation_mappings(root: pathlib.Path) -> tuple[CurrentOperationMapping, ...]:
-    from scripts.lib.document_governance.archive import migration_rows_for_task
-
-    try:
-        rows = migration_rows_for_task(root, 8)
-    except ValueError as error:
-        raise OperationsAuthorityError("migration-digest-invalid", str(error)) from error
-    return tuple(CurrentOperationMapping(
-        pathlib.PurePosixPath(row["source_path"]),
-        pathlib.PurePosixPath(row["target_path"]) if row["target_path"] is not None else None,
-        row["artifact_id"], row["action"],
-    ) for row in rows)
-
-
 def _tracked_paths(root: pathlib.Path, max_files: int) -> tuple[pathlib.PurePosixPath, ...]:
     effective_max_files = min(max_files, MAX_TRACKED_FILES)
     result = _run_git_bounded(
@@ -971,105 +492,18 @@ def _tracked_paths(root: pathlib.Path, max_files: int) -> tuple[pathlib.PurePosi
 
 def _excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
-    return value.startswith((
-        "docs/98.archive/", "graphify-out/", "docs/90.references/research/",
-        "docs/90.references/audits/", "docs/90.references/data/0082-llm-wiki-index/",
-        "docs/90.references/data/0066-foundation-summary/",
-        "docs/90.references/data/0067-foundation/",
-        "docs/90.references/data/0068-target-surface-convergence-summary/",
-        "docs/90.references/data/0069-target-surface-convergence/",
-        "docs/90.references/data/0076-llm-wiki-stage-category-coverage/",
-        "docs/90.references/data/0078-security-automation-readiness/",
-        "docs/90.references/data/0079-supply-chain-sample-service/",
-    ))
-
-
-def _current_route(
-    root: pathlib.Path,
-    path: pathlib.PurePosixPath,
-    rows_by_source: Mapping[pathlib.PurePosixPath, MigrationRow],
-) -> pathlib.PurePosixPath | None:
-    seen: set[pathlib.PurePosixPath] = set()
-    current = path
-    while current not in seen:
-        seen.add(current)
-        target = root / current
-        if target.is_file() and not target.is_symlink() and not _has_symlink_component(root, current):
-            return current
-        row = rows_by_source.get(current)
-        if row is None or row.target_path is None:
-            return None
-        current = row.target_path
-    raise OperationsAuthorityError("consumer-route-cycle", str(path))
-
-
-def extract_task8_consumers(
-    root: pathlib.Path,
-    migration: Task8Migration,
-    *,
-    max_files: int = MAX_TRACKED_FILES,
-    max_bytes: int = MAX_TRACKED_BYTES,
-) -> ConsumerInventory:
-    """Return the bounded declared/live Task 8 consumer union."""
-    if max_files < 1 or max_bytes < 1:
-        raise OperationsAuthorityError("bounds-invalid", "consumer bounds must be positive")
-    effective_max_files = min(max_files, MAX_TRACKED_FILES)
-    effective_max_bytes = min(max_bytes, MAX_TRACKED_BYTES)
-    tracked = _tracked_paths(root, effective_max_files)
-    routes = {row.source_path: row for row in migration.all_rows}
-    declared_raw = tuple(sorted({item for row in migration.rows for item in row.active_consumers}))
-    declared_current: set[pathlib.PurePosixPath] = set()
-    excluded: set[pathlib.PurePosixPath] = set()
-    for path in declared_raw:
-        current = _current_route(root, path, routes)
-        if current is None or _excluded(current):
-            excluded.add(path)
-        else:
-            declared_current.add(current)
-    tokens = {row.source_path.as_posix() for row in migration.rows}
-    tokens.update(
-        f"{row.source_path.parent.name}/{row.source_path.name}"
-        for row in migration.rows if row.action == "rename"
-    )
-
-    tokens.add("docs/05.operations/releases/")
-    live: set[pathlib.PurePosixPath] = set()
-    total = 0
-    for path in tracked:
-        if path in _EXPECTED_DELETED_TRACKED_PATHS:
-            continue
-        total += _regular_file_size(root, path)
-        if total > effective_max_bytes:
-            raise OperationsAuthorityError("tracked-byte-bounds", "tracked byte bound exceeded")
-        if _excluded(path):
-            continue
-        data = read_bounded_regular(root, path, max_bytes=min(MAX_FILE_BYTES, effective_max_bytes))
-        try:
-            text = data.decode()
-        except UnicodeDecodeError:
-            continue
-        if any(token in text for token in tokens):
-            live.add(path)
-    return ConsumerInventory(
-        declared_raw=declared_raw,
-        declared_current=tuple(sorted(declared_current)),
-        live=tuple(sorted(live)),
-        live_only=tuple(sorted(live - declared_current)),
-        union=tuple(sorted(live | declared_current)),
-        excluded=tuple(sorted(excluded)),
-        tracked_files=len(tracked),
-        tracked_bytes=total,
-    )
+    return value.startswith(("docs/90.references/", "docs/98.archive/", "graphify-out/"))
 
 
 def _active_reference_scan_excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
+    spec_execution_body = (
+        value.startswith("docs/03.specs/")
+        and (path.name == "plan.md" or "tasks" in path.parts)
+    )
     return (
         _excluded(path)
-        or value.startswith("docs/90.references/")
-        or path in _EXPECTED_DELETED_TRACKED_PATHS
-        or path in _ACTIVE_REFERENCE_HISTORY_EXCLUSIONS
-        or path in _SPEC_IMPLEMENTATION_EVIDENCE_EXCLUSIONS
+        or spec_execution_body
         or value.startswith(("tests/", ".superpowers/"))
     )
 
@@ -1093,9 +527,25 @@ def validate_active_operations_references(
         } or _active_reference_scan_excluded(path):
             continue
         try:
+            (root / path).lstat()
+        except FileNotFoundError:
+            continue
+        except OSError as error:
+            raise OperationsAuthorityError(
+                "tracked-file-invalid", f"{path}: {error}"
+            ) from error
+        try:
             text = read_bounded_regular(root, path).decode("utf-8")
         except UnicodeDecodeError:
             continue
+        value = path.as_posix()
+        if value.startswith("docs/03.specs/") and path.name == "spec.md":
+            try:
+                metadata = parse_frontmatter_text(text)
+            except FrontmatterError:
+                metadata = {}
+            if metadata.get("status") in {"superseded", "retired"}:
+                continue
         for line_number, line in enumerate(text.splitlines(), 1):
             old_route = any(pattern.search(line) for pattern in _ACTIVE_ROUTE_PATTERNS)
             release_role = suffix == ".md" and _RELEASE_ROLE_PATTERN.search(line) and not any(
@@ -1123,20 +573,10 @@ def _frontmatter(text: str, path: pathlib.PurePosixPath) -> Mapping[str, object]
 
 
 def _load_registry(root: pathlib.Path) -> Mapping[str, object]:
-    def unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
-        result: dict[str, object] = {}
-        for key, value in pairs:
-            if key in result:
-                raise OperationsAuthorityError("registry-invalid", f"duplicate JSON member: {key}")
-            result[key] = value
-        return result
-
     try:
-        value = json.loads(_read_text(root, REGISTRY_PATH), object_pairs_hook=unique_object)
-    except json.JSONDecodeError as error:
+        value = load_registry_document(root / REGISTRY_PATH)
+    except RegistryError as error:
         raise OperationsAuthorityError("registry-invalid", str(error)) from error
-    if not isinstance(value, Mapping):
-        raise OperationsAuthorityError("registry-invalid", "Registry must be an object")
     return value
 
 
@@ -1145,38 +585,73 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
     roles = registry.get("template_roles")
     if not isinstance(profiles, list) or not isinstance(roles, Mapping):
         return [_finding("registry-invalid", REGISTRY_PATH, "profile/template collections invalid")]
+    profile_ids = [
+        item.get("profile_id")
+        for item in profiles
+        if isinstance(item, Mapping) and isinstance(item.get("profile_id"), str)
+    ]
+    release_template_present = any(
+        isinstance(definition, Mapping)
+        and "release.template" in str(definition.get("source", ""))
+        for definition in roles.values()
+    )
+    canonical_findings = validate_canonical_registry(registry)
     findings: list[CatalogFinding] = [
         _finding("registry-canonical-invalid", REGISTRY_PATH, f"{item.code}:{item.path}")
-        for item in validate_canonical_registry(registry)
+        for item in canonical_findings
     ]
-    profile_ids = [item.get("profile_id") for item in profiles if isinstance(item, Mapping)]
+    if (
+        "release" in profile_ids
+        or "operations/release" in roles
+        or release_template_present
+    ):
+        findings.append(
+            _finding("release-authority-present", REGISTRY_PATH, "Release remains registered")
+        )
+    if any(item.code == "schema-invalid" for item in canonical_findings):
+        return findings
     duplicates = {item for item in profile_ids if isinstance(item, str) and profile_ids.count(item) > 1}
     if duplicates:
         findings.append(_finding("registry-profile-duplicate", REGISTRY_PATH, str(sorted(duplicates))))
     by_id = {item.get("profile_id"): item for item in profiles if isinstance(item, Mapping)}
-    for profile_id, contract in _OPERATIONS_PROFILE_CONTRACT.items():
+    lifecycles = registry.get("lifecycles")
+    for profile_id in _OPERATIONS_PROFILE_IDS:
         profile = by_id.get(profile_id)
         if not isinstance(profile, Mapping):
             findings.append(_finding("registry-operations-profile-invalid", REGISTRY_PATH, profile_id))
             continue
-        if set(profile) != set(contract):
-            findings.append(
-                _finding("registry-operations-profile-invalid", REGISTRY_PATH, f"{profile_id}.fields")
+        required_frontmatter = profile.get("required_frontmatter")
+        required_sections = profile.get("required_sections")
+        lifecycle_id = profile.get("lifecycle_id")
+        lifecycle = lifecycles.get(lifecycle_id) if isinstance(lifecycles, Mapping) else None
+        statuses = lifecycle.get("statuses") if isinstance(lifecycle, Mapping) else None
+        if (
+            profile.get("frontmatter_policy") != "required"
+            or not isinstance(profile.get("artifact_id_pattern"), str)
+            or not isinstance(required_frontmatter, list)
+            or not all(
+                isinstance(item, str) and item for item in required_frontmatter
             )
-        for key, expected in contract.items():
-            actual = profile.get(key)
-            if _contract_value(actual) != _contract_value(expected):
-                findings.append(
-                    _finding("registry-operations-profile-invalid", REGISTRY_PATH, f"{profile_id}.{key}")
-                )
-        role = roles.get(f"operations/{profile_id}")
-        expected_role = {
-            "source": f"docs/99.templates/templates/operations/{profile_id}.template.md",
-            "profile_id": profile_id,
-        }
-        if role != expected_role:
+            or not {"title", "type", "layer", "status", "owner", "artifact_id"}
+            <= set(required_frontmatter)
+            or not isinstance(required_sections, list)
+            or not required_sections
+            or not all(isinstance(item, str) and item for item in required_sections)
+        ):
             findings.append(
-                _finding("registry-operations-profile-invalid", REGISTRY_PATH, f"operations/{profile_id}")
+                _finding("registry-operations-profile-invalid", REGISTRY_PATH, profile_id)
+            )
+        if not isinstance(statuses, list) or not statuses or not all(
+            isinstance(status, str) and status for status in statuses
+        ):
+            findings.append(
+                _finding("registry-operations-lifecycle-invalid", REGISTRY_PATH, str(lifecycle_id))
+            )
+        template_id = profile.get("template_id")
+        role = roles.get(template_id) if isinstance(template_id, str) else None
+        if not isinstance(role, Mapping) or role.get("profile_id") != profile_id:
+            findings.append(
+                _finding("registry-operations-profile-invalid", REGISTRY_PATH, f"{profile_id}.template_id")
             )
     role_sections = [
         tuple(by_id[role].get("required_sections", ()))
@@ -1187,28 +662,40 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
         findings.append(
             _finding("registry-role-purpose-duplicate", REGISTRY_PATH, "role sections must differ")
         )
-    if "release" in by_id or "operations/release" in roles or "release.template" in json.dumps(registry):
-        findings.append(_finding("release-authority-present", REGISTRY_PATH, "Release remains registered"))
-    lifecycles = registry.get("lifecycles")
-    for lifecycle_id, expected_lifecycle in _OPERATIONS_LIFECYCLE_CONTRACT.items():
-        lifecycle = lifecycles.get(lifecycle_id) if isinstance(lifecycles, Mapping) else None
-        if _contract_value(lifecycle) != _contract_value(expected_lifecycle):
-            findings.append(
-                _finding(
-                    "registry-operations-lifecycle-invalid",
-                    REGISTRY_PATH,
-                    lifecycle_id,
-                )
-            )
     return findings
 
 
-def _contract_value(value: object) -> object:
-    if isinstance(value, Mapping):
-        return tuple(sorted((str(key), _contract_value(item)) for key, item in value.items()))
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
-        return tuple(_contract_value(item) for item in value)
-    return value
+def _registry_profiles(registry: Mapping[str, object]) -> dict[str, Mapping[str, object]]:
+    profiles = registry.get("profiles")
+    if not isinstance(profiles, list):
+        return {}
+    return {
+        str(profile["profile_id"]): profile
+        for profile in profiles
+        if isinstance(profile, Mapping) and isinstance(profile.get("profile_id"), str)
+    }
+
+
+def _profile_statuses(
+    registry: Mapping[str, object], profile: Mapping[str, object]
+) -> frozenset[str]:
+    lifecycles = registry.get("lifecycles")
+    lifecycle_id = profile.get("lifecycle_id")
+    lifecycle = (
+        lifecycles.get(lifecycle_id)
+        if isinstance(lifecycles, Mapping) and isinstance(lifecycle_id, str)
+        else None
+    )
+    statuses = lifecycle.get("statuses") if isinstance(lifecycle, Mapping) else None
+    if not isinstance(statuses, list):
+        return frozenset()
+    return frozenset(status for status in statuses if isinstance(status, str))
+
+
+def _string_items(value: object) -> tuple[str, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        return ()
+    return tuple(item for item in value if isinstance(item, str))
 
 
 def _headings(text: str) -> set[str]:
@@ -1217,6 +704,16 @@ def _headings(text: str) -> set[str]:
         for line in text.splitlines()
         if (match := re.fullmatch(r" {0,3}##\s+(.+?)\s*#*", line))
     }
+
+
+def _matches_artifact_pattern(pattern: object, value: object) -> bool:
+    if not isinstance(pattern, str) or not isinstance(value, str):
+        return False
+    expression = re.escape(pattern).replace(
+        re.escape("{number:4}"),
+        r"[0-9]{4}",
+    )
+    return re.fullmatch(expression, value) is not None
 
 
 def _date_time(value: object) -> dt.datetime | None:
@@ -1236,149 +733,26 @@ def _date_time(value: object) -> dt.datetime | None:
     return parsed
 
 
-def _prefixless(path: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
-    parts = list(path.parts)
-    if len(parts) > 4 and parts[4].startswith("ops-"):
-        parts[4] = parts[4][4:]
-    return pathlib.PurePosixPath(*parts)
-
-
-def _markdown_body_text(text: str) -> str:
-    """Return Markdown prose excluding YAML frontmatter and heading lines."""
-
-    lines = text.splitlines()
-    if lines and lines[0] == "---":
-        try:
-            end = lines.index("---", 1)
-        except ValueError:
-            return ""
-        lines = lines[end + 1 :]
-    return "\n".join(line for line in lines if re.match(r"^ {0,3}#{1,6}(?:\s|$)", line) is None)
-
-
-def _git_blob_id(data: bytes) -> str:
-    return hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
-
-
-def _validate_semantic_witnesses(root: pathlib.Path) -> list[CatalogFinding]:
-    """Use Migration 0002 only to prove its two body-derived merge witnesses."""
-    ledger = _fenced_yaml(_read_text(root, SEMANTIC_WITNESS_PATH), "## Archive Ledger")
-    raw_files = ledger.get("files")
-    if not isinstance(raw_files, list):
-        return [_finding("semantic-witness-invalid", SEMANTIC_WITNESS_PATH, "files missing")]
-    rows = [row for row in raw_files if isinstance(row, Mapping) and row.get("semantic_action") == "merge"]
-    if len(rows) != 2:
-        return [_finding("semantic-witness-invalid", SEMANTIC_WITNESS_PATH, "expected two role merges")]
-    identities: list[tuple[object, ...]] = []
-    for row in rows:
-        identities.append(
-            (
-                row.get("legacy_path"),
-                row.get("source_commit"),
-                row.get("source_blob"),
-                row.get("role"),
-                row.get("catalog_path"),
-                row.get("final_path"),
-                row.get("canonical_role_owner"),
-            )
-        )
-    expected_identities = tuple(item[:7] for item in _SEMANTIC_MERGE_IDENTITIES)
-    if tuple(identities) != expected_identities:
-        return [
-            _finding(
-                "semantic-witness-row-invalid",
-                SEMANTIC_WITNESS_PATH,
-                "merge identities and paths are not exact",
-            )
-        ]
-    findings: list[CatalogFinding] = []
-    for row, expected in zip(rows, _SEMANTIC_MERGE_IDENTITIES, strict=True):
-        legacy = _safe_relative(row.get("legacy_path"), "legacy_path")
-        final = pathlib.PurePosixPath(expected[7])
-        preserved = row.get("preserved_semantics")
-        if not isinstance(preserved, list):
-            findings.append(_finding("semantic-witness-invalid", legacy, "witness list invalid"))
-            continue
-        witnesses: list[str] = []
-        invalid_witness = False
-        for value in preserved:
-            if isinstance(value, Mapping) and any(str(key).startswith("text:") for key in value):
-                invalid_witness = True
-                continue
-            if not isinstance(value, str) or not value.startswith("text:"):
-                continue
-            parts = value.split(":", 2)
-            if len(parts) != 3:
-                invalid_witness = True
-                continue
-            witness = parts[2]
-            if (
-                not witness.strip()
-                or witness != witness.strip()
-                or len(witness.encode("utf-8")) > MAX_SEMANTIC_WITNESS_BYTES
-            ):
-                invalid_witness = True
-                continue
-            witnesses.append(witness)
-        if invalid_witness or not witnesses:
-            findings.append(_finding("semantic-witness-invalid", legacy, "no body-derived witness"))
-            continue
-        result = _run_git_bounded(
-            root,
-            ["show", f"{row.get('source_commit')}:{legacy.as_posix()}"],
-            max_stdout=MAX_FILE_BYTES,
-        )
-        try:
-            current = _read_text(root, final)
-        except OperationsAuthorityError as error:
-            findings.append(_finding(error.code, final, str(error)))
-            continue
-        if result.returncode:
-            findings.append(_finding("semantic-witness-source-invalid", legacy, "pinned source unavailable"))
-            continue
-        if _git_blob_id(result.stdout) != row.get("source_blob"):
-            findings.append(_finding("semantic-witness-source-invalid", legacy, "source blob mismatch"))
-            continue
-        try:
-            source_text = result.stdout.decode("utf-8")
-        except UnicodeDecodeError:
-            findings.append(_finding("semantic-witness-source-invalid", legacy, "source is not UTF-8"))
-            continue
-        source_body = _markdown_body_text(source_text)
-        current_body = _markdown_body_text(current)
-        for witness in witnesses:
-            if witness not in source_body:
-                findings.append(_finding("semantic-witness-not-body-derived", legacy, witness))
-            if witness not in current_body:
-                findings.append(_finding("semantic-witness-missing", final, witness))
-    return findings
-
-
-def validate_current_operations(
-    root: pathlib.Path,
-    *,
-    include_semantic_witnesses: bool = True,
-) -> tuple[CatalogFinding, ...]:
-    """Validate exact final topology against Registry + Migration 0003."""
+def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...]:
+    """Validate the bounded current Stage 05 tree against Stage 99 profiles."""
     try:
-        mappings = load_current_operation_mappings(root)
         registry = _load_registry(root)
     except OperationsAuthorityError as error:
         return (_finding(error.code, "authority", str(error)),)
     findings = _validate_registry(registry)
-    expected_files = {row.target_path: row for row in mappings if row.action == "rename"}
-    expected_subjects = {path.parent for path in expected_files if path is not None}
-    expected_by_domain: dict[str, set[str]] = defaultdict(set)
-    expected_roles: dict[pathlib.PurePosixPath, set[str]] = defaultdict(set)
-    for path in expected_files:
-        assert path is not None
-        expected_by_domain[path.parts[3]].add(path.parts[4])
-        expected_roles[path.parent].add(path.name)
-    if len(expected_subjects) != 75:
-        findings.append(_finding("subject-count-invalid", "migration", str(len(expected_subjects))))
-    role_counts = Counter(_ROLE_FILE[path.name] for path in expected_files if path is not None)
-    if dict(role_counts) != EXPECTED_ROLE_COUNTS:
-        findings.append(_finding("role-count-invalid", "migration", str(dict(role_counts))))
+    if any(finding.code == "registry-invalid" for finding in findings):
+        return tuple(sorted(set(findings)))
+    profiles = _registry_profiles(registry)
+    try:
+        tracked_paths = set(_tracked_paths(root, MAX_TRACKED_FILES))
+    except OperationsAuthorityError as error:
+        return tuple(sorted({*findings, _finding(error.code, "authority", str(error))}))
+
+    def require_tracked(path: pathlib.PurePosixPath) -> None:
+        if path not in tracked_paths:
+            findings.append(
+                _finding("untracked-operations-path", path, "current Operations files must be Git tracked")
+            )
 
     try:
         operations_entries = _directory_entries_bounded(
@@ -1390,6 +764,7 @@ def validate_current_operations(
         code = "operations-root-bounds" if error.code == "directory-bounds" else "operations-root-invalid"
         return (_finding(code, OPERATIONS_ROOT, str(error)),)
     root_entry_names = {entry.name for entry in operations_entries}
+    root_by_name = {entry.name: entry for entry in operations_entries}
     if root_entry_names != {"README.md", "catalog", "incidents"}:
         findings.append(
             _finding(
@@ -1401,6 +776,13 @@ def validate_current_operations(
     for retired in ("releases", "guides", "policies", "runbooks"):
         if retired in root_entry_names:
             findings.append(_finding("retired-root-present", OPERATIONS_ROOT / retired, "must be absent"))
+    root_readme = root_by_name.get("README.md")
+    if root_readme is None or not root_readme.is_regular:
+        findings.append(
+            _finding("operations-root-index-invalid", OPERATIONS_ROOT / "README.md", "regular README required")
+        )
+    else:
+        require_tracked(OPERATIONS_ROOT / "README.md")
     template = root / "docs/99.templates/templates/operations/release.template.md"
     if template.exists() or template.is_symlink():
         findings.append(_finding("release-template-present", template.relative_to(root), "must be absent"))
@@ -1416,13 +798,25 @@ def validate_current_operations(
         code = "catalog-bounds" if error.code == "directory-bounds" else "catalog-root-invalid"
         findings.append(_finding(code, catalog_relative, str(error)))
         catalog_entries = ()
-    actual_domains = {entry.name for entry in catalog_entries if entry.name != "README.md"}
-    if actual_domains != set(EXPECTED_DOMAINS):
-        findings.append(_finding("domain-set-invalid", catalog_relative, str(sorted(actual_domains))))
     seen_numbers: dict[str, pathlib.PurePosixPath] = {}
     seen_artifacts: dict[str, pathlib.PurePosixPath] = {}
-    for domain in EXPECTED_DOMAINS:
-        domain_relative = catalog_relative / domain
+    catalog_by_name = {entry.name: entry for entry in catalog_entries}
+    catalog_readme = catalog_by_name.get("README.md")
+    if catalog_readme is None or not catalog_readme.is_regular:
+        findings.append(
+            _finding("catalog-index-invalid", catalog_relative / "README.md", "regular README required")
+        )
+    else:
+        require_tracked(catalog_relative / "README.md")
+    for domain_entry in sorted(catalog_entries, key=lambda item: item.name):
+        if domain_entry.name == "README.md":
+            continue
+        domain_relative = catalog_relative / domain_entry.name
+        if not domain_entry.is_directory or _DOMAIN.fullmatch(domain_entry.name) is None:
+            findings.append(
+                _finding("domain-path-invalid", domain_relative, "must be a two-digit slug directory")
+            )
+            continue
         try:
             domain_entries = _directory_entries_bounded(
                 root,
@@ -1433,14 +827,20 @@ def validate_current_operations(
             code = "domain-bounds" if error.code == "directory-bounds" else "domain-invalid"
             findings.append(_finding(code, domain_relative, str(error)))
             continue
-        actual = {entry.name for entry in domain_entries}
-        expected = {"README.md", *expected_by_domain[domain]}
-        if actual != expected:
-            findings.append(_finding("domain-ownership-invalid", domain_relative, f"expected {sorted(expected)}"))
-        for subject_name in sorted(actual - {"README.md"}):
-            subject_relative = domain_relative / subject_name
-            match = _SUBJECT.fullmatch(subject_name)
-            if subject_name.startswith("ops-") or match is None:
+        domain_by_name = {entry.name: entry for entry in domain_entries}
+        domain_readme = domain_by_name.get("README.md")
+        if domain_readme is None or not domain_readme.is_regular:
+            findings.append(
+                _finding("domain-index-invalid", domain_relative / "README.md", "regular README required")
+            )
+        else:
+            require_tracked(domain_relative / "README.md")
+        for subject_entry in sorted(domain_entries, key=lambda item: item.name):
+            if subject_entry.name == "README.md":
+                continue
+            subject_relative = domain_relative / subject_entry.name
+            match = _SUBJECT.fullmatch(subject_entry.name)
+            if not subject_entry.is_directory or match is None:
                 findings.append(_finding("subject-path-invalid", subject_relative, "must be prefixless four-digit slug"))
                 continue
             try:
@@ -1459,11 +859,17 @@ def validate_current_operations(
                 findings.append(_finding("subject-identity-duplicate", subject_relative, str(previous)))
             entries_by_name = {entry.name: entry for entry in subject_entries}
             entries = set(entries_by_name)
-            role_set = expected_roles.get(subject_relative, set())
-            if entries != role_set:
-                findings.append(_finding("subject-role-membership-invalid", subject_relative, f"expected {sorted(role_set)}"))
+            if not entries or not entries <= set(_ROLE_FILE):
+                findings.append(
+                    _finding(
+                        "subject-role-membership-invalid",
+                        subject_relative,
+                        "one or more guide.md, policy.md, or runbook.md files required",
+                    )
+                )
             for filename in sorted(entries & set(_ROLE_FILE)):
                 role_relative = subject_relative / filename
+                require_tracked(role_relative)
                 if not entries_by_name[filename].is_regular:
                     findings.append(_finding("role-file-invalid", role_relative, "must be regular and symlink-free"))
                     continue
@@ -1473,25 +879,49 @@ def validate_current_operations(
                 except OperationsAuthorityError as error:
                     findings.append(_finding(error.code, role_relative, str(error)))
                     continue
-                row = expected_files.get(role_relative)
                 role = _ROLE_FILE[filename]
                 artifact = metadata.get("artifact_id")
-                if row is None or artifact != row.artifact_id or metadata.get("artifact_type") != role:
-                    findings.append(_finding("role-identity-invalid", role_relative, f"expected {row.artifact_id if row else None}"))
-                if metadata.get("profile_id") != role:
+                profile = profiles.get(role)
+                if not isinstance(profile, Mapping):
                     findings.append(_finding("role-profile-invalid", role_relative, role))
-                profile = _OPERATIONS_PROFILE_CONTRACT[role]
-                required_metadata = set(profile["required_frontmatter"])
+                    continue
+                if not path_matches_pattern(role_relative, profile.get("path_pattern")):
+                    findings.append(
+                        _finding(
+                            "role-path-profile-mismatch",
+                            role_relative,
+                            role,
+                        )
+                    )
+                if profile.get("identity_relation") != "subject-member":
+                    findings.append(
+                        _finding(
+                            "role-identity-relation-invalid",
+                            role_relative,
+                            str(profile.get("identity_relation")),
+                        )
+                    )
+                if (
+                    not _matches_artifact_pattern(
+                        profile.get("artifact_id_pattern"), artifact
+                    )
+                    or metadata.get("type") != document_type(role)
+                ):
+                    findings.append(
+                        _finding("role-identity-invalid", role_relative, str(artifact))
+                    )
+                required_metadata = set(_string_items(profile.get("required_frontmatter")))
                 if not required_metadata <= set(metadata):
                     findings.append(_finding("role-profile-invalid", role_relative, "required metadata missing"))
-                allowed_statuses = _OPERATIONS_LIFECYCLE_STATUSES[str(profile["lifecycle_id"])]
+                allowed_statuses = _profile_statuses(registry, profile)
                 if metadata.get("status") not in allowed_statuses:
                     findings.append(_finding("role-status-invalid", role_relative, str(metadata.get("status"))))
                 headings = _headings(role_text)
                 missing_sections = [
                     section
-                    for section in profile["required_sections"]
-                    if not headings & _ROLE_SECTION_ALIASES[role][section]
+                    for section in _string_items(profile.get("required_sections"))
+                    if not headings
+                    & _ROLE_SECTION_ALIASES.get(role, {}).get(section, {section})
                 ]
                 if missing_sections:
                     findings.append(
@@ -1513,6 +943,14 @@ def validate_current_operations(
         code = "incident-bounds" if error.code == "directory-bounds" else "incident-root-invalid"
         findings.append(_finding(code, incidents_relative, str(error)))
     else:
+        incident_by_name = {entry.name: entry for entry in incident_entries}
+        incident_readme = incident_by_name.get("README.md")
+        if incident_readme is None or not incident_readme.is_regular:
+            findings.append(
+                _finding("incident-index-invalid", incidents_relative / "README.md", "regular README required")
+            )
+        else:
+            require_tracked(incidents_relative / "README.md")
         for year_entry in incident_entries:
             if year_entry.name == "README.md":
                 continue
@@ -1550,12 +988,13 @@ def validate_current_operations(
                 if "incident.md" not in entries or not entries <= {"incident.md", "postmortem.md"}:
                     findings.append(_finding("incident-roles-invalid", packet_relative, "incident required; postmortem optional"))
                 for child_entry in packet_entries:
+                    child_relative = packet_relative / child_entry.name
+                    require_tracked(child_relative)
                     if not child_entry.is_regular:
-                        findings.append(_finding("incident-role-file-invalid", packet_relative / child_entry.name, "must be regular"))
+                        findings.append(_finding("incident-role-file-invalid", child_relative, "must be regular"))
                         continue
                     if child_entry.name not in {"incident.md", "postmortem.md"}:
                         continue
-                    child_relative = packet_relative / child_entry.name
                     role = pathlib.PurePosixPath(child_entry.name).stem
                     try:
                         child_text = _read_text(root, child_relative)
@@ -1563,15 +1002,34 @@ def validate_current_operations(
                     except OperationsAuthorityError as error:
                         findings.append(_finding(error.code, child_relative, str(error)))
                         continue
-                    profile = _OPERATIONS_PROFILE_CONTRACT[role]
-                    required_metadata = set(profile["required_frontmatter"])
+                    profile = profiles.get(role)
+                    if not isinstance(profile, Mapping):
+                        findings.append(_finding("incident-profile-invalid", child_relative, role))
+                        continue
+                    if not path_matches_pattern(child_relative, profile.get("path_pattern")):
+                        findings.append(
+                            _finding(
+                                "incident-path-profile-mismatch",
+                                child_relative,
+                                role,
+                            )
+                        )
+                    expected_relation = "direct" if role == "incident" else "package-member"
+                    if profile.get("identity_relation") != expected_relation:
+                        findings.append(
+                            _finding(
+                                "incident-identity-relation-invalid",
+                                child_relative,
+                                str(profile.get("identity_relation")),
+                            )
+                        )
+                    required_metadata = set(_string_items(profile.get("required_frontmatter")))
                     if (
                         not required_metadata <= set(metadata)
-                        or metadata.get("profile_id") != role
-                        or metadata.get("artifact_type") != role
+                        or metadata.get("type") != document_type(role)
                     ):
                         findings.append(_finding("incident-profile-invalid", child_relative, role))
-                    allowed_statuses = _OPERATIONS_LIFECYCLE_STATUSES[str(profile["lifecycle_id"])]
+                    allowed_statuses = _profile_statuses(registry, profile)
                     if metadata.get("status") not in allowed_statuses:
                         findings.append(
                             _finding(
@@ -1581,18 +1039,36 @@ def validate_current_operations(
                             )
                         )
                     number = packet_match.group("number")
-                    expected_id = f"inc-{number}" if role == "incident" else f"postmortem-{number}"
+                    artifact_pattern = profile.get("artifact_id_pattern")
+                    expected_id = (
+                        artifact_pattern.replace("{number:4}", number)
+                        if isinstance(artifact_pattern, str)
+                        else ""
+                    )
                     if metadata.get("artifact_id") != expected_id:
                         findings.append(_finding("incident-identity-invalid", child_relative, expected_id))
                     parent_ids = metadata.get("parent_ids")
+                    incident_profile = profiles.get("incident")
+                    incident_pattern = (
+                        incident_profile.get("artifact_id_pattern")
+                        if isinstance(incident_profile, Mapping)
+                        else None
+                    )
+                    expected_parent = (
+                        incident_pattern.replace("{number:4}", number)
+                        if isinstance(incident_pattern, str)
+                        else ""
+                    )
                     if role == "postmortem" and (
-                        not isinstance(parent_ids, list) or f"inc-{number}" not in parent_ids
+                        not isinstance(parent_ids, list) or expected_parent not in parent_ids
                     ):
                         findings.append(
                             _finding("incident-identity-invalid", child_relative, "incident parent required")
                         )
                     headings = _headings(child_text)
-                    missing_sections = set(profile["required_sections"]) - headings
+                    missing_sections = set(
+                        _string_items(profile.get("required_sections"))
+                    ) - headings
                     if missing_sections:
                         findings.append(
                             _finding(
@@ -1618,24 +1094,4 @@ def validate_current_operations(
                             findings.append(
                                 _finding("incident-date-order-invalid", child_relative, "resolved before occurred")
                             )
-    if include_semantic_witnesses:
-        try:
-            findings.extend(_validate_semantic_witnesses(root))
-        except OperationsAuthorityError as error:
-            findings.append(_finding(error.code, SEMANTIC_WITNESS_PATH, str(error)))
     return tuple(sorted(set(findings)))
-
-
-def consumer_inventory_json(inventory: ConsumerInventory) -> str:
-    return json.dumps(
-        {
-            "declared_raw": [str(path) for path in inventory.declared_raw],
-            "declared_current": [str(path) for path in inventory.declared_current],
-            "live": [str(path) for path in inventory.live],
-            "live_only": [str(path) for path in inventory.live_only],
-            "union": [str(path) for path in inventory.union],
-            "excluded": [str(path) for path in inventory.excluded],
-            "tracked_files": inventory.tracked_files,
-            "tracked_bytes": inventory.tracked_bytes,
-        }, indent=2, sort_keys=True,
-    )

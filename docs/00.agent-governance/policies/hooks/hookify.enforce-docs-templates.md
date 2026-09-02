@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "<title>"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: enforce-docs-templates
 enabled: true
 event: file

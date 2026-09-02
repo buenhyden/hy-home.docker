@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Postflight Routing
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Postflight Routing

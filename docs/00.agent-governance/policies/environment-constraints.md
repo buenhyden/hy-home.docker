@@ -1,6 +1,8 @@
 ---
-profile_id: governance-policy
+title: Environment Constraints
+type: governance/policy
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Environment Constraints
@@ -91,8 +93,13 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
   Ignored or outside-repository writes are not observed, and the wrapper is not
   a process or filesystem sandbox.
 - Run the completion checklist in `docs/00.agent-governance/policies/task-checklists.md` before declaring done.
-- Provider surface synchronization is a validation-only operation and must run
-  with explicit `scripts/operations/sync-provider-surfaces.sh --check`.
+- Provider surface `--write` is allowed once only after an approved canonical
+  Stage 00 or Provider Registry change. Ordinary postflight and CI use
+  `scripts/operations/sync-provider-surfaces.sh --check`; hooks and validation
+  commands must not regenerate provider surfaces implicitly. A reported
+  quarantine is a nonzero cleanup handoff, not successful regeneration; follow
+  the exact-path procedure in `docs/00.agent-governance/providers/README.md`
+  before rerunning write and check.
 - Repository script-reference validation is bounded to 4,096 scanned surfaces,
   8,192 discovery entries, 16 MiB per regular file, and 64 MiB in aggregate.
   These validator-owned ceilings are immutable contract safety limits; a limit

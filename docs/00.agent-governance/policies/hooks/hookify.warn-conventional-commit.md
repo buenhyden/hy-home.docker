@@ -1,5 +1,8 @@
 ---
-profile_id: governance-hook-policy
+title: "<title>"
+type: governance/hook-policy
+layer: agentic
+owner: "@buenhyden"
 name: warn-conventional-commit
 enabled: true
 event: bash

@@ -1,8 +1,10 @@
 ---
-profile_id: architecture-description
+title: Workflow Tier (07-workflow) Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0007
-artifact_type: architecture-description
 parent_ids:
   - REQ-0008
 created: 2026-03-26

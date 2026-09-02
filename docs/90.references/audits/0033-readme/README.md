@@ -1,8 +1,10 @@
 ---
-profile_id: audit
+title: "Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update)"
+type: references/audit
+layer: reference
 status: superseded
+owner: "@buenhyden"
 artifact_id: AUD-0033
-artifact_type: audit
 parent_ids: []
 created: '2026-07-07'
 updated: '2026-08-23'

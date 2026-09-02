@@ -1,10 +1,12 @@
 ---
-profile_id: research
+title: Agentic Engineering Research Pack
+type: references/research
+layer: reference
 status: active
+owner: "@buenhyden"
 artifact_id: RES-0002
-artifact_type: research
 parent_ids:
-  - SPEC-0137
+  - SPEC-0158
 created: 2026-08-28
 updated: 2026-08-30
 observed_at: 2026-08-28
@@ -67,46 +69,46 @@ generated output 수동 편집은 포함하지 않습니다.
 
 | Leaf                                                      | Use it for                                                                                                      |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [Workspace baseline](./workspace-baseline.md)             | 원래 19개 연구 category와 Task 9a V&V amendment를 포함한 현재 20개 leaf의 tracked baseline, evidence owner, gap |
-| [Scope application matrix](./scope-application-matrix.md) | normative 14-scope axis와 각 scope의 adoption disposition                                                       |
+| [Workspace baseline](./m0020-workspace-baseline.md)             | 원래 19개 연구 category와 Task 9a V&V amendment를 포함한 현재 20개 leaf의 tracked baseline, evidence owner, gap |
+| [Scope application matrix](./m0015-scope-application-matrix.md) | normative 14-scope axis와 각 scope의 adoption disposition                                                       |
 
 ### Agentic Engineering
 
 | Leaf                                                                          | Use it for                                                         |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| [Harness engineering](./harness-engineering.md)                               | harness 구성 요소, control plane, enforcement boundary             |
-| [Loop engineering](./loop-engineering.md)                                     | feedback loop anatomy, typed loop, stop/retry/evidence boundary    |
-| [Provider implementation comparison](./provider-implementation-comparison.md) | Claude/Codex common construction과 provider-native 차이            |
-| [Agent instructions and vibe coding](./agent-instructions-vibe-coding.md)     | instruction hierarchy, disciplined prompting, vibe-coding boundary |
-| [Provider model landscape](./provider-model-landscape.md)                     | dated provider observations와 fixed local model registry           |
-| [Agent model selection](./agent-model-selection.md)                           | task 특성별 model/tier/effort/fallback 선택 규칙                   |
-| [AI agent catalogs](./ai-agent-catalogs.md)                                   | local catalog와 immutable external catalog의 import boundary       |
-| [Memory hierarchy](./memory-hierarchy.md)                                     | short-term, durable, domain memory와 lifecycle/privacy gaps        |
+| [Harness engineering](./m0008-harness-engineering.md)                               | harness 구성 요소, control plane, enforcement boundary             |
+| [Loop engineering](./m0010-loop-engineering.md)                                     | feedback loop anatomy, typed loop, stop/retry/evidence boundary    |
+| [Provider implementation comparison](./m0012-provider-implementation-comparison.md) | Claude/Codex common construction과 provider-native 차이            |
+| [Agent instructions and vibe coding](./m0001-agent-instructions-vibe-coding.md)     | instruction hierarchy, disciplined prompting, vibe-coding boundary |
+| [Provider model landscape](./m0013-provider-model-landscape.md)                     | dated provider observations와 fixed local model registry           |
+| [Agent model selection](./m0002-agent-model-selection.md)                           | task 특성별 model/tier/effort/fallback 선택 규칙                   |
+| [AI agent catalogs](./m0003-ai-agent-catalogs.md)                                   | local catalog와 immutable external catalog의 import boundary       |
+| [Memory hierarchy](./m0011-memory-hierarchy.md)                                     | short-term, durable, domain memory와 lifecycle/privacy gaps        |
 
 ### SDLC and Documentation
 
 | Leaf                                                            | Use it for                                                             |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [Spec-driven SDLC](./spec-driven-sdlc.md)                       | lifecycle, gate, traceability, feedback, enforcement layers            |
-| [SDLC document roles](./sdlc-document-roles.md)                 | PRD부터 Runbook까지 12개 문서 역할과 금지 대체 관계                    |
-| [Document metadata lifecycle](./document-metadata-lifecycle.md) | metadata, state transition, archive, retention ownership               |
-| [Documentation architecture](./documentation-architecture.md)   | Diataxis reader modes와 workspace stage architecture의 경계            |
-| [LLM Wiki system](./llm-wiki-system.md)                         | authored/generated discovery, safety, freshness, stale-output boundary |
+| [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)                       | lifecycle, gate, traceability, feedback, enforcement layers            |
+| [SDLC document roles](./m0016-sdlc-document-roles.md)                 | PRD부터 Runbook까지 12개 문서 역할과 금지 대체 관계                    |
+| [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | metadata, state transition, archive, retention ownership               |
+| [Documentation architecture](./m0007-documentation-architecture.md)   | Diataxis reader modes와 workspace stage architecture의 경계            |
+| [LLM Wiki system](./m0009-llm-wiki-system.md)                         | authored/generated discovery, safety, freshness, stale-output boundary |
 
 ### Delivery and Quality
 
 | Leaf                                                              | Use it for                                                                                                      |
 | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [Automation pipeline workflow](./automation-pipeline-workflow.md) | local automation topology, GitHub Actions expansion, promotion gaps                                             |
-| [Quality, CI, and formatting](./quality-ci-formatting.md)         | formatting/lint/type/test/build/coverage gate와 failure propagation                                             |
-| [Verification and validation](./verification-validation.md)       | conformance와 intended use의 구분, evidence state, acceptance authority, residual risk, monitoring/revalidation |
+| [Automation pipeline workflow](./m0004-automation-pipeline-workflow.md) | local automation topology, GitHub Actions expansion, promotion gaps                                             |
+| [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)         | formatting/lint/type/test/build/coverage gate와 failure propagation                                             |
+| [Verification and validation](./m0019-verification-validation.md)       | conformance와 intended use의 구분, evidence state, acceptance authority, residual risk, monitoring/revalidation |
 
 ### Infrastructure and Security
 
 | Leaf                                                                    | Use it for                                                           |
 | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [Docker Compose and infrastructure](./docker-compose-infrastructure.md) | Compose topology, controls, operations evidence ladder, runtime gaps |
-| [Security governance](./security-governance.md)                         | secure SDLC, supply chain, secrets, approval, readiness boundaries   |
+| [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md) | Compose topology, controls, operations evidence ladder, runtime gaps |
+| [Security governance](./m0017-security-governance.md)                         | secure SDLC, supply chain, secrets, approval, readiness boundaries   |
 
 ## Reading Routes
 
@@ -118,7 +120,7 @@ generated output 수동 편집은 포함하지 않습니다.
    [SDLC and Documentation](#sdlc-and-documentation)을 읽습니다.
 4. workflow, gate, formatting, test, release-readiness evidence는
    [Delivery and Quality](#delivery-and-quality)과
-   [Verification and validation](./verification-validation.md)을 함께 읽습니다.
+   [Verification and validation](./m0019-verification-validation.md)을 함께 읽습니다.
 5. Compose/runtime 경계와 secure delivery는
    [Infrastructure and Security](#infrastructure-and-security)를 함께 읽습니다.
 6. 특정 workspace scope에 적용할 때는 다음 14-scope route와 foundation의
@@ -129,7 +131,7 @@ generated output 수동 편집은 포함하지 않습니다.
 이 표는 topic entry를 고르는 human route입니다. 실제 적용 여부와 owner는
 scope matrix와 해당 scope의 canonical contract가 결정합니다.
 모든 row의 conformance, intended-use, acceptance, residual-risk 판단은
-[Verification and validation](./verification-validation.md)을 cross-cutting route로
+[Verification and validation](./m0019-verification-validation.md)을 cross-cutting route로
 함께 사용하며, 이것은 열다섯 번째 scope를 만들지 않습니다.
 
 | Scope          | First pack route                                            | Adoption boundary                                                                   |
@@ -163,7 +165,7 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   가지고, `architecture`는 enum 안이지만 agent 없이 function 2개만 가지며,
   `entry`, `frontend`, `meta`, `product`는 enum 밖이되 tracked subject surface가
   존재하고, `backend`와 `mobile`만 enum 밖이면서 tracked surface가 없습니다.
-  정확한 근거와 per-scope 수치는 [scope matrix](./scope-application-matrix.md)가
+  정확한 근거와 per-scope 수치는 [scope matrix](./m0015-scope-application-matrix.md)가
   소유합니다.
 - provider runtime acceptance와 entitlement, remote GitHub enforcement,
   deployment/live Compose 상태는 검증되지 않았습니다. delivery promotion,
@@ -189,56 +191,56 @@ claim is created by this aggregation.
 
 | Subject / category | Owner leaf | agentic | architecture | common | docs | infra | ops | qa | security |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Workspace measurement | [workspace baseline](./workspace-baseline.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Scope application | [scope application matrix](./scope-application-matrix.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Harness elements | [harness engineering](./harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Workspace harness and loop systems, environment, and rules | [harness engineering](./harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Loop feedback, stopping, and escalation | [loop engineering](./loop-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Claude implementation | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Codex implementation | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Common Claude/Codex environment, rules, and system | [provider implementation comparison](./provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Instruction context | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Model landscape | [provider model landscape](./provider-model-landscape.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Work-aware model and configuration selection | [agent model selection](./agent-model-selection.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| AI agent catalogs / agency-agents | [AI agent catalogs](./ai-agent-catalogs.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Short-term memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Long-term memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Domain memory | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Memory management | [memory hierarchy](./memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Spec-driven development | [spec-driven SDLC](./spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| SDLC | [spec-driven SDLC](./spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| PRD | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Architecture Description | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Local historical ARD | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| ADR role and decision scope | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| ADR lifecycle, status, and supersession | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| ADR relationships | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| SPEC | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| PLAN | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| TASK | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Guide | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Incident | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Postmortem | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Policy | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Release evidence practice | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Runbook | [SDLC document roles](./sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Document metadata and lifecycle | [document metadata lifecycle](./document-metadata-lifecycle.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Diataxis | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| C4 Model | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| arc42 | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Architecture-practice composition | [documentation architecture](./documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| LLM Wiki | [LLM Wiki system](./llm-wiki-system.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| CI/CD | [automation pipeline workflow](./automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| GitHub Actions | [automation pipeline workflow](./automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| QA formatting | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| QA linting | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| QA testing | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| QA syntax errors | [quality CI and formatting](./quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Verification | [verification and validation](./verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Validation | [verification and validation](./verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Docker Compose | [Docker Compose infrastructure](./docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Infrastructure | [Docker Compose infrastructure](./docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
-| Security | [security governance](./security-governance.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Workspace measurement | [workspace baseline](./m0020-workspace-baseline.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Scope application | [scope application matrix](./m0015-scope-application-matrix.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Harness elements | [harness engineering](./m0008-harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Workspace harness and loop systems, environment, and rules | [harness engineering](./m0008-harness-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Loop feedback, stopping, and escalation | [loop engineering](./m0010-loop-engineering.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Claude implementation | [provider implementation comparison](./m0012-provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Codex implementation | [provider implementation comparison](./m0012-provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Common Claude/Codex environment, rules, and system | [provider implementation comparison](./m0012-provider-implementation-comparison.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Instruction context | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Model landscape | [provider model landscape](./m0013-provider-model-landscape.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Work-aware model and configuration selection | [agent model selection](./m0002-agent-model-selection.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| AI agent catalogs / agency-agents | [AI agent catalogs](./m0003-ai-agent-catalogs.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Short-term memory | [memory hierarchy](./m0011-memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Long-term memory | [memory hierarchy](./m0011-memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Domain memory | [memory hierarchy](./m0011-memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Memory management | [memory hierarchy](./m0011-memory-hierarchy.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Spec-driven development | [spec-driven SDLC](./m0018-spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| SDLC | [spec-driven SDLC](./m0018-spec-driven-sdlc.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| PRD | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Architecture Description | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Local historical ARD | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR role and decision scope | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR lifecycle, status, and supersession | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| ADR relationships | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| SPEC | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| PLAN | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| TASK | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Guide | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Incident | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Postmortem | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Policy | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Release evidence practice | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Runbook | [SDLC document roles](./m0016-sdlc-document-roles.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Document metadata and lifecycle | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Diataxis | [documentation architecture](./m0007-documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| C4 Model | [documentation architecture](./m0007-documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| arc42 | [documentation architecture](./m0007-documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Architecture-practice composition | [documentation architecture](./m0007-documentation-architecture.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| LLM Wiki | [LLM Wiki system](./m0009-llm-wiki-system.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| CI/CD | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| GitHub Actions | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA formatting | [quality CI and formatting](./m0014-quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA linting | [quality CI and formatting](./m0014-quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA testing | [quality CI and formatting](./m0014-quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| QA syntax errors | [quality CI and formatting](./m0014-quality-ci-formatting.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Verification | [verification and validation](./m0019-verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Validation | [verification and validation](./m0019-verification-validation.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Docker Compose | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Infrastructure | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
+| Security | [security governance](./m0017-security-governance.md#scope-application) | applies | applies | applies | applies | applies | applies | applies | applies |
 
 The matrix has 50 subject/category rows, eight closed dispositions per row,
 and exactly one owner leaf per row. It does not change any leaf's claim state:
@@ -296,6 +298,41 @@ entitlement gaps are not promoted.
 5. metadata, traceability, repository contract, deterministic coverage check를 실행하고
    실패와 `UNVERIFIED` 상태를 그대로 기록합니다.
 
+## Preservation Declaration
+
+SPEC-0158은 이 package를 보호 대상으로 지정합니다. 아래에 선언된 파일은
+모두 protected research evidence이며, consumer가 하나도 없더라도 유지됩니다.
+선언된 파일은 삭제, archive, tombstone, checksum 고정, 또는 body/source/claim의
+축소 대상이 될 수 없습니다. stale한 현재 경로, metadata, owner, link는 수정할 수
+있으나 substantive research 내용은 제거할 수 없습니다.
+
+이 목록이 durable protection oracle입니다. 경로만 선언하며 count, hash,
+expected commit, byte equality를 고정하지 않습니다. leaf를 추가하거나
+제거하려면 같은 변경 안에서 이 목록도 함께 수정해야 합니다. 경로는 이
+package root 기준 상대 경로입니다.
+
+- `README.md`
+- `m0001-agent-instructions-vibe-coding.md`
+- `m0002-agent-model-selection.md`
+- `m0003-ai-agent-catalogs.md`
+- `m0004-automation-pipeline-workflow.md`
+- `m0005-docker-compose-infrastructure.md`
+- `m0006-document-metadata-lifecycle.md`
+- `m0007-documentation-architecture.md`
+- `m0008-harness-engineering.md`
+- `m0009-llm-wiki-system.md`
+- `m0010-loop-engineering.md`
+- `m0011-memory-hierarchy.md`
+- `m0012-provider-implementation-comparison.md`
+- `m0013-provider-model-landscape.md`
+- `m0014-quality-ci-formatting.md`
+- `m0015-scope-application-matrix.md`
+- `m0016-sdlc-document-roles.md`
+- `m0017-security-governance.md`
+- `m0018-spec-driven-sdlc.md`
+- `m0019-verification-validation.md`
+- `m0020-workspace-baseline.md`
+
 ## Migration State
 
 - 이 2026-08-08 pack은 Task 9부터 agentic-engineering research의 canonical human
@@ -336,7 +373,7 @@ entitlement gaps are not promoted.
 ## Related Documents
 
 - [Research references](../README.md)
-- [Spec 137](../../../03.specs/0137-agentic-research-pack-rebuild/spec.md)
+- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - Source refresh Task (retired path: `../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`)
@@ -360,91 +397,91 @@ This package preserves its existing research evidence under the Stage 99 `resear
 
 | Claim ID | Owner leaf | State |
 | --- | --- | --- |
-| `WB-001` | [workspace-baseline](./workspace-baseline.md) | VERIFIED (tracked baseline) |
-| `WB-002` | [workspace-baseline](./workspace-baseline.md) | VERIFIED (tracked configuration) |
-| `SAM-001` | [scope-application-matrix](./scope-application-matrix.md) | VERIFIED (tracked specification) |
-| `SAM-002` | [scope-application-matrix](./scope-application-matrix.md) | VERIFIED (tracked governance routing) |
-| `HE-001` | [harness engineering](./harness-engineering.md) | VERIFIED (tracked configuration) |
-| `HE-002` | [harness engineering](./harness-engineering.md) | VERIFIED (tracked configuration) |
-| `HE-003` | [harness engineering](./harness-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
-| `HE-004` | [harness engineering](./harness-engineering.md) | VERIFIED (tracked configuration) |
-| `HE-005` | [harness engineering](./harness-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
-| `LE-001` | [loop engineering](./loop-engineering.md) | VERIFIED (tracked configuration) |
-| `LE-002` | [loop engineering](./loop-engineering.md) | VERIFIED (tracked configuration) |
-| `LE-003` | [loop engineering](./loop-engineering.md) | VERIFIED (tracked configuration) |
-| `LE-004` | [loop engineering](./loop-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
-| `LE-005` | [loop engineering](./loop-engineering.md) | HISTORICAL VERIFIED (retained external study) |
-| `PIC-001` | [provider implementation comparison](./provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
-| `PIC-002` | [provider implementation comparison](./provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
-| `PIC-003` | [provider implementation comparison](./provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
-| `PIC-004` | [provider implementation comparison](./provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
-| `PIC-005` | [provider implementation comparison](./provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
-| `PIC-006` | [provider implementation comparison](./provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
-| `PIC-007` | [provider implementation comparison](./provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
-| `AIV-001` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | VERIFIED (tracked configuration) |
-| `AIV-002` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | VERIFIED (tracked configuration) |
-| `AIV-003` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
-| `AIV-004` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | ADVISORY |
-| `AIV-005` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
-| `PML-001` | [provider model landscape](./provider-model-landscape.md) | VERIFIED (tracked configuration) |
-| `PML-002` | [provider model landscape](./provider-model-landscape.md) | HISTORICAL VERIFIED (retained official observation) |
-| `PML-003` | [provider model landscape](./provider-model-landscape.md) | UNVERIFIED |
-| `PML-004` | [provider model landscape](./provider-model-landscape.md) | ADVISORY |
-| `AMS-001` | [agent model selection](./agent-model-selection.md) | VERIFIED (tracked configuration) |
-| `AMS-002` | [agent model selection](./agent-model-selection.md) | ADVISORY |
-| `AMS-003` | [agent model selection](./agent-model-selection.md) | HISTORICAL VERIFIED (retained official observation) |
-| `AMS-004` | [agent model selection](./agent-model-selection.md) | VERIFIED (tracked configuration) |
-| `AAC-001` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
-| `AAC-002` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
-| `AAC-003` | [AI agent catalogs](./ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
-| `AAC-004` | [AI agent catalogs](./ai-agent-catalogs.md) | VERIFIED (tracked governance) |
-| `MH-001` | [memory hierarchy](./memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
-| `MH-002` | [memory hierarchy](./memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
-| `MH-003` | [memory hierarchy](./memory-hierarchy.md) | UNVERIFIED |
-| `MH-004` | [memory hierarchy](./memory-hierarchy.md) | ADVISORY |
-| `SSD-001` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
-| `SSD-002` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
-| `SSD-003` | [spec-driven SDLC](./spec-driven-sdlc.md) | VERIFIED (tracked configuration) |
-| `DML-001` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
-| `DML-004` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
-| `LWS-001` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
-| `LWS-003` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
-| `SSD-004` | [spec-driven SDLC](./spec-driven-sdlc.md) | HISTORICAL VERIFIED |
-| `DML-002` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
-| `DML-003` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
-| `DML-005` | [document metadata lifecycle](./document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
-| `LWS-002` | [LLM Wiki system](./llm-wiki-system.md) | VERIFIED (tracked configuration) |
-| `LWS-004` | [LLM Wiki system](./llm-wiki-system.md) | HISTORICAL VERIFIED |
-| `SDR-001` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
-| `SDR-002` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
-| `SDR-003` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked + historical retained source) |
-| `SDR-004` | [SDLC document roles](./sdlc-document-roles.md) | HISTORICAL VERIFIED |
-| `SDR-005` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED (tracked configuration) |
-| `SDR-006` | [SDLC document roles](./sdlc-document-roles.md) | HISTORICAL VERIFIED |
-| `DOCARCH-DIATAXIS-BASE-001` | [documentation architecture](./documentation-architecture.md) | HISTORICAL VERIFIED |
-| `SCOPE-COMP-001` | [scope application matrix](./scope-application-matrix.md) | ADVISORY |
-| `DOCARCH-C4-001` | [documentation architecture](./documentation-architecture.md) | VERIFIED |
-| `DOCARCH-ARC42-001` | [documentation architecture](./documentation-architecture.md) | VERIFIED |
-| `DOCARCH-COMP-001` | [documentation architecture](./documentation-architecture.md) | ADVISORY |
-| `SDLCDOC-ADR-001` | [SDLC document roles](./sdlc-document-roles.md) | VERIFIED |
-| `SDLCDOC-ADR-002` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
-| `SDLCDOC-ADR-003` | [SDLC document roles](./sdlc-document-roles.md) | UNVERIFIED |
-| `APW-001` | [automation pipeline workflow](./automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
-| `APW-002` | [automation pipeline workflow](./automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
-| `APW-003` | [automation pipeline workflow](./automation-pipeline-workflow.md) | HISTORICAL VERIFIED (retained official observation) |
-| `QCF-001` | [quality CI and formatting](./quality-ci-formatting.md) | VERIFIED (tracked configuration) |
-| `QCF-002` | [quality CI and formatting](./quality-ci-formatting.md) | VERIFIED (tracked configuration) |
-| `QCF-003` | [quality CI and formatting](./quality-ci-formatting.md) | HISTORICAL VERIFIED (retained official observation) |
-| `VV-001` | [verification and validation](./verification-validation.md) | VERIFIED (tracked configuration) |
-| `VV-002` | [verification and validation](./verification-validation.md) | HISTORICAL VERIFIED (retained official observation) |
-| `VV-003` | [verification and validation](./verification-validation.md) | VERIFIED (tracked governance) |
-| `DCI-001` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | VERIFIED (tracked configuration) |
-| `DCI-002` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | HISTORICAL VERIFIED (retained official observation) |
-| `DCI-003` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) | UNVERIFIED |
-| `SG-001` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
-| `SG-002` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
-| `SG-003` | [security governance](./security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
-| `SG-004` | [security governance](./security-governance.md) | VERIFIED (tracked configuration) |
+| `WB-001` | [workspace-baseline](./m0020-workspace-baseline.md) | VERIFIED (tracked baseline) |
+| `WB-002` | [workspace-baseline](./m0020-workspace-baseline.md) | VERIFIED (tracked configuration) |
+| `SAM-001` | [scope-application-matrix](./m0015-scope-application-matrix.md) | VERIFIED (tracked specification) |
+| `SAM-002` | [scope-application-matrix](./m0015-scope-application-matrix.md) | VERIFIED (tracked governance routing) |
+| `HE-001` | [harness engineering](./m0008-harness-engineering.md) | VERIFIED (tracked configuration) |
+| `HE-002` | [harness engineering](./m0008-harness-engineering.md) | VERIFIED (tracked configuration) |
+| `HE-003` | [harness engineering](./m0008-harness-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
+| `HE-004` | [harness engineering](./m0008-harness-engineering.md) | VERIFIED (tracked configuration) |
+| `HE-005` | [harness engineering](./m0008-harness-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
+| `LE-001` | [loop engineering](./m0010-loop-engineering.md) | VERIFIED (tracked configuration) |
+| `LE-002` | [loop engineering](./m0010-loop-engineering.md) | VERIFIED (tracked configuration) |
+| `LE-003` | [loop engineering](./m0010-loop-engineering.md) | VERIFIED (tracked configuration) |
+| `LE-004` | [loop engineering](./m0010-loop-engineering.md) | HISTORICAL VERIFIED (retained official observation) |
+| `LE-005` | [loop engineering](./m0010-loop-engineering.md) | HISTORICAL VERIFIED (retained external study) |
+| `PIC-001` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
+| `PIC-002` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
+| `PIC-003` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | VERIFIED (tracked configuration) |
+| `PIC-004` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PIC-005` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PIC-006` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PIC-007` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) | HISTORICAL VERIFIED (retained official observation) |
+| `AIV-001` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) | VERIFIED (tracked configuration) |
+| `AIV-002` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) | VERIFIED (tracked configuration) |
+| `AIV-003` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
+| `AIV-004` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) | ADVISORY |
+| `AIV-005` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PML-001` | [provider model landscape](./m0013-provider-model-landscape.md) | VERIFIED (tracked configuration) |
+| `PML-002` | [provider model landscape](./m0013-provider-model-landscape.md) | HISTORICAL VERIFIED (retained official observation) |
+| `PML-003` | [provider model landscape](./m0013-provider-model-landscape.md) | UNVERIFIED |
+| `PML-004` | [provider model landscape](./m0013-provider-model-landscape.md) | ADVISORY |
+| `AMS-001` | [agent model selection](./m0002-agent-model-selection.md) | VERIFIED (tracked configuration) |
+| `AMS-002` | [agent model selection](./m0002-agent-model-selection.md) | ADVISORY |
+| `AMS-003` | [agent model selection](./m0002-agent-model-selection.md) | HISTORICAL VERIFIED (retained official observation) |
+| `AMS-004` | [agent model selection](./m0002-agent-model-selection.md) | VERIFIED (tracked configuration) |
+| `AAC-001` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-002` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-003` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) | HISTORICAL VERIFIED (retained fixed source) |
+| `AAC-004` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) | VERIFIED (tracked governance) |
+| `MH-001` | [memory hierarchy](./m0011-memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
+| `MH-002` | [memory hierarchy](./m0011-memory-hierarchy.md) | HISTORICAL VERIFIED (retained official observation) |
+| `MH-003` | [memory hierarchy](./m0011-memory-hierarchy.md) | UNVERIFIED |
+| `MH-004` | [memory hierarchy](./m0011-memory-hierarchy.md) | ADVISORY |
+| `SSD-001` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `SSD-002` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `SSD-003` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) | VERIFIED (tracked configuration) |
+| `DML-001` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-004` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `LWS-001` | [LLM Wiki system](./m0009-llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `LWS-003` | [LLM Wiki system](./m0009-llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `SSD-004` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) | HISTORICAL VERIFIED |
+| `DML-002` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-003` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `DML-005` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) | VERIFIED (tracked configuration) |
+| `LWS-002` | [LLM Wiki system](./m0009-llm-wiki-system.md) | VERIFIED (tracked configuration) |
+| `LWS-004` | [LLM Wiki system](./m0009-llm-wiki-system.md) | HISTORICAL VERIFIED |
+| `SDR-001` | [SDLC document roles](./m0016-sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-002` | [SDLC document roles](./m0016-sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-003` | [SDLC document roles](./m0016-sdlc-document-roles.md) | VERIFIED (tracked + historical retained source) |
+| `SDR-004` | [SDLC document roles](./m0016-sdlc-document-roles.md) | HISTORICAL VERIFIED |
+| `SDR-005` | [SDLC document roles](./m0016-sdlc-document-roles.md) | VERIFIED (tracked configuration) |
+| `SDR-006` | [SDLC document roles](./m0016-sdlc-document-roles.md) | HISTORICAL VERIFIED |
+| `DOCARCH-DIATAXIS-BASE-001` | [documentation architecture](./m0007-documentation-architecture.md) | HISTORICAL VERIFIED |
+| `SCOPE-COMP-001` | [scope application matrix](./m0015-scope-application-matrix.md) | ADVISORY |
+| `DOCARCH-C4-001` | [documentation architecture](./m0007-documentation-architecture.md) | VERIFIED |
+| `DOCARCH-ARC42-001` | [documentation architecture](./m0007-documentation-architecture.md) | VERIFIED |
+| `DOCARCH-COMP-001` | [documentation architecture](./m0007-documentation-architecture.md) | ADVISORY |
+| `SDLCDOC-ADR-001` | [SDLC document roles](./m0016-sdlc-document-roles.md) | VERIFIED |
+| `SDLCDOC-ADR-002` | [SDLC document roles](./m0016-sdlc-document-roles.md) | UNVERIFIED |
+| `SDLCDOC-ADR-003` | [SDLC document roles](./m0016-sdlc-document-roles.md) | UNVERIFIED |
+| `APW-001` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
+| `APW-002` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) | VERIFIED (tracked configuration) |
+| `APW-003` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) | HISTORICAL VERIFIED (retained official observation) |
+| `QCF-001` | [quality CI and formatting](./m0014-quality-ci-formatting.md) | VERIFIED (tracked configuration) |
+| `QCF-002` | [quality CI and formatting](./m0014-quality-ci-formatting.md) | VERIFIED (tracked configuration) |
+| `QCF-003` | [quality CI and formatting](./m0014-quality-ci-formatting.md) | HISTORICAL VERIFIED (retained official observation) |
+| `VV-001` | [verification and validation](./m0019-verification-validation.md) | VERIFIED (tracked configuration) |
+| `VV-002` | [verification and validation](./m0019-verification-validation.md) | HISTORICAL VERIFIED (retained official observation) |
+| `VV-003` | [verification and validation](./m0019-verification-validation.md) | VERIFIED (tracked governance) |
+| `DCI-001` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) | VERIFIED (tracked configuration) |
+| `DCI-002` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) | HISTORICAL VERIFIED (retained official observation) |
+| `DCI-003` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) | UNVERIFIED |
+| `SG-001` | [security governance](./m0017-security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-002` | [security governance](./m0017-security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-003` | [security governance](./m0017-security-governance.md) | HISTORICAL VERIFIED (retained official observation) |
+| `SG-004` | [security governance](./m0017-security-governance.md) | VERIFIED (tracked configuration) |
 
 ## Sources
 
@@ -454,100 +491,100 @@ This package preserves its existing research evidence under the Stage 99 `resear
 
 | Source ID | Owner leaf |
 | --- | --- |
-| `WB-SRC-001` | [workspace-baseline](./workspace-baseline.md) |
-| `WB-SRC-002` | [workspace-baseline](./workspace-baseline.md) |
-| `WB-SRC-003` | [workspace-baseline](./workspace-baseline.md) |
-| `SAM-SRC-001` | [scope-application-matrix](./scope-application-matrix.md) |
-| `SAM-SRC-002` | [scope-application-matrix](./scope-application-matrix.md) |
-| `HE-SRC-001` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-002` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-003` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-004` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-005` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-006` | [harness engineering](./harness-engineering.md) |
-| `HE-SRC-007` | [harness engineering](./harness-engineering.md) |
-| `LE-SRC-001` | [loop engineering](./loop-engineering.md) |
-| `LE-SRC-002` | [loop engineering](./loop-engineering.md) |
-| `LE-SRC-003` | [loop engineering](./loop-engineering.md) |
-| `LE-SRC-004` | [loop engineering](./loop-engineering.md) |
-| `PIC-SRC-001` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-002` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-003` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-004` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-005` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-006` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-007` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-008` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `PIC-SRC-009` | [provider implementation comparison](./provider-implementation-comparison.md) |
-| `AIV-SRC-001` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
-| `AIV-SRC-002` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
-| `AIV-SRC-003` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
-| `AIV-SRC-004` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
-| `AIV-SRC-005` | [agent instructions and bounded generated work](./agent-instructions-vibe-coding.md) |
-| `PML-SRC-001` | [provider model landscape](./provider-model-landscape.md) |
-| `PML-SRC-002` | [provider model landscape](./provider-model-landscape.md) |
-| `PML-SRC-003` | [provider model landscape](./provider-model-landscape.md) |
-| `PML-SRC-004` | [provider model landscape](./provider-model-landscape.md) |
-| `PML-SRC-005` | [provider model landscape](./provider-model-landscape.md) |
-| `AMS-SRC-001` | [agent model selection](./agent-model-selection.md) |
-| `AMS-SRC-002` | [agent model selection](./agent-model-selection.md) |
-| `AMS-SRC-003` | [agent model selection](./agent-model-selection.md) |
-| `AAC-SRC-001` | [AI agent catalogs](./ai-agent-catalogs.md) |
-| `AAC-SRC-002` | [AI agent catalogs](./ai-agent-catalogs.md) |
-| `AAC-SRC-003` | [AI agent catalogs](./ai-agent-catalogs.md) |
-| `AAC-SRC-004` | [AI agent catalogs](./ai-agent-catalogs.md) |
-| `MH-SRC-001` | [memory hierarchy](./memory-hierarchy.md) |
-| `MH-SRC-002` | [memory hierarchy](./memory-hierarchy.md) |
-| `MH-SRC-003` | [memory hierarchy](./memory-hierarchy.md) |
-| `SSD-SRC-001` | [spec-driven SDLC](./spec-driven-sdlc.md) |
-| `SSD-SRC-002` | [spec-driven SDLC](./spec-driven-sdlc.md) |
-| `SSD-SRC-003` | [spec-driven SDLC](./spec-driven-sdlc.md) |
-| `SSD-SRC-004` | [spec-driven SDLC](./spec-driven-sdlc.md) |
-| `DML-SRC-001` | [document metadata lifecycle](./document-metadata-lifecycle.md) |
-| `DML-SRC-002` | [document metadata lifecycle](./document-metadata-lifecycle.md) |
-| `LWS-SRC-001` | [LLM Wiki system](./llm-wiki-system.md) |
-| `LWS-SRC-002` | [LLM Wiki system](./llm-wiki-system.md) |
-| `LWS-SRC-003` | [LLM Wiki system](./llm-wiki-system.md) |
-| `DA-SRC-001` | [documentation architecture](./documentation-architecture.md) |
-| `DA-SRC-002` | [documentation architecture](./documentation-architecture.md) |
-| `DA-SRC-003` | [documentation architecture](./documentation-architecture.md) |
-| `DA-SRC-004` | [documentation architecture](./documentation-architecture.md) |
-| `DA-SRC-005` | [documentation architecture](./documentation-architecture.md) |
-| `DA-SRC-006` | [documentation architecture](./documentation-architecture.md) |
-| `SDR-SRC-001` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-002` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-003` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-004` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-005` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-006` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-007` | [SDLC document roles](./sdlc-document-roles.md) |
-| `SDR-SRC-008` | [SDLC document roles](./sdlc-document-roles.md) |
-| `APW-SRC-001` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
-| `APW-SRC-002` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
-| `APW-SRC-003` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
-| `APW-SRC-004` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
-| `APW-SRC-005` | [automation pipeline workflow](./automation-pipeline-workflow.md) |
-| `QCF-SRC-001` | [quality CI and formatting](./quality-ci-formatting.md) |
-| `QCF-SRC-002` | [quality CI and formatting](./quality-ci-formatting.md) |
-| `QCF-SRC-003` | [quality CI and formatting](./quality-ci-formatting.md) |
-| `QCF-SRC-004` | [quality CI and formatting](./quality-ci-formatting.md) |
-| `QCF-SRC-005` | [quality CI and formatting](./quality-ci-formatting.md) |
-| `VV-SRC-001` | [verification and validation](./verification-validation.md) |
-| `VV-SRC-002` | [verification and validation](./verification-validation.md) |
-| `VV-SRC-003` | [verification and validation](./verification-validation.md) |
-| `DCI-SRC-001` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
-| `DCI-SRC-002` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
-| `DCI-SRC-003` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
-| `DCI-SRC-004` | [Docker Compose infrastructure](./docker-compose-infrastructure.md) |
-| `SG-SRC-001` | [security governance](./security-governance.md) |
-| `SG-SRC-002` | [security governance](./security-governance.md) |
-| `SG-SRC-003` | [security governance](./security-governance.md) |
-| `SG-SRC-004` | [security governance](./security-governance.md) |
-| `SG-SRC-005` | [security governance](./security-governance.md) |
-| `SG-SRC-006` | [security governance](./security-governance.md) |
-| `SG-SRC-007` | [security governance](./security-governance.md) |
-| `SG-SRC-008` | [security governance](./security-governance.md) |
-| `SG-SRC-009` | [security governance](./security-governance.md) |
+| `WB-SRC-001` | [workspace-baseline](./m0020-workspace-baseline.md) |
+| `WB-SRC-002` | [workspace-baseline](./m0020-workspace-baseline.md) |
+| `WB-SRC-003` | [workspace-baseline](./m0020-workspace-baseline.md) |
+| `SAM-SRC-001` | [scope-application-matrix](./m0015-scope-application-matrix.md) |
+| `SAM-SRC-002` | [scope-application-matrix](./m0015-scope-application-matrix.md) |
+| `HE-SRC-001` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-002` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-003` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-004` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-005` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-006` | [harness engineering](./m0008-harness-engineering.md) |
+| `HE-SRC-007` | [harness engineering](./m0008-harness-engineering.md) |
+| `LE-SRC-001` | [loop engineering](./m0010-loop-engineering.md) |
+| `LE-SRC-002` | [loop engineering](./m0010-loop-engineering.md) |
+| `LE-SRC-003` | [loop engineering](./m0010-loop-engineering.md) |
+| `LE-SRC-004` | [loop engineering](./m0010-loop-engineering.md) |
+| `PIC-SRC-001` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-002` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-003` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-004` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-005` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-006` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-007` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-008` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `PIC-SRC-009` | [provider implementation comparison](./m0012-provider-implementation-comparison.md) |
+| `AIV-SRC-001` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) |
+| `AIV-SRC-002` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) |
+| `AIV-SRC-003` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) |
+| `AIV-SRC-004` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) |
+| `AIV-SRC-005` | [agent instructions and bounded generated work](./m0001-agent-instructions-vibe-coding.md) |
+| `PML-SRC-001` | [provider model landscape](./m0013-provider-model-landscape.md) |
+| `PML-SRC-002` | [provider model landscape](./m0013-provider-model-landscape.md) |
+| `PML-SRC-003` | [provider model landscape](./m0013-provider-model-landscape.md) |
+| `PML-SRC-004` | [provider model landscape](./m0013-provider-model-landscape.md) |
+| `PML-SRC-005` | [provider model landscape](./m0013-provider-model-landscape.md) |
+| `AMS-SRC-001` | [agent model selection](./m0002-agent-model-selection.md) |
+| `AMS-SRC-002` | [agent model selection](./m0002-agent-model-selection.md) |
+| `AMS-SRC-003` | [agent model selection](./m0002-agent-model-selection.md) |
+| `AAC-SRC-001` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) |
+| `AAC-SRC-002` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) |
+| `AAC-SRC-003` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) |
+| `AAC-SRC-004` | [AI agent catalogs](./m0003-ai-agent-catalogs.md) |
+| `MH-SRC-001` | [memory hierarchy](./m0011-memory-hierarchy.md) |
+| `MH-SRC-002` | [memory hierarchy](./m0011-memory-hierarchy.md) |
+| `MH-SRC-003` | [memory hierarchy](./m0011-memory-hierarchy.md) |
+| `SSD-SRC-001` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) |
+| `SSD-SRC-002` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) |
+| `SSD-SRC-003` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) |
+| `SSD-SRC-004` | [spec-driven SDLC](./m0018-spec-driven-sdlc.md) |
+| `DML-SRC-001` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) |
+| `DML-SRC-002` | [document metadata lifecycle](./m0006-document-metadata-lifecycle.md) |
+| `LWS-SRC-001` | [LLM Wiki system](./m0009-llm-wiki-system.md) |
+| `LWS-SRC-002` | [LLM Wiki system](./m0009-llm-wiki-system.md) |
+| `LWS-SRC-003` | [LLM Wiki system](./m0009-llm-wiki-system.md) |
+| `DA-SRC-001` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `DA-SRC-002` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `DA-SRC-003` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `DA-SRC-004` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `DA-SRC-005` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `DA-SRC-006` | [documentation architecture](./m0007-documentation-architecture.md) |
+| `SDR-SRC-001` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-002` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-003` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-004` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-005` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-006` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-007` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `SDR-SRC-008` | [SDLC document roles](./m0016-sdlc-document-roles.md) |
+| `APW-SRC-001` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) |
+| `APW-SRC-002` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) |
+| `APW-SRC-003` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) |
+| `APW-SRC-004` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) |
+| `APW-SRC-005` | [automation pipeline workflow](./m0004-automation-pipeline-workflow.md) |
+| `QCF-SRC-001` | [quality CI and formatting](./m0014-quality-ci-formatting.md) |
+| `QCF-SRC-002` | [quality CI and formatting](./m0014-quality-ci-formatting.md) |
+| `QCF-SRC-003` | [quality CI and formatting](./m0014-quality-ci-formatting.md) |
+| `QCF-SRC-004` | [quality CI and formatting](./m0014-quality-ci-formatting.md) |
+| `QCF-SRC-005` | [quality CI and formatting](./m0014-quality-ci-formatting.md) |
+| `VV-SRC-001` | [verification and validation](./m0019-verification-validation.md) |
+| `VV-SRC-002` | [verification and validation](./m0019-verification-validation.md) |
+| `VV-SRC-003` | [verification and validation](./m0019-verification-validation.md) |
+| `DCI-SRC-001` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) |
+| `DCI-SRC-002` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) |
+| `DCI-SRC-003` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) |
+| `DCI-SRC-004` | [Docker Compose infrastructure](./m0005-docker-compose-infrastructure.md) |
+| `SG-SRC-001` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-002` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-003` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-004` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-005` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-006` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-007` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-008` | [security governance](./m0017-security-governance.md) |
+| `SG-SRC-009` | [security governance](./m0017-security-governance.md) |
 
 ## Implications
 

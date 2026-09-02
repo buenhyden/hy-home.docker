@@ -1,258 +1,62 @@
 ---
-profile_id: spec
-status: active
+title: Harness and Agent-first Engineering Outcome
+type: specs/spec
+layer: specification
+status: completed
+owner: "@buenhyden"
 artifact_id: SPEC-0094
-artifact_type: spec
 parent_ids:
   - AD-0027
 created: 2026-07-05
-updated: 2026-08-14
+updated: 2026-09-01
 ---
-# Harness / Agent-first Engineering Specification
+# Harness and Agent-first Engineering Outcome
 
 ## Overview
 
-This document analyzes the `hy-home.docker` workspace purpose, rules, environment, harness configuration, and Agent-first Engineering setup from repository files, then specifies the contracts already satisfied by the current implementation and the gaps that still need implementation work.
-
-## Strategic Boundaries & Non-goals
-
-- This specification covers agent/runtime/governance contract analysis.
-- It does not create a new agent catalog, parallel Codex catalog, or expanded root instructions.
-- It does not create new deliverables under `docs/01.requirements`, `docs/02.architecture/requirements`, `docs/02.architecture/decisions`, or `docs/05.operations/incidents`.
-- It does not create a PRD/ARD/ADR because this work improves an existing harness context-quality fallback rather than adding a new product feature, architecture replacement, or durable decision.
-- Runtime changes are limited to small, provable changes such as hook quoting fixes for gaps found during current validation.
-- `10-communication` Compose include/IP/network remediation is tracked as a separate infrastructure task and is not part of the HAFE success criteria.
-
-## Related Inputs
-
-- `README.md`
-- `docs/README.md`
-- `infra/README.md`
-- `scripts/README.md`
-- `AGENTS.md`
-- `CLAUDE.md`
-- `AGENTS.md`
-- `RTK.md`
-- `docs/00.agent-governance/README.md`
-- `docs/00.agent-governance/policies/agentic.md`
-- `docs/00.agent-governance/policies/documentation-protocol.md`
-- `.claude/CLAUDE.md`
-- `.codex/README.md`
-- `scripts/validation/check-repo-contracts.sh`
-- `scripts/validation/check-document-links.py`
-- `scripts/knowledge/report-graphify-health.sh`
-- `scripts/hooks/agent-event-hook.sh`
-- `scripts/validation/validate-docker-compose.sh`
-
-## Contracts
-
-| Contract | Source | Required Behavior |
-| --- | --- | --- |
-| Workspace purpose | `README.md`, `infra/README.md` | Operate Docker Compose-based home/development infrastructure through layered `infra/` content and stage documents. |
-| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | Active documents live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. |
-| Thin root shims | `AGENTS.md`, `CLAUDE.md` | Root files handle entry/import only and delegate detailed policy to Stage 00. |
-| Governance SSOT | `docs/00.agent-governance/` | Owns shared rules, scopes, providers, the agents catalog, memory, and the delegation protocol. |
-| Runtime mirror | `.agents/`, `.claude/`, `.codex/` | Registered provider projections stay synchronized with Stage 00 roles, skills and provider Registry. Configured parity is not runtime acceptance. |
-| Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex is a hook/context surface and does not create a parallel delegated-agent catalog. |
-| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify is a navigation aid when the corpus is clean; when contamination exists, downgrade it to advisory and re-check against tracked source and canonical docs. |
-| Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | Completion is proven through repository contracts, docs traceability, default/core Compose profiles, supported hardening tiers, and hook payload simulation. |
-
-## Core Design
-
-### Historical File Analysis Summary
-
-This table is the original session observation, not current authority. Current
-provider and catalog ownership is defined by Stage 00.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Area | Files Analyzed | Finding |
-| --- | --- | --- |
-| Workspace purpose and environment | `README.md`, `docs/README.md`, `infra/README.md`, `scripts/README.md` | Purpose, docs taxonomy, Compose tiering, and validation scripts are consistent. |
-| Agent entry and provider routing | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md` | Provider-neutral entry and provider shims remain thin. `RTK.md` describes the Codex CLI proxy convention, though `rtk` may be unavailable in the current shell. |
-| Governance rules | `bootstrap.md`, `persona.md`, `task-checklists.md`, `agentic.md`, `documentation-protocol.md`, `stage-authoring-matrix.md`, `scopes/agentic.md` | Non-mutating discovery, persona routing, scope loading, template-first docs, and completion checks are explicit. |
-| Harness runtime | `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.claude/hooks/*.sh` | The supervisor uses `opus`, workers use `sonnet`, and agents have exactly one scope import. Claude hooks must preserve JSON output without shell command substitution. |
-| Codex runtime | `.codex/README.md`, `.codex/hooks.json`, `providers/codex.md` | Codex hooks provide graphify context and post-edit validation, not policy authority. |
-| Agent/function catalog | `docs/00.agent-governance/agents/**`, `subagent-protocol.md` | Eight agents and ten functions are connected to the runtime mirror. |
-| Templates and validators | `docs/99.templates/*.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh` | Stage template contracts and runtime drift checks are included in repository validation. |
-
-### Harness Engineering Components
-
-- Entry shims: `AGENTS.md`, `CLAUDE.md`.
-- Governance hub: `docs/00.agent-governance/`.
-- Runtime projections: `.agents/`, `.claude/`, and `.codex/`; canonical roles and skills live under Stage 00.
-- Delegation protocol: `docs/00.agent-governance/policies/agentic.md`.
-- Provider overlays: `docs/00.agent-governance/providers/*.md`.
-- Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
-- Validation gates: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-links.py`, `scripts/validation/validate-docker-compose.sh`, security/hardening baseline scripts.
-- Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/knowledge/report-graphify-health.sh`.
-
-### Agent-first Engineering Components
-
-- Agents are first-class workers with explicit routing, scoped ownership, and verification evidence.
-- Work starts from repository discovery, not assumption.
-- Execution is gated by persona, checklist, one primary scope, and JIT-loaded stage docs.
-- Detailed policy stays in governance docs; root files remain concise.
-- Agent/runtime changes are auditable through catalog parity, model/scope/protocol checks, hook payload simulation, and validation scripts.
-- Memory notes record history but do not replace active policy.
-
-## Data Modeling & Storage Strategy
-
-No persistent data model is introduced. The implementation stores only Markdown documentation in canonical stage paths.
-
-## Interfaces & Data Structures
-
-### Core Interfaces
-
-| Interface | Shape | Purpose |
-| --- | --- | --- |
-| Stage docs | Markdown with existing `status` front matter | Human and agent-readable analysis, plan, task, guide, policy, and runbook. |
-| Runtime catalog | Markdown agent/function files | Delegated worker and function definitions. |
-| Validation scripts | Bash commands returning non-zero on failure | Completion and drift evidence. |
-
-## API Contract (If Applicable)
-
-Not applicable. This change does not add or modify service APIs.
-
-## Agent Role & IO Contract (If Applicable)
-
-| Role | Input | Output |
-| --- | --- | --- |
-| Agentic Workflow Specialist | Root shims, governance docs, runtime files, validators, templates | Analysis, gap classification, and verification evidence. |
-| Documentation Specialist | Stage templates and parent README files | Template-compliant stage docs and README links. |
-
-## Tools & Tool Contract (If Applicable)
-
-- Use `rg` for discovery where available.
-- Use `bash scripts/validation/check-repo-contracts.sh` for repository and runtime catalog drift.
-- Use `python3 scripts/validation/check-document-links.py --mode traceability` for execution and operations traceability.
-- Use `bash scripts/knowledge/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
-- Use `bash scripts/validation/validate-docker-compose.sh` for default/core Compose structural validation.
-- Use security and hardening baseline scripts for supported tier operational confidence.
-- Use hook payload simulation commands for Claude/Codex hook behavior.
-
-## Prompt / Policy Contract (If Applicable)
-
-- User-facing explanations are Korean by default.
-- Governance/runtime docs remain English unless they are human-facing stage docs.
-- Do not expose secrets.
-- Do not create GitHub-native instruction layers or a parallel Codex agent catalog.
-
-## Memory & Context Strategy (If Applicable)
-
-- Load `graphify-out/GRAPH_REPORT.md` before architecture or codebase answers.
-- Use Graphify as a navigation aid only when corpus health is clean.
-- If Graphify includes `volumes/`, gitlink/submodule content, generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory and corroborate with tracked source, `docs/00.agent-governance/`, and active stage docs.
-- Use `docs/00.agent-governance/memory/` for historical audit notes only.
-- Use live repository files and validators as the current source of truth.
-
-## Guardrails (If Applicable)
-
-- Keep root instruction files thin.
-- Use in-place refactors only.
-- Preserve `.claude` as the canonical delegated-agent runtime mirror.
-- Keep `.codex` limited to hooks and context wiring.
-- Do not treat contaminated Graphify output as authority for architecture or codebase conclusions.
-- Enforce zero external source-label references in runtime/governance files.
-- Keep `10-communication` remediation outside this HAFE scope unless a separate infra plan is approved.
-
-## Evaluation (If Applicable)
-
-Evaluation is command-based:
-
-- Repository contract passes.
-- Documentation traceability passes.
-- Default/core Compose validation passes.
-- Template/security, QuickWin, and supported hardening baselines pass.
-- Hook payload simulations return valid JSON/system-message output without command substitution side effects.
-- Graphify health report exits 0 and records `status=clean|advisory` without being treated as architecture authority when advisory.
-- Source-label scan returns no matches in active runtime/governance surfaces.
-
-## Edge Cases & Error Handling
-
-- If a validator fails, update the relevant stage task evidence and patch only the failing contract.
-- If Graphify health is `advisory`, read it for navigation only and re-check claims against tracked files and canonical docs.
-- If `graphify` CLI is unavailable after code changes, report graph refresh as skipped rather than claiming success.
-- If `rtk` is unavailable in Codex shell, run the underlying shell commands directly and record the fallback.
-- If a new stage artifact is added, update the parent README in the same change.
-- If `10-communication` validation fails, record it as a separate infra remediation item unless that tier is explicitly in scope.
-
-## Failure Modes & Fallback / Human Escalation
-
-| Failure Mode | Fallback |
-| --- | --- |
-| Runtime catalog mismatch | Repair registered projections from Stage 00 roles, skills and provider Registry. |
-| Missing scope import or model split | Restore exact scope import and `opus`/`sonnet` hierarchy. |
-| Stale source-label reference | Rewrite content to be self-contained, then rerun scans. |
-| Contaminated Graphify context | Downgrade Graphify to advisory context and corroborate against tracked source and canonical docs. |
-| Docs traceability failure | Add missing parent README or reciprocal execution/operations links. |
-| Scoped Compose validation failure | Treat as infra blocker and inspect affected in-scope `infra/**/docker-compose*.yml`. |
-| `10-communication` profile failure | Track separately as infra remediation; do not block HAFE completion. |
-| Hook payload failure | Fix hook quoting/parsing and rerun the exact payload simulation. |
-
-## Verification
-
-```bash
-python3 -m json.tool .codex/hooks.json >/dev/null
-python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/**/*.sh
-CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
-printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
-printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
-CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
-bash scripts/knowledge/report-graphify-health.sh
-bash scripts/validation/check-repo-contracts.sh
-python3 scripts/validation/check-document-links.py --mode traceability
-bash scripts/validation/validate-docker-compose.sh
-bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-quickwin-baseline.sh
-bash scripts/hardening/check-all-hardening.sh
-! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex docs/00.agent-governance
-```
-
-## Success Criteria & Verification Plan
-
-- Stage docs are created from the matching templates.
-- Parent README files link to the new documents.
-- Validators pass with zero failures for active governance/runtime contracts and scoped infra baselines.
-- No new runtime or provider policy drift is introduced.
-- No parallel Codex agent catalog is created.
-- `10-communication` Compose remediation is recorded as out of scope for this HAFE pass.
-
-## Related Documents
-
-- Plan
-- Task Evidence
-- [Guide](../../05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md)
-- [Operations Policy](../../05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md)
-- [Validation Runbook](../../05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md)
-- [Agent Governance Hub](../../00.agent-governance/README.md)
-- [Documentation Protocol](../../00.agent-governance/policies/documentation-protocol.md)
+This completed change aligned repository Agent behavior, provider projections,
+hooks, and validation with one canonical governance model.
 
 ## Boundaries and Inputs
 
-The preserved ownership boundaries, dependencies, and inputs above remain authoritative.
+The change covered repository-local Agent instructions and harness mechanics.
+It did not authorize user-global configuration, credential access, deployment,
+or runtime mutation.
 
 ## Behavior Contract
 
-The behaviors and invariants already specified above remain the package behavior contract.
+- Stage 00 policies, roles, skills, and Provider Registry are canonical.
+- .agents/, .claude/, and .codex/ are projections or native runtime mechanics.
+- Active repository work loads its governing Spec Package and current Task.
+- Hooks route policy decisions and cannot create new policy.
 
 ## Technical Approach
 
-The implementation and component design recorded above remain the technical approach.
+Canonical Markdown sources are rendered into provider-native surfaces and
+checked for source, name, scope, and content parity. Focused validators and the
+registered public suites report drift.
 
 ## Interfaces and Data
 
-The interfaces, configuration, and data shapes recorded above remain authoritative.
+The durable interfaces are Stage 00, Provider Registry, provider adapters,
+hook configuration, and the script manifest. Generated projections remain
+consumers of canonical sources.
 
 ## Failure Modes and Guardrails
 
-The safety, validation, and operational constraints above remain the package guardrails.
+Projection drift, a missing canonical source, an unsupported provider surface,
+or a broadened permission boundary fails closed. This completed Spec is not a
+provider policy source.
 
 ## Acceptance Contract
 
-The verification and success conditions above remain the acceptance contract.
+Provider projections identify their canonical source, Stage 00 and Stage 99
+have separate authority, and current governance gates validate the tracked
+surface without historical fixtures.
 
 ## Traceability
 
-The requirement, architecture, operations, and evidence links above provide traceability.
+- [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
+- [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0029](../../02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Harness Operations](../../05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md)

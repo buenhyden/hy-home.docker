@@ -1,9 +1,11 @@
 ---
-profile_id: governance-skill
+title: workspace-audit-revalidation
+type: governance/skill
 layer: agentic
+status: active
+owner: "@buenhyden"
 function_id: workspace-audit-revalidation
 scope: agentic
-status: active
 owner_agent: eval-engineer
 ---
 

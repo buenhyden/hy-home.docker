@@ -1,6 +1,8 @@
 ---
-profile_id: readme
+title: Operations Templates
+type: common/readme
 layer: agentic
+owner: "@buenhyden"
 ---
 
 # Operations Templates

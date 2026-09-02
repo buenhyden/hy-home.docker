@@ -22,6 +22,13 @@ compatibility:
 canonical_sources:
   role_pattern: docs/00.agent-governance/roles/{agent_id}.md
   skill_pattern: docs/00.agent-governance/skills/{skill_id}.md
+projections:
+  - provider_id: shared
+    path: .agents/README.md
+    source: docs/00.agent-governance/README.md
+  - provider_id: claude
+    path: .claude/CLAUDE.md
+    source: docs/00.agent-governance/providers/claude.md
 work_profiles:
   adversarial-review:
     claude: {model: claude-opus-5, control: effort, value: high}
@@ -90,87 +97,6 @@ model_catalog_policy:
 permissions:
   read-only: {claude: plan, codex: read-only}
   workspace-write: {claude: acceptEdits, codex: workspace-write}
-workflow_states:
-  - state_id: discover
-    owner_agent: workflow-supervisor
-    required_inputs: [approved-objective, repository-state]
-    mutation_authority: read-only
-    entry_condition: objective-and-boundary-known
-    exit_gate: scope-and-canonical-owners-identified
-    max_attempts: 1
-    failure_return: stop
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: design/plan
-  - state_id: design/plan
-    owner_agent: workflow-supervisor
-    required_inputs: [discovery-evidence, governing-specification]
-    mutation_authority: workspace-write
-    entry_condition: discovery-evidence-complete
-    exit_gate: implementation-ready-plan
-    max_attempts: 2
-    failure_return: design/plan
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: approval
-  - state_id: approval
-    owner_agent: rules-engineer
-    required_inputs: [proposed-plan, protected-boundary]
-    mutation_authority: read-only
-    entry_condition: plan-and-protected-boundaries-explicit
-    exit_gate: authority-confirmed
-    max_attempts: 1
-    failure_return: approval
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: implement
-  - state_id: implement
-    owner_agent: workflow-supervisor
-    required_inputs: [approved-plan, scoped-ownership]
-    mutation_authority: workspace-write
-    entry_condition: required-approval-recorded
-    exit_gate: scoped-change-complete
-    max_attempts: 2
-    failure_return: stop
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: validate
-  - state_id: validate
-    owner_agent: qa-engineer
-    required_inputs: [changed-path-inventory, verification-contract]
-    mutation_authority: workspace-write
-    entry_condition: implementation-attempt-complete
-    exit_gate: focused-and-aggregate-gates-pass
-    max_attempts: 1
-    failure_return: implement
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: independent-review
-  - state_id: independent-review
-    owner_agent: code-reviewer
-    required_inputs: [exact-diff, verification-evidence]
-    mutation_authority: read-only
-    entry_condition: validation-gates-pass
-    exit_gate: critical-and-important-zero
-    max_attempts: 2
-    failure_return: implement
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: evidence
-  - state_id: evidence
-    owner_agent: eval-engineer
-    required_inputs: [independent-review-verdict, validation-results]
-    mutation_authority: workspace-write
-    entry_condition: independent-review-approved
-    exit_gate: task-evidence-complete
-    max_attempts: 1
-    failure_return: independent-review
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: handoff
-  - state_id: handoff
-    owner_agent: workflow-supervisor
-    required_inputs: [bounded-evidence, next-owner]
-    mutation_authority: read-only
-    entry_condition: evidence-record-sanitized
-    exit_gate: next-owner-accepts-handoff
-    max_attempts: 1
-    failure_return: evidence
-    evidence_fields: [command, result, rollback, skipped_checks]
-    handoff_target: complete
 semantic_events:
   claude: [SessionStart, PreToolUse, PostToolUse, Stop, SessionEnd, PreCompact, UserPromptSubmit]
   codex: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]
@@ -190,50 +116,6 @@ hook_contracts:
     Stop: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
     PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
     UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
-harness_layers:
-  - {layer_id: canonical-contract, owner_agent: rules-engineer, gate: canonical-authority, failure_return: design-plan}
-  - {layer_id: role-skill-routing, owner_agent: workflow-supervisor, gate: registered-routing, failure_return: discover}
-  - {layer_id: permission-boundary, owner_agent: rules-engineer, gate: explicit-authority, failure_return: approval}
-  - {layer_id: provider-model-policy, owner_agent: eval-engineer, gate: native-schema-compatibility, failure_return: design-plan}
-  - {layer_id: semantic-events, owner_agent: hook-developer, gate: native-event-honesty, failure_return: implement}
-  - {layer_id: controlled-validation, owner_agent: qa-engineer, gate: deterministic-checks, failure_return: implement}
-  - {layer_id: tracked-ci, owner_agent: ci-cd-engineer, gate: least-privilege-workflow, failure_return: implement}
-  - {layer_id: sanitized-evidence, owner_agent: eval-engineer, gate: value-free-evidence, failure_return: evidence}
-harness_loops:
-  context-bootstrap:
-    owner_agent: workflow-supervisor
-    reviewer_agent: rules-engineer
-    permission_profile: read-only
-    workflow_states: [discover]
-    max_attempts: 1
-    stop_condition: bootstrap-contract-pass
-    on_failure: escalate
-  bounded-implementation:
-    owner_agent: qa-engineer
-    reviewer_agent: code-reviewer
-    permission_profile: workspace-write
-    workflow_states: [implement, validate]
-    max_attempts: 2
-    stop_condition: focused-checks-pass
-    on_failure: narrow-then-escalate
-  independent-review:
-    owner_agent: code-reviewer
-    reviewer_agent: eval-engineer
-    permission_profile: read-only
-    workflow_states: [independent-review, evidence]
-    max_attempts: 2
-    stop_condition: critical-and-important-zero
-    on_failure: escalate
-  approved-all-files-gate:
-    owner_agent: qa-engineer
-    reviewer_agent: code-reviewer
-    permission_profile: workspace-write
-    workflow_states: [validate, evidence]
-    max_attempts: 1
-    stop_condition: controlled-wrapper-pass
-    on_failure: record-and-stop
-evidence_fields: [command, result, rollback, skipped_checks]
-prohibited_evidence: [auth_files, credentials, raw_logs, secret_values, shell_history, tokens]
 agent_output_eval:
   fixture_thresholds:
     AOE-DOC-001: 0.50
@@ -246,4 +128,4 @@ agent_output_eval:
     AOE-ADAPTER-001: 0.50
     AOE-MODEL-001: 0.50
     AOE-LOOP-001: 0.50
-generated_roots: [.agents/agents, .agents/rules, .agents/skills, .agents/workflows, .claude/agents, .claude/skills, .codex/agents]
+generated_roots: [.agents/agents, .agents/skills, .claude/agents, .claude/skills, .codex/agents]

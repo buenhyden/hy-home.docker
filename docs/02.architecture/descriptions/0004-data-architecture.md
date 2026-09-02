@@ -1,12 +1,14 @@
 ---
-profile_id: architecture-description
+title: Data Tier (04-data) Architecture Description
+type: architecture/description
+layer: architecture
 status: active
+owner: "@buenhyden"
 artifact_id: AD-0004
-artifact_type: architecture-description
 parent_ids:
   - REQ-0004
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-09-01
 ---
 # Data Tier (04-data) Architecture Description
 
@@ -108,5 +110,4 @@ graph TD
 
 - **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)
-- **Plan**: ../../04.execution/plans/2026-03-26-04-data-standardization.md
 - **ADR**: [../decisions/0004-postgresql-ha-patroni.md](../decisions/0004-postgresql-ha-patroni.md)

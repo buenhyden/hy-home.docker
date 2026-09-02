@@ -1,8 +1,10 @@
 ---
-profile_id: policy
+title: Laboratory Dashboard Operations Policy
+type: operations/policy
+layer: operations
 status: active
-artifact_id: policy-0071
-artifact_type: policy
+owner: "@buenhyden"
+artifact_id: POL-0071
 parent_ids: []
 created: 2026-05-17
 updated: 2026-08-11

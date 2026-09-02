@@ -1,9 +1,11 @@
 ---
-profile_id: tombstone
+title: Workspace Audit 2026-05 Technical Specification Tombstone
+type: archive/tombstone
+layer: archive
 status: completed
-artifact_id: tombstone-0154
-artifact_type: tombstone
-parent_ids: [mig-0003]
+owner: "@buenhyden"
+artifact_id: tomb-SPEC-0090
+parent_ids: [MIG-0003]
 created: 2026-08-29
 updated: 2026-08-29
 ---

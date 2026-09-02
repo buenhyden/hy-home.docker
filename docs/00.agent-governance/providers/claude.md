@@ -1,8 +1,10 @@
 ---
-profile_id: governance-provider
+title: Claude Provider Adapter
+type: governance/provider
 layer: agentic
-runtime: claude
 status: active
+owner: "@buenhyden"
+runtime: claude
 ---
 
 # Claude Provider Adapter

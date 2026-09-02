@@ -17,7 +17,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-008",
@@ -35,7 +35,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-007"
@@ -51,7 +51,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-008",
@@ -68,7 +68,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-007",
@@ -85,7 +85,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-007",
@@ -102,7 +102,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-008",
@@ -119,7 +119,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-008",
@@ -136,7 +136,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-007",
@@ -154,7 +154,7 @@
       "required_evidence_paths": [
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
-        "tests/validation/test_document_metadata.py"
+        "tests/lib/document_governance/metadata/test_profile.py"
       ],
       "completed_task_ids": [
         "T-AER-007",
