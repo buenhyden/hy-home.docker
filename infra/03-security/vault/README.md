@@ -1,3 +1,13 @@
+---
+title: Vault Secret Management
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-15'
+updated: '2026-08-28'
+---
+
 # Vault Secret Management
 
 > Identity-based secrets management and encryption-as-a-service for `hy-home.docker`.

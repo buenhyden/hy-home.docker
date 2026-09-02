@@ -1,3 +1,13 @@
+---
+title: postgresql-cluster
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-28'
+---
+
 # postgresql-cluster
 
 > Patroni 및 etcd를 이용한 고가용성(HA) PostgreSQL 17 관계형 데이터베이스 클러스터

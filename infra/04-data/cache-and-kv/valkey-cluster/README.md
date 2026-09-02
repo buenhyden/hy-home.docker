@@ -1,3 +1,13 @@
+---
+title: Valkey Distributed Cluster
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-20'
+updated: '2026-08-28'
+---
+
 # Valkey Distributed Cluster
 
 > 고성능, 6노드 분산 캐시 클러스터 (Redis 호환 가능) / High-performance, 6-node Distributed Cache Cluster

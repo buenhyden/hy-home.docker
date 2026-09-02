@@ -1,3 +1,13 @@
+---
+title: Airflow (07-workflow)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-28'
+---
+
 # Airflow (07-workflow)
 
 > Apache Airflow를 이용한 복잡한 데이터 파이프라인 및 작업의 프로그래밍 방식 워크플로 오케스트레이션.

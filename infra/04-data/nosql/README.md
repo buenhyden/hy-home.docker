@@ -1,3 +1,13 @@
+---
+title: NoSQL Infrastructure (04-data/nosql)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-23'
+---
+
 # NoSQL Infrastructure (04-data/nosql)
 
 > Distributed, Document-oriented, and Wide-column NoSQL databases.

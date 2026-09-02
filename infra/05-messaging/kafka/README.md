@@ -1,3 +1,13 @@
+---
+title: Kafka Event Streaming (05-messaging)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-28'
+---
+
 # Kafka Event Streaming (05-messaging)
 
 > Kafka KRaft event streaming for hy-home.docker.

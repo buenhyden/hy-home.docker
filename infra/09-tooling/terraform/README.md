@@ -1,3 +1,13 @@
+---
+title: Terraform Infrastructure Tool
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-15'
+updated: '2026-08-28'
+---
+
 <!-- [ID:09-tooling:terraform] -->
 # Terraform Infrastructure Tool
 

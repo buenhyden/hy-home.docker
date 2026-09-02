@@ -1,3 +1,13 @@
+---
+title: Nginx Proxy
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-29'
+updated: '2026-08-28'
+---
+
 # Nginx Proxy
 
 > Profile-only specialized path-based proxy and SSO client for the hy-home.docker ecosystem.

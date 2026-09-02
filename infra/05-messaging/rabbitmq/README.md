@@ -1,3 +1,13 @@
+---
+title: RabbitMQ
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-02-01'
+updated: '2026-08-28'
+---
+
 # RabbitMQ
 
 > High-performance AMQP message broker for reliable asynchronous communication.

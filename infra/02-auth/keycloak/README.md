@@ -1,3 +1,13 @@
+---
+title: Keycloak IAM
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-09-02'
+---
+
 # Keycloak IAM
 
 > Identity and Access Management (IAM) provider based on Quarkus for the `hy-home.docker` ecosystem.

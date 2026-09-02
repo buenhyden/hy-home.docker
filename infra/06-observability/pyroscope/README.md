@@ -1,3 +1,13 @@
+---
+title: Pyroscope Continuous Profiling
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-19'
+updated: '2026-09-02'
+---
+
 # Pyroscope Continuous Profiling
 
 ## Overview

@@ -1,3 +1,13 @@
+---
+title: Security Tier (03-security)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-23'
+---
+
 # Security Tier (03-security)
 
 > Centralized secret management, encryption-as-a-service, and identity-based access.

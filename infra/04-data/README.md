@@ -1,3 +1,13 @@
+---
+title: Data Tier (04-data)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-07-28'
+---
+
 # Data Tier (04-data)
 
 > Central repository for databases, object storage, and persistence engines.

@@ -622,6 +622,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/common/readme-category.template.md](../../../99.templates/templates/common/readme-category.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme-documentation.template.md](../../../99.templates/templates/common/readme-documentation.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme-domain.template.md](../../../99.templates/templates/common/readme-domain.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/readme-package.template.md](../../../99.templates/templates/common/readme-package.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme-repository.template.md](../../../99.templates/templates/common/readme-repository.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme-stage.template.md](../../../99.templates/templates/common/readme-stage.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/contract.template.md](../../../99.templates/templates/governance/contract.template.md) | Markdown reference |

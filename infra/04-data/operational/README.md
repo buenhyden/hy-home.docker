@@ -1,3 +1,13 @@
+---
+title: Operational Data Tier (04-data/operational)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-23'
+---
+
 # Operational Data Tier (04-data/operational)
 
 > Shared core databases and management platforms for the hy-home.docker ecosystem.

@@ -99,6 +99,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "slug": "fixture",
             "hook_slug": "fixture",
             "category": "audits",
+            "subpath": "01-gateway/traefik",
         }
 
         def witness(pattern: str) -> str:

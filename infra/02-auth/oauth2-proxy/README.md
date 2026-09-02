@@ -1,3 +1,13 @@
+---
+title: OAuth2 Proxy
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-29'
+updated: '2026-08-28'
+---
+
 # OAuth2 Proxy
 
 > OIDC ForwardAuth gateway for protecting backend services within the `hy-home.docker` ecosystem.

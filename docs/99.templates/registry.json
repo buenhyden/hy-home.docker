@@ -1155,6 +1155,78 @@
       "exceptions": []
     },
     {
+      "profile_id": "package-readme",
+      "type": "common/package-readme",
+      "frontmatter_policy": "required",
+      "path_pattern": "infra/{subpath}/README.md",
+      "additional_paths": [
+        "examples/sample-web-service/README.md",
+        "projects/storybook/README.md",
+        "projects/storybook/nextjs/README.md"
+      ],
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "common/package-readme",
+      "required_frontmatter": [
+        "type",
+        "version"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by",
+        "layer",
+        "owner",
+        "status",
+        "title",
+        "updated"
+      ],
+      "required_sections": [
+        "Overview",
+        "Audience",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "Architecture",
+        "Available Scripts",
+        "Change Impact",
+        "Configuration",
+        "Configuration (Environment Variables)",
+        "Files",
+        "Getting Started",
+        "Governance",
+        "Healthcheck Strategy",
+        "Image Tag Review",
+        "Implementation Details",
+        "Integration",
+        "Management Guide",
+        "Networking (Ports)",
+        "Operational Governance",
+        "Operational Status",
+        "Operations",
+        "Overview (KR/EN)",
+        "Runtime Surface",
+        "Service Boundary",
+        "Service Configuration",
+        "Service Matrix",
+        "Service Readiness",
+        "Service Type",
+        "Services",
+        "System Components",
+        "Tech Stack",
+        "Testing",
+        "Traceability (Golden 5)",
+        "Troubleshooting",
+        "Usage Instructions",
+        "Validation"
+      ],
+      "lifecycle_id": null,
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "profile_id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
@@ -1632,6 +1704,10 @@
     "common/documentation-readme": {
       "source": "docs/99.templates/templates/common/readme-documentation.template.md",
       "profile_id": "documentation-readme"
+    },
+    "common/package-readme": {
+      "source": "docs/99.templates/templates/common/readme-package.template.md",
+      "profile_id": "package-readme"
     },
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",

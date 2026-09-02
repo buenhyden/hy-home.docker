@@ -1,3 +1,13 @@
+---
+title: Alertmanager Notification Routing
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-12'
+updated: '2026-08-23'
+---
+
 # Alertmanager Notification Routing
 
 ## Overview

@@ -1,3 +1,13 @@
+---
+title: Observability Tier (06-observability)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-09-02'
+---
+
 # Observability Tier (06-observability)
 
 ## Overview

@@ -1,3 +1,13 @@
+---
+title: Relational Databases (04-data/relational)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-23'
+---
+
 # Relational Databases (04-data/relational)
 
 > High-Availability Relational Database Clusters for Persistent Data

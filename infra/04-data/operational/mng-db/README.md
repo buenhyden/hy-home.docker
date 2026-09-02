@@ -1,3 +1,13 @@
+---
+title: Management Database (mng-db)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-12-03'
+updated: '2026-08-28'
+---
+
 # Management Database (mng-db)
 
 > Shared core database and cache for platform management services.

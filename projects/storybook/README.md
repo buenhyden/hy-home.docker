@@ -1,3 +1,13 @@
+---
+title: Storybook Workspace
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-24'
+updated: '2026-09-02'
+---
+
 # Storybook Workspace
 
 > Next.js와 Storybook 기반 UI 실험 및 디자인 시스템 템플릿 작업 공간

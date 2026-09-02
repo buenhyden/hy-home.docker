@@ -1,3 +1,13 @@
+---
+title: Auth Tier (02-auth)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-22'
+---
+
 # Auth Tier (02-auth)
 
 > Identity and Access Management (IAM) & Authentication ForwardAuth Gateway.

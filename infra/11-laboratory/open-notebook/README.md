@@ -1,3 +1,13 @@
+---
+title: Laboratory Open Notebook
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-05-09'
+updated: '2026-08-28'
+---
+
 # Laboratory Open Notebook
 
 > Local knowledge notebook and SurrealDB-backed laboratory service.

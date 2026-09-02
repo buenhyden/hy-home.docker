@@ -1,3 +1,13 @@
+---
+title: AI Infrastructure Tier (08-ai)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-09-02'
+---
+
 # AI Infrastructure Tier (08-ai)
 
 > Local LLM inference engines, RAG interfaces, and vector-backed intelligence.

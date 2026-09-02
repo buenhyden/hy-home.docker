@@ -39,7 +39,9 @@ TARGET_ROOTS = (
     "secrets",
     "tests",
 )
-REGISTERED_ENTRYPOINT_README_PROFILES = frozenset({"repository-readme"})
+REGISTERED_ENTRYPOINT_README_PROFILES = frozenset(
+    {"repository-readme", "package-readme"}
+)
 OVERVIEW_HEADING_READMES = (
     "infra/01-gateway/nginx/README.md",
     "infra/01-gateway/traefik/README.md",

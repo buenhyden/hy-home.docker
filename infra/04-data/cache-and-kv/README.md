@@ -1,3 +1,13 @@
+---
+title: Cache & Key-Value Stores (04-data/cache-and-kv)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-23'
+---
+
 # Cache & Key-Value Stores (04-data/cache-and-kv)
 
 > Distributed Caching and Fast Key-Value Storage Services / 분산 캐싱 및 고성능 키-밸류 저장소 서비스

@@ -1,3 +1,13 @@
+---
+title: "Analytics Tier (04-Data: Analytics)"
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-08-23'
+---
+
 # Analytics Tier (04-Data: Analytics)
 
 > Analytical and specialized data engines for time-series, log search, stream processing, and OLAP.

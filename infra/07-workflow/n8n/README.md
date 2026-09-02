@@ -1,3 +1,13 @@
+---
+title: n8n Low-code Automation
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-28'
+---
+
 # n8n Low-code Automation
 
 ## Overview

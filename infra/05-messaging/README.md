@@ -1,3 +1,13 @@
+---
+title: Messaging Tier (05-messaging)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-23'
+---
+
 # Messaging Tier (05-messaging)
 
 > Event streaming, message brokering, and real-time data processing tier.

@@ -1,3 +1,13 @@
+---
+title: Dozzle
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-03-27'
+updated: '2026-09-02'
+---
+
 # Dozzle
 
 > Real-time log viewer for Docker containers.

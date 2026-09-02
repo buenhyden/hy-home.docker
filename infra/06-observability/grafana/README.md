@@ -1,3 +1,13 @@
+---
+title: Grafana Visualization and Dashboards
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-12'
+updated: '2026-08-28'
+---
+
 # Grafana Visualization and Dashboards
 
 ## Overview

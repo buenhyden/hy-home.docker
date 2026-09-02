@@ -1,3 +1,13 @@
+---
+title: Lake & Object Storage (04-data/lake-and-object)
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-05-15'
+updated: '2026-08-23'
+---
+
 # Lake & Object Storage (04-data/lake-and-object)
 
 > 데이터 레이크 및 오브젝트 스토리지 서비스 / Data Lake and Object Storage Services

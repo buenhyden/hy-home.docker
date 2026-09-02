@@ -1,3 +1,13 @@
+---
+title: Traefik Edge Router
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-08-28'
+---
+
 # Traefik Edge Router
 
 > Primary edge router with dynamic service discovery and TLS orchestration for the hy-home.docker ecosystem.

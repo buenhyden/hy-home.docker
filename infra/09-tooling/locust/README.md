@@ -1,3 +1,13 @@
+---
+title: 🦗 Locust Load Testing Infrastructure
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-24'
+updated: '2026-08-28'
+---
+
 <!-- [ID:09-tooling:locust] -->
 # 🦗 Locust Load Testing Infrastructure
 

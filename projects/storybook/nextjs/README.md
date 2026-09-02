@@ -1,3 +1,13 @@
+---
+title: Storybook Next.js Workspace
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-02-01'
+updated: '2026-09-02'
+---
+
 # Storybook Next.js Workspace
 
 > Next.js 16, React 19, Storybook 10 기반 UI 개발 및 검증 package

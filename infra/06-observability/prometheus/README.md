@@ -1,3 +1,13 @@
+---
+title: Prometheus
+version: 1.0.0
+type: common/package-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-12'
+updated: '2026-09-02'
+---
+
 # Prometheus
 
 ## Scope
