@@ -1,6 +1,6 @@
 ---
 title: n8n Operations Policy
-type: operations/policy
+type: operation/policy
 layer: operations
 status: active
 owner: "@buenhyden"

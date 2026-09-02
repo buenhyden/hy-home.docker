@@ -94,7 +94,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             ),
             {
                 "title": "Common Optimizations Template Exceptions",
-                "type": "operations/policy",
+                "type": "operation/policy",
                 "layer": "operations",
                 "status": "active",
                 "owner": "@buenhyden",
@@ -121,7 +121,7 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
         base = {
             "title": "Common Optimizations Template Exceptions",
-            "type": "operations/policy",
+            "type": "operation/policy",
             "layer": "operations",
             "status": "active",
             "owner": "@buenhyden",

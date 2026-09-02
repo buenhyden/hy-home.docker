@@ -2004,7 +2004,7 @@ def _surface_partition_plan_findings(
         plan_record.parse_error is not None
         or not plan_record.frontmatter_present
         or plan_record.artifact_type != "plan"
-        or plan_record.metadata.get("type") != "specs/plan"
+        or plan_record.metadata.get("type") != "sdlc/plan"
         or plan_record.metadata.get("status") not in {"active", "completed"}
         or profile_errors
     ):
@@ -2502,7 +2502,7 @@ def _partition_plan_findings(
         plan_record.parse_error is not None
         or not plan_record.frontmatter_present
         or plan_record.artifact_type != "plan"
-        or values.get("type") != "specs/plan"
+        or values.get("type") != "sdlc/plan"
         or plan_errors
     ):
         return [

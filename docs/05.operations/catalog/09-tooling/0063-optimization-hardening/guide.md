@@ -1,6 +1,6 @@
 ---
 title: 09-Tooling Optimization Hardening Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

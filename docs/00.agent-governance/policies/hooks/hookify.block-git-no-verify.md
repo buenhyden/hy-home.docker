@@ -1,7 +1,7 @@
 ---
 title: "BLOCKED: git commit --no-verify"
 type: governance/hook-policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 name: block-git-no-verify
 enabled: true

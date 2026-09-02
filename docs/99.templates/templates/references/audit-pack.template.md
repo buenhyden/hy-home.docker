@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: references/audit
-layer: <layer>
+version: "#.#.#"
+type: reference/audit-pack
+layer: references
 status: draft
 owner: <owner>
 artifact_id: AUD-####

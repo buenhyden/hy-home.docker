@@ -1,6 +1,6 @@
 ---
 title: Communication Tier (10-communication) Product Requirements
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

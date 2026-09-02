@@ -1,7 +1,7 @@
 ---
 title: "Document Corpus Migration Summary: Lifecycle Foundation"
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0066

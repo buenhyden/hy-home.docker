@@ -1,6 +1,6 @@
 ---
 title: Operations — 12 Infra Net
-type: operations/domain-readme
+type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"
 ---

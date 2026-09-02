@@ -1,7 +1,7 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-type: references/research-member
-layer: reference
+type: reference/research
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: RES-0002-m0009

@@ -1,6 +1,6 @@
 ---
 title: AI GPU Recovery Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

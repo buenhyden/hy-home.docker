@@ -1,7 +1,7 @@
 ---
 title: "WARNING: parallel replacement document file"
 type: governance/hook-policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 name: warn-parallel-doc-file
 enabled: true

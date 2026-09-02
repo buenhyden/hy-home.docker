@@ -581,7 +581,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "### AOE-DOC-001: Provider Surface Parity",
             ),
             "moved-context": lambda text: text.replace(
-                "`docs/99.templates/templates/references/research.template.md`, ", ""
+                "`docs/99.templates/templates/references/research-pack.template.md`, ", ""
             ),
             "calibration": lambda text: text.replace(
                 "`CAL-AOE-DOC-001`; pass threshold `0.50`",

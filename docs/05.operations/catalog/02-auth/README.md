@@ -1,6 +1,6 @@
 ---
 title: Operations — 02 Auth
-type: operations/domain-readme
+type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"
 ---

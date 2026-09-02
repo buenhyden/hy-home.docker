@@ -1,7 +1,7 @@
 ---
 title: drift-detector
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: drift-detector

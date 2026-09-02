@@ -1,7 +1,7 @@
 ---
 title: Agentic Engineering Research Pack
-type: references/research
-layer: reference
+type: reference/research-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: RES-0002

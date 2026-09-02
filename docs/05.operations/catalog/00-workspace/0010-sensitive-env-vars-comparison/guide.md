@@ -1,6 +1,6 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

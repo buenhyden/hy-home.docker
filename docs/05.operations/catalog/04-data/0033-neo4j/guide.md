@@ -1,6 +1,6 @@
 ---
 title: Neo4j Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

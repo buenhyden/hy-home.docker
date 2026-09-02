@@ -1,7 +1,7 @@
 ---
 title: "Reference: Docker Image and Version Interpretation"
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0060
@@ -75,7 +75,7 @@ This reference provides stable context for interpreting Docker image drift, floa
 - [Docker references](README.md)
 - [90.references](../../README.md)
 - [docs index](../../README.md)
-- [reference template](../../../99.templates/templates/references/research.template.md)
+- [reference template](../../../99.templates/templates/references/research-pack.template.md)
 
 ## Schema
 

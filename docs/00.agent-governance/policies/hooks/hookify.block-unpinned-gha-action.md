@@ -1,7 +1,7 @@
 ---
 title: "BLOCKED: floating reference"
 type: governance/hook-policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 name: block-unpinned-gha-action
 enabled: true

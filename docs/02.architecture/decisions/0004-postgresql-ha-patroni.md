@@ -1,6 +1,6 @@
 ---
 title: Choice of Spilo/Patroni for PostgreSQL HA
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

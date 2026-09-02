@@ -1,7 +1,7 @@
 ---
 title: Common Templates
 type: common/readme
-layer: agentic
+layer: templates
 owner: "@buenhyden"
 ---
 
@@ -9,7 +9,7 @@ owner: "@buenhyden"
 
 ## Overview
 
-This directory provides the navigation README form. The Stage 99 Registry owns
+This directory provides the navigation README forms. The Stage 99 Registry owns
 profile selection, required metadata, sections, and lifecycle rules.
 
 ## Audience
@@ -20,23 +20,27 @@ profile selection, required metadata, sections, and lifecycle rules.
 
 ## Scope
 
-Use the README form for repository navigation. Research, Audit, and Data use
-the registered References forms; a necessary minimal recovery record uses the
+Use one README form per container kind. Research, Audit, and Data use the
+registered References forms; a necessary minimal recovery record uses the
 Tombstone form.
 
 ## Structure
 
-| Need | Template |
-| --- | --- |
-| 경로별 탐색 README 작성 | [readme.template.md](./readme.template.md) |
-| Evidence package | [References templates](../references/) |
-| Minimal recovery record | [Tombstone template](../archive/tombstone.template.md) |
+| Need | Registered type | Template |
+| --- | --- | --- |
+| 스테이지 루트 탐색 README | `common/readme` | [readme-stage.template.md](./readme-stage.template.md) |
+| Operations 도메인 README | `operation/domain-readme` | [readme-domain.template.md](./readme-domain.template.md) |
+| Stage 03 Spec Package README | `sdlc/package-readme` | [readme-package.template.md](./readme-package.template.md) |
+| Evidence package | — | [References templates](../references/) |
+| Minimal recovery record | `archive/tombstone` | [Tombstone template](../archive/tombstone.template.md) |
 
 ## How to Work in This Area
 
-Resolve the role in the Registry, copy its registered source, replace all
-placeholders, and run the document-contract gate. Do not copy historical
-templates from Git into current authoring workflows.
+1. Resolve the role in the [Registry](../../registry.json).
+2. Copy its registered source and replace all placeholders.
+3. Run the document-contract gate.
+
+Do not copy historical templates from Git into current authoring workflows.
 
 ## Related Documents
 

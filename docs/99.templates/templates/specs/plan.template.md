@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: specs/plan
-layer: <layer>
+version: "#.#.#"
+type: sdlc/plan
+layer: specs
 status: draft
 owner: <owner>
 artifact_id: SPEC-####-PLAN-####

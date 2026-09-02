@@ -1,6 +1,6 @@
 ---
 title: n8n Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

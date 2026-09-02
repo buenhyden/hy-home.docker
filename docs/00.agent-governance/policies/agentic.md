@@ -1,7 +1,7 @@
 ---
 title: Agentic Engineering Policy
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

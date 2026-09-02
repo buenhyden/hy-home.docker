@@ -1,7 +1,7 @@
 ---
 title: task-breakdown-agent
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: task-breakdown-agent

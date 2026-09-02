@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: operations/guide
-layer: <layer>
+version: "#.#.#"
+type: operation/guide
+layer: operations
 status: draft
 owner: <owner>
 artifact_id: GDE-####

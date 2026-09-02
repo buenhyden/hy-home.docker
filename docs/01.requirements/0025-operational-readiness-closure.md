@@ -1,6 +1,6 @@
 ---
 title: Operational Readiness Closure Requirements
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

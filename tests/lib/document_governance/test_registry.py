@@ -20,6 +20,8 @@ from scripts.lib.document_governance.registry import (
     _path_patterns_overlap,
     classify_path,
     load_registry,
+    _declares_provider_binding,
+    resolve_template_placeholders,
     validate_frontmatter,
     validate_registry,
 )
@@ -135,7 +137,7 @@ class DocumentRegistryTests(unittest.TestCase):
         for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md", "docs/99.templates/templates/common/README.md", "docs/99.templates/templates/operations/README.md"):
             with self.subTest(path=path):
                 self.assertEqual("readme", classify_path(path, registry))
-                record = Record(pathlib.Path(path), {"status": "active", "type": "specs/spec"}, "readme")
+                record = Record(pathlib.Path(path), {"status": "active", "type": "sdlc/spec"}, "readme")
                 self.assertIn("type-mismatch", {item.code for item in validate_record(record, build_registry_profiles(registry), build_manifest([record]))})
                 self.assertIn("body-heading-missing", {item.code for item in validate_body_contract(record, "# Navigation\n", build_registry_profiles(registry), changed_boundary=True)})
         self.assertIsNone(classify_path("docs/02.architecture/unknown/README.md", registry))
@@ -289,7 +291,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 pathlib.PurePosixPath(
                     "docs/05.operations/catalog/04-data/0051-example/guide.md"
                 ),
-                {"type": "operations/guide", "artifact_id": "GDE-0052"},
+                {"type": "operation/guide", "artifact_id": "GDE-0052"},
                 registry.profiles,
             ),
         )
@@ -313,13 +315,13 @@ class DocumentRegistryTests(unittest.TestCase):
                 pathlib.PurePosixPath(
                     "docs/05.operations/catalog/data/10012-wrong/guide.md"
                 ),
-                {"type": "operations/guide", "artifact_id": "GDE-0012"},
+                {"type": "operation/guide", "artifact_id": "GDE-0012"},
             ),
             (
                 pathlib.PurePosixPath(
                     "docs/03.specs/9999-contains-0015/plan.md"
                 ),
-                {"type": "specs/plan", "artifact_id": "SPEC-0015-PLAN-0001"},
+                {"type": "sdlc/plan", "artifact_id": "SPEC-0015-PLAN-0001"},
             ),
         )
         for path, metadata in examples:
@@ -343,20 +345,16 @@ class DocumentRegistryTests(unittest.TestCase):
                 continue
             with self.subTest(role=role):
                 text = (ROOT / str(source)).read_text(encoding="utf-8")
-                self.assertIn("type:", text)
                 values = _parse_frontmatter_text(text)
-                normalized = {
-                    key: (
-                        "2000-01-01T00:00:00Z"
-                        if value == "YYYY-MM-DDTHH:MM:SSZ"
-                        else "2000-01-01"
-                        if value == "YYYY-MM-DD"
-                        else value
-                    )
-                    for key, value in values.items()
-                }
+                profile = registry.profiles[str(template["profile_id"])]
+                if _declares_provider_binding(profile):
+                    # A provider runtime owns this binding, so it declares no type.
+                    self.assertIn("name:", text)
+                    self.assertNotIn("type:", text)
+                else:
+                    self.assertIn("type:", text)
                 self.assertEqual(
-                    (), validate_frontmatter(normalized)
+                    (), validate_frontmatter(resolve_template_placeholders(values))
                 )
                 self.assertNotIn("docs/01.requirements/", text)
                 self.assertNotIn("docs/02.architecture/", text)
@@ -424,13 +422,13 @@ class DocumentRegistryTests(unittest.TestCase):
                 }
             ),
             "concrete-template-target": lambda value: value["template_roles"][
-                "requirements/package"
+                "sdlc/requirement"
             ].update({"target_path": "docs/01.requirements/0001-example.md"}),
             "profile-transition-mismatch": lambda value: value["transitions"].update(
                 {"spec": "execution"}
             ),
             "template-source-traversal": lambda value: value["template_roles"][
-                "requirements/package"
+                "sdlc/requirement"
             ].update(
                 {
                     "source": (
@@ -445,7 +443,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 "traceability"
             ].update({"allowed_parent_profiles": ["typo-profile"]}),
             "template-id-mismatch": lambda value: value["profiles"][0].update(
-                {"template_id": "architecture/decision"}
+                {"template_id": "sdlc/architecture-decision"}
             ),
             "frontmatter-overlap": lambda value: value["profiles"][0][
                 "optional_frontmatter"
@@ -1154,7 +1152,7 @@ class DocumentRegistryTests(unittest.TestCase):
             pathlib.Path("docs/01.requirements/0001-example.md"),
             {
                 "title": "Example",
-                "type": "specs/spec",
+                "type": "sdlc/spec",
                 "layer": "requirements",
                 "status": "draft",
                 "owner": "@buenhyden",

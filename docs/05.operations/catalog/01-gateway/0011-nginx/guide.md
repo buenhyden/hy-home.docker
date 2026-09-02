@@ -1,6 +1,6 @@
 ---
 title: 01-Gateway Nginx Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

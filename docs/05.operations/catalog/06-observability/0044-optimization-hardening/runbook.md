@@ -1,6 +1,6 @@
 ---
 title: 06-Observability Optimization Hardening Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

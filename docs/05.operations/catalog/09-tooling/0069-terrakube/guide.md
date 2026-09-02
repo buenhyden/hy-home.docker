@@ -1,6 +1,6 @@
 ---
 title: "Operations: Terrakube Policy Usage Guide"
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

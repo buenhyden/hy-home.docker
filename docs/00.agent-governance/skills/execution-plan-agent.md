@@ -1,7 +1,7 @@
 ---
 title: execution-plan-agent
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: execution-plan-agent

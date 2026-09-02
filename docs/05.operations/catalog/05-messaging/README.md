@@ -1,6 +1,6 @@
 ---
 title: Operations — 05 Messaging
-type: operations/domain-readme
+type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"
 ---

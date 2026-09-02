@@ -498,7 +498,7 @@ def render_index(candidates: Sequence[Candidate]) -> str:
             continue
         grouped[candidate.category].append(candidate)
     lines = [
-        "---", "title: LLM Wiki Generated Index", "type: references/data", "layer: reference", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0082", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
+        "---", "title: LLM Wiki Generated Index", "type: reference/data-pack", "layer: references", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0082", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
         "# LLM Wiki Generated Index", "", "## Purpose", "",
         "이 문서는 `hy-home.docker`의 LLM Wiki가 사용하는 generated tracked repo-local index다. LLM 에이전트가 먼저 확인할 수 있는 안전한 경로 목록을 제공하되, 각 파일의 내용이나 runtime truth를 복제하지 않는다.", "",
         "Provide a deterministic path index for repo-local AI agents without creating a public site, a full-content bundle, or a replacement for canonical source files.", "",
@@ -541,7 +541,7 @@ def render_coverage(candidates: Sequence[Candidate]) -> str:
         buckets[candidate.bucket].append(candidate)
         roles[candidate.role].append(candidate)
     lines = [
-        "---", "title: LLM Wiki Stage Category Coverage", "type: references/data", "layer: reference", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0076", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
+        "---", "title: LLM Wiki Stage Category Coverage", "type: reference/data-pack", "layer: references", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0076", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
         "# LLM Wiki Stage Category Coverage", "", "## Purpose", "", "This generated reference summarizes the safe tracked source paths that feed the repo-local LLM Wiki index by source bucket, LLM Wiki category, and path role.", "", "Provide audit consumers with a compact coverage snapshot without duplicating the full generated index or changing canonical source ownership.", "",
         "## Schema", "", "Counts are grouped by source bucket, navigation category, and derived path role, with representative repository-relative links.", "",
         "## Provenance", "", "This package is generated from the same safe tracked candidate set as DATA-0082. Runtime truth remains in canonical tracked sources.", "",

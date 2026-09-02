@@ -1,7 +1,7 @@
 ---
 title: AI Agent Governance
 type: common/readme
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

@@ -1,6 +1,6 @@
 ---
 title: Gateway Tier (01-gateway) Product Requirements
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

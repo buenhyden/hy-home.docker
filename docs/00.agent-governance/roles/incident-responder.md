@@ -1,7 +1,7 @@
 ---
 title: incident-responder
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: incident-responder

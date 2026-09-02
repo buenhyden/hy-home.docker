@@ -1,7 +1,7 @@
 ---
 title: docker-compose-patterns
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: docker-compose-patterns

@@ -1,7 +1,7 @@
 ---
 title: Stage 99 Document Contracts and Templates
 type: common/readme
-layer: agentic
+layer: templates
 owner: "@buenhyden"
 ---
 
@@ -53,8 +53,8 @@ Consumers must load the Registry through
 prose or template bodies as machine policy.
 
 Every profile declares one `frontmatter_policy`. `required` means the canonical
-Markdown artifact must carry a `profile_id` equal to its Registry-classified
-profile; this also applies to package, domain, subject, stage, governance,
+Markdown artifact must carry a `type` equal to its Registry-classified profile
+type; this also applies to package, domain, subject, stage, governance,
 generated, and repository-support Markdown without a dedicated copy template.
 `absent` is reserved for executable machine contracts that do not use Markdown
 frontmatter. `unmanaged` is reserved for the unsupported fallback and never
@@ -74,6 +74,7 @@ defines a canonical target artifact.
 | `incident` / `postmortem` | `inc-<year>-####` / `inc-<year>-####-PM` | the incident |
 | `research` / `audit` / `data` | `RES-####` / `AUD-####` / `DATA-####` | — |
 | `research-member` / `audit-member` / `generated` | `RES-####-m####` / `AUD-####-m####` / `DATA-####-m####` | its `####` container |
+| `data-model-contract` / `openapi-contract` / `graphql-contract` / `proto-contract` | — | its `SPEC-####` package |
 | `migration` | `MIG-####` | — |
 | `tombstone` | `tomb-<retired artifact_id>` | the retired artifact |
 
@@ -85,16 +86,20 @@ Every identity-bearing document declares, in this order:
 | :--- | :--- |
 | `title` | Human-readable name; never repeats the artifact identity |
 | `type` | `family/kind` document role; replaces `profile_id` and `artifact_type` |
-| `layer` | Governance layer the document belongs to |
+| `layer` | Stage layer the document belongs to: `agent-governance`, `requirements`, `architecture`, `specs`, `operations`, `references`, `archive`, or `templates` |
 | `status` | Lifecycle state registered for the profile |
 | `owner` | Accountable owner, sourced from `.github/CODEOWNERS` |
 | `artifact_id` | Canonical identity; no domain alias duplicates it |
 | `parent_ids` | Traceability parents |
 | `created`, `updated` | Authoring dates |
 
-Templates additionally guide `version`. Provider-owned runtime projections are
-exempt: they declare `name` and `description` and carry the runtime's own
-`model` and `model_reasoning_effort`.
+Every template declares `version` immediately after `title`; the key stays
+optional on authored documents and must be semantic `MAJOR.MINOR.PATCH` when
+present. Profiles without an identity — READMEs, governance documents, machine
+contracts, and runtime projections — declare no `artifact_id`. Provider-owned
+runtime projections are exempt from the envelope entirely: they declare `name`
+and `description` and carry the runtime's own `model` and
+`model_reasoning_effort`.
 
 - Standalone package paths use four numeric digits and omit semantic prefixes.
 - A member identity is its container's identity plus that container's own
@@ -128,8 +133,11 @@ profile. Changed validation uses the persisted Registry allocation state.
 ## Template Rules
 
 - Copy the source registered by `template_id`/template role.
-- Markdown template frontmatter declares `profile_id` and contains no concrete
-  target path.
+- Markdown template frontmatter declares the profile's `type` and contains no
+  concrete target path.
+- Placeholders are literal: `<name>` for free text, `####` for a four-digit
+  number, `YYYY-MM-DD` for a date, and `"#.#.#"` for a semantic version.
+  Machine contract templates use `__UPPER_SNAKE__` tokens instead.
 - Replace every placeholder before promotion to a target document.
 - Executable OpenAPI, GraphQL, and Proto contracts belong to the owning Stage 03
   Spec package. Their deterministic filenames and media types are Registry
@@ -148,9 +156,11 @@ docs/99.templates/
 │   └── document-profile.schema.json
 └── templates/
     ├── governance/
+    ├── runtime/
     ├── requirements/
     ├── architecture/
     ├── specs/
+    │   └── contracts/
     ├── operations/
     ├── references/
     ├── archive/

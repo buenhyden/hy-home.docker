@@ -1,7 +1,7 @@
 ---
 title: "<title>"
 type: governance/hook-policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 name: warn-docker-infra-stop
 enabled: true

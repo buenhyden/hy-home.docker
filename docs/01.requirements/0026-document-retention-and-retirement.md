@@ -1,6 +1,6 @@
 ---
 title: 문서 보존 및 은퇴 요구사항
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

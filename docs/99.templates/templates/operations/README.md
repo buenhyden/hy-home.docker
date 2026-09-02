@@ -1,7 +1,7 @@
 ---
 title: Operations Templates
 type: common/readme
-layer: agentic
+layer: templates
 owner: "@buenhyden"
 ---
 

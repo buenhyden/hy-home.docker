@@ -1,6 +1,6 @@
 ---
 title: Security Tier Architecture Description
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"

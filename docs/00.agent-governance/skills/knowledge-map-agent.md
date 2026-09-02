@@ -1,7 +1,7 @@
 ---
 title: knowledge-map-agent
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: knowledge-map-agent

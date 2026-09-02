@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: operations/postmortem
-layer: <layer>
+version: "#.#.#"
+type: operation/postmortem
+layer: operations
 status: draft
 owner: <owner>
 artifact_id: inc-<year>-####-PM

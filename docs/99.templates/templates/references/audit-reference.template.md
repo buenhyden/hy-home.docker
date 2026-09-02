@@ -1,12 +1,12 @@
 ---
 title: <title>
-version: <version>
-type: references/research-member
-layer: <layer>
+version: "#.#.#"
+type: reference/audit
+layer: references
 status: draft
 owner: <owner>
-artifact_id: RES-####-m####
-parent_ids: [RES-####]
+artifact_id: AUD-####-m####
+parent_ids: [AUD-####]
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 observed_at: YYYY-MM-DD

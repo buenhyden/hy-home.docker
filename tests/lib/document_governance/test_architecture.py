@@ -68,7 +68,7 @@ def _document_text(
     superseded_by_value = "null" if superseded_by is None else superseded_by
     return f"""---
 title: Fixture {artifact_id}
-type: {"architecture/description" if profile_id == "architecture-description" else "architecture/decision"}
+type: {"sdlc/architecture-description" if profile_id == "architecture-description" else "sdlc/architecture-decision"}
 layer: architecture
 status: {status}
 owner: "@buenhyden"

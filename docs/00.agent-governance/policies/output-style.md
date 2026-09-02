@@ -1,7 +1,7 @@
 ---
 title: Output Style
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

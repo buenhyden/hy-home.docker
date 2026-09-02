@@ -1,7 +1,7 @@
 ---
 title: security-audit
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: security-audit

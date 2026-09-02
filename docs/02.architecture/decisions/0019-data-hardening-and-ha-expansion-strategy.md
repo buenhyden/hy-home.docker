@@ -1,6 +1,6 @@
 ---
 title: 04-Data Hardening and HA Expansion Strategy
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

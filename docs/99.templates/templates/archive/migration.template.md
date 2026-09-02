@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
+version: "#.#.#"
 type: archive/migration
-layer: <layer>
+layer: archive
 status: draft
 owner: <owner>
 artifact_id: MIG-####

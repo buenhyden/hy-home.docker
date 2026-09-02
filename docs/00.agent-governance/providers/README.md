@@ -1,7 +1,7 @@
 ---
 title: Provider Adapters
 type: governance/provider-index
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

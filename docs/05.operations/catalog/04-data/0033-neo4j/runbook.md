@@ -1,6 +1,6 @@
 ---
 title: Neo4j Health and Recovery Triage Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

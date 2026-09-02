@@ -1,7 +1,7 @@
 ---
 title: Template Catalog
 type: common/readme
-layer: agentic
+layer: templates
 owner: "@buenhyden"
 ---
 
@@ -13,18 +13,25 @@ This directory contains copyable sources registered by
 [`../registry.json`](../registry.json). Contract explanations live only in the
 [Stage 99 README](../README.md).
 
+## Audience
+
+- Documentation Writers
+- Repository Maintainers
+- AI Agents
+
 ## Scope
 
 | Category | Directory | Registered roles |
 | :--- | :--- | :--- |
+| Governance | `governance/` | Contract, Control, Rule, Provider, Role, Skill |
+| Runtime | `runtime/` | Claude agent projection, Codex agent projection |
 | Requirements | `requirements/` | Requirement Package |
-| Architecture | `architecture/` | Architecture Description, ADR |
-| Specs | `specs/` | Spec, Plan, Task, OpenAPI, GraphQL, Proto |
+| Architecture | `architecture/` | Architecture Description, Architecture Decision |
+| Specs | `specs/` | Spec, Plan, Task, and `contracts/` Data Model, OpenAPI, GraphQL, Proto |
 | Operations | `operations/` | Guide, Policy, Runbook, Incident, Postmortem |
-| References | `references/` | Research, Audit, Data |
-| Archive | `archive/` | Tombstone |
-| Governance | `governance/` | Stage 00 authoring guidance |
-| Common | `common/` | navigation README |
+| References | `references/` | Research, Audit, Data — one pack form and one reference form each |
+| Archive | `archive/` | Migration, Tombstone |
+| Common | `common/` | Stage, domain, and package README forms |
 
 ## Structure
 

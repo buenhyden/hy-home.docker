@@ -1,6 +1,6 @@
 ---
 title: Agent Governance Standardization Requirements
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

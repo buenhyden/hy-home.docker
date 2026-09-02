@@ -257,8 +257,8 @@ floating_rows = [row for row in image_rows if row["status"] in {"floating-except
 lines: list[str] = [
     "---",
     'title: "Reference: Tech-Stack Version Provenance"',
-    "type: references/data",
-    "layer: reference",
+    "type: reference/data-pack",
+    "layer: references",
     "status: active",
     "owner: \"@buenhyden\"",
     "artifact_id: DATA-0061",

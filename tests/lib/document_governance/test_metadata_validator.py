@@ -212,7 +212,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             source.write_bytes(PROFILES.read_bytes())
             document = root / "docs/03.specs/0104-example/spec.md"
             document.parent.mkdir(parents=True)
-            document.write_text("---\nstatus: active\ntype: specs/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
+            document.write_text("---\nstatus: active\ntype: sdlc/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
             for args in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")):
                 subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
             findings = validate_repository_contracts(root, metadata.build_registry_profiles(self.registry))
@@ -341,12 +341,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_allows_only_the_exact_incident_year_route(self) -> None:
         profiles = {
-            "operations/incident": {
+            "operation/incident": {
                 "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             }
         }
-        metadata = {"type": "operations/incident", "artifact_id": "inc-2026-0001"}
+        metadata = {"type": "operation/incident", "artifact_id": "inc-2026-0001"}
         accepted = validate_stable_identity(
             pathlib.PurePosixPath(
                 "docs/05.operations/incidents/2026/"
@@ -375,11 +375,11 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
 
     def test_stable_identity_rejects_incident_role_file_swaps(self) -> None:
         profiles = {
-            "operations/incident": {
+            "operation/incident": {
                 "id_pattern": r"inc-[0-9]{4}-[0-9]{4}",
                 "path_identity": "direct",
             },
-            "operations/postmortem": {
+            "operation/postmortem": {
                 "id_pattern": r"inc-[0-9]{4}-[0-9]{4}-PM",
                 "path_identity": "inherited",
                 "parent_id_pattern": r"inc-(?P<identity>[0-9]{4})-[a-z0-9-]+",
@@ -391,12 +391,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         swaps = (
             (
                 pathlib.PurePosixPath(f"{packet}/postmortem.md"),
-                {"type": "operations/incident", "artifact_id": "inc-2026-0001"},
+                {"type": "operation/incident", "artifact_id": "inc-2026-0001"},
             ),
             (
                 pathlib.PurePosixPath(f"{packet}/incident.md"),
                 {
-                    "type": "operations/postmortem",
+                    "type": "operation/postmortem",
                     "artifact_id": "inc-2026-0001-PM",
                 },
             ),

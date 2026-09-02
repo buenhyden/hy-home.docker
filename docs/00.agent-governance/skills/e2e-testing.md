@@ -1,7 +1,7 @@
 ---
 title: e2e-testing
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: e2e-testing

@@ -1,7 +1,7 @@
 ---
 title: Documentation Protocol
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 
@@ -42,10 +42,15 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
 8. Give a tombstone the retired document's identity under a `tomb-` prefix
    instead of allocating a new number.
-9. Declare `title`, `type`, `layer`, `status`, `owner`, `artifact_id`,
-   `parent_ids`, `created`, and `updated` in that frontmatter order. `type`
-   carries the `family/kind` document role; `profile_id` and `artifact_type`
-   are retired, and `title` never repeats the artifact identity.
+9. Declare `title`, `version`, `type`, `layer`, `status`, `owner`,
+   `artifact_id`, `parent_ids`, `created`, and `updated` in that frontmatter
+   order. `type` carries the `family/kind` document role and `layer` carries
+   the owning stage name without its numeric prefix; `profile_id`,
+   `artifact_type`, and `last-updated` are retired, and `title` never repeats
+   the artifact identity. `version` is optional on an authored document and
+   must be semantic `MAJOR.MINOR.PATCH` when present. A profile without an
+   identity — README, governance, machine contract, or runtime projection —
+   declares no `artifact_id` and never invents one.
 10. Update cross-links in the same logical change.
 11. Record execution evidence in the co-located Stage 03 Task.
 12. Validate metadata, links, and stage-specific contracts before completion.

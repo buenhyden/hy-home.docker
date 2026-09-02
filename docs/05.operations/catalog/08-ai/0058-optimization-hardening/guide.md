@@ -1,6 +1,6 @@
 ---
 title: 08-AI Optimization Hardening Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

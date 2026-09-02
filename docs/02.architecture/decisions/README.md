@@ -57,7 +57,7 @@ docs/02.architecture/decisions/
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
-3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/architecture/adr.template.md)를 사용한다.
+3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. 선택, alternatives, rationale와 consequences를 보존한다.
 5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
    supersession을 명시한다.
@@ -83,4 +83,4 @@ supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 AD
 - [Product Requirements](../../01.requirements/README.md)
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
-- [ADR Template](../../99.templates/templates/architecture/adr.template.md)
+- [ADR Template](../../99.templates/templates/architecture/decision.template.md)

@@ -569,7 +569,13 @@ def validate_body_contract(
         if (
             registered_profile == record.artifact_type
             and isinstance(profile, Mapping)
-            and profile.get("template_id") is None
+            and (
+                profile.get("template_id") is None
+                # A profile outside the typed target set never reaches the
+                # template-role route below, so its registered sections are
+                # enforced here whether or not it also declares a template.
+                or record.artifact_type not in _typed_target_types(profiles)
+            )
         ):
             findings: list[Finding] = []
             h1, h2 = extract_markdown_headings(text)

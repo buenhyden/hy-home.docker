@@ -1,7 +1,7 @@
 ---
 title: "Reference: Tech-Stack Version Provenance"
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0061
@@ -127,27 +127,27 @@ regenerate it with `bash scripts/operations/generate-tech-stack-version-provenan
 
 | Component | Image | Status | Severity | Source Provenance | Exception |
 | --- | --- | --- | --- | --- | --- |
-| Traefik | `traefik:v3.7.8` | `declared-pinned` | `none` | `infra/01-gateway/traefik/docker-compose.yml:12` (direct) | N/A |
-| Keycloak | `quay.io/keycloak/keycloak:26.7.0-0` | `declared-pinned` | `none` | `infra/02-auth/keycloak/docker-compose.yml:33` (direct) | N/A |
+| Traefik | `traefik:v3.7.12` | `declared-pinned` | `none` | `infra/01-gateway/traefik/docker-compose.yml:12` (direct) | N/A |
+| Keycloak | `quay.io/keycloak/keycloak:26.7.3-0` | `declared-pinned` | `none` | `infra/02-auth/keycloak/docker-compose.yml:33` (direct) | N/A |
 | Vault | `hashicorp/vault:2.0.3` | `declared-pinned` | `none` | `infra/03-security/vault/docker-compose.yml:33` (direct)<br>`infra/03-security/vault/docker-compose.yml:91` (direct) | N/A |
 | PostgreSQL | `ghcr.io/zalando/spilo-17:4.0-p3` | `declared-pinned` | `none` | `infra/04-data/relational/postgresql-cluster/docker-compose.yml:293` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:337` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:381` (direct) | N/A |
-| PostgreSQL | `postgres:18.4-alpine` | `declared-pinned` | `none` | `infra/04-data/operational/mng-db/docker-compose.yml:111` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:148` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:241` (direct) | N/A |
-| PostgreSQL | `supabase/postgres:17.6.1.150` | `declared-pinned` | `none` | `infra/04-data/operational/supabase/docker-compose.yml:364` (direct) | N/A |
-| Valkey | `valkey/valkey:9.1.0-alpine` | `declared-pinned` | `none` | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:11` (direct)<br>`infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:188` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:25` (direct)<br>`infra/07-workflow/airflow/docker-compose.yml:364` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:245` (direct) | N/A |
+| PostgreSQL | `postgres:18.6-alpine` | `declared-pinned` | `none` | `infra/04-data/operational/mng-db/docker-compose.yml:111` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:148` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:241` (direct) | N/A |
+| PostgreSQL | `supabase/postgres:17.6.1.167` | `declared-pinned` | `none` | `infra/04-data/operational/supabase/docker-compose.yml:364` (direct) | N/A |
+| Valkey | `valkey/valkey:9.1.1-alpine` | `declared-pinned` | `none` | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:11` (direct)<br>`infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:188` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:25` (direct)<br>`infra/07-workflow/airflow/docker-compose.yml:364` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:245` (direct) | N/A |
 | Kafbat UI | `kafbat/kafka-ui:v1.5.0` | `declared-pinned` | `none` | `infra/05-messaging/kafka/docker-compose.yml:309` (direct) | N/A |
 | Kafka | `confluentinc/cp-kafka:8.3.0` | `declared-pinned` | `none` | `infra/05-messaging/kafka/docker-compose.yml:31` (direct)<br>`infra/05-messaging/kafka/docker-compose.yml:409` (direct) | N/A |
-| Alloy | `grafana/alloy:v1.18.0` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:199` (direct) | N/A |
-| Grafana | `grafana/grafana:13.1.0` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:253` (direct) | N/A |
+| Alloy | `grafana/alloy:v1.19.2` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:199` (direct) | N/A |
+| Grafana | `grafana/grafana:13.2.0` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:253` (direct) | N/A |
 | Loki | `hy/loki:3.7.3-custom` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:107` (direct) | N/A |
-| Prometheus | `prom/prometheus:v3.13.1` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:56` (direct) | N/A |
+| Prometheus | `prom/prometheus:v3.14.0` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:56` (direct) | N/A |
 | Tempo | `hy/tempo:3.0.2-custom` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:156` (direct) | N/A |
-| Airflow | `apache/airflow:3.3.0` | `declared-pinned` | `none` | `infra/07-workflow/airflow/docker-compose.yml:30` (env-default) | N/A |
+| Airflow | `apache/airflow:3.3.1` | `declared-pinned` | `none` | `infra/07-workflow/airflow/docker-compose.yml:30` (env-default) | N/A |
 | n8n | `hyhome/n8n:2.29.5-local` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:68` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:130` (direct) | N/A |
-| n8n | `n8nio/runners:2.29.6` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:172` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:209` (direct) | N/A |
-| Ollama | `ollama/ollama:0.32.1` | `declared-pinned` | `none` | `infra/08-ai/ollama/docker-compose.yml:26` (direct) | N/A |
-| Open WebUI | `ghcr.io/open-webui/open-webui:v0.10.2-cuda` | `declared-pinned` | `none` | `infra/08-ai/open-webui/docker-compose.yml:20` (direct) | N/A |
+| n8n | `n8nio/runners:2.36.9` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:172` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:209` (direct) | N/A |
+| Ollama | `ollama/ollama:0.33.2` | `declared-pinned` | `none` | `infra/08-ai/ollama/docker-compose.yml:26` (direct) | N/A |
+| Open WebUI | `ghcr.io/open-webui/open-webui:v0.11.1-cuda` | `declared-pinned` | `none` | `infra/08-ai/open-webui/docker-compose.yml:20` (direct) | N/A |
 | Open Notebook | `lfnovo/open_notebook:v1-latest-single` | `floating-exception` | `advisory` | `infra/11-laboratory/open-notebook/docker-compose.yml:56` (direct) | Laboratory Operator / monthly |
-| RedisInsight | `redis/redisinsight:3.6.0` | `declared-pinned` | `none` | `infra/11-laboratory/redisinsight/docker-compose.yml:20` (direct) | N/A |
+| RedisInsight | `redis/redisinsight:3.8.0` | `declared-pinned` | `none` | `infra/11-laboratory/redisinsight/docker-compose.yml:20` (direct) | N/A |
 
 ## Floating Exception Detail
 

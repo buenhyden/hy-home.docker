@@ -57,7 +57,7 @@ docs/02.architecture/descriptions/
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.
 3. 새 문서는
-   [`architecture-description.template.md`](../../99.templates/templates/architecture/architecture-description.template.md)를 사용한다.
+   [`architecture-description.template.md`](../../99.templates/templates/architecture/description.template.md)를 사용한다.
 4. 현재 구현과 저장소 사실만 설명하고 확인되지 않은 runtime 구조를 만들지
    않는다.
 5. material choice는 [ADR](../decisions/README.md)에 기록한다.
@@ -83,4 +83,4 @@ secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interf
 - [Architecture Decisions](../decisions/README.md)
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
-- [Architecture Description Template](../../99.templates/templates/architecture/architecture-description.template.md)
+- [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)

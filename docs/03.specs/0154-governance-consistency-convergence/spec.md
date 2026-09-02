@@ -1,7 +1,7 @@
 ---
 title: Governance Consistency Convergence Outcome
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0154

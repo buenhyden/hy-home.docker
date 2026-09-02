@@ -1,7 +1,7 @@
 ---
 title: Postflight Routing
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

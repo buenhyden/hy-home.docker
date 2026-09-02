@@ -1,7 +1,7 @@
 ---
 title: iac-reviewer
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: iac-reviewer

@@ -1,6 +1,6 @@
 ---
 title: Open WebUI Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

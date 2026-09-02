@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: references/data-member
-layer: <layer>
+version: "#.#.#"
+type: reference/data
+layer: references
 status: draft
 owner: <owner>
 artifact_id: DATA-####-m####

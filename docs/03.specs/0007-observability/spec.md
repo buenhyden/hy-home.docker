@@ -1,7 +1,7 @@
 ---
 title: Observability Capability Specification
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: active
 owner: "@buenhyden"
 artifact_id: SPEC-0007

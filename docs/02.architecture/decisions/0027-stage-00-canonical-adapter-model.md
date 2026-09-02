@@ -1,6 +1,6 @@
 ---
 title: Stage 00 Canonical Adapter Model
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: superseded
 owner: "@buenhyden"

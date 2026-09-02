@@ -1,6 +1,6 @@
 ---
 title: 01-Gateway Nginx Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

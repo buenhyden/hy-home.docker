@@ -44,8 +44,8 @@ for tool in registry["tools"]:
 lines = [
     "---",
     'title: "Reference: Sample-service Local Supply-chain Verification"',
-    "type: references/data",
-    "layer: reference",
+    "type: reference/data-pack",
+    "layer: references",
     "status: active",
     "owner: \"@buenhyden\"",
     "artifact_id: DATA-0079",

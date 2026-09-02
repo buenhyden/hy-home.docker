@@ -1,6 +1,6 @@
 ---
 title: 04-Data Optimization Hardening Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

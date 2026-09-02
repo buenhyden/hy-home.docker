@@ -1,6 +1,6 @@
 ---
 title: "03-Security (Vault) Optimization & Hardening Product Requirements"
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

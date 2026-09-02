@@ -1,6 +1,6 @@
 ---
 title: 02-Auth Keycloak Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

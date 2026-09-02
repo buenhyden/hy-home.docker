@@ -1082,7 +1082,7 @@ def _legacy_spec_relation_alias(record: Record) -> str | None:
 
     if (
         record.artifact_type != "spec"
-        or record.metadata.get("type") != "specs/spec"
+        or record.metadata.get("type") != "sdlc/spec"
     ):
         return None
     path_match = LEGACY_SPEC_RELATION_PATH.fullmatch(record.path.as_posix())
@@ -1698,7 +1698,14 @@ def _typed_target_types(profiles: dict[str, object]) -> set[str]:
     families = profiles.get("document_families", {})
     if not isinstance(families, dict):
         return set()
-    excluded = {"readme", "governance", "generated", "template-source", "repo-support", "unsupported"}
+    # Stage 00 governance profiles are not SDLC targets. Their section contract
+    # is enforced from the Registry profile directly, whether or not the profile
+    # also registers a copyable Stage 99 template.
+    excluded = {"readme", "governance", "generated", "template-source", "repo-support", "unsupported"} | {
+        "governance-policy", "governance-hook-policy", "governance-role",
+        "governance-skill", "governance-provider", "governance-provider-index",
+        "governance-sdlc", "runtime-projection-claude", "runtime-projection-codex",
+    }
     return {
         item
         for members in families.values()
@@ -2954,7 +2961,7 @@ def build_registry_transition_profiles(
 
 def _registry_path_glob(pattern: str) -> str:
     rendered = re.sub(r"\{[^{}]+:4\}", "[0-9][0-9][0-9][0-9]", pattern)
-    return re.sub(r"\{(?:slug|domain|stage)\}", "*", rendered)
+    return re.sub(r"\{(?:slug|domain|stage|hook_slug)\}", "*", rendered)
 
 
 

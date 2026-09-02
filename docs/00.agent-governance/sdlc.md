@@ -1,7 +1,7 @@
 ---
 title: Software Development Lifecycle
 type: governance/sdlc
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

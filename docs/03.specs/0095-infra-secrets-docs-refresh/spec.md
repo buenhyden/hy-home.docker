@@ -1,7 +1,7 @@
 ---
 title: Infrastructure, Secrets, and Documentation Refresh Outcome
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0095

@@ -1,7 +1,7 @@
 ---
 title: 03.specs
 type: common/readme
-layer: specification
+layer: specs
 status: active
 owner: "@buenhyden"
 ---

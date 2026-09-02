@@ -1,7 +1,7 @@
 ---
 title: 11-Laboratory Optimization Hardening Technical Specification
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: active
 owner: "@buenhyden"
 artifact_id: SPEC-0012

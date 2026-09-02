@@ -33,6 +33,7 @@ from scripts.lib.document_governance.registry import (
     classify_path as classify_registered_path,
     load_registry,
     load_trusted_requirement_allocation_baseline,
+    resolve_template_placeholders,
     validate_frontmatter,
 )
 from scripts.lib.document_governance.requirements import (
@@ -1009,16 +1010,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         )
                     )
                 try:
-                    schema_values = {
-                        key: (
-                            "2000-01-01T00:00:00Z"
-                            if value == "YYYY-MM-DDTHH:MM:SSZ"
-                            else "2000-01-01"
-                            if value == "YYYY-MM-DD"
-                            else value
-                        )
-                        for key, value in values.items()
-                    }
+                    schema_values = resolve_template_placeholders(values)
                     schema_findings = validate_frontmatter(
                         schema_values,
                         root

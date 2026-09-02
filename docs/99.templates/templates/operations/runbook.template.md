@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: operations/runbook
-layer: <layer>
+version: "#.#.#"
+type: operation/runbook
+layer: operations
 status: draft
 owner: <owner>
 artifact_id: RUN-####

@@ -1,7 +1,7 @@
 ---
 title: Agent Bootstrap Policy
 type: governance/policy
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

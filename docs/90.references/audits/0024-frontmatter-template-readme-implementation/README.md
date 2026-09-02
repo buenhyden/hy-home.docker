@@ -1,7 +1,7 @@
 ---
 title: "Reference: Frontmatter, Template, and README Implementation Audit"
-type: references/audit
-layer: reference
+type: reference/audit-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: AUD-0024
@@ -176,7 +176,7 @@ unrelated historical findings remain advisory.
 - [Frontmatter contract](../../../99.templates/README.md) - current key/profile and README/generated rules
 - [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - target-stage status, template, and numbering rules
-- [Reference template](../../../99.templates/templates/references/research.template.md) - active report profile
+- [Reference template](../../../99.templates/templates/references/research-pack.template.md) - active report profile
 
 ## Maintenance
 

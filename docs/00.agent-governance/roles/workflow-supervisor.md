@@ -1,7 +1,7 @@
 ---
 title: workflow-supervisor
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: workflow-supervisor

@@ -8,7 +8,10 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.metadata import profile as profile_module
-from scripts.lib.document_governance.registry import document_type
+from scripts.lib.document_governance.registry import (
+    _declares_provider_binding,
+    document_type,
+)
 from tests.lib.document_governance.metadata._support import (
     REGISTRY,
     ROOT,
@@ -172,7 +175,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 self.assertLessEqual(set(headings), set(required) | set(optional))
 
     def test_audit_has_a_distinct_registered_form(self) -> None:
-        role = self.registry.template_roles["references/audit"]
+        role = self.registry.template_roles["reference/audit-pack"]
         self.assertEqual("audit", role["profile_id"])
         self.assertTrue((ROOT / role["source"]).read_bytes())
 
@@ -257,10 +260,10 @@ class TemplateMetadataTests(unittest.TestCase):
             ),
             "docs/99.templates/templates/README.md": (
                 "Requirement Package",
-                "Architecture Description, ADR",
+                "Architecture Description, Architecture Decision",
                 "Guide, Policy, Runbook, Incident, Postmortem",
                 "Research, Audit, Data",
-                "| Archive | `archive/` | Tombstone |",
+                "| Archive | `archive/` | Migration, Tombstone |",
             ),
         }
         for relative_path, literal_inventories in catalogs.items():
@@ -281,7 +284,14 @@ class TemplateMetadataTests(unittest.TestCase):
                 self.assertTrue(source.is_file())
                 if source.suffix != ".md":
                     continue
+                profile = self.registry.profiles[str(role["profile_id"])]
                 values = metadata.parse_frontmatter(source)
+                if _declares_provider_binding(profile):
+                    # A provider runtime owns this binding, so it carries no type.
+                    self.assertIn("name", values)
+                    self.assertIn("description", values)
+                    self.assertIsNone(values.get("type"))
+                    continue
                 self.assertEqual(document_type(str(role["profile_id"])), values.get("type"))
                 text = source.read_text(encoding="utf-8")
                 for target_prefix in (
@@ -323,12 +333,18 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertFalse((ROOT / "docs/05.operations/releases").exists())
 
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
-        path_text = "docs/99.templates/templates/common/readme.template.md"
+        path_text = "docs/99.templates/templates/common/readme-stage.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual(
             {
+                "title": "<title>",
+                "version": "#.#.#",
                 "type": "common/readme",
+                "layer": "<layer>",
                 "status": "draft",
+                "owner": "<owner>",
+                "created": "YYYY-MM-DD",
+                "updated": "YYYY-MM-DD",
             },
             values,
         )

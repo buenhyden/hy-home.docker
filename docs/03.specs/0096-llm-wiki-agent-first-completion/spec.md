@@ -1,7 +1,7 @@
 ---
 title: LLM Wiki Completion Outcome
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0096

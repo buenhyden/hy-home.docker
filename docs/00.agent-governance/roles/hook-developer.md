@@ -1,7 +1,7 @@
 ---
 title: hook-developer
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: hook-developer

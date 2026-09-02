@@ -1,7 +1,7 @@
 ---
 title: Provider Capability Matrix
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

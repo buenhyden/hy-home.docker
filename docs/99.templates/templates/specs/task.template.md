@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: specs/task
-layer: <layer>
+version: "#.#.#"
+type: sdlc/task
+layer: specs
 status: draft
 owner: <owner>
 artifact_id: SPEC-####-TSK-####

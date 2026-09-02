@@ -1,6 +1,6 @@
 ---
 title: Open WebUI as Primary AI/RAG Interface
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

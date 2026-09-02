@@ -1,6 +1,6 @@
 ---
 title: Alloy Readiness and Pipeline Recovery Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

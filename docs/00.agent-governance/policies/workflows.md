@@ -1,7 +1,7 @@
 ---
 title: Workflows
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

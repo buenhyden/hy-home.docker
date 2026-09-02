@@ -1,7 +1,7 @@
 ---
 title: Compose Enablement Model Convergence Specification
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: draft
 owner: "@buenhyden"
 artifact_id: SPEC-0156

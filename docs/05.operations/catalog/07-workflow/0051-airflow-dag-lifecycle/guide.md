@@ -1,6 +1,6 @@
 ---
 title: Airflow Dag Basics Operations
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

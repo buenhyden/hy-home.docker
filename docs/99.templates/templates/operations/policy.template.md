@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: operations/policy
-layer: <layer>
+version: "#.#.#"
+type: operation/policy
+layer: operations
 status: draft
 owner: <owner>
 artifact_id: POL-####

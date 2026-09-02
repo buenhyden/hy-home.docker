@@ -162,8 +162,8 @@ def compact_refs(items: list[dict[str, object]], limit: int = 18) -> str:
 lines: list[str] = [
     "---",
     'title: "Reference: Docker Compose Profile Service Coverage"',
-    "type: references/data",
-    "layer: reference",
+    "type: reference/data-pack",
+    "layer: references",
     "status: active",
     "owner: \"@buenhyden\"",
     "artifact_id: DATA-0059",

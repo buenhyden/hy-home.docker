@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: requirements/package
-layer: <layer>
+version: "#.#.#"
+type: sdlc/requirement
+layer: requirements
 status: draft
 owner: <owner>
 artifact_id: REQ-####

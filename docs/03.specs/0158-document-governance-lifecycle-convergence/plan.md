@@ -1,7 +1,7 @@
 ---
 title: Document Governance Lifecycle Convergence Implementation Plan
-type: specs/plan
-layer: specification
+type: sdlc/plan
+layer: specs
 status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0158-PLAN-0001

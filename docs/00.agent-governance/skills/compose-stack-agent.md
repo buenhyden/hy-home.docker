@@ -1,7 +1,7 @@
 ---
 title: compose-stack-agent
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: compose-stack-agent

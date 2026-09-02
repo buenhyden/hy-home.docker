@@ -603,6 +603,7 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
     if (
         "release" in profile_ids
         or "operations/release" in roles
+        or "operation/release" in roles
         or release_template_present
     ):
         findings.append(

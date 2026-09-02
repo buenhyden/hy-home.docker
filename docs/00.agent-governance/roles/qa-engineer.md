@@ -1,7 +1,7 @@
 ---
 title: qa-engineer
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: qa-engineer

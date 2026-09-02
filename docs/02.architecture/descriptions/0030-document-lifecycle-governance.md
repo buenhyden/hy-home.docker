@@ -1,6 +1,6 @@
 ---
 title: 문서 Lifecycle 거버넌스 아키텍처
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"

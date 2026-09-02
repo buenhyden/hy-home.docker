@@ -1,7 +1,7 @@
 ---
 title: Converge Document Governance by Lifecycle
-type: specs/task
-layer: specification
+type: sdlc/task
+layer: specs
 status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0158-TSK-0001

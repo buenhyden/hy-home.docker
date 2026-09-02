@@ -1,6 +1,6 @@
 ---
 title: 은퇴 기록으로서의 Tombstone
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

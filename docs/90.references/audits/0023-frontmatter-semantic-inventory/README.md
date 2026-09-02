@@ -1,7 +1,7 @@
 ---
 title: "Reference: Frontmatter Semantic Inventory"
-type: references/audit
-layer: reference
+type: reference/audit-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: AUD-0023
@@ -991,7 +991,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/99.templates/templates/common/archive.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/audit.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/content-archive.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
-| `docs/99.templates/templates/common/readme.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
+| `docs/99.templates/templates/common/readme-stage.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/reference.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/governance/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/templates/governance/memory.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |

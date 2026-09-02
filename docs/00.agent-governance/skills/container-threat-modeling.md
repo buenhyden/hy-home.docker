@@ -1,7 +1,7 @@
 ---
 title: container-threat-modeling
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: container-threat-modeling

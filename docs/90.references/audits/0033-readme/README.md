@@ -1,7 +1,7 @@
 ---
 title: "Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update)"
-type: references/audit
-layer: reference
+type: reference/audit-pack
+layer: references
 status: superseded
 owner: "@buenhyden"
 artifact_id: AUD-0033

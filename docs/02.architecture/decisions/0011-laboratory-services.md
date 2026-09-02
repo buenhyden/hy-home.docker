@@ -1,6 +1,6 @@
 ---
 title: Laboratory Services Selection and Configuration
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

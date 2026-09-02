@@ -1,7 +1,7 @@
 ---
 title: infra-implementer
 type: governance/role
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 agent_id: infra-implementer

@@ -1,7 +1,7 @@
 ---
 title: "Reference: Provider Harness and Loop Implementation"
-type: references/audit
-layer: reference
+type: reference/audit-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: AUD-0028

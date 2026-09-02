@@ -1,6 +1,6 @@
 ---
 title: "11-Laboratory Optimization & Hardening Product Requirements"
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

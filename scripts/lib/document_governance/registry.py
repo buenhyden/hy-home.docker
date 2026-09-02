@@ -665,6 +665,29 @@ def validate_registry(
     return tuple(sorted(set(findings)))
 
 
+TEMPLATE_PLACEHOLDER_SENTINELS: Mapping[str, str] = MappingProxyType({
+    "YYYY-MM-DDTHH:MM:SSZ": "2000-01-01T00:00:00Z",
+    "YYYY-MM-DD": "2000-01-01",
+    "#.#.#": "0.0.0",
+})
+
+
+def resolve_template_placeholders(values: Mapping[str, object]) -> dict[str, object]:
+    """Replace Stage 99 template placeholders with schema-valid sentinel values.
+
+    A template source carries a readable placeholder where an authored document
+    carries a typed value. One shared table keeps the schema strict for authored
+    documents while every template consumer substitutes identically.
+    """
+
+    return {
+        key: TEMPLATE_PLACEHOLDER_SENTINELS.get(value, value)
+        if isinstance(value, str)
+        else value
+        for key, value in values.items()
+    }
+
+
 def validate_frontmatter(
     values: Mapping[str, object],
     schema_path: pathlib.Path = DEFAULT_FRONTMATTER_SCHEMA,
@@ -1474,7 +1497,7 @@ def _safe_template_source(value: str) -> bool:
         and "\\" not in value
         and ".." not in path.parts
         and path.as_posix() == value
-        and value.endswith((".template.md", ".template.yaml", ".template.graphql", ".template.proto"))
+        and value.endswith((".template.md", ".template.yaml", ".template.graphql", ".template.proto", ".template.toml"))
     )
 
 

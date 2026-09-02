@@ -1,6 +1,6 @@
 ---
 title: Workspace Governance Authority
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

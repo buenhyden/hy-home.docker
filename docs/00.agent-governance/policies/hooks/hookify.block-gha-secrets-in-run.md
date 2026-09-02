@@ -1,7 +1,7 @@
 ---
 title: "BLOCKED: prints a secret to logs"
 type: governance/hook-policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 name: block-gha-secrets-in-run
 enabled: true

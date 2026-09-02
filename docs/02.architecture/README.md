@@ -54,8 +54,8 @@ docs/02.architecture/
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은
-   [`architecture-description.template.md`](../99.templates/templates/architecture/architecture-description.template.md)를 사용한다.
-3. 새 결정은 [`adr.template.md`](../99.templates/templates/architecture/adr.template.md)를 사용한다.
+   [`architecture-description.template.md`](../99.templates/templates/architecture/description.template.md)를 사용한다.
+3. 새 결정은 [`adr.template.md`](../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. Description은 실제 상위 요구사항, ADR은 실제 Description을
    `parent_ids`로 연결한다.
 5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고, 확인되지

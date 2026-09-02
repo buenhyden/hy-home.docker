@@ -202,7 +202,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertEqual(
                     f"REQ-{match.group('number')}", metadata["artifact_id"]
                 )
-                self.assertEqual("requirements/package", metadata["type"])
+                self.assertEqual("sdlc/requirement", metadata["type"])
                 self.assertEqual([], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
@@ -230,7 +230,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"AD-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("architecture/description", metadata["type"])
+                self.assertEqual("sdlc/architecture-description", metadata["type"])
                 self.assertEqual(
                     [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
                 )
@@ -257,7 +257,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 metadata = metadata_for(path)
                 artifact_id = f"ADR-{match.group('number')}"
                 self.assertEqual(artifact_id, metadata["artifact_id"])
-                self.assertEqual("architecture/decision", metadata["type"])
+                self.assertEqual("sdlc/architecture-decision", metadata["type"])
                 self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
                 self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
                 self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")

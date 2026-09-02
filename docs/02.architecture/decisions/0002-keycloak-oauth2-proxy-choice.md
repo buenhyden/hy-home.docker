@@ -1,6 +1,6 @@
 ---
 title: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

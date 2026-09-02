@@ -1,6 +1,6 @@
 ---
 title: 02-Auth OAuth2 Proxy Usage Guide
-type: operations/guide
+type: operation/guide
 layer: operations
 status: active
 owner: "@buenhyden"

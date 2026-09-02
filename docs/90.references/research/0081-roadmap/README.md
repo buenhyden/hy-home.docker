@@ -1,7 +1,7 @@
 ---
 title: "Reference: CS, CE & SE Self-Learning Roadmap (v2)"
-type: references/research
-layer: reference
+type: reference/research-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: RES-0081

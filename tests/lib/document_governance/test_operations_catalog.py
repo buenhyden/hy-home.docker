@@ -145,7 +145,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_registry_operations_profiles_and_template_roles_are_present(self) -> None:
         mutations = (
             ("profile_id", "guide-copy"),
-            ("template_id", "operations/policy"),
+            ("template_id", "operation/policy"),
         )
         for key, value in mutations:
             with self.subTest(key=key):
@@ -328,7 +328,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
             role.write_text(
-                text.replace(f"type: operations/{role_name}\n", "", 1),
+                text.replace(f"type: operation/{role_name}\n", "", 1),
                 encoding="utf-8",
             )
             self.assertIn("role-profile-invalid", finding_codes(root))
@@ -343,8 +343,8 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role.write_text(
                 text.replace(
-                    f"type: operations/{role_name}\n",
-                    f"type: operations/{role_name}\ntype: operations/{role_name}\n",
+                    f"type: operation/{role_name}\n",
+                    f"type: operation/{role_name}\ntype: operation/{role_name}\n",
                     1,
                 ),
                 encoding="utf-8",
@@ -367,7 +367,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)
         metadata = (
-            f"---\ntype: operations/incident\nstatus: {status}\n"
+            f"---\ntype: operation/incident\nstatus: {status}\n"
             f"artifact_id: {artifact_id}\nartifact_type: incident\nparent_ids: []\n"
             "created: 2026-08-23\nupdated: 2026-08-23\n"
             f"occurred_at: {occurred_at}\nresolved_at: {resolved_at}\n---\n"

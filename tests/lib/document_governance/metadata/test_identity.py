@@ -118,7 +118,7 @@ class CheckerCliTests(unittest.TestCase):
                 ),
                 {
                     "title": "Generated Data Member",
-                    "type": "references/data-member",
+                    "type": "reference/data",
                     "layer": "reference",
                     "status": "active",
                     "owner": "@buenhyden",

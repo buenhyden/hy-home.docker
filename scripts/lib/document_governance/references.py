@@ -32,9 +32,9 @@ from scripts.lib.document_governance.operations_catalog import read_bounded_regu
 CATEGORIES = ("audits", "data", "research")
 PREFIX_BY_CATEGORY = {"audits": "AUD-", "data": "DATA-", "research": "RES-"}
 PROFILE_BY_CATEGORY = {
-    "audits": "references/audit",
-    "data": "references/data",
-    "research": "references/research",
+    "audits": "reference/audit-pack",
+    "data": "reference/data-pack",
+    "research": "reference/research-pack",
 }
 DATA_PAYLOAD_NAME = "data.yaml"
 PACKAGE_PATH = re.compile(r"(?:audits|data|research)/[0-9]{4}-[a-z0-9][a-z0-9-]*")

@@ -1,6 +1,6 @@
 ---
 title: Operations — 07 Workflow
-type: operations/domain-readme
+type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"
 ---

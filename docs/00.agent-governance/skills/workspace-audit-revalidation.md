@@ -1,7 +1,7 @@
 ---
 title: workspace-audit-revalidation
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: workspace-audit-revalidation

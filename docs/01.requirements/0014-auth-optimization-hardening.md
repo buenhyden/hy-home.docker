@@ -1,6 +1,6 @@
 ---
 title: "02-Auth Optimization & Hardening Product Requirements"
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

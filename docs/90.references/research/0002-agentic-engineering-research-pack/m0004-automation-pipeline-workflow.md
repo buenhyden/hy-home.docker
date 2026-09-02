@@ -1,7 +1,7 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-type: references/research-member
-layer: reference
+type: reference/research
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: RES-0002-m0004

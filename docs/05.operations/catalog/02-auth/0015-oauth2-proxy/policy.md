@@ -1,6 +1,6 @@
 ---
 title: 02-Auth OAuth2 Proxy Operations Policy
-type: operations/policy
+type: operation/policy
 layer: operations
 status: active
 owner: "@buenhyden"

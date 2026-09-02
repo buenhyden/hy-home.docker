@@ -1,6 +1,6 @@
 ---
 title: 04-Data Storage Exhaustion Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

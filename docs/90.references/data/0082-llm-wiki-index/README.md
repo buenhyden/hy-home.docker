@@ -1,7 +1,7 @@
 ---
 title: LLM Wiki Generated Index
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0082
@@ -611,32 +611,41 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/contracts/frontmatter.schema.json](../../../99.templates/contracts/frontmatter.schema.json) | JSON registry |
 | [docs/99.templates/registry.json](../../../99.templates/registry.json) | JSON registry |
 | [docs/99.templates/templates/README.md](../../../99.templates/templates/README.md) | folder index |
-| [docs/99.templates/templates/architecture/adr.template.md](../../../99.templates/templates/architecture/adr.template.md) | Markdown reference |
-| [docs/99.templates/templates/architecture/architecture-description.template.md](../../../99.templates/templates/architecture/architecture-description.template.md) | Markdown reference |
+| [docs/99.templates/templates/architecture/decision.template.md](../../../99.templates/templates/architecture/decision.template.md) | Markdown reference |
+| [docs/99.templates/templates/architecture/description.template.md](../../../99.templates/templates/architecture/description.template.md) | Markdown reference |
 | [docs/99.templates/templates/archive/migration.template.md](../../../99.templates/templates/archive/migration.template.md) | Markdown reference |
 | [docs/99.templates/templates/archive/tombstone.template.md](../../../99.templates/templates/archive/tombstone.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/README.md](../../../99.templates/templates/common/README.md) | folder index |
-| [docs/99.templates/templates/common/readme.template.md](../../../99.templates/templates/common/readme.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/readme-domain.template.md](../../../99.templates/templates/common/readme-domain.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/readme-package.template.md](../../../99.templates/templates/common/readme-package.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/readme-stage.template.md](../../../99.templates/templates/common/readme-stage.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../../99.templates/templates/governance/README.md) | folder index |
-| [docs/99.templates/templates/governance/agent-projection.template.md](../../../99.templates/templates/governance/agent-projection.template.md) | Markdown reference |
-| [docs/99.templates/templates/governance/skill-projection.template.md](../../../99.templates/templates/governance/skill-projection.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/contract.template.md](../../../99.templates/templates/governance/contract.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/control.template.md](../../../99.templates/templates/governance/control.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/provider.template.md](../../../99.templates/templates/governance/provider.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/role.template.md](../../../99.templates/templates/governance/role.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/rule.template.md](../../../99.templates/templates/governance/rule.template.md) | Markdown reference |
+| [docs/99.templates/templates/governance/skill.template.md](../../../99.templates/templates/governance/skill.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/README.md](../../../99.templates/templates/operations/README.md) | folder index |
 | [docs/99.templates/templates/operations/guide.template.md](../../../99.templates/templates/operations/guide.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/incident.template.md](../../../99.templates/templates/operations/incident.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/policy.template.md](../../../99.templates/templates/operations/policy.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/postmortem.template.md](../../../99.templates/templates/operations/postmortem.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/runbook.template.md](../../../99.templates/templates/operations/runbook.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/audit-member.template.md](../../../99.templates/templates/references/audit-member.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/audit.template.md](../../../99.templates/templates/references/audit.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/data-member.template.md](../../../99.templates/templates/references/data-member.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/data.template.md](../../../99.templates/templates/references/data.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/research-member.template.md](../../../99.templates/templates/references/research-member.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/research.template.md](../../../99.templates/templates/references/research.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/audit-pack.template.md](../../../99.templates/templates/references/audit-pack.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/audit-reference.template.md](../../../99.templates/templates/references/audit-reference.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/data-pack.template.md](../../../99.templates/templates/references/data-pack.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/data-reference.template.md](../../../99.templates/templates/references/data-reference.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/research-pack.template.md](../../../99.templates/templates/references/research-pack.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/research-reference.template.md](../../../99.templates/templates/references/research-reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/requirements/requirement-package.template.md](../../../99.templates/templates/requirements/requirement-package.template.md) | Markdown reference |
-| [docs/99.templates/templates/specs/openapi.template.yaml](../../../99.templates/templates/specs/openapi.template.yaml) | YAML config |
+| [docs/99.templates/templates/runtime/claude-agent.template.md](../../../99.templates/templates/runtime/claude-agent.template.md) | Markdown reference |
+| [docs/99.templates/templates/runtime/codex-agent.template.toml](../../../99.templates/templates/runtime/codex-agent.template.toml) | source path |
+| [docs/99.templates/templates/specs/contracts/data-model.template.md](../../../99.templates/templates/specs/contracts/data-model.template.md) | Markdown reference |
+| [docs/99.templates/templates/specs/contracts/openapi.template.yaml](../../../99.templates/templates/specs/contracts/openapi.template.yaml) | YAML config |
+| [docs/99.templates/templates/specs/contracts/schema.template.graphql](../../../99.templates/templates/specs/contracts/schema.template.graphql) | source path |
+| [docs/99.templates/templates/specs/contracts/service.template.proto](../../../99.templates/templates/specs/contracts/service.template.proto) | source path |
 | [docs/99.templates/templates/specs/plan.template.md](../../../99.templates/templates/specs/plan.template.md) | Markdown reference |
-| [docs/99.templates/templates/specs/schema.template.graphql](../../../99.templates/templates/specs/schema.template.graphql) | source path |
-| [docs/99.templates/templates/specs/service.template.proto](../../../99.templates/templates/specs/service.template.proto) | source path |
 | [docs/99.templates/templates/specs/spec.template.md](../../../99.templates/templates/specs/spec.template.md) | Markdown reference |
 | [docs/99.templates/templates/specs/task.template.md](../../../99.templates/templates/specs/task.template.md) | Markdown reference |
 | [docs/README.md](../../../README.md) | folder index |

@@ -53,7 +53,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_enforce_machine_source_safety(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
@@ -80,8 +80,8 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         cases = (
             (
                 "profile",
-                "type: requirements/package",
-                "type: specs/spec",
+                "type: sdlc/requirement",
+                "type: sdlc/spec",
                 "template-artifact-type-mismatch",
             ),
             (
@@ -105,7 +105,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         cases = (
             (
@@ -146,7 +146,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_bound_openapi_credential_value_keywords(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         values = {
             "default": "fixture-default-leak",
@@ -196,7 +196,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         cases = {
             "scalar": "fixture-scalar-cli-private",
@@ -229,7 +229,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
@@ -254,7 +254,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/specs/openapi.template.yaml"
+            "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
         cases = (
             (

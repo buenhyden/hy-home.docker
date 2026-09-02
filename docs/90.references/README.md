@@ -1,7 +1,7 @@
 ---
 title: References
 type: common/readme
-layer: reference
+layer: references
 status: active
 owner: "@buenhyden"
 ---
@@ -62,6 +62,6 @@ Deprecated redirects, compatibility copies, `learning/`, and `llm-wiki/` are not
 - [Documentation protocol](../00.agent-governance/policies/documentation-protocol.md)
 - [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
-- [Research template](../99.templates/templates/references/research.template.md)
-- [Audit template](../99.templates/templates/references/audit.template.md)
-- [Data template](../99.templates/templates/references/data.template.md)
+- [Research template](../99.templates/templates/references/research-pack.template.md)
+- [Audit template](../99.templates/templates/references/audit-pack.template.md)
+- [Data template](../99.templates/templates/references/data-pack.template.md)

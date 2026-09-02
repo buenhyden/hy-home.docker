@@ -1,7 +1,7 @@
 ---
 title: Analytics Tier Technical Specification (Spec)
-type: specs/spec
-layer: specification
+type: sdlc/spec
+layer: specs
 status: active
 owner: "@buenhyden"
 artifact_id: SPEC-0005

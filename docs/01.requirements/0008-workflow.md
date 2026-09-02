@@ -1,6 +1,6 @@
 ---
 title: Workflow Tier (07-workflow) Product Requirements
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

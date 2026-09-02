@@ -1,6 +1,6 @@
 ---
 title: Data Optimization and Hardening Architecture
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"

@@ -1,6 +1,6 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

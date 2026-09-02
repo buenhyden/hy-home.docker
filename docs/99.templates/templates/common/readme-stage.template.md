@@ -1,6 +1,12 @@
 ---
+title: <title>
+version: "#.#.#"
 type: common/readme
+layer: <layer>
 status: draft
+owner: <owner>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
 ---
 
 # {{title}}

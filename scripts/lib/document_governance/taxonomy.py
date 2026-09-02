@@ -366,11 +366,11 @@ def validate_stable_identity(
         findings.append(
             TaxonomyFinding("path-id-mismatch", str(path), artifact_id)
         )
-    incident_role = artifact_type in {"operations/incident", "operations/postmortem"}
+    incident_role = artifact_type in {"operation/incident", "operation/postmortem"}
     role_filename_valid = (
-        artifact_type == "operations/incident" and path.name == "incident.md"
+        artifact_type == "operation/incident" and path.name == "incident.md"
     ) or (
-        artifact_type == "operations/postmortem" and path.name == "postmortem.md"
+        artifact_type == "operation/postmortem" and path.name == "postmortem.md"
     )
     valid_incident_route = (
         incident_role and role_filename_valid and is_valid_incident_path(path)

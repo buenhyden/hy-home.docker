@@ -1,7 +1,7 @@
 ---
 title: AI Agent Standards
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

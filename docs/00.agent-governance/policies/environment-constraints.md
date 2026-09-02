@@ -1,7 +1,7 @@
 ---
 title: Environment Constraints
 type: governance/policy
-layer: agentic
+layer: agent-governance
 owner: "@buenhyden"
 ---
 

@@ -474,7 +474,7 @@ FIXTURES: dict[str, Fixture] = {
             evidence="`git diff --check`, LLM Wiki freshness, doc traceability when relevant, doc implementation alignment, repo contracts.",
         ),
         (
-            "docs/99.templates/templates/references/research.template.md",
+            "docs/99.templates/templates/references/research-pack.template.md",
             "docs/90.references/README.md",
             "docs/90.references/data/0082-llm-wiki-index/README.md",
         ),

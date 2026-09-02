@@ -1,6 +1,6 @@
 ---
 title: Operations — 09 Tooling
-type: operations/domain-readme
+type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"
 ---

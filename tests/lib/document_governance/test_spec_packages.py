@@ -36,7 +36,7 @@ def _document_text(
     parents = "\n".join(f"  - {parent}" for parent in parent_ids)
     return f"""---
 title: Fixture {profile_id}
-type: specs/{profile_id}
+type: sdlc/{profile_id}
 layer: specification
 status: {status}
 owner: "@buenhyden"

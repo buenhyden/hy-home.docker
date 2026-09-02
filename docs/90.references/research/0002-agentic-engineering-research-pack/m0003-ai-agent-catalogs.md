@@ -1,7 +1,7 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-type: references/research-member
-layer: reference
+type: reference/research
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: RES-0002-m0003

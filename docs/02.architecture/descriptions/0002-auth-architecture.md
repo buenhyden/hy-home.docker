@@ -1,6 +1,6 @@
 ---
 title: 02-Auth Architecture Description
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"

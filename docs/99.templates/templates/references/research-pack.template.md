@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: references/research
-layer: <layer>
+version: "#.#.#"
+type: reference/research-pack
+layer: references
 status: draft
 owner: <owner>
 artifact_id: RES-####

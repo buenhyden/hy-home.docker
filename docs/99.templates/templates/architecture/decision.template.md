@@ -1,8 +1,8 @@
 ---
 title: <title>
-version: <version>
-type: architecture/decision
-layer: <layer>
+version: "#.#.#"
+type: sdlc/architecture-decision
+layer: architecture
 status: draft
 owner: <owner>
 artifact_id: ADR-####

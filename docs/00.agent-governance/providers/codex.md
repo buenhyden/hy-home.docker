@@ -1,7 +1,7 @@
 ---
 title: Codex Provider Adapter
 type: governance/provider
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 runtime: codex

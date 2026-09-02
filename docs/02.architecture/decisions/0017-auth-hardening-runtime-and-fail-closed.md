@@ -1,6 +1,6 @@
 ---
 title: 02-Auth Runtime Hardening and Fail-closed Policy
-type: architecture/decision
+type: sdlc/architecture-decision
 layer: architecture
 status: active
 owner: "@buenhyden"

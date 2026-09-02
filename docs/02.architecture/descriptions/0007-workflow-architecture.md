@@ -1,6 +1,6 @@
 ---
 title: Workflow Tier (07-workflow) Architecture Description
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"

@@ -1,7 +1,7 @@
 ---
 title: requirements-to-design-agent
 type: governance/skill
-layer: agentic
+layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: requirements-to-design-agent

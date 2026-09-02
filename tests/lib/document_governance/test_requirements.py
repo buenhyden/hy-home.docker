@@ -43,7 +43,7 @@ def _package_text(
     interface = "" if interface is None else interface
     return f"""---
 title: Fixture Requirement Package
-type: requirements/package
+type: sdlc/requirement
 layer: requirements
 status: active
 owner: "@buenhyden"

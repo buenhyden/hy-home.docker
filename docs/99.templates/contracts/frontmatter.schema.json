@@ -8,6 +8,10 @@
     "artifact_id": {"type": "string", "minLength": 1},
     "type": {"type": "string", "minLength": 1},
     "title": {"type": "string", "minLength": 1},
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
     "owner": {"type": "string", "minLength": 1},
     "parent_ids": {
       "type": "array",

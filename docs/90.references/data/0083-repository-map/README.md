@@ -1,7 +1,7 @@
 ---
 title: "Reference: LLM Wiki Repository Map"
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0083

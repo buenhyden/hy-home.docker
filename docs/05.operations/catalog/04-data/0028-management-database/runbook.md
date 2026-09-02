@@ -1,6 +1,6 @@
 ---
 title: Management Database Health and Init Runbook
-type: operations/runbook
+type: operation/runbook
 layer: operations
 status: active
 owner: "@buenhyden"

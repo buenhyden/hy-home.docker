@@ -280,8 +280,8 @@ def build_output() -> tuple[str, list[str]]:
     lines: list[str] = [
         "---",
         'title: "Reference: Audit Implementation Matrix"',
-        "type: references/data",
-        "layer: reference",
+        "type: reference/data-pack",
+        "layer: references",
         "status: active",
         "owner: \"@buenhyden\"",
         "artifact_id: DATA-0065",

@@ -1,7 +1,7 @@
 ---
 title: "Reference: Agent Output Eval Fixtures"
-type: references/data
-layer: reference
+type: reference/data-pack
+layer: references
 status: active
 owner: "@buenhyden"
 artifact_id: DATA-0064
@@ -84,7 +84,7 @@ approval rules.
 | --- | --- |
 | Surface | docs/90.references/** |
 | Input Scenario | User asks to add or continue a source-backed research, audit, or data reference. |
-| Required Context | `docs/99.templates/templates/references/research.template.md`, `docs/90.references/README.md`, `docs/90.references/data/0082-llm-wiki-index/README.md` |
+| Required Context | `docs/99.templates/templates/references/research-pack.template.md`, `docs/90.references/README.md`, `docs/90.references/data/0082-llm-wiki-index/README.md` |
 | Expected Output | Adds or updates a reference document with required sections, source links, related documents, index updates, and progress evidence. |
 | Scoring Criteria | Scope routing, source grounding, reference-template compliance, index synchronization, generated LLM Wiki freshness, validation evidence. |
 | Block Conditions | Active policy hidden inside reference docs; missing sources for external claims; secret/raw-log content; stale target paths. |

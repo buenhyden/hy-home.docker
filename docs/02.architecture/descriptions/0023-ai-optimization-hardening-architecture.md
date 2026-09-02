@@ -1,6 +1,6 @@
 ---
 title: 08-AI Optimization Hardening Architecture Description
-type: architecture/description
+type: sdlc/architecture-description
 layer: architecture
 status: active
 owner: "@buenhyden"
