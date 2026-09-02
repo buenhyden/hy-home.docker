@@ -13,6 +13,7 @@ from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.registry import (
+    _declares_provider_binding,
     document_type,
     DocumentRegistry,
     classify_path as classify_registered_path,
@@ -93,6 +94,25 @@ def _validate_template_source(
         return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
     placeholders = _template_placeholder_values(profiles)
     findings: list[Finding] = []
+    if _declares_provider_binding(target_profile):
+        # The provider runtime owns this surface, so the guided document
+        # envelope does not apply: no type, status, or parent placeholder. Only
+        # the keys the runtime itself declares are checked.
+        owned_required = set(target_profile.get("required", []))
+        owned_optional = set(target_profile.get("optional", []))
+        for key in sorted(owned_required - set(record.metadata)):
+            findings.append(
+                _finding(record, "missing-template-key", f"target-profile key is missing: {key}")
+            )
+        for key in sorted(set(record.metadata) - owned_required - owned_optional):
+            findings.append(
+                _finding(
+                    record,
+                    "type-inappropriate-key",
+                    f"key is not declared for target {target_type}: {key}",
+                )
+            )
+        return sorted(set(findings))
     required = set(target_profile.get("required", []))
     optional = set(target_profile.get("optional", []))
     forbidden = set(target_profile.get("forbidden", []))
@@ -103,8 +123,22 @@ def _validate_template_source(
         findings.append(_finding(record, "forbidden-template-key", f"key is forbidden for {target_type}: {key}"))
     for key in sorted(set(record.metadata) - allowed_template_keys):
         findings.append(_finding(record, "type-inappropriate-key", f"key is not declared for target {target_type}: {key}"))
-    if record.metadata.get("status") != "draft":
-        findings.append(_finding(record, "invalid-template-status", "template sources must keep status: draft"))
+    # A template source carries its lifecycle's initial status, which is
+    # `draft` for every profile that has one. The incident lifecycle is
+    # `open/mitigated/closed` and has no `draft`, so demanding it there
+    # contradicted the lifecycle-membership check on the same file.
+    allowed_statuses = target_profile.get("allowed_statuses") or ()
+    initial_status = "draft" if "draft" in allowed_statuses else (
+        allowed_statuses[0] if allowed_statuses else "draft"
+    )
+    if record.metadata.get("status") != initial_status:
+        findings.append(
+            _finding(
+                record,
+                "invalid-template-status",
+                f"template sources must keep status: {initial_status}",
+            )
+        )
     if record.metadata.get("type") != document_type(target_type):
         findings.append(
             _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
@@ -474,6 +508,25 @@ def _machine_template_findings(record: Record, text: str) -> list[Finding]:
     return sorted(set(findings))
 
 
+
+def _path_profile_declares_provider_binding(
+    path: pathlib.Path,
+    registry: object,
+) -> bool:
+    """Return whether the Registry profile owning `path` is provider-owned."""
+
+    if not isinstance(registry, DocumentRegistry):
+        return False
+    try:
+        profile_id = classify_registered_path(path.as_posix(), registry)
+    except Exception:
+        return False
+    if profile_id is None:
+        return False
+    profile = registry.profiles.get(profile_id)
+    return isinstance(profile, Mapping) and _declares_provider_binding(profile)
+
+
 def _source_roles_for_path(
     path: pathlib.Path,
     profiles: dict[str, object],
@@ -583,6 +636,11 @@ def validate_body_contract(
             return findings
         role_name, role = source_roles[0]
     elif is_markdown_source:
+        if _path_profile_declares_provider_binding(record.path, registry):
+            # A provider runtime owns this projection source: its body is the
+            # runtime's own render template, so no document body contract and
+            # no role apply.
+            return findings
         findings.append(
             _finding(
                 record,
@@ -779,7 +837,14 @@ def _body_deficit_multiset(
         deficits[(finding.code, identity, "body contract deficit", finding.severity)] += 1
 
     source_roles = _source_roles_for_path(record.path, profiles)
-    if source_roles:
+    # A `.template.md` under the Stage 99 template root is a source even when no
+    # role claims it, as the provider-owned projection sources do. Scanning one
+    # as a target reports its own render tokens as unresolved.
+    is_template_source = bool(source_roles) or (
+        record.path.as_posix().startswith("docs/99.templates/templates/")
+        and record.path.name.endswith(".template.md")
+    )
+    if is_template_source:
         scan_text = "\n".join(_markdown_unfenced_lines(text))
         instruction_code = "template-instruction-in-source"
     elif changed_boundary:
@@ -793,7 +858,7 @@ def _body_deficit_multiset(
         count = len(tuple(re.finditer(re.escape(literal), scan_text)))
         if count:
             deficits[(instruction_code, identity, "template instruction", "error")] += count
-    if not source_roles and changed_boundary:
+    if not is_template_source and changed_boundary:
         for match in MARKDOWN_BODY_TOKEN.finditer(scan_text):
             identity = _private_deficit_identity(
                 "template-body-token-in-target",

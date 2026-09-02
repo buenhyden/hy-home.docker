@@ -1355,7 +1355,8 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "free_form_sections": true
     },
     {
       "profile_id": "generated",
@@ -1439,85 +1440,13 @@
     }
   ],
   "template_roles": {
-    "requirements/package": {
-      "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
-      "profile_id": "requirements-package"
-    },
-    "architecture/description": {
-      "source": "docs/99.templates/templates/architecture/architecture-description.template.md",
-      "profile_id": "architecture-description"
-    },
     "architecture/decision": {
       "source": "docs/99.templates/templates/architecture/adr.template.md",
       "profile_id": "adr"
     },
-    "specs/spec": {
-      "source": "docs/99.templates/templates/specs/spec.template.md",
-      "profile_id": "spec"
-    },
-    "specs/plan": {
-      "source": "docs/99.templates/templates/specs/plan.template.md",
-      "profile_id": "plan"
-    },
-    "specs/task": {
-      "source": "docs/99.templates/templates/specs/task.template.md",
-      "profile_id": "task"
-    },
-    "specs/openapi": {
-      "source": "docs/99.templates/templates/specs/openapi.template.yaml",
-      "profile_id": "openapi-contract"
-    },
-    "specs/graphql": {
-      "source": "docs/99.templates/templates/specs/schema.template.graphql",
-      "profile_id": "graphql-contract"
-    },
-    "specs/proto": {
-      "source": "docs/99.templates/templates/specs/service.template.proto",
-      "profile_id": "proto-contract"
-    },
-    "operations/guide": {
-      "source": "docs/99.templates/templates/operations/guide.template.md",
-      "profile_id": "guide"
-    },
-    "operations/policy": {
-      "source": "docs/99.templates/templates/operations/policy.template.md",
-      "profile_id": "policy"
-    },
-    "operations/runbook": {
-      "source": "docs/99.templates/templates/operations/runbook.template.md",
-      "profile_id": "runbook"
-    },
-    "operations/incident": {
-      "source": "docs/99.templates/templates/operations/incident.template.md",
-      "profile_id": "incident"
-    },
-    "operations/postmortem": {
-      "source": "docs/99.templates/templates/operations/postmortem.template.md",
-      "profile_id": "postmortem"
-    },
-    "references/research": {
-      "source": "docs/99.templates/templates/references/research.template.md",
-      "profile_id": "research"
-    },
-    "references/audit": {
-      "source": "docs/99.templates/templates/references/audit.template.md",
-      "profile_id": "audit"
-    },
-    "references/research-member": {
-      "source": "docs/99.templates/templates/references/research-member.template.md",
-      "profile_id": "research-member"
-    },
-    "references/audit-member": {
-      "source": "docs/99.templates/templates/references/audit-member.template.md",
-      "profile_id": "audit-member"
-    },
-    "references/data-member": {
-      "source": "docs/99.templates/templates/references/data-member.template.md",
-      "profile_id": "generated"
-    },
-    "references/data": {
-      "source": "docs/99.templates/templates/references/data.template.md",
-      "profile_id": "data"
+    "architecture/description": {
+      "source": "docs/99.templates/templates/architecture/architecture-description.template.md",
+      "profile_id": "architecture-description"
     },
     "archive/migration": {
       "source": "docs/99.templates/templates/archive/migration.template.md",
@@ -1530,6 +1459,78 @@
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme.template.md",
       "profile_id": "readme"
+    },
+    "operations/guide": {
+      "source": "docs/99.templates/templates/operations/guide.template.md",
+      "profile_id": "guide"
+    },
+    "operations/incident": {
+      "source": "docs/99.templates/templates/operations/incident.template.md",
+      "profile_id": "incident"
+    },
+    "operations/policy": {
+      "source": "docs/99.templates/templates/operations/policy.template.md",
+      "profile_id": "policy"
+    },
+    "operations/postmortem": {
+      "source": "docs/99.templates/templates/operations/postmortem.template.md",
+      "profile_id": "postmortem"
+    },
+    "operations/runbook": {
+      "source": "docs/99.templates/templates/operations/runbook.template.md",
+      "profile_id": "runbook"
+    },
+    "references/audit": {
+      "source": "docs/99.templates/templates/references/audit.template.md",
+      "profile_id": "audit"
+    },
+    "references/audit-member": {
+      "source": "docs/99.templates/templates/references/audit-member.template.md",
+      "profile_id": "audit-member"
+    },
+    "references/data": {
+      "source": "docs/99.templates/templates/references/data.template.md",
+      "profile_id": "data"
+    },
+    "references/data-member": {
+      "source": "docs/99.templates/templates/references/data-member.template.md",
+      "profile_id": "generated"
+    },
+    "references/research": {
+      "source": "docs/99.templates/templates/references/research.template.md",
+      "profile_id": "research"
+    },
+    "references/research-member": {
+      "source": "docs/99.templates/templates/references/research-member.template.md",
+      "profile_id": "research-member"
+    },
+    "requirements/package": {
+      "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
+      "profile_id": "requirements-package"
+    },
+    "specs/graphql": {
+      "source": "docs/99.templates/templates/specs/schema.template.graphql",
+      "profile_id": "graphql-contract"
+    },
+    "specs/openapi": {
+      "source": "docs/99.templates/templates/specs/openapi.template.yaml",
+      "profile_id": "openapi-contract"
+    },
+    "specs/plan": {
+      "source": "docs/99.templates/templates/specs/plan.template.md",
+      "profile_id": "plan"
+    },
+    "specs/proto": {
+      "source": "docs/99.templates/templates/specs/service.template.proto",
+      "profile_id": "proto-contract"
+    },
+    "specs/spec": {
+      "source": "docs/99.templates/templates/specs/spec.template.md",
+      "profile_id": "spec"
+    },
+    "specs/task": {
+      "source": "docs/99.templates/templates/specs/task.template.md",
+      "profile_id": "task"
     }
   },
   "lifecycles": {

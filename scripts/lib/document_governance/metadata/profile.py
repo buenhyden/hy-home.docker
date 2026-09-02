@@ -2885,6 +2885,8 @@ def build_registry_transition_profiles(
             "artifact_id_pattern": profile.get("artifact_id_pattern"),
             "identity_relation": profile.get("identity_relation"),
             "transitions": transitions,
+            # Carried through so consumers can see a provider-owned binding.
+            "exceptions": profile.get("exceptions", ()),
         }
     adapted["profiles"] = translated
     adapted["_legacy_profiles"] = copy.deepcopy(legacy_map)

@@ -26,6 +26,7 @@ from scripts.lib.document_governance.identity_history import (
     validate_identity_history,
 )
 from scripts.lib.document_governance.registry import (
+    _declares_provider_binding,
     document_type,
     DocumentRegistry,
     RegistryError,
@@ -978,7 +979,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                         )
                     )
                     continue
-                if values.get("type") != document_type(profile_id):
+                provider_owned = _declares_provider_binding(profile)
+                if not provider_owned and values.get("type") != document_type(profile_id):
+                    # A provider-owned template declares the runtime's own keys,
+                    # so it carries no `type` and no lifecycle status.
                     contract_findings.append(
                         Finding(
                             source,
@@ -1034,7 +1038,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         for finding in schema_findings
                     )
                 lifecycle_id = profile.get("lifecycle_id")
-                if isinstance(lifecycle_id, str):
+                if isinstance(lifecycle_id, str) and not provider_owned:
                     status = values.get("status")
                     if status not in registry.lifecycles.get(lifecycle_id, ()):
                         contract_findings.append(
