@@ -39,8 +39,8 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.portainer.rule`, `traefik.http.routers.portainer.entrypoints`, `traefik.http.routers.portainer.tls`, `traefik.http.middlewares.portainer-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.portainer.middlewares`, `traefik.http.services.portainer.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `portainer` |
-| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md), [Policy](../../../docs/05.operations/policies/11-laboratory/portainer.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/portainer.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) after root include promotion; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) after root include promotion; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
@@ -83,7 +83,7 @@ labels:
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Portainer.
-- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
@@ -92,6 +92,6 @@ labels:
 
 ## Related Documents
 
-- **Guide**: [Portainer usage guide](../../../docs/05.operations/guides/11-laboratory/portainer.md)
-- **Policy**: [Portainer operations policy](../../../docs/05.operations/policies/11-laboratory/portainer.md)
-- **Runbook**: [Portainer recovery runbook](../../../docs/05.operations/runbooks/11-laboratory/portainer.md)
+- **Guide**: [Portainer usage guide](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/guide.md)
+- **Policy**: [Portainer operations policy](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/policy.md)
+- **Runbook**: [Portainer recovery runbook](../../../docs/05.operations/catalog/11-laboratory/0075-portainer/runbook.md)

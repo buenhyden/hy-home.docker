@@ -1,0 +1,46 @@
+---
+title: style-validation
+type: governance/skill
+layer: agentic
+status: active
+owner: "@buenhyden"
+function_id: style-validation
+scope: qa
+owner_agent: qa-engineer
+---
+
+# style-validation
+
+## Preconditions
+
+Changed authored files and their language/document style contracts must be identified; generated files remain owned by their generators.
+
+## Inputs
+
+- Changed authored files and style contract.
+- Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
+
+## Procedure
+
+1. Classify changed files by formatter, linter, syntax, metadata, and generated-owner obligations.
+2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
+3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
+
+## Outputs
+
+- Style-validation evidence and approved deterministic formatting changes.
+
+## Gates
+
+- Formatting is deterministic and generated ownership is preserved.
+- Linting is scoped to relevant authored files and does not rely on blanket suppression.
+
+## Failure Handling
+
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities; do not run direct all-files pre-commit or delete content to satisfy lint.
+
+## Related Documents
+
+- [QA engineer](../roles/qa-engineer.md)
+- [Task checklists](../policies/task-checklists.md)
+- [Quality standards](../policies/quality-standards.md)

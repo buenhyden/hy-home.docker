@@ -4,11 +4,11 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/security/security-automation-readiness.md"
+OUTPUT="docs/90.references/data/0078-security-automation-readiness/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/validation/generate-security-automation-readiness.sh [--check|--dry-run]
+Usage: bash scripts/validation/generate-security-automation-readiness.sh [--write|--check|--dry-run]
 
 Generate the Stage 90 security automation readiness snapshot from tracked repo surfaces.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)
@@ -49,6 +54,24 @@ import subprocess
 import sys
 from dataclasses import dataclass
 
+# The shell selected and entered the Git root; import only its own package.
+sys.path.insert(0, str(pathlib.Path.cwd()))
+
+from scripts.lib.gate.ci_gate_contract import (
+    GateContractError,
+    load_contract_document,
+    load_public_suite_registry,
+    parse_public_gate_contract,
+    public_root_gate_ids,
+)
+from scripts.lib.gate.github_workflow_contract import (
+    WorkflowContractError,
+    WorkflowDocument,
+    load_workflow_contract,
+    load_workflows,
+    validate_workflows,
+)
+
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
 
@@ -60,6 +83,13 @@ class Control:
     status: str
     evidence: tuple[str, ...]
     gap: str
+
+
+@dataclass(frozen=True)
+class TypedWorkflowEvidence:
+    command_text: str
+    action_text: str
+    reachable_gate_ids: tuple[str, ...]
 
 
 def git_ls_files() -> set[str]:
@@ -81,9 +111,161 @@ def read(path_text: str) -> str:
     return path.read_text(errors="ignore")
 
 
-def grep_any(paths: tuple[str, ...], patterns: tuple[str, ...]) -> bool:
-    combined = "\n".join(read(path) for path in paths)
-    return any(re.search(pattern, combined, flags=re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+def search_any(text: str, patterns: tuple[str, ...]) -> bool:
+    return any(re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+
+
+def has_strict_typed_workflow_shape_and_failure_contexts(
+    documents_by_path: dict[str, WorkflowDocument],
+    workflow_paths: set[str],
+) -> bool:
+    """Add narrow fail-closed shape/failure checks after public validation."""
+    for workflow_path in workflow_paths:
+        document = documents_by_path.get(workflow_path)
+        jobs = document.data.get("jobs") if document is not None else None
+        if not isinstance(jobs, dict):
+            return False
+        for job_id, job in jobs.items():
+            if not isinstance(job_id, str) or not isinstance(job, dict):
+                return False
+            if (
+                "continue-on-error" in job
+                and job["continue-on-error"] is not False
+            ):
+                return False
+            steps = job.get("steps")
+            if not isinstance(steps, list):
+                return False
+            for step in steps:
+                if not isinstance(step, dict):
+                    return False
+                has_run = "run" in step
+                has_uses = "uses" in step
+                if has_run == has_uses:
+                    return False
+                selected = step["run"] if has_run else step["uses"]
+                if not isinstance(selected, str) or not selected.strip():
+                    return False
+                if (
+                    "continue-on-error" in step
+                    and step["continue-on-error"] is not False
+                ):
+                    return False
+                if has_uses and "if" in step:
+                    return False
+                if has_run and "if" in step:
+                    return False
+    return True
+
+
+def resolve_typed_workflow_evidence(
+    contract_path: str,
+    workflow_paths: tuple[str, ...],
+) -> TypedWorkflowEvidence:
+    empty = TypedWorkflowEvidence("", "", ())
+    if contract_path != ".github/workflow-contract.yml":
+        return empty
+    try:
+        repository_root = pathlib.Path.cwd().resolve()
+        contract = load_workflow_contract(repository_root)
+        if validate_workflows(repository_root, contract):
+            return empty
+        workflow_documents = load_workflows(repository_root)
+    except (GateContractError, WorkflowContractError, OSError):
+        return empty
+
+    registry = contract.gate_registry
+    try:
+        contract_document = load_contract_document(repository_root)
+        suite_registry = load_public_suite_registry(
+            repository_root / "scripts/manifest.yaml"
+        )
+        public_gate = parse_public_gate_contract(
+            contract_document,
+            suite_registry,
+        )
+        root_gate_ids = list(
+            public_root_gate_ids(public_gate, suite_registry.public_names)
+        )
+    except (GateContractError, OSError):
+        return empty
+
+    workflow_registry = {spec.path: spec for spec in contract.workflows}
+    action_dependencies = contract.actions
+    documents_by_path = {
+        document.path: document
+        for document in workflow_documents
+        if document.path in workflow_paths
+    }
+    node_by_id = {node.gate_id: node for node in registry.nodes}
+    required_workflows = {
+        spec.path
+        for spec in workflow_registry.values()
+        if spec.classification == "required-quality"
+    }
+    if required_workflows != {".github/workflows/ci-quality.yml"}:
+        return empty
+    rooted_workflows = required_workflows
+
+    if not has_strict_typed_workflow_shape_and_failure_contexts(
+        documents_by_path,
+        set(documents_by_path),
+    ):
+        return empty
+
+    reachable: set[str] = set()
+    pending = list(reversed(root_gate_ids))
+    while pending:
+        gate_id = pending.pop()
+        if gate_id in reachable:
+            continue
+        node = node_by_id[gate_id]
+        reachable.add(gate_id)
+        pending.extend(reversed(node.children))
+
+    commands: list[str] = []
+    for node in registry.nodes:
+        if node.gate_id not in reachable or node.entrypoint is None:
+            continue
+        entrypoint = node.entrypoint.as_posix()
+        if not exists(entrypoint):
+            return empty
+        commands.append(" ".join((entrypoint, *node.argv)))
+
+    workflow_action_refs: dict[str, set[str]] = {}
+    for workflow_path in rooted_workflows:
+        document = documents_by_path[workflow_path]
+        actual_jobs = document.data.get("jobs")
+        if not isinstance(actual_jobs, dict):
+            return empty
+        references: set[str] = set()
+        for job in actual_jobs.values():
+            steps = job.get("steps") if isinstance(job, dict) else None
+            if not isinstance(steps, list):
+                continue
+            for step in steps:
+                uses = step.get("uses") if isinstance(step, dict) else None
+                if isinstance(uses, str):
+                    references.add(uses)
+        workflow_action_refs[workflow_path] = references
+
+    resolved_actions: list[str] = []
+    for action in action_dependencies:
+        if re.fullmatch(r"[0-9a-f]{40}", action.sha) is None:
+            continue
+        action_reference = f"{action.action}@{action.sha}"
+        if any(
+            consumer in rooted_workflows
+            and action_reference in workflow_action_refs.get(consumer, set())
+            for consumer in action.consumers
+        ):
+            resolved_actions.append(action_reference)
+
+    return TypedWorkflowEvidence(
+        "\n".join(commands),
+        "\n".join(resolved_actions),
+        tuple(sorted(reachable)),
+    )
 
 
 def link(path_text: str) -> str:
@@ -107,17 +289,31 @@ SCRIPT_PATHS = tuple(
     )
 )
 SECURITY_CODE_SURFACES = WORKFLOW_PATHS + SCRIPT_PATHS + (".pre-commit-config.yaml",)
+WORKFLOW_CONTRACT_PATH = ".github/workflow-contract.yml"
+TYPED_WORKFLOW_EVIDENCE = resolve_typed_workflow_evidence(
+    WORKFLOW_CONTRACT_PATH,
+    WORKFLOW_PATHS,
+)
 SECURITY_SCAN_EVIDENCE = (
     ".github/workflows/ci-quality.yml",
+    WORKFLOW_CONTRACT_PATH,
     "scripts/README.md",
     ".pre-commit-config.yaml",
 )
 SECURITY_SCAN_SUMMARY = (
     f"Scanned tracked workflow/script surfaces: {len(WORKFLOW_PATHS)} workflows, "
-    f"{len(SCRIPT_PATHS)} scripts, and `.pre-commit-config.yaml`."
+    f"{len(SCRIPT_PATHS)} scripts, `.pre-commit-config.yaml`, and "
+    f"{len(TYPED_WORKFLOW_EVIDENCE.reachable_gate_ids)} reachable typed gates."
 )
 
 ci_text = "\n".join(read(path) for path in WORKFLOW_PATHS)
+security_automation_text = "\n".join(
+    (
+        *(read(path) for path in SECURITY_CODE_SURFACES),
+        TYPED_WORKFLOW_EVIDENCE.command_text,
+        TYPED_WORKFLOW_EVIDENCE.action_text,
+    )
+)
 precommit_text = read(".pre-commit-config.yaml")
 dependabot_text = read(".github/dependabot.yml")
 
@@ -126,28 +322,42 @@ has_codeowners = exists(".github/CODEOWNERS")
 has_ruleset_record = exists(".github/rulesets/main-protection.md")
 has_gitleaks = exists(".gitleaks.toml") and "gitleaks" in precommit_text.lower()
 has_dependabot = exists(".github/dependabot.yml") and "package-ecosystem" in dependabot_text
-has_workflow_security = "permissions:" in ci_text and "zizmor" in ci_text and "upload-sarif" in ci_text
-has_hardening = exists("scripts/hardening/check-all-hardening.sh") and "check-all-hardening.sh" in ci_text
-has_template_security = exists("scripts/validation/check-template-security-baseline.sh") and "check-template-security-baseline.sh" in ci_text
-has_repo_contracts = exists("scripts/validation/check-repo-contracts.sh") and "workflow security" in read("scripts/validation/check-repo-contracts.sh").lower()
+has_workflow_security = (
+    "permissions:" in ci_text
+    and "run-zizmor-sarif" in TYPED_WORKFLOW_EVIDENCE.command_text
+    and "github/codeql-action/upload-sarif@" in TYPED_WORKFLOW_EVIDENCE.action_text
+)
+has_hardening = (
+    exists("scripts/hardening/check-all-hardening.sh")
+    and "scripts/hardening/check-all-hardening.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+)
+has_template_security = (
+    exists("scripts/validation/check-template-security-baseline.sh")
+    and "scripts/validation/check-template-security-baseline.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+)
+has_public_gate = (
+    exists("scripts/validation/run-ci-gate.py")
+    and "python3 scripts/validation/run-ci-gate.py --profile changed" in ci_text
+    and "python3 scripts/validation/run-ci-gate.py --profile full" in ci_text
+)
 has_tech_stack_provenance = all(
     exists(path)
     for path in (
         "infra/tech-stack.versions.json",
         "infra/image-tag-policy.exceptions.json",
         "scripts/operations/generate-tech-stack-version-provenance.sh",
-        "docs/90.references/data/docker/tech-stack-version-provenance.md",
+        "docs/90.references/data/0061-tech-stack-version-provenance/README.md",
     )
 )
 
 has_scoped_ecosystem_gate = bool(
     re.search(
         r"npm\s+audit\s+--audit-level=high\s+--prefix\s+projects/storybook/nextjs",
-        ci_text,
+        TYPED_WORKFLOW_EVIDENCE.command_text,
     )
 )
-has_broad_dependency_sca = grep_any(
-    SECURITY_CODE_SURFACES,
+has_broad_dependency_sca = search_any(
+    security_automation_text,
     (
         r"\bosv-scanner\b",
         r"\bsnyk\b",
@@ -156,16 +366,16 @@ has_broad_dependency_sca = grep_any(
         r"\bgovulncheck\b",
     ),
 )
-has_container_scan = grep_any(
-    SECURITY_CODE_SURFACES,
+has_container_scan = search_any(
+    security_automation_text,
     (
         r"\btrivy\b.*(?:image|fs)",
         r"\bgrype\b",
         r"docker\s+scout\s+cves",
     ),
 )
-has_sbom_generation = grep_any(
-    SECURITY_CODE_SURFACES,
+has_sbom_generation = search_any(
+    security_automation_text,
     (
         r"\bsyft\b",
         r"\bcyclonedx\b",
@@ -173,16 +383,16 @@ has_sbom_generation = grep_any(
         r"\bnpm\s+sbom\b",
     ),
 )
-has_attestation = grep_any(
-    SECURITY_CODE_SURFACES,
+has_attestation = search_any(
+    security_automation_text,
     (
         r"\bcosign\s+",
         r"slsa-framework/slsa-github-generator",
         r"actions/attest",
     ),
 )
-has_scorecard = grep_any(
-    SECURITY_CODE_SURFACES,
+has_scorecard = search_any(
+    security_automation_text,
     (
         r"ossf/scorecard",
         r"scorecard-action",
@@ -201,9 +411,9 @@ controls: list[Control] = [
     Control(
         "SEC-AUTO-002",
         "Workflow permissions and dangerous-workflow scanning",
-        "Implemented" if has_workflow_security and has_repo_contracts else "Partially Implemented",
-        (".github/workflows/ci-quality.yml", "scripts/validation/check-repo-contracts.sh"),
-        "Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload." if has_workflow_security and has_repo_contracts else "Wire workflow-security checks into CI and repo contracts.",
+        "Implemented" if has_workflow_security and has_public_gate else "Partially Implemented",
+        (".github/workflows/ci-quality.yml", "scripts/validation/run-ci-gate.py"),
+        "Continue checking SHA-pinned actions, least-privilege permissions, and zizmor SARIF upload." if has_workflow_security and has_public_gate else "Wire workflow-security checks through the public validation profiles.",
     ),
     Control(
         "SEC-AUTO-003",
@@ -234,7 +444,7 @@ controls: list[Control] = [
             "infra/tech-stack.versions.json",
             "infra/image-tag-policy.exceptions.json",
             "scripts/operations/generate-tech-stack-version-provenance.sh",
-            "docs/90.references/data/docker/tech-stack-version-provenance.md",
+            "docs/90.references/data/0061-tech-stack-version-provenance/README.md",
         ),
         "Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations." if has_tech_stack_provenance else "Regenerate or add the tech-stack provenance snapshot.",
     ),
@@ -322,7 +532,10 @@ if not has_scoped_ecosystem_gate:
             "Stage 03 security spec + Stage 04 plan",
         )
     )
-spec_126_route = "[Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+spec_126_route = (
+    "Stage 98 migration lookup: "
+    "`docs/98.archive/migrations/0003-workspace-governance-simplification.md`"
+)
 if not has_sbom_generation:
     follow_up_rows.append(
         (
@@ -366,38 +579,48 @@ if not has_container_scan:
 
 if residual_security_gaps:
     if len(residual_security_gaps) == 1:
-        residual_sentence = residual_security_gaps[0]
+        residual_finding = (
+            f"- {residual_security_gaps[0]} remains a gap in tracked "
+            "workflow/script surfaces."
+        )
     else:
         residual_sentence = ", ".join(residual_security_gaps[:-1])
         residual_sentence = f"{residual_sentence}, and {residual_security_gaps[-1]}"
-    residual_finding = f"- {residual_sentence} are still gaps in tracked workflow/script surfaces."
+        residual_finding = f"- {residual_sentence} are still gaps in tracked workflow/script surfaces."
 else:
     residual_finding = "- No tracked security automation gap remains in this readiness snapshot."
 
 lines: list[str] = [
     "---",
+    'title: "Reference: Security Automation Readiness"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
+    "artifact_id: DATA-0078",
+    "parent_ids: []",
+    "created: 2026-07-06",
+    "updated: 2026-08-23",
+    "observed_at: 2026-08-23",
     "generated_by: scripts/validation/generate-security-automation-readiness.sh",
     "---",
     "",
-    "<!-- Target: docs/90.references/data/security/security-automation-readiness.md -->",
-    "",
     "# Reference: Security Automation Readiness",
     "",
-    "## Overview",
+    "## Purpose",
     "",
     "This generated reference summarizes repository-local security automation",
     "readiness for scoped vulnerability gating, broad dependency SCA, container/image",
     "scanning, SBOM generation, provenance/attestation, workflow security, secret",
     "scanning, dependency updates, and hardening.",
     "",
-    "## Purpose",
+    "### Audit Intent",
     "",
     "The purpose is to make the remaining security automation gaps explicit from",
     "tracked repository evidence. It does not run scanners, generate SBOMs, sign",
     "artifacts, attest builds, query registries, or change CI behavior.",
     "",
-    "## Repository Role",
+    "## Consumers",
     "",
     "This reference supports Stage 90 security maturity audits and future Stage",
     "03/04 security automation planning. It does not replace Stage 00 security",
@@ -405,7 +628,7 @@ lines: list[str] = [
     "hardening scripts, branch protection, release workflows, or vulnerability",
     "management procedures.",
     "",
-    "## Scope",
+    "## Limitations",
     "",
     "### In Scope",
     "",
@@ -422,7 +645,7 @@ lines: list[str] = [
     "  branch protection, runtime Compose files, secrets, credentials, tokens,",
     "  private keys, shell history, raw logs, or `.env` values.",
     "",
-    "## Definitions / Facts",
+    "## Schema",
     "",
     "- **Implemented**: tracked local evidence exists for the automation surface.",
     "- **Partially Implemented**: tracked evidence exists, but live enforcement,",
@@ -433,7 +656,7 @@ lines: list[str] = [
     "  certification, score, vulnerability statement, SBOM, signature, or",
     "  attestation.",
     "",
-    "## Summary",
+    "## Inventory",
     "",
     "| Status | Count |",
     "| --- | ---: |",
@@ -441,7 +664,7 @@ lines: list[str] = [
     f"| Partially Implemented | {partial_count} |",
     f"| Gap | {gap_count} |",
     "",
-    "## Readiness Matrix",
+    "### Readiness Matrix",
     "",
     "| Control ID | Control | Status | Evidence | Gap / Next Step |",
     "| --- | --- | --- | --- | --- |",
@@ -465,7 +688,7 @@ for control in sorted(controls, key=lambda item: (readiness_order[item.status], 
 lines.extend(
     [
         "",
-        "## Findings",
+        "## Provenance",
         "",
         "- Security disclosure, workflow security, secret scanning, Dependabot,",
         "  hardening, and tracked image-version provenance all have repo-local",
@@ -478,7 +701,7 @@ lines.extend(
         "  advisory-rehearsal contract, not a live runtime or release claim.",
         residual_finding,
         "",
-        "## Gap / Follow-up",
+        "### Gap / Follow-up",
         "",
         "| Gap ID | Gap | Suggested Future Stage |",
         "| --- | --- | --- |",
@@ -494,25 +717,29 @@ else:
 lines.extend(
     [
         "",
-        "## Source Rules",
+        "### Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
+        "- Admit typed commands and Actions only after complete canonical workflow",
+        "  validation plus narrow fail-closed job/step shape and failure checks;",
+        "  registered Action evidence must use a single unconditional parsed `uses`.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",
         "  secret logs, or `.env` values.",
         "",
-        "## Sources",
+        "### Sources",
         "",
         "- [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) - CI quality and workflow-security evidence.",
         "- [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) - local pre-commit and secret-scanning hook evidence.",
         "- [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.",
         "- [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.",
-        "- [Security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - framework coverage and gap baseline.",
-        "- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - secure SDLC and supply-chain reference context.",
-        "- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.",
+        "- [Security framework maturity audit](../../audits/0031-security-framework-maturity/README.md) - framework coverage and gap baseline.",
+        "- [Security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
+        "- [Public validation runner](../../../../scripts/validation/run-ci-gate.py) - contract-owned changed and full suite routing.",
         "",
-        "## Maintenance",
+        "## Refresh",
         "",
         "- **Owner**: Security Reviewer / QA Engineer.",
         "- **Review Cadence**: Regenerate after security workflow, Dependabot,",
@@ -522,13 +749,13 @@ lines.extend(
         "- **Update Trigger**: Update when tracked workflow/script security automation",
         "  changes or when Stage 90 security maturity audits are refreshed.",
         "",
-        "## Related Documents",
+        "## Traceability",
         "",
         "- [security data index](./README.md)",
         "- [reference data index](../README.md)",
-        "- [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)",
-        "- [automation candidates](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
-        "- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)",
+        "- [security framework maturity audit](../../audits/0031-security-framework-maturity/README.md)",
+        "- [automation candidates](../../audits/0021-automation-candidates/README.md)",
+        "- [security governance research](../../research/0002-agentic-engineering-research-pack/m0017-security-governance.md)",
         "",
     ]
 )

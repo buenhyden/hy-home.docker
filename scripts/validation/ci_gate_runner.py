@@ -4,6 +4,7 @@ import argparse
 import collections.abc
 import dataclasses
 import errno
+import enum
 import os
 import pathlib
 import re
@@ -17,14 +18,21 @@ import tempfile
 import time
 from collections.abc import Mapping
 
+from scripts.lib.gate import ci_gate_adapters
+from scripts.lib.document_governance import suite_registry as public_suite_registry
+
 try:
-    from scripts.validation.ci_gate_contract import (
+    from scripts.lib.gate.ci_gate_contract import (
         GateContractError,
         GateKind,
         GateRegistry,
         expand_gate_ids,
+        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
+        parse_public_gate_contract,
+        public_root_gate_ids,
+        select_public_suites,
         validate_gate_registry,
     )
 except ModuleNotFoundError:  # Direct sibling-script execution.
@@ -33,8 +41,12 @@ except ModuleNotFoundError:  # Direct sibling-script execution.
         GateKind,
         GateRegistry,
         expand_gate_ids,
+        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
+        parse_public_gate_contract,
+        public_root_gate_ids,
+        select_public_suites,
         validate_gate_registry,
     )
 
@@ -67,6 +79,23 @@ _TERMINATION_GRACE_SECONDS = 0.25
 _MAX_PROC_PID_ENTRIES = 65_536
 _MAX_PROC_STAT_BYTES = 4_096
 _PROC_ROOT = pathlib.Path("/proc")
+_MAX_CHANGED_PATH_BYTES = 1024 * 1024
+_MAX_CHANGED_PATHS = 10_000
+_FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
+_LOCAL_EXCLUDED_GATE_IDS = frozenset(
+    {
+        "leaf.dependency-vulnerability-audit",
+        "leaf.docs-qa-gate-recommendations",
+        "leaf.frontend-build",
+        "leaf.frontend-lint",
+        "leaf.frontend-quality",
+        "leaf.frontend-typecheck",
+        "leaf.git-flow-contract",
+        "leaf.storybook-coverage",
+        "leaf.zizmor",
+    }
+)
+_PR_ONLY_GATE_IDS = frozenset({"leaf.git-flow-contract"})
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -80,6 +109,96 @@ class GateInvocation:
 
 
 GateExecutor = collections.abc.Callable[[GateInvocation], int]
+
+
+class ExecutionContext(enum.Enum):
+    LOCAL = "local"
+    PULL_REQUEST = "pull_request"
+    PUSH = "push"
+    PUSH_INITIAL = "push_initial"
+    WORKFLOW_DISPATCH = "workflow_dispatch"
+
+
+_ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
+_CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
+_INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
+_INTERNAL_CHECK_INVOCATIONS = frozenset(
+    (pathlib.PurePosixPath(path), argv)
+    for path, argv in (
+        ("scripts/operations/sync-provider-surfaces.sh", ("--check",)),
+        ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
+        ("scripts/knowledge/generate-llm-wiki.py", ("--check",)),
+        ("scripts/validation/generate-audit-implementation-matrix.sh", ("--check",)),
+        ("scripts/validation/generate-security-automation-readiness.sh", ("--check",)),
+        ("scripts/security/generate-supply-chain-sample-service-summary.sh", ("--check",)),
+        ("scripts/validation/validate-docker-compose.sh", ()),
+        ("tests/validation/test_run_ci_precommit.sh", ()),
+    )
+)
+
+
+def _is_admitted_internal_invocation(
+    invocation: GateInvocation,
+    context: ExecutionContext,
+) -> bool:
+    if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
+        return ci_gate_adapters.admits_adapter_invocation(
+            invocation.argv, context.value
+        )
+    return (invocation.entrypoint, invocation.argv) in _INTERNAL_CHECK_INVOCATIONS
+
+
+def public_suite_names() -> tuple[str, ...]:
+    """Return the immutable suite model without changing gate routing."""
+
+    return load_public_suite_registry().public_names
+
+
+def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
+    """Derive a closed execution context without extending the public CLI."""
+
+    github_actions = environ.get("GITHUB_ACTIONS", "")
+    event_name = environ.get("EVENT_NAME", "")
+    if not github_actions and not event_name:
+        return ExecutionContext.LOCAL
+    if github_actions != "true" or event_name not in {
+        "pull_request",
+        "push",
+        "workflow_dispatch",
+    }:
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "environment",
+            "GitHub execution requires GITHUB_ACTIONS=true and a registered event",
+        )
+    if event_name == "pull_request" and (
+        not _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", ""))
+        or environ.get("PR_BASE_SHA") == "0" * 40
+        or not environ.get("PR_TITLE", "")
+        or not environ.get("HEAD_REF", "")
+    ):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "pull_request",
+            "pull-request execution requires its validated identity keys",
+        )
+    if event_name == "push":
+        before = environ.get("PUSH_BEFORE_SHA", "")
+        if not _FULL_SHA.fullmatch(before):
+            raise GateContractError(
+                "ci-gate-execution-context",
+                "push",
+                "push execution requires PUSH_BEFORE_SHA",
+            )
+        if before == "0" * 40:
+            return ExecutionContext.PUSH_INITIAL
+    if event_name == "workflow_dispatch" and environ.get("PUSH_BEFORE_SHA", ""):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "workflow_dispatch",
+            "workflow dispatch must not invent a comparison base",
+        )
+    return ExecutionContext(event_name)
 
 
 @dataclasses.dataclass(slots=True)
@@ -211,6 +330,301 @@ def build_execution_plan(
     return tuple(invocations)
 
 
+def build_public_execution_plan(
+    registry: GateRegistry,
+    root_gate_ids: tuple[str, ...],
+) -> tuple[GateInvocation, ...]:
+    """Expand contract-owned public roots and execute each gate node once."""
+
+    node_by_id = {node.gate_id: node for node in registry.nodes}
+    if len(node_by_id) != len(registry.nodes):
+        raise GateContractError(
+            "ci-gate-id-duplicate",
+            "gate_nodes",
+            "gate identifiers must be unique",
+        )
+    ordered: list[str] = []
+    seen: set[str] = set()
+    active: set[str] = set()
+
+    def visit(gate_id: str) -> None:
+        if gate_id in seen:
+            return
+        if gate_id in active:
+            raise GateContractError(
+                "ci-gate-cycle",
+                "gate_nodes",
+                "the gate graph must be acyclic",
+            )
+        node = node_by_id.get(gate_id)
+        if node is None:
+            raise GateContractError(
+                "ci-gate-child-missing",
+                gate_id,
+                "a registered public root or child does not exist",
+            )
+        active.add(gate_id)
+        if node.kind is GateKind.AGGREGATE:
+            for child in node.children:
+                visit(child)
+        else:
+            ordered.append(gate_id)
+        active.remove(gate_id)
+        seen.add(gate_id)
+
+    for gate_id in root_gate_ids:
+        visit(gate_id)
+
+    invocations: list[GateInvocation] = []
+    for gate_id in ordered:
+        node = node_by_id[gate_id]
+        if node.entrypoint is None or node.cwd is None or node.timeout_minutes is None:
+            raise GateContractError(
+                "ci-gate-execution-node",
+                gate_id,
+                "the selected executable gate is incomplete",
+            )
+        invocations.append(
+            GateInvocation(
+                gate_id=node.gate_id,
+                entrypoint=node.entrypoint,
+                argv=node.argv,
+                cwd=node.cwd,
+                allowed_env_keys=node.allowed_env_keys,
+                timeout_seconds=node.timeout_minutes * 60,
+            )
+        )
+    return tuple(invocations)
+
+
+def build_public_validation_plan(
+    registry: GateRegistry,
+    root_gate_ids: tuple[str, ...],
+    suite_model: public_suite_registry.SuiteRegistry,
+    selected_suites: tuple[str, ...],
+    context: ExecutionContext,
+    *,
+    profile: str = "changed",
+) -> tuple[GateInvocation, ...]:
+    """Join public suite ownership to one canonical invocation per validator."""
+
+    selected = set(selected_suites)
+    if len(selected) != len(selected_suites) or not selected.issubset(
+        suite_model.public_names
+    ):
+        raise GateContractError(
+            "ci-gate-public-suites",
+            "suites",
+            "selected public suites must be unique and registered",
+        )
+    base_plan = _filter_execution_context(
+        build_public_execution_plan(registry, root_gate_ids), context, registry
+    )
+    manifest_context = (
+        "push" if context is ExecutionContext.PUSH_INITIAL else context.value
+    )
+    selected_ownership = tuple(
+        item
+        for item in suite_model.validators
+        if item.public_suites[0] in selected
+        and manifest_context in item.execution_contexts
+    )
+    selected_paths = {item.path for item in selected_ownership}
+    templates: dict[pathlib.PurePosixPath, GateInvocation] = {}
+    for invocation in base_plan:
+        if invocation.entrypoint in selected_paths:
+            templates.setdefault(invocation.entrypoint, invocation)
+
+    def canonical_invocation(
+        item: public_suite_registry.ValidatorOwnership,
+    ) -> GateInvocation:
+        template = templates.get(item.path)
+        return GateInvocation(
+            gate_id=(
+                template.gate_id
+                if template is not None
+                else "public.validator."
+                + item.path.as_posix().replace("/", ".")
+            ),
+            entrypoint=item.path,
+            argv=_context_validator_argv(item, context, profile),
+            cwd=(template.cwd if template is not None else pathlib.PurePosixPath(".")),
+            allowed_env_keys=(
+                ("TEMPLATE_GATE_BASE",)
+                if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                and context in {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
+                else () if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                else template.allowed_env_keys if template is not None else ()
+            ),
+            timeout_seconds=(template.timeout_seconds if template is not None else 300),
+        )
+
+    canonical = {
+        item.path: canonical_invocation(item) for item in selected_ownership
+    }
+    plan: list[GateInvocation] = []
+    emitted: set[pathlib.PurePosixPath] = set()
+    standalone_validator_paths = {
+        item.path
+        for item in suite_model.validators
+        if item.execution_contexts
+    }
+    for invocation in base_plan:
+        path = invocation.entrypoint
+        if path in standalone_validator_paths:
+            if path in canonical and path not in emitted:
+                plan.append(canonical[path])
+                emitted.add(path)
+            continue
+        plan.append(invocation)
+    for item in selected_ownership:
+        if item.path not in emitted:
+            plan.append(canonical[item.path])
+            emitted.add(item.path)
+    result = tuple(plan)
+    if context in {
+        ExecutionContext.LOCAL,
+        ExecutionContext.PUSH_INITIAL,
+        ExecutionContext.WORKFLOW_DISPATCH,
+    }:
+        result = tuple(
+            invocation for invocation in result
+            if invocation.gate_id != "leaf.repo-metadata-base"
+        )
+    validate_public_execution_parity(
+        suite_model, selected_suites, result, context, profile=profile
+    )
+    return result
+
+
+def _context_validator_argv(
+    item: public_suite_registry.ValidatorOwnership, context: ExecutionContext, profile: str,
+) -> tuple[str, ...]:
+    if profile not in {"changed", "full"}:
+        raise GateContractError("ci-gate-profile-unknown", "profile", "unknown public profile")
+    if item.path.name == "check-document-metadata.py":
+        if profile == "full":
+            return ("--mode", "check-contracts", "--history-scope", "full")
+        if context in {ExecutionContext.LOCAL, ExecutionContext.PUSH_INITIAL, ExecutionContext.WORKFLOW_DISPATCH}:
+            return ("--mode", "check-active")
+    return item.execution_argv
+
+
+def validate_public_execution_parity(
+    suite_model: public_suite_registry.SuiteRegistry,
+    selected_suites: tuple[str, ...],
+    plan: tuple[GateInvocation, ...],
+    context: ExecutionContext,
+    *,
+    profile: str = "changed",
+) -> None:
+    """Fail unless selected validators occur exactly once and others not at all."""
+
+    selected = set(selected_suites)
+    ownership_paths = tuple(item.path for item in suite_model.validators)
+    try:
+        for item in suite_model.validators:
+            public_suite_registry.validate_execution_argv(item.path, item.execution_argv)
+    except public_suite_registry.SuiteRegistryError as error:
+        raise GateContractError("ci-gate-validator-arguments", "manifest", str(error)) from error
+    if (
+        len(selected) != len(selected_suites)
+        or not selected.issubset(suite_model.public_names)
+        or len(ownership_paths) != len(set(ownership_paths))
+    ):
+        raise GateContractError(
+            "ci-gate-public-execution-parity",
+            "public_gate",
+            "validator ownership and selected suites must be unique and registered",
+        )
+    manifest_context = (
+        "push" if context is ExecutionContext.PUSH_INITIAL else context.value
+    )
+    expected = {
+        item.path
+        for item in suite_model.validators
+        if item.public_suites[0] in selected
+        and manifest_context in item.execution_contexts
+    }
+    ownership_by_path = {item.path: item for item in suite_model.validators}
+    counts: collections.Counter[pathlib.PurePosixPath] = collections.Counter()
+    for invocation in plan:
+        if _is_admitted_internal_invocation(invocation, context):
+            continue
+        if invocation.entrypoint not in expected:
+            raise GateContractError(
+                "ci-gate-public-execution-parity",
+                invocation.gate_id,
+                "every invocation requires selected validator or exact internal admission",
+            )
+        expected_argv = _context_validator_argv(ownership_by_path[invocation.entrypoint], context, profile)
+        if invocation.argv != expected_argv:
+            raise GateContractError(
+                "ci-gate-public-execution-parity",
+                invocation.gate_id,
+                "validator arguments must match their canonical context invocation",
+            )
+        counts[invocation.entrypoint] += 1
+    if any(counts[path] != 1 for path in expected):
+        raise GateContractError(
+            "ci-gate-public-execution-parity",
+            "public_gate",
+            "selected manifest validators must have exactly one executable invocation",
+        )
+
+
+def render_public_validation_plan(
+    plan: tuple[GateInvocation, ...],
+    suite_model: public_suite_registry.SuiteRegistry,
+    selected_suites: tuple[str, ...],
+    context: ExecutionContext,
+    *,
+    profile: str = "changed",
+) -> tuple[str, ...]:
+    """Explain the validator rows proven by the executable plan itself."""
+
+    validate_public_execution_parity(
+        suite_model, selected_suites, plan, context, profile=profile
+    )
+    manifest_context = (
+        "push" if context is ExecutionContext.PUSH_INITIAL else context.value
+    )
+    suite_by_path = {
+        item.path: item.public_suites[0]
+        for item in suite_model.validators
+        if item.public_suites[0] in selected_suites
+        and manifest_context in item.execution_contexts
+    }
+    return tuple(
+        f"{suite_by_path[item.entrypoint]}\t{item.entrypoint.as_posix()}"
+        for item in plan
+        if item.entrypoint in suite_by_path
+    )
+
+
+def _filter_execution_context(
+    plan: tuple[GateInvocation, ...],
+    context: ExecutionContext,
+    registry: GateRegistry,
+) -> tuple[GateInvocation, ...]:
+    if context is ExecutionContext.PULL_REQUEST:
+        return plan
+    if context is ExecutionContext.LOCAL:
+        node_by_id = {node.gate_id: node for node in registry.nodes}
+        return tuple(
+            invocation
+            for invocation in plan
+            if invocation.gate_id not in _LOCAL_EXCLUDED_GATE_IDS
+            and not invocation.gate_id.startswith("setup.")
+            and node_by_id[invocation.gate_id].profiles != ("ci",)
+        )
+    return tuple(
+        invocation
+        for invocation in plan
+        if invocation.gate_id not in _PR_ONLY_GATE_IDS
+    )
+
+
 def render_execution_plan(
     plan: tuple[GateInvocation, ...],
 ) -> tuple[str, ...]:
@@ -299,19 +713,9 @@ def main(argv: list[str] | None = None) -> int:
         exit_on_error=False,
     )
     parser.add_argument("--profile", required=True)
-    selection = parser.add_mutually_exclusive_group(required=True)
-    selection.add_argument("--gate")
-    selection.add_argument("--all", action="store_true")
-    selection.add_argument("--list", action="store_true")
-    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--explain", action="store_true")
     try:
         arguments = parser.parse_args(argv)
-        if arguments.list and arguments.dry_run:
-            raise GateContractError(
-                "ci-gate-cli-arguments",
-                "arguments",
-                "list and dry-run are distinct modes",
-            )
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
         root = (
             pathlib.Path(root_value)
@@ -331,28 +735,138 @@ def main(argv: list[str] | None = None) -> int:
                     file=sys.stderr,
                 )
             return 1
-        plan = build_execution_plan(
-            registry,
-            arguments.profile,
-            None if arguments.list or arguments.all else arguments.gate,
-            arguments.list or arguments.all,
+        suite_model = load_public_suite_registry(root / "scripts/manifest.yaml")
+        public_contract = parse_public_gate_contract(document, suite_model)
+        context = derive_execution_context(os.environ)
+        changed_paths = (
+            ()
+            if arguments.profile == "full"
+            else collect_changed_paths(root, os.environ)
         )
-        if arguments.list or arguments.dry_run:
-            for line in render_execution_plan(plan):
+        selected_suites = select_public_suites(
+            public_contract,
+            arguments.profile,
+            changed_paths,
+        )
+        plan = build_public_validation_plan(
+            registry,
+            public_root_gate_ids(public_contract, selected_suites),
+            suite_model,
+            selected_suites,
+            context,
+            profile=arguments.profile,
+        )
+        if arguments.explain:
+            for line in render_public_validation_plan(
+                plan, suite_model, selected_suites, context, profile=arguments.profile
+            ):
                 print(line)
             return 0
         return execute_execution_plan(root, plan, os.environ)
-    except (GateContractError, argparse.ArgumentError) as error:
+    except (GateContractError, argparse.ArgumentError, public_suite_registry.SuiteRegistryError) as error:
         if isinstance(error, GateContractError):
             code = error.code
             path = error.path
             message = error.message
+        elif isinstance(error, public_suite_registry.SuiteRegistryError):
+            code, path, message = "ci-gate-manifest-invalid", "scripts/manifest.yaml", str(error)
         else:
             code = "ci-gate-cli-arguments"
             path = "arguments"
             message = "the runner arguments do not match the closed grammar"
         print(f"FAIL [{code}] {path}: {message}", file=sys.stderr)
         return 2 if code == "ci-gate-cli-arguments" else 1
+
+
+def collect_changed_paths(
+    root: pathlib.Path,
+    environ: Mapping[str, str],
+) -> tuple[str, ...]:
+    """Collect bounded changed paths for local, pull-request, and push callers."""
+
+    git_environment = {
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": environ.get("PATH", os.defpath),
+    }
+    base = ""
+    event = environ.get("EVENT_NAME", "")
+    if event == "pull_request" and _FULL_SHA.fullmatch(
+        environ.get("PR_BASE_SHA", "")
+    ):
+        base = environ["PR_BASE_SHA"]
+    elif event == "push" and _FULL_SHA.fullmatch(
+        environ.get("PUSH_BEFORE_SHA", "")
+    ) and environ.get("PUSH_BEFORE_SHA") != "0" * 40:
+        base = environ["PUSH_BEFORE_SHA"]
+
+    commands = (
+        (("git", "diff", "--name-only", "-z", "--diff-filter=ACMRD", f"{base}...HEAD"),)
+        if base
+        else (
+            ("git", "diff", "--name-only", "-z", "--diff-filter=ACMRD"),
+            ("git", "diff", "--cached", "--name-only", "-z", "--diff-filter=ACMRD"),
+            ("git", "ls-files", "--others", "--exclude-standard", "-z"),
+        )
+    )
+    paths: set[str] = set()
+    total_bytes = 0
+    for command in commands:
+        try:
+            result = subprocess.run(
+                command,
+                cwd=root,
+                env=git_environment,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                timeout=_GIT_TIMEOUT_SECONDS,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "changed paths could not be collected",
+            ) from None
+        if result.returncode != 0:
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "changed paths could not be collected",
+            )
+        total_bytes += len(result.stdout)
+        if total_bytes > _MAX_CHANGED_PATH_BYTES or (
+            result.stdout and not result.stdout.endswith(b"\0")
+        ):
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "changed path output exceeds its boundary",
+            )
+        try:
+            values = tuple(
+                item.decode("utf-8", errors="strict")
+                for item in result.stdout.split(b"\0")
+                if item
+            )
+        except UnicodeDecodeError:
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "changed paths must be UTF-8",
+            ) from None
+        paths.update(values)
+        if len(paths) > _MAX_CHANGED_PATHS:
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "changed path count exceeds its boundary",
+            )
+    return tuple(sorted(paths))
 
 
 def _canonical_root(root: pathlib.Path) -> pathlib.Path:
@@ -702,9 +1216,37 @@ def _child_environment(
             )
         admitted["PYTHONPATH"] = str(python_bootstrap)
     for key in invocation.allowed_env_keys:
-        if key in environ:
+        if key == "TEMPLATE_GATE_BASE":
+            base = _metadata_comparison_base(environ)
+            if base is None:
+                raise GateContractError(
+                    "ci-gate-environment",
+                    invocation.gate_id,
+                    "the metadata comparison base is unavailable",
+                )
+            admitted[key] = base
+        elif key in environ:
             admitted[key] = environ[key]
     return admitted
+
+
+def _metadata_comparison_base(environ: Mapping[str, str]) -> str | None:
+    event_name = environ.get("EVENT_NAME", "")
+    if event_name == "pull_request":
+        base = environ.get("PR_BASE_SHA", "")
+        return (
+            base
+            if _FULL_SHA.fullmatch(base) and base != "0" * 40
+            else None
+        )
+    if event_name == "push":
+        base = environ.get("PUSH_BEFORE_SHA", "")
+        return (
+            base
+            if _FULL_SHA.fullmatch(base) and base != "0" * 40
+            else None
+        )
+    return None
 
 
 def _create_python_bootstrap(

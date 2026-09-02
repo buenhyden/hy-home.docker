@@ -1,7 +1,15 @@
 ---
+title: 02-Auth Runtime Hardening and Fail-closed Policy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0017
+parent_ids:
+  - AD-0014
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md -->
 # ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy
 
 ## Overview
@@ -36,7 +44,7 @@ status: active
   - 엔트리포인트 스크립트 유지보수 책임이 생긴다.
   - fail-closed로 인해 IdP 장애 시 사용자 영향이 즉시 드러날 수 있다.
 
-## Alternatives
+## Options Considered
 
 ### Compose 인라인 셸 유지
 
@@ -58,10 +66,17 @@ status: active
 - Tool gating: `scripts/hardening/check-all-hardening.sh 02-auth`를 CI 필수 게이트로 사용
 - Guardrail strategy: 시크릿 평문/우회 정책 금지
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/014-auth-optimization-hardening.md](../../01.requirements/014-auth-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0014-auth-optimization-hardening-architecture.md](../requirements/0014-auth-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
-- **Related ADR**: [./0002-keycloak-oauth2-proxy-choice.md](./0002-keycloak-oauth2-proxy-choice.md)
+- **PRD**: [../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0014-auth-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../descriptions/0014-auth-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)
+- **Related ADR**: [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)

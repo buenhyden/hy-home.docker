@@ -1,51 +1,55 @@
 ---
+title: <title>
+version: <version>
+type: operations/postmortem
+layer: <layer>
 status: draft
-artifact_id: <artifact-id>
-artifact_type: postmortem
-parent_ids: [<parent-artifact-id>]
-reviewed_at: <reviewed-at>
+owner: <owner>
+artifact_id: inc-<year>-####-PM
+parent_ids: [inc-<year>-####]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
-## Overview
+## Summary
 
-{{overview}}
+{{summary}}
 
-## Incident and Impact
+## Impact
 
-{{incident_and_impact}}
+{{impact}}
 
 ## Timeline
 
 {{timeline}}
 
-## Root Cause and Contributing Factors
+## Root Cause
 
-{{root_cause_and_contributing_factors}}
+{{root_cause}}
 
-## Lessons
+## Contributing Factors
 
-{{lessons}}
+{{contributing_factors}}
 
-## Action Items
+## Detection and Response
 
-| Reviewed action description | Owner | Priority | Tracking identity | Verification owner |
-| --- | --- | --- | --- | --- |
-| {{reviewed_action_description}} | {{action_owner}} | {{action_priority}} | {{action_tracking_identity}} | {{verification_owner}} |
+{{detection_and_response}}
 
-## Prevention and Verification
+## Corrective Actions
 
-{{prevention_and_verification}}
+{{corrective_actions}}
 
-## Feedback Loop
+## Learning
 
-{{feedback_loop}}
+{{learning}}
 
-## Detection Analysis
+## Traceability
 
-{{detection_analysis}}
+{{incident_runbook_and_task_links}}
 
-## Related Documents
+## Follow-up Review
 
-{{related_documents}}
+{{follow_up_review}}

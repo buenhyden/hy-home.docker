@@ -56,8 +56,8 @@ terrakube/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule`, plus 9 more |
 | Secret refs | names: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/minio_app_user_password`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
 | Healthcheck | Compose healthcheck declared for `terrakube-api`, `terrakube-ui`, `terrakube-executor` |
-| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terrakube.md), [Policy](../../../docs/05.operations/policies/09-tooling/terrakube.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terrakube.md) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md), [Policy](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md), [Runbook](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
@@ -89,7 +89,7 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after any Compose or config reference changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` before marking documentation ready.
+- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking documentation ready.
 - Verify workspace configuration by checking the Terrakube UI and confirming Terraform workspaces are registered with correct provider credentials.
 - Confirm API connectivity by checking `terrakube-api`, `terrakube-ui`, and `terrakube-executor` logs after config changes.
 - Verify OIDC authentication by confirming the Keycloak client configuration matches Terrakube's auth settings.
@@ -102,7 +102,7 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 ## Related Documents
 
 - [Tooling tier README](../README.md)
-- [Terrakube guide](../../../docs/05.operations/guides/09-tooling/terrakube.md)
-- [Terrakube operations policy](../../../docs/05.operations/policies/09-tooling/terrakube.md)
-- [Terrakube recovery runbook](../../../docs/05.operations/runbooks/09-tooling/terrakube.md)
+- [Terrakube guide](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md)
+- [Terrakube operations policy](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md)
+- [Terrakube recovery runbook](../../../docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md)
 - [Root infra README](../../README.md)

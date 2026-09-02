@@ -2,6 +2,6 @@
 
 ## Bootstrap
 
-1. Load `docs/00.agent-governance/rules/bootstrap.md`.
-2. Load `docs/00.agent-governance/providers/agents-md.md`.
-3. Load `docs/00.agent-governance/memory/README.md` and `docs/00.agent-governance/memory/current.md`.
+1. Load `docs/00.agent-governance/policies/bootstrap.md`.
+2. Load `docs/00.agent-governance/providers/codex.md`.
+3. Load the active Spec Package and its current Task when the request changes repository state.

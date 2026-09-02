@@ -68,10 +68,10 @@ new_fixture() {
   git -C "$primary" init -q
   git -C "$primary" config user.name "Wrapper Test"
   git -C "$primary" config user.email "wrapper-test@example.invalid"
-  mkdir -p "$primary/docs/04.execution/tasks/nested" "$primary/allowed" "$primary/outside"
-  printf '%s\n' '# Task evidence' >"$primary/docs/04.execution/tasks/task.md"
-  printf '%s\n' '# Nested task evidence' >"$primary/docs/04.execution/tasks/nested/task.md"
-  ln -s task.md "$primary/docs/04.execution/tasks/task-index-link.md"
+  mkdir -p "$primary/docs/03.specs/0001-example/tasks/nested" "$primary/allowed" "$primary/outside"
+  printf '%s\n' '# Task evidence' >"$primary/docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+  printf '%s\n' '# Nested task evidence' >"$primary/docs/03.specs/0001-example/tasks/nested/tsk-0002-nested.md"
+  ln -s tsk-0001-implement.md "$primary/docs/03.specs/0001-example/tasks/tsk-0003-symlink.md"
   printf '%s\n' 'allowed baseline' >"$primary/allowed/tracked.txt"
   printf '%s\n' 'outside baseline' >"$primary/outside/tracked.txt"
   printf '%s\n' '# Repository' >"$primary/README.md"
@@ -284,7 +284,20 @@ test_non_task_path() {
   local name="tracked non-task path is rejected"
   new_fixture "non-task"
   invoke "$LINKED" --task README.md --allow-prefix allowed
-  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "docs/04.execution/tasks"; then
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "canonical numbered Task"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_retired_stage04_task_path() {
+  local name="retired Stage 04 task path is rejected"
+  new_fixture "retired-stage04-task"
+  mkdir -p "$LINKED/docs/04.execution/tasks"
+  printf '%s\n' '# Retired task' >"$LINKED/docs/04.execution/tasks/retired.md"
+  invoke "$LINKED" --task docs/04.execution/tasks/retired.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "canonical numbered Task"; then
     pass_test "$name"
   else
     fail_test "$name" "status=$INVOKE_STATUS"
@@ -294,8 +307,8 @@ test_non_task_path() {
 test_untracked_task_path() {
   local name="untracked task path is rejected"
   new_fixture "untracked-task"
-  printf '%s\n' '# Untracked task' >"$LINKED/docs/04.execution/tasks/untracked.md"
-  invoke "$LINKED" --task docs/04.execution/tasks/untracked.md --allow-prefix allowed
+  printf '%s\n' '# Untracked task' >"$LINKED/docs/03.specs/0001-example/tasks/tsk-0004-untracked.md"
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0004-untracked.md --allow-prefix allowed
   if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "tracked task"; then
     pass_test "$name"
   else
@@ -306,8 +319,8 @@ test_untracked_task_path() {
 test_noncanonical_task_path() {
   local name="noncanonical task alias is rejected"
   new_fixture "noncanonical-task"
-  invoke "$LINKED" --task docs/04.execution/tasks//task.md --allow-prefix allowed
-  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "canonical Git index path" && [[ ! -e "$ARGS_FILE" ]]; then
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks//tsk-0001-implement.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "canonical numbered Task" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
     fail_test "$name" "status=$INVOKE_STATUS"
@@ -317,7 +330,7 @@ test_noncanonical_task_path() {
 test_index_symlink_task_rejected() {
   local name="Git-index symlink task is rejected"
   new_fixture "index-symlink-task"
-  invoke "$LINKED" --task docs/04.execution/tasks/task-index-link.md --allow-prefix allowed
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0003-symlink.md --allow-prefix allowed
   if assert_exit 4 "$INVOKE_STATUS" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -328,9 +341,9 @@ test_index_symlink_task_rejected() {
 test_worktree_symlink_task_rejected() {
   local name="working-tree symlink task is rejected"
   new_fixture "worktree-symlink-task"
-  rm "$LINKED/docs/04.execution/tasks/task.md"
-  ln -s nested/task.md "$LINKED/docs/04.execution/tasks/task.md"
-  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  rm "$LINKED/docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+  ln -s nested/tsk-0002-nested.md "$LINKED/docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -341,9 +354,9 @@ test_worktree_symlink_task_rejected() {
 test_symlink_parent_task_rejected() {
   local name="task path with symlink parent is rejected"
   new_fixture "symlink-parent-task"
-  mv "$LINKED/docs/04.execution/tasks/nested" "$FIXTURE/nested-target"
-  ln -s "$FIXTURE/nested-target" "$LINKED/docs/04.execution/tasks/nested"
-  invoke "$LINKED" --task docs/04.execution/tasks/nested/task.md --allow-prefix allowed
+  mv "$LINKED/docs/03.specs/0001-example/tasks" "$FIXTURE/tasks-target"
+  ln -s "$FIXTURE/tasks-target" "$LINKED/docs/03.specs/0001-example/tasks"
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -354,7 +367,7 @@ test_symlink_parent_task_rejected() {
 test_primary_checkout_rejected() {
   local name="primary checkout is rejected"
   new_fixture "primary-checkout"
-  invoke "$PRIMARY" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  invoke "$PRIMARY" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 3 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "linked worktree" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -367,7 +380,7 @@ test_linked_worktree_accepts_exact_command() {
   local -a actual_args=()
   new_fixture "linked-accept"
   mkdir -p "$FIXTURE/wrapper-tmp"
-  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   while IFS= read -r -d '' arg; do
     actual_args+=("$arg")
   done <"$ARGS_FILE"
@@ -394,7 +407,7 @@ test_missing_precommit() {
   (
     cd "$LINKED"
     PATH="$empty_bin" TMPDIR="$FIXTURE/wrapper-tmp" \
-      /usr/bin/bash "$WRAPPER" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+      /usr/bin/bash "$WRAPPER" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   ) >"$OUTPUT" 2>&1
   INVOKE_STATUS=$?
   set -e
@@ -410,7 +423,7 @@ test_invalid_prefixes() {
   local prefix status_ok=1
   new_fixture "invalid-prefixes"
   for prefix in "/tmp/allowed" "../allowed" "allowed/../../outside" ""; do
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix "$prefix"
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix "$prefix"
     if ! assert_exit 2 "$INVOKE_STATUS"; then
       status_ok=0
     fi
@@ -425,7 +438,7 @@ test_invalid_prefixes() {
 test_symlink_allow_prefix_rejected() {
   local name="symlink allow prefix is rejected"
   new_fixture "symlink-prefix"
-  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed-link
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed-link
   if assert_exit 2 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -436,7 +449,7 @@ test_symlink_allow_prefix_rejected() {
 test_symlink_parent_allow_prefix_rejected() {
   local name="allow prefix with symlink parent is rejected"
   new_fixture "symlink-parent-prefix"
-  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix prefix-parent/new-output
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix prefix-parent/new-output
   if assert_exit 2 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -448,7 +461,7 @@ test_nonexistent_allow_prefix_tail() {
   local name="nonexistent allow-prefix tail accepts new output"
   new_fixture "nonexistent-prefix-tail"
   FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$LINKED/new-output/nested/file.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix new-output/nested
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix new-output/nested
   if assert_exit 0 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "changed_count=1"; then
     pass_test "$name"
   else
@@ -460,7 +473,7 @@ test_dirty_start_rejected() {
   local name="pre-existing dirty paths cannot mask hook changes"
   new_fixture "dirty-start"
   printf '%s\n' 'pre-existing edit' >>"$LINKED/allowed/tracked.txt"
-  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 5 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "clean linked worktree" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
@@ -472,7 +485,7 @@ test_hook_exit_propagation() {
   local name="fake pre-commit exit status is propagated"
   new_fixture "exit-propagation"
   FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=37 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 37 "$INVOKE_STATUS" \
     && assert_contains "$OUTPUT" "hook_exit=37" \
     && assert_single_diagnostic "$OUTPUT" "first_failure=(hook_id=shellcheck,detail=exit_37)" \
@@ -488,7 +501,7 @@ test_before_snapshot_failure() {
   local name="before snapshot Git failure aborts before hook"
   new_fixture "before-snapshot-failure"
   FAKE_GIT_STATUS_FAILURE=before \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 6 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "before" \
     && [[ ! -e "$ARGS_FILE" ]] \
     && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
@@ -502,7 +515,7 @@ test_after_snapshot_failure() {
   local name="after snapshot Git failure fails closed and reports hook exit"
   new_fixture "after-snapshot-failure"
   FAKE_GIT_STATUS_FAILURE=after FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=41 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 6 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "snapshot_result=failed-after-hook" \
     && assert_contains "$OUTPUT" "hook_exit=41" \
     && assert_single_diagnostic "$OUTPUT" "first_failure=(hook_id=shellcheck,detail=exit_37)" \
@@ -518,7 +531,7 @@ test_term_cleanup_and_exit() {
   local name="TERM cleans temporary files and exits 143"
   new_fixture "term-signal"
   FAKE_PRECOMMIT_ACTION=signal-term \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 143 "$INVOKE_STATUS" \
     && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
     pass_test "$name"
@@ -542,7 +555,7 @@ test_expected_edit() {
   local name="expected modified path is accepted"
   new_fixture "expected-edit"
   FAKE_PRECOMMIT_ACTION=modify FAKE_PRECOMMIT_PATH="$LINKED/allowed/tracked.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 0 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "changed_count=1" && assert_contains "$OUTPUT" "allowed/tracked.txt"; then
     pass_test "$name"
   else
@@ -569,24 +582,24 @@ run_unexpected_path_case() {
 
 unexpected_modified() {
   FAKE_PRECOMMIT_ACTION=modify FAKE_PRECOMMIT_PATH="$LINKED/outside/tracked.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
 }
 
 unexpected_untracked() {
   FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$LINKED/outside/new file.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
 }
 
 unexpected_renamed() {
   FAKE_PRECOMMIT_ACTION=rename \
     FAKE_PRECOMMIT_PATH_FROM="$LINKED/outside/tracked.txt" \
     FAKE_PRECOMMIT_PATH_TO="$LINKED/outside/renamed file.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
 }
 
 unexpected_deleted() {
   FAKE_PRECOMMIT_ACTION=delete FAKE_PRECOMMIT_PATH="$LINKED/outside/tracked.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
 }
 
 test_prefix_boundary() {
@@ -597,7 +610,7 @@ test_prefix_boundary() {
   git -C "$LINKED" add allowed-sibling/tracked.txt
   git -C "$LINKED" commit -qm "add sibling"
   FAKE_PRECOMMIT_ACTION=modify FAKE_PRECOMMIT_PATH="$LINKED/allowed-sibling/tracked.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 20 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "allowed-sibling/tracked.txt"; then
     pass_test "$name"
   else
@@ -612,7 +625,7 @@ test_nul_safe_path() {
   odd_path="$LINKED/outside/line
 break.txt"
   FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$odd_path" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 20 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "unexpected_count=1"; then
     pass_test "$name"
   else
@@ -624,7 +637,7 @@ test_observation_boundary() {
   local name="ignored and outside-repository writes are outside observation"
   new_fixture "observation-boundary-ignored"
   FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$LINKED/ignored-output/file.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   local ignored_status="$INVOKE_STATUS"
   local ignored_output="$OUTPUT"
   if ! assert_exit 0 "$ignored_status" || ! assert_contains "$ignored_output" "changed_count=0"; then
@@ -634,7 +647,7 @@ test_observation_boundary() {
 
   new_fixture "observation-boundary-outside"
   FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$FIXTURE/outside-repository-write.txt" \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 0 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "changed_count=0"; then
     pass_test "$name"
   else
@@ -646,7 +659,7 @@ test_unexpected_overrides_hook_exit() {
   local name="unexpected-path status remains distinct from hook failure"
   new_fixture "unexpected-and-hook-failure"
   FAKE_PRECOMMIT_ACTION=modify FAKE_PRECOMMIT_PATH="$LINKED/outside/tracked.txt" FAKE_PRECOMMIT_EXIT=41 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 20 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "hook_exit=41"; then
     pass_test "$name"
   else
@@ -658,7 +671,7 @@ test_files_modified_diagnostic() {
   local name="registered files-modified failure emits one bounded tuple"
   new_fixture "files-modified-diagnostic"
   FAKE_PRECOMMIT_OUTPUT_MODE=files-modified FAKE_PRECOMMIT_EXIT=1 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 1 "$INVOKE_STATUS" \
     && assert_single_diagnostic "$OUTPUT" \
       "first_failure=(hook_id=trailing-whitespace,detail=files_modified)" \
@@ -678,7 +691,7 @@ test_unavailable_diagnostic_cases() {
   for mode in absent-metadata malformed-id overlong-id unregistered-id invalid-detail nul-output oversized-output; do
     new_fixture "unavailable-$mode"
     FAKE_PRECOMMIT_OUTPUT_MODE="$mode" FAKE_PRECOMMIT_EXIT=19 \
-      invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+      invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
     if ! assert_exit 19 "$INVOKE_STATUS" \
       || ! assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
       || ! assert_not_contains "$OUTPUT" "super-secret-output" \
@@ -700,7 +713,7 @@ CONFIG
   git -C "$LINKED" add .pre-commit-config.yaml
   git -C "$LINKED" commit -qm "duplicate hook id fixture"
   FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=37 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if ! assert_exit 37 "$INVOKE_STATUS" \
     || ! assert_single_diagnostic "$OUTPUT" "first_failure=unavailable"; then
     all_safe=0
@@ -717,7 +730,7 @@ test_duplicate_metadata_diagnostic() {
   local name="duplicate registered metadata fails closed"
   new_fixture "duplicate-metadata-diagnostic"
   FAKE_PRECOMMIT_OUTPUT_MODE=duplicate-metadata FAKE_PRECOMMIT_EXIT=37 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 37 "$INVOKE_STATUS" \
     && assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
     && assert_not_contains "$OUTPUT" "shellcheck" \
@@ -732,7 +745,7 @@ test_raw_output_spoof_diagnostic() {
   local name="raw-output spoof fails closed without leaking values"
   new_fixture "raw-spoof-diagnostic"
   FAKE_PRECOMMIT_OUTPUT_MODE=raw-spoof FAKE_PRECOMMIT_EXIT=37 \
-    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    invoke "$LINKED" --task docs/03.specs/0001-example/tasks/tsk-0001-implement.md --allow-prefix allowed
   if assert_exit 37 "$INVOKE_STATUS" \
     && assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
     && assert_not_contains "$OUTPUT" "top-secret-hook-name" \
@@ -749,6 +762,7 @@ test_raw_output_spoof_diagnostic() {
 
 test_missing_task_argument
 test_non_task_path
+test_retired_stage04_task_path
 test_untracked_task_path
 test_noncanonical_task_path
 test_index_symlink_task_rejected

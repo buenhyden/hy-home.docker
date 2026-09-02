@@ -1,8 +1,15 @@
 ---
+title: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0002
+parent_ids:
+  - AD-0002
+created: 2026-03-26
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md -->
-
 # ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
 
 > This ADR documents the decision to use Keycloak as the Identity Provider and OAuth2 Proxy as the authentication gateway.
@@ -35,13 +42,13 @@ We decided to use:
 - **OAuth2 Proxy** allows us to enforce authentication at the ingress layer (Traefik) without modifying the source code of internal applications.
 - This combination is well-supported, highly configurable, and integrates natively with our Traefik gateway via the ForwardAuth middleware pattern.
 
-## Alternatives Considered
+## Options Considered
 
 - **Authelia**: A lightweight alternative. While good, it lacks the advanced identity provider features and wide community support of Keycloak.
 - **Casdoor**: Another IAM. Less "enterprise-proven" compared to Keycloak in our assessment.
 - **App-level Auth**: Implementing auth in each app. Rejected due to high maintenance and lack of unified security policy.
 
-## Consequence
+## Consequences
 
 - **Pros**: Robust, standard-based, zero-trust ready, unified UI for users.
 - **Cons**: higher resource consumption (Keycloak is Java/Quarkus-based), increased complexity in managing realms and clients.
@@ -56,13 +63,20 @@ Agents must use the OIDC discovery endpoint provided by Keycloak (`/realms/hy-ho
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
-## Consequences
+### Additional Consequences
 
 Existing rationale, positive/negative notes, and trade-off text in this ADR remain the consequence record. This alignment section introduces no new decision outcome.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/002-auth.md](../../01.requirements/002-auth.md)
-- **ARD**: [../requirements/0002-auth-architecture.md](../requirements/0002-auth-architecture.md)
-- **Spec**: [../../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-26-02-auth-standardization.md](../../04.execution/plans/2026-03-26-02-auth-standardization.md)
+- **PRD**: [../../01.requirements/0002-auth.md](../../01.requirements/0002-auth.md)
+- **Architecture Description**: [../descriptions/0002-auth-architecture.md](../descriptions/0002-auth-architecture.md)
+- **Spec**: [../../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)

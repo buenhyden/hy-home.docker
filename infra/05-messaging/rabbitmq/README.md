@@ -52,15 +52,15 @@ rabbitmq/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.rabbitmq.rule`, `traefik.http.routers.rabbitmq.entrypoints`, `traefik.http.routers.rabbitmq.tls`, `traefik.http.routers.rabbitmq.middlewares`, `traefik.http.services.rabbitmq.loadbalancer.server.port` |
 | Secret refs | names: `rabbitmq_user`, `rabbitmq_password`; mounts: `/run/secrets/rabbitmq_user`, `/run/secrets/rabbitmq_password` |
 | Healthcheck | Compose healthcheck declared for `rabbitmq` |
-| Operations | [Guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md), [Policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md), [Runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md), [Policy](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md), [Runbook](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. **Service Guide**: 상세 아키텍처 및 연결 설정은 [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)를 참조한다.
-2. **Operations**: 보안 규정 및 가용성 정책은 [RabbitMQ policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md)에 정의되어 있다.
-3. **Emergency**: 서비스 장애 상황 발생 시 [RabbitMQ runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md)의 복구 절차를 따른다.
+1. **Service Guide**: 상세 아키텍처 및 연결 설정은 [RabbitMQ guide](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md)를 참조한다.
+2. **Operations**: 보안 규정 및 가용성 정책은 [RabbitMQ policy](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md)에 정의되어 있다.
+3. **Emergency**: 서비스 장애 상황 발생 시 [RabbitMQ runbook](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md)의 복구 절차를 따른다.
 
 ## Tech Stack
 
@@ -101,8 +101,8 @@ Definition export/import, queue purge/delete, vhost/user mutation, and replay ar
 
 ## Related Documents
 
-- **ARD**: [Messaging architecture](../../../docs/02.architecture/requirements/0005-messaging-architecture.md)
-- **Guide**: [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)
-- **Policy**: [RabbitMQ policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md)
-- **Runbook**: [RabbitMQ runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md)
+- **ARD**: [Messaging architecture](../../../docs/02.architecture/descriptions/0005-messaging-architecture.md)
+- **Guide**: [RabbitMQ guide](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md)
+- **Policy**: [RabbitMQ policy](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md)
+- **Runbook**: [RabbitMQ runbook](../../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/runbook.md)
 - **Monitoring**: `Grafana - Messaging Dashboard`

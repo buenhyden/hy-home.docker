@@ -1,8 +1,15 @@
 ---
+title: Open WebUI as Primary AI/RAG Interface
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0016
+parent_ids:
+  - AD-0013
+created: 2026-03-27
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0016-open-webui-implementation.md -->
-
 # ADR-0016: Open WebUI as Primary AI/RAG Interface
 
 ---
@@ -23,7 +30,7 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 - **Decision 3**: Integrate with Traefik SSO middleware for auth.
 - **Decision 4**: Use Ollama as primary inference engine.
 
-## Related ADRs
+## Follow-up Decisions
 
 performance.
 
@@ -42,7 +49,7 @@ performance.
   - Increased GPU/System memory consumption for the Svelte/Python backend.
   - Dependency on external vector stores for production-grade scaling.
 
-## Alternatives
+## Options Considered
 
 ### [LibreChat]
 
@@ -54,9 +61,16 @@ performance.
 - Good: Extremely lightweight.
 - Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/013-ai-open-webui.md](../../01.requirements/013-ai-open-webui.md)
-- **ARD**: [../requirements/0013-open-webui-architecture.md](../requirements/0013-open-webui-architecture.md)
-- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/009-ai/open-webui.md)
-- **Plan**: [../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
+- **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
+- **Architecture Description**: [../descriptions/0013-open-webui-architecture.md](../descriptions/0013-open-webui-architecture.md)
+- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/0009-ai/spec.md)

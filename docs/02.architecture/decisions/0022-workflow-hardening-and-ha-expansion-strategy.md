@@ -1,7 +1,15 @@
 ---
+title: Workflow Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0022
+parent_ids:
+  - AD-0022
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md -->
 # ADR-0022: Workflow Hardening and HA Expansion Strategy
 
 ## Overview
@@ -40,7 +48,7 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
   - SSO 강화로 기존 자동화 접근 방식 일부 조정이 필요하다.
   - custom image build가 CI/개발 환경에서 추가 빌드 시간을 유발할 수 있다.
 
-## Alternatives
+## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현
 
@@ -61,11 +69,17 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 - Guardrail strategy: workflow 관리 경로는 gateway+SSO 체인 필수
 - Tool gating: workflow 하드닝 검증 스크립트를 정책 게이트로 강제
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/019-workflow-optimization-hardening.md](../../01.requirements/019-workflow-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../requirements/0022-workflow-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
-- **Related ADR**: [./0007-airflow-n8n-hybrid-workflow.md](./0007-airflow-n8n-hybrid-workflow.md)
+- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../descriptions/0022-workflow-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)
+- **Related ADR**: [ADR-0007](0007-airflow-n8n-hybrid-workflow.md)

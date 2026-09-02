@@ -1,9 +1,15 @@
 ---
+title: Standardize infra_net Subnet and Static IP Assignment
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0026
+parent_ids:
+  - AD-0026
+created: 2026-04-01
+updated: 2026-08-10
 ---
-
-<!-- Target: docs/02.architecture/decisions/0026-standardize-infra-net.md -->
-
 # ADR-0026: Standardize infra_net Subnet and Static IP Assignment
 
 ## Overview
@@ -36,7 +42,7 @@ status: active
   - 서브넷이 겹치는 다른 로컬 네트워크 환경과의 충돌 가능성이 미세하게 존재할 수 있음.
   - IP 충돌을 피하기 위한 사전 대역 관리 오버헤드가 발생함.
 
-## Alternatives
+## Options Considered
 
 ### 대안 1: Docker Default Bridge (Automatic CIDR)
 
@@ -48,9 +54,17 @@ status: active
 - Good: 독립적인 전담 관리 도구로 IP 주소 관리를 자동화할 수 있음.
 - Bad: 소규모 Docker Compose 기반 로컬 인프라에서 과도한 구성과 운영 복잡도를 추가함.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [infra_net product requirements](../../01.requirements/023-standardize-infra-net.md)
-- **ARD**: [infra_net architecture requirements](../requirements/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../../03.specs/098-standardize-infra-net/spec.md)
-- **Plan**: [infra_net implementation plan](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
+- **PRD**: [infra_net product requirements](../../01.requirements/0023-standardize-infra-net.md)
+- **Architecture Description**: [infra_net architecture descriptions](../descriptions/0026-standardize-infra-net.md)
+- **Spec**: [infra_net technical specification](../../03.specs/0098-standardize-infra-net/spec.md)
+- **Plan**: infra_net implementation plan

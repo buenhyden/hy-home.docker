@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import pathlib
 import re
 import subprocess
@@ -8,14 +9,34 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 GENERATOR = "scripts/validation/generate-security-automation-readiness.sh"
-AUDIT_PACK = (
+AUTOMATION_AUDIT = (
     ROOT
-    / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
+    / "docs/90.references/audits/0021-automation-candidates/README.md"
+)
+SECURITY_AUDIT = (
+    ROOT
+    / "docs/90.references/audits/0031-security-framework-maturity/README.md"
 )
 
 
 class SecurityAutomationReadinessTests(unittest.TestCase):
     maxDiff = None
+
+    def test_safe_python_check_and_dry_run_are_read_only_without_ambient_path(self) -> None:
+        output = ROOT / "docs/90.references/data/0078-security-automation-readiness/README.md"
+        before = output.read_bytes()
+        environment = {**os.environ, "PYTHONSAFEPATH": "1"}
+        environment.pop("PYTHONPATH", None)
+        for mode in ("--check", "--dry-run"):
+            with self.subTest(mode=mode):
+                result = subprocess.run(
+                    ["bash", GENERATOR, mode], cwd=ROOT, env=environment,
+                    capture_output=True, text=True, check=False, timeout=30,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(before, output.read_bytes())
+                if mode == "--dry-run":
+                    self.assertEqual(before.decode("utf-8"), result.stdout)
 
     def render(self) -> str:
         result = subprocess.run(
@@ -58,24 +79,22 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         self.assertIn("| Partially Implemented | 1 |", output)
         self.assertIn("| Gap | 1 |", output)
 
-    def test_broad_supply_chain_gaps_route_to_draft_spec_126(self) -> None:
+    def test_broad_supply_chain_gap_routes_to_canonical_migration(self) -> None:
         output = self.render()
-        spec_126 = (
-            "[Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+        migration = (
+            "Stage 98 migration lookup: "
+            "`docs/98.archive/migrations/0003-workspace-governance-simplification.md`"
         )
         for control_id in (
             "SEC-AUTO-012",
         ):
             self.assertRegex(
                 output,
-                rf"(?m)^\| `{control_id}` \|.*\| {re.escape(spec_126)} \|$",
+                rf"(?m)^\| `{control_id}` \|.*\| {re.escape(migration)} \|$",
             )
 
     def test_canonical_security_leaf_preserves_the_three_signal_boundary(self) -> None:
-        security_audit = (AUDIT_PACK / "security-framework-maturity.md").read_text(
-            encoding="utf-8"
-        )
+        security_audit = SECURITY_AUDIT.read_text(encoding="utf-8")
         self.assertIn("satisfies only `SEC-AUTO-008`", security_audit)
         self.assertIn("broad dependency SCA (`SEC-AUTO-012`)", security_audit)
         self.assertIn(
@@ -84,15 +103,13 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         )
 
     def test_canonical_automation_leaf_routes_broad_gaps_to_spec_126(self) -> None:
-        automation_audit = (AUDIT_PACK / "automation-candidates.md").read_text(
-            encoding="utf-8"
-        )
+        automation_audit = AUTOMATION_AUDIT.read_text(encoding="utf-8")
         self.assertIn(
             "`SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap`", automation_audit
         )
         self.assertIn(
-            "[draft Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)",
+            "`SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap` and route to "
+            "draft Spec 126",
             automation_audit,
         )
 

@@ -1,0 +1,14 @@
+{
+  "backup_seconds": 1,
+  "cleanup_status": "passed",
+  "dump_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "fixture_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "integrity_status": "passed",
+  "producer_spec": "spec:125-infrastructure-operations-readiness-remediation",
+  "redaction_status": "passed",
+  "restore_seconds": 1,
+  "schema_version": 1,
+  "scope": "synthetic-local",
+  "source_image": "postgres:16@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "target_image": "postgres:17@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+}

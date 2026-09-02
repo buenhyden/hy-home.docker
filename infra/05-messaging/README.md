@@ -41,12 +41,12 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Read the [Kafka Guide](../../docs/05.operations/guides/05-messaging/kafka.md) for cluster ops.
-2. Follow the [RabbitMQ Guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md) for queues.
-3. Check the [Operations Policy](../../docs/05.operations/policies/05-messaging/README.md) for topic, secret, and queue controls.
-4. Consult the [Messaging Runbook](../../docs/05.operations/runbooks/05-messaging/README.md) for recovery.
+1. Read the [Kafka Guide](../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md) for cluster ops.
+2. Follow the [RabbitMQ Guide](../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md) for queues.
+3. Check the [Operations Policy](../../docs/05.operations/catalog/05-messaging/README.md) for topic, secret, and queue controls.
+4. Consult the [Messaging Runbook](../../docs/05.operations/catalog/05-messaging/README.md) for recovery.
 
 5. Always use the `Schema Registry` for any new topic schemas.
 6. Use `replication-factor: 3` only in the full 3 broker Kafka compose; root dev single broker topics are development-only.
@@ -103,5 +103,5 @@ docker exec rabbitmq rabbitmq-diagnostics check_running
 - [04-data](../04-data/README.md) - Storing and analyzing processed events.
 - [ksqlDB analytics README](../04-data/analytics/ksql/README.md) - Streaming SQL implementation.
 - [01-gateway](../01-gateway/README.md) - routing to Messaging UIs.
-- [Kafka guide](../../docs/05.operations/guides/05-messaging/kafka.md)
-- [RabbitMQ guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md)
+- [Kafka guide](../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md)
+- [RabbitMQ guide](../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md)

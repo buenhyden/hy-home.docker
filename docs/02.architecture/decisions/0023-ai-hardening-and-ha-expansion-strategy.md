@@ -1,7 +1,15 @@
 ---
+title: AI Hardening and HA Expansion Strategy
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0023
+parent_ids:
+  - AD-0023
+created: 2026-03-28
+updated: 2026-09-01
 ---
-<!-- Target: docs/02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md -->
 # ADR-0023: AI Hardening and HA Expansion Strategy
 
 ## Overview
@@ -42,7 +50,7 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
   - 동시성 상한 도입으로 단기 처리량이 제한될 수 있다.
   - SSO/접근 통제 강화로 기존 임시 테스트 경로 조정이 필요하다.
 
-## Alternatives
+## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현
 
@@ -63,11 +71,17 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
 - Guardrail strategy: AI 공개 경로는 gateway+SSO 체인 필수
 - Tool gating: `check-all-hardening.sh 08-ai`를 AI tier 머지 전 필수 정책 게이트로 적용
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../01.requirements/020-ai-optimization-hardening.md](../../01.requirements/020-ai-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0023-ai-optimization-hardening-architecture.md](../requirements/0023-ai-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/009-ai/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
-- **Related ADR**: [./0008-ollama-openwebui-local-ai.md](./0008-ollama-openwebui-local-ai.md)
+- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
+- **Architecture Description**: [../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../descriptions/0023-ai-optimization-hardening-architecture.md)
+- **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/0009-ai/spec.md)
+- **Related ADR**: [ADR-0008](0008-ollama-openwebui-local-ai.md)

@@ -1,107 +1,40 @@
 ---
+title: Claude Provider Adapter
+type: governance/provider
 layer: agentic
+status: active
+owner: "@buenhyden"
 runtime: claude
 ---
 
-# Claude Provider Notes
+# Claude Provider Adapter
 
-Claude Code-specific guidance for this repository.
+## Purpose
 
-## 1. Context and Objective
+Translate provider-neutral Stage 00 sources into Claude Code syntax.
 
-- Keep Claude execution aligned with repository governance.
-- Keep `CLAUDE.md` minimal and modular.
+## Loading
 
-## 2. Provider-Specific Rules
+The root `CLAUDE.md` imports the canonical
+[bootstrap policy](../policies/bootstrap.md) and this adapter. Load the active
+Spec Package and current Task when repository state changes.
 
-- Keep direct bootstrap, provider, and memory imports in root `CLAUDE.md`.
-- Keep provider-neutral behavior in `providers/agents-md.md` and shared rules.
-- Use `@path` imports for modular instruction loading.
-- Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
-- Keep canonical Hookify rules at
-  `docs/00.agent-governance/rules/hooks/hookify.*.md`. The repository does not
-  yet track a Claude-local Hookify projection; do not cite or create one until
-  the registered provider renderer owns it.
-- Claude exposes provider-native Markdown adapters for the Stage 00 canonical
-  agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
-  and `.claude/skills/` are runtime adapters, not separate governance.
-- Apply the work profile in `contracts/agent-catalog.yaml` through the exact
-  Claude model/control record in `contracts/provider-models.yaml`. Claude
-  subagents support `effort` values `low`, `medium`, `high`, `xhigh`, and
-  `max`; the subagent value overrides the session value. Generated Sonnet and
-  Opus adapters therefore emit the selected `high` effort. Per-subagent
-  `thinking` is unsupported and remains inherited from the session, so no
-  generated adapter emits a `thinking` key. Haiku omits `effort` because its
-  selected model profile does not expose that control.
-- Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
+## Runtime Boundary
 
-## 3. Root Import Boundary
+- `.claude/agents/` and `.claude/skills/` are generated projections.
+- `.claude/settings.json`, `.claude/hooks/`, and `.claude/output-styles/` are
+  Claude-native mechanics that must route to shared policies and scripts.
+- Provider/model selections and permission translations come only from
+  `registry.yaml`.
+- Generated files may adapt syntax but may not define policy, roles, lifecycle,
+  templates, model selection, or completion criteria.
 
-The root `CLAUDE.md` owns the executable import list. It loads bootstrap, this
-provider overlay, the shared memory contract, and the bounded `current.md`
-record in that order. Claude-local or user-global memory may supplement session
-loading but may not copy, replace, or override the repository current-state
-body.
+## Verification
 
-## 4. Instruction Precedence (Claude-Specific)
-
-Claude Code loads instruction files in a defined precedence order. Within this repository:
-
-- `CLAUDE.md` is the root shim; it imports bootstrap, this overlay, and memory.
-- `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
-- `.claude/` is the Claude runtime baseline.
-- `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
-- Claude agents and skills must maintain catalog parity with `docs/00.agent-governance/agents/`.
-- The `.agents/` directory is the cross-provider compatibility and shared-skill
-  surface, distinct from Claude-native `.claude/` and Gemini-native `.gemini/`.
-- `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/hooks/agent-event-hook.sh`.
-- Claude `PreToolUse` Graphify advisory context and Docker Compose edit guardrails must route through the shared dispatcher, not inline shell snippets in `.claude/settings.json`.
-- GitHub-native instruction files are not part of this repository's active instruction hierarchy.
-- Personal `settings.local.json` may not override team policy in `settings.json`.
-
-## 5. Hook Parity Contract
-
-- Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event.
-- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`,
-  `PreCompact`, and `UserPromptSubmit` route through generated executable
-  wrappers and then the provider-neutral dispatcher in
-  `scripts/hooks/agent-event-hook.sh`.
-- Claude `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
-- Claude `PostToolUse` must delegate changed-file style normalization and style validation to `scripts/hooks/post-tool-validate.sh` before repository contract checks. The shared script trims text-file whitespace/newline drift, runs `shfmt` for changed hook/script shell files when available, and runs optional `shellcheck`/`yamllint` style checks when those tools are available.
-- Claude hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
-- `PreToolUse`, `PreCompact`, and `UserPromptSubmit` are advisory in the tracked
-  dispatcher even when the provider primitive can block. `provider_can_block`
-  records native capability; `repository_hook_mode` records implemented
-  repository behavior. Only the conditional Stop gates are blocking here.
-- Claude Stop/SessionEnd guidance must require agents to create logical Conventional Commits for completed repository-modifying work unless a higher-priority instruction or incomplete verification prevents committing; Stop blocks while task-owned uncommitted paths remain.
-- README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/templates/common/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
-- Non-Stop runtime hooks provide advisory context and validation routing only.
-  Policy remains in `docs/00.agent-governance/`.
-
-## 6. Operational Practices
-
-- Keep instructions short, specific, and executable.
-- Prefer path-scoped instruction files instead of large monolithic root files.
-- For changed or new target Markdown, run
-  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
-  with the task's safe comparison base. Claude hooks may surface validation
-  guidance, but the command result is the evidence boundary.
-- Direct agent execution of all-files pre-commit is prohibited. At the approved
-  final QA gate, use only
-  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
-  Git-visible, non-ignored repository paths in Stage 04 evidence.
-- After instruction updates, start a fresh run or reload context so new guidance is effective.
+Run `python3 scripts/validation/run-ci-gate.py --profile full`. Hook behavior
+remains subject to the shared policy and manifest-owned public suites.
 
 ## Related Documents
 
-- `docs/00.agent-governance/providers/agents-md.md`
-- `docs/00.agent-governance/rules/github-governance.md`
-- `docs/00.agent-governance/rules/bootstrap.md`
-- `scripts/hooks/agent-event-hook.sh`
-- `scripts/hooks/post-tool-validate.sh`
-
-## References
-
 - <https://code.claude.com/docs/en/sub-agents>
 - <https://code.claude.com/docs/en/hooks>
-- <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>

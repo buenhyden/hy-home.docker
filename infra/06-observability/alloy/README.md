@@ -43,12 +43,12 @@ alloy/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
-1. Follow the [Alloy Guide](../../../docs/05.operations/guides/06-observability/alloy.md).
+1. Follow the [Alloy Guide](../../../docs/05.operations/catalog/06-observability/0040-alloy/guide.md).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
 3. Access the Alloy UI at `https://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
-4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/policies/06-observability/alloy.md).
+4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/catalog/06-observability/0040-alloy/policy.md).
 5. Use Alloy's `discovery.docker` for automatic container metadata enrichment.
 
 6. **OTLP First**: Prefer `OTLP` ingestion for all new application instrumentation to ensure future-proof telemetry.
@@ -98,6 +98,6 @@ alloy/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/guides/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
-- **Policy**: [docs/05.operations/policies/06-observability/alloy.md](../../../docs/05.operations/policies/06-observability/alloy.md)
-- **Runbooks**: [docs/05.operations/runbooks/06-observability/alloy.md](../../../docs/05.operations/runbooks/06-observability/alloy.md)
+- **System Guide**: [docs/05.operations/catalog/06-observability/0040-alloy/guide.md](../../../docs/05.operations/catalog/06-observability/0040-alloy/guide.md)
+- **Policy**: [docs/05.operations/catalog/06-observability/0040-alloy/policy.md](../../../docs/05.operations/catalog/06-observability/0040-alloy/policy.md)
+- **Runbooks**: [docs/05.operations/catalog/06-observability/0040-alloy/runbook.md](../../../docs/05.operations/catalog/06-observability/0040-alloy/runbook.md)

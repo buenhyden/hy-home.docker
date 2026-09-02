@@ -1,8 +1,15 @@
 ---
+title: "Traefik & Nginx Hybrid Gateway Architecture"
+type: architecture/decision
+layer: architecture
 status: active
+owner: "@buenhyden"
+artifact_id: ADR-0001
+parent_ids:
+  - AD-0001
+created: 2026-03-26
+updated: 2026-08-10
 ---
-<!-- Target: docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md -->
-
 # ADR-0001: Traefik & Nginx Hybrid Gateway Architecture
 
 ## Overview
@@ -41,7 +48,7 @@ status: active
   - 특정 서비스에 대해 네트워크 홉(Hop)이 하나 추가됨 (Traefik -> Nginx).
   - 두 종류의 프록시 설정 문법을 모두 관리해야 하는 운영 부담.
 
-## Alternatives
+## Options Considered
 
 ### [Alternative 1: Traefik Only]
 
@@ -53,8 +60,16 @@ status: active
 - Good: 설정이 매우 강력하고 친숙함.
 - Bad: 순수 Nginx 사용 시 Docker 컨테이너의 동적 변화를 감지하기 위해 `jwilder/nginx-proxy` 같은 추가 도구가 필요하거나 수동 관리가 필요함.
 
+## Traceability
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
 ## Related Documents
 
-- **PRD**: [../../01.requirements/001-gateway.md](../../01.requirements/001-gateway.md)
-- **ARD**: [../requirements/0001-gateway-architecture.md](../requirements/0001-gateway-architecture.md)
-- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md)
+- **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
+- **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)
+- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/0001-gateway/spec.md)

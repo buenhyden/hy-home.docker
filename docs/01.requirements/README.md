@@ -1,134 +1,89 @@
 ---
+title: Requirement Packages
+type: common/readme
+layer: requirements
 status: active
+owner: "@buenhyden"
 ---
 
-<!-- Target: docs/01.requirements/README.md -->
-
-# Product Requirements Documents (PRD)
-
-> 이 경로는 제품 요구사항 정의(Vision, Use Case, Requirements)를 관리한다.
+# Requirement Packages
 
 ## Overview
 
-`docs/01.requirements`는 시스템이나 기능의 "Why"와 "What"을 정의하는 문서가 보관되는 장소다. 비즈니스 가치, 사용자 시나리오, 기능적/비기능적 요구사항을 기술하며 모든 설계와 구현의 출발점이 된다.
+`docs/01.requirements`는 제품의 문제, 이해관계자 가치, 범위, 요구사항과
+수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
+Stage 03, 실행 증거는 현재 변경 패킷, 운영 절차는 Stage 05가 소유한다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Developers
 - Product Owners
 - System Architects
+- Developers
 - AI Agents
 
 ## Scope
 
-### In Scope
+이 디렉터리는 현재 25개의 Requirement Package를 보유한다. 각 패키지는
+functional, non-functional, solution-independent interface 요구사항을 같은
+경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다.
 
-- 제품 비전 및 목표 정의서
-- 사용자 스토리 및 유즈케이스 명세
-- 기능적 / 비기능적 요구사항 정의 (PRD)
-- 핵심 성공 지표 (KPI/Metrics)
-
-### Out of Scope
-
-- 상세 기술 설계 (Spec 담당)
-- 아키텍처 참조 모델 (ARD 담당)
-- 상세 구현 코드
-- 운영 및 유지보수 절차
+Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
+위험과 추적성을 소유한다. 아키텍처 구조, 선택의 근거, 구현 계약과 운영
+절차는 소유하지 않는다. 실행 가능한 OpenAPI, GraphQL, Proto payload는
+관련 Stage 03 Spec package가 소유한다.
 
 ## Structure
 
 ```text
 docs/01.requirements/
-├── 기초 PRD (2026-03-26)
-│   ├── 001-gateway.md             # Gateway Tier
-│   ├── 002-auth.md                # Auth / IAM Tier
-│   ├── 003-security.md            # Security (Vault) Tier
-│   ├── 004-data.md                # Data Tier (core)
-│   ├── 005-data-analytics.md      # Analytics Sub-tier
-│   ├── 006-messaging.md           # Messaging Tier
-│   ├── 007-observability.md       # Observability Tier
-│   ├── 008-workflow.md            # Workflow Tier
-│   ├── 009-ai.md                  # AI Infrastructure Tier
-│   ├── 010-tooling.md             # Tooling Tier
-│   ├── 011-communication.md       # Communication Tier
-│   └── 012-laboratory.md          # Laboratory Tier
-├── 추가 PRD
-│   ├── 013-ai-open-webui.md       # Open WebUI (AI sub-feature)
-│   ├── 023-standardize-infra-net.md  # infra_net 표준화
-│   ├── 024-agent-governance-standardization.md # Agent governance 표준화
-│   └── 025-operational-readiness-closure.md # Local-isolated operational readiness closure
-├── 최적화/하드닝 PRD (2026-03-28)
-│   ├── 014-auth-optimization-hardening.md
-│   ├── 015-security-optimization-hardening.md
-│   ├── 016-data-optimization-hardening.md
-│   ├── 017-messaging-optimization-hardening.md
-│   ├── 018-observability-optimization-hardening.md
-│   ├── 019-workflow-optimization-hardening.md
-│   ├── 020-ai-optimization-hardening.md
-│   ├── 021-tooling-optimization-hardening.md
-│   └── 022-laboratory-optimization-hardening.md
-│   # NOTE: 01-gateway, 10-communication 하드닝 PRD는 backlog/deferred 항목이며 별도 승인 전까지 새 PRD를 만들지 않음
-└── README.md                                # This file
+├── 0001-gateway.md
+├── 0002-auth.md
+├── ...
+├── 0024-agent-governance-standardization.md
+├── 0025-operational-readiness-closure.md
+├── 0026-document-retention-and-retirement.md
+└── README.md
 ```
+
+파일명은 `####-<slug>.md`이고 frontmatter의 `profile_id`와 `artifact_type`은
+`requirements-package`, `artifact_id`는 `REQ-####`를 사용한다. 자식 ID는
+반드시 `REQ-####-FR-####`, `REQ-####-NFR-####`, 또는
+`REQ-####-IF-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
+high-water를 낮추지 않는다.
 
 ## How to Work in This Area
 
-1. 새 기능 제안 시 [prd.template.md](../99.templates/templates/sdlc/prd.template.md)를 사용하여 문서를 생성함.
-2. 상위 비전이나 비즈니스 목표와 일치하는지 검토함.
-3. 문서 상태(`draft`, `active`, `completed`)를 frontmatter의 `status` 필드로 관리하고, active chain에서 제거된 문서는 `docs/98.archive/` tombstone으로만 추적함.
-4. 승인 후에는 관련 `ARD`, `Spec`, `Plan` 문서를 생성하여 추적성을 유지함.
-
-## PRD Contract
-
-PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, 운영 절차는 이 stage에 두지 않습니다.
-
-| PRD Must Define | Downstream Owner |
-| --- | --- |
-| 사용자 또는 운영자 문제 | ARD/ADR이 해결 구조와 trade-off를 설명 |
-| 기능 요구사항과 비기능 요구사항 | Spec이 interface와 verification contract로 변환 |
-| Scope, out-of-scope, non-goals | Plan이 실행 범위와 risk gate로 변환 |
-| Success criteria와 acceptance criteria | Task가 검증 evidence로 기록 |
-
-새 PRD의 `## Related Documents` 링크는 `docs/01.requirements/`에 복사된 PRD 파일 위치 기준으로 계산합니다. 예를 들어 architecture requirements는 `../02.architecture/requirements/...`, technical spec은 `../03.specs/...`, execution plan은 `../04.execution/plans/...`로 연결합니다.
+1. [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)를 사용한다.
+2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.
+3. 패키지의 요구사항을 설명하는 Architecture Description과 중요한 선택을
+   기록하는 ADR을 연결한다.
+4. 구현 계약은 Stage 03 Spec, 운영 절차는 Stage 05에 둔다.
+5. 변경 후 metadata와 repository-local link 검증을 실행한다.
 
 ## Documentation Standards
 
-- 가능한 경우 승인된 템플릿에서 시작한다.
-- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
-- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+- `profile_id: requirements-package`, `artifact_type: requirements-package`와
+  안정 ID를 사용한다.
+- Requirement Package의 `parent_ids`는 비어 있다.
+- 구현 방법이나 실행 순서를 요구사항으로 복사하지 않는다.
+- 비어 있는 분류를 위해 별도 요구사항 문서를 만들지 않는다.
+- solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
+  Stage 03에 둔다.
 
 ## AI Agent Guidance
 
-이 영역을 수정하기 전에 Agent는 다음을 먼저 수행해야 한다.
-
-1. 이 README를 먼저 읽는다.
-2. 기존 PRD 문서를 확인하여 중복 기능 정의를 피한다.
-3. 요구사항 변경 시 연관된 `Spec`과 `Plan` 문서도 함께 검토하여 불일치를 방지한다.
-
-### Allowed Outputs
-
-- PRD 문서 (`prd.template.md` 기반, `NNN-feature-or-system.md` 파일명 형식. 예: `025-feature-name.md`)
-- 기존 PRD의 lifecycle `status` 갱신 (`draft` → `active` → `completed` 또는 `superseded`)
-
-### Guardrails
-
-- `prd.template.md` 없이 새 PRD 형식을 임의로 만들지 않는다.
-- 기존 구조 확인 없이 새 파일을 만들지 않는다.
-- 추적성 링크(`ARD`, `Spec`, `Plan`, `ADR`)가 필요한 영역에서 상위/하위 문서 연결을 누락하지 않는다.
-- `004-data.md`와 `005-data-analytics.md`는 별도 PRD이므로 혼용하지 않는다.
-
-### Validation
-
-- 새 PRD 생성 후 `Related Documents` 링크가 실제 존재하는 파일을 가리키는지 확인한다.
-- `bash scripts/validation/check-repo-contracts.sh`로 docs taxonomy, template, README/link contract를 확인한다.
-- 연관된 execution plan 또는 operations 문서를 함께 갱신한 경우 `bash scripts/validation/check-doc-traceability.sh`도 실행한다.
+Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호환 문서를
+만들지 않는다.
+연결된 Description, ADR, Spec 또는 Operations 문서가 실제로 존재할 때만
+추적성 링크를 추가한다.
 
 ## Related Documents
 
-- [ARD README](../02.architecture/requirements/README.md)
-- [Spec README](../03.specs/README.md)
-- [Plan README](../04.execution/plans/README.md)
-- [Agent Governance Standardization PRD](./024-agent-governance-standardization.md)
-- [Operational Readiness Closure PRD](./025-operational-readiness-closure.md)
+- [Architecture](../02.architecture/README.md)
+- [Architecture Descriptions](../02.architecture/descriptions/README.md)
+- [Architecture Decisions](../02.architecture/decisions/README.md)
+- [Specifications](../03.specs/README.md)
+- [Operations](../05.operations/README.md)
+- [Agent Governance Standardization Requirements](./0024-agent-governance-standardization.md)
+- [Operational Readiness Closure Requirements](./0025-operational-readiness-closure.md)
+- [문서 보존 및 은퇴 요구사항](./0026-document-retention-and-retirement.md)

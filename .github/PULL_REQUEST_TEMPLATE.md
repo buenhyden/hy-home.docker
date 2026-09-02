@@ -1,6 +1,6 @@
 # Pull Request
 
-> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.agent-governance/rules/git-workflow.md`.
+> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.agent-governance/policies/git-workflow.md`.
 > Human `feat/` and `fix/` source branches MUST include an issue ID segment, for example `feat/123-add-service`.
 
 ## Related Specification
@@ -56,7 +56,7 @@ List exact commands used and outcome.
 - [ ] `.env.example` changed
 - [ ] `scripts/**` validation, hardening, hook, or operation command changed
 - [ ] `.github/workflows/**` changed
-- [ ] Root shims or `.agents/**`, `.claude/**`, `.codex/**`, `.gemini/**` changed
+- [ ] Root shims or `.agents/**`, `.claude/**`, `.codex/**` changed
 - [ ] `docs/00.agent-governance/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
@@ -64,12 +64,8 @@ List exact commands used and outcome.
 If any harness surface changed, list exact validation evidence:
 
 ```bash
-bash scripts/validation/validate-harness.sh
-bash scripts/validation/run-local-qa-gates.sh --script-backed
-python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
-# Compose-affecting changes only:
-bash scripts/validation/validate-docker-compose.sh --preflight
+python3 scripts/validation/run-ci-gate.py --profile changed
+python3 scripts/validation/run-ci-gate.py --profile full
 ```
 
 Secret handling:
@@ -85,7 +81,7 @@ Agent-loop evidence:
 - [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when agent-harness surfaces changed
 - [ ] Provider configuration is not presented as proof of live native-event execution
 
-See [Approval Boundaries](../docs/00.agent-governance/rules/approval-boundaries.md) for protected surfaces.
+See [Approval Boundaries](../docs/00.agent-governance/policies/approval-boundaries.md) for protected surfaces.
 
 ## Risk Assessment
 
@@ -94,8 +90,8 @@ See [Approval Boundaries](../docs/00.agent-governance/rules/approval-boundaries.
 
 ## Validations
 
-- [ ] I have reviewed the relevant governance rules under `docs/00.agent-governance/rules`.
-- [ ] My source branch follows the governed branch policy in `docs/00.agent-governance/rules/git-workflow.md`.
+- [ ] I have reviewed the relevant governance policies under `docs/00.agent-governance/policies`.
+- [ ] My source branch follows the governed branch policy in `docs/00.agent-governance/policies/git-workflow.md`.
 - [ ] My code strictly follows the Implementation Specification.
 - [ ] Documentation has been added/updated using `docs/99.templates`, or marked N/A with a reason.
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.

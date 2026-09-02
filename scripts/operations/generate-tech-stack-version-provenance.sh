@@ -4,11 +4,11 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/docker/tech-stack-version-provenance.md"
+OUTPUT="docs/90.references/data/0061-tech-stack-version-provenance/README.md"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/operations/generate-tech-stack-version-provenance.sh [--check|--dry-run]
+Usage: bash scripts/operations/generate-tech-stack-version-provenance.sh [--write|--check|--dry-run]
 
 Generate the tech-stack version drift severity and source provenance snapshot.
 
@@ -19,11 +19,16 @@ Options:
 EOF
 }
 
-mode="write"
+mode="check"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
-  "")
+  --write)
+    mode="write"
     ;;
-  --check)
+  "" | --check)
     mode="check"
     ;;
   --dry-run)
@@ -251,11 +256,18 @@ floating_rows = [row for row in image_rows if row["status"] in {"floating-except
 
 lines: list[str] = [
     "---",
+    'title: "Reference: Tech-Stack Version Provenance"',
+    "type: references/data",
+    "layer: reference",
     "status: active",
+    "owner: \"@buenhyden\"",
+    "artifact_id: DATA-0061",
+    "parent_ids: []",
+    "created: '2026-08-23'",
+    "updated: '2026-08-23'",
+    "observed_at: '2026-08-23'",
     "generated_by: scripts/operations/generate-tech-stack-version-provenance.sh",
     "---",
-    "",
-    "<!-- Target: docs/90.references/data/docker/tech-stack-version-provenance.md -->",
     "",
     "# Reference: Tech-Stack Version Provenance",
     "",
@@ -434,7 +446,7 @@ lines.extend(
         "- [tech-stack registry](../../../../infra/tech-stack.versions.json) - curated image registry and listed Compose sources.",
         "- [floating image exceptions](../../../../infra/image-tag-policy.exceptions.json) - approved floating-tag review obligations.",
         "- [sync script](../../../../scripts/operations/sync-tech-stack-versions.sh) - registry-to-Compose drift synchronization rules.",
-        "- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - freshness and drift validation boundary.",
+        "- [public validation runner](../../../../scripts/validation/run-ci-gate.py) - changed/full freshness and drift validation boundary.",
         "",
         "## Maintenance",
         "",
@@ -444,10 +456,40 @@ lines.extend(
         "",
         "## Related Documents",
         "",
-        "- **Docker data index**: [README.md](./README.md)",
-        "- **Docker image/version interpretation**: [image-version-interpretation.md](./image-version-interpretation.md)",
-        "- **Compose profile coverage**: [compose-profile-service-coverage.md](./compose-profile-service-coverage.md)",
-        "- **Automation candidates**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
+        "- **Docker data index**: [README.md](../README.md)",
+        "- **Docker image/version interpretation**: [README.md](../0060-image-version-interpretation/README.md)",
+        "- **Compose profile coverage**: [README.md](../0059-compose-profile-service-coverage/README.md)",
+        "- **Automation candidates**: [README.md](../../audits/0021-automation-candidates/README.md)",
+        "",
+        "## Schema",
+        "",
+        "Each image row records component, image, declaration status, severity,",
+        "tracked source provenance, and any approved floating-tag exception.",
+        "",
+        "## Provenance",
+        "",
+        "The inventory is derived only from `infra/tech-stack.versions.json`,",
+        "`infra/image-tag-policy.exceptions.json`, and the listed tracked Compose files.",
+        "",
+        "## Inventory",
+        "",
+        "The summary, coverage, component, image, and exception tables above are the",
+        "generated inventory for the current tracked inputs.",
+        "",
+        "## Refresh",
+        "",
+        "Run `bash scripts/operations/generate-tech-stack-version-provenance.sh` to",
+        "write the snapshot, or pass `--check` to verify freshness without writing.",
+        "",
+        "## Consumers",
+        "",
+        "The public validation runner, audit matrix, security-readiness snapshot, and",
+        "Stage 90 reviewers consume this advisory evidence.",
+        "",
+        "## Traceability",
+        "",
+        "Current authority remains the tracked registry, exception registry, Compose",
+        "declarations, generator, and public validation runner linked above.",
     ]
 )
 

@@ -1,44 +1,52 @@
 ---
+title: <title>
+version: <version>
+type: operations/runbook
+layer: <layer>
 status: draft
-artifact_id: <artifact-id>
-artifact_type: runbook
-parent_ids: [<parent-artifact-id>]
-reviewed_at: <reviewed-at>
-review_cycle: <review-cycle>
+owner: <owner>
+artifact_id: RUN-####
+parent_ids: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+reviewed_at: YYYY-MM-DD
+next_review_at: YYYY-MM-DD
 ---
 
 # {{title}}
 
-## When to Use
+## Purpose
 
-| Trigger     | Prerequisites     | Safety conditions     |
-| ----------- | ----------------- | --------------------- |
-| {{trigger}} | {{prerequisites}} | {{safety_conditions}} |
+{{purpose}}
+
+## Trigger
+
+{{trigger}}
+
+## Prerequisites
+
+{{prerequisites}}
 
 ## Procedure
 
-| Step order     | Procedure step     | Expected result     |
-| -------------- | ------------------ | ------------------- |
-| {{step_order}} | {{procedure_step}} | {{expected_result}} |
+{{procedure}}
 
-## Evidence
+## Verification
 
-{{supporting_evidence}}
+{{verification}}
 
-## Rollback or Recovery
+## Rollback
 
-{{rollback_or_recovery}}
+{{rollback}}
 
 ## Escalation
 
 {{escalation}}
 
-## Automation Handoff
+## Traceability
 
-| Automation candidate or invocation     | Human or operator judgment boundary     |
-| -------------------------------------- | --------------------------------------- |
-| {{automation_candidate_or_invocation}} | {{human_or_operator_judgment_boundary}} |
+{{subject_and_authority_links}}
 
-## Related Documents
+## Automation
 
-{{related_documents}}
+{{automation}}

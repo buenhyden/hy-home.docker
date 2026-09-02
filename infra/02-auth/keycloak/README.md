@@ -52,13 +52,13 @@ keycloak/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.keycloak.rule`, `traefik.http.routers.keycloak.entrypoints`, `traefik.http.routers.keycloak.tls`, `traefik.http.routers.keycloak.middlewares`, `traefik.http.services.keycloak.loadbalancer.server.port` |
 | Secret refs | names: `keycloak_db_password`, `keycloak_admin_password`; mounts: `/run/secrets/keycloak_db_password`, `/run/secrets/keycloak_admin_password` |
 | Healthcheck | Compose healthcheck declared for `keycloak` |
-| Operations | [Guide](../../../docs/05.operations/guides/02-auth/keycloak.md), [Policy](../../../docs/05.operations/policies/02-auth/keycloak.md), [Runbook](../../../docs/05.operations/runbooks/02-auth/keycloak.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Operations | [Guide](../../../docs/05.operations/catalog/02-auth/0014-keycloak/guide.md), [Policy](../../../docs/05.operations/catalog/02-auth/0014-keycloak/policy.md), [Runbook](../../../docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
 
 1. Read the linked operations guide, policy, and runbook before changing Keycloak configuration.
 2. Keep all sensitive values behind Docker Secrets or mounted secret files.
@@ -115,7 +115,7 @@ healthcheck:
 
 ## Related Documents
 
-- **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)
-- **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/policies/02-auth/keycloak.md)
-- **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/runbooks/02-auth/keycloak.md)
-- **Spec**: [02-auth Spec](../../../docs/03.specs/002-auth/spec.md)
+- **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/catalog/02-auth/0014-keycloak/guide.md)
+- **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/catalog/02-auth/0014-keycloak/policy.md)
+- **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md)
+- **Spec**: [02-auth Spec](../../../docs/03.specs/0002-auth/spec.md)
