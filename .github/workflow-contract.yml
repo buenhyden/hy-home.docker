@@ -2031,7 +2031,7 @@
       "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
       "runtime": "node24",
       "manifest_url": "https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
-      "retrieved_at": "2026-07-28",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml",
         ".github/workflows/generate-changelog.yml",
@@ -2043,7 +2043,7 @@
       "sha": "1c4688942c71f71d4f5502a26ea67c331730fa4d",
       "runtime": "node24",
       "manifest_url": "https://raw.githubusercontent.com/actions/first-interaction/1c4688942c71f71d4f5502a26ea67c331730fa4d/action.yml",
-      "retrieved_at": "2026-07-28",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/greetings.yml"
       ],
@@ -2053,7 +2053,7 @@
       "sha": "bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13",
       "runtime": "node24",
       "manifest_url": "https://raw.githubusercontent.com/actions/labeler/bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13/action.yml",
-      "retrieved_at": "2026-07-28",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/pr-labeler.yml"
       ],
@@ -2063,7 +2063,7 @@
       "sha": "820762786026740c76f36085b0efc47a31fe5020",
       "runtime": "node24",
       "manifest_url": "https://raw.githubusercontent.com/actions/setup-node/820762786026740c76f36085b0efc47a31fe5020/action.yml",
-      "retrieved_at": "2026-07-28",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],
@@ -2073,37 +2073,37 @@
       "sha": "5fda3b95a4ea91299a34e894583c3862153e4b97",
       "runtime": "node24",
       "manifest_url": "https://raw.githubusercontent.com/actions/setup-python/5fda3b95a4ea91299a34e894583c3862153e4b97/action.yml",
-      "retrieved_at": "2026-07-28",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },
     "actions/stale": {
-      "sha": "1e223db275d687790206a7acac4d1a11bd6fe629",
+      "sha": "4391f3da665fdf50b6810c1a66712fb9ba21aa93",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/actions/stale/1e223db275d687790206a7acac4d1a11bd6fe629/action.yml",
-      "retrieved_at": "2026-07-28",
+      "manifest_url": "https://raw.githubusercontent.com/actions/stale/4391f3da665fdf50b6810c1a66712fb9ba21aa93/action.yml",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/stale.yml"
       ],
       "security_disposition": "approved-node24"
     },
     "astral-sh/setup-uv": {
-      "sha": "11f9893b081a58869d3b5fccaea48c9e9e46f990",
+      "sha": "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/astral-sh/setup-uv/11f9893b081a58869d3b5fccaea48c9e9e46f990/action.yml",
-      "retrieved_at": "2026-07-28",
+      "manifest_url": "https://raw.githubusercontent.com/astral-sh/setup-uv/20cfd1bf945f4377ade1205e4dbc17946fc9a30d/action.yml",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },
     "github/codeql-action/upload-sarif": {
-      "sha": "7188fc363630916deb702c7fdcf4e481b751f97a",
+      "sha": "cdf488f595d80d6e07e03d4674febd5ab45fa938",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/7188fc363630916deb702c7fdcf4e481b751f97a/upload-sarif/action.yml",
-      "retrieved_at": "2026-07-28",
+      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/cdf488f595d80d6e07e03d4674febd5ab45fa938/upload-sarif/action.yml",
+      "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],

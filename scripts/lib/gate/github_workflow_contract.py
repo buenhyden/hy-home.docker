@@ -220,15 +220,15 @@ _ACTION_REGISTRY_BASELINE: Final = (
     ),
     (
         "actions/stale",
-        "1e223db275d687790206a7acac4d1a11bd6fe629",
+        "4391f3da665fdf50b6810c1a66712fb9ba21aa93",
     ),
     (
         "astral-sh/setup-uv",
-        "11f9893b081a58869d3b5fccaea48c9e9e46f990",
+        "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
     ),
     (
         "github/codeql-action/upload-sarif",
-        "7188fc363630916deb702c7fdcf4e481b751f97a",
+        "cdf488f595d80d6e07e03d4674febd5ab45fa938",
     ),
 )
 
@@ -2737,7 +2737,7 @@ def validate_workflows(
         )
         if (
             action.manifest_url != expected_url
-            or action.retrieved_at != "2026-07-28"
+            or action.retrieved_at != "2026-09-02"
             or action.security_disposition
             not in {"approved-node24", "approved-composite-reviewed"}
         ):

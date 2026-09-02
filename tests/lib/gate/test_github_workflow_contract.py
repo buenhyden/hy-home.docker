@@ -332,7 +332,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         for action in contract.actions:
             with self.subTest(action=action.action):
-                self.assertEqual("2026-07-28", action.retrieved_at)
+                self.assertEqual("2026-09-02", action.retrieved_at)
                 self.assertIn(f"/{action.sha}/", action.manifest_url)
                 self.assertEqual("approved-node24", action.security_disposition)
 
@@ -1901,7 +1901,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                             "https://raw.githubusercontent.com/"
                             f"{action}/{sha}/action.yml"
                         ),
-                        "retrieved_at": "2026-07-28",
+                        "retrieved_at": "2026-09-02",
                         "consumers": [
                             ".github/workflows/ci-quality.yml"
                         ],
