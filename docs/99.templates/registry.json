@@ -1227,6 +1227,33 @@
       "exceptions": []
     },
     {
+      "profile_id": "runtime-governance-readme",
+      "type": "common/runtime-governance-readme",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "common/runtime-governance-readme",
+      "required_frontmatter": [
+        "type",
+        "version"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by",
+        "layer",
+        "owner",
+        "status",
+        "title",
+        "updated"
+      ],
+      "required_sections": [],
+      "optional_sections": [],
+      "lifecycle_id": null,
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "profile_id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
@@ -1716,6 +1743,10 @@
     "common/repository-readme": {
       "source": "docs/99.templates/templates/common/readme-repository.template.md",
       "profile_id": "repository-readme"
+    },
+    "common/runtime-governance-readme": {
+      "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
+      "profile_id": "runtime-governance-readme"
     },
     "governance/claude-agent": {
       "source": "docs/99.templates/templates/runtime/claude-agent.template.md",

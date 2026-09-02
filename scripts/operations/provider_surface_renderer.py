@@ -240,8 +240,27 @@ def _skill(skill: SkillRecord, output: pathlib.PurePosixPath) -> bytes:
     ).encode()
 
 
-def _pointer(title: str, source: pathlib.PurePosixPath) -> bytes:
-    return f"{_marker(source)}\n\n# {title}\n\nThis generated adapter routes to `{source}`.\n".encode()
+def _pointer(
+    title: str,
+    source: pathlib.PurePosixPath,
+    path: pathlib.PurePosixPath | None = None,
+) -> bytes:
+    # A projected README is an entrypoint document with a registered Stage 99
+    # form, so it carries that form's frontmatter. Provider instruction files
+    # such as CLAUDE.md stay provider-owned and frontmatter-free.
+    envelope = ""
+    if path is not None and path.name == "README.md":
+        envelope = (
+            "---\n"
+            f'title: "{title}"\n'
+            "version: 1.0.0\n"
+            "type: common/runtime-governance-readme\n"
+            "status: active\n"
+            'owner: "@buenhyden"\n'
+            "generated_by: scripts/operations/provider_surface_renderer.py\n"
+            "---\n\n"
+        )
+    return f"{envelope}{_marker(source)}\n\n# {title}\n\nThis generated adapter routes to `{source}`.\n".encode()
 
 
 def render_all(
@@ -301,7 +320,7 @@ def render_all(
         path = pathlib.PurePosixPath(str(projection["path"]))
         source = pathlib.PurePosixPath(str(projection["source"]))
         title = "Shared Runtime Route" if provider == "shared" else f"{provider.title()} Runtime Route"
-        records.append(RenderRecord(provider, path, _pointer(title, source)))
+        records.append(RenderRecord(provider, path, _pointer(title, source, path)))
     return tuple(sorted(records, key=lambda item: item.path.as_posix()))
 
 
