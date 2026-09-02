@@ -1,7 +1,7 @@
 ---
 title: Documentation Space
 version: 1.0.0
-type: common/repo-support
+type: common/documentation-readme
 owner: "@buenhyden"
 ---
 

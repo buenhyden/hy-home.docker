@@ -1061,6 +1061,52 @@
       "exceptions": []
     },
     {
+      "profile_id": "documentation-readme",
+      "type": "common/documentation-readme",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "common/documentation-readme",
+      "required_frontmatter": [
+        "type",
+        "version"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by",
+        "layer",
+        "owner",
+        "status",
+        "title",
+        "updated"
+      ],
+      "required_sections": [
+        "Overview",
+        "Audience",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "AI Agent Guidance",
+        "Cross-link Rules",
+        "Current Inventory",
+        "Current LLM Wiki Evidence",
+        "Current Refresh Evidence",
+        "Document Contract Validation",
+        "Documentation Contract",
+        "Documentation Standards",
+        "Migration Map",
+        "Routing",
+        "Template Usage"
+      ],
+      "lifecycle_id": null,
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "profile_id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
@@ -1505,29 +1551,6 @@
       "exceptions": []
     },
     {
-      "profile_id": "repo-support",
-      "type": "common/repo-support",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/README.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [
-        "type",
-        "version"
-      ],
-      "optional_frontmatter": [
-        "layer",
-        "owner",
-        "title"
-      ],
-      "required_sections": [],
-      "optional_sections": [],
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
-    },
-    {
       "profile_id": "unsupported",
       "type": "common/unsupported",
       "frontmatter_policy": "unmanaged",
@@ -1557,6 +1580,10 @@
     "archive/tombstone": {
       "source": "docs/99.templates/templates/archive/tombstone.template.md",
       "profile_id": "tombstone"
+    },
+    "common/documentation-readme": {
+      "source": "docs/99.templates/templates/common/readme-documentation.template.md",
+      "profile_id": "documentation-readme"
     },
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",

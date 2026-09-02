@@ -782,7 +782,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 "governance-provider",
                 "governance-sdlc",
                 "generated",
-                "repo-support",
+                "documentation-readme",
             }
             <= set(markdown_profiles)
         )

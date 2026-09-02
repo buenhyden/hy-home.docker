@@ -35,7 +35,7 @@ document; the kind names its role inside that family.
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `domain-readme` |
 | `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data` |
 | `archive` | 98 | `migration`, `tombstone` |
-| `common` | any | `readme`, `template-source`, `navigation-index`, `repo-support`, `unsupported` |
+| `common` | any | `readme`, `documentation-readme`, `template-source`, `navigation-index`, `unsupported` |
 
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`
 member inside it.
