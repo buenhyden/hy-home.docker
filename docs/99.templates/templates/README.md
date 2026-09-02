@@ -57,7 +57,7 @@ finished document must satisfy live with its owning stage.
 | `sdlc/openapi` | [specs/contracts/openapi.template.yaml](./specs/contracts/openapi.template.yaml) |
 | `sdlc/graphql` | [specs/contracts/schema.template.graphql](./specs/contracts/schema.template.graphql) |
 | `sdlc/proto` | [specs/contracts/service.template.proto](./specs/contracts/service.template.proto) |
-| `sdlc/package-readme` | [common/readme-package.template.md](./common/readme-package.template.md) |
+| `reference/category-readme` | [common/readme-category.template.md](./common/readme-category.template.md) |
 | `operation/guide` | [operations/guide.template.md](./operations/guide.template.md) |
 | `operation/policy` | [operations/policy.template.md](./operations/policy.template.md) |
 | `operation/runbook` | [operations/runbook.template.md](./operations/runbook.template.md) |

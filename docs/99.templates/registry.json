@@ -200,45 +200,6 @@
       "exceptions": []
     },
     {
-      "profile_id": "spec-package-readme",
-      "type": "sdlc/package-readme",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/03.specs/{package_number:4}-{slug}/README.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": "sdlc/package-readme",
-      "required_frontmatter": [
-        "type",
-        "version"
-      ],
-      "optional_frontmatter": [
-        "created",
-        "generated_by",
-        "layer",
-        "owner",
-        "status",
-        "title",
-        "updated"
-      ],
-      "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "How to Work in This Area",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience"
-      ],
-      "lifecycle_id": null,
-      "traceability": {
-        "allowed_parent_profiles": [
-          "spec"
-        ]
-      },
-      "exceptions": []
-    },
-    {
       "profile_id": "data-model-contract",
       "type": "sdlc/data-model",
       "frontmatter_policy": "required",
@@ -723,6 +684,42 @@
           "kind": "year-directory"
         }
       ]
+    },
+    {
+      "profile_id": "reference-category-readme",
+      "type": "reference/category-readme",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/90.references/{category}/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "reference/category-readme",
+      "required_frontmatter": [
+        "type",
+        "version"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by",
+        "layer",
+        "owner",
+        "status",
+        "title",
+        "updated"
+      ],
+      "required_sections": [
+        "Overview",
+        "Packages",
+        "Authoring",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "Canonical Current Audit",
+        "Dated Historical Snapshots",
+        "Supersession Ledgers"
+      ],
+      "lifecycle_id": null,
+      "traceability": {},
+      "exceptions": []
     },
     {
       "profile_id": "research",
@@ -1629,6 +1626,10 @@
       "source": "docs/99.templates/templates/references/audit-pack.template.md",
       "profile_id": "audit"
     },
+    "reference/category-readme": {
+      "source": "docs/99.templates/templates/common/readme-category.template.md",
+      "profile_id": "reference-category-readme"
+    },
     "reference/data": {
       "source": "docs/99.templates/templates/references/data-reference.template.md",
       "profile_id": "generated"
@@ -1664,10 +1665,6 @@
     "sdlc/openapi": {
       "source": "docs/99.templates/templates/specs/contracts/openapi.template.yaml",
       "profile_id": "openapi-contract"
-    },
-    "sdlc/package-readme": {
-      "source": "docs/99.templates/templates/common/readme-package.template.md",
-      "profile_id": "spec-package-readme"
     },
     "sdlc/plan": {
       "source": "docs/99.templates/templates/specs/plan.template.md",

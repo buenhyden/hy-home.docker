@@ -2961,7 +2961,7 @@ def build_registry_transition_profiles(
 
 def _registry_path_glob(pattern: str) -> str:
     rendered = re.sub(r"\{[^{}]+:4\}", "[0-9][0-9][0-9][0-9]", pattern)
-    return re.sub(r"\{(?:slug|domain|stage|hook_slug)\}", "*", rendered)
+    return re.sub(r"\{(?:slug|domain|stage|hook_slug|category)\}", "*", rendered)
 
 
 

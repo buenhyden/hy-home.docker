@@ -234,7 +234,6 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         expected_profiles = {
             ".github/INDEX.md": "github-navigation-index",
-            package / "README.md": "spec-package-readme",
             package / "spec.md": "spec",
             package / "plan.md": "plan",
             **{
@@ -272,7 +271,7 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
 
         expected = {
-            "docs/03.specs/0153-example/README.md": "spec-package-readme",
+            "docs/90.references/audits/README.md": "reference-category-readme",
             "docs/03.specs/0153-example/contracts/openapi.yaml": "openapi-contract",
             "docs/03.specs/0153-example/contracts/schema.graphql": "graphql-contract",
             "docs/03.specs/0153-example/contracts/service.proto": "proto-contract",
@@ -773,7 +772,7 @@ class DocumentRegistryTests(unittest.TestCase):
         }
         self.assertTrue(
             {
-                "spec-package-readme",
+                "reference-category-readme",
                 "operations-domain-readme",
                 "readme",
                 "governance-policy",

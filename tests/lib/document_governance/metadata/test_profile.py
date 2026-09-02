@@ -98,6 +98,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "stage": "03.specs",
             "slug": "fixture",
             "hook_slug": "fixture",
+            "category": "audits",
         }
 
         def witness(pattern: str) -> str:

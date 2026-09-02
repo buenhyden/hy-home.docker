@@ -1452,7 +1452,7 @@ def validate_requirement_allocation_transition(
 
 _TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
-    r"|\{(?:slug|hook_slug|domain|stage)\}"
+    r"|\{(?:slug|hook_slug|domain|stage|category)\}"
 )
 _ARTIFACT_TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
@@ -1524,6 +1524,8 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
             rendered.append(r"[a-z0-9][a-z0-9-]*")
         elif token == "{stage}":
             rendered.append(r"(?:00\.agent-governance|01\.requirements|02\.architecture|03\.specs|05\.operations|90\.references|98\.archive|99\.templates)")
+        elif token == "{category}":
+            rendered.append(r"(?:audits|data|research)")
         else:
             rendered.append(r"[a-z0-9][a-z0-9-]*")
         cursor = match.end()
