@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Mark and close stale threads
-        uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10.4.0
+        uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
         with:
           stale-issue-message: '이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
             없으면 닫힙니다.'

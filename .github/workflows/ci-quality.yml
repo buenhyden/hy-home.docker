@@ -75,13 +75,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Install uv
-        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
       - name: Install validation dependencies
         run: python3 -m pip install -r scripts/requirements.txt
       - name: Run all public validation suites
         run: python3 scripts/validation/run-ci-gate.py --profile full
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: results.sarif
           category: zizmor
