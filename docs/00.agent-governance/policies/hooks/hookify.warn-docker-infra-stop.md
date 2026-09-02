@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "WARNING: Docker infrastructure completion routing"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"

@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "WARNING: template use required"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"

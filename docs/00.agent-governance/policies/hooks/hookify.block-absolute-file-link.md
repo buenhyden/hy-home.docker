@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "BLOCKED: absolute file:// link"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"

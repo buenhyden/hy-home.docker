@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "WARNING: Stage document edit"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"

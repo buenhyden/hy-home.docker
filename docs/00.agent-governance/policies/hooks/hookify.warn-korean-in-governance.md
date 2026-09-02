@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "WARNING: Korean text in governance documentation"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"

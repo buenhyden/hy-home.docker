@@ -1,5 +1,5 @@
 ---
-title: "<title>"
+title: "WARNING: Stage 00 root authority edit"
 version: 1.0.0
 type: governance/hook-policy
 owner: "@buenhyden"
