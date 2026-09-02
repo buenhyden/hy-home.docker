@@ -49,14 +49,15 @@ docs/
 ├── 02.architecture/            # 아키텍처 설명과 결정 기록
 │   ├── descriptions/
 │   └── decisions/
-├── 03.specs/                   # Spec Package: spec, plan, tasks 동거
+├── 03.specs/                   # Spec Package: spec, plan, tasks, contracts 동거
 │   └── ####-<slug>/
 │       ├── spec.md
 │       ├── plan.md
-│       └── tasks/
+│       ├── tasks/
+│       └── contracts/
 ├── 05.operations/              # 운영 가이드, 정책, 런북, 사고 기록
-│   ├── catalog/
-│   └── incidents/
+│   ├── catalog/<domain>/####-<subject>/
+│   └── incidents/<year>/inc-####-<slug>/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
 ├── 98.archive/                 # manifest-first validated tombstone result with full typed provenance and preservation
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
@@ -70,13 +71,14 @@ docs/
 | define user value or requirements | `01.requirements/` |
 | describe architecture | `02.architecture/descriptions/` |
 | record an architecture decision | `02.architecture/decisions/` |
-| write a technical specification | `03.specs/` |
+| write a technical specification | `03.specs/####-<slug>/spec.md` |
+| declare an executable interface contract | `03.specs/####-<slug>/contracts/` |
 | plan implementation work | `03.specs/####-<slug>/plan.md` |
 | record task evidence | `03.specs/####-<slug>/tasks/` |
 | operate or configure a service | `05.operations/catalog/` |
 | define operational controls | `05.operations/catalog/` |
 | execute recovery or repeatable procedures | `05.operations/catalog/` |
-| record incidents or postmortems | `05.operations/incidents/YYYY/INC-###-<title>/` |
+| record incidents or postmortems | `05.operations/incidents/<year>/inc-####-<slug>/` |
 | provide LLM-facing repository navigation | `90.references/data/0082-llm-wiki-index/` |
 | inspect a manifest-first validated tombstone result | `98.archive/` |
 
