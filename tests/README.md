@@ -1,3 +1,13 @@
+---
+title: Test Surface
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2026-02-21'
+updated: '2026-09-01'
+---
+
 # tests
 
 > 저장소 전역 검증과 테스트 자산의 진입점

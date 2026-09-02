@@ -1,3 +1,13 @@
+---
+title: Projects Surface
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2026-01-12'
+updated: '2026-09-02'
+---
+
 # projects
 
 > 보조 애플리케이션과 실험용 프로젝트를 parent repo의 인프라 문서 체계와 연결하는 작업 공간

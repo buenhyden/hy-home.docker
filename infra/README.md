@@ -1,3 +1,13 @@
+---
+title: Infrastructure Surface
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-24'
+updated: '2026-08-30'
+---
+
 # Hy-Home Infrastructure (infra/)
 
 > Unified service definition and orchestration layer for the hy-home.docker ecosystem.

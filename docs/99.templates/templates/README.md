@@ -59,6 +59,7 @@ finished document must satisfy live with its owning stage.
 | `sdlc/proto` | [specs/contracts/service.template.proto](./specs/contracts/service.template.proto) |
 | `reference/category-readme` | [common/readme-category.template.md](./common/readme-category.template.md) |
 | `common/documentation-readme` | [common/readme-documentation.template.md](./common/readme-documentation.template.md) |
+| `common/repository-readme` | [common/readme-repository.template.md](./common/readme-repository.template.md) |
 | `operation/guide` | [operations/guide.template.md](./operations/guide.template.md) |
 | `operation/policy` | [operations/policy.template.md](./operations/policy.template.md) |
 | `operation/runbook` | [operations/runbook.template.md](./operations/runbook.template.md) |

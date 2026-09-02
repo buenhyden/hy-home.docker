@@ -406,7 +406,7 @@ def validate_registry(
         if not isinstance(additional, (list, tuple)):
             continue
         for path in additional:
-            if (not isinstance(path, str) or not path.startswith("docs/")
+            if (not isinstance(path, str) or not _registry_owned_root(path)
                     or not _safe_path_pattern(path) or "{" in path or "}" in path
                     or profile.get("identity_relation") != "none"):
                 findings.append(RegistryFinding("additional-path-invalid", f"profiles.{index}", "additional paths must be exact safe identity-free routes"))
@@ -1460,12 +1460,41 @@ _ARTIFACT_TOKEN_PATTERN = re.compile(
 )
 
 
+# Registry authority reaches outside docs/ only for the repository entrypoint
+# surfaces that carry a registered README form. Every other root stays out.
+_NON_DOCS_ROOTS = (
+    ".agents/",
+    "examples/",
+    "infra/",
+    "projects/",
+)
+_NON_DOCS_FILES = frozenset(
+    {
+        ".github/INDEX.md",
+        "README.md",
+        "infra/README.md",
+        "projects/README.md",
+        "scripts/README.md",
+        "secrets/README.md",
+        "tests/README.md",
+    }
+)
+
+
+def _registry_owned_root(value: str) -> bool:
+    return (
+        value.startswith("docs/")
+        or value in _NON_DOCS_FILES
+        or value.startswith(_NON_DOCS_ROOTS)
+    )
+
+
 def _safe_path_pattern(value: str) -> bool:
     path = pathlib.PurePosixPath(value)
     tokens = re.findall(r"\{[^{}]+\}", value)
     without_tokens = _TOKEN_PATTERN.sub("", value)
     return bool(
-        (value.startswith("docs/") or value == ".github/INDEX.md")
+        _registry_owned_root(value)
         and not value.startswith("/")
         and "\\" not in value
         and all(character.isprintable() for character in value)

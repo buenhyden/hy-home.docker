@@ -1107,6 +1107,54 @@
       "exceptions": []
     },
     {
+      "profile_id": "repository-readme",
+      "type": "common/repository-readme",
+      "frontmatter_policy": "required",
+      "path_pattern": "README.md",
+      "additional_paths": [
+        "infra/README.md",
+        "projects/README.md",
+        "scripts/README.md",
+        "secrets/README.md",
+        "tests/README.md"
+      ],
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "common/repository-readme",
+      "required_frontmatter": [
+        "type",
+        "version"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by",
+        "layer",
+        "owner",
+        "status",
+        "title",
+        "updated"
+      ],
+      "required_sections": [
+        "Overview",
+        "Audience",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "Documentation Standards",
+        "Getting Started",
+        "Navigation / Inventory",
+        "Script Lifecycle",
+        "Utilities & Automation",
+        "Verification and Quality Gates"
+      ],
+      "lifecycle_id": null,
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "profile_id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
@@ -1588,6 +1636,10 @@
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",
       "profile_id": "readme"
+    },
+    "common/repository-readme": {
+      "source": "docs/99.templates/templates/common/readme-repository.template.md",
+      "profile_id": "repository-readme"
     },
     "governance/claude-agent": {
       "source": "docs/99.templates/templates/runtime/claude-agent.template.md",

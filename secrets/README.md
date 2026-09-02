@@ -1,3 +1,13 @@
+---
+title: Secret Handling Surface
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2026-02-23'
+updated: '2026-09-02'
+---
+
 # Secrets Management
 
 > Docker Secrets 포맷의 민감 정보 파일 경로와 운영 규칙을 관리하는 보안 진입 문서

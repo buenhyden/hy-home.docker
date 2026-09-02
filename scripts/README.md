@@ -1,3 +1,13 @@
+---
+title: Utilities and Automation Scripts
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2026-02-21'
+updated: '2026-09-01'
+---
+
 # Utilities & Automation Scripts (`scripts/`)
 
 > Repository maintenance, utility scripts, and automation triggers.

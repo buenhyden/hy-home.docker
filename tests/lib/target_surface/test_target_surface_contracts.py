@@ -39,6 +39,7 @@ TARGET_ROOTS = (
     "secrets",
     "tests",
 )
+REGISTERED_ENTRYPOINT_README_PROFILES = frozenset({"repository-readme"})
 OVERVIEW_HEADING_READMES = (
     "infra/01-gateway/nginx/README.md",
     "infra/01-gateway/traefik/README.md",
@@ -725,7 +726,13 @@ class TargetReadmeProfileTests(unittest.TestCase):
         self.assertTrue(readmes)
         for path in readmes:
             with self.subTest(path=path):
-                self.assertIsNone(classify_path(path, registry))
+                profile = classify_path(path, registry)
+                # Repository entrypoint READMEs carry a registered Stage 99 form
+                # so their authoring contract has one owner. Every other target
+                # README stays governed by the target surface manifest alone.
+                if profile in REGISTERED_ENTRYPOINT_README_PROFILES:
+                    continue
+                self.assertIsNone(profile)
 
     def test_native_markdown_and_typed_example_stay_outside_the_document_registry(self) -> None:
         registry = load_registry(REGISTRY)

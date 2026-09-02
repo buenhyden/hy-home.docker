@@ -1,3 +1,13 @@
+---
+title: hy-home.docker
+version: 1.0.0
+type: common/repository-readme
+status: active
+owner: "@buenhyden"
+created: '2025-11-12'
+updated: '2026-09-02'
+---
+
 # hy-home.docker
 
 > Shared harness-engineering and agent-first engineering workspace for modular Docker Compose home infrastructure.
