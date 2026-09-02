@@ -13,9 +13,13 @@
       "archive/"
     ],
     "frontmatter_order": [
+      "title",
+      "version",
+      "type",
+      "layer",
       "status",
+      "owner",
       "artifact_id",
-      "artifact_type",
       "parent_ids",
       "created",
       "updated",
@@ -45,10 +49,8 @@
       "docs/90.references/data/0074-target-surface-delta-summary/README.md": "scripts/validation/check-target-surface-delta-contract.py"
     },
     "globally_forbidden": [
-      "type",
       "document_type",
       "template_type",
-      "owner",
       "links"
     ],
     "inventory_excludes": [
@@ -100,7 +102,6 @@
     "typed_keys": [
       "status",
       "artifact_id",
-      "artifact_type",
       "parent_ids",
       "created",
       "updated",
