@@ -95,7 +95,19 @@ blob, with the delta confirmed as the single added `version` line.
 ## Deferred Items
 
 - The legacy transition layer in `scripts/lib/document_governance/` is still
-  loaded at run time by `lifecycle/contract.py` and is not retired here; it
-  needs its own bounded package.
+  loaded at run time by `lifecycle/contract.py` and is not retired here. It was
+  measured on 2026-09-02 so the follow-up is scoped rather than open-ended:
+
+  | Half | Reach over 755 tracked Markdown files | Disposition |
+  | :--- | :--- | :--- |
+  | Legacy-only document profiles `prd`, `srs`, `interface-requirement`, `reference`, `archive`, `governance` | 0 documents; Registry profiles claim every path first | unreachable |
+  | Legacy `readme_profiles` (17) | 149 READMEs, led by `stage-index` 63 and `infrastructure-service` 56 | load-bearing |
+
+  The legacy source is a frozen Git blob, so retirement is a migration of the 17
+  README profiles into `registry.json` followed by deleting the loader, its
+  expected-role constant, and the legacy merge, not a deletion in place.
+  `tests/lib/README.md` and `tests/validation/README.md` are unclassified today
+  and would gain a registered profile in that migration; both sit outside the
+  `docs/` scan, so neither is gate-enforced now.
 - The Graphify report is built from an earlier commit and remains advisory, as
   the bootstrap policy already provides for.

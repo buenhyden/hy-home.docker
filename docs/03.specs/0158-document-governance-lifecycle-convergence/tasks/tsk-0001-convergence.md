@@ -1141,3 +1141,13 @@ independently of this work. Restoring only the two pre-merge workflow files
 returns that suite to `OK`, which isolates the cause to the bumps and not to
 this Spec Package. Accepting the three new pins is a supply-chain disposition
 outside this Spec Package's target surface and is left to its owner.
+
+### 2026-09-02 external blocker resolved
+
+The owner accepted the three bumps in `061cb919`, which re-pinned the `actions`
+registry in `.github/workflow-contract.yml` and `_ACTION_REGISTRY_BASELINE` in
+`scripts/lib/gate/github_workflow_contract.py` to the merged workflow SHAs. All
+three actions now carry one pin across the workflow, the registry, and the
+baseline, and `scripts/validation/check-github-workflow-contract.py` reports
+`PASS: GitHub workflow contract (workflows=6, jobs=8, actions=8)`. The table
+above is the dated observation of the drift, not a current condition.
