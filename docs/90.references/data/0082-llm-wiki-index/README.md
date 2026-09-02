@@ -333,6 +333,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0160-readme-entrypoint-form-registration/plan.md](../../../03.specs/0160-readme-entrypoint-form-registration/plan.md) | Markdown reference |
 | [docs/03.specs/0160-readme-entrypoint-form-registration/spec.md](../../../03.specs/0160-readme-entrypoint-form-registration/spec.md) | Markdown reference |
 | [docs/03.specs/0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md](../../../03.specs/0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md) | Markdown reference |
+| [docs/03.specs/0161-legacy-profile-layer-retirement/plan.md](../../../03.specs/0161-legacy-profile-layer-retirement/plan.md) | Markdown reference |
+| [docs/03.specs/0161-legacy-profile-layer-retirement/spec.md](../../../03.specs/0161-legacy-profile-layer-retirement/spec.md) | Markdown reference |
+| [docs/03.specs/0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md](../../../03.specs/0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
