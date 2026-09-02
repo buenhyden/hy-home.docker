@@ -1,5 +1,6 @@
 ---
 title: Requirement Packages
+version: 1.0.0
 type: common/readme
 layer: requirements
 status: active

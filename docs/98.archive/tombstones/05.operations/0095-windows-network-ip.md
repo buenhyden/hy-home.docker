@@ -1,5 +1,6 @@
 ---
 title: Archived Windows Network IP Note
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

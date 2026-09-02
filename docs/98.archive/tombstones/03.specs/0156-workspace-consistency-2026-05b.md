@@ -1,5 +1,6 @@
 ---
 title: Workspace Doc and Governance Consistency 2026-05b Technical Specification Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

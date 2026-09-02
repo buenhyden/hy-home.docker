@@ -1,5 +1,6 @@
 ---
 title: "Reference: CS, CE & SE Self-Learning Roadmap (v2)"
+version: 1.0.0
 type: reference/research-pack
 layer: references
 status: active

@@ -1,7 +1,7 @@
 ---
 title: change-review-execution
+version: 1.0.0
 type: governance/skill
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: change-review-execution

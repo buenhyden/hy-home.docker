@@ -1,5 +1,6 @@
 ---
 title: "Archive Tombstone: 09-Tooling IaC Automation Guide"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

@@ -1,5 +1,6 @@
 ---
 title: Agent Governance Canonical Adapter Architecture
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active

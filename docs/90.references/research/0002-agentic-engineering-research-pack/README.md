@@ -1,5 +1,6 @@
 ---
 title: Agentic Engineering Research Pack
+version: 1.0.0
 type: reference/research-pack
 layer: references
 status: active

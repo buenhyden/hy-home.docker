@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update)"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: superseded

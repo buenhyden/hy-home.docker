@@ -1,5 +1,7 @@
 ---
-profile_id: github-navigation-index
+title: GitHub Control Surface Index
+version: 1.0.0
+type: common/navigation-index
 ---
 
 # GitHub Control Surface Index

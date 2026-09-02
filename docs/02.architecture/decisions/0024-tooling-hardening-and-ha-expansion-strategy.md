@@ -1,5 +1,6 @@
 ---
 title: Tooling Hardening and HA Expansion Strategy
+version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
 status: active

@@ -1,5 +1,6 @@
 ---
 title: "Archive Tombstone: Local LLM Setup Guide"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

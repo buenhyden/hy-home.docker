@@ -1,5 +1,6 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
+version: 1.0.0
 type: reference/research-pack
 layer: references
 status: active

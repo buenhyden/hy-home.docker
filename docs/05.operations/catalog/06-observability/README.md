@@ -1,5 +1,6 @@
 ---
 title: Operations — 06 Observability
+version: 1.0.0
 type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"

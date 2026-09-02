@@ -1,5 +1,6 @@
 ---
 title: 03.specs
+version: 1.0.0
 type: common/readme
 layer: specs
 status: active

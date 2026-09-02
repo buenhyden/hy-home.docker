@@ -1,5 +1,6 @@
 ---
 title: Script Surface Ownership Convergence Outcome
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

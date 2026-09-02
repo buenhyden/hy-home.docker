@@ -1,5 +1,6 @@
 ---
 title: Security Tier (03-security) Product Requirements
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

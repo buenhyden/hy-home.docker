@@ -1,5 +1,6 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

@@ -1,5 +1,6 @@
 ---
 title: "Reference: Docker Compose and Infrastructure"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

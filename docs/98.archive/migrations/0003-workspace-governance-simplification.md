@@ -1,5 +1,6 @@
 ---
 title: Workspace Governance Simplification Migration
+version: 1.0.0
 type: archive/migration
 layer: archive
 status: completed

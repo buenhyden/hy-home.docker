@@ -1,5 +1,6 @@
 ---
 title: LLM Wiki Stage Category Coverage Technical Specification Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

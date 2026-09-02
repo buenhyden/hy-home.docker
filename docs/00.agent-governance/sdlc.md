@@ -1,7 +1,7 @@
 ---
 title: Software Development Lifecycle
+version: 1.0.0
 type: governance/sdlc
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

@@ -121,6 +121,7 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
         base = {
             "title": "Common Optimizations Template Exceptions",
+            "version": "1.0.0",
             "type": "operation/policy",
             "layer": "operations",
             "status": "active",

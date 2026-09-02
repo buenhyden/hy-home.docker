@@ -1,7 +1,7 @@
 ---
 title: "BLOCKED: plaintext secrets"
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: block-plaintext-secret-compose
 enabled: true

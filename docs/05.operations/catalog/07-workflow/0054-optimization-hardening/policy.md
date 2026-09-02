@@ -1,5 +1,6 @@
 ---
 title: 07-Workflow Optimization Hardening Operations Policy
+version: 1.0.0
 type: operation/policy
 layer: operations
 status: active

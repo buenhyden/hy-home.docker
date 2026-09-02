@@ -1,7 +1,7 @@
 ---
 title: Claude Provider Adapter
+version: 1.0.0
 type: governance/provider
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 runtime: claude

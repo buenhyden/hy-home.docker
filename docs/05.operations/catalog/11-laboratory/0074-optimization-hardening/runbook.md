@@ -1,5 +1,6 @@
 ---
 title: 11-Laboratory Optimization Hardening Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

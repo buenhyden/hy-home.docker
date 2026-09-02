@@ -1,5 +1,6 @@
 ---
 title: Messaging Tier (05-messaging) Product Requirements
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

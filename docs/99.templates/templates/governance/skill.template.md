@@ -2,7 +2,6 @@
 title: <title>
 version: "#.#.#"
 type: governance/skill
-layer: agent-governance
 status: draft
 owner: <owner>
 function_id: <function-id>

@@ -1,5 +1,6 @@
 ---
 title: "Reference: Provider Harness and Loop Implementation"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: active

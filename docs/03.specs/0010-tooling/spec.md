@@ -1,5 +1,6 @@
 ---
 title: 09-Tooling Optimization Hardening Technical Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: active

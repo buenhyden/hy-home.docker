@@ -1,7 +1,7 @@
 ---
 title: Stage 99 Document Contracts and Templates
+version: 1.0.0
 type: common/readme
-layer: templates
 owner: "@buenhyden"
 ---
 
@@ -86,20 +86,21 @@ Every identity-bearing document declares, in this order:
 | :--- | :--- |
 | `title` | Human-readable name; never repeats the artifact identity |
 | `type` | `family/kind` document role; replaces `profile_id` and `artifact_type` |
-| `layer` | Stage layer the document belongs to: `agent-governance`, `requirements`, `architecture`, `specs`, `operations`, `references`, `archive`, or `templates` |
+| `layer` | Owning stage without its numeric prefix: `requirements`, `architecture`, `specs`, `operations`, `references`, or `archive`; omitted by Stage 00 and Stage 99 |
 | `status` | Lifecycle state registered for the profile |
 | `owner` | Accountable owner, sourced from `.github/CODEOWNERS` |
 | `artifact_id` | Canonical identity; no domain alias duplicates it |
 | `parent_ids` | Traceability parents |
 | `created`, `updated` | Authoring dates |
 
-Every template declares `version` immediately after `title`; the key stays
-optional on authored documents and must be semantic `MAJOR.MINOR.PATCH` when
-present. Profiles without an identity — READMEs, governance documents, machine
-contracts, and runtime projections — declare no `artifact_id`. Provider-owned
-runtime projections are exempt from the envelope entirely: they declare `name`
-and `description` and carry the runtime's own `model` and
-`model_reasoning_effort`.
+`version` is required on every managed document and template and must be
+semantic `MAJOR.MINOR.PATCH`; a new document starts at `1.0.0`. `layer` is
+declared only by Stage 01, 02, 03, 05, 90, and 98 documents; Stage 00 and
+Stage 99 documents omit it. Profiles without an identity — READMEs, governance
+documents, machine contracts, and runtime projections — declare no
+`artifact_id`. Provider-owned runtime projections are exempt from the envelope
+entirely: they declare `name` and `description` and carry the runtime's own
+`model` and `model_reasoning_effort`.
 
 - Standalone package paths use four numeric digits and omit semantic prefixes.
 - A member identity is its container's identity plus that container's own

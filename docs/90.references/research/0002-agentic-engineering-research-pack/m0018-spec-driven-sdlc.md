@@ -1,5 +1,6 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

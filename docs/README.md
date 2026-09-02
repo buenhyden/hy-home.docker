@@ -1,3 +1,10 @@
+---
+title: Documentation Space
+version: 1.0.0
+type: common/repo-support
+owner: "@buenhyden"
+---
+
 # docs
 
 > Shared harness-engineering and agent-first engineering documentation space for staged repository knowledge.

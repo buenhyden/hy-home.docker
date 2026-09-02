@@ -1,5 +1,6 @@
 ---
 title: Security Optimization and Hardening Architecture
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active

@@ -1,7 +1,7 @@
 ---
 title: Documentation Protocol
+version: 1.0.0
 type: governance/policy
-layer: agent-governance
 owner: "@buenhyden"
 ---
 
@@ -44,13 +44,16 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
    instead of allocating a new number.
 9. Declare `title`, `version`, `type`, `layer`, `status`, `owner`,
    `artifact_id`, `parent_ids`, `created`, and `updated` in that frontmatter
-   order. `type` carries the `family/kind` document role and `layer` carries
-   the owning stage name without its numeric prefix; `profile_id`,
+   order. `type` carries the `family/kind` document role; `profile_id`,
    `artifact_type`, and `last-updated` are retired, and `title` never repeats
-   the artifact identity. `version` is optional on an authored document and
-   must be semantic `MAJOR.MINOR.PATCH` when present. A profile without an
-   identity — README, governance, machine contract, or runtime projection —
-   declares no `artifact_id` and never invents one.
+   the artifact identity. `version` is required and must be semantic
+   `MAJOR.MINOR.PATCH`; a new document starts at `1.0.0`. `layer` carries the
+   owning stage name without its numeric prefix and is declared only by
+   Stage 01, 02, 03, 05, 90, and 98 documents. Stage 00 and Stage 99 documents
+   omit `layer` because their canonical path already states their authority. A
+   profile without an identity — README, governance, machine contract, or
+   runtime projection — declares no `artifact_id` and never invents one. A
+   provider-owned runtime projection is exempt from this envelope entirely.
 10. Update cross-links in the same logical change.
 11. Record execution evidence in the co-located Stage 03 Task.
 12. Validate metadata, links, and stage-specific contracts before completion.

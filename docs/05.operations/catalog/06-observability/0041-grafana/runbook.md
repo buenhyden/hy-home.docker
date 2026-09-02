@@ -1,5 +1,6 @@
 ---
 title: Grafana Provisioning and Access Recovery Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

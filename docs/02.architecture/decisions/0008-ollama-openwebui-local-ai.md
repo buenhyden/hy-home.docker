@@ -1,5 +1,6 @@
 ---
 title: Ollama and Open WebUI for Local AI Infrastructure
+version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
 status: active

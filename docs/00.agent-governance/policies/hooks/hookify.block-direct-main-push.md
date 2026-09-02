@@ -1,7 +1,7 @@
 ---
 title: "BLOCKED: direct push to main"
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: block-direct-main-push
 enabled: true

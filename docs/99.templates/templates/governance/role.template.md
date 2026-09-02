@@ -2,7 +2,6 @@
 title: <title>
 version: "#.#.#"
 type: governance/role
-layer: agent-governance
 status: draft
 owner: <owner>
 agent_id: <agent-id>

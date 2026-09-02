@@ -2,7 +2,6 @@
 title: <title>
 version: "#.#.#"
 type: governance/provider
-layer: agent-governance
 status: draft
 owner: <owner>
 runtime: <runtime>

@@ -1,5 +1,6 @@
 ---
 title: Tooling Tier Architecture Description
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active

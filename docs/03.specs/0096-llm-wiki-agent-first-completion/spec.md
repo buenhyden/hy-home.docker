@@ -1,5 +1,6 @@
 ---
 title: LLM Wiki Completion Outcome
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

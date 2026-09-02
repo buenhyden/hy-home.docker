@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

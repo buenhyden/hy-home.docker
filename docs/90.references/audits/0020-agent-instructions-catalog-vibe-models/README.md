@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: active

@@ -1,5 +1,6 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
+version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
 status: active

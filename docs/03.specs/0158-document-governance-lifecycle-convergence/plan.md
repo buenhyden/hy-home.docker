@@ -1,5 +1,6 @@
 ---
 title: Document Governance Lifecycle Convergence Implementation Plan
+version: 1.0.0
 type: sdlc/plan
 layer: specs
 status: completed

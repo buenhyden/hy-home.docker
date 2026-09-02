@@ -1,5 +1,6 @@
 ---
 title: infra_net Architecture Description
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active

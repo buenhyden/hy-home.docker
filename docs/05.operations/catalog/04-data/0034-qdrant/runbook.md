@@ -1,5 +1,6 @@
 ---
 title: Qdrant Health and Recovery Triage Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

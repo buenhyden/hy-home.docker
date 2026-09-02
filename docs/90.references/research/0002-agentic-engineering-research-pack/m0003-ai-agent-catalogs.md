@@ -1,5 +1,6 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

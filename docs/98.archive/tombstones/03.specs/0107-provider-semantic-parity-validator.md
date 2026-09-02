@@ -1,5 +1,6 @@
 ---
 title: Provider Semantic Parity Validator Technical Specification Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

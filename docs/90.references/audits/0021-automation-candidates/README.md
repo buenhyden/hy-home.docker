@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Automation Candidates"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: active

@@ -1,5 +1,6 @@
 ---
 title: "Reference: Superseded Automation Candidate Mapping Tombstone"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

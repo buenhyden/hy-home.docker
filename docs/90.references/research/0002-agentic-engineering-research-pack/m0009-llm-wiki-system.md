@@ -1,5 +1,6 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

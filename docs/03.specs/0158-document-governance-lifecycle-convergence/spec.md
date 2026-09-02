@@ -1,5 +1,6 @@
 ---
 title: Document Governance Lifecycle Convergence Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

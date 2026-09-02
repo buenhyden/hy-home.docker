@@ -1,5 +1,6 @@
 ---
 title: Communication Services Selection and Configuration
+version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
 status: active

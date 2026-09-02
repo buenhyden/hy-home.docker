@@ -1,7 +1,7 @@
 ---
 title: "<title>"
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: warn-hook-parity-edit
 enabled: true

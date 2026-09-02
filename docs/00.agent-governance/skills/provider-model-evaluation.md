@@ -1,7 +1,7 @@
 ---
 title: provider-model-evaluation
+version: 1.0.0
 type: governance/skill
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: provider-model-evaluation

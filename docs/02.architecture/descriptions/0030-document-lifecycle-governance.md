@@ -1,5 +1,6 @@
 ---
 title: 문서 Lifecycle 거버넌스 아키텍처
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active

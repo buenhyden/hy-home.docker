@@ -79,6 +79,7 @@ _TASK10_ROW_FIELDS = frozenset(
 _TOMBSTONE_FIELDS = frozenset(
     {
         "title",
+        "version",
         "type",
         "layer",
         "status",

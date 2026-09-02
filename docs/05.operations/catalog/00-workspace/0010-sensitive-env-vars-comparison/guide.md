@@ -1,5 +1,6 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
+version: 1.0.0
 type: operation/guide
 layer: operations
 status: active

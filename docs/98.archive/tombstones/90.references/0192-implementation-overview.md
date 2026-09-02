@@ -1,5 +1,6 @@
 ---
 title: "Reference: Superseded 2026-07-07 Implementation Overview Mapping Tombstone"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

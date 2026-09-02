@@ -1,5 +1,6 @@
 ---
 title: "Reference: Superseded SDLC, QA, and Security Audit Mapping Tombstone"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

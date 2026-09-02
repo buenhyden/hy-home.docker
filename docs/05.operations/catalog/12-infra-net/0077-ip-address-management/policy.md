@@ -1,5 +1,6 @@
 ---
 title: infra_net IP Management Operations Policy
+version: 1.0.0
 type: operation/policy
 layer: operations
 status: active

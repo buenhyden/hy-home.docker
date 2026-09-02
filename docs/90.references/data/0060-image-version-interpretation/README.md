@@ -1,5 +1,6 @@
 ---
 title: "Reference: Docker Image and Version Interpretation"
+version: 1.0.0
 type: reference/data-pack
 layer: references
 status: active

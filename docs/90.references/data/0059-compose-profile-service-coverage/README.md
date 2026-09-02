@@ -1,5 +1,6 @@
 ---
 title: "Reference: Docker Compose Profile Service Coverage"
+version: 1.0.0
 type: reference/data-pack
 layer: references
 status: active

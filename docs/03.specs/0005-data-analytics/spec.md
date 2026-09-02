@@ -1,5 +1,6 @@
 ---
 title: Analytics Tier Technical Specification (Spec)
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: active

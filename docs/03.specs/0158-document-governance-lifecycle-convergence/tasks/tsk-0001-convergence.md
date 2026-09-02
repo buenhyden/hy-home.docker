@@ -1,5 +1,6 @@
 ---
 title: Converge Document Governance by Lifecycle
+version: 1.0.0
 type: sdlc/task
 layer: specs
 status: completed

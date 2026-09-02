@@ -1,5 +1,6 @@
 ---
 title: "Reference: Task-Aware Agent Model Selection"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

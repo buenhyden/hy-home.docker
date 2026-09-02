@@ -1,5 +1,6 @@
 ---
 title: Communication Tier (10-communication) Product Requirements
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

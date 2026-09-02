@@ -1,5 +1,6 @@
 ---
 title: 문서 보존 및 은퇴 요구사항
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

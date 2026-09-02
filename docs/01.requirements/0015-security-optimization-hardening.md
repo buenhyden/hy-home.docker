@@ -1,5 +1,6 @@
 ---
 title: "03-Security (Vault) Optimization & Hardening Product Requirements"
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

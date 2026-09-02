@@ -1,5 +1,6 @@
 ---
 title: "Reference: Provider Model Landscape at the Evidence Cutoff"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

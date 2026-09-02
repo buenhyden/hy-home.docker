@@ -1,5 +1,6 @@
 ---
 title: "Reference: Harness Engineering"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

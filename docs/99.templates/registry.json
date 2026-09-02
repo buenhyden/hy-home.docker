@@ -18,12 +18,12 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Problem and Goals",
@@ -68,12 +68,12 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Context and Stakeholders",
@@ -114,12 +114,12 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Context",
@@ -164,14 +164,14 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Overview",
@@ -208,7 +208,8 @@
       "identity_relation": "none",
       "template_id": "sdlc/package-readme",
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "created",
@@ -217,8 +218,7 @@
         "owner",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Overview",
@@ -254,11 +254,10 @@
         "owner",
         "parent_ids",
         "created",
-        "updated"
-      ],
-      "optional_frontmatter": [
+        "updated",
         "version"
       ],
+      "optional_frontmatter": [],
       "required_sections": [
         "Purpose",
         "Entities",
@@ -359,11 +358,11 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
-        "completed_at",
-        "version"
+        "completed_at"
       ],
       "required_sections": [
         "Objective",
@@ -405,11 +404,11 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
-        "completed_at",
-        "version"
+        "completed_at"
       ],
       "required_sections": [
         "Objective",
@@ -447,7 +446,8 @@
       "identity_relation": "none",
       "template_id": "operation/domain-readme",
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "created",
@@ -456,8 +456,7 @@
         "owner",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Overview",
@@ -490,14 +489,14 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Purpose",
@@ -539,14 +538,14 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Purpose",
@@ -589,14 +588,14 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Purpose",
@@ -641,11 +640,11 @@
         "parent_ids",
         "created",
         "updated",
-        "occurred_at"
+        "occurred_at",
+        "version"
       ],
       "optional_frontmatter": [
-        "resolved_at",
-        "version"
+        "resolved_at"
       ],
       "required_sections": [
         "Summary",
@@ -691,12 +690,12 @@
         "parent_ids",
         "created",
         "updated",
-        "reviewed_at"
+        "reviewed_at",
+        "version"
       ],
       "optional_frontmatter": [
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Summary",
@@ -743,14 +742,14 @@
         "parent_ids",
         "created",
         "updated",
-        "observed_at"
+        "observed_at",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Question",
@@ -795,14 +794,14 @@
         "parent_ids",
         "created",
         "updated",
-        "observed_at"
+        "observed_at",
+        "version"
       ],
       "optional_frontmatter": [
         "generated_by",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Objective",
@@ -847,15 +846,15 @@
         "parent_ids",
         "created",
         "updated",
-        "observed_at"
+        "observed_at",
+        "version"
       ],
       "optional_frontmatter": [
         "generated_by",
         "next_review_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Purpose",
@@ -898,7 +897,8 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
@@ -906,8 +906,7 @@
         "review_cycle",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [],
       "optional_sections": [
@@ -943,7 +942,8 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "next_review_at",
@@ -951,8 +951,7 @@
         "review_cycle",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [],
       "optional_sections": [
@@ -988,7 +987,8 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "archive_disposition",
@@ -999,8 +999,7 @@
         "archived_from",
         "preservation_class",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Purpose",
@@ -1041,12 +1040,12 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [
         "Retired Path",
@@ -1082,7 +1081,8 @@
       "identity_relation": "none",
       "template_id": "common/readme",
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "created",
@@ -1092,8 +1092,7 @@
         "runtime",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Overview",
@@ -1123,13 +1122,13 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "layer",
         "owner",
-        "title",
-        "version"
+        "title"
       ],
       "required_sections": [
         "Purpose",
@@ -1153,7 +1152,7 @@
       "template_id": "governance/policy",
       "required_frontmatter": [
         "type",
-        "layer"
+        "version"
       ],
       "optional_frontmatter": [
         "created",
@@ -1161,8 +1160,7 @@
         "runtime",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "free_form_sections": true,
       "required_sections": [
@@ -1187,7 +1185,8 @@
       "identity_relation": "none",
       "template_id": "governance/hook-policy",
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "action",
@@ -1195,14 +1194,12 @@
         "created",
         "enabled",
         "event",
-        "layer",
         "name",
         "owner",
         "pattern",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [],
       "optional_sections": [
@@ -1226,21 +1223,20 @@
       "template_id": "governance/role",
       "required_frontmatter": [
         "type",
-        "layer",
         "agent_id",
         "scope",
         "tier",
         "status",
         "work_profile",
         "permission_profile",
-        "skill_ids"
+        "skill_ids",
+        "version"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Purpose",
@@ -1267,18 +1263,17 @@
       "template_id": "governance/skill",
       "required_frontmatter": [
         "type",
-        "layer",
         "function_id",
         "scope",
         "status",
-        "owner_agent"
+        "owner_agent",
+        "version"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Preconditions",
@@ -1304,7 +1299,7 @@
       "template_id": "governance/provider",
       "required_frontmatter": [
         "type",
-        "layer"
+        "version"
       ],
       "optional_frontmatter": [
         "created",
@@ -1312,8 +1307,7 @@
         "runtime",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Purpose",
@@ -1337,13 +1331,12 @@
       "template_id": null,
       "required_frontmatter": [
         "type",
-        "layer"
+        "version"
       ],
       "optional_frontmatter": [
         "owner",
         "status",
-        "title",
-        "version"
+        "title"
       ],
       "required_sections": [
         "Overview",
@@ -1367,15 +1360,14 @@
       "template_id": "governance/sdlc",
       "required_frontmatter": [
         "type",
-        "layer"
+        "version"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
         "status",
         "title",
-        "updated",
-        "version"
+        "updated"
       ],
       "required_sections": [
         "Purpose",
@@ -1463,13 +1455,13 @@
       "template_id": null,
       "required_frontmatter": [
         "type",
-        "status"
+        "status",
+        "version"
       ],
       "optional_frontmatter": [
         "layer",
         "owner",
-        "title",
-        "version"
+        "title"
       ],
       "required_sections": [],
       "optional_sections": [],
@@ -1498,7 +1490,8 @@
         "artifact_id",
         "parent_ids",
         "created",
-        "updated"
+        "updated",
+        "version"
       ],
       "optional_frontmatter": [
         "generated_by",
@@ -1506,8 +1499,7 @@
         "observed_at",
         "reviewed_at",
         "superseded_by",
-        "supersedes",
-        "version"
+        "supersedes"
       ],
       "required_sections": [],
       "optional_sections": [
@@ -1526,13 +1518,13 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [
-        "type"
+        "type",
+        "version"
       ],
       "optional_frontmatter": [
         "layer",
         "owner",
-        "title",
-        "version"
+        "title"
       ],
       "required_sections": [],
       "optional_sections": [],

@@ -1,5 +1,6 @@
 ---
 title: "Reference: SDLC Document Roles"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

@@ -1,5 +1,6 @@
 ---
 title: 은퇴 기록으로서의 Tombstone
+version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
 status: active

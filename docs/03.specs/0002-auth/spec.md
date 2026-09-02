@@ -1,5 +1,6 @@
 ---
 title: 02-Auth Optimization Hardening Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: active

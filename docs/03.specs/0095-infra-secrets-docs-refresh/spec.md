@@ -1,5 +1,6 @@
 ---
 title: Infrastructure, Secrets, and Documentation Refresh Outcome
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

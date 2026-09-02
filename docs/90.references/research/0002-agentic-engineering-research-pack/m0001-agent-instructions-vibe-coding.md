@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

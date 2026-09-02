@@ -1,5 +1,6 @@
 ---
 title: AI GPU Recovery Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

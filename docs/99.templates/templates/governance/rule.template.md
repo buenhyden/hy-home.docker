@@ -2,7 +2,6 @@
 title: <title>
 version: "#.#.#"
 type: governance/hook-policy
-layer: agent-governance
 status: draft
 owner: <owner>
 created: YYYY-MM-DD

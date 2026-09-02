@@ -1,5 +1,6 @@
 ---
 title: 04-Data Optimization Hardening Operations Policy
+version: 1.0.0
 type: operation/policy
 layer: operations
 status: active

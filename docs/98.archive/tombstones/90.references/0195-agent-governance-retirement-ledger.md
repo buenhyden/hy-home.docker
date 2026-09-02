@@ -1,5 +1,6 @@
 ---
 title: Agent Governance Retirement Ledger Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

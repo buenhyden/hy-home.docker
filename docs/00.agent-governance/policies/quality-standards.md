@@ -1,7 +1,7 @@
 ---
 title: Agent Quality and Security Standards
+version: 1.0.0
 type: governance/policy
-layer: agent-governance
 owner: "@buenhyden"
 ---
 

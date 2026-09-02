@@ -1,5 +1,6 @@
 ---
 title: Communication Tier Technical Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: active

@@ -1,7 +1,7 @@
 ---
 title: AI Agent Governance
+version: 1.0.0
 type: common/readme
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 ---

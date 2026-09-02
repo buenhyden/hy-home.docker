@@ -1,5 +1,6 @@
 ---
 title: "05-Messaging Optimization & Hardening Product Requirements"
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

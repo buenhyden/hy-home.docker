@@ -1,5 +1,6 @@
 ---
 title: "Reference: Superseded Harness and Loop Audit Mapping Tombstone"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

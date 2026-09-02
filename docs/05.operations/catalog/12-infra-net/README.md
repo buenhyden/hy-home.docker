@@ -1,5 +1,6 @@
 ---
 title: Operations — 12 Infra Net
+version: 1.0.0
 type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"

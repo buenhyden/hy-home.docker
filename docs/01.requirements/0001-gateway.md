@@ -1,5 +1,6 @@
 ---
 title: Gateway Tier (01-gateway) Product Requirements
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

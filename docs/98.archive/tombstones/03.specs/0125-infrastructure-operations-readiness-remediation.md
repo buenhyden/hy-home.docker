@@ -1,5 +1,6 @@
 ---
 title: Infrastructure Operations Readiness Remediation Technical Specification (Spec) Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

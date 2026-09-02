@@ -1,5 +1,6 @@
 ---
 title: Validation Surface Reduction Outcome
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

@@ -1,5 +1,6 @@
 ---
 title: Neo4j Usage Guide
+version: 1.0.0
 type: operation/guide
 layer: operations
 status: active

@@ -1,5 +1,6 @@
 ---
 title: Gateway Tier (01-gateway) Technical Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: active

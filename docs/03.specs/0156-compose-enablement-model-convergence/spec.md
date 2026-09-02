@@ -1,5 +1,6 @@
 ---
 title: Compose Enablement Model Convergence Specification
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: draft

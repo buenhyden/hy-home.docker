@@ -1,5 +1,6 @@
 ---
 title: Observability Tier Product Requirements
+version: 1.0.0
 type: sdlc/requirement
 layer: requirements
 status: active

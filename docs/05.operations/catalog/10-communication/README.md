@@ -1,5 +1,6 @@
 ---
 title: Operations — 10 Communication
+version: 1.0.0
 type: operation/domain-readme
 layer: operations
 owner: "@buenhyden"

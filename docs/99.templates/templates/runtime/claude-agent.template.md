@@ -2,6 +2,7 @@
 name: <name>
 description: <description>
 model: <model>
+version: 1.0.0
 model_reasoning_effort: <model_reasoning_effort>
 ---
 

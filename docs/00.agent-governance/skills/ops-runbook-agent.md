@@ -1,7 +1,7 @@
 ---
 title: ops-runbook-agent
+version: 1.0.0
 type: governance/skill
-layer: agent-governance
 status: active
 owner: "@buenhyden"
 function_id: ops-runbook-agent

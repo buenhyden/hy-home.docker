@@ -1,5 +1,6 @@
 ---
 title: 06-Observability Optimization Hardening Usage Guide
+version: 1.0.0
 type: operation/guide
 layer: operations
 status: active

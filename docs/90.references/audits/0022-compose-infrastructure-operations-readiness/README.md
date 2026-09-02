@@ -1,5 +1,6 @@
 ---
 title: "Reference: Compose, Infrastructure, and Operations Readiness"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: active

@@ -1,5 +1,6 @@
 ---
 title: Harness / Agent-first Engineering Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

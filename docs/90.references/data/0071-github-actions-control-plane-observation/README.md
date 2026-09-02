@@ -1,5 +1,6 @@
 ---
 title: Github Actions Control Plane Observation
+version: 1.0.0
 type: reference/data-pack
 layer: references
 status: active

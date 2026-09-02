@@ -1,5 +1,6 @@
 ---
 title: "Reference: Docker Compose to k3s/k3d Migration Tombstone"
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

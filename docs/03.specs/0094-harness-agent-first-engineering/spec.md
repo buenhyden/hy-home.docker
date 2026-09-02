@@ -1,5 +1,6 @@
 ---
 title: Harness and Agent-first Engineering Outcome
+version: 1.0.0
 type: sdlc/spec
 layer: specs
 status: completed

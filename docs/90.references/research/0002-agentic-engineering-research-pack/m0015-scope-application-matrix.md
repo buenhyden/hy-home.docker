@@ -1,5 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
+version: 1.0.0
 type: reference/research
 layer: references
 status: active

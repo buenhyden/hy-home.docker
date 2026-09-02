@@ -1,5 +1,6 @@
 ---
 title: 98.archive
+version: 1.0.0
 type: common/readme
 layer: archive
 status: active

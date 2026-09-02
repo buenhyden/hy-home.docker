@@ -1,5 +1,6 @@
 ---
 title: 05.operations/incidents
+version: 1.0.0
 type: common/readme
 layer: operations
 status: active

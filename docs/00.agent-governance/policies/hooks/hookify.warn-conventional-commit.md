@@ -1,7 +1,7 @@
 ---
 title: "<title>"
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: warn-conventional-commit
 enabled: true

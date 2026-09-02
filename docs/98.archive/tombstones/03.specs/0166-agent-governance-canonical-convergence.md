@@ -1,5 +1,6 @@
 ---
 title: Agent Governance Canonical Convergence Specification Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

@@ -711,16 +711,20 @@ class ArchiveMinimizationTests(unittest.TestCase):
         parent, which the 0158 merge removed, so the frontmatter now points at
         its tombstone. The fenced evidence blocks are byte-identical; only the
         frontmatter parent moved.
+
+        Repinned again when `version` became a required envelope key. Both
+        bodies were verified byte-identical against the predecessor blob; the
+        only delta is the added `version: 1.0.0` line.
         """
 
         for name, digest in (
             (
                 "0001-sdlc-taxonomy-convergence.md",
-                "4aeecc3c6b9adf3d1936de6fc016b1f53167cee984c8cdf006304b8ff7ed41dd",
+                "43ff98699fcb5ecfbd913c98dc82b387843a169e0e5427543644e3aad5d03f90",
             ),
             (
                 "0002-operations-catalog-convergence.md",
-                "a1909833fa8f44c8754f716647e978988cb717a25c453a0f33ae95ec592257b6",
+                "c88e68e4f8d046f88ad39eeedd11769b8be8f69bfc35b4271ea91c3bd53cdf13",
             ),
         ):
             with self.subTest(migration=name):
@@ -737,9 +741,11 @@ class ArchiveMinimizationTests(unittest.TestCase):
         # (`MIG-0003`). The fenced evidence block is byte-identical to its
         # predecessor and `archive._migration_document` still reverifies it
         # against the approved Git blob; only frontmatter moved.
+        # Repinned again when `version` became a required envelope key: the
+        # body is byte-identical and only `version: 1.0.0` was added.
         path = ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         self.assertEqual(
-            "33be9ffe500b1edc8af6c0a76feaa4466a97dc9aff29669124a339bf5550ffdb",
+            "91279cc54017e4ae76f431bb37b4eb474519ca386ddaf12e89d61db59676ca2c",
             self.archive.sha256_file(path),
         )
         self.assertFalse((ROOT / "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md").exists())

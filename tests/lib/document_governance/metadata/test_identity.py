@@ -108,7 +108,7 @@ class CheckerCliTests(unittest.TestCase):
         records = [
             metadata.Record(
                 pathlib.Path("docs/03.specs/README.md"),
-                {"type": "common/readme", "status": "active"},
+                {"type": "common/readme", "version": "1.0.0", "status": "active"},
                 "readme",
                 frontmatter_present=True,
             ),
@@ -118,8 +118,9 @@ class CheckerCliTests(unittest.TestCase):
                 ),
                 {
                     "title": "Generated Data Member",
+                    "version": "1.0.0",
                     "type": "reference/data",
-                    "layer": "reference",
+                    "layer": "references",
                     "status": "active",
                     "owner": "@buenhyden",
                     "artifact_id": "DATA-0001-m0001",

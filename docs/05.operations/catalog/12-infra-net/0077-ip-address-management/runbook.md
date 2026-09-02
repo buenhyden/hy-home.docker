@@ -1,5 +1,6 @@
 ---
 title: 0012 Standardize Infra Net Runbook
+version: 1.0.0
 type: operation/runbook
 layer: operations
 status: active

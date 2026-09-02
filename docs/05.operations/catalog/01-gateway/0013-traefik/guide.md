@@ -1,5 +1,6 @@
 ---
 title: 01-Gateway Traefik Usage Guide
+version: 1.0.0
 type: operation/guide
 layer: operations
 status: active

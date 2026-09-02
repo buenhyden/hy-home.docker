@@ -1,7 +1,7 @@
 ---
 title: "<title>"
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: require-logical-commits-before-stop
 enabled: true

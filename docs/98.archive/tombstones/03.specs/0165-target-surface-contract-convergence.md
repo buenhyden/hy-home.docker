@@ -1,5 +1,6 @@
 ---
 title: Target Surface Contract and Deprecated Runtime Convergence Design Specification Tombstone
+version: 1.0.0
 type: archive/tombstone
 layer: archive
 status: completed

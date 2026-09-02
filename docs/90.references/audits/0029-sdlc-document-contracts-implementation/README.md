@@ -1,5 +1,6 @@
 ---
 title: "Reference: SDLC and Document Contracts Implementation Audit"
+version: 1.0.0
 type: reference/audit-pack
 layer: references
 status: active

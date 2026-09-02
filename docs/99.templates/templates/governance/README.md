@@ -1,7 +1,7 @@
 ---
 title: Governance Templates
+version: 1.0.0
 type: common/readme
-layer: templates
 owner: "@buenhyden"
 ---
 

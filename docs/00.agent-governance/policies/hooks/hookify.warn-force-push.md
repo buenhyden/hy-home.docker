@@ -1,7 +1,7 @@
 ---
 title: Prefer --force-with-lease over --force.
+version: 1.0.0
 type: governance/hook-policy
-layer: agent-governance
 owner: "@buenhyden"
 name: warn-force-push
 enabled: true

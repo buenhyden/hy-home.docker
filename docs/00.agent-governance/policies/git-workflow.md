@@ -1,7 +1,7 @@
 ---
 title: Git Workflow Governance
+version: 1.0.0
 type: governance/policy
-layer: agent-governance
 owner: "@buenhyden"
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: 08-AI Optimization Hardening Architecture Description
+version: 1.0.0
 type: sdlc/architecture-description
 layer: architecture
 status: active
