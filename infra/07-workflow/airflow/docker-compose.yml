@@ -27,7 +27,7 @@ x-airflow-common-env: &airflow-common-env
 x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.0}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.1}
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -361,7 +361,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: valkey/valkey:9.1.0-alpine
+    image: valkey/valkey:9.1.1-alpine
     container_name: airflow-valkey
     user: '999:999'
     secrets:
@@ -395,7 +395,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: oliver006/redis_exporter:v1.86.0-alpine
+    image: oliver006/redis_exporter:v1.90.0-alpine
     container_name: airflow-valkey-exporter
     read_only: true
     tmpfs:
