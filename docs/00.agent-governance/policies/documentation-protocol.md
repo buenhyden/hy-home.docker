@@ -35,25 +35,26 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 3. Keep dates in frontmatter; the incident year directory is the only path exception.
 4. Store incident packets only at `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md` and `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
 5. Link canonical IDs in full and never reuse an issued ID.
-6. Give a member document its container identity plus that container's internal
-   sequence: `SPEC-####-PLAN-####`, `SPEC-####-TSK-####`, `RES-####-m####`,
-   `AUD-####-m####`, `DATA-####-m####`, and `inc-<year>-####-PM`.
+6. Give a member document its container identity plus that container's own
+   internal sequence, so the same member number may recur under two containers.
+   The registry's `artifact_id_pattern` states the exact shape per profile.
 7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
 8. Give a tombstone the retired document's identity under a `tomb-` prefix
    instead of allocating a new number.
-9. Declare `title`, `version`, `type`, `layer`, `status`, `owner`,
-   `artifact_id`, `parent_ids`, `created`, and `updated` in that frontmatter
-   order. `type` carries the `family/kind` document role; `profile_id`,
-   `artifact_type`, and `last-updated` are retired, and `title` never repeats
-   the artifact identity. `version` is required and must be semantic
-   `MAJOR.MINOR.PATCH`; a new document starts at `1.0.0`. `layer` carries the
-   owning stage name without its numeric prefix and is declared only by
-   Stage 01, 02, 03, 05, 90, and 98 documents. Stage 00 and Stage 99 documents
-   omit `layer` because their canonical path already states their authority. A
-   profile without an identity — README, governance, machine contract, or
-   runtime projection — declares no `artifact_id` and never invents one. A
-   provider-owned runtime projection is exempt from this envelope entirely.
+9. Declare the frontmatter its registry profile requires, in the registry's
+   `common.frontmatter_order`. The registry owns which keys a profile requires
+   and permits; `contracts/frontmatter.schema.json` owns their value shapes.
+   The reasons behind that envelope are the part this policy owns. `type`
+   carries the `family/kind` document role, so a reader learns a document's
+   family without resolving its path. `title` never repeats the artifact
+   identity, because the identity is already a field. A new document starts its
+   `version` at `1.0.0`, so a first revision is distinguishable from an unset
+   value. `layer` names the owning stage without its numeric prefix and is
+   omitted wherever the canonical path already states the authority. A profile
+   without an identity declares no `artifact_id` and never invents one. A
+   provider-owned runtime projection is exempt from this envelope entirely,
+   because its shape belongs to the runtime that reads it.
 10. Update cross-links in the same logical change.
 11. Record execution evidence in the co-located Stage 03 Task.
 12. Validate metadata, links, and stage-specific contracts before completion.

@@ -64,43 +64,30 @@ defines a canonical target artifact.
 
 ### Registered Identity Shapes
 
-| Profile | Identity | Owning container |
-| :--- | :--- | :--- |
-| `requirements-package` | `REQ-####` | — |
-| `architecture-description` / `adr` | `AD-####` / `ADR-####` | — |
-| `spec` | `SPEC-####` | — |
-| `plan` / `task` | `SPEC-####-PLAN-####` / `SPEC-####-TSK-####` | `SPEC-####` |
-| `guide` / `policy` / `runbook` | `GDE-####` / `POL-####` / `RUN-####` | — |
-| `incident` / `postmortem` | `inc-<year>-####` / `inc-<year>-####-PM` | the incident |
-| `research` / `audit` / `data` | `RES-####` / `AUD-####` / `DATA-####` | — |
-| `research-member` / `audit-member` / `generated` | `RES-####-m####` / `AUD-####-m####` / `DATA-####-m####` | its `####` container |
-| `data-model-contract` / `openapi-contract` / `graphql-contract` / `proto-contract` | — | its `SPEC-####` package |
-| `migration` | `MIG-####` | — |
-| `tombstone` | `tomb-<retired artifact_id>` | the retired artifact |
+`registry.json` states the identity shape per profile in `artifact_id_pattern`,
+and the owning container in `identity_relation`. This section states the rules
+those fields express, not the fields themselves.
 
 ### Required Frontmatter Envelope
 
-Every identity-bearing document declares, in this order:
+A profile's `required_frontmatter` and `optional_frontmatter` state which keys a
+document declares; `common.frontmatter_order` states the order;
+[`contracts/frontmatter.schema.json`](./contracts/frontmatter.schema.json)
+states each value's shape. The reasons behind that envelope are:
 
-| Key | Purpose |
-| :--- | :--- |
-| `title` | Human-readable name; never repeats the artifact identity |
-| `type` | `family/kind` document role; replaces `profile_id` and `artifact_type` |
-| `layer` | Owning stage without its numeric prefix: `requirements`, `architecture`, `specs`, `operations`, `references`, or `archive`; omitted by Stage 00 and Stage 99 |
-| `status` | Lifecycle state registered for the profile |
-| `owner` | Accountable owner, sourced from `.github/CODEOWNERS` |
-| `artifact_id` | Canonical identity; no domain alias duplicates it |
-| `parent_ids` | Traceability parents |
-| `created`, `updated` | Authoring dates |
-
-`version` is required on every managed document and template and must be
-semantic `MAJOR.MINOR.PATCH`; a new document starts at `1.0.0`. `layer` is
-declared only by Stage 01, 02, 03, 05, 90, and 98 documents; Stage 00 and
-Stage 99 documents omit it. Profiles without an identity — READMEs, governance
-documents, machine contracts, and runtime projections — declare no
-`artifact_id`. Provider-owned runtime projections are exempt from the envelope
-entirely: they declare `name` and `description` and carry the runtime's own
-`model` and `model_reasoning_effort`.
+- `type` carries the `family/kind` document role, so a reader learns a
+  document's family without resolving its path.
+- `title` never repeats the artifact identity, because the identity is already
+  a field.
+- `layer` names the owning stage without its numeric prefix, and is omitted
+  wherever the canonical path already states the authority.
+- `owner` is sourced from `.github/CODEOWNERS`, so accountability has one home.
+- `version` starts at `1.0.0`, so a first revision is distinguishable from an
+  unset value.
+- A profile without an identity declares no `artifact_id`, and no domain alias
+  duplicates one that exists.
+- A provider-owned runtime projection is exempt from the envelope entirely,
+  because its shape belongs to the runtime that reads it.
 
 - Standalone package paths use four numeric digits and omit semantic prefixes.
 - A member identity is its container's identity plus that container's own
