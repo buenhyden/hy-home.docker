@@ -3,12 +3,12 @@ title: Compose Enablement Model Convergence Specification
 version: 1.0.0
 type: sdlc/spec
 layer: specs
-status: draft
+status: active
 owner: "@buenhyden"
 artifact_id: SPEC-0156
 parent_ids: [REQ-0023, REQ-0025, ADR-0026]
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-09-02
 ---
 
 # Compose Enablement Model Convergence Specification
