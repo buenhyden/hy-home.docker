@@ -120,8 +120,18 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         records = collect_records(root, profiles, require_git=True)
         manifest = build_current_manifest(root, records)
         for record in records:
-            if record.metadata.get("status") == "active" or record.parse_error:
-                findings.extend(finding for finding in validate_record(record, profiles, manifest) if finding.severity == "error")
+            # Gating on `status == "active"` made `invalid-status` unreachable:
+            # a document with a status outside its lifecycle is by definition
+            # not active, so the check that would catch it never ran. Template
+            # sources keep their own route, because a template's placeholders
+            # are correct for a template and invalid for an authored document.
+            if record.artifact_type == "template-source" and not record.parse_error:
+                continue
+            findings.extend(
+                finding
+                for finding in validate_record(record, profiles, manifest)
+                if finding.severity == "error"
+            )
         findings.extend(_allocation_findings(root, profiles, records, base_ref))
         requirement_root = root / "docs/01.requirements"
         if requirement_root.exists() or requirement_root.is_symlink():
