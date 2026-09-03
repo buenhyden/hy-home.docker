@@ -29,6 +29,12 @@ projections:
   - provider_id: claude
     path: .claude/CLAUDE.md
     source: docs/00.agent-governance/providers/claude.md
+  - provider_id: claude
+    path: .claude/README.md
+    source: docs/00.agent-governance/providers/claude.md
+  - provider_id: codex
+    path: .codex/README.md
+    source: docs/00.agent-governance/providers/codex.md
 work_profiles:
   adversarial-review:
     claude: {model: claude-opus-5, control: effort, value: high}

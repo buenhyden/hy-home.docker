@@ -85,4 +85,4 @@ Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextj
 - [Storybook workspace](../README.md)
 - [Projects README](../../README.md)
 - [Root README](../../../README.md)
-- [README template](../../../docs/99.templates/templates/common/readme-stage.template.md)
+- [README template](../../../docs/99.templates/templates/common/readme-package.template.md)

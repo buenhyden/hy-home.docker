@@ -1231,6 +1231,9 @@
       "frontmatter_policy": "required",
       "path_pattern": "README.md",
       "additional_paths": [
+        ".github/repository-surface.md",
+        "_workspace/README.md",
+        "examples/README.md",
         "infra/README.md",
         "projects/README.md",
         "scripts/README.md",
@@ -1350,6 +1353,10 @@
       "type": "common/runtime-governance-readme",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/README.md",
+      "additional_paths": [
+        ".claude/README.md",
+        ".codex/README.md"
+      ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "common/runtime-governance-readme",
@@ -1419,35 +1426,6 @@
           "owner": "scripts/lib/document_governance/references.py"
         }
       ]
-    },
-    {
-      "profile_id": "github-navigation-index",
-      "type": "common/navigation-index",
-      "frontmatter_policy": "required",
-      "path_pattern": ".github/INDEX.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [
-        "type",
-        "version"
-      ],
-      "optional_frontmatter": [
-        "layer",
-        "owner",
-        "title"
-      ],
-      "required_sections": [
-        "Purpose",
-        "Surface Map",
-        "Authority and Change Routes",
-        "Verification",
-        "Related Documents"
-      ],
-      "optional_sections": [],
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
     },
     {
       "profile_id": "governance-policy",

@@ -69,4 +69,4 @@ storybook/
 - [Projects README](../README.md)
 - [Next.js Storybook workspace](nextjs/README.md)
 - [Root README](../../README.md)
-- [README template](../../docs/99.templates/templates/common/readme-stage.template.md)
+- [README template](../../docs/99.templates/templates/common/readme-package.template.md)

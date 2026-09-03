@@ -1567,8 +1567,11 @@ _NON_DOCS_ROOTS = (
 )
 _NON_DOCS_FILES = frozenset(
     {
-        ".github/INDEX.md",
+        ".claude/README.md",
+        ".codex/README.md",
+        ".github/repository-surface.md",
         "README.md",
+        "_workspace/README.md",
         "infra/README.md",
         "projects/README.md",
         "scripts/README.md",

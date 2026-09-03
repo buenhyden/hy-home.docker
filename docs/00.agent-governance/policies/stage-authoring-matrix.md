@@ -32,11 +32,11 @@ document; the kind names its role inside that family.
 | Family | Owning stage | Kinds |
 | --- | --- | --- |
 | `governance` | 00 | `sdlc`, `policy`, `hook-policy`, `role`, `skill`, `provider`, `provider-index`, `claude-agent`, `codex-agent` |
-| `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto`, `package-readme` |
+| `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `domain-readme` |
-| `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data` |
+| `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data`, `category-readme` |
 | `archive` | 98 | `migration`, `tombstone` |
-| `common` | any | `readme`, `documentation-readme`, `template-source`, `navigation-index`, `unsupported` |
+| `common` | any | `readme`, `documentation-readme`, `repository-readme`, `package-readme`, `runtime-governance-readme`, `template-source`, `unsupported` |
 
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`
 member inside it.

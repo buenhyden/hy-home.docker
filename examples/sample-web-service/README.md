@@ -126,7 +126,7 @@ Spec 126 baseline/candidate pair exists and passes every upstream gate.
 
 ## Related Documents
 
-- [README template](../../docs/99.templates/templates/common/readme-stage.template.md)
+- [README template](../../docs/99.templates/templates/common/readme-package.template.md)
 - [Spec contract template](../../docs/99.templates/templates/specs/spec.template.md)
 - [New-service onboarding guide](../../docs/05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md)
 - [Release management runbook](../../docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md)

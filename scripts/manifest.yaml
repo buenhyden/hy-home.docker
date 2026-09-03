@@ -892,7 +892,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/INDEX.md
+  - .github/repository-surface.md
   - .github/workflow-contract.yml
   disposition: retain
   successor: null
@@ -1150,7 +1150,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/INDEX.md
+  - .github/repository-surface.md
   - .github/workflows/ci-quality.yml
   disposition: retain
   successor: null
@@ -1183,7 +1183,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/INDEX.md
+  - .github/repository-surface.md
   - docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md
   disposition: retain
   successor: null

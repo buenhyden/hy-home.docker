@@ -195,7 +195,7 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `docs/00.agent-governance/providers/README.md`
 - `docs/00.agent-governance/providers/claude.md`
 - `docs/00.agent-governance/providers/codex.md`
-- `.github/INDEX.md`
+- `.github/repository-surface.md`
 - `.github/rulesets/main-protection.md`
 - `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
 

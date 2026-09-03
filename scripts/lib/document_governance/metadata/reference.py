@@ -223,6 +223,27 @@ def _template_catalog_findings(
     return findings
 
 
+# A README form is named by its registered profile, never by its filename. The
+# `common/readme` type predates the `*-readme` naming, so both are listed.
+_README_FORM_TYPES = frozenset({"common/readme"})
+_README_FORM_TYPE_SUFFIX = "-readme"
+
+
+def _is_registered_readme_form(
+    path: pathlib.Path, registry: DocumentRegistry
+) -> bool:
+    """Return whether one path carries a registered README form."""
+
+    profile_id = classify_registered_path(path.as_posix(), registry)
+    if profile_id is None:
+        return False
+    declared = registry.profiles.get(profile_id, {}).get("type")
+    return isinstance(declared, str) and (
+        declared in _README_FORM_TYPES
+        or declared.endswith(_README_FORM_TYPE_SUFFIX)
+    )
+
+
 def validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -368,8 +389,18 @@ def validate_repository_contracts(
         )
 
     classified_readmes: list[Record] = []
+    readme_registry = profiles.get("_registry") if registry_native else None
     for path in tracked_markdown:
-        if path.name != "README.md":
+        # `.github/repository-surface.md` carries the repository README form
+        # under another name: GitHub resolves a repository's displayed README
+        # from `.github/` as well as the root, so a README.md there would take
+        # the landing page from the root one. Keying this gate on the filename
+        # left that document classified but with none of its declared sections
+        # checked.
+        if path.name != "README.md" and not (
+            isinstance(readme_registry, DocumentRegistry)
+            and _is_registered_readme_form(path, readme_registry)
+        ):
             continue
         try:
             text = (root / path).read_text(encoding="utf-8")

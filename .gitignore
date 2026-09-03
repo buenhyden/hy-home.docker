@@ -104,6 +104,17 @@ volumes/
 .gstack/
 
 
+# Agent and migration staging. `_workspace/README.md` declares this surface as
+# ignored-by-default with two tracked contract documents; without these rules
+# that contract was prose only, and scripts writing into repo-support/ (grype
+# database seeds, supply-chain verdicts, rehearsal records) showed up as
+# untracked files waiting to be committed.
+_workspace/**
+!_workspace/README.md
+!_workspace/repo-support/
+!_workspace/repo-support/README.md
+
+
 # Graphify is optional generated intelligence for local exploration.
 graphify-out/.graphify*
 

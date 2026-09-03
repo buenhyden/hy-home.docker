@@ -290,7 +290,7 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
         package = pathlib.Path("docs/03.specs/0153-workspace-governance-simplification")
         expected_profiles = {
-            ".github/INDEX.md": "github-navigation-index",
+            ".github/repository-surface.md": "repository-readme",
             package / "spec.md": "spec",
             package / "plan.md": "plan",
             **{

@@ -151,6 +151,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md) | Markdown reference |
+| [.claude/README.md](../../../../.claude/README.md) | folder index |
 | [.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md) | Markdown reference |
 | [.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) | Markdown reference |
 | [.claude/agents/doc-writer.md](../../../../.claude/agents/doc-writer.md) | Markdown reference |
@@ -197,6 +198,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/task-breakdown-agent/SKILL.md](../../../../.claude/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/test-authoring/SKILL.md](../../../../.claude/skills/test-authoring/SKILL.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/SKILL.md](../../../../.claude/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
+| [.codex/README.md](../../../../.codex/README.md) | folder index |
 | [.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml) | source path |
 | [.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) | source path |
 | [.codex/agents/doc-writer.toml](../../../../.codex/agents/doc-writer.toml) | source path |
@@ -986,13 +988,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS) | source path |
-| [.github/INDEX.md](../../../../.github/INDEX.md) | Markdown reference |
 | [.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) | YAML config |
 | [.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) | YAML config |
 | [.github/PULL_REQUEST_TEMPLATE.md](../../../../.github/PULL_REQUEST_TEMPLATE.md) | Markdown reference |
 | [.github/SECURITY.md](../../../../.github/SECURITY.md) | Markdown reference |
 | [.github/dependabot.yml](../../../../.github/dependabot.yml) | YAML config |
 | [.github/labeler.yml](../../../../.github/labeler.yml) | YAML config |
+| [.github/repository-surface.md](../../../../.github/repository-surface.md) | Markdown reference |
 | [.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Markdown reference |
 | [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) | YAML config |
 | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | YAML config |
