@@ -495,6 +495,9 @@ def _excluded(path: pathlib.PurePosixPath) -> bool:
     return value.startswith(("docs/90.references/", "docs/98.archive/", "graphify-out/"))
 
 
+_RETIRED_ROUTE_RECORD_MARKER = "retired-route-record"
+
+
 def _active_reference_scan_excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
     spec_execution_body = (
@@ -547,6 +550,13 @@ def validate_active_operations_references(
             if metadata.get("status") in {"superseded", "retired"}:
                 continue
         for line_number, line in enumerate(text.splitlines(), 1):
+            if _RETIRED_ROUTE_RECORD_MARKER in line:
+                # A line whose purpose is to record a retired route is not an
+                # active reference to it. Sixteen such lines used to satisfy
+                # this scan by splitting the path across adjacent string
+                # literals, so the check was met by typography and any
+                # reformatting broke it. The marker states the exemption.
+                continue
             old_route = any(pattern.search(line) for pattern in _ACTIVE_ROUTE_PATTERNS)
             release_role = suffix == ".md" and _RELEASE_ROLE_PATTERN.search(line) and not any(
                 token in line.lower() for token in _RELEASE_NEGATIONS

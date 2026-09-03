@@ -423,21 +423,21 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/03.specs/0005-data-analytics/README.md",
     "docs/03.specs/0005-data-analytics/spec.md",
     "docs/03.specs/README.md",
-    "docs/05.operations/" "guides/04-data/analytics/README.md",
-    "docs/05.operations/" "guides/04-data/analytics/influxdb.md",
-    "docs/05.operations/" "guides/04-data/lake-and-object/seaweedfs.md",
-    "docs/05.operations/" "guides/09-tooling/k6.md",
-    "docs/05.operations/" "guides/09-tooling/locust.md",
-    "docs/05.operations/" "guides/09-tooling/performance-testing.md",
-    "docs/05.operations/" "policies/04-data/analytics/influxdb.md",
-    "docs/05.operations/" "policies/04-data/lake-and-object/seaweedfs.md",
-    "docs/05.operations/" "policies/09-tooling/k6.md",
-    "docs/05.operations/" "policies/09-tooling/locust.md",
-    "docs/05.operations/" "policies/09-tooling/performance-testing.md",
-    "docs/05.operations/" "runbooks/04-data/analytics/influxdb.md",
-    "docs/05.operations/" "runbooks/09-tooling/k6.md",
-    "docs/05.operations/" "runbooks/09-tooling/locust.md",
-    "docs/05.operations/" "runbooks/09-tooling/performance-testing.md",
+    "docs/05.operations/guides/04-data/analytics/README.md",  # retired-route-record
+    "docs/05.operations/guides/04-data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",  # retired-route-record
+    "docs/05.operations/guides/09-tooling/k6.md",  # retired-route-record
+    "docs/05.operations/guides/09-tooling/locust.md",  # retired-route-record
+    "docs/05.operations/guides/09-tooling/performance-testing.md",  # retired-route-record
+    "docs/05.operations/policies/04-data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",  # retired-route-record
+    "docs/05.operations/policies/09-tooling/k6.md",  # retired-route-record
+    "docs/05.operations/policies/09-tooling/locust.md",  # retired-route-record
+    "docs/05.operations/policies/09-tooling/performance-testing.md",  # retired-route-record
+    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",  # retired-route-record
+    "docs/05.operations/runbooks/09-tooling/k6.md",  # retired-route-record
+    "docs/05.operations/runbooks/09-tooling/locust.md",  # retired-route-record
+    "docs/05.operations/runbooks/09-tooling/performance-testing.md",  # retired-route-record
     "docs/90.references/audits/0019-readme/README.md",
     "docs/90.references/audits/0021-automation-candidates/README.md",
     "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
