@@ -121,7 +121,9 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             pathlib.Path(contract["audit_index"]),
             pathlib.Path(contract["overview"]),
             pathlib.Path(contract["canonical_pack"]) / "0019-readme/README.md",
-            pathlib.Path(contract["canonical_pack"]) / "0033-readme/README.md",
+            # The superseded snapshot is preserved under the archive, so its
+            # location comes from the checker rather than being spelled twice.
+            module.SUPERSEDED_2026_07_07_README,
             CONTRACT,
         }
         required_paths.update(
@@ -433,7 +435,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("canonical README", "status: active")
 
     def test_non_superseded_2026_07_07_readme_fails(self) -> None:
-        path = self.repo / self.contract["canonical_pack"] / "0033-readme/README.md"
+        path = self.repo / module.SUPERSEDED_2026_07_07_README
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: superseded", "status: active", 1), encoding="utf-8"
