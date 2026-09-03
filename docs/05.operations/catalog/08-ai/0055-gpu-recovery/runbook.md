@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [../../../03.specs/009-ai/spec.md](../../../../03.specs/0009-ai/spec.md)
+- **Spec**: [../../../03.specs/009-ai/spec.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
 - **Policy**: [Ollama operations policy](../0056-ollama/policy.md)
 - **Guide**: [Ollama usage guide](../0056-ollama/guide.md)
 

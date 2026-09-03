@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: RUN-0068
 parent_ids:
-  - SPEC-0010
+  - GDE-0068
 created: 2026-05-17
 updated: 2026-08-11
 ---

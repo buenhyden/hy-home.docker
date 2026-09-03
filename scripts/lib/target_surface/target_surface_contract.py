@@ -39,7 +39,6 @@ INFLUX_ACTIVE_PATHS: Final = (
     "docs/01.requirements/0005-data-analytics.md",
     "docs/02.architecture/descriptions/0012-data-analytics-architecture.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
-    "docs/03.specs/0005-data-analytics/spec.md",
     "docs/05.operations/catalog/04-data/README.md",
     "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
     "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",

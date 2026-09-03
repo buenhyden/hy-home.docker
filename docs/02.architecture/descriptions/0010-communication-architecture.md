@@ -90,6 +90,6 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [011-communication.md](../../01.requirements/0011-communication.md)
-- **Spec**: [011-communication/spec.md](../../03.specs/0011-communication/spec.md)
+- **Spec**: [011-communication/spec.md](0010-communication-architecture.md)
 - **Plan**: 2026-03-26-10-communication-standardization.md
 - **ADR**: [0010-communication-services.md](../decisions/0010-communication-services.md)

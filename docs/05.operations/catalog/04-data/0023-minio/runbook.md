@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
 - **Policy**: [MinIO policy](policy.md)
 - **Guide**: [MinIO guide](guide.md)
 - **Repo**: [MinIO infrastructure](../../../../../infra/04-data/lake-and-object/minio/README.md)

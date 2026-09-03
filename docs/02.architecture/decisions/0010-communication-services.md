@@ -71,5 +71,5 @@ The decision context above records the applicable drivers and evidence.
 
 - [Communication PRD](../../01.requirements/0011-communication.md)
 - [Communication Architecture Description](../descriptions/0010-communication-architecture.md)
-- [Communication spec](../../03.specs/0011-communication/spec.md)
+- [Communication spec](../descriptions/0010-communication-architecture.md)
 - Communication standardization plan

@@ -120,5 +120,5 @@ Existing architecture details above remain authoritative for this view.
 ## Related Documents
 
 - **PRD**: [Auth product requirements](../../01.requirements/0002-auth.md)
-- **Spec**: [Auth technical specification](../../03.specs/0002-auth/spec.md)
+- **Spec**: [Auth technical specification](0002-auth-architecture.md)
 - **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)

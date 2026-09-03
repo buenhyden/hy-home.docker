@@ -88,7 +88,5 @@ manifest checker, so declaration and coverage widen together and cannot drift.
 
 ## Related Documents
 
-- [Implementation plan](plan.md)
-- [Execution task](tasks/tsk-0001-entrypoint-readme-registration.md)
 - [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
 - [Stage 99 registry](../../99.templates/registry.json)

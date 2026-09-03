@@ -82,5 +82,5 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **ADR**: [0015-analytics-engine-selection.md](../02.architecture/decisions/0015-analytics-engine-selection.md)
-- **Spec**: [spec.md](../03.specs/0005-data-analytics/spec.md)
+- **Spec**: [spec.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **Guide**: [README.md](../05.operations/catalog/04-data/README.md)

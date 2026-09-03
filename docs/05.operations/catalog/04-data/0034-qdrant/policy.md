@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: POL-0034
 parent_ids:
-  - SPEC-0004
+  - AD-0004
 created: 2026-05-17
 updated: 2026-08-11
 ---

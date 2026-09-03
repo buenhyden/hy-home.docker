@@ -74,4 +74,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
 - **Architecture Description**: [../descriptions/0013-open-webui-architecture.md](../descriptions/0013-open-webui-architecture.md)
-- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/0009-ai/spec.md)
+- **Spec**: [../../03.specs/009-ai/open-webui.md](../descriptions/0008-ai-architecture.md)

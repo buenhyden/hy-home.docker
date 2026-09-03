@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
 - **Policy**: [04-data backup policy](../0021-backup-and-restore/policy.md)
 - **Guide**: [04-data guides index](../README.md)
 

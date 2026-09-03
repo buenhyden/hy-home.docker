@@ -74,4 +74,4 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Architecture Description**: [../descriptions/0005-messaging-architecture.md](../descriptions/0005-messaging-architecture.md)
-- **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
+- **Spec**: [../../03.specs/006-messaging/spec.md](../descriptions/0005-messaging-architecture.md)

@@ -81,5 +81,5 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0012-laboratory.md)
 - **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)
+- **Spec**: [../03.specs/012-laboratory/spec.md](../descriptions/0011-laboratory-architecture.md)
 - **Related ADR**: [ADR-0011](0011-laboratory-services.md)

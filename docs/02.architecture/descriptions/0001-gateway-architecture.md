@@ -90,5 +90,5 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
-- **Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/0001-gateway/spec.md)
+- **Spec**: [../../03.specs/001-gateway/spec.md](0001-gateway-architecture.md)
 - **ADR**: [../decisions/0001-traefik-nginx-hybrid.md](../decisions/0001-traefik-nginx-hybrid.md)

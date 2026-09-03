@@ -107,7 +107,7 @@ This hardening Architecture Description does not introduce production data owner
 ## Related Documents
 
 - **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0012-laboratory.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/0012-laboratory/spec.md)
+- **Spec**: [../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)

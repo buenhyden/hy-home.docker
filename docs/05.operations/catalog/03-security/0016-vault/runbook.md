@@ -29,7 +29,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [Spec](../../../../03.specs/0003-security/spec.md)
+- [Spec](../../../../02.architecture/descriptions/0003-security-architecture.md)
 - [Operations Policy](policy.md)
 - Plan
 - Tasks

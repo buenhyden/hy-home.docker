@@ -212,20 +212,10 @@ class OperationsAuthorityTests(unittest.TestCase):
         )
 
     def test_selected_spec_role_links_use_exact_current_role_leaves(self) -> None:
+        # The twelve domain packages that also carried role links were retired:
+        # they described a steady state the catalog owns, so their links moved
+        # with them. What remains are bounded change packages.
         expected = {
-            "docs/03.specs/0001-gateway/spec.md": {
-                "Guide": "../../05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md",
-                "Policy": "../../05.operations/catalog/01-gateway/0013-traefik/policy.md",
-                "Runbook": "../../05.operations/catalog/01-gateway/0013-traefik/runbook.md",
-            },
-            "docs/03.specs/0002-auth/spec.md": {
-                role: f"../../05.operations/catalog/02-auth/0014-keycloak/{role.lower()}.md"
-                for role in ("Guide", "Policy", "Runbook")
-            },
-            "docs/03.specs/0005-data-analytics/spec.md": {
-                role: f"../../05.operations/catalog/04-data/0017-influxdb/{role.lower()}.md"
-                for role in ("Guide", "Policy", "Runbook")
-            },
             "docs/03.specs/0095-infra-secrets-docs-refresh/spec.md": {
                 role: f"../../05.operations/catalog/03-security/0016-vault/{role.lower()}.md"
                 for role in ("Guide", "Policy", "Runbook")

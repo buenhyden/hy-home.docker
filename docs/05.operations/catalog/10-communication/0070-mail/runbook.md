@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: RUN-0070
 parent_ids:
-  - SPEC-0011
+  - GDE-0070
 created: 2026-05-17
 updated: 2026-09-01
 ---
@@ -29,7 +29,7 @@ updated: 2026-09-01
 
 ### Canonical References
 
-- **Spec**: [Communication tier spec](../../../../03.specs/0011-communication/spec.md)
+- **Spec**: [Communication tier spec](../../../../02.architecture/descriptions/0010-communication-architecture.md)
 - **Policy**: [Mail operations policy](policy.md)
 - **Guide**: [Mail usage guide](guide.md)
 

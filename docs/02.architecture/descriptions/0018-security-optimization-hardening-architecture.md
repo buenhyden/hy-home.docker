@@ -64,6 +64,6 @@ ADR 없이는 current topology로 간주하지 않는다.
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [ADR-0018](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
-- [SPEC-0003](../../03.specs/0003-security/spec.md)
+- [SPEC-0003](0003-security-architecture.md)
 - [Vault policy](../../05.operations/catalog/03-security/0016-vault/policy.md)
 - [Vault runbook](../../05.operations/catalog/03-security/0016-vault/runbook.md)

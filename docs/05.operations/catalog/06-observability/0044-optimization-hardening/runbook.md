@@ -28,7 +28,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [Spec](../../../../03.specs/0007-observability/spec.md)
+- [Spec](../../../../02.architecture/descriptions/0006-observability-architecture.md)
 - [Operations Policy](policy.md)
 - Plan
 - Tasks

@@ -30,7 +30,7 @@ SeaweedFS 서비스 상태를 안전하게 확인하고, elevated mount behavior
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/0004-data/spec.md)
+- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
 - **Policy**: [SeaweedFS policy](policy.md)
 - **Guide**: [SeaweedFS guide](guide.md)
 - **Repo**: [SeaweedFS infrastructure](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)

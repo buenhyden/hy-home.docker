@@ -30,7 +30,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [Analytics spec](../../../../03.specs/0005-data-analytics/spec.md)
+- **Spec**: [Analytics spec](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **Policy**: [ksqlDB policy](policy.md)
 - **Guide**: [ksqlDB guide](guide.md)
 

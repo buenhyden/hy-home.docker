@@ -29,7 +29,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [Spec](../../../../03.specs/0004-data/spec.md)
+- [Spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
 - [Operations Policy](policy.md)
 - [Usage Guide](guide.md)
 - Plan

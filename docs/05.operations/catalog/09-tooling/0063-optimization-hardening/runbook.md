@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: RUN-0063
 parent_ids:
-  - SPEC-0010
+  - GDE-0063
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -29,7 +29,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../../03.specs/0010-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - **Policy**: [Optimization hardening policy](policy.md)
 - **Guide**: [Optimization hardening guide](guide.md)
 - **Plan**: Optimization hardening plan

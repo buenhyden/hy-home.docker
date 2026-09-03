@@ -97,5 +97,5 @@ updated: 2026-09-01
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
-- **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
+- **Spec**: [../../03.specs/006-messaging/spec.md](0005-messaging-architecture.md)
 - **ADR**: [../decisions/0005-kafka-vs-rabbitmq-selection.md](../decisions/0005-kafka-vs-rabbitmq-selection.md)

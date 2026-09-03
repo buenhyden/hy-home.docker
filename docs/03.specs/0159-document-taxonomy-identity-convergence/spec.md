@@ -102,8 +102,6 @@ gained one; each is repaired at its cause rather than by relaxing the contract.
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0029](../../02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Plan](./plan.md)
-- [Task](./tasks/tsk-0001-taxonomy-convergence.md)
 
 ## Open Questions
 

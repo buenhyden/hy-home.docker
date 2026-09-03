@@ -109,7 +109,6 @@ INFLUX_ACTIVE_PATHS = (
     "docs/01.requirements/0005-data-analytics.md",
     "docs/02.architecture/descriptions/0012-data-analytics-architecture.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
-    "docs/03.specs/0005-data-analytics/spec.md",
     "docs/05.operations/catalog/04-data/README.md",
     "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
     "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
@@ -1290,7 +1289,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         current_docs = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
-            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/runbook.md",
@@ -1321,7 +1319,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ROOT
             / "docs/02.architecture/descriptions/0012-data-analytics-architecture.md",
             ROOT / "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
-            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
             ROOT / "docs/05.operations/catalog/04-data/README.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/policy.md",
@@ -1342,7 +1339,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         canonical_docs = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
-            ROOT / "docs/03.specs/0005-data-analytics/spec.md",
             ROOT / "docs/05.operations/catalog/04-data/0017-influxdb/guide.md",
         )
         for path in canonical_docs:

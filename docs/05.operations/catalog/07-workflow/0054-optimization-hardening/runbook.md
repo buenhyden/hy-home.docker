@@ -27,7 +27,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- [Spec](../../../../03.specs/0008-workflow/spec.md)
+- [Spec](../../../../02.architecture/descriptions/0007-workflow-architecture.md)
 - [Operations Policy](policy.md)
 - Plan
 - Tasks

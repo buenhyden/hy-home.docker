@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: GDE-0062
 parent_ids:
-  - SPEC-0010
+  - POL-0062
 created: 2026-05-10
 updated: 2026-08-11
 ---

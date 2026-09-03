@@ -88,6 +88,6 @@ N/A
 ## Traceability
 
 - **Architecture Description**: [Security architecture descriptions](../02.architecture/descriptions/0003-security-architecture.md)
-- **Spec**: [Security technical specification](../03.specs/0003-security/spec.md)
+- **Spec**: [Security technical specification](../02.architecture/descriptions/0003-security-architecture.md)
 - **Plan**: Security standardization plan
 - **ADR**: [Vault as secrets manager decision](../02.architecture/decisions/0003-vault-as-secrets-manager.md)

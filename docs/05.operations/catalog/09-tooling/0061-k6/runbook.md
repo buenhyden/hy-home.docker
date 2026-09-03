@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: RUN-0061
 parent_ids:
-  - SPEC-0010
+  - GDE-0061
 created: 2026-05-17
 updated: 2026-08-11
 ---
@@ -31,7 +31,7 @@ updated: 2026-08-11
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../../03.specs/0010-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - **Policy**: [k6 policy](policy.md)
 - **Guide**: [k6 guide](guide.md)
 

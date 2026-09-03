@@ -115,5 +115,5 @@ updated: 2026-09-01
 ## Related Documents
 
 - **PRD**: [../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0002-auth.md)
-- **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)
+- **Spec**: [../03.specs/002-auth/spec.md](0002-auth-architecture.md)
 - **ADR**: [../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)

@@ -90,6 +90,6 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
-- **Spec**: [010-tooling/spec.md](../../03.specs/0010-tooling/spec.md)
+- **Spec**: [010-tooling/spec.md](0009-tooling-architecture.md)
 - **Plan**: 2026-03-26-09-tooling-standardization.md
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)

@@ -79,5 +79,5 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0002-auth.md)
 - **Architecture Description**: [../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../descriptions/0014-auth-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/0002-auth/spec.md)
+- **Spec**: [../03.specs/002-auth/spec.md](../descriptions/0002-auth-architecture.md)
 - **Related ADR**: [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)

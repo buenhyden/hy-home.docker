@@ -33,7 +33,7 @@ updated: 2026-08-11
 ### Canonical References
 
 - [../../../02.architecture/descriptions/0005-messaging-architecture.md](../../../../02.architecture/descriptions/0005-messaging-architecture.md)
-- [../../../03.specs/006-messaging/spec.md](../../../../03.specs/0006-messaging/spec.md)
+- [../../../03.specs/006-messaging/spec.md](../../../../02.architecture/descriptions/0005-messaging-architecture.md)
 - [Kafka operations policy](policy.md)
 
 ## When to Use

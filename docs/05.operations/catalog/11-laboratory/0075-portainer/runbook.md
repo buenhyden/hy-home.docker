@@ -28,7 +28,7 @@ Portainer의 optional root include 상태와 write-capable Docker socket 위험�
 
 ### Canonical References
 
-- **Spec**: [Laboratory spec](../../../../03.specs/0012-laboratory/spec.md)
+- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - **Policy**: [Portainer policy](policy.md)
 - **Guide**: [Portainer guide](guide.md)
 
