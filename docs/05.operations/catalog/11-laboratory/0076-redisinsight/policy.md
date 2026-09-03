@@ -39,10 +39,11 @@ RedisInsight의 접근 권한, 연결 메타데이터 관리, 그리고 운영 �
 - **Persistence**:
   - 연결 설정 및 튜닝 데이터는 `${DEFAULT_MANAGEMENT_DIR}/redisinsight` 볼륨에 안전하게 보관되어야 한다.
 
-## Disallowed Actions
+### Disallowed Actions
 
 - RedisInsight를 퍼블릭 망에 노출하거나 SSO 없이 접근 가능하게 설정하는 행위.
 - 고부하 환경에서 `keys *` 명령을 Profiler 없이 직접 실행하는 행위 (Scan 명령 권장).
+
 
 ## Exceptions
 

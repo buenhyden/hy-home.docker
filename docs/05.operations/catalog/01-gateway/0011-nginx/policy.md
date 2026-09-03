@@ -46,6 +46,14 @@ updated: 2026-08-11
   - `/ping`, `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 기본 흐름 훼손
   - readonly 환경에서 영구 쓰기 경로 의존 설정
 
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
+- **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
+- **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
+
+
 ## Exceptions
 
 - 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
@@ -60,13 +68,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 점검
 - nginx.conf 변경 시 수시 점검
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
-- **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
-- **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
 
 ## Traceability
 

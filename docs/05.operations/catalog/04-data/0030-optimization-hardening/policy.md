@@ -47,6 +47,26 @@ updated: 2026-08-11
   - 무검증 compose 변경 배포
   - 카탈로그/운영정책 미연계 확장 실행
 
+### Catalog Expansion Approval Gates
+
+- **Analytics 확장 승인 조건**:
+  - retention/lifecycle 정책 문서화
+  - schema compatibility 및 복구 시간 목표(RTO) 검증
+- **Stateful DB 확장 승인 조건**:
+  - failover/PITR/backup drill 증적 확보
+  - SLA/SLO와 경보 기준 합의
+- **Storage 확장 승인 조건**:
+  - lifecycle/versioning/encryption 정책 명시
+  - 용량 계획과 복구 절차 검증
+
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
+- **Log / Trace Retention**: `06-observability` 정책 준수
+- **Safety Incident Thresholds**: 데이터 손상 의심, 장기 healthcheck fail, 복구 불가 상태 발생 시 즉시 runbook 전환
+
+
 ## Exceptions
 
 - 실험 환경에서 일시적 점검을 위해 일부 서비스 healthcheck 완화는 허용 가능
@@ -63,25 +83,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 검토
 - 데이터 서비스 신규 추가/버전 대규모 변경 시 수시 검토
-
-## Catalog Expansion Approval Gates
-
-- **Analytics 확장 승인 조건**:
-  - retention/lifecycle 정책 문서화
-  - schema compatibility 및 복구 시간 목표(RTO) 검증
-- **Stateful DB 확장 승인 조건**:
-  - failover/PITR/backup drill 증적 확보
-  - SLA/SLO와 경보 기준 합의
-- **Storage 확장 승인 조건**:
-  - lifecycle/versioning/encryption 정책 명시
-  - 용량 계획과 복구 절차 검증
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
-- **Log / Trace Retention**: `06-observability` 정책 준수
-- **Safety Incident Thresholds**: 데이터 손상 의심, 장기 healthcheck fail, 복구 불가 상태 발생 시 즉시 runbook 전환
 
 ## Traceability
 

@@ -50,6 +50,16 @@ updated: 2026-08-11
   - root runtime 복귀
   - 검증 게이트 우회 배포
 
+### Catalog Expansion Approval Gates
+
+- **Airflow 승인 조건**:
+  - DAG parse/schedule/delay 기준 품질 게이트 문서화 및 CI 반영
+  - worker autoscale 트리거(큐 지연, 실행 대기 수, CPU/memory) 기준 합의
+- **n8n 승인 조건**:
+  - workflow Git backup 표준 운영 절차 수립
+  - credential store Vault 연계 모델 및 롤백 절차 문서화
+
+
 ## Exceptions
 
 - 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
@@ -67,15 +77,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 검토
 - Airflow/n8n 버전 변경 또는 인증/보안 이슈 발생 시 수시 검토
-
-## Catalog Expansion Approval Gates
-
-- **Airflow 승인 조건**:
-  - DAG parse/schedule/delay 기준 품질 게이트 문서화 및 CI 반영
-  - worker autoscale 트리거(큐 지연, 실행 대기 수, CPU/memory) 기준 합의
-- **n8n 승인 조건**:
-  - workflow Git backup 표준 운영 절차 수립
-  - credential store Vault 연계 모델 및 롤백 절차 문서화
 
 ## Traceability
 

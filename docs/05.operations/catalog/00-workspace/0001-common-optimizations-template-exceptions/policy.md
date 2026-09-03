@@ -43,6 +43,14 @@ updated: 2026-08-11
   - 레지스트리 미등록 상태의 임의 예외 적용
   - 문서와 레지스트리 간 불일치 상태로 배포 진행
 
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+
+
 ## Exceptions
 
 - 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.
@@ -61,13 +69,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 검토
 - 신규 예외 추가/삭제 시 즉시 검토
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
-- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
-- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
 ## Traceability
 

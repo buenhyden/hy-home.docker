@@ -46,6 +46,25 @@ updated: 2026-08-11
   - 평문 시크릿 하드코딩
   - 승인 없는 auto-unseal/원격 audit 실적용
 
+### Auto-unseal & Remote Audit Adoption Gate
+
+- **Auto-unseal 승인 조건**:
+  - KMS/HSM 키 관리 책임자 지정
+  - 장애 시 수동 unseal fallback 절차 검증
+  - runbook 전환 체크리스트 승인
+- **Remote Audit 승인 조건**:
+  - 전송 대상(예: SIEM, object storage) 보존 정책 확정
+  - 감사 로그 무결성/지연 모니터링 기준 수립
+  - 로컬 + 원격 이중화 검증 완료
+
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: infrastructure-hardening/doc-traceability 통과
+- **Log / Trace Retention**: audit/healthcheck/검증 로그 보존 정책 준수
+- **Safety Incident Thresholds**: seal 상태 지속, 렌더 실패 지속, audit 비활성 상태 감지 시 runbook 즉시 수행
+
+
 ## Exceptions
 
 - 단기 테스트 환경에서 임시 로컬 audit만 사용 가능.
@@ -64,24 +83,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 점검
 - Vault 버전/구성/정책 변경 시 수시 점검
-
-## Auto-unseal & Remote Audit Adoption Gate
-
-- **Auto-unseal 승인 조건**:
-  - KMS/HSM 키 관리 책임자 지정
-  - 장애 시 수동 unseal fallback 절차 검증
-  - runbook 전환 체크리스트 승인
-- **Remote Audit 승인 조건**:
-  - 전송 대상(예: SIEM, object storage) 보존 정책 확정
-  - 감사 로그 무결성/지연 모니터링 기준 수립
-  - 로컬 + 원격 이중화 검증 완료
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: infrastructure-hardening/doc-traceability 통과
-- **Log / Trace Retention**: audit/healthcheck/검증 로그 보존 정책 준수
-- **Safety Incident Thresholds**: seal 상태 지속, 렌더 실패 지속, audit 비활성 상태 감지 시 runbook 즉시 수행
 
 ## Traceability
 

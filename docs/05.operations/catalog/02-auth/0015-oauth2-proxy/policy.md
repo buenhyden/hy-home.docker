@@ -49,6 +49,14 @@ updated: 2026-08-11
   - fail-open 상시 운영
   - 시크릿을 Compose/문서에 평문으로 저장
 
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
+- **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
+- **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
+
+
 ## Exceptions
 
 - OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
@@ -65,13 +73,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 점검
 - OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
-- **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
-- **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
 
 ## Traceability
 

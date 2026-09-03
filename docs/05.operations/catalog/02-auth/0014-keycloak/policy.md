@@ -43,6 +43,14 @@ updated: 2026-08-11
   - 시크릿 평문 하드코딩
   - 인증 우회 목적 설정 변경
 
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
+- **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
+- **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
+
+
 ## Exceptions
 
 - 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
@@ -57,13 +65,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 점검
 - Keycloak 버전/realm 정책 변경 시 수시 점검
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
-- **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
-- **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
 
 ## Traceability
 

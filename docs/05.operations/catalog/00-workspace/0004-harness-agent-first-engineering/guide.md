@@ -18,31 +18,6 @@ updated: 2026-08-21
 
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
 
-## Audience and Prerequisites
-
-### Usage Type
-
-How-to / audit guide.
-
-### Target Audience
-
-- AI Agents
-- Documentation Writers
-- Infra Operators
-- Repository Maintainers
-
-### Purpose
-
-반복 가능한 방식으로 workspace purpose, rules, runtime surface, governance contracts, validation gates를 조사하고, 필요한 경우 stage 문서와 README를 템플릿에 맞춰 갱신한다.
-
-### Prerequisites
-
-- Read `AGENTS.md`.
-- Read `graphify-out/GRAPH_REPORT.md` before architecture or codebase answers.
-- Run `bash scripts/knowledge/report-graphify-health.sh` when `graphify-out/` exists.
-- Confirm the active role, skill, provider, and policy route from `docs/00.agent-governance/`.
-- Do not inspect secrets or credential files.
-
 ## Usage
 
 1. Read root entry files: `README.md`, `AGENTS.md`, and `CLAUDE.md`.
@@ -55,6 +30,32 @@ How-to / audit guide.
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
 9. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
 10. Run the validation commands listed in the runbook before declaring completion.
+
+### Audience and Prerequisites
+
+#### Usage Type
+
+How-to / audit guide.
+
+#### Target Audience
+
+- AI Agents
+- Documentation Writers
+- Infra Operators
+- Repository Maintainers
+
+#### Purpose
+
+반복 가능한 방식으로 workspace purpose, rules, runtime surface, governance contracts, validation gates를 조사하고, 필요한 경우 stage 문서와 README를 템플릿에 맞춰 갱신한다.
+
+#### Prerequisites
+
+- Read `AGENTS.md`.
+- Read `graphify-out/GRAPH_REPORT.md` before architecture or codebase answers.
+- Run `bash scripts/knowledge/report-graphify-health.sh` when `graphify-out/` exists.
+- Confirm the active role, skill, provider, and policy route from `docs/00.agent-governance/`.
+- Do not inspect secrets or credential files.
+
 
 ## Troubleshooting
 

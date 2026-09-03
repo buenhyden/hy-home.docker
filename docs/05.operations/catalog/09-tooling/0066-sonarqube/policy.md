@@ -28,15 +28,21 @@ This policy defines the operational standards for the SonarQube service. It ensu
 - **Maintenance**: Plug-in life-cycle, database optimization.
 - **Reporting**: Security hotspots and vulnerability tracking.
 
-## Operational Standards
+## Controls
 
-### 1. Quality Gate Enforcement
+- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
+- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
+- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+### Operational Standards
+
+#### 1. Quality Gate Enforcement
 
 - All platform-level projects **MUST** pass the "Sonar way" Quality Gate before merging into `main`.
 - Critical issues and high-severity security vulnerabilities **MUST** be remediated or officially "Acknowledged" with a technical rationale.
 - Test coverage requirements: Minimum 90% for new code (mandatory).
 
-### 2. Routine Maintenance
+#### 2. Routine Maintenance
 
 | Frequency | Task | Owner |
 | :--- | :--- | :--- |
@@ -44,13 +50,13 @@ This policy defines the operational standards for the SonarQube service. It ensu
 | **Monthly** | Database index maintenance (Postgres). | DBAs |
 | **Quarterly** | Plug-in compatibility audit (SonarLint). | Platform Team |
 
-### 3. Backup and Persistence
+#### 3. Backup and Persistence
 
 - **Data**: All persistent configuration is stored in the `mng-db` cluster.
 - **Indexing**: ElasticSearch indexes are located at `/opt/sonarqube/data/es7`.
 - **Note**: Only the SQL database needs regular backups. ElasticSearch indexes can be rebuilt from the DB.
 
-## Monitoring Strategy
+### Monitoring Strategy
 
 - **Health Check**: `http://sonarqube:9000/api/system/health`.
 - **Key Metrics**:
@@ -58,11 +64,6 @@ This policy defines the operational standards for the SonarQube service. It ensu
   - `sonar.search-jvm.max_heap_size`
   - Number of pending Background Tasks.
 
-## Controls
-
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
 
 ## Exceptions
 

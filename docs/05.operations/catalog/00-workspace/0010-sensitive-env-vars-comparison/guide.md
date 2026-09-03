@@ -67,11 +67,11 @@ updated: 2026-08-14
 - 현재 tracked example은 카테고리 11개와 unique ID 106개를 선언한다.
 - 새 서비스 추가 후 `<PREFIX>-<NNN>` ID 규칙을 유지하는지 확인한다.
 
-## 감사 기준일
+### 감사 기준일
 
 2026-08-14
 
-## 요약
+### 요약
 
 | 항목                      | 결과                   |
 | ------------------------- | ---------------------- |
@@ -84,7 +84,7 @@ updated: 2026-08-14
 
 > **참고**: 실제 `SENSITIVE_ENV_VARS.md`는 민감 정보 보호를 위해 mode 600이며, 값 비교는 수행하지 않는다. 라인 수와 ID count 기준으로 구조 일치를 추정한다.
 
-## 카테고리별 항목 현황 (Example 기준)
+### 카테고리별 항목 현황 (Example 기준)
 
 | 카테고리 접두사 | 섹션명                           | unique ID 수 | `.env` 연계 변수 포함 | secrets/ 파일 포함 |
 | --------------- | -------------------------------- | ------------ | --------------------- | ------------------ |
@@ -101,7 +101,7 @@ updated: 2026-08-14
 | `SEC-`          | 보안 및 비밀 관리 (Vault)        | 2            | ✓                     | ✓                  |
 | **합계**        |                                  | **106**      |                       |                    |
 
-## secrets/ 경로 패턴
+### secrets/ 경로 패턴
 
 example 파일 기준 secret 파일은 다음 경로 패턴을 따른다.
 
@@ -117,15 +117,16 @@ example 파일 기준 secret 파일은 다음 경로 패턴을 따른다.
 | `secrets/automation/`    | `secrets/automation/airflow_*.txt`        |
 | `secrets/observability/` | `secrets/observability/grafana_*.txt`     |
 
-## 유의 사항
+### 유의 사항
 
 1. **실제 파일은 mode 600**: `secrets/SENSITIVE_ENV_VARS.md`는 operator-owned 파일이므로 값 내용을 출력하지 않는다. 구조 변경 시 라인 수, ID count, 경로 패턴 같은 metadata-only 비교로 확인한다.
 2. **새 서비스 추가 시**: `SENSITIVE_ENV_VARS.md.example`에 새 항목을 먼저 추가하고, 실제 파일도 동기화한다.
 3. **ID 규칙**: `<PREFIX>-<NNN>` 형식을 유지한다 (예: `CACHE-001`).
 
-## 점검 주기
+### 점검 주기
 
 분기 1회 또는 서비스 추가/제거 시. 점검 후 이 문서의 "감사 기준일"과 요약 표를 업데이트한다.
+
 
 ## Runbook Handoff
 

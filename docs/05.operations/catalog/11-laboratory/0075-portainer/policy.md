@@ -40,10 +40,11 @@ Portainer 인터페이스의 접근 제어, 데이터 백업, 리소스 관리 �
 - **Resource Management**:
   - `sts` (Short Term Support) 이미지를 사용하여 보안 업데이트를 주기적으로 적용한다.
 
-## Disallowed Actions
+### Disallowed Actions
 
 - Portainer 내부의 `docker.sock`을 외부에 API 형태로 노출하는 행위.
 - `admin` 계정의 비밀번호를 평문으로 기록하거나 공유하는 행위.
+
 
 ## Exceptions
 

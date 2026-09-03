@@ -45,25 +45,7 @@ updated: 2026-08-11
   - 검증 게이트 우회 배포
   - 감사/보존 정책 없이 확장 항목 운영 전환
 
-## Exceptions
-
-- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
-- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
-
-## Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
-- Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
-
-## Review Cadence
-
-- 월 1회 정기 검토
-- tooling 구성/권한/정책 변경 시 수시 검토
-
-## Catalog Expansion Approval Gates
+### Catalog Expansion Approval Gates
 
 - **terraform 승인 조건**:
   - plan/apply 승인 게이트 문서화
@@ -82,6 +64,25 @@ updated: 2026-08-11
   - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
 - **syncthing 승인 조건**:
   - 폴더 ACL/암호화 정책 및 충돌 처리 표준화
+
+
+## Exceptions
+
+- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
+- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
+
+## Review Cadence
+
+- 월 1회 정기 검토
+- tooling 구성/권한/정책 변경 시 수시 검토
 
 ## Traceability
 

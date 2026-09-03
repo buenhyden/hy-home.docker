@@ -46,6 +46,26 @@ updated: 2026-08-11
   - 부동 태그 이미지 도입
   - 카탈로그/정책 미연계 확장 실행
 
+### Catalog Expansion Approval Gates
+
+- **Kafka 확장 승인 조건**:
+  - 토픽 거버넌스(보존/compaction/파티션 기준) 문서화
+  - DLQ + 재처리 파이프라인 표준 운영 절차 확보
+- **RabbitMQ 확장 승인 조건**:
+  - quorum queue 적용 범위 및 예외 명시
+  - dead-letter/retry 정책 + 소비자 재시도 기준 합의
+- **Gateway 연계 승인 조건**:
+  - 보안 헤더/접근 정책 템플릿 적용 계획 수립
+  - 운영 자동화 경로의 접근 제어 영향 평가 완료
+
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
+- **Log / Trace Retention**: `06-observability` 정책 준수
+- **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
+
+
 ## Exceptions
 
 - 긴급 장애 대응 시 일시적으로 middleware 완화가 필요할 수 있다.
@@ -63,25 +83,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 검토
 - 메시징 컴포넌트 주요 버전 변경/보안 이슈 발생 시 수시 검토
-
-## Catalog Expansion Approval Gates
-
-- **Kafka 확장 승인 조건**:
-  - 토픽 거버넌스(보존/compaction/파티션 기준) 문서화
-  - DLQ + 재처리 파이프라인 표준 운영 절차 확보
-- **RabbitMQ 확장 승인 조건**:
-  - quorum queue 적용 범위 및 예외 명시
-  - dead-letter/retry 정책 + 소비자 재시도 기준 합의
-- **Gateway 연계 승인 조건**:
-  - 보안 헤더/접근 정책 템플릿 적용 계획 수립
-  - 운영 자동화 경로의 접근 제어 영향 평가 완료
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
-- **Log / Trace Retention**: `06-observability` 정책 준수
-- **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
 
 ## Traceability
 

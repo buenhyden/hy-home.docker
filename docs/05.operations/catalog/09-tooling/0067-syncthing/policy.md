@@ -28,15 +28,21 @@ This policy defines the operational standards for the Syncthing service. It ensu
 - **Maintenance**: Database health, version upgrades.
 - **Security**: Device pairing approval, encrypted transfer enforcement.
 
-## Operational Standards
+## Controls
 
-### 1. Data Integrity and Conflicts
+- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
+- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
+- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+### Operational Standards
+
+#### 1. Data Integrity and Conflicts
 
 - **Conflict Handling**: If a sync conflict occurs, Syncthing generates a `.sync-conflict-` file. Operators/Users must manually resolve these to ensure data consistency.
 - **Ignore Patterns**: Use `.stignore` files to prevent synchronization of temporary or large log files that do not require P2P distribution.
 - **Folder Type**: Use "Send Only" for master nodes (e.g., a central backup server) and "Receive Only" for immutable mirrors where appropriate.
 
-### 2. Routine Maintenance
+#### 2. Routine Maintenance
 
 | Frequency | Task | Owner |
 | :--- | :--- | :--- |
@@ -44,12 +50,12 @@ This policy defines the operational standards for the Syncthing service. It ensu
 | **Monthly** | Database consistency check (`-verify-db`). | Operators |
 | **Quarterly** | Device pairing audit (remove stale devices). | Security |
 
-### 3. Resource Optimization
+#### 3. Resource Optimization
 
 - **CPU Usage**: Enable "Low Priority" for the scanning process on low-resource nodes.
 - **Memory**: Monitor the `syncthing` process; large folder structures may require higher JVM/RAM allocation via `stateful-med` optimizations.
 
-## Monitoring Strategy
+### Monitoring Strategy
 
 - **Health Check**: REST API `/rest/noauth/health` returns `OK`.
 - **Key Metrics**:
@@ -57,11 +63,6 @@ This policy defines the operational standards for the Syncthing service. It ensu
   - `device_count` (Online vs Total).
   - `throughput` (Inbound/Outbound).
 
-## Controls
-
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
 
 ## Exceptions
 

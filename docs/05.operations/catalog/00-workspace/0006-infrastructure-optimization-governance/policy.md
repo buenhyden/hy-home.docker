@@ -40,92 +40,27 @@ updated: 2026-08-14
   - 운영 서비스에 무검증 무중단 정책 없는 이미지/설정 변경
   - 근거 없는 외부 포트 노출 및 `latest` 태그 관행
 
-## Exceptions
-
-- 실험성 서비스(`11-laboratory`)는 제한적 예외 허용 가능
-  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
-
-## Verification
-
-- Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
-- Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
-- 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
-- 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
-- 운영 갭 점검(예시):
-  - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
-- 문서 추적성 점검:
-  - 서비스별 `infra/*/README.md` ↔ `docs/05.operations/*` ↔ `docs/05.operations/*` 상호 링크 확인
-
-## Review Cadence
-
-- 월 1회 정기 검토
-- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
-
-## AI Agent Policy Section (If Applicable)
+### AI Agent Policy
 
 - **Model / Prompt Change Process**: AI 관련 변경은 `08-ai` 정책 문서 선반영 후 `05.operations/catalog/08-ai` 절차로 배포/롤백
 - **Eval / Guardrail Threshold**: 서비스 영향 변경은 최소 정상성(헬스체크/핵심 API) 자동 검증 통과 필요
 - **Log / Trace Retention**: 운영 로그는 `06-observability` 보존 정책 준수
 - **Safety Incident Thresholds**: 인증 실패 급증, 데이터 손상, 장기 장애 징후는 즉시 Incident 프로세스 전환
 
-## Baseline Audit Snapshot (2026-03-27)
-
-- 조사 대상 Compose 서비스: **39**
-- 갭 집계(서비스 단위):
-  - `healthcheck` 미구성: **6/39**
-  - `restart` 미구성: **21/39**
-  - `no-new-privileges` 미구성: **37/39**
-  - 자원 제한(`cpus`/`memory`) 미구성: **37/39**
-  - `secrets` 미구성: **16/39**
-- 추가 관찰:
-  - workflow tier의 미구현 서비스 문서는 active operations chain에서 제거하고 archive ledger로만 추적한다.
-
-## Common Template Coverage Snapshot (2026-03-28)
-
-- 기준 템플릿: [infra/common-optimizations.yml](../../../../../infra/common-optimizations.yml)
-- 템플릿 기준선:
-  - 보안: `no-new-privileges`, `cap_drop: [ALL]` (`x-security-base`)
-  - 재시작: `restart: unless-stopped` (`x-restart-default`)
-  - 자원 상한: `x-resource-low/med/high/db` (`cpus`, `mem_limit`)
-- 적용 커버리지:
-  - 서비스 디렉터리 기준: **39/39 (100%)**
-  - Compose 파일 기준: **43/43 (100%)**
-- 미적용 서비스(서비스 기준): **없음 (0건)**
-- 보조 Compose 적용 상태(서비스 수 미산입):
-  - [opensearch cluster compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml): **적용 완료**
-- 의도된 템플릿 예외:
-  - SSoT: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
-  - 운영 정책: [common-optimizations-template-exceptions.md](../0001-common-optimizations-template-exceptions/policy.md)
-
-## Quick Win Enforcement Snapshot (2026-03-28)
-
-- 기준: `PLN-QW-001 ~ PLN-QW-005`
-- 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
-- 통합 Compose 기준 결과(`total services=19`):
-  - `restart` 누락: `0`
-  - `healthcheck` 누락: `0` (예외 반영 후)
-  - `no-new-privileges` 누락: `0`
-  - `cpus`/`mem_limit` 누락: `0`
-  - `secrets` 누락: `0` (예외 반영 후)
-- 승인 예외:
-  - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init` (one-shot init job)
-  - `secrets`: `etcd-1`, `etcd-2`, `etcd-3` (auth-disabled cluster bootstrap mode)
-  - 상세 정의: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
-
-## Roadmap Status and Priority Boundary
+### Roadmap Status and Priority Boundary
 
 이 정책은 기존 infrastructure optimization catalog와 umbrella priority
 plan의 고유한 현재 사실을 하나의 canonical owner로 통합합니다. Quick Win
 완료는 quarterly roadmap 전체 완료를 의미하지 않습니다.
 
-### Priority Model
+#### Priority Model
 
 - Priority Score = `Risk Reduction(40) + Availability Impact(25) + Security Impact(25) + Execution Effort Inverse(10)`
 - Tier A: `01-gateway`, `02-auth`, `03-security`, `04-data`, `05-messaging`, `06-observability`
 - Tier B: `07-workflow`, `08-ai`, `09-tooling`, `10-communication`
 - Tier C: `11-laboratory`
 
-### Roadmap Disposition
+#### Roadmap Disposition
 
 | Item | Current evidence | Current disposition |
 | :-- | :-- | :-- |
@@ -140,28 +75,28 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 과거 plan-authoring checklist의 완료 표시는 이 정책 roadmap의 완료 근거가
 아닙니다.
 
-## Tier-by-Tier Optimization & Expansion Catalog
+### Tier-by-Tier Optimization & Expansion Catalog
 
-### 01-gateway
+#### 01-gateway
 
 - [traefik](../../../../../infra/01-gateway/traefik/README.md): 엔트리포인트별 `rate-limit`/`retry`/`circuit-breaker` 표준화, `restart`/자원 제한 보강
   ([OPER](../../01-gateway/0013-traefik/guide.md), [RUN](../../01-gateway/0013-traefik/runbook.md))
 - [nginx](../../../../../infra/01-gateway/nginx/README.md): 업스트림 헬스체크/타임아웃 일원화, `read_only`+`tmpfs` 적용, 정적 자산 캐시 정책 강화
   ([OPER](../../01-gateway/0011-nginx/guide.md), [RUN](../../01-gateway/0011-nginx/runbook.md))
 
-### 02-auth
+#### 02-auth
 
 - [keycloak](../../../../../infra/02-auth/keycloak/README.md): 세션/캐시 외부화 전략 점검, DB/관리자 비밀 회전 자동화, 노드 확장 대비 세션 정책 정리
   ([OPER](../../02-auth/0014-keycloak/guide.md), [RUN](../../02-auth/0014-keycloak/runbook.md))
 - [oauth2-proxy](../../../../../infra/02-auth/oauth2-proxy/README.md): 쿠키/세션 만료 정책 표준화, OIDC 장애시 degraded-mode 정책 추가, 보안헤더 강화
   ([OPER](../../02-auth/0015-oauth2-proxy/guide.md), [RUN](../../02-auth/0015-oauth2-proxy/runbook.md))
 
-### 03-security
+#### 03-security
 
 - [vault](../../../../../infra/03-security/vault/README.md): auto-unseal(KMS/HSM) 도입 검토, audit device 원격 적재, `no-new-privileges` 및 자원 상한 일괄 적용
   ([OPER](../../03-security/0016-vault/guide.md), [RUN](../../03-security/0016-vault/runbook.md))
 
-### 04-data
+#### 04-data
 
 - Analytics
   - [influxdb](../../../../../infra/04-data/analytics/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
@@ -201,14 +136,14 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   - [qdrant](../../../../../infra/04-data/specialized/qdrant/README.md): 컬렉션별 HNSW/quantization 정책 표준화, 임베딩 재색인 운영 절차 추가
     ([OPER](../../04-data/0034-qdrant/guide.md), [RUN](../../04-data/0034-qdrant/runbook.md))
 
-### 05-messaging
+#### 05-messaging
 
 - [kafka](../../../../../infra/05-messaging/kafka/README.md): 토픽 거버넌스(파티션/보존/compaction) 표준화, DLQ/재처리 파이프라인 공식화
   ([OPER](../../05-messaging/0036-kafka/guide.md), [RUN](../../05-messaging/0036-kafka/runbook.md))
 - [rabbitmq](../../../../../infra/05-messaging/rabbitmq/README.md): quorum queue 채택 범위 정의, dead-letter 정책과 소비자 재시도 표준화
   ([OPER](../../05-messaging/0038-rabbitmq/guide.md), [RUN](../../05-messaging/0038-rabbitmq/runbook.md))
 
-### 06-observability
+#### 06-observability
 
 - [prometheus](../../../../../infra/06-observability/prometheus/README.md): scrape budget 관리, rule/group 지연 예산 도입, 장기저장(remote_write) 계층화
   ([OPER](../../06-observability/0045-prometheus/guide.md), [RUN](../../06-observability/0045-prometheus/runbook.md))
@@ -227,21 +162,21 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [pyroscope](../../../../../infra/06-observability/pyroscope/README.md): 프로파일 수집 대상 우선순위화, CPU/heap 프로파일 보존정책 확정
   ([OPER](../../06-observability/0047-pyroscope/guide.md), [RUN](../../06-observability/0047-pyroscope/runbook.md))
 
-### 07-workflow
+#### 07-workflow
 
 - [airflow](../../../../../infra/07-workflow/airflow/README.md): DAG 품질 게이트(파싱/스케줄/지연) CI 추가, 워커 오토스케일 기준 정의
   ([OPER](../../07-workflow/0050-airflow/guide.md), [RUN](../../07-workflow/0050-airflow/runbook.md))
 - [n8n](../../../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화, 자격증명 스토어 Vault 연계 강화
   ([OPER](../../07-workflow/0053-n8n/guide.md), [RUN](../../07-workflow/0053-n8n/runbook.md))
 
-### 08-ai
+#### 08-ai
 
 - [ollama](../../../../../infra/08-ai/ollama/README.md): 모델 캐시/스토리지 정책, GPU 스케줄링 및 동시성 상한, 모델 승격 절차(실험→운영) 명문화
   ([OPER](../../08-ai/0056-ollama/guide.md), [RUN](../../08-ai/0056-ollama/runbook.md))
 - [open-webui](../../../../../infra/08-ai/open-webui/README.md): SSO 강제, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
   ([OPER](../../08-ai/0057-open-webui/guide.md), [RUN](../../08-ai/0057-open-webui/runbook.md))
 
-### 09-tooling
+#### 09-tooling
 
 - [terraform](../../../../../infra/09-tooling/terraform/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
   ([OPER](../../09-tooling/0068-terraform/guide.md), [RUN](../../09-tooling/0068-terraform/runbook.md))
@@ -258,12 +193,12 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [syncthing](../../../../../infra/09-tooling/syncthing/README.md): 동기화 폴더 ACL/암호화 기준 강화, 충돌 파일 처리 정책 명문화
   ([OPER](../../09-tooling/0067-syncthing/guide.md), [RUN](../../09-tooling/0067-syncthing/runbook.md))
 
-### 10-communication
+#### 10-communication
 
 - [mail](../../../../../infra/10-communication/mail/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
   ([OPER](../../10-communication/0070-mail/guide.md), [RUN](../../10-communication/0070-mail/runbook.md))
 
-### 11-laboratory
+#### 11-laboratory
 
 - [dashboard](../../../../../infra/11-laboratory/dashboard/README.md): 실험성 대시보드 접근정책(SSO/IP allowlist) 적용, 만료 정책(자동 종료) 추가
   ([OPER](../../11-laboratory/0071-homer-dashboard/guide.md), [RUN](../../11-laboratory/0071-homer-dashboard/runbook.md))
@@ -273,6 +208,73 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   ([OPER](../../11-laboratory/0075-portainer/guide.md), [RUN](../../11-laboratory/0075-portainer/runbook.md))
 - [redisinsight](../../../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
   ([OPER](../../11-laboratory/0076-redisinsight/guide.md), [RUN](../../11-laboratory/0076-redisinsight/runbook.md))
+
+
+## Exceptions
+
+- 실험성 서비스(`11-laboratory`)는 제한적 예외 허용 가능
+  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
+
+## Verification
+
+- Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
+- Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
+- 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
+- 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
+- 운영 갭 점검(예시):
+  - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
+- 문서 추적성 점검:
+  - 서비스별 `infra/*/README.md` ↔ `docs/05.operations/*` ↔ `docs/05.operations/*` 상호 링크 확인
+
+### Baseline Audit Snapshot (2026-03-27)
+
+- 조사 대상 Compose 서비스: **39**
+- 갭 집계(서비스 단위):
+  - `healthcheck` 미구성: **6/39**
+  - `restart` 미구성: **21/39**
+  - `no-new-privileges` 미구성: **37/39**
+  - 자원 제한(`cpus`/`memory`) 미구성: **37/39**
+  - `secrets` 미구성: **16/39**
+- 추가 관찰:
+  - workflow tier의 미구현 서비스 문서는 active operations chain에서 제거하고 archive ledger로만 추적한다.
+
+### Common Template Coverage Snapshot (2026-03-28)
+
+- 기준 템플릿: [infra/common-optimizations.yml](../../../../../infra/common-optimizations.yml)
+- 템플릿 기준선:
+  - 보안: `no-new-privileges`, `cap_drop: [ALL]` (`x-security-base`)
+  - 재시작: `restart: unless-stopped` (`x-restart-default`)
+  - 자원 상한: `x-resource-low/med/high/db` (`cpus`, `mem_limit`)
+- 적용 커버리지:
+  - 서비스 디렉터리 기준: **39/39 (100%)**
+  - Compose 파일 기준: **43/43 (100%)**
+- 미적용 서비스(서비스 기준): **없음 (0건)**
+- 보조 Compose 적용 상태(서비스 수 미산입):
+  - [opensearch cluster compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml): **적용 완료**
+- 의도된 템플릿 예외:
+  - SSoT: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
+  - 운영 정책: [common-optimizations-template-exceptions.md](../0001-common-optimizations-template-exceptions/policy.md)
+
+### Quick Win Enforcement Snapshot (2026-03-28)
+
+- 기준: `PLN-QW-001 ~ PLN-QW-005`
+- 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
+- 통합 Compose 기준 결과(`total services=19`):
+  - `restart` 누락: `0`
+  - `healthcheck` 누락: `0` (예외 반영 후)
+  - `no-new-privileges` 누락: `0`
+  - `cpus`/`mem_limit` 누락: `0`
+  - `secrets` 누락: `0` (예외 반영 후)
+- 승인 예외:
+  - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init` (one-shot init job)
+  - `secrets`: `etcd-1`, `etcd-2`, `etcd-3` (auth-disabled cluster bootstrap mode)
+  - 상세 정의: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
+
+
+## Review Cadence
+
+- 월 1회 정기 검토
+- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
 
 ## Traceability
 

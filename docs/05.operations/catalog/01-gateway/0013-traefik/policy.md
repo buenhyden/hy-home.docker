@@ -47,6 +47,14 @@ updated: 2026-08-11
   - 비게이트웨이 소유 라우터에 전역 강제 적용
   - BasicAuth 제거 또는 평문 인증정보 사용
 
+### AI Agent Policy
+
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
+- **Log / Trace Retention**: gateway access/error 로그는 observability 정책 준수
+- **Safety Incident Thresholds**: 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차 수행
+
+
 ## Exceptions
 
 - 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
@@ -61,13 +69,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 점검
 - Traefik 버전 변경/라우터 추가 시 수시 점검
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
-- **Log / Trace Retention**: gateway access/error 로그는 observability 정책 준수
-- **Safety Incident Thresholds**: 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차 수행
 
 ## Traceability
 

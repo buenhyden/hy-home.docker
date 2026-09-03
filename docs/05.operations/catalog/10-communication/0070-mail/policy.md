@@ -42,11 +42,12 @@ updated: 2026-08-11
   - 인증되지 않은 릴레이(Open Relay) 설정은 엄격히 금지됨.
   - 서비스 로컬 standalone compose render를 root readiness evidence로 사용하는 행위.
 
-## Persistence & Backups
+### Persistence & Backups
 
 - **Data Retention**: Stalwart의 메일 데이터는 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`가 바인드된 `stalwart-data` 볼륨에 보존됩니다.
 - **Backup Schedule**: 현재 compose에는 백업 스케줄이 선언되어 있지 않다. 운영 승격 전 백업/복구 방식과 evidence를 별도 승인해야 한다.
 - **MailHog Data**: MailHog는 인메모리 저장소를 사용하므로 별도의 데이터 보존 정책을 두지 않습니다.
+
 
 ## Exceptions
 

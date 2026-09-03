@@ -45,6 +45,12 @@ updated: 2026-08-11
   - secret 값을 문서, 로그, task evidence, PR 본문에 기록하는 것
   - delete topic, partition reassignment, retention 축소 같은 데이터 영향 작업을 승인/evidence 없이 실행하는 것
 
+### AI Agent Policy
+
+- **Automated Topic Creation**: 자동 생성은 `kafka-init` compose 선언 또는 승인된 task evidence로만 허용한다.
+- **Health Guardrails**: 복제 오류 발생 시 AI Agent는 destructive topic mutation을 수행하지 않고 runbook evidence capture와 escalation을 우선한다.
+
+
 ## Exceptions
 
 - 단기 성능 테스트용 토픽 또는 dev-only topic은 owner, 만료 기준, cleanup 책임을 task evidence에 기록한 경우 예외로 허용한다.
@@ -61,11 +67,6 @@ updated: 2026-08-11
 ## Review Cadence
 
 - Quarterly 또는 Kafka compose, topic policy, Schema Registry, Kafbat UI route 변경 시 검토.
-
-## AI Agent Policy Section
-
-- **Automated Topic Creation**: 자동 생성은 `kafka-init` compose 선언 또는 승인된 task evidence로만 허용한다.
-- **Health Guardrails**: 복제 오류 발생 시 AI Agent는 destructive topic mutation을 수행하지 않고 runbook evidence capture와 escalation을 우선한다.
 
 ## Traceability
 

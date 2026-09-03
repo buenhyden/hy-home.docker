@@ -60,6 +60,19 @@ updated: 2026-08-11
   - secret guard가 없는 Loki/Tempo object storage 연결
   - 정책 미연계 확장 실행
 
+### Catalog Expansion Approval Gates
+
+- **Prometheus 승인 조건**:
+  - scrape budget 및 rule evaluation 지연 예산 정의
+  - remote_write 계층화 운영 절차 준비
+- **Loki/Tempo 승인 조건**:
+  - cardinality/sampling 가드레일 문서화
+  - retention/compaction 정책과 복구 절차 연동
+- **Alloy 승인 조건**:
+  - 신규 서비스 온보딩 템플릿 표준화
+  - 파이프라인 모듈 경계와 소유권 명시
+
+
 ## Exceptions
 
 - 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
@@ -77,18 +90,6 @@ updated: 2026-08-11
 
 - 월 1회 정기 검토
 - 관측성 주요 버전 변경/보안 이슈 발생 시 수시 검토
-
-## Catalog Expansion Approval Gates
-
-- **Prometheus 승인 조건**:
-  - scrape budget 및 rule evaluation 지연 예산 정의
-  - remote_write 계층화 운영 절차 준비
-- **Loki/Tempo 승인 조건**:
-  - cardinality/sampling 가드레일 문서화
-  - retention/compaction 정책과 복구 절차 연동
-- **Alloy 승인 조건**:
-  - 신규 서비스 온보딩 템플릿 표준화
-  - 파이프라인 모듈 경계와 소유권 명시
 
 ## Traceability
 
