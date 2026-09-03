@@ -213,13 +213,23 @@ def validate_repository_contracts(
             _index_membership_findings(root, active_registry, records)
         )
         for record in records:
+            if record.artifact_type == "template-source" and not record.parse_error:
+                # A template's placeholders are correct for a template, so its
+                # general document validation stays out. Its status is not
+                # exempt: a template seeds the state every document copied from
+                # it starts in, and `invalid-template-status` was unreachable
+                # from this route while the whole record was skipped.
+                findings.extend(
+                    finding
+                    for finding in validate_record(record, profiles, manifest)
+                    if finding.code == "invalid-template-status"
+                )
+                continue
             # Gating on `status == "active"` made `invalid-status` unreachable:
             # a document with a status outside its lifecycle is by definition
             # not active, so the check that would catch it never ran. Template
             # sources keep their own route, because a template's placeholders
             # are correct for a template and invalid for an authored document.
-            if record.artifact_type == "template-source" and not record.parse_error:
-                continue
             findings.extend(
                 finding
                 for finding in validate_record(record, profiles, manifest)
