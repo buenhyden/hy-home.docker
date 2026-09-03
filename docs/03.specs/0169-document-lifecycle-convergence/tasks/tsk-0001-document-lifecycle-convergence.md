@@ -75,6 +75,14 @@ the generated `Traceability` sections added their own.
 `check-document-metadata.py --mode check-contracts` reports zero violations
 under the newly enforced contract.
 
+Final all-files QA on a clean linked worktree:
+`scripts/validation/run-agent-precommit-all-files.sh` reports
+`hook_result=passed hook_exit=0` with `changed_count=0` and
+`unexpected_count=0`. Its first run rewrote 93 documents to remove a double
+blank line the section transforms left before each heading, plus two
+outstanding `ruff-format` wraps; those are commit `32939f20` and the rerun above
+is clean.
+
 One load-dependent test failure was observed twice across five full-gate runs
 and is not attributed to this work:
 `tests.lib.ops.test_postgres_logical_upgrade_rehearsal.test_timeout_still_cleans`
