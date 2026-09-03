@@ -8,6 +8,9 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.metadata import reference as reference_module
+from scripts.lib.document_governance.metadata.heading import (
+    extract_markdown_headings,
+)
 from scripts.lib.document_governance.metadata.profile import (
     classify_registered_path,
 )
@@ -388,3 +391,44 @@ class IndexMembershipTests(unittest.TestCase):
                     == member_profile
                 ]
                 self.assertTrue(governed, f"{index_path} governs no document")
+
+
+class ReadmeSectionProfileTests(unittest.TestCase):
+    """Sections come from the document's own profile, not from `readme`."""
+
+    def test_every_readme_profile_that_declares_sections_is_satisfied(self) -> None:
+        registry = metadata.load_registry()
+        checked = 0
+        for path in ROOT.glob("**/README.md"):
+            relative = path.relative_to(ROOT).as_posix()
+            if relative.startswith((".git/", ".worktrees/", "node_modules/")):
+                continue
+            profile_id = classify_registered_path(relative, registry)
+            if profile_id is None:
+                continue
+            required = registry.profiles.get(profile_id, {}).get(
+                "required_sections", ()
+            )
+            if not required:
+                continue
+            checked += 1
+            _, h2 = extract_markdown_headings(
+                path.read_text(encoding="utf-8")
+            )
+            for section in required:
+                with self.subTest(path=relative, section=section):
+                    self.assertIn(f"## {section}", h2)
+        # A profile-driven check that inspects nothing passes vacuously.
+        self.assertGreater(checked, 100, "too few READMEs carry a section contract")
+
+    def test_profiles_beyond_readme_declare_sections(self) -> None:
+        """The rule is only worth enforcing if other profiles use it."""
+
+        registry = metadata.load_registry()
+        with_sections = {
+            profile_id
+            for profile_id, profile in registry.profiles.items()
+            if profile.get("required_sections")
+        }
+        self.assertIn("readme", with_sections)
+        self.assertTrue(with_sections - {"readme"})

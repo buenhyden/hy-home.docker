@@ -323,12 +323,18 @@ def validate_repository_contracts(
         if registry_native:
             active_registry = profiles.get("_registry")
             assert isinstance(active_registry, DocumentRegistry)
-            if classify_registered_path(path.as_posix(), active_registry) != "readme":
-                # Specialized package/domain READMEs remain in the bounded
-                # legacy corpus until Task 3 supplies their Registry metadata.
+            readme_profile = classify_registered_path(
+                path.as_posix(), active_registry
+            )
+            if readme_profile is None:
                 continue
+            # Each README profile declares its own required_sections. Checking
+            # them all against the `readme` profile's list would have been
+            # wrong, so the previous code checked only `readme` documents and
+            # skipped the other 131, leaving every other profile's declared
+            # sections unenforced.
             _, h2 = extract_markdown_headings(text)
-            raw_readme = active_registry.profiles.get("readme", {})
+            raw_readme = active_registry.profiles.get(readme_profile, {})
             required_sections = raw_readme.get("required_sections", ())
             if isinstance(required_sections, Sequence) and not isinstance(
                 required_sections, (str, bytes)
