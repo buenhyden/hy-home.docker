@@ -64,27 +64,16 @@ def _validate_template_source(
     target_type = role.get("artifact_profile")
     if not isinstance(target_type, str):
         return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
-    if target_type == "readme":
-        expected = {
-            "type": document_type("readme"),
-            "status": "draft",
-        }
-        return (
-            []
-            if record.metadata == expected
-            else [
-                _finding(
-                    record,
-                    "invalid-template-metadata",
-                    "README source metadata must match the registered README template envelope",
-                )
-            ]
-        )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
     if not isinstance(target_profile, dict):
         return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
     placeholders = _template_placeholder_values(profiles)
+    common_contract, _ = _profile_mapping(profiles)
+    required_placeholder_keys = set(
+        common_contract.get("template_required_placeholders", ())
+    )
+    registered_placeholder_values = set(placeholders.values())
     findings: list[Finding] = []
     if _declares_provider_binding(target_profile):
         # The provider runtime owns this surface, so the guided document
@@ -137,7 +126,12 @@ def _validate_template_source(
         )
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
-    if "parent_ids" in forbidden and "parent_ids" not in record.metadata:
+    # `forbidden` is empty for every profile, so testing it here made the
+    # exemption unreachable and demanded `parent_ids` from twelve templates
+    # whose target profile does not declare the key at all. Declaration is the
+    # thing that decides whether a template should carry it.
+    declares_parents = "parent_ids" in required or "parent_ids" in optional
+    if not declares_parents and "parent_ids" not in record.metadata:
         pass
     elif parents is None:
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids must be a placeholder list"))
@@ -156,8 +150,34 @@ def _validate_template_source(
         placeholder = placeholders.get(key)
         if placeholder is None:
             continue
-        if record.metadata.get(key) != placeholder:
-            findings.append(_finding(record, "invalid-template-placeholder", f"{key} must use the Stage 99 placeholder"))
+        value = record.metadata.get(key)
+        if key in required_placeholder_keys:
+            if value != placeholder:
+                findings.append(
+                    _finding(
+                        record,
+                        "invalid-template-placeholder",
+                        f"{key} must use the Stage 99 placeholder",
+                    )
+                )
+            continue
+        # Other keys may be fixed by the profile -- a Spec template's layer is
+        # always `specs`. Demanding the placeholder there reported 22 templates
+        # that were correct. Only a placeholder-shaped value is constrained,
+        # and then only to be one the Registry actually registers.
+        if (
+            isinstance(value, str)
+            and value.startswith("<")
+            and value.endswith(">")
+            and value not in registered_placeholder_values
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-template-placeholder",
+                    f"{key} uses an unregistered placeholder: {value}",
+                )
+            )
     return sorted(set(findings))
 
 

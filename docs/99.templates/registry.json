@@ -81,6 +81,10 @@
       "work-profile": "<work-profile>",
       "year": "<year>"
     },
+    "template_required_placeholders": [
+      "title",
+      "owner"
+    ],
     "terminal_statuses": [
       "superseded",
       "archived"
