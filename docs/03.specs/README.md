@@ -82,6 +82,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0166 | [Formatting Authority Convergence](./0166-formatting-authority-convergence/spec.md) | completed outcome Spec with retained [Plan](./0166-formatting-authority-convergence/plan.md) and [Task](./0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md) |
 | SPEC-0167 | [Quality Gate Convergence](./0167-quality-gate-convergence/spec.md) | completed outcome Spec with retained [Plan](./0167-quality-gate-convergence/plan.md) and [Task](./0167-quality-gate-convergence/tasks/tsk-0001-quality-gate-convergence.md) |
 | SPEC-0168 | [Entrypoint README Registration](./0168-entrypoint-readme-registration/spec.md) | completed outcome Spec with retained [Plan](./0168-entrypoint-readme-registration/plan.md) and [Task](./0168-entrypoint-readme-registration/tasks/tsk-0001-entrypoint-readme-registration.md) |
+| SPEC-0169 | [Document Lifecycle Convergence](./0169-document-lifecycle-convergence/spec.md) | active Spec with [Plan](./0169-document-lifecycle-convergence/plan.md) and [Task](./0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 
 ## Role Contract
 

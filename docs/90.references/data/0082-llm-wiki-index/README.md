@@ -359,6 +359,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0168-entrypoint-readme-registration/plan.md](../../../03.specs/0168-entrypoint-readme-registration/plan.md) | Markdown reference |
 | [docs/03.specs/0168-entrypoint-readme-registration/spec.md](../../../03.specs/0168-entrypoint-readme-registration/spec.md) | Markdown reference |
 | [docs/03.specs/0168-entrypoint-readme-registration/tasks/tsk-0001-entrypoint-readme-registration.md](../../../03.specs/0168-entrypoint-readme-registration/tasks/tsk-0001-entrypoint-readme-registration.md) | Markdown reference |
+| [docs/03.specs/0169-document-lifecycle-convergence/plan.md](../../../03.specs/0169-document-lifecycle-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0169-document-lifecycle-convergence/spec.md](../../../03.specs/0169-document-lifecycle-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md](../../../03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
