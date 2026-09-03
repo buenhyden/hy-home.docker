@@ -14,6 +14,13 @@
 #   *.py            ruff format, pinned by ruff.toml
 #   *.sh            shellcheck
 #   Dockerfile*     hadolint
+#   *.ts, *.tsx     eslint, run by the frontend-lint gate on the Next.js
+#   *.js, *.jsx     project; no other JavaScript is tracked here
+#
+# One type has no owner: `examples/sample-web-service/site/index.html`. Prettier
+# was the only tool that reached it, so removing Prettier left it unformatted
+# rather than reformatted by something else. Give HTML an owner before adding
+# more of it.
 #
 # Ignoring everything keeps that ownership single. Narrow this file only
 # together with a tracked Prettier invocation that says what it owns.

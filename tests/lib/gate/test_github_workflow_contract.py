@@ -18,6 +18,19 @@ from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
+
+
+def _bootstrap_program() -> str:
+    """Read the bootstrap command from the contract, never from a copy here."""
+
+    sys.path.insert(0, str(ROOT))
+    try:
+        from scripts.lib.gate.ci_gate_contract import CI_DEPENDENCY_BOOTSTRAP
+    finally:
+        sys.path.remove(str(ROOT))
+    return CI_DEPENDENCY_BOOTSTRAP
+
+
 REQUIRED_CI_JOBS = frozenset(
     {
         "validation-changed",
@@ -440,7 +453,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     @staticmethod
     def _static_gate_profile(program: str) -> str:
-        if program == "python3 -m pip install -r scripts/requirements.txt":
+        if program == _bootstrap_program():
             return "bootstrap"
         match = re.fullmatch(
             r"python3 scripts/validation/run-ci-gate\.py --profile (changed|full)",
@@ -506,7 +519,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 document.path, document.data, document.data["jobs"], contract
             ),
         )
-        bootstrap = "python3 -m pip install -r scripts/requirements.txt"
+        bootstrap = self.module.CI_DEPENDENCY_BOOTSTRAP
         for job_id, profile in (
             ("validation-changed", "changed"),
             ("validation-full", "full"),
@@ -567,8 +580,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     step = next(
                         step
                         for step in steps
-                        if step.get("run")
-                        == "python3 -m pip install -r scripts/requirements.txt"
+                        if step.get("run") == self.module.CI_DEPENDENCY_BOOTSTRAP
                     )
                     if key == "checkout-order":
                         steps.remove(step)

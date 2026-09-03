@@ -1,6 +1,9 @@
 # Shared shellcheck defaults for local runs and pre-commit.
-# Keep severity aligned with `.pre-commit-config.yaml`.
+#
+# `severity` is a command-line flag, not an rc directive: shellcheck silently
+# ignores unknown keys here, so a `severity=warning` line looked like a second
+# owner while changing nothing. Severity is owned solely by the `shellcheck`
+# hook arguments in `.pre-commit-config.yaml`.
 
-severity=warning
 external-sources=true
 source-path=SCRIPTDIR

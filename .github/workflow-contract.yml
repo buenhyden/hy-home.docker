@@ -303,8 +303,7 @@
       ],
       "opaque": false,
       "children": [
-        "leaf.docs-implementation-alignment",
-        "leaf.docs-qa-gate-recommendations"
+        "leaf.docs-implementation-alignment"
       ]
     },
     {
@@ -747,27 +746,6 @@
       ],
       "opaque": true,
       "suite_key": "operations-catalog"
-    },
-    {
-      "gate_id": "leaf.docs-qa-gate-recommendations",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "publish-qa-recommendations"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [
-        "EVENT_NAME",
-        "PR_BASE_SHA",
-        "PUSH_BEFORE_SHA",
-        "GITHUB_STEP_SUMMARY"
-      ],
-      "timeout_minutes": 5,
-      "profiles": [
-        "ci"
-      ],
-      "opaque": true,
-      "suite_key": "docs-qa-gate-recommendations"
     },
     {
       "gate_id": "leaf.docs-traceability",
@@ -1234,8 +1212,7 @@
       "cwd": ".",
       "allowed_env_keys": [
         "CI",
-        "GITHUB_ACTIONS",
-        "SKIP"
+        "GITHUB_ACTIONS"
       ],
       "timeout_minutes": 20,
       "profiles": [
@@ -1953,6 +1930,7 @@
         "ci.frontend-quality",
         "ci.storybook-coverage",
         "ci.zizmor",
+        "leaf.pre-commit",
         "leaf.repository-integrity-regressions"
       ]
     },

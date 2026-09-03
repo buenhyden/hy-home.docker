@@ -16,7 +16,6 @@ node_modules/
 dist/
 build/
 *.log
-.env
 .env.local
 .env.production
 npm-debug.log
@@ -52,8 +51,6 @@ sessions/
 uploads/
 examples/.generated/
 .history/
-
-# Archive
 
 # Example
 
@@ -107,9 +104,6 @@ volumes/
 .gstack/
 
 
-!graphify-out/graph.html
-!graphify-out/GRAPH_REPORT.md
-!graphify-out/graph.json
 # Graphify is optional generated intelligence for local exploration.
 graphify-out/.graphify*
 
@@ -122,6 +116,8 @@ graphify-out/manifest.json
 # local token tracking, not useful to share
 graphify-out/cost.json
 
+# The tracked snapshots. These negations come last so they override every
+# graphify rule above them.
 !graphify-out/graph.html
 !graphify-out/GRAPH_REPORT.md
 !graphify-out/graph.json

@@ -73,12 +73,17 @@ Quality dimensions:
 - **Remote (GitHub CI)**: the ultimate SSoT quality gate. Heavy analysis such as
   E2E, Zizmor SARIF upload, and SonarQube belongs here.
 - **CI-only pre-commit**: `scripts/validation/run-ci-precommit.sh` accepts no
-  arguments or Agent-wrapper variables, requires `GITHUB_ACTIONS=true` and
-  `CI=true`, preserves `SKIP=eslint-nextjs`, and executes the exact pinned CI
-  command. It is not a local or Agent authorization path.
-- **Anti-duplication**: do not execute the same heavy workloads redundantly. If
-  a dedicated CI job exists for a task, such as `zizmor` or `eslint`, skip it in
-  the CI `pre-commit` runner.
+  arguments, no Agent-wrapper variables, and no caller-supplied `SKIP`. It
+  requires `GITHUB_ACTIONS=true` and `CI=true`, sets its own skip list, and
+  executes the exact pinned CI command. It is not a local or Agent
+  authorization path. The public gate reaches it as the `leaf.pre-commit`
+  root of the `repository-integrity` suite, which is the changed-profile
+  fallback, so formatting and linting gate every push and pull request.
+- **Anti-duplication**: do not execute the same heavy workloads redundantly. A
+  task with a dedicated gate leaf is skipped in the CI `pre-commit` runner. The
+  `public-validation-changed` and `public-validation-full` hooks are skipped
+  for a second reason: the gate invokes the runner, so running them from inside
+  it would make the two orchestrators call each other without end.
 
 ## 5. Change-Type Verification Matrix
 

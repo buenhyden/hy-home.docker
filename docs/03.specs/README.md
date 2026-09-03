@@ -80,6 +80,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0164 | [Lifecycle Vocabulary Alignment](./0164-lifecycle-vocabulary-alignment/spec.md) | completed outcome Spec with retained [Plan](./0164-lifecycle-vocabulary-alignment/plan.md) and [Task](./0164-lifecycle-vocabulary-alignment/tasks/tsk-0001-vocabulary-alignment.md) |
 | SPEC-0165 | [Template Contract Enforcement](./0165-template-contract-enforcement/spec.md) | completed outcome Spec with retained [Plan](./0165-template-contract-enforcement/plan.md) and [Task](./0165-template-contract-enforcement/tasks/tsk-0001-template-contract.md) |
 | SPEC-0166 | [Formatting Authority Convergence](./0166-formatting-authority-convergence/spec.md) | completed outcome Spec with retained [Plan](./0166-formatting-authority-convergence/plan.md) and [Task](./0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md) |
+| SPEC-0167 | [Quality Gate Convergence](./0167-quality-gate-convergence/spec.md) | active outcome Spec with retained [Plan](./0167-quality-gate-convergence/plan.md) and [Task](./0167-quality-gate-convergence/tasks/tsk-0001-quality-gate-convergence.md) |
 
 ## Role Contract
 

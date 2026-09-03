@@ -351,6 +351,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0166-formatting-authority-convergence/plan.md](../../../03.specs/0166-formatting-authority-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0166-formatting-authority-convergence/spec.md](../../../03.specs/0166-formatting-authority-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md](../../../03.specs/0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md) | Markdown reference |
+| [docs/03.specs/0167-quality-gate-convergence/plan.md](../../../03.specs/0167-quality-gate-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0167-quality-gate-convergence/spec.md](../../../03.specs/0167-quality-gate-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0167-quality-gate-convergence/tasks/tsk-0001-quality-gate-convergence.md](../../../03.specs/0167-quality-gate-convergence/tasks/tsk-0001-quality-gate-convergence.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

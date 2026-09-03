@@ -44,9 +44,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Install validation dependencies
-        # The runner imports the declared libraries before planning any gate.
+        # The runner imports the declared libraries before planning any gate,
+        # and the `pre-commit` gate leaf needs its own pinned runner.
         # Bootstrap is CI-only; local gate execution never installs packages.
-        run: python3 -m pip install -r scripts/requirements.txt
+        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
       - name: Run changed public validation suites
         run: python3 scripts/validation/run-ci-gate.py --profile changed
 
@@ -77,7 +78,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
       - name: Install validation dependencies
-        run: python3 -m pip install -r scripts/requirements.txt
+        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
       - name: Run all public validation suites
         run: python3 scripts/validation/run-ci-gate.py --profile full
       - name: Upload SARIF file

@@ -96,8 +96,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             bootstrap = [
                 i
                 for i, step in enumerate(steps)
-                if step.get("run")
-                == "python3 -m pip install -r scripts/requirements.txt"
+                if step.get("run") == contract.CI_DEPENDENCY_BOOTSTRAP
             ]
             self.assertEqual(len(bootstrap), 1, name)
             self.assertLess(bootstrap[0], runner_index)
@@ -839,11 +838,25 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "scripts/validation/run-agent-precommit-all-files.sh"
             ),
         )
+        # These exact pairs are registered internal gate invocations rather than
+        # validator rebinds, so the parity check admits them by design. Every
+        # other (path, argv) combination below must still be rejected, which is
+        # what keeps `run-ci-precommit.sh` from being reachable with arguments.
+        admitted_pairs = {
+            (runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",)),
+            (pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"), ()),
+        }
+        self.assertTrue(
+            admitted_pairs.issubset(
+                {(path, argv) for path in forbidden_paths for argv in ((), ("check-diff-hygiene",))}
+                | {(runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",))}
+            )
+        )
         for context in runner.ExecutionContext:
             for path in forbidden_paths:
                 for argv in ((), ("check-diff-hygiene",)):
-                    if path == runner._INTERNAL_ADAPTER_PATH and argv:
-                        continue  # This exact internal adapter is admitted.
+                    if (path, argv) in admitted_pairs:
+                        continue
                     with self.subTest(context=context, path=path, argv=argv):
                         with self.assertRaises(contract.GateContractError) as raised:
                             runner.build_public_validation_plan(
@@ -1211,13 +1224,13 @@ class DescriptorExecutionTests(unittest.TestCase):
                     _invocation(
                         "leaf.one",
                         "scripts/validation/one.py",
-                        allowed_env_keys=("EVENT_NAME",),
+                        allowed_env_keys=("HEAD_REF",),
                     ),
                     _invocation("leaf.two", "scripts/validation/two.py"),
                 ),
                 {
                     "PATH": "/usr/bin",
-                    "EVENT_NAME": "push",
+                    "HEAD_REF": "topic/example",
                     "GIT_DIR": "/tmp/hostile",
                     "GIT_CONFIG": "hostile",
                     "PYTHONPATH": "/tmp/hostile",

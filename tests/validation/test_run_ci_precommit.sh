@@ -50,10 +50,10 @@ expect_rejected "false GITHUB_ACTIONS" \
   env GITHUB_ACTIONS=false CI=true "$WRAPPER"
 expect_rejected "false CI" \
   env GITHUB_ACTIONS=true CI=false "$WRAPPER"
-expect_rejected "missing SKIP" \
-  env GITHUB_ACTIONS=true CI=true "$WRAPPER"
-expect_rejected "wrong SKIP" \
-  env GITHUB_ACTIONS=true CI=true SKIP=eslint "$WRAPPER"
+expect_rejected "caller-supplied SKIP" \
+  env GITHUB_ACTIONS=true CI=true SKIP=public-validation-changed "$WRAPPER"
+expect_rejected "empty caller-supplied SKIP" \
+  env GITHUB_ACTIONS=true CI=true SKIP= "$WRAPPER"
 expect_rejected "positional argument" \
   env GITHUB_ACTIONS=true CI=true "$WRAPPER" --all-files
 expect_rejected "TASK_FILE Agent-wrapper variable" \
@@ -66,10 +66,11 @@ env \
   FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
   GITHUB_ACTIONS=true \
   CI=true \
-  SKIP=eslint-nextjs \
   "$WRAPPER"
 
-expected_call=$'SKIP=eslint-nextjs\nrun\n--all-files\n--show-diff-on-failure'
+# The wrapper, not its caller, supplies the skip list, and it must name both
+# gate-owned hooks: either one left in would re-enter `run-ci-gate.py`.
+expected_call=$'SKIP=public-validation-changed,public-validation-full\nrun\n--all-files\n--show-diff-on-failure'
 actual_call="$(<"$CALL_FILE")"
 [[ "$actual_call" == "$expected_call" ]] || fail "command or SKIP differs from the contract"
 
@@ -80,7 +81,6 @@ env \
   FAKE_PRECOMMIT_EXIT=37 \
   GITHUB_ACTIONS=true \
   CI=true \
-  SKIP=eslint-nextjs \
   "$WRAPPER"
 child_exit=$?
 set -e

@@ -8,8 +8,13 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 
-[*.md]
-trim_trailing_whitespace = false
+# `ruff format` indents Python with four spaces; the [*] default of two would
+# make every editor fight the repository's only Python formatter.
+[*.py]
+indent_size = 4
 
+# Docker secret files are read verbatim; a trailing newline becomes part of the
+# secret. `pre-commit`'s end-of-file-fixer never sees them because they are
+# untracked.
 [secrets/**/*.txt]
 insert_final_newline = false

@@ -38,6 +38,8 @@ repos:
         require_serial: true
         files: \.md$
 
+  # Severity is a command-line flag only; `.shellcheckrc` cannot set it and
+  # silently ignores the key. This argument is its single owner.
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
     hooks:

@@ -61,17 +61,15 @@ _SECRET_ENV_SHAPE = re.compile(
     re.IGNORECASE,
 )
 _ADMITTED_ENV_KEYS = frozenset(
+    # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
+    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
-        "EVENT_NAME",
         "GITHUB_ACTIONS",
-        "GITHUB_STEP_SUMMARY",
         "HEAD_REF",
         "HYHOME_COMPOSE_PROFILES",
-        "PR_BASE_SHA",
         "PR_TITLE",
-        "PUSH_BEFORE_SHA",
-        "SKIP",
         "TEMPLATE_GATE_BASE",
     }
 )
@@ -85,12 +83,12 @@ _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _LOCAL_EXCLUDED_GATE_IDS = frozenset(
     {
         "leaf.dependency-vulnerability-audit",
-        "leaf.docs-qa-gate-recommendations",
         "leaf.frontend-build",
         "leaf.frontend-lint",
         "leaf.frontend-quality",
         "leaf.frontend-typecheck",
         "leaf.git-flow-contract",
+        "leaf.pre-commit",
         "leaf.storybook-coverage",
         "leaf.zizmor",
     }
@@ -135,6 +133,7 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
             ("--check",),
         ),
         ("scripts/validation/validate-docker-compose.sh", ()),
+        ("scripts/validation/run-ci-precommit.sh", ()),
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
 )

@@ -1094,18 +1094,20 @@ class CiGateContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 "CI",
-                "EVENT_NAME",
                 "GITHUB_ACTIONS",
-                "GITHUB_STEP_SUMMARY",
                 "HEAD_REF",
                 "HYHOME_COMPOSE_PROFILES",
-                "PR_BASE_SHA",
                 "PR_TITLE",
-                "PUSH_BEFORE_SHA",
-                "SKIP",
                 "TEMPLATE_GATE_BASE",
             },
             {key for node in registry.nodes for key in node.allowed_env_keys},
+        )
+        # The allowlist admits no key that no node declares.
+        self.assertEqual(
+            contract._ADMITTED_ENV_KEYS,
+            frozenset(
+                key for node in registry.nodes for key in node.allowed_env_keys
+            ),
         )
 
 

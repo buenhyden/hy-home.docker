@@ -14,7 +14,14 @@ from collections.abc import Mapping
 from scripts.lib.document_governance import suite_registry
 
 
-CI_DEPENDENCY_BOOTSTRAP = "python3 -m pip install -r scripts/requirements.txt"
+# One bootstrap step per job: the workflow contract admits exactly one
+# dependency install before the gate program, and `pre-commit` is now a
+# gate leaf rather than a job of its own, so both requirement files install
+# together here.
+CI_DEPENDENCY_BOOTSTRAP = (
+    "python3 -m pip install -r scripts/requirements.txt"
+    " -r scripts/requirements-pre-commit.txt"
+)
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
 _MAX_JSON_DEPTH = 256
@@ -68,10 +75,7 @@ def load_public_suite_registry(
 
 _INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
-    "ci.docs-implementation-alignment": (
-        "leaf.docs-implementation-alignment",
-        "leaf.docs-qa-gate-recommendations",
-    ),
+    "ci.docs-implementation-alignment": ("leaf.docs-implementation-alignment",),
     "ci.repo-contracts": (
         "leaf.repo-metadata-base",
         "setup.repo-python-dependencies",
@@ -285,17 +289,15 @@ _SECRET_ENV_SHAPE = re.compile(
 )
 _ENV_KEY = re.compile(r"[A-Z_][A-Z0-9_]*\Z")
 _ADMITTED_ENV_KEYS = frozenset(
+    # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
+    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
-        "EVENT_NAME",
         "GITHUB_ACTIONS",
-        "GITHUB_STEP_SUMMARY",
         "HEAD_REF",
         "HYHOME_COMPOSE_PROFILES",
-        "PR_BASE_SHA",
         "PR_TITLE",
-        "PUSH_BEFORE_SHA",
-        "SKIP",
         "TEMPLATE_GATE_BASE",
     }
 )
