@@ -19,22 +19,13 @@ updated: 2026-08-11
 
 ---
 
-## SeaweedFS Stack Health Procedure
-
-### Overview
+## Overview
 
 이 런북은 SeaweedFS data-profile stack의 compose render, master/volume/filer/S3 health, mount service 상태를 확인할 때 사용한다. master metadata restore, volume deletion, forced unmount, reshard operations are not verified recovery steps in this runbook.
 
 ### Purpose
 
 SeaweedFS 서비스 상태를 안전하게 확인하고, elevated mount behavior나 destructive recovery가 필요한 경우 escalation하도록 한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [SeaweedFS policy](policy.md)
-- **Guide**: [SeaweedFS guide](guide.md)
-- **Repo**: [SeaweedFS infrastructure](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
 
 ## When to Use
 
@@ -122,6 +113,24 @@ N/A - no verified destructive rollback or data recovery procedure is documented 
 ## Escalation
 
 Escalate to the owning operator when compose render fails, services remain unhealthy after documented checks, master status cannot be verified, mount behavior remains stale after approved restart, private data exposure risk appears, or destructive metadata/storage changes are required.
+
+## Traceability
+
+- Declared parent: [SeaweedFS Usage Guide](guide.md) (`GDE-0024`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
+
+## Traceability
+
+- Declared parent: [SeaweedFS Usage Guide](guide.md) (`GDE-0024`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
+
+## Traceability
+
+- Declared parent: [SeaweedFS Usage Guide](guide.md) (`GDE-0024`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
 
 ## Related Documents
 

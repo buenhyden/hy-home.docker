@@ -15,23 +15,15 @@ updated: 2026-09-01
 
 # Mail Recovery Runbook
 
-## Mail Recovery Procedure
+## Overview
 
 > Scope: Stalwart and MailHog static/runtime recovery for the optional `10-communication` mail compose.
-
-### Overview
 
 이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩의 검증 실패, UI 접근 실패, SMTP/IMAP 연결 실패가 발생했을 때 운영자가 증거를 보존하고 안전하게 복구 또는 에스컬레이션하기 위한 절차를 정의한다.
 
 ### Purpose
 
 메일 서비스 장애 원인을 확인하되, secret 노출, 데이터 삭제, 검증되지 않은 rollback 명령을 피하고 현재 root optional compose 경계에 맞는 evidence를 남긴다.
-
-### Canonical References
-
-- **Spec**: [Communication tier spec](../../../../02.architecture/descriptions/0010-communication-architecture.md)
-- **Policy**: [Mail operations policy](policy.md)
-- **Guide**: [Mail usage guide](guide.md)
 
 ## When to Use
 
@@ -95,6 +87,24 @@ N/A — no verified broad rollback or data restore procedure is documented yet. 
 ## Escalation
 
 verification이 실패하거나, 데이터 삭제/복구, production mail delivery 변경, DNS 변경, secret rotation, host firewall 변경이 필요하면 owning operator에게 에스컬레이션한다. 에스컬레이션에는 captured evidence, 최근 변경 내역, optional include 활성화 여부, 현재 rollback/recovery 상태를 포함한다.
+
+## Traceability
+
+- Declared parent: [Mail Usage Guide](guide.md) (`GDE-0070`)
+- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
+- Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
+
+## Traceability
+
+- Declared parent: [Mail Usage Guide](guide.md) (`GDE-0070`)
+- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
+- Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
+
+## Traceability
+
+- Declared parent: [Mail Usage Guide](guide.md) (`GDE-0070`)
+- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
+- Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
 
 ## Related Documents
 

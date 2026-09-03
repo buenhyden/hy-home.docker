@@ -52,6 +52,21 @@ Compliance is checked via the Airflow static/runtime checks documented in [Airfl
 
 - 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0051`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0051`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0051`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

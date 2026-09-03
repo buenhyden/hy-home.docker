@@ -19,21 +19,12 @@ updated: 2026-08-11
 
 이 런북은 Vault seal/unseal, raft 상태 점검, audit 활성/검증, Vault Agent 렌더 실패 복구, 안전 롤백 절차를 즉시 실행 가능 형태로 제공한다.
 
-## 03-Security Vault Procedure
-
 > Scope: Vault Secret Management Recovery & Maintenance
 
 ### Purpose
 
 - Vault 장애/오작동 상황에서 복구 시간을 줄인다.
 - 하드닝 계약 위반을 빠르게 진단하고 원복한다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0003-security-architecture.md)
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -119,6 +110,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [03-Security Vault Usage Guide](guide.md) (`GDE-0016`)
+- Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
+- Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
+
+## Traceability
+
+- Declared parent: [03-Security Vault Usage Guide](guide.md) (`GDE-0016`)
+- Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
+- Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
+
+## Traceability
+
+- Declared parent: [03-Security Vault Usage Guide](guide.md) (`GDE-0016`)
+- Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
+- Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
 
 ## Related Documents
 

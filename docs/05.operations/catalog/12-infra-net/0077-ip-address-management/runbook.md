@@ -15,24 +15,15 @@ updated: 2026-09-01
 
 # 0012 Standardize Infra Net Runbook
 
-## infra_net IP Mapping Validation and Update Procedure
+## Overview
 
 > Scope: 신규 서비스 추가 또는 기존 서비스 IP 변경 시 `infra_net` mapping과 compose 구조를 검증한다.
-
-### Overview
 
 이 런북은 `infra_net` 서브넷 내 신규 서비스 추가 및 기존 서비스 IP 변경 시의 운영 절차를 정의한다. 서브넷 정합성 유지와 충돌 방지가 주 목적이다.
 
 ### Purpose
 
 신속하고 정확하게 서브넷 내 고정 IP를 할당하거나 기존 설정의 오구성을 수정한다.
-
-### Canonical References
-
-- [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-- [infra_net architecture decision](../../../../02.architecture/decisions/0026-standardize-infra-net.md)
-- [IP management policy](policy.md)
-- [IP management guide](guide.md)
 
 ## When to Use
 
@@ -103,6 +94,24 @@ updated: 2026-09-01
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [0012 Standardize Infra Net Usage Guide](guide.md) (`GDE-0077`)
+- Governing authority: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Policy](policy.md) (`POL-0077`)
+
+## Traceability
+
+- Declared parent: [0012 Standardize Infra Net Usage Guide](guide.md) (`GDE-0077`)
+- Governing authority: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Policy](policy.md) (`POL-0077`)
+
+## Traceability
+
+- Declared parent: [0012 Standardize Infra Net Usage Guide](guide.md) (`GDE-0077`)
+- Governing authority: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Policy](policy.md) (`POL-0077`)
 
 ## Related Documents
 

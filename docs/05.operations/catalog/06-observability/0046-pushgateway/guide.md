@@ -102,6 +102,24 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Pushgateway Operations Policy](policy.md) (`POL-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0046`), [Runbook](runbook.md) (`RUN-0046`)
+
+## Traceability
+
+- Declared parent: [Pushgateway Operations Policy](policy.md) (`POL-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0046`), [Runbook](runbook.md) (`RUN-0046`)
+
+## Traceability
+
+- Declared parent: [Pushgateway Operations Policy](policy.md) (`POL-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0046`), [Runbook](runbook.md) (`RUN-0046`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

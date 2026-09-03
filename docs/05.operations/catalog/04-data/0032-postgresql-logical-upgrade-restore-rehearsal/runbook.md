@@ -25,7 +25,7 @@ updated: 2026-08-11
 - Backup capture와 restore/integrity를 별도 gate로 검증해야 할 때
 - Checksum mismatch, partial state, bad target major, 또는 timeout cleanup 동작을 재검증할 때
 
-## Trigger and Preconditions
+### Trigger and Preconditions
 
 | Trigger | Prerequisites | Safety conditions |
 | --- | --- | --- |
@@ -68,6 +68,11 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 | Automation candidate or invocation | Human or operator judgment boundary |
 | --- | --- |
 | `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` normal/check/negative envelope | Canonical verdict는 local synthetic rollback boundary일 뿐 deployment gate가 아니다. Pin, data class, storage, cleanup, remote, or live target 변경은 새 승인 없이 자동화하지 않는다. |
+
+## Traceability
+
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: none — `04-data/0032-postgresql-logical-upgrade-restore-rehearsal` holds this document alone.
 
 ## Related Documents
 

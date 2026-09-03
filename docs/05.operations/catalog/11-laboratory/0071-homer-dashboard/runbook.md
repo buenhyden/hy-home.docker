@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Laboratory Dashboard Recovery Runbook
 
-## Laboratory Dashboard Recovery Procedure
+## Overview
 
 > Scope: Homer dashboard static config, route hardening, and optional runtime evidence.
-
-### Overview
 
 이 런북은 optional Homer dashboard의 설정 오류, route hardening drift, UI 렌더링 실패를 진단하고 증거를 남기는 절차를 정의한다.
 
 ### Purpose
 
 Homer 설정을 검증하고, direct host port 재노출이나 SSO/allowlist 누락을 빠르게 확인하며, runtime 변경이 필요하면 승인된 범위로 분리한다.
-
-### Canonical References
-
-- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Policy**: [Dashboard policy](policy.md)
-- **Guide**: [Dashboard guide](guide.md)
 
 ## When to Use
 
@@ -88,6 +80,24 @@ If the observed failure requires deleting dashboard data, changing auth, or rest
 ## Escalation
 
 Escalate to the owning operator when verification fails, direct exposure appears, auth/allowlist changes are needed, or runtime restart/data mutation requires approval.
+
+## Traceability
+
+- Declared parent: [Laboratory Dashboard Usage Guide](guide.md) (`GDE-0071`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Policy](policy.md) (`POL-0071`)
+
+## Traceability
+
+- Declared parent: [Laboratory Dashboard Usage Guide](guide.md) (`GDE-0071`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Policy](policy.md) (`POL-0071`)
+
+## Traceability
+
+- Declared parent: [Laboratory Dashboard Usage Guide](guide.md) (`GDE-0071`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Policy](policy.md) (`POL-0071`)
 
 ## Related Documents
 

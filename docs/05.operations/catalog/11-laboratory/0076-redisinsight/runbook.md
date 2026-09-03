@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # RedisInsight Recovery Runbook
 
-## RedisInsight Recovery Procedure
+## Overview
 
 > Scope: RedisInsight route hardening, root-active admin profile evidence, and non-destructive connection diagnosis.
-
-### Overview
 
 이 런북은 RedisInsight UI 접속 실패, Redis/Valkey connection failure, route hardening drift를 진단하고 비파괴적 evidence를 남기는 절차를 정의한다.
 
 ### Purpose
 
 RedisInsight의 current image/route/storage boundary를 유지하면서 운영 캐시 직접 수정이나 data reset을 승인 없는 복구 절차로 수행하지 않도록 한다.
-
-### Canonical References
-
-- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Policy**: [RedisInsight policy](policy.md)
-- **Guide**: [RedisInsight guide](guide.md)
 
 ## When to Use
 
@@ -88,6 +80,24 @@ If data reset, volume deletion, cache mutation, credential rotation, or broad re
 ## Escalation
 
 Escalate to the owning operator when cache mutation, connection credential changes, data reset/delete, or auth/allowlist changes are required.
+
+## Traceability
+
+- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
+
+## Traceability
+
+- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
+
+## Traceability
+
+- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
 
 ## Related Documents
 

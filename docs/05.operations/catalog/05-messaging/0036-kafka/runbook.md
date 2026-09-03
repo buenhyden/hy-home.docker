@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 비파괴 점검, evidence capture, escalation 절차를 정의한다. Root-included dev Kafka는 단일 broker이며, full 3 broker Kafka compose는 root network/secret context가 필요한 service-local compose다.
 
-## Kafka Recovery & Maintenance Procedure (05-messaging)
-
 > Scope: Kafka Infrastructure
 
 > Step-by-step procedures for broker recovery, partition rebalancing, and system maintenance.
@@ -30,12 +28,6 @@ updated: 2026-08-11
 ### Purpose
 
 이 런북은 브로커 다운, 메시지 지연(Lag), 복제본 불일치 및 스키마 등록 오류를 신속히 해결하고 클러스터 상태를 정상으로 복구하는 것을 목적으로 한다.
-
-### Canonical References
-
-- [../../../02.architecture/descriptions/0005-messaging-architecture.md](../../../../02.architecture/descriptions/0005-messaging-architecture.md)
-- [../../../03.specs/006-messaging/spec.md](../../../../02.architecture/descriptions/0005-messaging-architecture.md)
-- [Kafka operations policy](policy.md)
 
 ## When to Use
 
@@ -140,6 +132,24 @@ N/A - no verified generic Kafka data rollback procedure is documented yet. Use t
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [Kafka Usage Guide](guide.md) (`GDE-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Policy](policy.md) (`POL-0036`)
+
+## Traceability
+
+- Declared parent: [Kafka Usage Guide](guide.md) (`GDE-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Policy](policy.md) (`POL-0036`)
+
+## Traceability
+
+- Declared parent: [Kafka Usage Guide](guide.md) (`GDE-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Policy](policy.md) (`POL-0036`)
 
 ## Related Documents
 

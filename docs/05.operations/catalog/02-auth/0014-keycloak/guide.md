@@ -71,6 +71,24 @@ updated: 2026-08-11
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Operations Policy](policy.md) (`POL-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Policy](policy.md) (`POL-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Operations Policy](policy.md) (`POL-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Policy](policy.md) (`POL-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Operations Policy](policy.md) (`POL-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Policy](policy.md) (`POL-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -15,11 +15,9 @@ updated: 2026-08-11
 
 # OpenSearch Recovery Runbook
 
-## OpenSearch Recovery Procedure
+## Overview
 
 > Scope: OpenSearch primary stack readiness, HTTPS health checks, and optional cluster variant evidence.
-
-### Overview
 
 이 런북은 OpenSearch primary stack 또는 optional cluster variant의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; cluster variant는 `opensearch-node1..3` service names를 사용한다.
 
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
 - primary stack과 cluster variant를 혼동하지 않는다.
 - index/shard 작업 전 snapshot or escalation evidence를 확보한다.
-
-### Canonical References
-
-- **Spec**: [Analytics spec](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **Policy**: [OpenSearch policy](policy.md)
-- **Guide**: [OpenSearch guide](guide.md)
 
 ## When to Use
 
@@ -115,6 +107,24 @@ N/A - no verified generic rollback procedure can restore OpenSearch index or sec
 ## Escalation
 
 Escalate when health remains red/unavailable, shard mutation is needed, secrets or certs are missing, or primary and cluster variant evidence conflict.
+
+## Traceability
+
+- Declared parent: [OpenSearch Usage Guide](guide.md) (`GDE-0019`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
+
+## Traceability
+
+- Declared parent: [OpenSearch Usage Guide](guide.md) (`GDE-0019`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
+
+## Traceability
+
+- Declared parent: [OpenSearch Usage Guide](guide.md) (`GDE-0019`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
 
 ## Related Documents
 

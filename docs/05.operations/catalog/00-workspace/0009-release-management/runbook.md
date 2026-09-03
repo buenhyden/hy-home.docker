@@ -19,20 +19,12 @@ updated: 2026-08-14
 
 이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 배포 자동화, GitHub branch protection, required check, Docker runtime, secret, `.env`, port, permission 동작을 변경하지 않는다.
 
-## Release Management Runbook Procedure
-
 > Scope: Release Management Runbook operational execution
 
 ### Purpose
 
 - Release Management Runbook 작업을 반복 가능하고 검증 가능한 절차로 수행한다.
 - 실행 전후 evidence, rollback 또는 escalation 기준을 명확히 남긴다.
-
-### Canonical References
-
-- [Operations index](../../../README.md)
-- **Policy**: N/A — no upstream source
-- **Guide**: N/A — no upstream source
 
 ## When to Use
 
@@ -213,6 +205,21 @@ updated: 2026-08-14
 
 - Escalate to the repository owner or responsible operator before creating tags, pushing release branches, changing branch protection, changing required checks, deploying, or mutating runtime state.
 - Escalate immediately if validation output suggests secret exposure, `.env` drift requiring value-bearing changes, or rollback evidence that cannot be corroborated from tracked docs.
+
+## Traceability
+
+- Declared parent: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
+
+## Traceability
+
+- Declared parent: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
+
+## Traceability
+
+- Declared parent: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
 
 ## Related Documents
 

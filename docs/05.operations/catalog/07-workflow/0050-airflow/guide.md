@@ -97,6 +97,24 @@ docker compose exec airflow-apiserver airflow dags list
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Airflow Operations Policy](policy.md) (`POL-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
+## Traceability
+
+- Declared parent: [Airflow Operations Policy](policy.md) (`POL-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
+## Traceability
+
+- Declared parent: [Airflow Operations Policy](policy.md) (`POL-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

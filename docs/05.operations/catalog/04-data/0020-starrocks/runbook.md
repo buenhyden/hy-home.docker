@@ -15,11 +15,9 @@ updated: 2026-08-11
 
 # StarRocks Recovery Runbook
 
-## StarRocks Recovery Procedure
+## Overview
 
 > Scope: StarRocks FE/BE readiness, BE registration evidence, and load retry boundaries.
-
-### Overview
 
 이 런북은 `starrocks-fe` 또는 `starrocks-be` healthcheck가 실패하거나 BE registration/load job 상태 확인이 필요할 때 사용한다. 현재 compose는 단일 FE/BE pair를 제공한다.
 
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - FE/BE service status를 current compose hostnames로 확인한다.
 - BE registration command와 healthcheck evidence를 보존한다.
 - load retry와 metadata mutation을 owner approval 없이 수행하지 않는다.
-
-### Canonical References
-
-- **Spec**: [Analytics spec](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **Policy**: [StarRocks policy](policy.md)
-- **Guide**: [StarRocks guide](guide.md)
 
 ## When to Use
 
@@ -113,6 +105,24 @@ N/A - no verified generic rollback procedure can restore StarRocks metadata or t
 ## Escalation
 
 Escalate when FE metadata appears inconsistent, BE registration repeatedly fails, load retry may duplicate data, or destructive data/metadata changes are required.
+
+## Traceability
+
+- Declared parent: [StarRocks Usage Guide](guide.md) (`GDE-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
+
+## Traceability
+
+- Declared parent: [StarRocks Usage Guide](guide.md) (`GDE-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
+
+## Traceability
+
+- Declared parent: [StarRocks Usage Guide](guide.md) (`GDE-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
 
 ## Related Documents
 

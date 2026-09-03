@@ -15,24 +15,15 @@ updated: 2026-08-11
 
 # Pushgateway Metrics Buffer Recovery Runbook
 
-## Pushgateway Metrics Buffer Recovery Procedure
+## Overview
 
 > Scope: stale metric cleanup, Pushgateway readiness checks, and in-memory buffer reset.
-
-### Overview
 
 이 런북은 Pushgateway 운영 중 발생할 수 있는 stale metric, metric group contamination, memory pressure, and push failure를 복구하기 위한 실행 절차를 정의한다.
 
 ### Purpose
 
 Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상적인 메트릭 데이터를 정제하여 가시성 품질을 확보한다.
-
-### Canonical References
-
-- ARD: [Observability architecture Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md)
-- Infrastructure: [Pushgateway infra README](../../../../../infra/06-observability/pushgateway/README.md)
-- Operation: [Pushgateway operations policy](policy.md)
-- Guide: [Pushgateway usage guide](guide.md)
 
 ## When to Use
 
@@ -129,6 +120,24 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, metric 삭제 범위가 불명확하거나, runtime config 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [Pushgateway Usage Guide](guide.md) (`GDE-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0046`), [Policy](policy.md) (`POL-0046`)
+
+## Traceability
+
+- Declared parent: [Pushgateway Usage Guide](guide.md) (`GDE-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0046`), [Policy](policy.md) (`POL-0046`)
+
+## Traceability
+
+- Declared parent: [Pushgateway Usage Guide](guide.md) (`GDE-0046`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0046`), [Policy](policy.md) (`POL-0046`)
 
 ## Related Documents
 

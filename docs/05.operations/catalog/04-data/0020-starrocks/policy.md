@@ -50,6 +50,21 @@ Manual FE metadata changes, backend add/drop operations, or destructive data cle
 - On StarRocks image, FE/BE volume, port, or BE registration command change
 - Monthly when load or schema examples are used as operating procedures
 
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
 ## Related Documents
 
 - [Operations policies index](../../../README.md)

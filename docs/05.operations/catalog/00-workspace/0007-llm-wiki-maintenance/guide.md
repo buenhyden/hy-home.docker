@@ -73,6 +73,21 @@ updated: 2026-08-14
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Policy](policy.md) (`POL-0007`), [Runbook](runbook.md) (`RUN-0007`)
+
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Policy](policy.md) (`POL-0007`), [Runbook](runbook.md) (`RUN-0007`)
+
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Policy](policy.md) (`POL-0007`), [Runbook](runbook.md) (`RUN-0007`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

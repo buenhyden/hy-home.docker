@@ -69,6 +69,21 @@ Ollama 추론 엔진 운영 전반:
 - **Quarterly**: 모델 포트폴리오/자원 정책 검토
 - **Per Model Change**: 모델 도입/교체 건별 검토
 
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Runbook](runbook.md) (`RUN-0056`)
+
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Runbook](runbook.md) (`RUN-0056`)
+
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Runbook](runbook.md) (`RUN-0056`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -21,9 +21,12 @@ updated: 2026-08-11
 
 이 런북은 `docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
-## Procedure: Syncthing Service Recovery (P2)
-
 > Procedures for recovering from Syncthing synchronization failures and connectivity issues.
+
+## When to Use
+
+- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
+- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
 ### Symptoms
 
@@ -31,6 +34,8 @@ updated: 2026-08-11
 - Devices appear as "Disconnected" or "Never Seen".
 - GUI inaccessible via `https://syncthing.${DEFAULT_URL}`.
 - High CPU usage on small nodes during disk scanning.
+
+## Procedure
 
 ### Diagnostic Steps
 
@@ -88,28 +93,6 @@ If the admin password is lost:
 2. Edit the file and remove the `<user>` and `<password>` values within the `<gui>` tag.
 3. Restart Syncthing; it will start without a password, and you can set a new one in the GUI.
 
-### Escalation Policy
-
-- **P1**: Critical sync failure for production resource data -> Notify SRE Team.
-- **P2**: Intermittent connectivity or "Out of Sync" for non-critical data -> Follow manual re-scan procedures.
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-
-## When to Use
-
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-## Procedure
-
 ### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
@@ -161,6 +144,21 @@ If the admin password is lost:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+- **P1**: Critical sync failure for production resource data -> Notify SRE Team.
+- **P2**: Intermittent connectivity or "Out of Sync" for non-critical data -> Follow manual re-scan procedures.
+
+## Traceability
+
+- Declared parent: [Syncthing Usage Guide](guide.md) (`GDE-0067`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0067`), [Policy](policy.md) (`POL-0067`)
+
+## Traceability
+
+- Declared parent: [Syncthing Usage Guide](guide.md) (`GDE-0067`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0067`), [Policy](policy.md) (`POL-0067`)
 
 ## Related Documents
 

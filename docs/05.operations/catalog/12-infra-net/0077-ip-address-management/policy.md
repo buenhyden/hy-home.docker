@@ -56,6 +56,21 @@ updated: 2026-09-01
 - **Monthly**: authoritative mapping table과 현재 Compose 파일 사이의 실태를 점검한다.
 - **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
 
+## Traceability
+
+- Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
+
+## Traceability
+
+- Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
+
+## Traceability
+
+- Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

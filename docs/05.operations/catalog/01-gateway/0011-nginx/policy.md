@@ -68,6 +68,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
 - **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
 
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Runbook](runbook.md) (`RUN-0011`)
+
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Runbook](runbook.md) (`RUN-0011`)
+
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Runbook](runbook.md) (`RUN-0011`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

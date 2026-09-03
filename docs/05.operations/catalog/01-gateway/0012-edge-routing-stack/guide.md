@@ -92,6 +92,21 @@ Runtime start/stop/reload actions are not part of this guide. Traefik runtime wo
 
 Runtime recovery is handled by [Traefik runbook](../0013-traefik/runbook.md) and [Nginx runbook](../0011-nginx/runbook.md).
 
+## Traceability
+
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
+
+## Traceability
+
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
+
+## Traceability
+
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

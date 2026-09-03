@@ -91,6 +91,21 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
   mapping, route, secret reference가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

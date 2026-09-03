@@ -58,6 +58,21 @@ N/A — 현재 승인된 예외 없음.
 
 - Semi-annually (6개월 단위 정기 보안 리뷰)
 
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Runbook](runbook.md) (`RUN-0075`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Runbook](runbook.md) (`RUN-0075`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Runbook](runbook.md) (`RUN-0075`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

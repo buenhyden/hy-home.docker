@@ -57,6 +57,21 @@ N/A — 현재 승인된 예외 없음.
 
 - Semi-annually (데이터 접근 권한 감사와 병행)
 
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Runbook](runbook.md) (`RUN-0076`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Runbook](runbook.md) (`RUN-0076`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0076`), [Runbook](runbook.md) (`RUN-0076`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -83,6 +83,21 @@ updated: 2026-08-11
 - **syncthing 승인 조건**:
   - 폴더 ACL/암호화 정책 및 충돌 처리 표준화
 
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Runbook](runbook.md) (`RUN-0063`)
+
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Runbook](runbook.md) (`RUN-0063`)
+
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Runbook](runbook.md) (`RUN-0063`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

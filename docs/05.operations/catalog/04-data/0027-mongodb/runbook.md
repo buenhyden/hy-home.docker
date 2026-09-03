@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # MongoDB Replica Set Triage Runbook
 
-## MongoDB Replica Set Triage Procedure
+## Overview
 
 > Scope: Triage MongoDB replica set health, init job results, Mongo Express route, and exporter readiness without destructive data actions.
-
-### Overview
 
 이 런북은 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 강제 선출, secondary data wipe, keyfile rotation, restore는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 
 ### Purpose
 
 MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고, destructive resync 또는 undocumented replica-set control이 운영 문서에 재유입되지 않도록 한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [MongoDB operations policy](policy.md)
-- **Guide**: [MongoDB usage guide](guide.md)
 
 ## When to Use
 
@@ -126,6 +118,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when no primary can be identified, `mongo-init` repeatedly fails, replica member state diverges from `mongodb-rep1`/`mongodb-rep2`/`mongodb-arbiter`, secret exposure risk appears, or any data operation is required. Include sanitized logs, member summary, rendered compose evidence, service states, and attempted steps.
+
+## Traceability
+
+- Declared parent: [MongoDB Usage Guide](guide.md) (`GDE-0027`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
+
+## Traceability
+
+- Declared parent: [MongoDB Usage Guide](guide.md) (`GDE-0027`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
+
+## Traceability
+
+- Declared parent: [MongoDB Usage Guide](guide.md) (`GDE-0027`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
 
 ## Related Documents
 

@@ -91,6 +91,21 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
   route, healthcheck, retention/capacity policy가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0047`), [Runbook](runbook.md) (`RUN-0047`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0047`), [Runbook](runbook.md) (`RUN-0047`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0047`), [Runbook](runbook.md) (`RUN-0047`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

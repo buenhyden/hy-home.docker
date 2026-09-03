@@ -54,6 +54,21 @@ N/A - no currently approved exceptions.
 - Review on MongoDB compose image/profile/secret/keyfile/replica-member changes.
 - Review during the Stage 05 operations documentation audit cadence.
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Runbook](runbook.md) (`RUN-0027`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Runbook](runbook.md) (`RUN-0027`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0027`), [Runbook](runbook.md) (`RUN-0027`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

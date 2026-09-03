@@ -15,25 +15,15 @@ updated: 2026-08-11
 
 # 09-Tooling Optimization Hardening Runbook
 
-## 09-Tooling Optimization Hardening Procedure
+## Overview
 
 > Scope: restore the documented hardening baseline for optional `09-tooling` compose leaves.
-
-### Overview
 
 이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, `infra_net` external 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
 
 ### Purpose
 
 service-local compose 단독 검증과 root optional context를 혼동하지 않고, 현재 구현에 맞는 하드닝 기준선을 재확인한다.
-
-### Canonical References
-
-- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Policy**: [Optimization hardening policy](policy.md)
-- **Guide**: [Optimization hardening guide](guide.md)
-- **Plan**: Optimization hardening plan
-- **Tasks**: Optimization hardening tasks
 
 ## When to Use
 
@@ -120,6 +110,24 @@ Use only the focused restore steps above. If service runtime, data mutation, or 
 ## Escalation
 
 Escalate to the tooling owner when hardening remains failed after focused restore, secret exposure risk appears, optional root context cannot be reconstructed, or runtime service changes are required.
+
+## Traceability
+
+- Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
+
+## Traceability
+
+- Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
+
+## Traceability
+
+- Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
 
 ## Related Documents
 

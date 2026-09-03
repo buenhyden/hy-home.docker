@@ -19,22 +19,13 @@ updated: 2026-08-11
 
 ---
 
-## MinIO Object Storage Health Procedure
-
-### Overview
+## Overview
 
 이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. optional cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
 
 ### Purpose
 
 `minio`와 `minio-create-buckets` 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [MinIO policy](policy.md)
-- **Guide**: [MinIO guide](guide.md)
-- **Repo**: [MinIO infrastructure](../../../../../infra/04-data/lake-and-object/minio/README.md)
 
 ## When to Use
 
@@ -122,6 +113,24 @@ N/A - no verified destructive rollback or data recovery procedure is documented 
 ## Escalation
 
 Escalate to the owning operator when compose render fails, required secrets are missing, service health remains failed after documented checks, bucket bootstrap fails, secret exposure risk appears, or destructive object/credential/storage changes are required.
+
+## Traceability
+
+- Declared parent: [MinIO Object Storage Usage Guide](guide.md) (`GDE-0023`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Policy](policy.md) (`POL-0023`)
+
+## Traceability
+
+- Declared parent: [MinIO Object Storage Usage Guide](guide.md) (`GDE-0023`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Policy](policy.md) (`POL-0023`)
+
+## Traceability
+
+- Declared parent: [MinIO Object Storage Usage Guide](guide.md) (`GDE-0023`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Policy](policy.md) (`POL-0023`)
 
 ## Related Documents
 

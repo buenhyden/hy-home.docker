@@ -49,6 +49,21 @@ updated: 2026-08-11
 - 문서 템플릿 변경 시 검토
 - 주요 운영 정책 변경 시 검토
 
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: none — `09-tooling/0060-iac-deployment` holds this document alone.
+
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: none — `09-tooling/0060-iac-deployment` holds this document alone.
+
+## Traceability
+
+- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: none — `09-tooling/0060-iac-deployment` holds this document alone.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

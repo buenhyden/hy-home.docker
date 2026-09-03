@@ -57,6 +57,21 @@ N/A - no currently approved exceptions.
 - Review on PostgreSQL cluster compose image/profile/secret/port/network/init/exporter changes.
 - Review during the Stage 05 operations documentation audit cadence.
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Runbook](runbook.md) (`RUN-0031`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Runbook](runbook.md) (`RUN-0031`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Runbook](runbook.md) (`RUN-0031`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

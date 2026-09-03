@@ -105,6 +105,24 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [n8n Operations Policy](policy.md) (`POL-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
+## Traceability
+
+- Declared parent: [n8n Operations Policy](policy.md) (`POL-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
+## Traceability
+
+- Declared parent: [n8n Operations Policy](policy.md) (`POL-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](policy.md) (`POL-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -65,6 +65,21 @@ Review on any change to MinIO compose services, image tag, profiles, network, se
 
 ---
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Runbook](runbook.md) (`RUN-0023`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Runbook](runbook.md) (`RUN-0023`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0023`), [Runbook](runbook.md) (`RUN-0023`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

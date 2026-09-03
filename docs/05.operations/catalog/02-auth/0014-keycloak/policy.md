@@ -65,6 +65,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
 - **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
 
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

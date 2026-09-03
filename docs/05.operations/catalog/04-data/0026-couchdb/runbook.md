@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # CouchDB Cluster Triage Runbook
 
-## CouchDB Cluster Triage Procedure
+## Overview
 
 > Scope: Triage CouchDB 3-node cluster health, cluster-init results, membership, and Traefik route assumptions.
-
-### Overview
 
 이 런북은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 수동 재조인, 데이터베이스 compaction, shard 변경, cookie 교체는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 
 ### Purpose
 
 CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구현에 없는 서비스명이나 secret control을 사용하지 않도록 한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [CouchDB operations policy](policy.md)
-- **Guide**: [CouchDB usage guide](guide.md)
 
 ## When to Use
 
@@ -125,6 +117,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when membership does not show the expected three nodes, cluster-init repeatedly fails, Traefik route assumptions diverge from compose labels, secret exposure risk appears, or any data operation is required. Include sanitized logs, membership summary, rendered compose evidence, service states, and attempted steps.
+
+## Traceability
+
+- Declared parent: [CouchDB Usage Guide](guide.md) (`GDE-0026`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
+
+## Traceability
+
+- Declared parent: [CouchDB Usage Guide](guide.md) (`GDE-0026`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
+
+## Traceability
+
+- Declared parent: [CouchDB Usage Guide](guide.md) (`GDE-0026`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
 
 ## Related Documents
 

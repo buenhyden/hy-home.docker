@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Dozzle Recovery Runbook
 
-## Dozzle Recovery Procedure
+## Overview
 
 > Scope: Dozzle route hardening, Docker socket read-only access, and log-stream evidence.
-
-### Overview
 
 이 런북은 Dozzle UI 접속 실패, 로그 스트림 중단, Docker socket 접근 오류가 발생했을 때 비파괴적으로 상태를 확인하고 복구 범위를 판단하는 절차를 정의한다.
 
 ### Purpose
 
 Dozzle의 read-only Docker socket 경계와 SSO/allowlist route 경계를 유지하면서 로그 기반 트러블슈팅 evidence를 확보한다.
-
-### Canonical References
-
-- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Policy**: [Dozzle policy](policy.md)
-- **Guide**: [Dozzle guide](guide.md)
 
 ## When to Use
 
@@ -89,6 +81,24 @@ If the observed failure requires changing Docker socket permissions beyond read-
 ## Escalation
 
 Escalate to the owning operator when socket permission changes, auth/allowlist changes, destructive actions, or runtime restarts outside Dozzle scope are required.
+
+## Traceability
+
+- Declared parent: [Dozzle Usage Guide](guide.md) (`GDE-0072`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
+
+## Traceability
+
+- Declared parent: [Dozzle Usage Guide](guide.md) (`GDE-0072`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
+
+## Traceability
+
+- Declared parent: [Dozzle Usage Guide](guide.md) (`GDE-0072`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
 
 ## Related Documents
 

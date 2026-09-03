@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
-## 02-Auth OAuth2 Proxy Procedure
-
 > Scope: OAuth2 Proxy ForwardAuth Recovery
 
 ### Purpose
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - 인증 경로 장애를 신속히 복구한다.
 - degraded-mode 수행/종료를 통제한다.
 - config lint 실패 시 안전하게 롤백한다.
-
-### Canonical References
-
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -119,6 +111,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [02-Auth OAuth2 Proxy Usage Guide](guide.md) (`GDE-0015`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Policy](policy.md) (`POL-0015`)
+
+## Traceability
+
+- Declared parent: [02-Auth OAuth2 Proxy Usage Guide](guide.md) (`GDE-0015`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Policy](policy.md) (`POL-0015`)
+
+## Traceability
+
+- Declared parent: [02-Auth OAuth2 Proxy Usage Guide](guide.md) (`GDE-0015`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Policy](policy.md) (`POL-0015`)
 
 ## Related Documents
 

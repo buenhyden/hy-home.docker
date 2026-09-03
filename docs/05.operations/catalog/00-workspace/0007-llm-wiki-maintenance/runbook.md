@@ -28,12 +28,6 @@ updated: 2026-08-14
 - LLM Wiki Maintenance Runbook 작업을 반복 가능하고 검증 가능한 절차로 수행한다.
 - 실행 전후 evidence, rollback 또는 escalation 기준을 명확히 남긴다.
 
-### Canonical References
-
-- [Operations index](../../../README.md)
-- **Policy**: [LLM Wiki maintenance policy](policy.md)
-- **Guide**: [LLM Wiki maintenance guide](guide.md)
-
 ### When to Use
 
 - Root entrypoints, agent governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki files changed.
@@ -139,6 +133,21 @@ updated: 2026-08-14
 | Automation candidate or invocation            | Human or operator judgment boundary                                                                            |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Generator freshness checks in local QA and CI | A human approves ownership, source-boundary, or public-scope changes before regeneration becomes authoritative |
+
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Guide](guide.md) (`GDE-0007`), [Policy](policy.md) (`POL-0007`)
+
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Guide](guide.md) (`GDE-0007`), [Policy](policy.md) (`POL-0007`)
+
+## Traceability
+
+- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Subject peers: [Guide](guide.md) (`GDE-0007`), [Policy](policy.md) (`POL-0007`)
 
 ## Related Documents
 

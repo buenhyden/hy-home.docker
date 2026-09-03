@@ -19,22 +19,13 @@ updated: 2026-08-11
 
 ---
 
-## Management Database Health and Init Procedure
-
-### Overview
+## Overview
 
 이 런북은 `mng-db`의 compose render, 서비스 상태, PostgreSQL readiness, Valkey readiness, `mng-pg-init` 재실행을 즉시 점검해야 할 때 사용한다. 파괴적 데이터 복구나 HA failover 절차는 이 런북의 범위가 아니다.
 
 ### Purpose
 
 관리용 PostgreSQL/Valkey가 unhealthy 상태이거나 신규 관리 서비스 DB/role 동기화가 필요한 상황에서, 안전한 확인 절차와 증거 수집 기준을 제공한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [Management Database policy](policy.md)
-- **Guide**: [Management Database guide](guide.md)
-- **Repo**: [mng-db infrastructure](../../../../../infra/04-data/operational/mng-db/README.md)
 
 ## When to Use
 
@@ -122,6 +113,24 @@ N/A — no verified destructive rollback or data recovery procedure is documente
 ## Escalation
 
 Escalate to the owning operator when compose render fails, required secrets are missing, services remain unhealthy after the documented checks, secret exposure risk appears, or destructive data recovery is required.
+
+## Traceability
+
+- Declared parent: [Management Database Usage Guide](guide.md) (`GDE-0028`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0028`), [Policy](policy.md) (`POL-0028`)
+
+## Traceability
+
+- Declared parent: [Management Database Usage Guide](guide.md) (`GDE-0028`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0028`), [Policy](policy.md) (`POL-0028`)
+
+## Traceability
+
+- Declared parent: [Management Database Usage Guide](guide.md) (`GDE-0028`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0028`), [Policy](policy.md) (`POL-0028`)
 
 ## Related Documents
 

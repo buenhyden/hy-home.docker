@@ -15,11 +15,9 @@ updated: 2026-08-11
 
 # ksqlDB Recovery Runbook
 
-## ksqlDB Recovery Procedure
+## Overview
 
 > Scope: ksqlDB server readiness, Kafka dependency checks, and query lifecycle evidence.
-
-### Overview
 
 이 런북은 `ksqldb-server`가 unhealthy이거나 Kafka/Schema Registry dependency 문제로 stream processing이 실패할 때 사용한다. CLI/datagen 절차는 `ksql` profile을 명시한 경우에만 적용한다.
 
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - ksqlDB 장애와 upstream Kafka dependency 장애를 구분한다.
 - query termination/replay 전 topic, query, offset evidence를 확보한다.
 - profile boundary를 지키며 복구 절차를 수행한다.
-
-### Canonical References
-
-- **Spec**: [Analytics spec](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **Policy**: [ksqlDB policy](policy.md)
-- **Guide**: [ksqlDB guide](guide.md)
 
 ## When to Use
 
@@ -114,6 +106,24 @@ N/A - no verified workload-independent rollback procedure exists for ksqlDB quer
 ## Escalation
 
 Escalate when Kafka/Schema Registry is unavailable, query replay is required, consumer lag cannot be explained, or service state diverges from compose evidence.
+
+## Traceability
+
+- Declared parent: [ksqlDB Usage Guide](guide.md) (`GDE-0018`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Policy](policy.md) (`POL-0018`)
+
+## Traceability
+
+- Declared parent: [ksqlDB Usage Guide](guide.md) (`GDE-0018`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Policy](policy.md) (`POL-0018`)
+
+## Traceability
+
+- Declared parent: [ksqlDB Usage Guide](guide.md) (`GDE-0018`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Policy](policy.md) (`POL-0018`)
 
 ## Related Documents
 

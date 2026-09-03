@@ -59,6 +59,21 @@ updated: 2026-08-11
 
 - Quarterly (매 분기 대시보드 링크 유효성 및 보안 정책 리뷰).
 
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Runbook](runbook.md) (`RUN-0071`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Runbook](runbook.md) (`RUN-0071`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0071`), [Runbook](runbook.md) (`RUN-0071`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

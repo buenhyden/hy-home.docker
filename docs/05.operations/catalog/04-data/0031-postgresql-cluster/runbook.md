@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # PostgreSQL Cluster Health and Recovery Triage Runbook
 
-## PostgreSQL Cluster Health and Recovery Triage Procedure
+## Overview
 
 > Scope: Triage optional PostgreSQL HA cluster health, etcd quorum symptoms, HAProxy routing, Patroni leadership, init job state, and exporter readiness without destructive data actions.
-
-### Overview
 
 이 런북은 `postgresql-cluster` 선택 스택의 etcd, Patroni/Spilo, HAProxy, init job, exporter 상태 이상을 현재 compose 기준으로 점검하는 절차다. DCS destructive recovery, forced cluster bootstrap, leadership mutation, backup restore, volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
 PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수집하고, compose가 보장하는 범위 안에서만 비파괴 재기동과 상태 확인을 수행한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [PostgreSQL cluster operations policy](policy.md)
-- **Guide**: [PostgreSQL cluster usage guide](guide.md)
 
 ## When to Use
 
@@ -134,6 +126,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when no leader can be identified, etcd quorum symptoms appear, HAProxy routing diverges from compose, `pg-cluster-init` repeatedly fails, logs show storage corruption, secret exposure risk appears, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, leadership summary, and attempted steps.
+
+## Traceability
+
+- Declared parent: [PostgreSQL Cluster Usage Guide](guide.md) (`GDE-0031`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
+
+## Traceability
+
+- Declared parent: [PostgreSQL Cluster Usage Guide](guide.md) (`GDE-0031`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
+
+## Traceability
+
+- Declared parent: [PostgreSQL Cluster Usage Guide](guide.md) (`GDE-0031`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
 
 ## Related Documents
 

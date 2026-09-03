@@ -57,6 +57,21 @@ updated: 2026-08-11
 - n8n/core runner version 변경 시 검토
 - 주요 운영 정책 변경 시 검토
 
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Runbook](runbook.md) (`RUN-0053`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

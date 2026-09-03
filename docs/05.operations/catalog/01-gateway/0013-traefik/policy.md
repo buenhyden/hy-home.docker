@@ -69,6 +69,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: gateway access/error 로그는 observability 정책 준수
 - **Safety Incident Thresholds**: 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차 수행
 
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
+
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
+
+## Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

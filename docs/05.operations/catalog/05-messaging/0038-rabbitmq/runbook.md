@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 RabbitMQ 서비스 장애 시 비파괴 점검, evidence capture, 서비스 재시작, escalation 절차를 정의한다. Queue purge/delete/rebind 같은 메시지 손실 가능 작업은 일반 복구 단계가 아니라 승인된 escalation으로만 처리한다.
 
-## RabbitMQ Recovery Procedure
-
 > Scope: Emergency procedures for RabbitMQ service failures.
 
 ---
@@ -30,11 +28,6 @@ updated: 2026-08-11
 - RabbitMQ service health와 queue backlog 상태를 빠르게 확인한다.
 - secret 값을 노출하지 않고 evidence를 캡처한다.
 - 비파괴 재시작으로 복구 가능한 장애와 데이터 영향 조치가 필요한 장애를 분리한다.
-
-### Canonical References
-
-- [../../../../infra/05-messaging/rabbitmq/README.md](../../../../../infra/05-messaging/rabbitmq/README.md)
-- [RabbitMQ operations policy](policy.md)
 
 ## When to Use
 
@@ -103,6 +96,24 @@ N/A - no verified generic RabbitMQ data rollback procedure is documented yet. Us
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [RabbitMQ Usage Guide](guide.md) (`GDE-0038`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
+
+## Traceability
+
+- Declared parent: [RabbitMQ Usage Guide](guide.md) (`GDE-0038`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
+
+## Traceability
+
+- Declared parent: [RabbitMQ Usage Guide](guide.md) (`GDE-0038`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
 
 ## Related Documents
 

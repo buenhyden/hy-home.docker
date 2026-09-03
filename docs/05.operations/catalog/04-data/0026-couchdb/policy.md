@@ -54,6 +54,21 @@ N/A - no currently approved exceptions.
 - Review on CouchDB compose image/profile/secret/Traefik/cluster-init changes.
 - Review during the Stage 05 operations documentation audit cadence.
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Runbook](runbook.md) (`RUN-0026`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Runbook](runbook.md) (`RUN-0026`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0026`), [Runbook](runbook.md) (`RUN-0026`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

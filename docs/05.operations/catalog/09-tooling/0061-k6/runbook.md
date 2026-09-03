@@ -17,23 +17,15 @@ updated: 2026-08-11
 
 <!-- [ID:09-tooling:k6] -->
 
-## k6 Wrapper Recovery Procedure
+## Overview
 
 > Scope: recover or stop the current `infra/09-tooling/k6` Locust-wrapper service `k6-master`.
-
-### Overview
 
 이 런북은 `k6-master` 실행 중 target service SLI가 급락하거나 Locust 요청 오류, healthcheck 실패가 발생했을 때 사용한다. 현재 k6 leaf는 별도 worker service가 없는 단일 Locust wrapper다.
 
 ### Purpose
 
 테스트 부하를 안전하게 중단하고 root optional compose context와 Locust 결과 상태를 확인한 뒤 재실행 여부를 판단한다.
-
-### Canonical References
-
-- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Policy**: [k6 policy](policy.md)
-- **Guide**: [k6 guide](guide.md)
 
 ## When to Use
 
@@ -117,6 +109,24 @@ Use the stop-and-review procedure above. No broader verified rollback procedure 
 ## Escalation
 
 Escalate to the performance tooling owner when `k6-master` cannot stop, target SLI does not recover after stopping load, secret exposure risk appears, or root compose context cannot render required dependencies.
+
+## Traceability
+
+- Declared parent: [k6 Usage Guide](guide.md) (`GDE-0061`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0061`), [Policy](policy.md) (`POL-0061`)
+
+## Traceability
+
+- Declared parent: [k6 Usage Guide](guide.md) (`GDE-0061`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0061`), [Policy](policy.md) (`POL-0061`)
+
+## Traceability
+
+- Declared parent: [k6 Usage Guide](guide.md) (`GDE-0061`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0061`), [Policy](policy.md) (`POL-0061`)
 
 ## Related Documents
 

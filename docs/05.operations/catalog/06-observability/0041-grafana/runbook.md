@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Grafana Provisioning and Access Recovery Runbook
 
-## Grafana Provisioning and Access Recovery Procedure
+## Overview
 
 > Scope: Grafana readiness checks, OAuth role mapping triage, datasource/provisioning evidence, dashboard reload, restart, and config rollback.
-
-### Overview
 
 이 런북은 Grafana readiness failure, OAuth login loop, role mapping drift, datasource query errors, dashboard provisioning failure, trace-to-log link regression, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
 운영자가 `infra-grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
-
-### Canonical References
-
-- **Policy**: [Grafana operations policy](policy.md)
-- **Guide**: [Grafana usage guide](guide.md)
-- **Infrastructure**: [Grafana infra README](../../../../../infra/06-observability/grafana/README.md)
 
 ## When to Use
 
@@ -160,6 +152,24 @@ updated: 2026-08-11
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [Grafana Usage Guide](guide.md) (`GDE-0041`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
+
+## Traceability
+
+- Declared parent: [Grafana Usage Guide](guide.md) (`GDE-0041`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
+
+## Traceability
+
+- Declared parent: [Grafana Usage Guide](guide.md) (`GDE-0041`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
 
 ## Related Documents
 

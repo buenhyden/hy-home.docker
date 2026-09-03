@@ -19,19 +19,10 @@ updated: 2026-08-11
 
 이 런북은 `08-ai` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, Ollama concurrency 설정 누락, Open WebUI stateful 드리프트, exporter health 계약 실패, CI 게이트 실패를 중심으로 점검/복구한다.
 
-## 08-AI Optimization Hardening Procedure
-
 ### Purpose
 
 - AI 공개 경로 보안과 GPU 안정성 기준을 빠르게 복구한다.
 - compose/script/CI 회귀를 표준 절차로 차단한다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0008-ai-architecture.md)
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -120,6 +111,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [08-AI Optimization Hardening Usage Guide](guide.md) (`GDE-0058`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Policy](policy.md) (`POL-0058`)
+
+## Traceability
+
+- Declared parent: [08-AI Optimization Hardening Usage Guide](guide.md) (`GDE-0058`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Policy](policy.md) (`POL-0058`)
+
+## Traceability
+
+- Declared parent: [08-AI Optimization Hardening Usage Guide](guide.md) (`GDE-0058`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Policy](policy.md) (`POL-0058`)
 
 ## Related Documents
 

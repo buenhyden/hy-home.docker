@@ -80,6 +80,21 @@ How-to / audit guide.
 반복 검증, evidence capture, rollback 또는 escalation 절차는
 [Harness / Agent-first Engineering Runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Policy](policy.md) (`POL-0004`), [Runbook](runbook.md) (`RUN-0004`)
+
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Policy](policy.md) (`POL-0004`), [Runbook](runbook.md) (`RUN-0004`)
+
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Policy](policy.md) (`POL-0004`), [Runbook](runbook.md) (`RUN-0004`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

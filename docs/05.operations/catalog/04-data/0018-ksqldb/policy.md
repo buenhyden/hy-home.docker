@@ -51,6 +51,21 @@ Offset replay, query termination, or datagen workloads that affect shared Kafka 
 - On Kafka/Schema Registry/Connect dependency change
 - On ksqlDB image or heap setting change
 
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Runbook](runbook.md) (`RUN-0018`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Runbook](runbook.md) (`RUN-0018`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0018`), [Runbook](runbook.md) (`RUN-0018`)
+
 ## Related Documents
 
 - [Operations policies index](../../../README.md)

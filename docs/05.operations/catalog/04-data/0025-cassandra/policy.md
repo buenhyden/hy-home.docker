@@ -53,6 +53,21 @@ N/A - no currently approved exceptions.
 - Review on Cassandra compose image/profile/secret/volume changes.
 - Review during the Stage 05 operations documentation audit cadence.
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Runbook](runbook.md) (`RUN-0025`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Runbook](runbook.md) (`RUN-0025`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Runbook](runbook.md) (`RUN-0025`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

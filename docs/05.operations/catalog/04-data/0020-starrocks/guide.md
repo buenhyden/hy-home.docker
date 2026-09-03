@@ -80,6 +80,24 @@ updated: 2026-08-11
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [StarRocks Operations Policy](policy.md) (`POL-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Policy](policy.md) (`POL-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
+## Traceability
+
+- Declared parent: [StarRocks Operations Policy](policy.md) (`POL-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Policy](policy.md) (`POL-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
+## Traceability
+
+- Declared parent: [StarRocks Operations Policy](policy.md) (`POL-0020`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Policy](policy.md) (`POL-0020`), [Runbook](runbook.md) (`RUN-0020`)
+
 ## Related Documents
 
 - [Operations guides index](../../../README.md)

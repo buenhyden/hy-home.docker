@@ -51,6 +51,21 @@ Long retention or manual data cleanup requires owner approval and evidence showi
 - On secret mount or volume path change
 - On retention or migration requirement change
 
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Runbook](runbook.md) (`RUN-0017`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Runbook](runbook.md) (`RUN-0017`)
+
+## Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Runbook](runbook.md) (`RUN-0017`)
+
 ## Related Documents
 
 - [Operations policies index](../../../README.md)

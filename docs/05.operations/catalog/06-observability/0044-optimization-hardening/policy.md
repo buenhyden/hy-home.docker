@@ -90,6 +90,21 @@ updated: 2026-08-11
   - 신규 서비스 온보딩 템플릿 표준화
   - 파이프라인 모듈 경계와 소유권 명시
 
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

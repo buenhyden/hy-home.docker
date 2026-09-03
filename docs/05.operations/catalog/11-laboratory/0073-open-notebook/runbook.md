@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Open Notebook Recovery Runbook
 
-## Open Notebook Recovery Procedure
+## Overview
 
 > Scope: root-active Open Notebook and SurrealDB service evidence, route hardening, secret-file boundary, and non-destructive diagnosis.
-
-### Overview
 
 이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret-file 주입 오류, 데이터 볼륨 경계 문제를 진단하고 복구 범위를 판단하는 절차를 정의한다.
 
 ### Purpose
 
 Open Notebook 관리/실험 작업 환경의 가용성을 확인하되, secret 값 출력, 데이터 볼륨 삭제, credential storage 재초기화 같은 파괴적 조치를 승인 없는 복구 절차로 수행하지 않는다.
-
-### Canonical References
-
-- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Policy**: [Open Notebook policy](policy.md)
-- **Guide**: [Open Notebook guide](guide.md)
 
 ## When to Use
 
@@ -94,6 +86,24 @@ If encryption key changes, credential storage reset, data volume restore/delete,
 ## Escalation
 
 Escalate to the owning operator when verification fails, secret exposure risk appears, host-bound API/DB exposure needs change, destructive data actions are required, or Open Notebook content governance is implicated.
+
+## Traceability
+
+- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
+
+## Traceability
+
+- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
+
+## Traceability
+
+- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
 
 ## Related Documents
 

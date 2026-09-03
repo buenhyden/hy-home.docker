@@ -21,9 +21,12 @@ updated: 2026-08-11
 
 이 런북은 `docs/05.operations/catalog/09-tooling/0066-sonarqube/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
-## Procedure: SonarQube Service Recovery (P2)
-
 > Procedures for recovering from SonarQube service failures and index corruption.
+
+## When to Use
+
+- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
+- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
 ### Symptoms
 
@@ -31,6 +34,8 @@ updated: 2026-08-11
 - Authentication failures (SonarQube uses its own user DB stored in Postgres).
 - ElasticSearch initialization loops or "Search index is corrupted" in logs.
 - Scan tasks (Background Tasks) stuck in "Pending".
+
+## Procedure
 
 ### Diagnostic Steps
 
@@ -89,28 +94,6 @@ Monitor these files for specific error patterns:
 - `${DEFAULT_TOOLING_DIR}/sonarqube/logs/ce.log`: Compute Engine (scan task) issues.
 - `${DEFAULT_TOOLING_DIR}/sonarqube/logs/es.log`: ElasticSearch internal issues.
 
-### Escalation Policy
-
-- **P1**: Total UI outage affecting all PR merges -> Notify SRE Team.
-- **P2**: Intermittent scan failures -> Investigate Compute Engine limits.
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-
-## When to Use
-
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-## Procedure
-
 ### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
@@ -162,6 +145,21 @@ Monitor these files for specific error patterns:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+- **P1**: Total UI outage affecting all PR merges -> Notify SRE Team.
+- **P2**: Intermittent scan failures -> Investigate Compute Engine limits.
+
+## Traceability
+
+- Declared parent: [SonarQube Usage Guide](guide.md) (`GDE-0066`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0066`), [Policy](policy.md) (`POL-0066`)
+
+## Traceability
+
+- Declared parent: [SonarQube Usage Guide](guide.md) (`GDE-0066`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0066`), [Policy](policy.md) (`POL-0066`)
 
 ## Related Documents
 

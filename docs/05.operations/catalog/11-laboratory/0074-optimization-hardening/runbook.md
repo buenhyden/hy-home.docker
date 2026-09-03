@@ -19,19 +19,10 @@ updated: 2026-08-11
 
 이 런북은 `11-laboratory` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 중심으로 점검/복구한다.
 
-## 11-Laboratory Optimization Hardening Procedure
-
 ### Purpose
 
 - Laboratory 관리 UI 보안 경계와 운영 안정성 기준을 신속히 복구한다.
 - compose/script/CI 회귀를 표준 절차로 차단한다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -117,6 +108,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [11-Laboratory Optimization Hardening Usage Guide](guide.md) (`GDE-0074`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
+
+## Traceability
+
+- Declared parent: [11-Laboratory Optimization Hardening Usage Guide](guide.md) (`GDE-0074`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
+
+## Traceability
+
+- Declared parent: [11-Laboratory Optimization Hardening Usage Guide](guide.md) (`GDE-0074`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
 
 ## Related Documents
 

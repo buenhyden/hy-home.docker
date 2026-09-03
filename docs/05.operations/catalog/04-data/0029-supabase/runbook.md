@@ -19,23 +19,13 @@ updated: 2026-08-11
 
 ---
 
-## Supabase Stack Health Procedure
-
-### Overview
+## Overview
 
 이 런북은 Supabase stack이 기동되지 않거나 Kong/API 접근, Auth, REST, Realtime, Storage, DB, pooler 상태를 즉시 확인해야 할 때 사용한다. 파괴적 DB 복구, storage 삭제, credential rotation 실행 절차는 이 런북의 범위가 아니다.
 
 ### Purpose
 
 Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경로, 주요 로그를 안전하게 확인하고, secret 노출이나 destructive recovery가 필요한 경우 빠르게 escalation하도록 한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [Supabase policy](policy.md)
-- **Guide**: [Supabase guide](guide.md)
-- **Repo**: [Supabase infrastructure](../../../../../infra/04-data/operational/supabase/README.md)
-- **Compose**: [Supabase compose](../../../../../infra/04-data/operational/supabase/docker-compose.yml)
 
 ## When to Use
 
@@ -125,6 +115,24 @@ N/A — no verified destructive rollback or data recovery procedure is documente
 ## Escalation
 
 Escalate to the owning operator when compose render fails, required secrets or mounted configs are missing, services remain unhealthy after documented checks, Kong access remains unavailable, secret exposure risk appears, or destructive database/storage/credential changes are required.
+
+## Traceability
+
+- Declared parent: [Supabase Usage Guide](guide.md) (`GDE-0029`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0029`), [Policy](policy.md) (`POL-0029`)
+
+## Traceability
+
+- Declared parent: [Supabase Usage Guide](guide.md) (`GDE-0029`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0029`), [Policy](policy.md) (`POL-0029`)
+
+## Traceability
+
+- Declared parent: [Supabase Usage Guide](guide.md) (`GDE-0029`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0029`), [Policy](policy.md) (`POL-0029`)
 
 ## Related Documents
 

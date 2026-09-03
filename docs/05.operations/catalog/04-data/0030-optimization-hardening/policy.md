@@ -83,6 +83,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 데이터 손상 의심, 장기 healthcheck fail, 복구 불가 상태 발생 시 즉시 runbook 전환
 
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
+
+## Traceability
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

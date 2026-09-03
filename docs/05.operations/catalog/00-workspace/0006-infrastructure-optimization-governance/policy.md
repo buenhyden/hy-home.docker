@@ -274,6 +274,18 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [redisinsight](../../../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
   ([OPER](../../11-laboratory/0076-redisinsight/guide.md), [RUN](../../11-laboratory/0076-redisinsight/runbook.md))
 
+## Traceability
+
+- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
+
+## Traceability
+
+- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
+
+## Traceability
+
+- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

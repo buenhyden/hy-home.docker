@@ -21,9 +21,12 @@ updated: 2026-08-11
 
 이 런북은 `docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
-## Procedure: Terrakube Recovery (P2)
-
 > Procedures for recovering the Terrakube platform from executor failures, sync drift, and database corruption.
+
+## When to Use
+
+- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
+- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
 ### Symptoms
 
@@ -31,6 +34,8 @@ updated: 2026-08-11
 - Login redirection loops between Terrakube and Keycloak.
 - "Error: S3 Storage not reachable" in API logs.
 - Workspace state is "Locked" permanently in the UI.
+
+## Procedure
 
 ### Diagnostic Steps
 
@@ -87,28 +92,6 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 > [!WARNING]
 > Manual DB modifications are high-risk. Always back up the `terrakube` database before running raw SQL.
 
-### Escalation Policy
-
-- **P1**: Total loss of the `tfstate` bucket content in MinIO -> Follow Disaster Recovery Plan.
-- **P2**: Intermittent executor failures or UI sync issues -> Follow manual restart and queue cleanup.
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-
-## When to Use
-
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-## Procedure
-
 ### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
@@ -160,6 +143,21 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+- **P1**: Total loss of the `tfstate` bucket content in MinIO -> Follow Disaster Recovery Plan.
+- **P2**: Intermittent executor failures or UI sync issues -> Follow manual restart and queue cleanup.
+
+## Traceability
+
+- Declared parent: [Operations: Terrakube Policy Usage Guide](guide.md) (`GDE-0069`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0069`), [Policy](policy.md) (`POL-0069`)
+
+## Traceability
+
+- Declared parent: [Operations: Terrakube Policy Usage Guide](guide.md) (`GDE-0069`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0069`), [Policy](policy.md) (`POL-0069`)
 
 ## Related Documents
 

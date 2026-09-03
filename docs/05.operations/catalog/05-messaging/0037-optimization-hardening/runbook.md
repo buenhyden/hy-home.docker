@@ -19,21 +19,12 @@ updated: 2026-08-11
 
 이 런북은 05-messaging 하드닝 항목에서 발생할 수 있는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. 관리 경로 middleware/SSO 누락, 이미지 태그 회귀, dev 경로 오류, CI 하드닝 실패를 중심으로 점검/복구 절차를 정의한다.
 
-## 05-Messaging Optimization Hardening Procedure
-
 > Scope: Messaging Gateway/Compose Baseline Recovery
 
 ### Purpose
 
 - 메시징 관리 경로의 보안/안정성 기준을 신속히 복구한다.
 - compose 정합성과 CI 기준선 회귀를 빠르게 차단한다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0005-messaging-architecture.md)
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -117,6 +108,24 @@ Use only recovery or rollback steps already documented in this runbook, includin
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
+
+## Traceability
+
+- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
+
+## Traceability
+
+- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
 
 ## Related Documents
 

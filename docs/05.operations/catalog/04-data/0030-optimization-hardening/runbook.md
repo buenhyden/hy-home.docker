@@ -19,22 +19,12 @@ updated: 2026-08-11
 
 이 런북은 04-data 하드닝 항목에서 발생 가능한 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. `supabase` healthcheck 이상, `valkey` exporter 인증 실패, `seaweedfs` compose 파싱 오류, `ksql` 라벨 회귀를 중심으로 점검/복구 절차를 정의한다.
 
-## 04-Data Optimization Hardening Procedure
-
 > Scope: 04-data Configuration Recovery & Baseline Restoration
 
 ### Purpose
 
 - 04-data 하드닝 회귀를 신속하게 감지하고 복구한다.
 - 배포 전후 정적 검증/증적 수집 절차를 표준화한다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- [Operations Policy](policy.md)
-- [Usage Guide](guide.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -123,6 +113,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [04-Data Optimization Hardening Usage Guide](guide.md) (`GDE-0030`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
+
+## Traceability
+
+- Declared parent: [04-Data Optimization Hardening Usage Guide](guide.md) (`GDE-0030`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
+
+## Traceability
+
+- Declared parent: [04-Data Optimization Hardening Usage Guide](guide.md) (`GDE-0030`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
 
 ## Related Documents
 

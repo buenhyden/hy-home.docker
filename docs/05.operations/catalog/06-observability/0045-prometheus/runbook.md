@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Prometheus Readiness and Recovery Runbook
 
-## Prometheus Readiness and Recovery Procedure
+## Overview
 
 > Scope: readiness checks, config/rule validation, lifecycle reload, scrape target triage, restart, and TSDB symptom escalation.
-
-### Overview
 
 이 런북은 Prometheus service disruption, scrape target failure, alert rule evaluation failure, lifecycle reload, and TSDB corruption symptom을 다룬다. Policy와 guide의 설명을 반복하지 않고, 실행 가능한 확인 절차와 evidence 기준만 제공한다.
 
 ### Purpose
 
 운영자가 `infra-prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload or restart를 수행하며, 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리하도록 돕는다.
-
-### Canonical References
-
-- **Policy**: [Prometheus operations policy](policy.md)
-- **Guide**: [Prometheus usage guide](guide.md)
-- **Infrastructure**: [Prometheus infra README](../../../../../infra/06-observability/prometheus/README.md)
 
 ## When to Use
 
@@ -141,6 +133,24 @@ updated: 2026-08-11
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, TSDB/WAL 조치가 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [Prometheus Usage Guide](guide.md) (`GDE-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0045`), [Policy](policy.md) (`POL-0045`)
+
+## Traceability
+
+- Declared parent: [Prometheus Usage Guide](guide.md) (`GDE-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0045`), [Policy](policy.md) (`POL-0045`)
+
+## Traceability
+
+- Declared parent: [Prometheus Usage Guide](guide.md) (`GDE-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0045`), [Policy](policy.md) (`POL-0045`)
 
 ## Related Documents
 

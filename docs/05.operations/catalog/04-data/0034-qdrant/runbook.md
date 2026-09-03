@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Qdrant Health and Recovery Triage Runbook
 
-## Qdrant Health and Recovery Triage Procedure
+## Overview
 
 > Scope: Triage root-active Qdrant service health, REST/gRPC route assumptions, persistence path, and evidence capture without destructive data actions.
-
-### Overview
 
 이 런북은 `qdrant` 서비스가 unhealthy, stopped, route failure, or readiness failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. collection delete, snapshot recovery, volume replacement, cluster repair는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
 Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC Traefik route, snapshot path evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [Qdrant operations policy](policy.md)
-- **Guide**: [Qdrant usage guide](guide.md)
 
 ## When to Use
 
@@ -126,6 +118,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when `/readyz` fails after restart, logs show storage corruption, route labels differ from expected compose, a Qdrant secret/API-key requirement appears without compose support, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, and attempted steps.
+
+## Traceability
+
+- Declared parent: [Qdrant Usage Guide](guide.md) (`GDE-0034`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
+
+## Traceability
+
+- Declared parent: [Qdrant Usage Guide](guide.md) (`GDE-0034`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
+
+## Traceability
+
+- Declared parent: [Qdrant Usage Guide](guide.md) (`GDE-0034`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
 
 ## Related Documents
 

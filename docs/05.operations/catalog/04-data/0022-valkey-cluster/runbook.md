@@ -19,22 +19,13 @@ updated: 2026-08-11
 
 ---
 
-## Valkey Cluster Health Procedure
-
-### Overview
+## Overview
 
 이 런북은 Valkey cluster의 compose render, 6개 노드 상태, init job, exporter 상태, cluster info를 즉시 확인해야 할 때 사용한다. 데이터 볼륨 삭제, 강제 cluster recreation, RDB/AOF restore는 이 런북의 검증된 복구 범위가 아니다.
 
 ### Purpose
 
 `valkey-node-0..5`, `valkey-cluster-init`, `valkey-cluster-exporter`의 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [Valkey Cluster policy](policy.md)
-- **Guide**: [Valkey Cluster guide](guide.md)
-- **Repo**: [Valkey Cluster infrastructure](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
 
 ## When to Use
 
@@ -122,6 +113,24 @@ N/A - no verified destructive rollback or data recovery procedure is documented 
 ## Escalation
 
 Escalate to the owning operator when compose render fails, required secrets are missing, services remain unhealthy after documented checks, cluster state cannot be verified, secret exposure risk appears, or destructive data recovery is required.
+
+## Traceability
+
+- Declared parent: [Valkey Cluster Usage Guide](guide.md) (`GDE-0022`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0022`), [Policy](policy.md) (`POL-0022`)
+
+## Traceability
+
+- Declared parent: [Valkey Cluster Usage Guide](guide.md) (`GDE-0022`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0022`), [Policy](policy.md) (`POL-0022`)
+
+## Traceability
+
+- Declared parent: [Valkey Cluster Usage Guide](guide.md) (`GDE-0022`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0022`), [Policy](policy.md) (`POL-0022`)
 
 ## Related Documents
 

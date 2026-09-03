@@ -17,23 +17,15 @@ updated: 2026-08-11
 
 <!-- [ID:09-tooling:locust] -->
 
-## Locust Recovery Procedure
+## Overview
 
 > Scope: recover or stop `locust-master` and `locust-worker` under `infra/09-tooling/locust`.
-
-### Overview
 
 이 런북은 Locust master/worker 연결 끊김, 요청 통계 이상, 또는 테스트 부하로 인한 target service 영향이 발생했을 때 사용한다.
 
 ### Purpose
 
 부하 생성을 즉시 통제하고 master/worker 연결과 Locust 결과를 확인한 뒤 안전하게 재시작 또는 escalation한다.
-
-### Canonical References
-
-- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Policy**: [Locust policy](policy.md)
-- **Guide**: [Locust guide](guide.md)
 
 ## When to Use
 
@@ -121,6 +113,24 @@ Use the stop, inspect, and worker-only recreate procedure above. No broader veri
 ## Escalation
 
 Escalate to the performance tooling owner when workers cannot reconnect after master health is restored, target SLI does not recover after stopping load, secret exposure risk appears, or root compose context cannot render required dependencies.
+
+## Traceability
+
+- Declared parent: [Locust Usage Guide](guide.md) (`GDE-0062`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0062`), [Policy](policy.md) (`POL-0062`)
+
+## Traceability
+
+- Declared parent: [Locust Usage Guide](guide.md) (`GDE-0062`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0062`), [Policy](policy.md) (`POL-0062`)
+
+## Traceability
+
+- Declared parent: [Locust Usage Guide](guide.md) (`GDE-0062`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0062`), [Policy](policy.md) (`POL-0062`)
 
 ## Related Documents
 

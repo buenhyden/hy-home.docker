@@ -98,6 +98,24 @@ updated: 2026-08-11
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Alloy Operations Policy](policy.md) (`POL-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0040`), [Runbook](runbook.md) (`RUN-0040`)
+
+## Traceability
+
+- Declared parent: [Alloy Operations Policy](policy.md) (`POL-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0040`), [Runbook](runbook.md) (`RUN-0040`)
+
+## Traceability
+
+- Declared parent: [Alloy Operations Policy](policy.md) (`POL-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0040`), [Runbook](runbook.md) (`RUN-0040`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -144,6 +144,21 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
 
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Guide](guide.md) (`GDE-0004`), [Policy](policy.md) (`POL-0004`)
+
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Guide](guide.md) (`GDE-0004`), [Policy](policy.md) (`POL-0004`)
+
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Guide](guide.md) (`GDE-0004`), [Policy](policy.md) (`POL-0004`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

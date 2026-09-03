@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Tempo Readiness and Recovery Runbook
 
-## Tempo Readiness and Recovery Procedure
+## Overview
 
 > Scope: Tempo readiness checks, OTLP ingestion triage, MinIO storage evidence, metrics generator verification, restart, and WAL symptom escalation.
-
-### Overview
 
 이 런북은 Tempo trace ingestion failure, MinIO-backed storage error, metrics generator failure, query latency, and WAL corruption symptom을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
 운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → MinIO → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
-
-### Canonical References
-
-- **Policy**: [Tempo operations policy](policy.md)
-- **Guide**: [Tempo usage guide](guide.md)
-- **Infrastructure**: [Tempo infra README](../../../../../infra/06-observability/tempo/README.md)
 
 ## When to Use
 
@@ -146,6 +138,24 @@ updated: 2026-08-11
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, WAL/bucket/object mutation이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [Tempo Usage Guide](guide.md) (`GDE-0049`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Policy](policy.md) (`POL-0049`)
+
+## Traceability
+
+- Declared parent: [Tempo Usage Guide](guide.md) (`GDE-0049`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Policy](policy.md) (`POL-0049`)
+
+## Traceability
+
+- Declared parent: [Tempo Usage Guide](guide.md) (`GDE-0049`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Policy](policy.md) (`POL-0049`)
 
 ## Related Documents
 

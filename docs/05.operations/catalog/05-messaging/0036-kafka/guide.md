@@ -96,6 +96,24 @@ docker inspect --format '{{json .State.Health}}' kafka-connect
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Kafka Operations Policy](policy.md) (`POL-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Policy](policy.md) (`POL-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
+## Traceability
+
+- Declared parent: [Kafka Operations Policy](policy.md) (`POL-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Policy](policy.md) (`POL-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
+## Traceability
+
+- Declared parent: [Kafka Operations Policy](policy.md) (`POL-0036`)
+- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Policy](policy.md) (`POL-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

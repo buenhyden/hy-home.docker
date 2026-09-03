@@ -58,6 +58,21 @@ updated: 2026-08-11
 - **Quarterly**: 매 분기별 리소스 사용량 분석 및 쿼터 조정.
 - **Per Release**: 새로운 Airflow 버전 또는 Provider 업데이트 시 정책 재검토.
 
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -118,6 +118,24 @@ docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm
 - credential 오류가 권한 축소, 계정 잠금, MFA 실패와 연결되면 Security/Ops owner에게 escalation한다.
 - 복구 절차가 현재 관측된 장애와 맞지 않으면 변경을 멈추고 evidence를 보존한다.
 
+## Traceability
+
+- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
+
+## Traceability
+
+- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
+
+## Traceability
+
+- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -54,6 +54,21 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 
 - Quarterly (보안 감사 주기와 동기화)
 
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Runbook](runbook.md) (`RUN-0072`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Runbook](runbook.md) (`RUN-0072`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0072`), [Runbook](runbook.md) (`RUN-0072`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -71,6 +71,21 @@ updated: 2026-08-11
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Open WebUI recovery runbook](../0057-open-webui/runbook.md)을 따른다.
 
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
+
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
+
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

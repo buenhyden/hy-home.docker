@@ -59,6 +59,21 @@ updated: 2026-08-11
 - 월 1회
 - Open Notebook 이미지, secret, Traefik middleware, SurrealDB schema/storage 변경 시 즉시
 
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Runbook](runbook.md) (`RUN-0073`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Runbook](runbook.md) (`RUN-0073`)
+
+## Traceability
+
+- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0073`), [Runbook](runbook.md) (`RUN-0073`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

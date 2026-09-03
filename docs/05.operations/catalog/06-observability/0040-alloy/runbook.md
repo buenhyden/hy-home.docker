@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Alloy Readiness and Pipeline Recovery Runbook
 
-## Alloy Readiness and Pipeline Recovery Procedure
+## Overview
 
 > Scope: Alloy readiness checks, Docker discovery evidence, OTLP ingress triage, downstream exporter verification, restart, and config rollback.
-
-### Overview
 
 이 런북은 Grafana Alloy의 service readiness failure, Docker discovery/log collection gap, OTLP trace ingress failure, downstream exporter failure, pipeline label drift, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
 운영자가 `infra-alloy` 상태를 확인하고 Docker discovery, Loki/Prometheus/Tempo/Pyroscope exporter 경로, OTLP ports, route, config boundary를 검증하며, mount 권한이나 pipeline 구조 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
-
-### Canonical References
-
-- **Policy**: [Alloy operations policy](policy.md)
-- **Guide**: [Alloy usage guide](guide.md)
-- **Infrastructure**: [Alloy infra README](../../../../../infra/06-observability/alloy/README.md)
 
 ## When to Use
 
@@ -154,6 +146,24 @@ updated: 2026-08-11
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, Docker mount/endpoint/port 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [Alloy Usage Guide](guide.md) (`GDE-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0040`), [Policy](policy.md) (`POL-0040`)
+
+## Traceability
+
+- Declared parent: [Alloy Usage Guide](guide.md) (`GDE-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0040`), [Policy](policy.md) (`POL-0040`)
+
+## Traceability
+
+- Declared parent: [Alloy Usage Guide](guide.md) (`GDE-0040`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0040`), [Policy](policy.md) (`POL-0040`)
 
 ## Related Documents
 

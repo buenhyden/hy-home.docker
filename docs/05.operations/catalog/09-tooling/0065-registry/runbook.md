@@ -19,37 +19,25 @@ updated: 2026-08-11
 
 이 런북은 `docs/05.operations/catalog/09-tooling/0065-registry/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
-## Registry Recovery Procedure
-
 Procedure for recovering the local Docker registry in the `09-tooling` tier.
-
-### Symptoms
-
-- `Error: response from daemon: Get https://registry.hy-home.com/v2/: dial tcp ...`
-- Container `registry` is in `restarting` state.
-
-### Recovery Steps
-
-1. Verify storage mounts: `df -h ${DEFAULT_DATA_DIR}/registry`
-2. Restart service: `docker compose restart registry`
-3. Verify logs: `docker compose logs -f registry`
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
 
 ## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
+### Symptoms
+
+- `Error: response from daemon: Get https://registry.hy-home.com/v2/: dial tcp ...`
+- Container `registry` is in `restarting` state.
+
 ## Procedure
+
+### Recovery Steps
+
+1. Verify storage mounts: `df -h ${DEFAULT_DATA_DIR}/registry`
+2. Restart service: `docker compose restart registry`
+3. Verify logs: `docker compose logs -f registry`
 
 ### Checklist
 
@@ -102,6 +90,18 @@ Procedure for recovering the local Docker registry in the `09-tooling` tier.
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [Docker Registry Usage Guide](guide.md) (`GDE-0065`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0065`), [Policy](policy.md) (`POL-0065`)
+
+## Traceability
+
+- Declared parent: [Docker Registry Usage Guide](guide.md) (`GDE-0065`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0065`), [Policy](policy.md) (`POL-0065`)
 
 ## Related Documents
 

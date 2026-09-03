@@ -73,6 +73,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
 - **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
 
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Runbook](runbook.md) (`RUN-0015`)
+
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Runbook](runbook.md) (`RUN-0015`)
+
+## Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0015`), [Runbook](runbook.md) (`RUN-0015`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

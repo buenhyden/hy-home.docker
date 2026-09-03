@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Neo4j Health and Recovery Triage Runbook
 
-## Neo4j Health and Recovery Triage Procedure
+## Overview
 
 > Scope: Triage root-active Neo4j service health, route assumptions, secret-backed authentication, and evidence capture without destructive data actions.
-
-### Overview
 
 이 런북은 `neo4j` 서비스가 unhealthy, stopped, route failure, or authentication failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. offline dump/load, password rotation, data volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
 Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, Traefik Browser route evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [Neo4j operations policy](policy.md)
-- **Guide**: [Neo4j usage guide](guide.md)
 
 ## When to Use
 
@@ -126,6 +118,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when `cypher-shell RETURN 1` fails after restart, logs show data corruption, the secret-aware entrypoint cannot read `/run/secrets/neo4j_password`, route labels differ from expected compose, secret exposure risk appears, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, and attempted steps.
+
+## Traceability
+
+- Declared parent: [Neo4j Usage Guide](guide.md) (`GDE-0033`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0033`), [Policy](policy.md) (`POL-0033`)
+
+## Traceability
+
+- Declared parent: [Neo4j Usage Guide](guide.md) (`GDE-0033`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0033`), [Policy](policy.md) (`POL-0033`)
+
+## Traceability
+
+- Declared parent: [Neo4j Usage Guide](guide.md) (`GDE-0033`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0033`), [Policy](policy.md) (`POL-0033`)
 
 ## Related Documents
 

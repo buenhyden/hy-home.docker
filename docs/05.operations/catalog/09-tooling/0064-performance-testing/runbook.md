@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Performance Testing Incident Runbook
 
-## Performance Testing Incident Procedure
+## Overview
 
 > Scope: stop and triage Locust/k6-wrapper performance tests that affect shared services.
-
-### Overview
 
 이 런북은 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 발생했을 때 사용하는 공통 절차다.
 
 ### Purpose
 
 테스트 부하를 우선 중단하고, 어떤 leaf(`locust` 또는 `k6`)가 실행 중인지 확인한 뒤, target 회복과 evidence capture를 완료한다.
-
-### Canonical References
-
-- **Spec**: [09-tooling spec](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Policy**: [Performance testing policy](policy.md)
-- **Guide**: [Performance testing guide](guide.md)
 
 ## When to Use
 
@@ -106,6 +98,24 @@ Use the leaf-specific stop procedure and target-specific recovery runbook. No ve
 ## Escalation
 
 Escalate to the platform operator and target service owner when stopping load does not restore service health, root compose context is broken, or secret exposure risk appears.
+
+## Traceability
+
+- Declared parent: [Performance Testing Usage Guide](guide.md) (`GDE-0064`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
+
+## Traceability
+
+- Declared parent: [Performance Testing Usage Guide](guide.md) (`GDE-0064`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
+
+## Traceability
+
+- Declared parent: [Performance Testing Usage Guide](guide.md) (`GDE-0064`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
 
 ## Related Documents
 

@@ -19,8 +19,6 @@ updated: 2026-09-01
 
 이 런북은 Open WebUI 장애 및 성능 저하 상황에서 즉시 실행 가능한 복구 절차를 제공한다. SQLite 데이터 복구, RAG 인덱스 재동기화, Ollama/Qdrant 연결 복구를 표준화한다.
 
-## Open WebUI Maintenance & Recovery Procedure
-
 > Scope: Open WebUI Service
 
 ---
@@ -30,12 +28,6 @@ updated: 2026-09-01
 - Open WebUI 가용성을 신속히 복구한다.
 - RAG 기능(인덱싱/검색) 정상 상태를 재확인한다.
 - 동일 장애 재발 시 일관된 증적을 남긴다.
-
-### Canonical References
-
-- [../../../02.architecture/descriptions/0013-open-webui-architecture.md](../../../../02.architecture/descriptions/0013-open-webui-architecture.md)
-- [../../../02.architecture/decisions/0016-open-webui-implementation.md](../../../../02.architecture/decisions/0016-open-webui-implementation.md)
-- [../../../03.specs/009-ai/open-webui.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
 
 ## When to Use
 
@@ -148,6 +140,24 @@ docker compose restart open-webui
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [Open WebUI Usage Guide](guide.md) (`GDE-0057`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
+
+## Traceability
+
+- Declared parent: [Open WebUI Usage Guide](guide.md) (`GDE-0057`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
+
+## Traceability
+
+- Declared parent: [Open WebUI Usage Guide](guide.md) (`GDE-0057`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
 
 ## Related Documents
 

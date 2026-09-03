@@ -88,6 +88,21 @@ storage, block retention, metrics generator, secret boundary, protected route를
   remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
+
+## Traceability
+
+- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

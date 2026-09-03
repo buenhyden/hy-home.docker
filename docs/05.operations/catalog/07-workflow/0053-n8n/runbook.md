@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`를 기준으로 하며 root-included dev compose와 service-local compose의 broker 경계를 먼저 식별한다.
 
-## n8n Recovery Procedure
-
 > Scope: n8n (07-workflow)
 
 ---
@@ -30,12 +28,6 @@ updated: 2026-08-11
 - n8n 서비스의 가용성 조기 회복
 - 자동화 워크플로우 중단 시간 최소화
 - 시스템 정상 작동 여부 검증
-
-### Canonical References
-
-- ARD: [07-workflow Architecture](../../../../02.architecture/descriptions/0007-workflow-architecture.md)
-- Usage: [n8n System Usage](guide.md)
-- Policy: [n8n Operations Policy](policy.md)
 
 ## When to Use
 
@@ -111,6 +103,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [n8n Usage Guide](guide.md) (`GDE-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
+
+## Traceability
+
+- Declared parent: [n8n Usage Guide](guide.md) (`GDE-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
+
+## Traceability
+
+- Declared parent: [n8n Usage Guide](guide.md) (`GDE-0053`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
 
 ## Related Documents
 

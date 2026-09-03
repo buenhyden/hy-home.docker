@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Cassandra Health and Recovery Triage Runbook
 
-## Cassandra Health and Recovery Triage Procedure
+## Overview
 
 > Scope: Triage Cassandra single-node runtime health, collect evidence, and perform only verified non-destructive recovery steps.
-
-### Overview
 
 이 런북은 `cassandra-node1` 또는 `cassandra-exporter` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 데이터 복원, snapshot 교체, 볼륨 이동은 이 문서에서 검증된 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
 Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하고, compose가 보장하는 범위 안에서만 서비스를 재기동하거나 확인한다.
-
-### Canonical References
-
-- **Spec**: N/A — no upstream source
-- **Policy**: [Cassandra operations policy](policy.md)
-- **Guide**: [Cassandra usage guide](guide.md)
 
 ## When to Use
 
@@ -125,6 +117,24 @@ N/A — no verified rollback or recovery procedure is documented beyond non-dest
 ## Escalation
 
 Escalate to the owning operator when `nodetool status` does not return `UN`, logs show storage corruption, a restore is required, secret exposure risk appears, or the observed service set differs from `cassandra-node1` plus `cassandra-exporter`. Include sanitized logs, rendered compose evidence, service states, and attempted steps.
+
+## Traceability
+
+- Declared parent: [Cassandra Usage Guide](guide.md) (`GDE-0025`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Policy](policy.md) (`POL-0025`)
+
+## Traceability
+
+- Declared parent: [Cassandra Usage Guide](guide.md) (`GDE-0025`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Policy](policy.md) (`POL-0025`)
+
+## Traceability
+
+- Declared parent: [Cassandra Usage Guide](guide.md) (`GDE-0025`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](guide.md) (`GDE-0025`), [Policy](policy.md) (`POL-0025`)
 
 ## Related Documents
 

@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, root-included dev compose는 shared `mng-valkey`, service-local compose는 `airflow-valkey`를 사용한다.
 
-## Airflow Recovery Procedure
-
 > Scope: Apache Airflow (07-workflow)
 
 ---
@@ -30,12 +28,6 @@ updated: 2026-08-11
 - Airflow 서비스 가용성 즉각 복구
 - 파이프라인 중단 시간 최소화
 - 시스템 상태 검증 및 정상화 확인
-
-### Canonical References
-
-- ARD: [07-workflow Architecture](../../../../02.architecture/descriptions/0007-workflow-architecture.md)
-- Usage: [Airflow System Usage](guide.md)
-- Policy: [Airflow Operations Policy](policy.md)
 
 ## When to Use
 
@@ -122,6 +114,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [Airflow Usage Guide](guide.md) (`GDE-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Policy](policy.md) (`POL-0050`)
+
+## Traceability
+
+- Declared parent: [Airflow Usage Guide](guide.md) (`GDE-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Policy](policy.md) (`POL-0050`)
+
+## Traceability
+
+- Declared parent: [Airflow Usage Guide](guide.md) (`GDE-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](guide.md) (`GDE-0050`), [Policy](policy.md) (`POL-0050`)
 
 ## Related Documents
 

@@ -15,24 +15,15 @@ updated: 2026-08-11
 
 # 06-Observability Optimization Hardening Runbook
 
-## 06-Observability Optimization Hardening Procedure
+## Overview
 
 > Scope: observability gateway/SSO middleware, compose health dependency, custom image hardening, hardening checks, restart, and Git-managed rollback evidence.
-
-### Overview
 
 이 런북은 `06-observability` hardening regression을 복구하기 위한 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, and CI hardening baseline failure를 중심으로 점검/복구한다.
 
 ### Purpose
 
 운영자가 observability management route, compose dependency, healthcheck, custom image, and hardening validation boundary를 확인하고, runtime/security policy 변경이 필요한 경우 별도 승인으로 격리하도록 돕는다.
-
-### Canonical References
-
-- [Spec](../../../../02.architecture/descriptions/0006-observability-architecture.md)
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -143,6 +134,24 @@ updated: 2026-08-11
 ## Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Traceability
+
+- Declared parent: [06-Observability Optimization Hardening Usage Guide](guide.md) (`GDE-0044`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Policy](policy.md) (`POL-0044`)
+
+## Traceability
+
+- Declared parent: [06-Observability Optimization Hardening Usage Guide](guide.md) (`GDE-0044`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Policy](policy.md) (`POL-0044`)
+
+## Traceability
+
+- Declared parent: [06-Observability Optimization Hardening Usage Guide](guide.md) (`GDE-0044`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](guide.md) (`GDE-0044`), [Policy](policy.md) (`POL-0044`)
 
 ## Related Documents
 

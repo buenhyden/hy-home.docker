@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
-## 01-Gateway Traefik Procedure
-
 > Scope: Traefik Primary Gateway Recovery
 
 ### Purpose
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - `gateway-standard-chain` 회귀 시 신속 복구
 - Dashboard 인증/접근 장애 진단
 - Traefik 서비스 정상성 복원
-
-### Canonical References
-
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -110,6 +102,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [01-Gateway Traefik Usage Guide](guide.md) (`GDE-0013`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Policy](policy.md) (`POL-0013`)
+
+## Traceability
+
+- Declared parent: [01-Gateway Traefik Usage Guide](guide.md) (`GDE-0013`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Policy](policy.md) (`POL-0013`)
+
+## Traceability
+
+- Declared parent: [01-Gateway Traefik Usage Guide](guide.md) (`GDE-0013`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0013`), [Policy](policy.md) (`POL-0013`)
 
 ## Related Documents
 

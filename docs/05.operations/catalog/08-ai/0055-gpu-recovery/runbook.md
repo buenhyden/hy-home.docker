@@ -14,11 +14,9 @@ updated: 2026-08-11
 
 # AI GPU Recovery Runbook
 
-## AI GPU Recovery Procedure
+## Overview
 
 > Scope: NVIDIA GPU acceleration for `ollama` in `infra/08-ai`.
-
-### Overview
 
 이 런북은 Ollama 컨테이너가 NVIDIA GPU를 인식하지 못하거나 CPU fallback으로 동작할 때 실행한다. 호스트 드라이버, NVIDIA Container Toolkit, compose device reservation을 순서대로 확인하고 복구한다.
 
@@ -27,12 +25,6 @@ updated: 2026-08-11
 - Ollama GPU 가속 경로를 빠르게 복구한다.
 - Docker daemon 또는 GPU-dependent container 재시작 전에 증적과 승인 기준을 남긴다.
 - 복구 후 Ollama와 Open WebUI 연동 상태를 확인한다.
-
-### Canonical References
-
-- **Spec**: [../../../03.specs/009-ai/spec.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
-- **Policy**: [Ollama operations policy](../0056-ollama/policy.md)
-- **Guide**: [Ollama usage guide](../0056-ollama/guide.md)
 
 ## When to Use
 
@@ -131,6 +123,21 @@ Use only the recovery steps documented in `## Procedure`; if host GPU runtime st
 ## Escalation
 
 Stop and escalate to the owning operator when host `nvidia-smi` fails, NVIDIA Container Toolkit test fails, Docker daemon restart is not approved, or service impact extends beyond `08-ai`. Include captured logs, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
+
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
+
+## Traceability
+
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
 
 ## Related Documents
 

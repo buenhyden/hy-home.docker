@@ -15,11 +15,9 @@ updated: 2026-08-11
 
 # InfluxDB Recovery Runbook
 
-## InfluxDB Recovery Procedure
+## Overview
 
 > Scope: InfluxDB 3 Core service readiness, database/endpoint verification, and unprovisioned-token escalation.
-
-### Overview
 
 이 런북은 InfluxDB 3 Core service가 unhealthy이거나 database/endpoint readiness 또는 token-provisioning 문제가 의심될 때 사용한다.
 
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - InfluxDB 3 Core database/endpoint source contract mismatch를 방지한다.
 - Root secret metadata를 leaf token provisioning으로 오인하지 않고 health 상태를 확인한다.
 - cleanup or retention changes를 escalation 없이 임의 수행하지 않도록 한다.
-
-### Canonical References
-
-- **Spec**: [Analytics spec](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **Policy**: [InfluxDB policy](policy.md)
-- **Guide**: [InfluxDB guide](guide.md)
 
 ## When to Use
 
@@ -111,6 +103,24 @@ N/A - no verified rollback procedure can restore deleted InfluxDB data from this
 ## Escalation
 
 Escalate when token provisioning or authenticated write acceptance is needed, health does not match accepted response codes, disk pressure requires cleanup, or the observed database/endpoint contract differs from source.
+
+## Traceability
+
+- Declared parent: [InfluxDB Usage Guide](guide.md) (`GDE-0017`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
+
+## Traceability
+
+- Declared parent: [InfluxDB Usage Guide](guide.md) (`GDE-0017`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
+
+## Traceability
+
+- Declared parent: [InfluxDB Usage Guide](guide.md) (`GDE-0017`)
+- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
 
 ## Related Documents
 

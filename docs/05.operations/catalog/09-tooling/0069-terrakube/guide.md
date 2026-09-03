@@ -131,6 +131,24 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
+
+## Traceability
+
+- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
+
+## Traceability
+
+- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
+- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

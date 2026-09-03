@@ -69,6 +69,18 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
+## Traceability
+
+- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
+
+## Traceability
+
+- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
+
+## Traceability
+
+- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

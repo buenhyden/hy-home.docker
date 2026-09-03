@@ -67,6 +67,21 @@ updated: 2026-08-11
 - **Automated Topic Creation**: 자동 생성은 `kafka-init` compose 선언 또는 승인된 task evidence로만 허용한다.
 - **Health Guardrails**: 복제 오류 발생 시 AI Agent는 destructive topic mutation을 수행하지 않고 runbook evidence capture와 escalation을 우선한다.
 
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0036`), [Runbook](runbook.md) (`RUN-0036`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

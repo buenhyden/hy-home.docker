@@ -19,20 +19,12 @@ updated: 2026-08-11
 
 이 런북은 Keycloak readiness 실패, DB 연결 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다.
 
-## 02-Auth Keycloak Procedure
-
 > Scope: Keycloak Runtime Recovery
 
 ### Purpose
 
 - Keycloak 가용성을 빠르게 복구한다.
 - 시크릿/설정 회귀 시 안전하게 롤백한다.
-
-### Canonical References
-
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -103,6 +95,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Usage Guide](guide.md) (`GDE-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Usage Guide](guide.md) (`GDE-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
+
+## Traceability
+
+- Declared parent: [02-Auth Keycloak Usage Guide](guide.md) (`GDE-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
 
 ## Related Documents
 

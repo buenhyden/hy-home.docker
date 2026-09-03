@@ -19,8 +19,6 @@ updated: 2026-09-01
 
 이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
 
-## Ollama Maintenance & Recovery Procedure
-
 > Scope: Ollama Inference Service
 
 ---
@@ -30,12 +28,6 @@ updated: 2026-09-01
 - Ollama 추론 가용성을 빠르게 복구한다.
 - GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
 - 복구 후 Open WebUI 연동 상태를 검증한다.
-
-### Canonical References
-
-- [../../../02.architecture/descriptions/0008-ai-architecture.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
-- [../../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md](../../../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md)
-- [../../../03.specs/009-ai/spec.md](../../../../02.architecture/descriptions/0008-ai-architecture.md)
 
 ## When to Use
 
@@ -151,6 +143,24 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [Ollama Usage Guide](guide.md) (`GDE-0056`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Policy](policy.md) (`POL-0056`)
+
+## Traceability
+
+- Declared parent: [Ollama Usage Guide](guide.md) (`GDE-0056`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Policy](policy.md) (`POL-0056`)
+
+## Traceability
+
+- Declared parent: [Ollama Usage Guide](guide.md) (`GDE-0056`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0056`), [Policy](policy.md) (`POL-0056`)
 
 ## Related Documents
 

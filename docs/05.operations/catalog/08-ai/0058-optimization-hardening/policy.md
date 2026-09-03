@@ -78,6 +78,21 @@ updated: 2026-08-11
   - 모델 접근 권한 분리 정책(역할/환경) 문서화
   - 대화 로그 보존 기간/마스킹 규칙/파기 절차 문서화
 
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
+
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
+
+## Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

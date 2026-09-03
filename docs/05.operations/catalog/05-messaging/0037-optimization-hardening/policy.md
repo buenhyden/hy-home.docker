@@ -83,6 +83,21 @@ updated: 2026-08-11
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
 
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
+
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
+
+## Traceability
+
+- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
+- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

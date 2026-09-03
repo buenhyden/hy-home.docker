@@ -19,8 +19,6 @@ updated: 2026-08-11
 
 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 
-## 01-Gateway Nginx Procedure
-
 > Scope: Nginx Special-path Proxy Recovery
 
 ### Purpose
@@ -28,12 +26,6 @@ updated: 2026-08-11
 - readonly/tmpfs 운영 안정성 확보
 - config lint 실패 시 안전 롤백
 - 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/`) 정상성 회복
-
-### Canonical References
-
-- [Operations Policy](policy.md)
-- Plan
-- Tasks
 
 ## When to Use
 
@@ -114,6 +106,24 @@ updated: 2026-08-11
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [01-Gateway Nginx Usage Guide](guide.md) (`GDE-0011`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
+
+## Traceability
+
+- Declared parent: [01-Gateway Nginx Usage Guide](guide.md) (`GDE-0011`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
+
+## Traceability
+
+- Declared parent: [01-Gateway Nginx Usage Guide](guide.md) (`GDE-0011`)
+- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
 
 ## Related Documents
 

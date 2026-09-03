@@ -14,11 +14,9 @@ updated: 2026-08-11
 
 # 04-Data Storage Exhaustion Runbook
 
-## 04-Data Storage Exhaustion Procedure
+## Overview
 
 > Scope: emergency response when `04-data` persistent volumes or the host data root approach full capacity.
-
-### Overview
 
 이 런북은 데이터 볼륨이 포화되어 write failure, service crash, healthcheck failure가 발생할 때 사용하는 실행 절차다. 용량 확인, 증거 확보, 승인된 정리, 장기 복구 계획으로 절차를 분리한다.
 
@@ -27,12 +25,6 @@ updated: 2026-08-11
 - 데이터 서비스 중단을 최소화하면서 storage pressure의 원인을 식별한다.
 - destructive cleanup 전에 evidence와 승인 경계를 명확히 한다.
 - 백업/보존 정책과 충돌하지 않는 복구 경로를 선택한다.
-
-### Canonical References
-
-- **Spec**: [04-data spec](../../../../02.architecture/descriptions/0004-data-architecture.md)
-- **Policy**: [04-data backup policy](../0021-backup-and-restore/policy.md)
-- **Guide**: [04-data guides index](../README.md)
 
 ## When to Use
 
@@ -115,6 +107,21 @@ N/A - no verified rollback procedure can restore data removed by emergency clean
 ## Escalation
 
 Escalate to the owning operator before destructive cleanup, when backup evidence is missing, when affected services remain unhealthy after capacity relief, or when the root cause involves unknown data growth. Include captured evidence, attempted steps, current capacity, and the proposed recovery option.
+
+## Traceability
+
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
+
+## Traceability
+
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
+
+## Traceability
+
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
 
 ## Related Documents
 

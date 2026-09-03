@@ -15,23 +15,15 @@ updated: 2026-08-11
 
 # Portainer Recovery Runbook
 
-## Portainer Recovery Procedure
+## Overview
 
 > Scope: optional Portainer route hardening, Docker socket boundary, and access evidence.
-
-### Overview
 
 이 런북은 optional Portainer UI 접속 실패, route hardening drift, Docker socket 연결 문제를 진단하는 절차를 정의한다. 관리자 비밀번호 초기화나 데이터 삭제는 이 런북의 검증된 자동 복구 범위가 아니다.
 
 ### Purpose
 
 Portainer의 optional root include 상태와 write-capable Docker socket 위험을 명확히 기록하고, 비파괴적 evidence를 확보한 뒤 필요한 경우 승인 절차로 에스컬레이션한다.
-
-### Canonical References
-
-- **Spec**: [Laboratory spec](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Policy**: [Portainer policy](policy.md)
-- **Guide**: [Portainer guide](guide.md)
 
 ## When to Use
 
@@ -87,6 +79,24 @@ If password reset, endpoint mutation, Docker socket permission expansion, volume
 ## Escalation
 
 Escalate to the owning operator for password reset, helper container execution, endpoint authorization, data restore/delete, or any runtime mutation outside static boundary correction.
+
+## Traceability
+
+- Declared parent: [Portainer Usage Guide](guide.md) (`GDE-0075`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Policy](policy.md) (`POL-0075`)
+
+## Traceability
+
+- Declared parent: [Portainer Usage Guide](guide.md) (`GDE-0075`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Policy](policy.md) (`POL-0075`)
+
+## Traceability
+
+- Declared parent: [Portainer Usage Guide](guide.md) (`GDE-0075`)
+- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- Subject peers: [Guide](guide.md) (`GDE-0075`), [Policy](policy.md) (`POL-0075`)
 
 ## Related Documents
 

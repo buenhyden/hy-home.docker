@@ -155,6 +155,24 @@ Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current co
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+## Traceability
+
+- Declared parent: [Prometheus Operations Policy](policy.md) (`POL-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0045`), [Runbook](runbook.md) (`RUN-0045`)
+
+## Traceability
+
+- Declared parent: [Prometheus Operations Policy](policy.md) (`POL-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0045`), [Runbook](runbook.md) (`RUN-0045`)
+
+## Traceability
+
+- Declared parent: [Prometheus Operations Policy](policy.md) (`POL-0045`)
+- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](policy.md) (`POL-0045`), [Runbook](runbook.md) (`RUN-0045`)
+
 ## Related Documents
 
 - [Operations index](../../../README.md)
