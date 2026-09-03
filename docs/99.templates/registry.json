@@ -522,15 +522,15 @@
       "identity_relation": "none",
       "template_id": "operation/domain-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -809,15 +809,15 @@
       "identity_relation": "none",
       "template_id": "reference/category-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -1184,15 +1184,15 @@
       "identity_relation": "none",
       "template_id": "common/documentation-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -1237,15 +1237,15 @@
       "identity_relation": "none",
       "template_id": "common/repository-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -1283,15 +1283,15 @@
       "identity_relation": "none",
       "template_id": "common/package-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -1350,15 +1350,15 @@
       "identity_relation": "none",
       "template_id": "common/runtime-governance-readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "generated_by",
         "layer",
         "owner",
-        "status",
         "title",
         "updated"
       ],
@@ -1384,8 +1384,9 @@
       "identity_relation": "none",
       "template_id": "common/readme",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
@@ -1393,7 +1394,6 @@
         "layer",
         "owner",
         "runtime",
-        "status",
         "title",
         "updated"
       ],
@@ -1454,14 +1454,14 @@
       "identity_relation": "none",
       "template_id": "governance/policy",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
         "runtime",
-        "status",
         "title",
         "updated"
       ],
@@ -1488,8 +1488,9 @@
       "identity_relation": "none",
       "template_id": "governance/hook-policy",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "action",
@@ -1500,7 +1501,6 @@
         "name",
         "owner",
         "pattern",
-        "status",
         "title",
         "updated"
       ],
@@ -1601,14 +1601,14 @@
       "identity_relation": "none",
       "template_id": "governance/provider",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
         "runtime",
-        "status",
         "title",
         "updated"
       ],
@@ -1633,12 +1633,12 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "owner",
-        "status",
         "title"
       ],
       "required_sections": [
@@ -1662,13 +1662,13 @@
       "identity_relation": "none",
       "template_id": "governance/sdlc",
       "required_frontmatter": [
+        "version",
         "type",
-        "version"
+        "status"
       ],
       "optional_frontmatter": [
         "created",
         "owner",
-        "status",
         "title",
         "updated"
       ],
