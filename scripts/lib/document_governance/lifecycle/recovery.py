@@ -29,11 +29,25 @@ def run(root: pathlib.Path) -> int:
     findings = archive_authority.validate_recovery_rows(recovery_rows, root)
     for finding in findings:
         print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
-    violations = len(findings)
+    # A record of a decision and a preserved body are different things, and the
+    # index says so in prose. This is what keeps them from being conflated.
+    boundary = archive_authority.validate_preservation_boundary(
+        root / "docs/98.archive"
+    )
+    for detail in boundary:
+        print(f"archive-preservation-boundary: {detail}")
+    violations = len(findings) + len(boundary)
+    preserved = sum(
+        1
+        for disposition in ("completed", "superseded", "retired")
+        for _ in (root / "docs/98.archive" / disposition).rglob("*.md")
+        if (root / "docs/98.archive" / disposition).is_dir()
+    )
     print(
         "archive recovery: "
         f"migrations={len(inventory.migrations)} "
         f"tombstones={len(inventory.tombstones)} "
+        f"preserved={preserved} "
         f"decisions={len(decisions)} "
         f"recovery_rows={len(recovery_rows)} violations={violations}"
     )

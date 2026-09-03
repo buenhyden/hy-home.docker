@@ -393,6 +393,47 @@ class ArchiveMinimizationTests(unittest.TestCase):
                     offenders.append(f"{method.name}:{literal.value}")
         self.assertEqual([], offenders)
 
+    def test_preservation_boundary_is_total_and_exclusive(self) -> None:
+        """The two kinds of Stage 98 record must not be conflated.
+
+        Retirement pairs a Tombstone with a preserved body and neither half is
+        evidence alone. Completion and supersession are self-describing and take
+        no Tombstone, so one appearing there would record a withdrawal that
+        never happened.
+        """
+
+        archive_root = ROOT / "docs/98.archive"
+        self.assertEqual((), self.archive.validate_preservation_boundary(archive_root))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory) / "98.archive"
+            for disposition in ("completed", "retired", "tombstones"):
+                (root / disposition).mkdir(parents=True)
+            tombstone = root / "tombstones/0001-example.md"
+            tombstone.write_text(
+                "## Retired Path\n\n`docs/01.requirements/0001-example.md`\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(1, len(self.archive.validate_preservation_boundary(root)))
+
+            record = root / "retired/01.requirements/0001-example.md"
+            record.parent.mkdir(parents=True)
+            record.write_text("# Example\n", encoding="utf-8")
+            self.assertEqual((), self.archive.validate_preservation_boundary(root))
+
+            orphan = root / "retired/01.requirements/0002-orphan.md"
+            orphan.write_text("# Orphan\n", encoding="utf-8")
+            self.assertEqual(1, len(self.archive.validate_preservation_boundary(root)))
+            orphan.unlink()
+
+            conflated = root / "completed/01.requirements/0001-example.md"
+            conflated.parent.mkdir(parents=True)
+            conflated.write_text("# Example\n", encoding="utf-8")
+            self.assertIn(
+                "must not carry a tombstone",
+                " ".join(self.archive.validate_preservation_boundary(root)),
+            )
+
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         # A disposition subtree exists only once something is preserved into

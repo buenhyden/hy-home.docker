@@ -837,6 +837,66 @@ def _parse_tombstone(path: pathlib.Path, archive_root: pathlib.Path) -> Tombston
     return _parse_tombstone_text(_decode_document(path), relative, path.name)
 
 
+def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...]:
+    """Return every place the two kinds of Stage 98 record are conflated.
+
+    A record of a decision says what happened; a preserved body says what a
+    document said. Retirement needs both and they must pair exactly, while
+    completion and supersession are self-describing and take no Tombstone.
+    Without this, the boundary is prose in the index and nothing enforces it.
+    """
+
+    from scripts.lib.document_governance.registry import preserved_origin_path
+
+    archive_root = pathlib.Path(archive_root)
+    findings: list[str] = []
+
+    expected: dict[str, str] = {}
+    for tombstone in sorted((archive_root / "tombstones").rglob("*.md")):
+        text = tombstone.read_text(encoding="utf-8")
+        retired = _section(text, "Retired Path").strip().strip("`")
+        if not retired:
+            findings.append(f"{tombstone.as_posix()}: tombstone names no retired path")
+            continue
+        if retired in expected:
+            findings.append(f"{retired}: named by more than one tombstone")
+            continue
+        expected[retired] = tombstone.as_posix()
+
+    preserved: dict[str, set[str]] = {
+        "completed": set(),
+        "superseded": set(),
+        "retired": set(),
+    }
+    for disposition in preserved:
+        subtree = archive_root / disposition
+        if not subtree.is_dir():
+            continue
+        for record in sorted(subtree.rglob("*.md")):
+            origin = preserved_origin_path(
+                record.as_posix()[record.as_posix().index("docs/98.archive/") :]
+                if "docs/98.archive/" in record.as_posix()
+                else f"docs/98.archive/{disposition}/"
+                + record.relative_to(subtree).as_posix()
+            )
+            if origin is not None:
+                preserved[disposition].add(origin)
+
+    for retired, tombstone in sorted(expected.items()):
+        if retired not in preserved["retired"]:
+            findings.append(
+                f"{tombstone}: tombstone has no preserved record: {retired}"
+            )
+    for origin in sorted(preserved["retired"] - set(expected)):
+        findings.append(f"{origin}: retired record has no tombstone")
+    for disposition in ("completed", "superseded"):
+        for origin in sorted(preserved[disposition] & set(expected)):
+            findings.append(
+                f"{origin}: {disposition} record must not carry a tombstone"
+            )
+    return tuple(findings)
+
+
 def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
     parent, root_fd, root_name, root_snapshot = _open_directory_path(
         archive_root, "Stage 98"
