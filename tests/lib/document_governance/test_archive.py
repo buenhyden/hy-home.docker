@@ -434,6 +434,31 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 " ".join(self.archive.validate_preservation_boundary(root)),
             )
 
+    def test_active_stages_hold_no_terminal_document(self) -> None:
+        """A terminal document has left current work and must be preserved.
+
+        The corpus satisfies this today; the fixture proves the rule is what
+        makes that true rather than an accident of the current tree.
+        """
+
+        self.assertEqual((), self.archive.validate_active_stage_occupancy(ROOT))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            live = root / "docs/02.architecture/decisions/0001-example.md"
+            live.parent.mkdir(parents=True)
+            live.write_text("---\nstatus: active\n---\n\n# Example\n", encoding="utf-8")
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            self.assertEqual((), self.archive.validate_active_stage_occupancy(root))
+
+            live.write_text(
+                "---\nstatus: superseded\n---\n\n# Example\n", encoding="utf-8"
+            )
+            findings = self.archive.validate_active_stage_occupancy(root)
+            self.assertEqual(1, len(findings))
+            self.assertIn("remains in an active stage", findings[0])
+
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         # A disposition subtree exists only once something is preserved into

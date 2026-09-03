@@ -36,7 +36,12 @@ def run(root: pathlib.Path) -> int:
     )
     for detail in boundary:
         print(f"archive-preservation-boundary: {detail}")
-    violations = len(findings) + len(boundary)
+    # An active stage holds current work; a terminal document has left that
+    # state and belongs under the subtree for its disposition.
+    occupancy = archive_authority.validate_active_stage_occupancy(root)
+    for detail in occupancy:
+        print(f"active-stage-occupancy: {detail}")
+    violations = len(findings) + len(boundary) + len(occupancy)
     preserved = sum(
         1
         for disposition in ("completed", "superseded", "retired")

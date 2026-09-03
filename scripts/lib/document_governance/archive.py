@@ -10,6 +10,7 @@ import os
 import pathlib
 import re
 import stat
+import subprocess
 from collections.abc import Iterable, Mapping
 from typing import Any
 
@@ -835,6 +836,52 @@ def _parse_tombstone(path: pathlib.Path, archive_root: pathlib.Path) -> Tombston
         path.relative_to(archive_root.parent.parent).as_posix()
     )
     return _parse_tombstone_text(_decode_document(path), relative, path.name)
+
+
+ACTIVE_STAGE_PREFIXES = (
+    "docs/01.requirements/",
+    "docs/02.architecture/",
+    "docs/03.specs/",
+    "docs/05.operations/",
+    "docs/90.references/",
+)
+TERMINAL_DOCUMENT_STATUSES = frozenset(
+    {"completed", "cancelled", "superseded", "retired"}
+)
+
+
+def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
+    """Return every terminal-status document still sitting in an active stage.
+
+    An active stage holds current work. A document whose status is terminal has
+    left that state, so it belongs under the `docs/98.archive/` subtree for its
+    disposition. Without this the placement rule is prose and a finished
+    document can sit beside live work indefinitely.
+    """
+
+    from scripts.lib.document_governance.frontmatter import read_frontmatter_values
+
+    root = pathlib.Path(root)
+    tracked = subprocess.run(
+        ["git", "ls-files", "docs"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout.split()
+    findings: list[str] = []
+    for relative in tracked:
+        if not relative.endswith(".md") or not relative.startswith(
+            ACTIVE_STAGE_PREFIXES
+        ):
+            continue
+        try:
+            status = read_frontmatter_values(root / relative).get("status")
+        except Exception:
+            continue
+        if isinstance(status, str) and status in TERMINAL_DOCUMENT_STATUSES:
+            findings.append(f"{relative}: {status} document remains in an active stage")
+    return tuple(findings)
 
 
 def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...]:
