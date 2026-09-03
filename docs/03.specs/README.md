@@ -76,6 +76,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0160 | [README Entrypoint Form Registration](./0160-readme-entrypoint-form-registration/spec.md) | completed outcome Spec with retained [Plan](./0160-readme-entrypoint-form-registration/plan.md) and [Task](./0160-readme-entrypoint-form-registration/tasks/tsk-0001-readme-entrypoint-forms.md) |
 | SPEC-0161 | [Legacy Profile Layer Retirement](./0161-legacy-profile-layer-retirement/spec.md) | completed outcome Spec with retained [Plan](./0161-legacy-profile-layer-retirement/plan.md) and [Task](./0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md) |
 | SPEC-0162 | [Validation Blind Spot Closure](./0162-validation-blind-spot-closure/spec.md) | completed outcome Spec with retained [Plan](./0162-validation-blind-spot-closure/plan.md) and [Task](./0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md) |
+| SPEC-0163 | [Deferred Contract Enforcement](./0163-deferred-contract-enforcement/spec.md) | completed outcome Spec with retained [Plan](./0163-deferred-contract-enforcement/plan.md) and [Task](./0163-deferred-contract-enforcement/tasks/tsk-0001-deferred-items.md) |
 
 ## Role Contract
 

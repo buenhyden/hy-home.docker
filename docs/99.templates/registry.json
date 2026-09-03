@@ -3198,8 +3198,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 162,
-      "next_number": 163,
+      "high_water": 163,
+      "next_number": 164,
       "child_spaces": {}
     },
     "operations-subject": {

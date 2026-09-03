@@ -339,6 +339,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0162-validation-blind-spot-closure/plan.md](../../../03.specs/0162-validation-blind-spot-closure/plan.md) | Markdown reference |
 | [docs/03.specs/0162-validation-blind-spot-closure/spec.md](../../../03.specs/0162-validation-blind-spot-closure/spec.md) | Markdown reference |
 | [docs/03.specs/0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md](../../../03.specs/0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md) | Markdown reference |
+| [docs/03.specs/0163-deferred-contract-enforcement/plan.md](../../../03.specs/0163-deferred-contract-enforcement/plan.md) | Markdown reference |
+| [docs/03.specs/0163-deferred-contract-enforcement/spec.md](../../../03.specs/0163-deferred-contract-enforcement/spec.md) | Markdown reference |
+| [docs/03.specs/0163-deferred-contract-enforcement/tasks/tsk-0001-deferred-items.md](../../../03.specs/0163-deferred-contract-enforcement/tasks/tsk-0001-deferred-items.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
