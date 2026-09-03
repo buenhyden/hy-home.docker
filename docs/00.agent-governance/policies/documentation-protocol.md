@@ -116,6 +116,11 @@ and its still-current meaning has moved to a canonical owner.
 | `superseded` | preserve the package under `docs/98.archive/superseded/`, keeping `superseded_by` | preserve under `docs/98.archive/superseded/` with `superseded_by` |
 | `retired` | preserve the package under `docs/98.archive/retired/` and record one Tombstone | preserve under `docs/98.archive/retired/` and record one Tombstone |
 
+Run the all-files QA wrapper before the change that completes a package. It
+binds its evidence to a Task under `docs/03.specs/`, and completion preserves
+that Task under `docs/98.archive/completed/`, where it is a frozen record that
+must not take new evidence.
+
 ### Retirement preconditions
 
 Retire a package or a standalone document only when all of these hold.
