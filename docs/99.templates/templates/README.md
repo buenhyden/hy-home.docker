@@ -2,6 +2,7 @@
 title: Template Catalog
 version: 1.0.0
 type: common/readme
+status: active
 owner: "@buenhyden"
 ---
 

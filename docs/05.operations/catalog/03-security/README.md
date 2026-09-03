@@ -3,6 +3,7 @@ title: Operations — 03 Security
 version: 1.0.0
 type: operation/domain-readme
 layer: operations
+status: active
 owner: "@buenhyden"
 ---
 

@@ -2,6 +2,7 @@
 title: "WARNING: template use required"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: enforce-docs-templates
 enabled: true

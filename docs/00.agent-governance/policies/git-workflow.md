@@ -2,6 +2,7 @@
 title: Git Workflow Governance
 version: 1.0.0
 type: governance/policy
+status: active
 owner: "@buenhyden"
 ---
 

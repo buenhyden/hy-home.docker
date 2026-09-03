@@ -2,6 +2,7 @@
 title: "BLOCKED: git commit --no-verify"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: block-git-no-verify
 enabled: true

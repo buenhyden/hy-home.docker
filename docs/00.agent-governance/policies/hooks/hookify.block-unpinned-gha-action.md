@@ -2,6 +2,7 @@
 title: "BLOCKED: floating reference"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: block-unpinned-gha-action
 enabled: true

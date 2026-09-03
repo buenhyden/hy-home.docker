@@ -2,6 +2,7 @@
 title: "WARNING: branch naming rule violation"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-branch-naming
 enabled: true

@@ -2,6 +2,7 @@
 title: "WARNING: non-Conventional Commit message"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-conventional-commit
 enabled: true

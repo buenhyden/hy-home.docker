@@ -2,6 +2,7 @@
 title: "BLOCKED: incomplete logical commits"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: require-logical-commits-before-stop
 enabled: true

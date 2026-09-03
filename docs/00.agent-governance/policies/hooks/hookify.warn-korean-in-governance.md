@@ -2,6 +2,7 @@
 title: "WARNING: Korean text in governance documentation"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-korean-in-governance
 enabled: true

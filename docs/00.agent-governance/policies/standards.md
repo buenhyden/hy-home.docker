@@ -2,6 +2,7 @@
 title: AI Agent Standards
 version: 1.0.0
 type: governance/policy
+status: active
 owner: "@buenhyden"
 ---
 

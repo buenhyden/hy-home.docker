@@ -2,6 +2,7 @@
 title: "WARNING: manual pre-commit execution"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-pre-commit-manual
 enabled: true

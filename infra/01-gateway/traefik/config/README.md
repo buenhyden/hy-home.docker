@@ -1,5 +1,10 @@
 ---
+title: Traefik Static Configuration
+version: 1.0.0
+type: common/package-readme
 layer: infra
+status: active
+owner: "@buenhyden"
 ---
 
 # Traefik Static Configuration

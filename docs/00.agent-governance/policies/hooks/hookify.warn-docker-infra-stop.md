@@ -2,6 +2,7 @@
 title: "WARNING: Docker infrastructure completion routing"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-docker-infra-stop
 enabled: true

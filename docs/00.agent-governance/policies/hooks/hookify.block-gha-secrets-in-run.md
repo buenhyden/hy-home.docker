@@ -2,6 +2,7 @@
 title: "BLOCKED: prints a secret to logs"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: block-gha-secrets-in-run
 enabled: true

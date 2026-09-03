@@ -2,6 +2,7 @@
 title: "BLOCKED: absolute file:// link"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: block-absolute-file-link
 enabled: true

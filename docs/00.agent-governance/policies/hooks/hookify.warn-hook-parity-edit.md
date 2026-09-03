@@ -2,6 +2,7 @@
 title: "WARNING: hook parity contract review required"
 version: 1.0.0
 type: governance/hook-policy
+status: active
 owner: "@buenhyden"
 name: warn-hook-parity-edit
 enabled: true

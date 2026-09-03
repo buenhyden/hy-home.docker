@@ -3,6 +3,7 @@ title: Operations — 02 Auth
 version: 1.0.0
 type: operation/domain-readme
 layer: operations
+status: active
 owner: "@buenhyden"
 ---
 
