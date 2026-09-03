@@ -41,4 +41,4 @@ above and by the domain's Stage 02 architecture description.
 ## Traceability
 
 - [Archive index](../../README.md)
-- [SPEC-0169](../../../03.specs/0169-document-lifecycle-convergence/spec.md)
+- [SPEC-0169](../../completed/03.specs/0169-document-lifecycle-convergence/spec.md)

@@ -75,7 +75,7 @@ updated: 2026-08-14
 
 ## Traceability
 
-- Declared parent: [LLM Wiki Completion Outcome](../../../../03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
+- Declared parent: [LLM Wiki Completion Outcome](../../../../98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) (`SPEC-0096`)
 - Subject peers: [Policy](policy.md) (`POL-0007`), [Runbook](runbook.md) (`RUN-0007`)
 
 ## Related Documents

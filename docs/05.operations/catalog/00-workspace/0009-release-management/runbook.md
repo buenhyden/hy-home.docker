@@ -208,7 +208,7 @@ updated: 2026-08-14
 
 ## Traceability
 
-- Declared parent: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- Declared parent: [Workspace Revalidation Outcome](../../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
 - Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
 
 ## Related Documents

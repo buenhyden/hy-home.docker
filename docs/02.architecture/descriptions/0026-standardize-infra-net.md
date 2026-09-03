@@ -101,7 +101,7 @@ tracked Compose configuration.
 
 - [REQ-0023 Standardize infra_net](../../01.requirements/0023-standardize-infra-net.md)
 - [ADR-0026 Standardize infra_net](../decisions/0026-standardize-infra-net.md)
-- [SPEC-0098 completed implementation outcome](../../03.specs/0098-standardize-infra-net/spec.md)
+- [SPEC-0098 completed implementation outcome](../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
 - [IP address management guide](../../05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md)
 - [IP address management policy](../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md)
 - [IP address management runbook](../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md)

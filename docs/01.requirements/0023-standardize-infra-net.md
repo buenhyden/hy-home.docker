@@ -77,6 +77,6 @@ N/A
 
 - **Architecture Description**: [infra_net architecture descriptions](../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision](../02.architecture/decisions/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../03.specs/0098-standardize-infra-net/spec.md)
+- **Spec**: [infra_net technical specification](../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
 - **Plan**: infra_net implementation plan
 - **Task**: infra_net task evidence

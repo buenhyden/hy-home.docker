@@ -176,9 +176,9 @@ Archived exercise ideas. These are not implementation tasks, operations runbooks
 
 - [Learning reference index](README.md)
 - [Active learning roadmap](ref-0081-roadmap.md)
-- [90.references](../../README.md)
+- [90.references](../../../../../90.references/README.md)
 - [stable reference terms](../data/glossary/ref-0062-stable-reference-terms.md)
-- [docs index](../../README.md)
+- [docs index](../../../../../90.references/README.md)
 
 ## Question
 

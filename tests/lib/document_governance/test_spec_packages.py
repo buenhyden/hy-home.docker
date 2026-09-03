@@ -593,6 +593,42 @@ class SpecPackageTests(unittest.TestCase):
                 ),
             )
 
+    def test_preserved_package_is_not_a_retirement(self) -> None:
+        """Completion and withdrawal are different events with different records.
+
+        A package moved to the archive keeps every document, so demanding a
+        Tombstone for it would record a withdrawal that never happened. A
+        package that leaves without being preserved still needs one.
+        """
+
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            before_stage = root / "before/docs/03.specs"
+            after_stage = root / "after/docs/03.specs"
+            _write_package(before_stage, spec_status="completed")
+            after_stage.mkdir(parents=True, exist_ok=True)
+            before = spec_packages.load_spec_packages(before_stage)
+            after = spec_packages.load_spec_packages(after_stage)
+            preserved = frozenset(
+                {pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")}
+            )
+            self.assertEqual(
+                (),
+                spec_packages.validate_spec_package_lifecycle(
+                    before, after, preserved_paths=preserved
+                ),
+            )
+            self.assertEqual(
+                {("package-retirement-unrecorded", "docs/03.specs/0001-example")},
+                {
+                    (finding.code, finding.path)
+                    for finding in spec_packages.validate_spec_package_lifecycle(
+                        before, after
+                    )
+                },
+            )
+
     def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(
         self,
     ) -> None:
@@ -610,8 +646,11 @@ class SpecPackageTests(unittest.TestCase):
             self.assertNotIn(token, source)
         self.assertIsNone(re.search(r"!=\s*(?:49|46)\b", source))
         signature = inspect.signature(spec_packages.validate_spec_package_lifecycle)
+        # Both path sets are facts the caller injects. The validator still
+        # reads no archive of its own, which is what this test guards.
         self.assertEqual(
-            ["previous", "current", "retired_paths"], list(signature.parameters)
+            ["previous", "current", "retired_paths", "preserved_paths"],
+            list(signature.parameters),
         )
 
     def test_public_repository_validator_enforces_snapshot_lifecycle(self) -> None:

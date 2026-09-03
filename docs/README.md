@@ -160,7 +160,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/0095-infra-secrets-docs-refresh/spec.md](03.specs/0095-infra-secrets-docs-refresh/spec.md) |
+| Spec | [03.specs/0095-infra-secrets-docs-refresh/spec.md](98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md) |
 | Plan and Task evidence | co-located in the owning Spec Package |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
@@ -168,7 +168,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/0096-llm-wiki-agent-first-completion/spec.md](03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
+| Spec | [03.specs/0096-llm-wiki-agent-first-completion/spec.md](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
 | Plan and Task evidence | co-located in the owning Spec Package |
 | Repository map | [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md) |
 | Generated index | [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md) |

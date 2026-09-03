@@ -40,5 +40,5 @@ provider 절차, validation 범위, lifecycle 규칙을 정의하지 않는다.
 
 ## Traceability
 
-- [ADR-0029 Workspace Governance Authority](0029-workspace-governance-authority.md)
-- [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0029 Workspace Governance Authority](../../../../02.architecture/decisions/0029-workspace-governance-authority.md)
+- [AD-0027 Agent Governance Canonical Adapter](../../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)

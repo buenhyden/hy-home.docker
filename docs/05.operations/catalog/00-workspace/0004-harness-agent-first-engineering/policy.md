@@ -92,7 +92,7 @@ bash scripts/hardening/check-all-hardening.sh
 
 ## Traceability
 
-- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - Subject peers: [Guide](guide.md) (`GDE-0004`), [Runbook](runbook.md) (`RUN-0004`)
 
 ## Related Documents

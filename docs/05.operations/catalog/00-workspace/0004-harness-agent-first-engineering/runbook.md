@@ -146,13 +146,13 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Traceability
 
-- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - Subject peers: [Guide](guide.md) (`GDE-0004`), [Policy](policy.md) (`POL-0004`)
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
-- [Specification](../../../../03.specs/0094-harness-agent-first-engineering/spec.md)
+- [Specification](../../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
 - [Agent Governance Hub](../../../../00.agent-governance/README.md)

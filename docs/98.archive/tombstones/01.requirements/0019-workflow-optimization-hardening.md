@@ -40,4 +40,4 @@ for every stage. The domain's solution-independent requirement is REQ-0008.
 ## Traceability
 
 - [Archive index](../../README.md)
-- [SPEC-0169](../../../03.specs/0169-document-lifecycle-convergence/spec.md)
+- [SPEC-0169](../../completed/03.specs/0169-document-lifecycle-convergence/spec.md)

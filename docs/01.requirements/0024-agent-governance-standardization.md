@@ -94,5 +94,5 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - **Decision**: [ADR-0029 Workspace Governance Authority](../02.architecture/decisions/0029-workspace-governance-authority.md)
-- **Current convergence**: [SPEC-0158](../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- **Current convergence**: [SPEC-0158](../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - **Governance entry**: [Stage 00](../00.agent-governance/README.md)

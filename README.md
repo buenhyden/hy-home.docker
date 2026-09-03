@@ -75,7 +75,7 @@ hy-home.docker/
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
 - [`docs/90.references/data/`](./docs/90.references/data) - Docker image/version drift 기준과 참고 규칙
-- [`docs/03.specs/0095-infra-secrets-docs-refresh/`](./docs/03.specs/0095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
+- [`docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/`](./docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
 
@@ -284,7 +284,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`docs/90.references/data/0082-llm-wiki-index/README.md`](./docs/90.references/data/0082-llm-wiki-index/README.md)
 - [`docs/90.references/data/0082-llm-wiki-index/README.md`](docs/90.references/data/0082-llm-wiki-index/README.md)
 - [`llms.txt`](./llms.txt)
-- [`docs/03.specs/0095-infra-secrets-docs-refresh/spec.md`](docs/03.specs/0095-infra-secrets-docs-refresh/spec.md)
+- [`docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md`](docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md)
 - Historical execution evidence: `plan-0028` (retained through the typed change ledger)
 - [`infra/README.md`](./infra/README.md)
 - [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)

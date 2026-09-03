@@ -38,28 +38,28 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 
 | ID | Package | Current roles |
 | --- | --- | --- |
-| SPEC-0093 | [Documentation Taxonomy Migration](./0093-docs-taxonomy-agent-first-migration/spec.md) | completed outcome Spec |
-| SPEC-0094 | [Harness and Agent-first Engineering](./0094-harness-agent-first-engineering/spec.md) | completed outcome Spec |
-| SPEC-0095 | [Infrastructure, Secrets, and Documentation Refresh](./0095-infra-secrets-docs-refresh/spec.md) | completed outcome Spec |
-| SPEC-0096 | [LLM Wiki Completion](./0096-llm-wiki-agent-first-completion/spec.md) | completed outcome Spec |
-| SPEC-0097 | [Workspace Revalidation](./0097-home-docker-revalidation-deferred-follow-up/spec.md) | completed outcome Spec |
-| SPEC-0098 | [infra_net Standardization](./0098-standardize-infra-net/spec.md) | completed outcome Spec |
-| SPEC-0154 | [Governance Consistency Convergence](./0154-governance-consistency-convergence/spec.md) | completed outcome Spec |
-| SPEC-0155 | [Validation Surface Reduction](./0155-validation-surface-reduction/spec.md) | completed outcome Spec |
+| SPEC-0093 | [Documentation Taxonomy Migration](../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md) | completed, preserved under the archive |
+| SPEC-0094 | [Harness and Agent-first Engineering](../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) | completed, preserved under the archive |
+| SPEC-0095 | [Infrastructure, Secrets, and Documentation Refresh](../98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md) | completed, preserved under the archive |
+| SPEC-0096 | [LLM Wiki Completion](../98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) | completed, preserved under the archive |
+| SPEC-0097 | [Workspace Revalidation](../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) | completed, preserved under the archive |
+| SPEC-0098 | [infra_net Standardization](../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md) | completed, preserved under the archive |
+| SPEC-0154 | [Governance Consistency Convergence](../98.archive/completed/03.specs/0154-governance-consistency-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0155 | [Validation Surface Reduction](../98.archive/completed/03.specs/0155-validation-surface-reduction/spec.md) | completed, preserved under the archive |
 | SPEC-0156 | [Compose Enablement Model Convergence](./0156-compose-enablement-model-convergence/spec.md) | active Spec with [Plan](./0156-compose-enablement-model-convergence/plan.md) and [Task](./0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) |
-| SPEC-0157 | [Script Surface Ownership Convergence](./0157-script-surface-ownership-convergence/spec.md) | completed outcome Spec |
-| SPEC-0158 | [Document Governance Lifecycle Convergence](./0158-document-governance-lifecycle-convergence/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0159 | [Document Taxonomy and Identity Convergence](./0159-document-taxonomy-identity-convergence/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0160 | [README Entrypoint Form Registration](./0160-readme-entrypoint-form-registration/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0161 | [Legacy Profile Layer Retirement](./0161-legacy-profile-layer-retirement/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0162 | [Validation Blind Spot Closure](./0162-validation-blind-spot-closure/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0163 | [Deferred Contract Enforcement](./0163-deferred-contract-enforcement/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0164 | [Lifecycle Vocabulary Alignment](./0164-lifecycle-vocabulary-alignment/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0165 | [Template Contract Enforcement](./0165-template-contract-enforcement/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0166 | [Formatting Authority Convergence](./0166-formatting-authority-convergence/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0167 | [Quality Gate Convergence](./0167-quality-gate-convergence/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0168 | [Entrypoint README Registration](./0168-entrypoint-readme-registration/spec.md) | completed outcome Spec; execution members removed at completion |
-| SPEC-0169 | [Document Lifecycle Convergence](./0169-document-lifecycle-convergence/spec.md) | active Spec with [Plan](./0169-document-lifecycle-convergence/plan.md) and [Task](./0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
+| SPEC-0157 | [Script Surface Ownership Convergence](../98.archive/completed/03.specs/0157-script-surface-ownership-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0158 | [Document Governance Lifecycle Convergence](../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0159 | [Document Taxonomy and Identity Convergence](../98.archive/completed/03.specs/0159-document-taxonomy-identity-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0160 | [README Entrypoint Form Registration](../98.archive/completed/03.specs/0160-readme-entrypoint-form-registration/spec.md) | completed, preserved under the archive |
+| SPEC-0161 | [Legacy Profile Layer Retirement](../98.archive/completed/03.specs/0161-legacy-profile-layer-retirement/spec.md) | completed, preserved under the archive |
+| SPEC-0162 | [Validation Blind Spot Closure](../98.archive/completed/03.specs/0162-validation-blind-spot-closure/spec.md) | completed, preserved under the archive |
+| SPEC-0163 | [Deferred Contract Enforcement](../98.archive/completed/03.specs/0163-deferred-contract-enforcement/spec.md) | completed, preserved under the archive |
+| SPEC-0164 | [Lifecycle Vocabulary Alignment](../98.archive/completed/03.specs/0164-lifecycle-vocabulary-alignment/spec.md) | completed, preserved under the archive |
+| SPEC-0165 | [Template Contract Enforcement](../98.archive/completed/03.specs/0165-template-contract-enforcement/spec.md) | completed, preserved under the archive |
+| SPEC-0166 | [Formatting Authority Convergence](../98.archive/completed/03.specs/0166-formatting-authority-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0167 | [Quality Gate Convergence](../98.archive/completed/03.specs/0167-quality-gate-convergence/spec.md) | completed, preserved under the archive |
+| SPEC-0168 | [Entrypoint README Registration](../98.archive/completed/03.specs/0168-entrypoint-readme-registration/spec.md) | completed, preserved under the archive |
+| SPEC-0169 | [Document Lifecycle Convergence](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 | SPEC-0170 | [Archive Preservation Model](./0170-archive-preservation-model/spec.md) | active Spec with [Plan](./0170-archive-preservation-model/plan.md) and [Task](./0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 
 ## How to Work in This Area

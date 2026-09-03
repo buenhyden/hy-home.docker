@@ -374,7 +374,7 @@ package root 기준 상대 경로입니다.
 ## Related Documents
 
 - [Research references](../README.md)
-- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - Source refresh Task (retired path: `../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`)

@@ -805,14 +805,16 @@ def validate_spec_package_lifecycle(
     current: Sequence[SpecPackage],
     *,
     retired_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
+    preserved_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
 ) -> tuple[SpecPackageFinding, ...]:
     """Enforce the Stage 00 retention contract on Spec Package removals.
 
-    A retained package keeps its non-terminal members. A package removed in
-    whole is a retirement, and Stage 00 requires one Stage 98 Tombstone for it.
-    Git stores the content; the Tombstone is the tracked pointer that keeps it
-    findable, so an unrecorded removal fails closed even when nothing links to
-    the package.
+    A retained package keeps its non-terminal members. A package that leaves
+    Stage 03 is either preserved or retired, and the two are not the same
+    event: preservation moves a finished package to the archive and keeps every
+    document, while retirement withdraws one and records a Tombstone saying
+    why. A Tombstone is required for the second, and asking for one after a
+    completion would record a withdrawal that never happened.
 
     The Spec's terminal status is an authoring obligation recorded in the
     Tombstone's `Reason`, not a predicate here: the comparison base is the
@@ -841,6 +843,8 @@ def validate_spec_package_lifecycle(
                 )
             )
     for name, package in sorted(retired_packages.items()):
+        if package.spec.path in preserved_paths:
+            continue
         if package.spec.path not in retired_paths:
             findings.append(
                 SpecPackageFinding(
@@ -1135,7 +1139,34 @@ def validate_repository_spec_package_lifecycle(
         previous,
         current,
         retired_paths=_recorded_retirements(root),
+        preserved_paths=_preserved_records(root),
     )
+
+
+def _preserved_records(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
+    """Return the live paths of documents preserved under the archive.
+
+    A preserved record answers "where did this go" with a file rather than a
+    pointer, so a package that reappears here left Stage 03 by completion and
+    not by withdrawal.
+    """
+
+    from scripts.lib.document_governance.registry import (
+        PRESERVED_DISPOSITIONS,
+        preserved_origin_path,
+    )
+
+    preserved: set[pathlib.PurePosixPath] = set()
+    for disposition in PRESERVED_DISPOSITIONS:
+        subtree = root / "docs/98.archive" / disposition
+        if not subtree.is_dir():
+            continue
+        for path in subtree.rglob("*.md"):
+            relative = path.relative_to(root).as_posix()
+            origin = preserved_origin_path(relative)
+            if origin is not None:
+                preserved.add(pathlib.PurePosixPath(origin))
+    return frozenset(preserved)
 
 
 def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:

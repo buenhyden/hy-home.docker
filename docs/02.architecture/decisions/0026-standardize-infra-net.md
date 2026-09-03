@@ -65,5 +65,5 @@ The decision context above records the applicable drivers and evidence.
 
 - **PRD**: [infra_net product requirements](../../01.requirements/0023-standardize-infra-net.md)
 - **Architecture Description**: [infra_net architecture descriptions](../descriptions/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../../03.specs/0098-standardize-infra-net/spec.md)
+- **Spec**: [infra_net technical specification](../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
 - **Plan**: infra_net implementation plan

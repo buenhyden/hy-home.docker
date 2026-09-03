@@ -570,7 +570,7 @@ below so a topic-first reader encounters all fourteen scopes.
 
 | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
+| [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
 | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
 | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
@@ -623,7 +623,7 @@ unit.
 
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - [Verification and validation](./m0019-verification-validation.md)
-- [SPEC-0158 preservation contract](../../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - [Agent governance hub](../../../00.agent-governance/README.md)
