@@ -63,7 +63,6 @@ This policy defines the operational standards for the Syncthing service. It ensu
   - `device_count` (Online vs Total).
   - `throughput` (Inbound/Outbound).
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

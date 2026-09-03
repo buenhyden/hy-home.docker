@@ -59,7 +59,6 @@ updated: 2026-08-11
   - workflow Git backup 표준 운영 절차 수립
   - credential store Vault 연계 모델 및 롤백 절차 문서화
 
-
 ## Exceptions
 
 - 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.

@@ -23,7 +23,6 @@ updated: 2026-09-01
 
 `02-auth`는 중앙 IdP(Keycloak) + ForwardAuth 게이트(OAuth2 Proxy) 구조를 유지한다. 최적화의 핵심은 런타임 시크릿 주입 경로 단순화, 컨테이너 권한 최소화, 운영 검증 자동화, 그리고 문서-운영 실행 계층의 추적성 강화다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -78,7 +77,6 @@ updated: 2026-09-01
 - **Memory & Context Strategy**: Plan/Task/Operation/Runbook 상호 링크를 유지한다.
 - **Guardrail Boundary**: 시크릿 평문 하드코딩 금지, fail-open 금지.
 - **Latency / Cost Budget**: N/A
-
 
 ## Data Flow
 

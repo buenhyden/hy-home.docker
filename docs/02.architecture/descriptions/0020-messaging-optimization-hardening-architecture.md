@@ -23,7 +23,6 @@ updated: 2026-09-01
 
 메시징 계층은 데이터 평면(Kafka broker, RabbitMQ AMQP)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `infra_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -80,7 +79,6 @@ updated: 2026-09-01
 - **Memory & Context Strategy**: Spec/Plan/Runbook/Catalog 링크를 실행 컨텍스트로 고정
 - **Guardrail Boundary**: 부동 태그, 무검증 middleware 변경, 무근거 노출 확대 금지
 - **Latency / Cost Budget**: 운영 정책에서 관리
-
 
 ## Data Flow
 

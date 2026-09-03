@@ -48,7 +48,6 @@ updated: 2026-09-01
 - Redis Pub/Sub을 대체하지 않음 (Zustand/In-memory 상태 용도 제외).
 - Cloud Native Messaging (SQS/SNS) 연동 전략은 이 ADR 범위 밖.
 
-
 ## Options Considered
 
 ### [Only Apache Kafka]

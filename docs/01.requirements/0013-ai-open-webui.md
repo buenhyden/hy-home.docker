@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 Interacting with local LLMs often requires CLI knowledge or fragmented tools. Users need a unified, visual, and secure interface that supports multi-user collaboration, document indexing, and seamless integration with existing AI/Data tiers (Ollama, Qdrant).
 
-
 ## Stakeholders and User Needs
 
 Provide a premium, ChatGPT-like interface for the `hy-home.docker` ecosystem that empowers users to interact with local LLMs and manage document-based knowledge sharing via RAG.
@@ -36,7 +35,6 @@ Provide a premium, ChatGPT-like interface for the `hy-home.docker` ecosystem tha
 - **STORY-01**: As an end user, I want to chat with local models (Ollama) through a beautiful web UI.
 - **STORY-02**: As an AI engineer, I want to upload PDF/Text documents and query them using RAG.
 - **STORY-03**: As an operator, I want to ensure only authenticated users can access the AI interface via SSO.
-
 
 ## Functional Requirements
 
@@ -75,7 +73,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Allowed Actions**: Updating documentation links, adjusting environment variables in `docker-compose.yml`.
 - **Disallowed Actions**: Disabling SSO middlewares without approval.
 - **Human-in-the-loop Requirement**: Required for upgrading major image versions.
-
 
 ## Risks
 

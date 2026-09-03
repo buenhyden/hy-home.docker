@@ -42,7 +42,6 @@ updated: 2026-08-10
 - ELK(Elasticsearch, Logstash, Kibana) 스택의 전면 배제 (특수 목적의 전문 검색이 필요한 경우 개별 검토).
 - 상용 SaaS(Datadog 등)로의 즉각적인 마이그레이션 지원.
 
-
 ## Options Considered
 
 ### Alternative 1: ELK Stack (Elasticsearch, Logstash, Kibana)

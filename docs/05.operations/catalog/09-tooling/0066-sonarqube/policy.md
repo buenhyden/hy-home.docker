@@ -64,7 +64,6 @@ This policy defines the operational standards for the SonarQube service. It ensu
   - `sonar.search-jvm.max_heap_size`
   - Number of pending Background Tasks.
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

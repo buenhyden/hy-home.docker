@@ -51,7 +51,6 @@ Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강�
 - Keycloak/Traefik 코어 정책 전면 재설계
 - 모든 카탈로그 확장 항목의 즉시 런타임 자동화
 
-
 ## Options Considered
 
 ### 카탈로그 항목 즉시 전면 구현

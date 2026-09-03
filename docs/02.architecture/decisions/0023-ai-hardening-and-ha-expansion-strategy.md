@@ -54,7 +54,6 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
 - Guardrail strategy: AI 공개 경로는 gateway+SSO 체인 필수
 - Tool gating: `check-all-hardening.sh 08-ai`를 AI tier 머지 전 필수 정책 게이트로 적용
 
-
 ## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현

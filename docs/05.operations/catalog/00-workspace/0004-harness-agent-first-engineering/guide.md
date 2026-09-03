@@ -56,7 +56,6 @@ How-to / audit guide.
 - Confirm the active role, skill, provider, and policy route from `docs/00.agent-governance/`.
 - Do not inspect secrets or credential files.
 
-
 ## Troubleshooting
 
 - Treating `.codex/agents/*.toml` or `.claude/agents/*.md` as canonical role catalogs instead of provider-native adapters to the Stage 00 catalog.

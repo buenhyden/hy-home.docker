@@ -65,7 +65,6 @@ updated: 2026-08-11
   - notebook data retention/expiration 기준 문서화
   - API/SurrealDB host-bound port 노출 필요성, 방화벽, 접근 경계 evidence 기록
 
-
 ## Exceptions
 
 - 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.

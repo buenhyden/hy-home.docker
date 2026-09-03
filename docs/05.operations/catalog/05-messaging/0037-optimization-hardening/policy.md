@@ -65,7 +65,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
 
-
 ## Exceptions
 
 - 긴급 장애 대응 시 일시적으로 middleware 완화가 필요할 수 있다.

@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 현재 산재된 스크립트 기반의 작업들은 모니터링이 어렵고, 시스템 간의 복잡한 연동 작업을 중앙에서 제어할 수 있는 표준화된 플랫폼이 부재한다.
 
-
 ## Stakeholders and User Needs
 
 복잡한 데이터 엔지니어링 작업부터 단순한 API 통합까지 포괄하는 통합 워크플로 엔진을 구축하여, 운영 효율성을 극대화하고 에이전트가 자율적으로 태스크를 오케스트레이션할 수 있는 환경을 제공한다.
@@ -36,7 +35,6 @@ updated: 2026-08-13
 - **STORY-01**: 데이터 엔지니어는 Airflow DAG를 통해 매일 새벽에 원천 데이터를 가공하여 데이터 웨어하우스로 적재한다.
 - **STORY-02**: 개발자는 n8n을 사용하여 Slack 메시지 유입 시 특정 API를 호출하는 연동 시나리오를 5분 만에 구축한다.
 - **STORY-03**: 시스템 모니터링 에이전트는 특정 장애 감지 시 대응 워크플로를 n8n에서 실행하여 자동 복구를 시도한다.
-
 
 ## Functional Requirements
 
@@ -77,7 +75,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Allowed Actions**: 워크플로 실행 상태 조회, 특정 워크플로 수동 트리거, n8n JSON 내보내기.
 - **Disallowed Actions**: Airflow 관리자 설정 변경, DB 직접 조작.
 - **Human-in-the-loop Requirement**: 신규 DAG 배포 및 n8n 워크플로 활성화는 사람의 최종 승인이 필요함.
-
 
 ## Risks
 

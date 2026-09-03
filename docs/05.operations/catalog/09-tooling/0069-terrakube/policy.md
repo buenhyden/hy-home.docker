@@ -74,7 +74,6 @@ This policy applies to Terrakube workspace access, execution governance, registr
 - Perform a manual backup of the Terrakube metadata database (PostgreSQL).
 - Update the base Docker images for executors to include the latest security patches.
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

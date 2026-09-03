@@ -78,7 +78,6 @@ Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호�
 연결된 Description, ADR, Spec 또는 Operations 문서가 실제로 존재할 때만
 추적성 링크를 추가한다.
 
-
 ## Related Documents
 
 - [Architecture](../02.architecture/README.md)

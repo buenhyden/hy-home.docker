@@ -45,7 +45,6 @@ updated: 2026-08-10
 - 두 엔진 간의 직접적인 상호 호출 표준화 (필요 시 API를 통해서만 수행).
 - n8n을 대용량 데이터 처리용으로 사용하지 않음.
 
-
 ## Options Considered
 
 ### [Alternative 1: Airflow Only]

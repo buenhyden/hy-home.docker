@@ -41,7 +41,6 @@ updated: 2026-08-10
 - 사용자 애플리케이션용 네트워크(`project_net`)의 서브넷 변경은 포함하지 않는다.
 - 데이터베이스 클러스터 내부의 전용 인터커넥트 네트워크 구성 방식 변경은 다루지 않는다.
 
-
 ## Options Considered
 
 ### 대안 1: Docker Default Bridge (Automatic CIDR)

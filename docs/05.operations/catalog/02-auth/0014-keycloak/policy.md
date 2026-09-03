@@ -50,7 +50,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
 - **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
 
-
 ## Exceptions
 
 - 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.

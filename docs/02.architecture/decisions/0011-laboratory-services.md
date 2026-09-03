@@ -43,7 +43,6 @@ updated: 2026-08-10
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
 
-
 ## Options Considered
 
 Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.

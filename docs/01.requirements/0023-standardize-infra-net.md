@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 현재 여러 `docker-compose` 파일들이 파편화되어 있으며, 일부 서비스는 `infra_net`에 명시적으로 연결되어 있지 않거나 서브넷 설정이 모호할 수 있다. 이는 마이크로서비스 간의 통신 복잡도를 높이고 문제 해결 시 혼선이 발생할 수 있는 원인이 된다.
 
-
 ## Stakeholders and User Needs
 
 모든 인프라 서비스가 단일 표준 네트워크(`infra_net`)를 통해 안전하고 효율적으로 통신하며, 명확한 IP 대역 관리를 통해 네트워크 충돌을 방지하고 운영 투명성을 높인다.
@@ -35,7 +34,6 @@ updated: 2026-08-13
 - **STORY-01**: 관리자는 모든 인프라 서비스가 `infra_net` 내에서 서로 통신할 수 있음을 보장받고 싶어 한다.
 - **STORY-02**: 운영자는 `172.19.0.0/16` 대역을 통해 각 서비스의 IP를 예측 가능하게 관리하고 싶어 한다.
 - **STORY-03**: 기존에 설정된 `k3d-hyhome` 네트워크 연결은 그대로 유지되어 로컬 k3s 클러스터와의 연동이 중단되지 않아야 한다.
-
 
 ## Functional Requirements
 
@@ -68,7 +66,6 @@ No separately numbered solution-independent external interface requirement was i
 ### AI Agent Requirements
 
 N/A
-
 
 ## Risks
 

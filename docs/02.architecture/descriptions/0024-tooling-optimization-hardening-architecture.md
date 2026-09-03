@@ -30,7 +30,6 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 모든 공개 관리 경로는 Traefik TLS 경계 뒤에서 정책 통제되어야 한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.

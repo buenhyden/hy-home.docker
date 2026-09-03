@@ -28,7 +28,6 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 - Data Admin UI: redisinsight
 - Local notebook lab: open-notebook, surrealdb
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.

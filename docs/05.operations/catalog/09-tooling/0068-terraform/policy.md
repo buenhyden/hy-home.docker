@@ -71,7 +71,6 @@ This policy applies to Terraform state management, deployment workflow, provider
 - **Secrets**: Never hardcode credentials in `.tf` files. Use environment variables or secret managers (Vault).
 - **Versioning**: Pin all provider and module versions to prevent breaking changes during `init`.
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

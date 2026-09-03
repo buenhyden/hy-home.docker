@@ -50,7 +50,6 @@ updated: 2026-09-01
 - Tool gating: `check-all-hardening.sh 06-observability`를 PR 필수 게이트로 사용
 - Guardrail strategy: 공개 라우터 보안 체인 필수, non-root/secret guard 필수
 
-
 ## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현

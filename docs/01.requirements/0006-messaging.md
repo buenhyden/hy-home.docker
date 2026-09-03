@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 현재 복잡한 마이크로서비스 및 인프라 환경에서 컴포넌트 간의 직접 통신은 확산성이 떨어지고, 데이터 손실 위험과 시스템 가용성 저하를 초래할 수 있다. 다양한 트래픽 특성(고처리량 vs 단순 큐잉)에 대응할 수 있는 계층화된 메시징 솔루션이 필요하다.
 
-
 ## Stakeholders and User Needs
 
 시스템 컴포넌트 간의 결합도를 낮추고, 실시간 이벤트 처리 및 신뢰성 있는 메시지 전달을 가능하게 하는 견고한 전용 메시징 인프라를 제공한다.
@@ -37,7 +36,6 @@ updated: 2026-08-13
 - **STORY-01**: 시스템 로그 및 이벤트를 Kafka로 수집하여 실시간 분석 및 보관.
 - **STORY-02**: 시간이 오래 걸리는 작업을 RabbitMQ 큐에 넣고 비동기 워커가 처리.
 - **STORY-03**: Schema Registry와 Kafka Connect를 사용해 이벤트 형식과 커넥터 경계를 검증한다.
-
 
 ## Functional Requirements
 
@@ -78,7 +76,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Allowed Actions**: `kafka-init` 기준 토픽 선언 검토, 스키마 등록 상태 조회, 컨슈머 그룹 상태 조회.
 - **Disallowed Actions**: 클러스터 전체 리셋, 메시지 보존 주기(Retention) 임의 변경.
-
 
 ## Risks
 

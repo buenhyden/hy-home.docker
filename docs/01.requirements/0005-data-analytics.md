@@ -22,7 +22,6 @@ updated: 2026-08-13
 
 현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, ksqlDB, OpenSearch, StarRocks compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose에서는 주석 처리된 optional include 또는 standalone compose로 검증된다는 요구사항을 정의한다.
 
-
 ## Stakeholders and User Needs
 
 플랫폼에서 발생하는 모든 정형/비정형 데이터를 실시간으로 수집, 가공, 분석하여 사용자에게 즉각적이고 심층적인 시각화 및 인사이트를 제공하는 고성능 분석 허브를 구축한다.
@@ -39,7 +38,6 @@ updated: 2026-08-13
 - **STORY-02**: 개발자는 Kafka로 인입되는 스트림 데이터를 실시간으로 변환(JOIN/Windowing)하여 새로운 분석용 이벤트를 생성하고 싶어한다 (ksqlDB).
 - **STORY-03**: 운영자는 수집된 마이크로서비스 로그에서 특정 키워드를 기반으로 초 단위의 고속 검색을 수행하고 싶어한다 (OpenSearch).
 - **STORY-04**: 분석가는 수억 건의 레코드가 포함된 데이터웨어하우스에서 복잡한 SQL JOIN 쿼리를 실시간으로 수행하고 싶어한다 (StarRocks).
-
 
 ## Functional Requirements
 
@@ -73,7 +71,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Allowed Actions**: 분석용 스키마 조회, 로그 패턴 분석, SQL 쿼리 최적화 제안.
 - **Disallowed Actions**: 원본 데이터 삭제, 운영 중인 분석 클러스터의 설정 무단 변경.
-
 
 ## Risks
 

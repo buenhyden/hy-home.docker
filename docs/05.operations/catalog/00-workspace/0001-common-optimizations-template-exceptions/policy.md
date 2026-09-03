@@ -50,7 +50,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
-
 ## Exceptions
 
 - 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.

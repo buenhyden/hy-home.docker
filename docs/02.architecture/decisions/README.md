@@ -54,7 +54,6 @@ docs/02.architecture/decisions/
 - [`ADR-0030`](./0030-tombstone-retirement-record.md):
   은퇴 기록으로서의 Tombstone decision.
 
-
 ## How to Work in This Area
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
@@ -77,7 +76,6 @@ docs/02.architecture/decisions/
 Agent는 결정 내용을 요약하면서 alternatives, rationale, consequences 또는
 supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 ADR을 덮어쓰지
 말고 별도 승인된 ADR과 명시적 supersession을 사용한다.
-
 
 ## Related Documents
 

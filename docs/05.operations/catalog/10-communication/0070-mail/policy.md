@@ -48,7 +48,6 @@ updated: 2026-08-11
 - **Backup Schedule**: 현재 compose에는 백업 스케줄이 선언되어 있지 않다. 운영 승격 전 백업/복구 방식과 evidence를 별도 승인해야 한다.
 - **MailHog Data**: MailHog는 인메모리 저장소를 사용하므로 별도의 데이터 보존 정책을 두지 않습니다.
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

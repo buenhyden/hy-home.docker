@@ -30,7 +30,6 @@ updated: 2026-08-10
 - **Primary Tech Stack**: InfluxDB 3 Core, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 - **Connectivity**: Private isolated `infra_net`.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -113,7 +112,6 @@ graph LR
 - **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
 - **Does Not Own**: Secret values, runtime changes, or execution evidence outside this Architecture Description.
 - **Non-goals**: Semantic rewriting of the historical architecture record.
-
 
 ## Data Flow
 

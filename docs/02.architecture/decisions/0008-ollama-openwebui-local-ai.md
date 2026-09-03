@@ -45,7 +45,6 @@ updated: 2026-08-10
 - **Model selection**: 경량 업무는 `llama3.1-8b`, 복잡한 추론은 `qwen2.5-coder` 계열 채택.
 - **Tool gating**: 에이전트는 Open WebUI의 API 엔드포인트를 통해 간접적으로 추론 수행.
 
-
 ## Options Considered
 
 ### vLLM

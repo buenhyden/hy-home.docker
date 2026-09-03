@@ -55,7 +55,6 @@ current curated image registry is `infra/tech-stack.versions.json`.
 - 핵심 트랜잭션 데이터(사용자 정보, 시스템 설정 등)를 분석 엔진에 직접 저장하는 행위는 지양한다 (원본은 PostgreSQL에 유지).
 - 각 엔진 간의 중복된 데이터 저장 최소화.
 
-
 ## Options Considered
 
 ### Alternative 01: PostgreSQL 확장 (TimescaleDB, pg_search 등 사용)

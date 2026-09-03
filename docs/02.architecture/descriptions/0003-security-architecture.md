@@ -30,7 +30,6 @@ This section was added for template alignment. Existing architecture content in 
 - **Does Not Own**: Secret values, runtime changes, or execution evidence outside this Architecture Description.
 - **Non-goals**: Semantic rewriting of the historical architecture record.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -43,7 +42,6 @@ This section was added for template alignment. Existing architecture content in 
 
 - **Direct API Call**: SDK를 통한 직접 조회가 가능하나, 코드 수정 최소화를 위해 템플릿 방식 우선.
 - **OIDC Auth**: 관리자 접속을 위해 Keycloak OIDC 연동 가능 (향후 고도화).
-
 
 ## Components
 
@@ -89,7 +87,6 @@ graph TD
 - **Process**: Vault Agent가 Consul Template 구문을 사용하여 Vault의 시크릿을 로컬 파일로 렌더링.
 - **Targets**: PostgreSQL Password, Keycloak Credentials, Grafana Secrets 등.
 
-
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -111,7 +108,6 @@ The existing architecture diagram, component, constraint, or reliability section
 
 - **Availability**: 현재는 단일 노드 Raft 운영 상태이며, Raft cluster 확장은 별도 전환 절차로 준비.
 - **Fault Tolerance**: Vault Agent의 캐싱 기능을 통해 서버 일시 장애 시 조회 가용성 확보.
-
 
 ## Data Flow
 

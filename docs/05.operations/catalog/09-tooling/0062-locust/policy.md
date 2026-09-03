@@ -29,7 +29,6 @@ updated: 2026-08-11
 - **지표 무결성**: Locust가 기록하는 요청 통계의 일관성 및 정확성 확보.
 - **비용 최적화**: 테스트 미수행 시 워커 노드의 유휴 자원 최소화.
 
-
 ## Policy Scope
 
 This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
@@ -39,7 +38,6 @@ This policy applies to the service, workflow, or operational control surface des
 - Operator
 - Performance Engineer
 - SRE
-
 
 ## Controls
 
@@ -68,7 +66,6 @@ This policy applies to the service, workflow, or operational control surface des
 
 - **Secret Management**: Test target credential은 compose에 추가하지 않고 별도 승인된 secret owner를 따른다.
 - **Endpoint Protection**: 현재 compose에는 Locust Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
-
 
 ## Exceptions
 

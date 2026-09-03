@@ -53,7 +53,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
 - **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
 
-
 ## Exceptions
 
 - 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.

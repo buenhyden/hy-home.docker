@@ -25,7 +25,6 @@ updated: 2026-09-01
 
 Open WebUI acts as the presentation layer and orchestration hub for AI services. it bridges the gap between raw API backends (Ollama) and end-users, while also providing the logic for document-based RAG.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -71,7 +70,6 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 - **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
 - **Memory & Context Strategy**: SQLite-based chat persistence.
 - **Guardrail Boundary**: SSO access control and GPU resource limits.
-
 
 ## Data Flow
 

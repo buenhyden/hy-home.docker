@@ -22,7 +22,6 @@ updated: 2026-08-13
 - 서비스 Discovery가 자동화되지 않으면 운영 복잡도가 증가함.
 - 외부 노출 경로에 대한 중앙 집중식 제어와 가시성(Logging/Metrics)이 부족함.
 
-
 ## Stakeholders and User Needs
 
 모든 외부 트래픽에 대해 단일화되고 안전하며 관찰 가능한 진입점을 제공하여 시스템의 보안을 강화하고 서비스 노출을 단순화한다.
@@ -38,7 +37,6 @@ updated: 2026-08-13
 - **STORY-01**: 사용자가 브라우저를 통해 서비스에 접속하면 자동으로 HTTPS로 연결되고, 유효한 인증서가 제공되어야 함.
 - **STORY-02**: 관리자는 Traefik 대시보드를 통해 현재 라우팅 규칙과 서비스 상태를 실시간으로 확인할 수 있어야 함.
 - **STORY-03**: 특정 경로(예: `/keycloak/`, `/minio/`)에 대해 Nginx leaf를 통한 정교한 경로 재작성 및 헤더 조작이 가능해야 하며, Nginx runtime은 명시적 root network/dependency context에서만 다뤄야 함.
-
 
 ## Functional Requirements
 
@@ -78,7 +76,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Disallowed Actions**: Accessing or exfiltrating private keys/certificates, modifying global security policies without human approval.
 - **Human-in-the-loop Requirement**: Critical security policy changes and certificate renewals.
 - **Evaluation Expectation**: 100% routing accuracy for new services within 60 seconds.
-
 
 ## Risks
 

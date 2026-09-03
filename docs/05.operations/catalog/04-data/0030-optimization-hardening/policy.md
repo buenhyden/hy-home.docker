@@ -66,7 +66,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 데이터 손상 의심, 장기 healthcheck fail, 복구 불가 상태 발생 시 즉시 runbook 전환
 
-
 ## Exceptions
 
 - 실험 환경에서 일시적 점검을 위해 일부 서비스 healthcheck 완화는 허용 가능

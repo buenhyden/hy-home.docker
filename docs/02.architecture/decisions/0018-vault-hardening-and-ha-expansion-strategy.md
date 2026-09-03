@@ -53,7 +53,6 @@ updated: 2026-09-01
 - Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
 - Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
 
-
 ## Options Considered
 
 ### 즉시 auto-unseal/원격 audit까지 동시 구현

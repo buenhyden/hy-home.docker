@@ -50,7 +50,6 @@ updated: 2026-08-11
 - **Automated Topic Creation**: 자동 생성은 `kafka-init` compose 선언 또는 승인된 task evidence로만 허용한다.
 - **Health Guardrails**: 복제 오류 발생 시 AI Agent는 destructive topic mutation을 수행하지 않고 runbook evidence capture와 escalation을 우선한다.
 
-
 ## Exceptions
 
 - 단기 성능 테스트용 토픽 또는 dev-only topic은 owner, 만료 기준, cleanup 책임을 task evidence에 기록한 경우 예외로 허용한다.

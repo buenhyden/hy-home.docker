@@ -35,7 +35,6 @@ updated: 2026-08-10
 - **Proposed**: 2026-03-26
 - **Accepted**: 2026-03-26
 
-
 ## Consequences
 
 ### Positive
@@ -54,7 +53,6 @@ updated: 2026-08-10
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
-
 
 ## Options Considered
 

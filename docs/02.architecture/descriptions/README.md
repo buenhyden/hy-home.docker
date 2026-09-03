@@ -53,7 +53,6 @@ docs/02.architecture/descriptions/
 - [`AD-0030`](./0030-document-lifecycle-governance.md):
   문서 lifecycle 거버넌스 아키텍처.
 
-
 ## How to Work in This Area
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
@@ -77,7 +76,6 @@ docs/02.architecture/descriptions/
 Agent는 기존 문서를 제자리에서 수정하고 대체·redirect 파일을 만들지 않는다.
 secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interface를
 아키텍처 사실로 기록하지 않는다.
-
 
 ## Related Documents
 

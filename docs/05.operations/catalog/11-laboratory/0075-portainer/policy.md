@@ -45,7 +45,6 @@ Portainer 인터페이스의 접근 제어, 데이터 백업, 리소스 관리 �
 - Portainer 내부의 `docker.sock`을 외부에 API 형태로 노출하는 행위.
 - `admin` 계정의 비밀번호를 평문으로 기록하거나 공유하는 행위.
 
-
 ## Exceptions
 
 N/A — 현재 승인된 예외 없음.

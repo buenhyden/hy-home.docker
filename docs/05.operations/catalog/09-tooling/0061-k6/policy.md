@@ -30,7 +30,6 @@ updated: 2026-08-11
 - **데이터 보안**: 지표 전송 과정에서의 인증 및 기밀성 보장.
 - **거버넌스 준수**: 승인된 시나리오와 정해진 윈도우에서의 테스팅 문화 정착.
 
-
 ## Policy Scope
 
 This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
@@ -40,7 +39,6 @@ This policy applies to the service, workflow, or operational control surface des
 - Operator
 - SRE
 - Security Engineer
-
 
 ## Controls
 
@@ -69,7 +67,6 @@ This policy applies to the service, workflow, or operational control surface des
 
 - **Alerting**: 테스트 실행 중 Gateway의 응답 성공률이 95% 이하로 떨어질 경우 즉시 중단 경고 발생.
 - **Logging**: 테스트 실행 기록(시작 시간, 시나리오명, 수행자, target, 결과 요약)을 task 또는 incident evidence에 기록한다.
-
 
 ## Exceptions
 

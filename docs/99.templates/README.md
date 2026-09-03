@@ -166,7 +166,6 @@ profile. Changed validation uses the persisted Registry allocation state.
 - `DESIGN.md` remains the root UI/design-system authority and is not a Stage 03
   design artifact.
 
-
 ## Related Documents
 
 - [Template catalog](./templates/README.md)

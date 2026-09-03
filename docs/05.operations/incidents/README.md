@@ -70,7 +70,6 @@ service names, environment variables는 원형을 유지합니다.
 - [incident.template.md](../../99.templates/templates/operations/incident.template.md)
 - [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
 
-
 ## How to Work in This Area
 
 1. 새 사고는 `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`

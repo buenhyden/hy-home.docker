@@ -51,7 +51,6 @@ updated: 2026-09-01
 - Tool gating: `check-all-hardening.sh 05-messaging`를 CI 게이트로 강제
 - Guardrail strategy: 부동 태그 금지, middleware 표준 체인 강제, 문서 링크 무결성 유지
 
-
 ## Options Considered
 
 ### 카탈로그 확장 항목을 즉시 전면 구현

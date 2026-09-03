@@ -23,7 +23,6 @@ updated: 2026-09-01
 
 Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 현재 root compose는 Traefik을 active edge router로 포함하며, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 profile-only 보조 프록시 leaf로 유지한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.

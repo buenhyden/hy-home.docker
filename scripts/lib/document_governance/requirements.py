@@ -736,7 +736,9 @@ def parse_requirement_package(
     return package
 
 
-_REQUIREMENT_TOMBSTONES = pathlib.PurePosixPath("docs/98.archive/tombstones/01.requirements")
+_REQUIREMENT_TOMBSTONES = pathlib.PurePosixPath(
+    "docs/98.archive/tombstones/01.requirements"
+)
 
 
 def _tombstoned_requirement_ids(

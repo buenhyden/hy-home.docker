@@ -607,8 +607,8 @@ class DocumentRegistryTests(unittest.TestCase):
         for sibling in ("REQ-0023.NFR", "REQ-0023.IF"):
             space = spaces[sibling]
             space["reserved_history"] = sorted(
-                set(space["reserved_history"]) | set(range(1, allocation + 1))
-                - set(space["current_issued"])
+                set(space["reserved_history"])
+                | set(range(1, allocation + 1)) - set(space["current_issued"])
             )
             space["high_water"] = allocation
             space["next_number"] = allocation + 1

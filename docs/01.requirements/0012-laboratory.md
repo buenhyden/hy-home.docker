@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 인프라 서비스 접근점, 컨테이너 상태, 데이터 저장소 디버깅 도구, 로컬 노트북형 실험 도구가 분산되면 운영자는 상태 확인과 장애 대응에 불필요한 시간을 쓰게 된다. `11-laboratory`는 Homer, Portainer, RedisInsight, Dozzle, Open Notebook 같은 관리/실험 표면을 SSO로 보호하면서 한곳에서 탐색 가능하게 해야 한다.
 
-
 ## Stakeholders and User Needs
 
 `11-laboratory` 계층은 시스템 관리자 및 개발자를 위한 통합 제어 센터와 실험적인 고립 환경을 제공한다. 분산된 인프라 서비스들을 시각화하고, 컨테이너 및 데이터 리소스에 대한 직관적인 관리 인터페이스를 구축하여 운영 효율성을 극대화한다.
@@ -37,7 +36,6 @@ updated: 2026-08-13
 - **컨테이너 관리**: Portainer GUI를 사용하여 터미널 없이 컨테이너 로그 확인 및 재시작을 수행한다.
 - **데이터 시각화**: RedisInsight를 통해 Redis 클러스터의 키 분 분포 및 성능을 분석한다.
 - **노트북형 실험**: Open Notebook을 통해 로컬 지식 작업과 SurrealDB-backed 실험을 수행한다.
-
 
 ## Functional Requirements
 
@@ -68,7 +66,6 @@ No separately numbered solution-independent external interface requirement was i
 ### AI Agent Requirements
 
 N/A
-
 
 ## Risks
 

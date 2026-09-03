@@ -61,7 +61,6 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0168 | [Entrypoint README Registration](./0168-entrypoint-readme-registration/spec.md) | completed outcome Spec; execution members removed at completion |
 | SPEC-0169 | [Document Lifecycle Convergence](./0169-document-lifecycle-convergence/spec.md) | active Spec with [Plan](./0169-document-lifecycle-convergence/plan.md) and [Task](./0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 
-
 ## How to Work in This Area
 
 1. Load the governing Requirement, Architecture Description, and ADR.
@@ -93,7 +92,6 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | Plan | approved prospective sequence, risk, rollback, completion criteria |
 | Task | actual work log, command result, review, commit, and deferral evidence |
 | Contract | registered executable interface owned by the Spec |
-
 
 ## Related Documents
 

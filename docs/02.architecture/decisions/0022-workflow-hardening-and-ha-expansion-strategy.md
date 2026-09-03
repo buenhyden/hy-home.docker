@@ -52,7 +52,6 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 - Guardrail strategy: workflow 관리 경로는 gateway+SSO 체인 필수
 - Tool gating: workflow 하드닝 검증 스크립트를 정책 게이트로 강제
 
-
 ## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현

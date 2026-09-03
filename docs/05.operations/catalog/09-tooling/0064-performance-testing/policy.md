@@ -29,7 +29,6 @@ updated: 2026-08-11
 - **가용성 보존**: 테스트 중 임계 시스템(Gateway, Identity)의 다운타임을 방지해야 함.
 - **데이터 보존**: 테스트 결과 지표와 evidence를 벤치마킹 자산으로 안전하게 보관해야 함.
 
-
 ## Policy Scope
 
 - `infra/09-tooling/locust/docker-compose.yml`
@@ -42,7 +41,6 @@ updated: 2026-08-11
 - Operator
 - Performance Engineer
 - Infrastructure Admin
-
 
 ## Controls
 
@@ -75,7 +73,6 @@ updated: 2026-08-11
 ### Governance & Compliance
 
 이 정책은 플랫폼의 전체 성능 가용성 기준을 따르며, 모든 테스트 수행 이력은 감사(Audit) 대상이 될 수 있습니다.
-
 
 ## Exceptions
 

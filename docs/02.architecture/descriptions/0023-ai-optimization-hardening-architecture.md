@@ -28,7 +28,6 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 
 외부 진입은 Traefik TLS 경계에서 표준 middleware+SSO 체인을 공유한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.

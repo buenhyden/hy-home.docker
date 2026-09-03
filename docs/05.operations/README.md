@@ -83,7 +83,6 @@ owner: "@buenhyden"
 - 과거 경로와 실행 이력은 Git에서 복구하며 current Operations 권한으로
   사용하지 않는다.
 
-
 ## Related Documents
 
 - [Docs index](README.md)

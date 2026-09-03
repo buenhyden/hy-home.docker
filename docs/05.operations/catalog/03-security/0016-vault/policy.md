@@ -64,7 +64,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: audit/healthcheck/검증 로그 보존 정책 준수
 - **Safety Incident Thresholds**: seal 상태 지속, 렌더 실패 지속, audit 비활성 상태 감지 시 runbook 즉시 수행
 
-
 ## Exceptions
 
 - 단기 테스트 환경에서 임시 로컬 audit만 사용 가능.

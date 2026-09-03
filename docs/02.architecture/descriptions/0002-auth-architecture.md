@@ -40,7 +40,6 @@ updated: 2026-08-10
 
 This section was added for template alignment. Existing architecture content in this existing Architecture Description remains the source of truth; no runtime behavior is changed.
 
-
 ## Components
 
 ### Viewpoints and Views
@@ -72,7 +71,6 @@ graph TD
 ### AI Agent Architecture
 
 Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
-
 
 ## Traceability
 

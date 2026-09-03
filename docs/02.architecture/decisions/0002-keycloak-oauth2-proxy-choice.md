@@ -41,7 +41,6 @@ We decided to use:
 - **OAuth2 Proxy** allows us to enforce authentication at the ingress layer (Traefik) without modifying the source code of internal applications.
 - This combination is well-supported, highly configurable, and integrates natively with our Traefik gateway via the ForwardAuth middleware pattern.
 
-
 ## Options Considered
 
 - **Authelia**: A lightweight alternative. While good, it lacks the advanced identity provider features and wide community support of Keycloak.
@@ -66,7 +65,6 @@ Agents must use the OIDC discovery endpoint provided by Keycloak (`/realms/hy-ho
 #### Additional Consequences
 
 Existing rationale, positive/negative notes, and trade-off text in this ADR remain the consequence record. This alignment section introduces no new decision outcome.
-
 
 ## Traceability
 

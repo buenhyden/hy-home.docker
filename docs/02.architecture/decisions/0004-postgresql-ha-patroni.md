@@ -39,7 +39,6 @@ updated: 2026-09-01
 - 데이터베이스 샤딩 (본 ADR 범위 밖).
 - 애플리케이션 레벨의 데이터 마이그레이션 전략.
 
-
 ## Options Considered
 
 ### Vanilla PostgreSQL with Replication

@@ -209,7 +209,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [redisinsight](../../../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
   ([OPER](../../11-laboratory/0076-redisinsight/guide.md), [RUN](../../11-laboratory/0076-redisinsight/runbook.md))
 
-
 ## Exceptions
 
 - 실험성 서비스(`11-laboratory`)는 제한적 예외 허용 가능
@@ -269,7 +268,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init` (one-shot init job)
   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3` (auth-disabled cluster bootstrap mode)
   - 상세 정의: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
-
 
 ## Review Cadence
 

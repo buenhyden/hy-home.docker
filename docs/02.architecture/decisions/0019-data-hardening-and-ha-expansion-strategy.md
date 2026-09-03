@@ -51,7 +51,6 @@ updated: 2026-09-01
 - Tool gating: `check-all-hardening.sh 04-data`를 PR/Push 게이트로 강제
 - Guardrail strategy: 시크릿 경로 정합성, malformed compose 토큰 금지
 
-
 ## Options Considered
 
 ### 즉시 모든 04-data 서비스를 HA 기준으로 동시 확장

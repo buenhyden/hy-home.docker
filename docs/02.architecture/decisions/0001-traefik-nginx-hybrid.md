@@ -47,7 +47,6 @@ updated: 2026-08-10
 - 모든 내부 서비스 앞에 Nginx를 두는 방식 (불필요한 홉 증가 방지).
 - Nginx를 외부 Edge로 직접 노출하는 방식.
 
-
 ## Options Considered
 
 ### [Alternative 1: Traefik Only]

@@ -23,7 +23,6 @@ updated: 2026-08-10
 
 `08-ai` 계층은 시스템의 '지능'을 담당하는 핵심 영역으로, 프라이버시가 보호되는 로컬 추론 엔진과 이를 활용하는 UI/RAG 인터페이스를 소유한다. NVIDIA GPU 자원을 추론 연산에 집중적으로 사용하며, 외부 모델 API에 의존하지 않는 독립적인 AI 에코시스템을 구축한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -71,7 +70,6 @@ updated: 2026-08-10
 - **Model/Provider Strategy**: 로컬 Ollama를 기본 제공자로 지정하되, 중요 태스크에 한해 외부 API(Claude/OpenAI)로의 폴백 전략 지원.
 - **Tooling Boundary**: 에이전트는 Ollama API를 인터페이스로 사용하며 직접 모델 가중치나 GPU 드라이버를 조작하지 않는다.
 - **Latency / Cost Budget**: 모델 리로딩 횟수 최소화 및 경량 임베딩 모델(`qwen3-embedding:0.6b`) 사용으로 리소스 효율 극대화.
-
 
 ## Data Flow
 

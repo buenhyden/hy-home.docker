@@ -56,7 +56,6 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
 - Guardrail strategy: tooling 공개 라우터는 gateway+SSO 체인 필수
 - Tool gating: `check-all-hardening.sh 09-tooling`를 머지 전 필수 정책 게이트로 강제
 
-
 ## Options Considered
 
 ### 카탈로그 확장을 즉시 전면 구현

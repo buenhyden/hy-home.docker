@@ -56,7 +56,6 @@ updated: 2026-08-11
 - **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
 - **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
 
-
 ## Exceptions
 
 - OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.

@@ -51,7 +51,6 @@ docs/02.architecture/
 - [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
 
-
 ## How to Work in This Area
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
@@ -71,7 +70,6 @@ docs/02.architecture/
   `artifact_type: adr`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
-
 
 ## Related Documents
 

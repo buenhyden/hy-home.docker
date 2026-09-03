@@ -28,7 +28,6 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 
 양 시스템의 관리 평면은 Traefik TLS 경계 뒤에서 표준 middleware+SSO를 공유한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.

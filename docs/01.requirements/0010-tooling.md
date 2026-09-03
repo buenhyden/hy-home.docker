@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 인프라 변경 사항이 수동으로 관리되어 추적이 어렵고, 코드 품질 및 성능 검증이 파편화되어 있어 시스템의 전체적인 안정성을 보장하기 위한 중앙 집중식 도구가 필요하다.
 
-
 ## Stakeholders and User Needs
 
 코드 품질 검사부터 인프라 프로비저닝 자동화까지 아우르는 통합 툴링 생태계를 구축하여, 수동 작업을 최소화하고 데이터 기반의 엔지니어링 의사결정을 지원한다.
@@ -36,7 +35,6 @@ updated: 2026-08-13
 - **STORY-01**: DevOps 엔지니어는 Terrakube를 통해 코드 변경 시마다 자동으로 인프라 계획(Plan)을 검토하고 배포한다.
 - **STORY-02**: 개발자는 소스 코드 푸시 시 SonarQube를 통해 버그, 취약점, 코드 스멜을 자동으로 분석받는다.
 - **STORY-03**: 성능 엔지니어는 Locust를 사용하여 분산 환경에서 수만 명의 동시 접속자를 시뮬레이션하고 병목 지점을 찾는다.
-
 
 ## Functional Requirements
 
@@ -75,7 +73,6 @@ No separately numbered solution-independent external interface requirement was i
 ### AI Agent Requirements
 
 N/A
-
 
 ## Risks
 

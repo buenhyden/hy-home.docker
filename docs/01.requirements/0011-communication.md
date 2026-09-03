@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 현재 메일 발송 로직이 파편화되어 있고, 성능 및 보안 정책이 일관되지 않아 대규모 알림 처리 시 신뢰성을 보장하기 어렵다. 또한 개발 환경에서 실제 운영 메일이 발송될 위험이 존재한다.
 
-
 ## Stakeholders and User Needs
 
 모든 알림 및 통신 데이터가 보안 가이드라인에 따라 안전하게 처리되고, 개발 단계에서의 실수로 인한 오발송을 원천 차단하는 지능형 통신 허브를 제공한다.
@@ -36,7 +35,6 @@ updated: 2026-08-13
 - **STORY-01**: 개발자는 MailHog UI를 통해 테스트용 메일이 실제로 외부로 나가지 않고 정상적으로 캡처되었는지 확인한다.
 - **STORY-02**: 시스템은 Stalwart를 통해 사용자 가입 환영 메일을 암호화된 채널로 안전하게 발송한다.
 - **STORY-03**: 관리자는 외부 메일 서비스로의 발송 시 스팸으로 분류되지 않도록 Stalwart에 SPF/DKIM 설정을 적용한다.
-
 
 ## Functional Requirements
 
@@ -75,7 +73,6 @@ No separately numbered solution-independent external interface requirement was i
 ### AI Agent Requirements
 
 N/A
-
 
 ## Risks
 

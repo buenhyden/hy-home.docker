@@ -23,7 +23,6 @@ updated: 2026-09-01
 
 `hy-home.docker`의 메시징 계층은 시스템의 이벤트 중심 아키텍처(EDA)를 뒷받침한다. Kafka는 대용량 스트리밍 및 이벤트 로그 저장을 담당하며, RabbitMQ는 저지연 작업 큐잉 및 마이크로서비스 간의 단발성 비동기 통신을 담당한다.
 
-
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
@@ -69,7 +68,6 @@ updated: 2026-09-01
 - **Tooling Boundary**: Topic Manager Tool, Queue Monitor Tool.
 - **Memory & Context Strategy**: 최근 메시지 오프셋 저장 및 추적.
 - **Guardrail Boundary**: 대기열 소비율 임계치 기반 알림 호출.
-
 
 ## Data Flow
 

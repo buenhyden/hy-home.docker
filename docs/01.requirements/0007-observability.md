@@ -22,7 +22,6 @@ updated: 2026-08-13
 
 마이크로서비스 아키텍처에서 서비스 간 연동이 복잡해짐에 따라, 로그만으로는 장애의 근본 원인을 파악하기 어렵다. 메트릭, 로그, 트레이싱이 파편화되어 있으면 문제 해결 시간이 길어지며 시스템 가용성이 저하된다.
 
-
 ## Stakeholders and User Needs
 
 제공되는 모든 인프라 및 애플리케이션 서비스의 상태를 단일 지점(Single Source of Truth)에서 파악하고, 장애 발생 시 원인을 즉각적으로 규명할 수 있는 고도화된 관측 환경을 구축한다.
@@ -37,7 +36,6 @@ updated: 2026-08-13
 - **STORY-01**: 운영자는 Grafana 대시보드에서 모든 컨테이너의 CPU/Memory 사용량을 한눈에 확인한다.
 - **STORY-02**: 개발자는 요청 ID를 통해 특정 트랜잭션의 트레이스(Trace)와 관련 로그(Log)를 상관 분석한다.
 - **STORY-03**: 시스템 장애 시 Alertmanager가 Slack/Email로 알람을 전송하여 즉각 대응하게 한다.
-
 
 ## Functional Requirements
 
@@ -74,7 +72,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Allowed Actions**: Prometheus 쿼리(PromQL) 실행, 대시보드 상태 조회, 알람 상태 확인.
 - **Disallowed Actions**: 운영 데이터 임의 삭제, 알람 정책 임의 해제.
-
 
 ## Risks
 

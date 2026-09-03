@@ -48,7 +48,6 @@ performance.
 - Custom development of a chat UI from scratch.
 - Real-time multi-modal streaming without local model support.
 
-
 ## Options Considered
 
 ### [LibreChat]

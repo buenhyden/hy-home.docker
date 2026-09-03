@@ -20,7 +20,6 @@ updated: 2026-08-13
 
 서비스별 비밀 정보가 파일, 환경 변수, 수동 절차로 분산되면 노출 위험과 감사 공백이 커진다. `03-security`는 Vault를 중심으로 비밀 저장, 접근 제어, 주입, 감사 로그를 통합해 모든 서비스가 동일한 신뢰 경계를 따르게 해야 한다.
 
-
 ## Stakeholders and User Needs
 
 - **보안성**: 모든 비밀 정보의 암호화 저장 및 접근 제어 자동화.
@@ -42,7 +41,6 @@ updated: 2026-08-13
 | UC-01 | Secret Storage    | KV(Key-Value) 엔진을 사용하여 서비스별 비밀 정보를 안전하게 저장.               |
 | UC-02 | Sidecar Injection | Vault Agent를 통해 컨테이너 시작 시 템플릿 기반으로 설정 파일에 비밀 정보 주입. |
 | UC-03 | Dynamic Access    | AppRole 또는 Userpass를 통한 애플리케이션/사용자별 권한 기반 접근 통제.         |
-
 
 ## Functional Requirements
 
@@ -70,7 +68,6 @@ updated: 2026-08-13
 ### AI Agent Requirements
 
 N/A
-
 
 ## Interface Requirements
 
