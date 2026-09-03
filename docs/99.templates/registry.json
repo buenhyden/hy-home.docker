@@ -788,7 +788,7 @@
         "Follow-up Review",
         "Related Documents"
       ],
-      "lifecycle_id": "point-in-time",
+      "lifecycle_id": "living",
       "traceability": {
         "allowed_parent_profiles": [
           "incident"
@@ -929,7 +929,7 @@
         "Limitations",
         "Related Documents"
       ],
-      "lifecycle_id": "point-in-time",
+      "lifecycle_id": "living",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -2074,26 +2074,6 @@
           "closed"
         ],
         "closed": []
-      }
-    },
-    "point-in-time": {
-      "statuses": [
-        "draft",
-        "active",
-        "superseded",
-        "retired"
-      ],
-      "transitions": {
-        "draft": [
-          "active",
-          "retired"
-        ],
-        "active": [
-          "superseded",
-          "retired"
-        ],
-        "superseded": [],
-        "retired": []
       }
     },
     "historical": {
@@ -3265,7 +3245,7 @@
   "transitions": {
     "adr": "adr",
     "architecture-description": "living",
-    "audit": "point-in-time",
+    "audit": "living",
     "audit-member": "living",
     "data": "living",
     "data-model-contract": "living",
@@ -3285,7 +3265,7 @@
     "package-readme": "living",
     "plan": "execution",
     "policy": "living",
-    "postmortem": "point-in-time",
+    "postmortem": "living",
     "readme": "living",
     "reference-category-readme": "living",
     "repository-readme": "living",
