@@ -539,6 +539,12 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
     for link in graph.links:
+        if link.source.as_posix().startswith(_PRESERVED_LINK_PREFIXES):
+            # A preserved record's outbound links named what existed when it was
+            # written. Requiring them to resolve now would force edits to the
+            # record the archive exists to preserve. Links *into* a preserved
+            # record are still checked, because that target is a live file.
+            continue
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
             continue

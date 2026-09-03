@@ -41,6 +41,9 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
 PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired")
+# Roots a document may have been retired from, mirroring the registry's
+# `archive_source_prefixes`. `docs/` is the implicit default.
+LEGACY_ARCHIVE_SOURCE_ROOTS = frozenset({"archive/"})
 GIT_READ_TIMEOUT_SECONDS = 10
 MAX_GIT_STDERR_BYTES = 64 * 1024
 MAX_TRUSTED_REQUIREMENT_BYTES = 512 * 1024
@@ -1731,6 +1734,14 @@ def preserved_origin_path(path: str | pathlib.PurePosixPath) -> str | None:
     disposition, separator, rest = remainder.partition("/")
     if not separator or disposition not in PRESERVED_DISPOSITIONS or not rest:
         return None
+    # Retirement predates the `docs/` reorganization for some records, so the
+    # source root is part of what is preserved. `archive_source_prefixes`
+    # registers the roots a document may have been retired from; a record whose
+    # first segment names one of them keeps it, and every other record is a
+    # stage under `docs/`.
+    head = rest.partition("/")[0]
+    if f"{head}/" in LEGACY_ARCHIVE_SOURCE_ROOTS:
+        return rest
     return f"docs/{rest}"
 
 
