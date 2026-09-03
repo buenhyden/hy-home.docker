@@ -370,7 +370,15 @@ class AgentGovernanceContractTests(unittest.TestCase):
     def test_stage03_token_evidence_is_exact_and_new_active_specs_are_scanned(
         self,
     ) -> None:
+        # The scanner judges active roots only, and a completed package is now
+        # preserved outside them. The case under test is still what happens
+        # when that content sits at an active path, so the destination stays in
+        # Stage 03 while the source follows the record into the archive.
         historical = "docs/03.specs/0094-harness-agent-first-engineering/spec.md"
+        historical_source = (
+            "docs/98.archive/completed/03.specs/"
+            "0094-harness-agent-first-engineering/spec.md"
+        )
         cases = ("exact-evidence", "changed-evidence", "new-active-spec")
         for case in cases:
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
@@ -387,7 +395,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 else:
                     target = root / historical
                     target.parent.mkdir(parents=True)
-                    shutil.copy2(ROOT / historical, target)
+                    shutil.copy2(ROOT / historical_source, target)
                     if case == "changed-evidence":
                         target.write_text(
                             target.read_text(encoding="utf-8")
