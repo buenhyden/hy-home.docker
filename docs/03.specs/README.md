@@ -60,6 +60,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0167 | [Quality Gate Convergence](./0167-quality-gate-convergence/spec.md) | completed outcome Spec; execution members removed at completion |
 | SPEC-0168 | [Entrypoint README Registration](./0168-entrypoint-readme-registration/spec.md) | completed outcome Spec; execution members removed at completion |
 | SPEC-0169 | [Document Lifecycle Convergence](./0169-document-lifecycle-convergence/spec.md) | active Spec with [Plan](./0169-document-lifecycle-convergence/plan.md) and [Task](./0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
+| SPEC-0170 | [Archive Preservation Model](./0170-archive-preservation-model/spec.md) | active Spec with [Plan](./0170-archive-preservation-model/plan.md) and [Task](./0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 
 ## How to Work in This Area
 
