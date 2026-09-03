@@ -58,7 +58,7 @@ without secret-value access.
 
 - [AD-0028](../../../../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - [Secrets registry](../../../../../secrets/README.md)
-- **Guide**: [../../05.operations/catalog/03-security/0016-vault/guide.md](../../../../05.operations/catalog/03-security/0016-vault/guide.md)
-- **Policy**: [../../05.operations/catalog/03-security/0016-vault/policy.md](../../../../05.operations/catalog/03-security/0016-vault/policy.md)
-- **Runbook**: [../../05.operations/catalog/03-security/0016-vault/runbook.md](../../../../05.operations/catalog/03-security/0016-vault/runbook.md)
+- **Guide**: [../../../../05.operations/catalog/03-security/0016-vault/guide.md](../../../../05.operations/catalog/03-security/0016-vault/guide.md)
+- **Policy**: [../../../../05.operations/catalog/03-security/0016-vault/policy.md](../../../../05.operations/catalog/03-security/0016-vault/policy.md)
+- **Runbook**: [../../../../05.operations/catalog/03-security/0016-vault/runbook.md](../../../../05.operations/catalog/03-security/0016-vault/runbook.md)
 - [Documentation index](../../../../README.md)

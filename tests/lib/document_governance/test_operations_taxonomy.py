@@ -215,9 +215,14 @@ class OperationsAuthorityTests(unittest.TestCase):
         # The twelve domain packages that also carried role links were retired:
         # they described a steady state the catalog owns, so their links moved
         # with them. What remains are bounded change packages.
+        # The package is completed, so it is preserved under the archive; its
+        # role links are relative to that location.
         expected = {
-            "docs/03.specs/0095-infra-secrets-docs-refresh/spec.md": {
-                role: f"../../05.operations/catalog/03-security/0016-vault/{role.lower()}.md"
+            "docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md": {
+                role: (
+                    "../../../../05.operations/catalog/03-security/0016-vault/"
+                    f"{role.lower()}.md"
+                )
                 for role in ("Guide", "Policy", "Runbook")
             },
         }
