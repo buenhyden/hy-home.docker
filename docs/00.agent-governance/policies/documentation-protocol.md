@@ -95,7 +95,7 @@ evidence; surrounding instructions remain current and validated normally.
 | Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
-| Historical recovery | Git history; Stage 98 is non-authoritative | Recover prior content without creating a current authoring route. |
+| Historical recovery | `docs/98.archive/`; non-authoritative for current rules | Read prior content as a preserved record without creating a current authoring route. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
@@ -112,9 +112,9 @@ and its still-current meaning has moved to a canonical owner.
 | --- | --- | --- |
 | `draft` | keep every member | keep |
 | `active` | keep every member | keep |
-| `completed` | keep `spec.md`; mark `plan.md` and Tasks `completed` first, then remove them in a following change | not reachable in the `living` lifecycle |
-| `superseded` | keep `spec.md` with `superseded_by`; execution members may be removed | keep with `superseded_by` |
-| `retired` | remove the package and record one Tombstone | remove and record one Tombstone |
+| `completed` | mark every member `completed`, then preserve the whole package under `docs/98.archive/completed/` in a following change | not reachable in the `living` lifecycle |
+| `superseded` | preserve the package under `docs/98.archive/superseded/`, keeping `superseded_by` | preserve under `docs/98.archive/superseded/` with `superseded_by` |
+| `retired` | preserve the package under `docs/98.archive/retired/` and record one Tombstone | preserve under `docs/98.archive/retired/` and record one Tombstone |
 
 ### Retirement preconditions
 
@@ -124,7 +124,8 @@ Retire a package or a standalone document only when all of these hold.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical Stage 00, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.
-4. One Stage 98 Tombstone records the retirement.
+4. One Stage 98 Tombstone records the retirement, and the document itself is
+   preserved under `docs/98.archive/retired/`. Neither half is evidence alone.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to

@@ -3,9 +3,10 @@ title: 은퇴 기록으로서의 Tombstone
 version: 1.0.0
 type: sdlc/architecture-decision
 layer: architecture
-status: active
+status: superseded
 owner: "@buenhyden"
 artifact_id: ADR-0030
+superseded_by: ADR-0031
 parent_ids:
   - AD-0030
 created: 2026-09-01

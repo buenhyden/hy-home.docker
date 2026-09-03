@@ -3159,8 +3159,8 @@
         "REQ-0026.FR": {
           "prefix": "REQ-0026-FR-",
           "width": 4,
-          "high_water": 11,
-          "next_number": 12,
+          "high_water": 12,
+          "next_number": 13,
           "current_issued": [
             1,
             2,
@@ -3170,7 +3170,8 @@
             8,
             9,
             10,
-            11
+            11,
+            12
           ],
           "reserved_history": [
             6,
@@ -3181,8 +3182,8 @@
         "REQ-0026.NFR": {
           "prefix": "REQ-0026-NFR-",
           "width": 4,
-          "high_water": 11,
-          "next_number": 12,
+          "high_water": 12,
+          "next_number": 13,
           "current_issued": [
             6,
             7
@@ -3196,7 +3197,8 @@
             8,
             9,
             10,
-            11
+            11,
+            12
           ],
           "child_spaces": {}
         },
@@ -3221,8 +3223,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 30,
-      "next_number": 31,
+      "high_water": 31,
+      "next_number": 32,
       "child_spaces": {}
     },
     "spec": {

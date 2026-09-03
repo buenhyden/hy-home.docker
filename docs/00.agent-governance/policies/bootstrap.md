@@ -41,8 +41,9 @@ The Provider Registry owns provider identities, projection routes, model and
 permission translations, and hook/event bindings only. Stage 99 owns document
 paths and profiles. Neither namespace may redefine Stage 00 policy. Generated
 and tracked native runtime controls are consumers, never policy sources.
-Execution progress and handoff state belong to the current Task; Git history is
-the recovery mechanism.
+Execution progress and handoff state belong to the current Task. A document that
+leaves an active stage is preserved under `docs/98.archive/`; Git history proves
+that preserved record is what was removed.
 
 ## Hard Constraints
 

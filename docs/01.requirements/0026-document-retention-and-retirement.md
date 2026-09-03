@@ -38,9 +38,10 @@ updated: 2026-09-01
 
 - **REQ-0026-FR-0001**: 보존 판단은 lifecycle status와 소유권을 입력으로
   사용합니다. 문서의 나이와 corpus 크기는 보존 판단의 입력이 될 수 없습니다.
-- **REQ-0026-FR-0002**: package 또는 단독 문서의 은퇴는 Stage 98 Tombstone을
-  정확히 하나 생성합니다. Tombstone은 retired path, replacement 또는 `none`,
-  reason, recovery commit을 담습니다.
+- **REQ-0026-FR-0002**: package 또는 단독 문서의 은퇴는 두 기록을 남깁니다.
+  Stage 98 Tombstone 정확히 하나가 retired path, replacement 또는 `none`,
+  reason, recovery commit을 담고, 문서 자신은 `docs/98.archive/retired/` 아래에
+  원문 그대로 보존됩니다. 어느 한쪽만으로는 은퇴의 근거가 되지 않습니다.
 - **REQ-0026-FR-0003**: 등록된 check는 Tombstone이 없는 package 제거를
   거부합니다. 해당 package를 가리키는 link의 존재 여부와 무관합니다.
 - **REQ-0026-FR-0004**: 아직 현재 의미를 갖는 obligation, decision, structure,
@@ -53,20 +54,25 @@ updated: 2026-09-01
   반영하는 경로에 놓입니다. 문서를 은퇴시킬 수 있는 모든 stage는 namespace를
   가지며, namespace가 없다는 사실이 은퇴를 막거나 Tombstone 없는 제거를
   정당화하지 않습니다.
-- **REQ-0026-FR-0009**: `completed` Spec Package는 `spec.md`만 유지합니다.
-  완료 선언 자체가 "결과가 canonical owner에 도달했다"는 주장이므로,
-  `plan.md`와 Task는 남지 않습니다. 제거는 두 단계입니다. 먼저 package와
-  execution member를 `completed`로 표시하고, 그다음 변경에서 member를
-  제거합니다. 실행 증거 삭제 check는 제거되는 member의 status를 비교 base에서
-  읽으므로, 한 변경 안에서 완료 표시와 제거를 함께 수행하면 그 member는 base에
-  여전히 비terminal로 관측되어 삭제가 거부됩니다. 이 규칙은 판단이 아니라
-  기계적으로 검사 가능한 상태입니다.
+- **REQ-0026-FR-0009**: 활성 스테이지에는 terminal status 문서가 남지
+  않습니다. `completed`, `superseded`, `retired` 문서는 처분에 대응하는
+  `docs/98.archive/` 하위 트리로 보존 이동합니다. 이동은 두 단계입니다. 먼저
+  package와 execution member를 terminal status로 표시하고, 그다음 변경에서
+  보존합니다. 실행 증거 이동 check는 옮겨지는 member의 status를 비교 base에서
+  읽으므로, 한 변경 안에서 표시와 이동을 함께 수행하면 그 member는 base에
+  여전히 비terminal로 관측되어 거부됩니다.
 - **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
   정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
   Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.
 - **REQ-0026-FR-0011**: Stage 01부터 05까지의 문서 레이어는 상호 참조 링크로
   양방향 추적성을 유지합니다. 이 의무는 문서 거버넌스에 속하므로 개별 도메인
   요구사항이 각자 다시 선언하지 않습니다.
+
+- **REQ-0026-FR-0012**: 보존 기록은 수정하지 않습니다. 이동 또는 삭제 당시
+  본문과 byte-identical해야 하며, 처분과 사유는 경로와 Tombstone이 담고 보존본
+  자신의 frontmatter가 담지 않습니다. 현재 계약에 맞추기 위한 편집은 보존
+  대상을 훼손하므로 보존 기록은 frontmatter와 section 계약의 적용 대상이
+  아닙니다.
 
 ## Non-functional Requirements
 
@@ -100,7 +106,7 @@ updated: 2026-09-01
 
 - [문서 보존 및 은퇴 정책](../00.agent-governance/policies/documentation-protocol.md)
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0030 은퇴 기록으로서의 Tombstone](../02.architecture/decisions/0030-tombstone-retirement-record.md)
+- [ADR-0031 보존 기록으로서의 아카이브](../02.architecture/decisions/0031-preserved-archive-record.md)
 
 ## Related Documents
 

@@ -48,7 +48,9 @@ recovery commit으로 도달합니다. 그리고 비교 base를 선택하지만 
 - `scripts/validation/check-document-metadata.py`와
   `scripts/validation/check-document-links.py`는 이 판정을 gate profile로
   노출하는 등록된 entrypoint입니다.
-- `docs/98.archive/tombstones/<stage>/`는 은퇴 pointer의 저장 구조입니다.
+- `docs/98.archive/`는 두 종류를 담습니다. `migrations/`와 `tombstones/`는
+  결정의 기록이고, `completed/`, `superseded/`, `retired/`는 보존된 본문입니다.
+  `docs/98.archive/tombstones/<stage>/`는 철회 기록의 저장 구조입니다.
   namespace는 은퇴한 문서의 stage를 그대로 반영하므로, 어떤 stage에서 은퇴가
   일어났는지는 디렉터리 목록만으로 읽힙니다. namespace의 부재는 "그 stage는
   은퇴할 수 없다"가 아니라 "아직 은퇴한 적이 없다"를 뜻합니다.
@@ -121,7 +123,7 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 ## Traceability
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
-- [ADR-0030 은퇴 기록으로서의 Tombstone](../decisions/0030-tombstone-retirement-record.md)
+- [ADR-0031 보존 기록으로서의 아카이브](../decisions/0031-preserved-archive-record.md)
 - [문서 보존 및 은퇴 정책](../../00.agent-governance/policies/documentation-protocol.md)
 
 ## Related Documents
