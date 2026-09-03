@@ -207,8 +207,16 @@ def validate_record(
     }
     required = set(raw_profile.get("required", []))
     optional = set(raw_profile.get("optional", []))
-    forbidden = set(raw_profile.get("forbidden", [])) - specialization_keys
     global_forbidden = set(common.get("globally_forbidden", []))
+    # `globally_forbidden` named three retired keys but was read only to pick a
+    # finding code inside a loop no profile could enter, because no profile
+    # declares `forbidden`. The whitelist below rejected the keys anyway, as
+    # undeclared rather than as deliberately retired. Unioning them here makes
+    # the declared contract the thing that decides, and restores the distinct
+    # code that tells an author the key was removed on purpose.
+    forbidden = (
+        set(raw_profile.get("forbidden", [])) | global_forbidden
+    ) - specialization_keys
     registered_owner = registered_generated_owner(record.path, profiles)
     for key in sorted(required):
         if key not in record.metadata or record.metadata[key] in (None, ""):
@@ -218,8 +226,22 @@ def validate_record(
     for key in sorted(record.metadata):
         if key not in forbidden:
             continue
-        code = "forbidden-key" if key in global_forbidden else "type-inappropriate-key"
-        findings.append(_finding(record, code, f"key is forbidden for {profile_label}: {key}"))
+        if key in global_forbidden:
+            findings.append(
+                _finding(
+                    record,
+                    "forbidden-key",
+                    f"key is forbidden repository-wide: {key}",
+                )
+            )
+            continue
+        findings.append(
+            _finding(
+                record,
+                "type-inappropriate-key",
+                f"key is forbidden for {profile_label}: {key}",
+            )
+        )
 
     status = record.metadata.get("status")
     allowed_statuses = raw_profile.get("allowed_statuses", [])

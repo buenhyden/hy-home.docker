@@ -432,3 +432,40 @@ class ReadmeSectionProfileTests(unittest.TestCase):
         }
         self.assertIn("readme", with_sections)
         self.assertTrue(with_sections - {"readme"})
+
+
+class GloballyForbiddenKeyTests(unittest.TestCase):
+    """A retired key is reported as retired, not as an unknown typo."""
+
+    def _codes(self, key: str) -> list[str]:
+        registry = metadata.load_registry()
+        profiles = metadata.build_registry_profiles(registry)
+        record = metadata.Record(
+            pathlib.Path("docs/00.agent-governance/providers/README.md"),
+            {
+                "title": "Providers",
+                "version": "1.0.0",
+                "type": "governance/provider-index",
+                "status": "active",
+                "owner": "@buenhyden",
+                key: "x",
+            },
+            "governance-provider-index",
+        )
+        manifest = metadata.build_manifest([record])
+        return [
+            finding.code
+            for finding in metadata.validate_record(record, profiles, manifest)
+            if finding.code in {"forbidden-key", "type-inappropriate-key"}
+        ]
+
+    def test_every_globally_forbidden_key_is_reported_as_forbidden(self) -> None:
+        registry = metadata.load_registry()
+        forbidden = registry.common.get("globally_forbidden", ())
+        self.assertTrue(forbidden, "the contract declares nothing to enforce")
+        for key in forbidden:
+            with self.subTest(key=key):
+                self.assertIn("forbidden-key", self._codes(key))
+
+    def test_an_undeclared_key_keeps_the_other_code(self) -> None:
+        self.assertEqual(["type-inappropriate-key"], self._codes("bogus_key"))
