@@ -6,7 +6,8 @@ layer: operations
 status: active
 owner: "@buenhyden"
 artifact_id: RUN-0043
-parent_ids: []
+parent_ids:
+  - GDE-0043
 created: 2026-05-17
 updated: 2026-08-11
 ---

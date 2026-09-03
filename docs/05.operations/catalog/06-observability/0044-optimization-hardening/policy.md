@@ -6,7 +6,8 @@ layer: operations
 status: active
 owner: "@buenhyden"
 artifact_id: POL-0044
-parent_ids: []
+parent_ids:
+  - AD-0006
 created: 2026-05-10
 updated: 2026-08-11
 ---

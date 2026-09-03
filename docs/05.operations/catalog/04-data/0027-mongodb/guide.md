@@ -6,7 +6,8 @@ layer: operations
 status: active
 owner: "@buenhyden"
 artifact_id: GDE-0027
-parent_ids: []
+parent_ids:
+  - POL-0027
 created: 2026-05-10
 updated: 2026-08-11
 ---
