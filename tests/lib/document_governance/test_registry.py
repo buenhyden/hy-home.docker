@@ -589,6 +589,59 @@ class DocumentRegistryTests(unittest.TestCase):
             {finding.code for finding in findings},
         )
 
+    def test_sibling_space_may_advance_by_reservation_but_not_by_a_gap(
+        self,
+    ) -> None:
+        """FR, NFR, and IF share one sequence: the non-issuing siblings advance
+        their high-water by recording the same numbers as reservations."""
+
+        baseline = registry_module.load_trusted_requirement_allocation_baseline(":")
+
+        allocated = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        spaces = allocated["identity_spaces"]["requirement"]["child_spaces"]
+        issuing = spaces["REQ-0023.FR"]
+        allocation = issuing["high_water"] + 1
+        issuing["current_issued"].append(allocation)
+        issuing["high_water"] = allocation
+        issuing["next_number"] = allocation + 1
+        for sibling in ("REQ-0023.NFR", "REQ-0023.IF"):
+            space = spaces[sibling]
+            space["reserved_history"] = sorted(
+                set(space["reserved_history"]) | set(range(1, allocation + 1))
+                - set(space["current_issued"])
+            )
+            space["high_water"] = allocation
+            space["next_number"] = allocation + 1
+
+        self.assertEqual(
+            (),
+            validate_registry(
+                allocated,
+                trusted_requirement_baseline=baseline,
+                allow_requirement_allocation_transition=True,
+            ),
+        )
+
+        gapped = json.loads(json.dumps(allocated))
+        gapped_space = gapped["identity_spaces"]["requirement"]["child_spaces"][
+            "REQ-0023.NFR"
+        ]
+        gapped_space["reserved_history"].remove(allocation)
+        gapped_space["high_water"] = allocation + 1
+        gapped_space["next_number"] = allocation + 2
+
+        self.assertIn(
+            "requirement-allocation-transition-invalid",
+            {
+                finding.code
+                for finding in validate_registry(
+                    gapped,
+                    trusted_requirement_baseline=baseline,
+                    allow_requirement_allocation_transition=True,
+                )
+            },
+        )
+
     def test_requirement_allocation_transition_requires_trusted_baseline(
         self,
     ) -> None:

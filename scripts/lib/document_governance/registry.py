@@ -1495,9 +1495,18 @@ def _validate_requirement_allocation_transition(
                 )
             )
             continue
-        new_current = current_numbers - prior_current
+        # FR, NFR, and IF share one numeric sequence, so an allocation advances
+        # the high-water of every sibling while only one of them issues the new
+        # numbers; the others record the same numbers as reservations. Measuring
+        # the advance by newly issued numbers alone made that state
+        # unrepresentable: the reserving sibling could satisfy either "the union
+        # must classify 1..high_water" or "the advance must be contiguous", never
+        # both. Classify the advance by everything newly accounted for instead.
+        newly_classified = (current_numbers | reserved_numbers) - (
+            prior_current | prior_reserved
+        )
         expected_new = set(range(prior.high_water + 1, high_water + 1))
-        if new_current - prior_reserved != expected_new:
+        if newly_classified != expected_new:
             findings.append(
                 RegistryFinding(
                     "requirement-allocation-transition-invalid",

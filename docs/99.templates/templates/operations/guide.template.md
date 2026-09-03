@@ -15,34 +15,22 @@ next_review_at: YYYY-MM-DD
 
 # {{title}}
 
-## Purpose
-
-{{purpose}}
-
-## Audience
-
-{{audience}}
-
-## Prerequisites
-
-{{prerequisites}}
-
 ## Usage
 
 {{usage}}
 
-## Troubleshooting
+## Common Checks
 
-{{troubleshooting}}
+{{common_checks}}
 
-## Verification
+## Runbook Handoff
 
-{{verification}}
+{{runbook_handoff}}
 
 ## Traceability
 
 {{subject_and_authority_links}}
 
-## Examples
+## Related Documents
 
-{{examples}}
+{{related_documents}}

@@ -49,6 +49,17 @@ updated: 2026-09-01
 - **REQ-0026-FR-0005**: 이 workspace에 구현된 모든 capability는 Stage 01
   Requirement owner 하나와 Stage 02 Description 또는 ADR owner 하나를 가지며,
   Stage 03 package의 은퇴가 그 coverage를 제거하지 않습니다.
+- **REQ-0026-FR-0008**: Tombstone은 은퇴한 문서의 stage namespace를 그대로
+  반영하는 경로에 놓입니다. 문서를 은퇴시킬 수 있는 모든 stage는 namespace를
+  가지며, namespace가 없다는 사실이 은퇴를 막거나 Tombstone 없는 제거를
+  정당화하지 않습니다.
+- **REQ-0026-FR-0009**: `completed` Spec Package는 `spec.md`만 유지합니다.
+  완료 선언 자체가 "결과가 canonical owner에 도달했다"는 주장이므로, 완료와
+  동시에 `plan.md`와 Task를 제거합니다. 이 규칙은 판단이 아니라 기계적으로
+  검사 가능한 상태입니다.
+- **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
+  정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
+  Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.
 
 ## Non-functional Requirements
 
@@ -73,6 +84,10 @@ updated: 2026-09-01
 - Tombstone과 함께 제거된 package는 통과하며, 그 Tombstone은 retired path와
   정규 Git blob으로 해석됩니다.
 - 보존 규칙은 Spec Package를 적재하지 않고 Stage 00에서 읽을 수 있습니다.
+- `completed` status를 가진 Spec Package 중 `plan.md` 또는 Task를 보유한
+  package가 하나도 없습니다.
+- Tombstone이 존재하는 모든 stage namespace는 그 stage에서 실제로 은퇴가
+  일어났음을 뜻하며, 은퇴가 일어난 stage에 namespace가 없는 경우는 없습니다.
 
 ## Traceability
 

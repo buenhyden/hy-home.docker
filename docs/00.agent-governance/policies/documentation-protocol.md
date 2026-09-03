@@ -56,9 +56,19 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
    without an identity declares no `artifact_id` and never invents one. A
    provider-owned runtime projection is exempt from this envelope entirely,
    because its shape belongs to the runtime that reads it.
-10. Update cross-links in the same logical change.
-11. Record execution evidence in the co-located Stage 03 Task.
-12. Validate metadata, links, and stage-specific contracts before completion.
+10. Title a Stage 03 Spec as `<Subject> Specification`. The subject names what
+    the change contracts, not the document class, so `Technical`, `Capability`,
+    and other class words do not appear in it.
+11. Keep a Stage 03 package to a bounded change. A package that describes a
+    steady state belongs to the Stage 02 Description and Stage 05 subjects that
+    own that state, and is retired to them.
+12. Keep Stage 01 solution-independent. A requirement that names a specific
+    middleware chain, container flag, volume path, or script is an
+    implementation contract; it belongs to the Stage 03 Spec or Stage 05 policy
+    that owns the implementation.
+13. Update cross-links in the same logical change.
+14. Record execution evidence in the co-located Stage 03 Task.
+15. Validate metadata, links, and stage-specific contracts before completion.
 
 Governance and internal technical authority is written in English. User-facing
 guidance may follow the audience language when its template permits it.
@@ -102,7 +112,7 @@ and its still-current meaning has moved to a canonical owner.
 | --- | --- | --- |
 | `draft` | keep every member | keep |
 | `active` | keep every member | keep |
-| `completed` | keep `spec.md`; remove `plan.md` and Tasks only after their outcomes reach a canonical owner | not reachable in the `living` lifecycle |
+| `completed` | keep `spec.md`; `plan.md` and Tasks are removed by the same change that completes the package | not reachable in the `living` lifecycle |
 | `superseded` | keep `spec.md` with `superseded_by`; execution members may be removed | keep with `superseded_by` |
 | `retired` | remove the package and record one Tombstone | remove and record one Tombstone |
 
@@ -134,6 +144,11 @@ One Tombstone records one retired package or one retired standalone document,
 never one per member. It carries the retired path, the replacement or `none`,
 the reason, and the recovery commit. Git stores the content; the Tombstone is
 the tracked pointer that keeps the content findable.
+
+A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
+namespace of the document it retires. Every stage that can retire a document has
+one. A missing namespace is a namespace to create, never a reason to remove a
+document without its Tombstone.
 
 ### Implementation coverage
 

@@ -579,17 +579,15 @@
         "supersedes"
       ],
       "required_sections": [
-        "Purpose",
-        "Audience",
-        "Prerequisites",
         "Usage",
-        "Troubleshooting",
-        "Verification",
-        "Traceability"
+        "Common Checks",
+        "Runbook Handoff",
+        "Traceability",
+        "Related Documents"
       ],
       "optional_sections": [
-        "Examples",
-        "Related Documents"
+        "Overview",
+        "Troubleshooting"
       ],
       "lifecycle_id": "living",
       "traceability": {
@@ -628,17 +626,17 @@
         "supersedes"
       ],
       "required_sections": [
-        "Purpose",
-        "Scope",
-        "Policy Statements",
-        "Enforcement",
+        "Overview",
+        "Policy Scope",
+        "Controls",
         "Exceptions",
         "Verification",
-        "Traceability"
+        "Review Cadence",
+        "Traceability",
+        "Related Documents"
       ],
       "optional_sections": [
-        "Definitions",
-        "Related Documents"
+        "Definitions"
       ],
       "lifecycle_id": "living",
       "traceability": {
@@ -678,18 +676,18 @@
         "supersedes"
       ],
       "required_sections": [
-        "Purpose",
-        "Trigger",
-        "Prerequisites",
+        "When to Use",
         "Procedure",
-        "Verification",
-        "Rollback",
+        "Evidence",
+        "Rollback or Recovery",
         "Escalation",
-        "Traceability"
+        "Traceability",
+        "Related Documents"
       ],
       "optional_sections": [
-        "Automation",
-        "Related Documents"
+        "Overview",
+        "Automation Handoff",
+        "Verification Record"
       ],
       "lifecycle_id": "living",
       "traceability": {
@@ -3110,14 +3108,17 @@
         "REQ-0026.FR": {
           "prefix": "REQ-0026-FR-",
           "width": 4,
-          "high_water": 7,
-          "next_number": 8,
+          "high_water": 10,
+          "next_number": 11,
           "current_issued": [
             1,
             2,
             3,
             4,
-            5
+            5,
+            8,
+            9,
+            10
           ],
           "reserved_history": [
             6,
@@ -3128,8 +3129,8 @@
         "REQ-0026.NFR": {
           "prefix": "REQ-0026-NFR-",
           "width": 4,
-          "high_water": 7,
-          "next_number": 8,
+          "high_water": 10,
+          "next_number": 11,
           "current_issued": [
             6,
             7
@@ -3139,7 +3140,10 @@
             2,
             3,
             4,
-            5
+            5,
+            8,
+            9,
+            10
           ],
           "child_spaces": {}
         },

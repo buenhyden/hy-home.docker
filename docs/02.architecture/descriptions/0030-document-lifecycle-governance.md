@@ -48,6 +48,14 @@ recovery commit으로 도달합니다. 그리고 비교 base를 선택하지만 
 - `scripts/validation/check-document-metadata.py`와
   `scripts/validation/check-document-links.py`는 이 판정을 gate profile로
   노출하는 등록된 entrypoint입니다.
+- `docs/98.archive/tombstones/<stage>/`는 은퇴 pointer의 저장 구조입니다.
+  namespace는 은퇴한 문서의 stage를 그대로 반영하므로, 어떤 stage에서 은퇴가
+  일어났는지는 디렉터리 목록만으로 읽힙니다. namespace의 부재는 "그 stage는
+  은퇴할 수 없다"가 아니라 "아직 은퇴한 적이 없다"를 뜻합니다.
+- `scripts/lib/document_governance/metadata/heading.py`는 profile이 선언한
+  section 계약을 본문에 강제합니다. 선언과 강제가 갈라지면 corpus는 선언을
+  참조하지 않고 자기들끼리 수렴하므로, 이 component가 두 값을 하나로
+  유지합니다.
 
 ## Data Flow
 

@@ -15,21 +15,17 @@ next_review_at: YYYY-MM-DD
 
 # {{title}}
 
-## Purpose
+## Overview
 
-{{purpose}}
+{{overview}}
 
-## Scope
+## Policy Scope
 
-{{scope}}
+{{policy_scope}}
 
-## Policy Statements
+## Controls
 
-{{normative_policy}}
-
-## Enforcement
-
-{{enforcement}}
+{{controls}}
 
 ## Exceptions
 
@@ -39,10 +35,14 @@ next_review_at: YYYY-MM-DD
 
 {{verification}}
 
+## Review Cadence
+
+{{review_cadence}}
+
 ## Traceability
 
 {{subject_and_authority_links}}
 
-## Definitions
+## Related Documents
 
-{{definitions}}
+{{related_documents}}

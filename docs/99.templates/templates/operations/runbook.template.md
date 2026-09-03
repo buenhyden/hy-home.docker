@@ -15,29 +15,21 @@ next_review_at: YYYY-MM-DD
 
 # {{title}}
 
-## Purpose
+## When to Use
 
-{{purpose}}
-
-## Trigger
-
-{{trigger}}
-
-## Prerequisites
-
-{{prerequisites}}
+{{when_to_use}}
 
 ## Procedure
 
 {{procedure}}
 
-## Verification
+## Evidence
 
-{{verification}}
+{{evidence}}
 
-## Rollback
+## Rollback or Recovery
 
-{{rollback}}
+{{rollback_or_recovery}}
 
 ## Escalation
 
@@ -47,6 +39,6 @@ next_review_at: YYYY-MM-DD
 
 {{subject_and_authority_links}}
 
-## Automation
+## Related Documents
 
-{{automation}}
+{{related_documents}}
