@@ -626,6 +626,70 @@ def _source_roles_for_path(
     )
 
 
+def _registered_section_findings(
+    record: Record,
+    text: str,
+    profile: Mapping[str, object],
+) -> list[Finding]:
+    """Return the section-contract findings a Registry profile declares."""
+
+    findings: list[Finding] = []
+    h1, h2 = extract_markdown_headings(text)
+    if len(h1) != 1:
+        findings.append(
+            _finding(
+                record,
+                "body-h1-count",
+                f"profile {record.artifact_type} requires exactly one H1; found {len(h1)}",
+            )
+        )
+    required = {
+        f"## {heading}"
+        for heading in profile.get("required_sections", ())
+        if isinstance(heading, str)
+    }
+    optional = {
+        f"## {heading}"
+        for heading in profile.get("optional_sections", ())
+        if isinstance(heading, str)
+    }
+    for heading in sorted(required - set(h2)):
+        findings.append(
+            _finding(
+                record,
+                "body-heading-missing",
+                f"profile {record.artifact_type} is missing required heading: {heading}",
+            )
+        )
+    # Membership alone lets a document repeat a declared section indefinitely.
+    # A section names one place to look, so a second copy of it is a defect
+    # whether the heading is registered or not.
+    for heading, count in sorted(collections.Counter(h2).items()):
+        if count > 1:
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-duplicate",
+                    f"profile {record.artifact_type} repeats heading {count} times: {heading}",
+                )
+            )
+    # A profile whose documents share no heading vocabulary declares
+    # itself free-form rather than registering a union nothing follows.
+    # Without this, an unregistered heading is a violation only when a
+    # change introduces it, so the profile passes its own corpus and
+    # rejects every edit to it.
+    if not profile.get("free_form_sections"):
+        for heading in sorted(set(h2) - required - optional):
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-forbidden",
+                    f"profile {record.artifact_type} contains unregistered heading: {heading}",
+                )
+            )
+    return sorted(set(findings))
+
+
 def validate_body_contract(
     record: Record,
     text: str,
@@ -637,6 +701,7 @@ def validate_body_contract(
     if _machine_template_path(record.path):
         return _machine_template_findings(record, text)
 
+    section_findings: list[Finding] = []
     registry = profiles.get("_registry")
     if isinstance(registry, DocumentRegistry):
         owner = registered_generated_owner(record.path, profiles)
@@ -646,60 +711,18 @@ def validate_body_contract(
             return []
         registered_profile = classify_registered_path(record.path.as_posix(), registry)
         profile = registry.profiles.get(record.artifact_type)
-        if (
-            registered_profile == record.artifact_type
-            and isinstance(profile, Mapping)
-            and (
-                profile.get("template_id") is None
-                # A profile outside the typed target set never reaches the
-                # template-role route below, so its registered sections are
-                # enforced here whether or not it also declares a template.
-                or record.artifact_type not in _typed_target_types(profiles)
-            )
-        ):
-            findings: list[Finding] = []
-            h1, h2 = extract_markdown_headings(text)
-            if len(h1) != 1:
-                findings.append(
-                    _finding(
-                        record,
-                        "body-h1-count",
-                        f"profile {record.artifact_type} requires exactly one H1; found {len(h1)}",
-                    )
-                )
-            required = {
-                f"## {heading}"
-                for heading in profile.get("required_sections", ())
-                if isinstance(heading, str)
-            }
-            optional = {
-                f"## {heading}"
-                for heading in profile.get("optional_sections", ())
-                if isinstance(heading, str)
-            }
-            for heading in sorted(required - set(h2)):
-                findings.append(
-                    _finding(
-                        record,
-                        "body-heading-missing",
-                        f"profile {record.artifact_type} is missing required heading: {heading}",
-                    )
-                )
-            # A profile whose documents share no heading vocabulary declares
-            # itself free-form rather than registering a union nothing follows.
-            # Without this, an unregistered heading is a violation only when a
-            # change introduces it, so the profile passes its own corpus and
-            # rejects every edit to it.
-            if not profile.get("free_form_sections"):
-                for heading in sorted(set(h2) - required - optional):
-                    findings.append(
-                        _finding(
-                            record,
-                            "body-heading-forbidden",
-                            f"profile {record.artifact_type} contains unregistered heading: {heading}",
-                        )
-                    )
-            return sorted(set(findings))
+        if registered_profile == record.artifact_type and isinstance(profile, Mapping):
+            section_findings = _registered_section_findings(record, text, profile)
+            # A profile that also registers a template used to be exempt here
+            # and checked only through its template role, which runs on changed
+            # paths alone. That left the declared sections of every SDLC target
+            # unenforced. Enforce them for every profile, and carry the result
+            # into the role route below so a changed target still loses none of
+            # its template-residue checks.
+            if profile.get(
+                "template_id"
+            ) is None or record.artifact_type not in _typed_target_types(profiles):
+                return section_findings
 
     source_roles = _source_roles_for_path(record.path, profiles)
     is_markdown_source = record.path.as_posix().startswith(
@@ -707,7 +730,7 @@ def validate_body_contract(
     ) and record.path.name.endswith(".template.md")
     role_name: str | None = None
     role: dict[str, object] | None = None
-    findings: list[Finding] = []
+    findings: list[Finding] = list(section_findings)
     if source_roles:
         if len(source_roles) > 1:
             findings.append(
@@ -759,7 +782,7 @@ def validate_body_contract(
         candidate = roles.get(role_name, {}) if isinstance(roles, dict) else {}
         role = candidate if isinstance(candidate, dict) else None
     else:
-        return []
+        return sorted(set(findings))
 
     if role is None or role_name is None:
         return findings

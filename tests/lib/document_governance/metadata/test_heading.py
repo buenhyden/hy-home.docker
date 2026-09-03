@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import pathlib
+import subprocess
 import unittest
 
 from scripts.lib.document_governance.metadata import heading as heading_module
+from scripts.lib.document_governance.registry import classify_path
 from tests.lib.document_governance.metadata._support import (
     POLICY_TARGET_BODY,
     REQUIREMENT_TARGET_BODY,
+    ROOT,
+    body_with_headings,
     current_profiles,
     metadata,
 )
@@ -190,3 +194,105 @@ class CurrentBodyContractTests(unittest.TestCase):
             ["template-body-token-in-target"],
             [item.code for item in self.introduced(body, REQUIREMENT_TARGET_BODY)],
         )
+
+
+class RegisteredSectionContractTests(unittest.TestCase):
+    """Every profile that declares sections has them enforced.
+
+    A profile that also registered a template used to be exempt from the
+    Registry section check and was covered only by its template role, which
+    runs on changed paths alone. Twenty-eight of the twenty-nine profiles
+    declaring a section contract carry a `template_id`, so the contract was
+    declared and never applied to the documents it governs.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = current_profiles()
+        cls.registry = cls.profiles["_registry"]
+        cls.representatives = cls._representative_paths()
+
+    @classmethod
+    def _representative_paths(cls) -> dict[str, pathlib.Path]:
+        """Map each enforced profile to one tracked document that carries it."""
+
+        tracked = subprocess.run(
+            ["git", "ls-files", "docs"],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd=ROOT,
+        ).stdout.split()
+        found: dict[str, pathlib.Path] = {}
+        for candidate in tracked:
+            if not candidate.endswith(".md"):
+                continue
+            profile_id = classify_path(candidate, cls.registry)
+            if profile_id is None or profile_id in found:
+                continue
+            profile = cls.registry.profiles.get(profile_id, {})
+            if profile.get("required_sections") and not profile.get(
+                "free_form_sections"
+            ):
+                found[profile_id] = pathlib.Path(candidate)
+        return found
+
+    def _findings(self, profile_id: str, body: str) -> list[str]:
+        record = metadata.Record(
+            self.representatives[profile_id],
+            {"artifact_type": profile_id, "status": "active"},
+            profile_id,
+            frontmatter_present=True,
+        )
+        return [
+            item.code
+            for item in heading_module.validate_body_contract(
+                record, body, self.profiles, False
+            )
+        ]
+
+    def _conforming_body(self, profile_id: str) -> tuple[str, tuple[str, ...]]:
+        required = tuple(
+            self.registry.profiles[profile_id].get("required_sections", ())
+        )
+        return body_with_headings(*(f"## {name}" for name in required)), required
+
+    def test_every_declaring_profile_accepts_its_own_contract(self) -> None:
+        self.assertTrue(self.representatives, "no enforced profile has a document")
+        for profile_id in sorted(self.representatives):
+            with self.subTest(profile=profile_id):
+                body, _ = self._conforming_body(profile_id)
+                self.assertEqual([], self._findings(profile_id, body))
+
+    def test_a_missing_required_section_is_reported(self) -> None:
+        for profile_id in sorted(self.representatives):
+            with self.subTest(profile=profile_id):
+                _, required = self._conforming_body(profile_id)
+                body = body_with_headings(*(f"## {name}" for name in required[:-1]))
+                self.assertIn("body-heading-missing", self._findings(profile_id, body))
+
+    def test_an_unregistered_section_is_reported(self) -> None:
+        for profile_id in sorted(self.representatives):
+            with self.subTest(profile=profile_id):
+                body, _ = self._conforming_body(profile_id)
+                body += "\n## Totally Unregistered Heading\n\nFixture content.\n"
+                self.assertIn(
+                    "body-heading-forbidden", self._findings(profile_id, body)
+                )
+
+    def test_a_repeated_section_is_reported(self) -> None:
+        for profile_id in sorted(self.representatives):
+            with self.subTest(profile=profile_id):
+                body, required = self._conforming_body(profile_id)
+                body += f"\n## {required[0]}\n\nFixture content.\n"
+                self.assertIn(
+                    "body-heading-duplicate", self._findings(profile_id, body)
+                )
+
+    def test_a_second_h1_is_reported(self) -> None:
+        for profile_id in sorted(self.representatives):
+            with self.subTest(profile=profile_id):
+                body, _ = self._conforming_body(profile_id)
+                self.assertIn(
+                    "body-h1-count", self._findings(profile_id, body + "\n# Second\n")
+                )
