@@ -105,8 +105,20 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 
-def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object], *, base_ref: str | None = None) -> list[Finding]:
-    """Validate tracked repository surfaces backed by the canonical registry."""
+def validate_repository_contracts(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    *,
+    base_ref: str | None = None,
+    transition_ref: str | None = None,
+) -> list[Finding]:
+    """Validate tracked repository surfaces backed by the canonical registry.
+
+    `transition_ref` names the committed state the working tree is compared
+    against for lifecycle transitions. Without it every record carries no
+    predecessor status, so `invalid-transition` cannot fire and the rule is
+    declared but unreachable in this route.
+    """
 
     _require_git_worktree(root)
     findings: list[Finding] = []
@@ -117,7 +129,21 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         active_registry = profiles.get("_registry")
         assert isinstance(active_registry, DocumentRegistry)
         findings.extend(_reference_delegation_findings(root, profiles))
-        records = collect_records(root, profiles, require_git=True)
+        # One ls-tree plus batched blob reads, not a `git show` per file.
+        previous_records = (
+            {
+                record.path.as_posix(): record
+                for record in collect_records_at_ref(root, profiles, transition_ref)
+            }
+            if transition_ref is not None
+            else None
+        )
+        records = collect_records(
+            root,
+            profiles,
+            previous_records=previous_records,
+            require_git=True,
+        )
         manifest = build_current_manifest(root, records)
         for record in records:
             # Gating on `status == "active"` made `invalid-status` unreachable:
@@ -1059,7 +1085,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
                 )
         try:
-            contract_findings.extend(validate_repository_contracts(root, profiles, base_ref=args.base_ref))
+            contract_findings.extend(
+                validate_repository_contracts(
+                    root,
+                    profiles,
+                    base_ref=args.base_ref,
+                    # The full history scope is the only route with a
+                    # committed predecessor to compare against, so it is
+                    # where the transition rule becomes reachable.
+                    transition_ref="HEAD" if args.history_scope == "full" else None,
+                )
+            )
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
