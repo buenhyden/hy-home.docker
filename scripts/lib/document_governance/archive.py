@@ -138,6 +138,20 @@ APPROVED_BASELINE_RECOVERY_PATHS = frozenset(
 )
 
 
+class ArchiveContractError(ValueError):
+    """An archive document that violates its contract, with the path to it.
+
+    The archive loader raises plain ValueError throughout. A caller can report
+    that only as an unclassified failure, so a real contract violation reaches
+    the operator as an internal error with nothing to act on. This subclass
+    carries the offending path so the tombstone case can be named.
+    """
+
+    def __init__(self, path: str) -> None:
+        super().__init__(f"archive document violates its contract: {path}")
+        self.path = path
+
+
 @dataclasses.dataclass(frozen=True, order=True)
 class ArchiveFinding:
     code: str
@@ -816,7 +830,14 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
                     relative = pathlib.PurePosixPath(
                         f"docs/98.archive/tombstones/{stage_name}/{filename}"
                     )
-                    tombstones.append(_parse_tombstone_text(text, relative, filename))
+                    try:
+                        tombstones.append(
+                            _parse_tombstone_text(text, relative, filename)
+                        )
+                    except ArchiveContractError:
+                        raise
+                    except ValueError as error:
+                        raise ArchiveContractError(relative.as_posix()) from error
                 _verify_directory(
                     tombstones_fd,
                     stage_name,

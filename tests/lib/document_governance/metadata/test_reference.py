@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
 import pathlib
+import shutil
 import subprocess
 import tempfile
 import unittest
+
+from scripts.lib.document_governance import archive as archive_authority
+from scripts.lib.document_governance.lifecycle.recovery import (
+    run as run_recovery,
+)
 
 from scripts.lib.document_governance.metadata import reference as reference_module
 from scripts.lib.document_governance.metadata.heading import (
@@ -469,3 +477,37 @@ class GloballyForbiddenKeyTests(unittest.TestCase):
 
     def test_an_undeclared_key_keeps_the_other_code(self) -> None:
         self.assertEqual(["type-inappropriate-key"], self._codes("bogus_key"))
+
+
+class ArchiveContractDiagnosticTests(unittest.TestCase):
+    """An archive contract violation must name the document, not be an error."""
+
+    def _corrupted_root(self, directory: str) -> pathlib.Path:
+        root = pathlib.Path(directory)
+        shutil.copytree(ROOT / "docs/98.archive", root / "docs/98.archive")
+        victim = next(
+            (root / "docs/98.archive/tombstones").rglob("*.md")
+        )
+        victim.write_text(
+            victim.read_text(encoding="utf-8")
+            + "\n## Original Body\n\nA retired body copied into the pointer.\n",
+            encoding="utf-8",
+        )
+        self.relative = victim.relative_to(root).as_posix()
+        return root
+
+    def test_violation_is_reported_with_its_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._corrupted_root(directory)
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                code = run_recovery(root)
+        output = stream.getvalue()
+        self.assertEqual(1, code, output)
+        self.assertIn("archive-contract-invalid", output)
+        self.assertIn(self.relative, output)
+
+    def test_intact_archive_still_loads(self) -> None:
+        inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
+        self.assertTrue(inventory.tombstones)
+        self.assertTrue(inventory.migrations)
