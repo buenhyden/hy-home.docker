@@ -169,6 +169,60 @@ def _index_membership_findings(
     return findings
 
 
+def _template_catalog_findings(
+    root: pathlib.Path, registry: DocumentRegistry
+) -> list[Finding]:
+    """Require the catalog to link every registered template source.
+
+    The catalog calls itself "the only navigation surface for templates", and
+    category directories carry no README, so a role missing from it is a
+    template nobody can find by the documented route. Nothing checked that:
+    deleting a row passed both the metadata and the link validators.
+    """
+
+    catalog = registry.template_catalog
+    present = [
+        role_id
+        for role_id, role in registry.template_roles.items()
+        if isinstance(role.get("source"), str) and (root / role["source"]).is_file()
+    ]
+    source = root / catalog
+    if not source.is_file():
+        # An absent catalog over a tree that holds no template source is a
+        # repository without templates, not a missing navigation surface.
+        if present:
+            return [
+                Finding(
+                    catalog,
+                    "template-catalog-missing",
+                    f"{len(present)} registered template sources have no catalog",
+                )
+            ]
+        return []
+    try:
+        text = source.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        return [Finding(catalog, "template-catalog-unreadable", str(error))]
+    directory = pathlib.PurePosixPath(catalog).parent
+    listed = set()
+    for target in _MARKDOWN_LINK_TARGET.findall(text):
+        target = target.split("#", 1)[0]
+        if not target or target.startswith(("/", "http:", "https:", "mailto:")):
+            continue
+        listed.add(posixpath.normpath((directory / target).as_posix()))
+    findings: list[Finding] = []
+    for role_id in sorted(present):
+        if registry.template_roles[role_id]["source"] not in listed:
+            findings.append(
+                Finding(
+                    catalog,
+                    "template-catalog-unlisted",
+                    f"registered role is absent from the catalog: {role_id}",
+                )
+            )
+    return findings
+
+
 def validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -212,6 +266,7 @@ def validate_repository_contracts(
         findings.extend(
             _index_membership_findings(root, active_registry, records)
         )
+        findings.extend(_template_catalog_findings(root, active_registry))
         for record in records:
             # Gating on `status == "active"` made `invalid-status` unreachable:
             # a document with a status outside its lifecycle is by definition

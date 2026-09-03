@@ -511,3 +511,44 @@ class ArchiveContractDiagnosticTests(unittest.TestCase):
         inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
         self.assertTrue(inventory.tombstones)
         self.assertTrue(inventory.migrations)
+
+
+class TemplateCatalogTests(unittest.TestCase):
+    """The catalog is the documented way to find a template, so it must be whole."""
+
+    def test_catalog_lists_every_registered_role(self) -> None:
+        registry = metadata.load_registry()
+        findings = reference_module._template_catalog_findings(ROOT, registry)
+        self.assertEqual([], findings)
+
+    def test_the_rule_governs_every_role(self) -> None:
+        """A catalog check that inspects nothing passes vacuously."""
+
+        registry = metadata.load_registry()
+        self.assertTrue(registry.template_catalog)
+        self.assertGreater(len(registry.template_roles), 30)
+
+    def test_a_missing_row_is_reported(self) -> None:
+        registry = metadata.load_registry()
+        catalog = ROOT / registry.template_catalog
+        victim = sorted(registry.template_roles)[0]
+        source = registry.template_roles[victim]["source"]
+        kept = [
+            line
+            for line in catalog.read_text(encoding="utf-8").splitlines()
+            if source.split("templates/")[-1] not in line
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            target = root / registry.template_catalog
+            target.parent.mkdir(parents=True)
+            target.write_text("\n".join(kept), encoding="utf-8")
+            # The rule only governs roles whose source is present, so the
+            # omitted template has to exist for the omission to matter.
+            copied = root / source
+            copied.parent.mkdir(parents=True, exist_ok=True)
+            copied.write_text((ROOT / source).read_text(encoding="utf-8"), encoding="utf-8")
+            findings = reference_module._template_catalog_findings(root, registry)
+        self.assertIn(
+            "template-catalog-unlisted", [finding.code for finding in findings]
+        )

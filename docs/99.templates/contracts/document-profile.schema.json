@@ -12,7 +12,8 @@
     "identity_spaces",
     "transitions",
     "common",
-    "indexes"
+    "indexes",
+    "template_catalog"
   ],
   "properties": {
     "schema_version": {
@@ -65,6 +66,11 @@
         "type": "string",
         "minLength": 1
       }
+    },
+    "template_catalog": {
+      "description": "Document that must link every registered template_roles source.",
+      "type": "string",
+      "minLength": 1
     }
   },
   "$defs": {

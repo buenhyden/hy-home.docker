@@ -132,6 +132,7 @@ class DocumentRegistry:
     identity_spaces: Mapping[str, IdentitySpace]
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
     indexes: Mapping[str, str]
+    template_catalog: str
     common: Mapping[str, object]
 
 
@@ -1646,6 +1647,7 @@ def load_registry(
     spaces_raw = raw["identity_spaces"]
     transition_map = raw["transitions"]
     indexes_raw = raw["indexes"]
+    template_catalog = raw["template_catalog"]
     if not (
         isinstance(profiles_raw, list)
         and isinstance(roles_raw, Mapping)
@@ -1653,6 +1655,7 @@ def load_registry(
         and isinstance(spaces_raw, Mapping)
         and isinstance(transition_map, Mapping)
         and isinstance(indexes_raw, Mapping)
+        and isinstance(template_catalog, str)
     ):
         raise RegistryError("registry members have invalid shapes")
     profiles = MappingProxyType(
@@ -1705,5 +1708,6 @@ def load_registry(
         indexes=MappingProxyType(
             {str(key): str(value) for key, value in indexes_raw.items()}
         ),
+        template_catalog=template_catalog,
         common=_freeze(raw.get("common", {})),  # type: ignore[arg-type]
     )
