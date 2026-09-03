@@ -345,6 +345,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0164-lifecycle-vocabulary-alignment/plan.md](../../../03.specs/0164-lifecycle-vocabulary-alignment/plan.md) | Markdown reference |
 | [docs/03.specs/0164-lifecycle-vocabulary-alignment/spec.md](../../../03.specs/0164-lifecycle-vocabulary-alignment/spec.md) | Markdown reference |
 | [docs/03.specs/0164-lifecycle-vocabulary-alignment/tasks/tsk-0001-vocabulary-alignment.md](../../../03.specs/0164-lifecycle-vocabulary-alignment/tasks/tsk-0001-vocabulary-alignment.md) | Markdown reference |
+| [docs/03.specs/0165-template-contract-enforcement/plan.md](../../../03.specs/0165-template-contract-enforcement/plan.md) | Markdown reference |
+| [docs/03.specs/0165-template-contract-enforcement/spec.md](../../../03.specs/0165-template-contract-enforcement/spec.md) | Markdown reference |
+| [docs/03.specs/0165-template-contract-enforcement/tasks/tsk-0001-template-contract.md](../../../03.specs/0165-template-contract-enforcement/tasks/tsk-0001-template-contract.md) | Markdown reference |
+| [docs/03.specs/0166-formatting-authority-convergence/plan.md](../../../03.specs/0166-formatting-authority-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0166-formatting-authority-convergence/spec.md](../../../03.specs/0166-formatting-authority-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md](../../../03.specs/0166-formatting-authority-convergence/tasks/tsk-0001-formatting-authority.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
