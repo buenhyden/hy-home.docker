@@ -112,7 +112,7 @@ and its still-current meaning has moved to a canonical owner.
 | --- | --- | --- |
 | `draft` | keep every member | keep |
 | `active` | keep every member | keep |
-| `completed` | mark every member `completed`, then preserve the whole package under `docs/98.archive/completed/` in a following change | not reachable in the `living` lifecycle |
+| `completed` | mark every member `completed` and preserve the whole package under `docs/98.archive/completed/` in the same change | not reachable in the `living` lifecycle |
 | `superseded` | preserve the package under `docs/98.archive/superseded/`, keeping `superseded_by` | preserve under `docs/98.archive/superseded/` with `superseded_by` |
 | `retired` | preserve the package under `docs/98.archive/retired/` and record one Tombstone | preserve under `docs/98.archive/retired/` and record one Tombstone |
 

@@ -3,7 +3,7 @@ title: Archive Preservation Model Specification
 version: 1.0.0
 type: sdlc/spec
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0170
 parent_ids: [REQ-0026, AD-0030, ADR-0030]
@@ -15,19 +15,19 @@ updated: 2026-09-04
 
 ## Overview
 
-Retirement currently deletes. `ADR-0030` decided that a Tombstone is a pointer
-and Git history is the recovery mechanism, so `docs/98.archive/` holds 104
-pointers and no retained content. The workspace now requires the opposite
+Retirement used to delete. `ADR-0030` decided that a Tombstone was a pointer
+and Git history the recovery mechanism, so `docs/98.archive/` held 104 pointers
+and no retained content. The workspace now requires the opposite
 default: completed, aged, and withdrawn documents are all kept, each under its
 own management rule, and none of them sits in an active stage directory.
 
-Two populations violate that today. Twenty-one completed Stage 03 packages and
-three `superseded` documents remain in `docs/03.specs`, `docs/02.architecture`,
-and `docs/90.references` alongside live work. And 104 retired documents exist
-only inside Git objects, so half the retired set is preserved as a file and
-half is not.
+Two populations violated that. Twenty-one completed Stage 03 packages and three
+`superseded` documents remained in `docs/03.specs`, `docs/02.architecture`, and
+`docs/90.references` alongside live work. And 104 retired documents existed only
+inside Git objects, so half the retired set was preserved as a file and half was
+not.
 
-The declaration for a retained archive already exists and has never been used.
+The declaration for a retained archive already existed and had never been used.
 The `migration` profile registers `archive_disposition`, `archive_reason`,
 `archived_from`, `archived_commit`, `archived_at`, `archived_blob`, and
 `preservation_class` as optional frontmatter, and `common` registers

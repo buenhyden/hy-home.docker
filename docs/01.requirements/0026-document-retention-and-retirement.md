@@ -56,11 +56,10 @@ updated: 2026-09-01
   정당화하지 않습니다.
 - **REQ-0026-FR-0009**: 활성 스테이지에는 terminal status 문서가 남지
   않습니다. `completed`, `superseded`, `retired` 문서는 처분에 대응하는
-  `docs/98.archive/` 하위 트리로 보존 이동합니다. 이동은 두 단계입니다. 먼저
-  package와 execution member를 terminal status로 표시하고, 그다음 변경에서
-  보존합니다. 실행 증거 이동 check는 옮겨지는 member의 status를 비교 base에서
-  읽으므로, 한 변경 안에서 표시와 이동을 함께 수행하면 그 member는 base에
-  여전히 비terminal로 관측되어 거부됩니다.
+  `docs/98.archive/` 하위 트리로 보존 이동합니다. 보존은 이동이므로 status
+  표시와 이동을 한 변경 안에서 함께 수행합니다. 두 단계로 나누는 규칙은
+  member를 삭제하던 이전 모델의 제약이었고, 실행 증거 삭제 check는 문서가
+  다른 경로에 계속 존재하는 이동에는 적용되지 않습니다.
 - **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
   정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
   Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.

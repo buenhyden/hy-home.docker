@@ -295,9 +295,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0156-compose-enablement-model-convergence/plan.md](../../../03.specs/0156-compose-enablement-model-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md](../../../03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) | Markdown reference |
-| [docs/03.specs/0170-archive-preservation-model/plan.md](../../../03.specs/0170-archive-preservation-model/plan.md) | Markdown reference |
-| [docs/03.specs/0170-archive-preservation-model/spec.md](../../../03.specs/0170-archive-preservation-model/spec.md) | Markdown reference |
-| [docs/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md](../../../03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
@@ -979,6 +976,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md](../../../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md](../../../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md](../../../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0170-archive-preservation-model/plan.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0170-archive-preservation-model/spec.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) | Markdown reference |
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |
