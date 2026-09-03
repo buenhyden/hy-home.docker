@@ -3,7 +3,7 @@ title: Quality Gate Convergence Specification
 version: 1.0.0
 type: sdlc/spec
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0167
 parent_ids: [REQ-0024, REQ-0026, AD-0030, ADR-0029]

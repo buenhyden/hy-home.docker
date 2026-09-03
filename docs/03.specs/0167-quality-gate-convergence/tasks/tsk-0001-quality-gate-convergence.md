@@ -3,7 +3,7 @@ title: Make the Declared Quality Gate the Executed One
 version: 1.0.0
 type: sdlc/task
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0167-TSK-0001
 parent_ids: [SPEC-0167, SPEC-0167-PLAN-0001]
@@ -80,25 +80,67 @@ because a caller-supplied value is exactly what went missing and stayed missing.
 | `graphify-out/` must stay ignored | GRAPH_REPORT.md alone reports 1464 findings, and it is generated |
 | `.gitignore` repeated four rules | the three `graphify-out/` negations and `.env` |
 
+### The backlog the route would have exposed
+
+`pre-commit` passes only changed files, so findings accumulate in files nobody
+touches. The approved all-files wrapper, run against the pinned hook revisions,
+gave the real number:
+
+| Run | Result | Files rewritten |
+| :--- | :--- | ---: |
+| First | `hook_result=failed` | 27 |
+| After accepting the fixes | `hook_result=failed`, `changed_count=0` | 0 |
+| After the ten manual findings | `hook_result=passed hook_exit=0` | 0 |
+
+Of the 27, twenty-five were Markdown documents markdownlint fixes itself and two
+were the test files edited earlier in this Task, which `ruff format` rewraps --
+evidence that the formatter now reaches work an agent produces.
+
+The ten that no formatter fixes had been miscounted in an earlier tally of mine:
+the pattern matched `file.md:LINE error` while MD033 emits `file.md:LINE:COL`.
+The totals reconcile exactly at 39 = 29 auto-fixed + 10 manual.
+
 ## Verification Evidence
 
-- Plan composition, per execution context: `leaf.pre-commit` is present under
+- Plan composition, per execution context: `leaf.pre-commit` present under
   `push` and `pull_request` in both profiles, absent under `local` in both.
 - `run-ci-gate.py --profile full --explain` locally: no pre-commit row.
 - `tests/validation/test_run_ci_precommit.sh`: passes; two mutants caught --
   dropping one hook from the skip list, and dropping the caller-supplied-SKIP
   rejection.
 - Gate contract and runner suites: `test_ci_gate_contract`,
-  `test_ci_gate_runner`, `test_github_workflow_contract`, `test_ci_gate_adapters`.
-- All 782 tracked Markdown files linted under the new ignore rules.
+  `test_ci_gate_runner`, `test_github_workflow_contract`,
+  `test_ci_gate_adapters`.
+- 774 tracked Markdown files under the new ignore rules: 0 findings.
+- `run-agent-precommit-all-files.sh`: `hook_result=passed hook_exit=0`,
+  `changed_count=0`, `unexpected_count=0`.
+- `run-ci-gate.py --profile full` -> `EXIT=0`, 18 OK suites, after each commit.
+- `.gitignore` deduplication: `git check-ignore` on eight probe paths before
+  and after is byte-identical.
 
 ## Review Evidence
 
-Pending.
+The route was measured before it was opened. Had it been opened on the state
+this Task began from, CI would have failed on 27 files the local hook had never
+looked at. That ordering -- verify the corpus, then route -- is the reason the
+routing commit is green.
+
+Corrections made during the work rather than carried:
+
+| Severity | Site | Defect |
+| :--- | :--- | :--- |
+| high | this Task's own change | A `cd` into a scratch directory moved the shell to the main checkout, where two edits landed. Caught by `git status`, reverted with `git checkout --`, and reapplied in the worktree with absolute paths. |
+| medium | this Task's own change | Raising the job timeout to 45 minutes broke eighteen contract tests. The bound is deliberate; the change was reverted rather than the bound widened. |
+| medium | this Task's own analysis | `local.generated-freshness` was reported as unreachable. It is a declared `profile_roots` root; the walk had only covered job roots and public suites. Retracted. |
+| low | this Task's own analysis | The per-rule tally silently dropped every finding carrying a column number, hiding nine MD033 findings until the wrapper surfaced them. |
 
 ## Commit Ledger
 
-Pending.
+| Commit | Scope |
+| :--- | :--- |
+| `3989da58` | route `leaf.pre-commit`; drop the dead QA node; reconcile configuration with the tree |
+| `858dd13c` | the 27-file auto-fixable backlog |
+| `8bf30bd1` | the ten findings no formatter fixes |
 
 ## Rulings
 
@@ -115,7 +157,22 @@ Pending.
 
 ## Deferred Items
 
-Pending.
+- `leaf.repo-contracts` and `leaf.local-script-manifest` are the same
+  invocation of `check-script-manifest.py` with no arguments, under two gate
+  ids. Both are declared profile roots, so neither is dead; collapsing them
+  changes what the local profiles declare and is its own decision.
+- The five `ci.X` / `local.X` aggregate pairs differ only by a setup child, and
+  the public gate routes the `local.` side, so `setup.compose-env` and
+  `setup.repo-python-dependencies` never execute. They describe workflow steps
+  rather than gate leaves, which is defensible, but nothing states that.
+- `ci.validation-changed` and `ci.validation-full` declare identical children
+  while running different profiles, so the job DAG describes a superset of what
+  either job does.
+- `examples/sample-web-service/site/index.html` still has no formatter, carried
+  from SPEC-0166.
+- The 30-minute job timeout now has to accommodate a full-corpus `pre-commit`
+  run on a cold GitHub runner. That cannot be measured from here; the first CI
+  run is the measurement.
 
 ## Related Documents
 

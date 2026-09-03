@@ -3,7 +3,7 @@ title: Quality Gate Convergence Plan
 version: 1.0.0
 type: sdlc/plan
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0167-PLAN-0001
 parent_ids: [SPEC-0167]
