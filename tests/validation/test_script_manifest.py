@@ -553,6 +553,14 @@ class ScriptManifestTests(unittest.TestCase):
                         path.relative_to(ROOT).as_posix()
                         for path in (ROOT / "docs/90.references/audits").rglob("*.md")
                     )
+                    # The superseded snapshot the freshness checker reads is
+                    # preserved outside the live audit tree, so the producer
+                    # fixture takes its location from the checker itself.
+                    from tests.validation.test_agentic_audit_semantic_freshness import (
+                        module as freshness_module,
+                    )
+
+                    inputs.add(freshness_module.SUPERSEDED_2026_07_07_README.as_posix())
                     inputs.add(semantic["task_evidence"])
                     fixture_sources[semantic["task_evidence"]] = (
                         ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
