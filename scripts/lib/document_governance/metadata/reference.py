@@ -6,6 +6,7 @@ import argparse
 import collections
 import dataclasses
 import pathlib
+import posixpath
 import re
 import stat
 import sys
@@ -105,6 +106,69 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 
+_MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)\s]+)\)")
+
+
+def _index_membership_findings(
+    root: pathlib.Path,
+    registry: DocumentRegistry,
+    records: Sequence[Record],
+) -> list[Finding]:
+    """Require every registered package to appear in the index that lists it.
+
+    Stage 90 states the rule in prose: a package "is retired by deleting it in
+    the same change that ... removes its row below". The stale direction is
+    already covered, because a row pointing at a deleted package fails
+    `missing-link-target`. The missing direction had no check at all, which is
+    how three Spec Package rows went absent past a green gate.
+    """
+
+    findings: list[Finding] = []
+    for index_path, member_profile in sorted(registry.indexes.items()):
+        members = [
+            record.path.as_posix()
+            for record in records
+            if classify_registered_path(record.path.as_posix(), registry)
+            == member_profile
+        ]
+        source = root / index_path
+        if not source.is_file():
+            # An absent index over an empty tree is the state of a repository
+            # that has no such packages yet, not a governance defect. It only
+            # becomes one once a package exists with nowhere to be listed.
+            if members:
+                findings.append(
+                    Finding(
+                        index_path,
+                        "index-missing",
+                        f"{len(members)} registered {member_profile} documents have no index",
+                    )
+                )
+            continue
+        try:
+            text = source.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(Finding(index_path, "index-unreadable", str(error)))
+            continue
+        index_directory = pathlib.PurePosixPath(index_path).parent
+        listed = set()
+        for target in _MARKDOWN_LINK_TARGET.findall(text):
+            target = target.split("#", 1)[0]
+            if not target or target.startswith(("/", "http:", "https:", "mailto:")):
+                continue
+            listed.add(posixpath.normpath((index_directory / target).as_posix()))
+        for member in members:
+            if member not in listed:
+                findings.append(
+                    Finding(
+                        index_path,
+                        "index-member-unlisted",
+                        f"registered {member_profile} is absent from its index: {member}",
+                    )
+                )
+    return findings
+
+
 def validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -145,6 +209,9 @@ def validate_repository_contracts(
             require_git=True,
         )
         manifest = build_current_manifest(root, records)
+        findings.extend(
+            _index_membership_findings(root, active_registry, records)
+        )
         for record in records:
             # Gating on `status == "active"` made `invalid-status` unreachable:
             # a document with a status outside its lifecycle is by definition

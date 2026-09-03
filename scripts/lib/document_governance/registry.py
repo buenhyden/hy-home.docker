@@ -131,6 +131,7 @@ class DocumentRegistry:
     lifecycles: Mapping[str, tuple[str, ...]]
     identity_spaces: Mapping[str, IdentitySpace]
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
+    indexes: Mapping[str, str]
     common: Mapping[str, object]
 
 
@@ -661,6 +662,17 @@ def validate_registry(
                         "transition-profile-mismatch",
                         f"transitions.{profile_id}",
                         "transition mapping must equal the profile lifecycle_id",
+                    )
+                )
+    indexes = raw.get("indexes")
+    if isinstance(indexes, Mapping):
+        for index_path, member_profile in indexes.items():
+            if member_profile not in known_profiles:
+                findings.append(
+                    RegistryFinding(
+                        "index-profile-unknown",
+                        f"indexes.{index_path}",
+                        str(member_profile),
                     )
                 )
     return tuple(sorted(set(findings)))
@@ -1633,12 +1645,14 @@ def load_registry(
     lifecycles_raw = raw["lifecycles"]
     spaces_raw = raw["identity_spaces"]
     transition_map = raw["transitions"]
+    indexes_raw = raw["indexes"]
     if not (
         isinstance(profiles_raw, list)
         and isinstance(roles_raw, Mapping)
         and isinstance(lifecycles_raw, Mapping)
         and isinstance(spaces_raw, Mapping)
         and isinstance(transition_map, Mapping)
+        and isinstance(indexes_raw, Mapping)
     ):
         raise RegistryError("registry members have invalid shapes")
     profiles = MappingProxyType(
@@ -1688,5 +1702,8 @@ def load_registry(
             }
         ),
         transitions=transitions,
+        indexes=MappingProxyType(
+            {str(key): str(value) for key, value in indexes_raw.items()}
+        ),
         common=_freeze(raw.get("common", {})),  # type: ignore[arg-type]
     )

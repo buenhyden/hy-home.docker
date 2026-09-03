@@ -3290,5 +3290,11 @@
     "task": "execution",
     "template-source": "living",
     "tombstone": "historical"
+  },
+  "indexes": {
+    "docs/03.specs/README.md": "spec",
+    "docs/90.references/audits/README.md": "audit",
+    "docs/90.references/data/README.md": "data",
+    "docs/90.references/research/README.md": "research"
   }
 }

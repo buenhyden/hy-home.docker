@@ -425,6 +425,9 @@ class DocumentRegistryTests(unittest.TestCase):
             "profile-transition-mismatch": lambda value: value["transitions"].update(
                 {"spec": "execution"}
             ),
+            "index-profile-unknown": lambda value: value["indexes"].update(
+                {"docs/03.specs/README.md": "typo-profile"}
+            ),
             "template-source-traversal": lambda value: value["template_roles"][
                 "sdlc/requirement"
             ].update(
@@ -1396,3 +1399,22 @@ class ResurrectedMigrationContractTests(unittest.TestCase):
         self.assertNotIn("migration_contract_path", signature.parameters)
         profiles = metadata_validator.load_profiles()
         self.assertIn("governance-policy", profiles)
+
+
+class RegistryIndexContractTests(unittest.TestCase):
+    """The index binding is a Registry fact, not a path hardcoded in Python."""
+
+    def test_unknown_member_profile_is_named_exactly(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        raw["indexes"]["docs/03.specs/README.md"] = "typo-profile"
+        self.assertEqual(
+            ["index-profile-unknown"],
+            [finding.code for finding in validate_registry(raw)],
+        )
+
+    def test_every_index_binds_a_registered_profile(self) -> None:
+        registry = load_registry()
+        self.assertTrue(registry.indexes)
+        for index_path, member_profile in registry.indexes.items():
+            with self.subTest(index=index_path):
+                self.assertIn(member_profile, registry.profiles)

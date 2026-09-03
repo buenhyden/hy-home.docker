@@ -11,7 +11,8 @@
     "lifecycles",
     "identity_spaces",
     "transitions",
-    "common"
+    "common",
+    "indexes"
   ],
   "properties": {
     "schema_version": {
@@ -49,6 +50,15 @@
       }
     },
     "transitions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "indexes": {
+      "description": "Index document path -> the profile whose documents it must enumerate.",
       "type": "object",
       "minProperties": 1,
       "additionalProperties": {

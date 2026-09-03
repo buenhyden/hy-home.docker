@@ -8,6 +8,9 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.metadata import reference as reference_module
+from scripts.lib.document_governance.metadata.profile import (
+    classify_registered_path,
+)
 from tests.lib.document_governance.metadata._support import (
     ROOT,
     copy_registry_contract_fixture,
@@ -323,3 +326,65 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             "workspace-inventory-coupling",
             {finding.code for finding in findings},
         )
+
+
+class IndexMembershipTests(unittest.TestCase):
+    """The index rule must fire, and must not fire on a listed package."""
+
+    def _findings(self, index_body: str) -> list[object]:
+        registry = metadata.load_registry()
+        member = "docs/90.references/research/0002-agentic-engineering-research-pack/README.md"
+        self.assertEqual(
+            "research",
+            classify_registered_path(member, registry),
+            "fixture path must classify as the indexed member profile",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            index = root / "docs/90.references/research/README.md"
+            index.parent.mkdir(parents=True)
+            index.write_text(index_body, encoding="utf-8")
+            record = metadata.Record(pathlib.Path(member), {}, "research")
+            findings = reference_module._index_membership_findings(
+                root, registry, [record]
+            )
+        # The fixture root holds only the research index and one research
+        # record, so the other registered indexes govern nothing and are
+        # skipped. Scoping keeps this test about the research rule alone.
+        return [
+            finding
+            for finding in findings
+            if finding.path == "docs/90.references/research/README.md"
+            and finding.code != "index-unreadable"
+        ]
+
+    def test_unlisted_package_is_reported(self) -> None:
+        findings = self._findings("# Research Packages\n")
+        self.assertEqual(
+            ["index-member-unlisted"], [finding.code for finding in findings]
+        )
+
+    def test_listed_package_is_accepted(self) -> None:
+        findings = self._findings(
+            "# Research Packages\n\n"
+            "| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | x |\n"
+        )
+        self.assertEqual([], findings)
+
+    def test_every_registered_index_governs_at_least_one_package(self) -> None:
+        """A rule that enumerates nothing passes without checking anything."""
+
+        registry = metadata.load_registry()
+        self.assertTrue(registry.indexes)
+        for index_path, member_profile in registry.indexes.items():
+            with self.subTest(index=index_path):
+                self.assertTrue((ROOT / index_path).is_file())
+                governed = [
+                    path
+                    for path in (ROOT / index_path).parent.rglob("*.md")
+                    if classify_registered_path(
+                        path.relative_to(ROOT).as_posix(), registry
+                    )
+                    == member_profile
+                ]
+                self.assertTrue(governed, f"{index_path} governs no document")
