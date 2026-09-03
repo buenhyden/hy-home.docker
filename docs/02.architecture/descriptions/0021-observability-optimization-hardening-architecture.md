@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0021
 parent_ids:
-  - REQ-0018
+  - REQ-0007
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -108,7 +108,7 @@ updated: 2026-09-01
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0018-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0007-observability.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)

@@ -79,7 +79,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0016-data-optimization-hardening.md)
+- **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0004-data.md)
 - **Architecture Description**: [../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../../03.specs/0004-data/spec.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md)

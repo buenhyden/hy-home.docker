@@ -68,7 +68,7 @@ configuration success alone is not a live model claim.
 
 ## Traceability
 
-- [REQ-0020](../../01.requirements/0020-ai-optimization-hardening.md)
+- [REQ-0009](../../01.requirements/0009-ai.md)
 - [AD-0013](../../02.architecture/descriptions/0013-open-webui-architecture.md)
 - [AD-0023](../../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md)
 - [AI Operations catalog](../../05.operations/catalog/08-ai/README.md)

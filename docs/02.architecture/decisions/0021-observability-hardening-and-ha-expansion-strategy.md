@@ -78,7 +78,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0018-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0007-observability.md)
 - **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../descriptions/0021-observability-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/0007-observability/spec.md)
 - **Related ADR**: [ADR-0006](0006-lgtm-stack-selection.md)

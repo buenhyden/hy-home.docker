@@ -65,7 +65,7 @@ engine-specific and must not be inferred from a static render pass.
 
 ## Traceability
 
-- [REQ-0016](../../01.requirements/0016-data-optimization-hardening.md)
+- [REQ-0004](../../01.requirements/0004-data.md)
 - [AD-0019](../../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md)
 - [Data hardening guide](../../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
 - [Data hardening policy](../../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)

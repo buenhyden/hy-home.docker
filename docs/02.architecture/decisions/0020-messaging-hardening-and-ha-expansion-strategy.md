@@ -79,7 +79,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0006-messaging.md)
 - **Architecture Description**: [../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../descriptions/0020-messaging-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
 - **Related ADR**: [ADR-0005](0005-kafka-vs-rabbitmq-selection.md)

@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0018
 parent_ids:
-  - REQ-0015
+  - REQ-0003
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -62,7 +62,7 @@ ADR 없이는 current topology로 간주하지 않는다.
 
 ## Traceability
 
-- [REQ-0015](../../01.requirements/0015-security-optimization-hardening.md)
+- [REQ-0003](../../01.requirements/0003-security.md)
 - [ADR-0018](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
 - [SPEC-0003](../../03.specs/0003-security/spec.md)
 - [Vault policy](../../05.operations/catalog/03-security/0016-vault/policy.md)

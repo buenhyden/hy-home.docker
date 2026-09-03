@@ -65,6 +65,6 @@ profile blocks acceptance.
 
 ## Traceability
 
-- [REQ-0018](../../01.requirements/0018-observability-optimization-hardening.md)
+- [REQ-0007](../../01.requirements/0007-observability.md)
 - [AD-0021](../../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md)
 - [Observability Operations catalog](../../05.operations/catalog/06-observability/README.md)

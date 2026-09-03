@@ -82,7 +82,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0015-security-optimization-hardening.md)
+- **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0003-security.md)
 - **Architecture Description**: [../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../descriptions/0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/0003-security/spec.md)
 - **Related ADR**: [ADR-0003](0003-vault-as-secrets-manager.md)

@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0022
 parent_ids:
-  - REQ-0019
+  - REQ-0008
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -115,7 +115,7 @@ Tracked infra artifact가 없는 신규 workflow service는 active workflow arch
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
+- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0008-workflow.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md)

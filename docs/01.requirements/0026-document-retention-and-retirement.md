@@ -60,6 +60,9 @@ updated: 2026-09-01
 - **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
   정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
   Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.
+- **REQ-0026-FR-0011**: Stage 01부터 05까지의 문서 레이어는 상호 참조 링크로
+  양방향 추적성을 유지합니다. 이 의무는 문서 거버넌스에 속하므로 개별 도메인
+  요구사항이 각자 다시 선언하지 않습니다.
 
 ## Non-functional Requirements
 

@@ -232,15 +232,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/01.requirements/0011-communication.md](../../../01.requirements/0011-communication.md) | Markdown reference |
 | [docs/01.requirements/0012-laboratory.md](../../../01.requirements/0012-laboratory.md) | Markdown reference |
 | [docs/01.requirements/0013-ai-open-webui.md](../../../01.requirements/0013-ai-open-webui.md) | Markdown reference |
-| [docs/01.requirements/0014-auth-optimization-hardening.md](../../../01.requirements/0014-auth-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0015-security-optimization-hardening.md](../../../01.requirements/0015-security-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0016-data-optimization-hardening.md](../../../01.requirements/0016-data-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0017-messaging-optimization-hardening.md](../../../01.requirements/0017-messaging-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0018-observability-optimization-hardening.md](../../../01.requirements/0018-observability-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0019-workflow-optimization-hardening.md](../../../01.requirements/0019-workflow-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0020-ai-optimization-hardening.md](../../../01.requirements/0020-ai-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0021-tooling-optimization-hardening.md](../../../01.requirements/0021-tooling-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/0022-laboratory-optimization-hardening.md](../../../01.requirements/0022-laboratory-optimization-hardening.md) | Markdown reference |
 | [docs/01.requirements/0023-standardize-infra-net.md](../../../01.requirements/0023-standardize-infra-net.md) | Markdown reference |
 | [docs/01.requirements/0024-agent-governance-standardization.md](../../../01.requirements/0024-agent-governance-standardization.md) | Markdown reference |
 | [docs/01.requirements/0025-operational-readiness-closure.md](../../../01.requirements/0025-operational-readiness-closure.md) | Markdown reference |

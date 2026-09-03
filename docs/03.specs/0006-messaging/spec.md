@@ -64,6 +64,6 @@ must not be reported as a valid root configuration.
 
 ## Traceability
 
-- [REQ-0017](../../01.requirements/0017-messaging-optimization-hardening.md)
+- [REQ-0006](../../01.requirements/0006-messaging.md)
 - [AD-0020](../../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md)
 - [Messaging Operations catalog](../../05.operations/catalog/05-messaging/README.md)

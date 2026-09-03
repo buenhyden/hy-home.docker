@@ -96,6 +96,21 @@ _TOMBSTONE_FIELDS = frozenset(
 # Retired paths that predate four-digit identity fall back to the archive
 # sequence number carried by the tombstone filename.
 _RETIRED_IDENTITY_ROOTS = (
+    (
+        "docs/01.requirements/",
+        re.compile(r"docs/01\.requirements/(?P<number>[0-9]{4})-"),
+        "REQ",
+    ),
+    (
+        "docs/02.architecture/decisions/",
+        re.compile(r"docs/02\.architecture/decisions/(?P<number>[0-9]{4})-"),
+        "ADR",
+    ),
+    (
+        "docs/02.architecture/descriptions/",
+        re.compile(r"docs/02\.architecture/descriptions/(?P<number>[0-9]{4})-"),
+        "AD",
+    ),
     ("docs/03.specs/", re.compile(r"docs/03\.specs/(?P<number>[0-9]{3,4})-"), "SPEC"),
     (
         "docs/90.references/research/",

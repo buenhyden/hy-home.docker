@@ -64,6 +64,6 @@ Operators follow the matching Stage 05 subject.
 
 ## Traceability
 
-- [REQ-0019](../../01.requirements/0019-workflow-optimization-hardening.md)
+- [REQ-0008](../../01.requirements/0008-workflow.md)
 - [AD-0022](../../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md)
 - [Workflow Operations catalog](../../05.operations/catalog/07-workflow/README.md)

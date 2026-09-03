@@ -82,7 +82,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0009-ai.md)
 - **Architecture Description**: [../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../descriptions/0023-ai-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/0009-ai/spec.md)
 - **Related ADR**: [ADR-0008](0008-ollama-openwebui-local-ai.md)

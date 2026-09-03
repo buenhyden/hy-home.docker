@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0023
 parent_ids:
-  - REQ-0020
+  - REQ-0009
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -119,7 +119,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0009-ai.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/0009-ai/spec.md)
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/guide.md)

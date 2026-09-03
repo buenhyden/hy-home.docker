@@ -1272,9 +1272,14 @@ def load_trusted_requirement_allocation_baseline(
         for path in trusted_paths
         if (match := _trusted_requirement_path_match(path)) is not None
     }
-    if actual_packages and actual_packages != expected_packages:
+    # A retired Requirement leaves its number allocated and its document gone,
+    # so the trusted snapshot is a subset of the allocated run rather than the
+    # whole of it. What must never appear is a package outside that run: the
+    # allocation history is what this baseline exists to establish, and a
+    # retired package simply contributes no declarations.
+    if actual_packages and not actual_packages <= expected_packages:
         raise RegistryError(
-            "trusted Requirement predecessor does not cover its package high-water"
+            "trusted Requirement predecessor declares a package outside its high-water"
         )
 
     current_paths = [

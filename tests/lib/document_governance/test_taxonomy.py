@@ -67,15 +67,15 @@ AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0011": "REQ-0012",
     "AD-0012": "REQ-0005",
     "AD-0013": "REQ-0013",
-    "AD-0014": "REQ-0014",
-    "AD-0018": "REQ-0015",
-    "AD-0019": "REQ-0016",
-    "AD-0020": "REQ-0017",
-    "AD-0021": "REQ-0018",
-    "AD-0022": "REQ-0019",
-    "AD-0023": "REQ-0020",
-    "AD-0024": "REQ-0021",
-    "AD-0025": "REQ-0022",
+    "AD-0014": "REQ-0002",
+    "AD-0018": "REQ-0003",
+    "AD-0019": "REQ-0004",
+    "AD-0020": "REQ-0006",
+    "AD-0021": "REQ-0007",
+    "AD-0022": "REQ-0008",
+    "AD-0023": "REQ-0009",
+    "AD-0024": "REQ-0010",
+    "AD-0025": "REQ-0012",
     "AD-0026": "REQ-0023",
     "AD-0027": "REQ-0024",
     "AD-0028": "REQ-0025",
@@ -185,9 +185,16 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
+        # A retired Requirement keeps its number allocated and leaves the stage,
+        # so the live corpus plus its Tombstones covers the allocated run.
+        retired = {
+            metadata_for(path)["artifact_id"].removeprefix("tomb-")
+            for path in tracked_paths("docs/98.archive/tombstones/01.requirements")
+            if path.endswith(".md")
+        }
         self.assertEqual(
             {f"REQ-{number:04d}" for number in range(1, _requirement_high_water() + 1)},
-            {metadata_for(path)["artifact_id"] for path in paths},
+            {metadata_for(path)["artifact_id"] for path in paths} | retired,
         )
         for path in paths:
             with self.subTest(path=path):

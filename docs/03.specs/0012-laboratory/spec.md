@@ -33,7 +33,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0022-laboratory-optimization-hardening.md)
+- **PRD**: [../../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0012-laboratory.md)
 - **ARD**: [../../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/0011-laboratory-services.md](../../02.architecture/decisions/0011-laboratory-services.md)

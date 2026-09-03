@@ -67,7 +67,7 @@ runbook; an Agent may not invent, print, or recover secret values.
 
 ## Traceability
 
-- [REQ-0015](../../01.requirements/0015-security-optimization-hardening.md)
+- [REQ-0003](../../01.requirements/0003-security.md)
 - [AD-0018](../../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md)
 - [Vault policy](../../05.operations/catalog/03-security/0016-vault/policy.md)
 - [Vault runbook](../../05.operations/catalog/03-security/0016-vault/runbook.md)

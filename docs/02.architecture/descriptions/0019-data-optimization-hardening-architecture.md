@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0019
 parent_ids:
-  - REQ-0016
+  - REQ-0004
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -68,7 +68,7 @@ Requirement와 ADR을 통해 도입한다.
 
 ## Traceability
 
-- [REQ-0016](../../01.requirements/0016-data-optimization-hardening.md)
+- [REQ-0004](../../01.requirements/0004-data.md)
 - [ADR-0019](../decisions/0019-data-hardening-and-ha-expansion-strategy.md)
 - [SPEC-0004](../../03.specs/0004-data/spec.md)
 - [Data hardening guide](../../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)

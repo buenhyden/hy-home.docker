@@ -7,7 +7,7 @@ status: active
 owner: "@buenhyden"
 artifact_id: AD-0020
 parent_ids:
-  - REQ-0017
+  - REQ-0006
 created: 2026-03-28
 updated: 2026-09-01
 ---
@@ -112,7 +112,7 @@ updated: 2026-09-01
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0017-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0006-messaging.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/0006-messaging/spec.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md)

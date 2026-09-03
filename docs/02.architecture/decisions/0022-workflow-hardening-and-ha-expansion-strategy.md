@@ -80,7 +80,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0019-workflow-optimization-hardening.md)
+- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../descriptions/0022-workflow-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/0008-workflow/spec.md)
 - **Related ADR**: [ADR-0007](0007-airflow-n8n-hybrid-workflow.md)
