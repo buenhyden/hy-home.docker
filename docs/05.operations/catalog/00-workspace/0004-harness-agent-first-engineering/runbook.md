@@ -27,7 +27,7 @@ updated: 2026-08-21
 
 ## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] Confirm `git status --short --branch`.
 - [ ] Read `graphify-out/GRAPH_REPORT.md`.
@@ -37,7 +37,7 @@ updated: 2026-08-21
 - [ ] Run hook payload simulations after any hook quoting or parsing change.
 - [ ] Run all verification commands below.
 
-##### Procedure
+### Procedure
 
 1. Inspect workspace state.
 
@@ -94,11 +94,11 @@ updated: 2026-08-21
 
 7. Report changed files, command outcomes, Graphify health status, and any residual risk, including out-of-scope infra profile failures such as `10-communication`.
 
-#### Verification Steps
+### Verification Steps
 
 The runbook is successful when JSON parsing, hook payload simulation, Graphify health reporting, repository validators, default/core Docker checks, supported hardening tier checks, and the source-label scan all complete as expected. `report-graphify-health.sh` is non-failing advisory evidence; `status=advisory` requires corroboration but does not fail the repository gate.
 
-#### Observability and Evidence Sources
+### Observability and Evidence Sources
 
 - Command output from validation scripts.
 - `git diff --stat`.
@@ -107,21 +107,21 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - Hook payload simulation output.
 - The current co-located Task when a new implementation change is active.
 
-#### Safe Rollback or Recovery Procedure
+### Safe Rollback or Recovery Procedure
 
 - For documentation mistakes, revert only the affected stage doc or README hunk.
 - For runtime catalog drift, regenerate provider projections from the canonical Stage 00 roles, skills, and provider registry.
 - For Compose validation failures, inspect the changed `infra/**/docker-compose*.yml` files before editing unrelated files.
 - For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
 
-#### Agent Operations (If Applicable)
+### Agent Operations (If Applicable)
 
 - Use the active runtime's delegated-agent facility only when the user explicitly requests delegation.
 - Pass a primary scope path explicitly to delegated agents.
 - Record durable repository guidance in its owning policy, design, runbook, or Task.
 - Do not delete `_workspace/` artifacts without approval.
 
-#### Related Operational Documents
+### Related Operational Documents
 
 - [Operations Policy](../0004-harness-agent-first-engineering/policy.md)
 - [Usage Guide](../0004-harness-agent-first-engineering/guide.md)

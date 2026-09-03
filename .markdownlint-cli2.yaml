@@ -23,6 +23,10 @@ config:
       - feature-or-stream
       - incident-title
       - subdomain
+      - tier
+      - service
+      - key
+      - slug
   MD024: false
 # Shared markdownlint-cli2 rules for docs and root markdown files.
 #
