@@ -82,6 +82,6 @@ scripts와 provider surface는 각각의 consumer가 된다.
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027 superseded decision](0027-stage-00-canonical-adapter-model.md)
+- [ADR-0027 superseded decision](../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - [Stage 99 document authority](../../99.templates/README.md)
 - [SPEC-0158 lifecycle convergence](../../03.specs/0158-document-governance-lifecycle-convergence/spec.md)

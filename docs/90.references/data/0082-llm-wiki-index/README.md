@@ -261,7 +261,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
-| [docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
 | [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
 | [docs/02.architecture/decisions/0029-workspace-governance-authority.md](../../../02.architecture/decisions/0029-workspace-governance-authority.md) | Markdown reference |
 | [docs/02.architecture/decisions/0030-tombstone-retirement-record.md](../../../02.architecture/decisions/0030-tombstone-retirement-record.md) | Markdown reference |
@@ -319,6 +318,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0169-document-lifecycle-convergence/plan.md](../../../03.specs/0169-document-lifecycle-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0169-document-lifecycle-convergence/spec.md](../../../03.specs/0169-document-lifecycle-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md](../../../03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) | Markdown reference |
+| [docs/03.specs/0170-archive-preservation-model/plan.md](../../../03.specs/0170-archive-preservation-model/plan.md) | Markdown reference |
+| [docs/03.specs/0170-archive-preservation-model/spec.md](../../../03.specs/0170-archive-preservation-model/spec.md) | Markdown reference |
+| [docs/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md](../../../03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
@@ -553,7 +555,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md](../../audits/0030-sdlc-quality-formatting-implementation/README.md) | folder index |
 | [docs/90.references/audits/0031-security-framework-maturity/README.md](../../audits/0031-security-framework-maturity/README.md) | folder index |
 | [docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md](../../audits/0032-workspace-rules-environment-implementation/README.md) | folder index |
-| [docs/90.references/audits/0033-readme/README.md](../../audits/0033-readme/README.md) | folder index |
 | [docs/90.references/audits/README.md](../../audits/README.md) | folder index |
 | [docs/90.references/data/0059-compose-profile-service-coverage/README.md](../0059-compose-profile-service-coverage/README.md) | folder index |
 | [docs/90.references/data/0060-image-version-interpretation/README.md](../0060-image-version-interpretation/README.md) | folder index |
@@ -597,7 +598,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md](../../research/0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | Markdown reference |
 | [docs/90.references/research/0002-agentic-engineering-research-pack/m0019-verification-validation.md](../../research/0002-agentic-engineering-research-pack/m0019-verification-validation.md) | Markdown reference |
 | [docs/90.references/research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md](../../research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Markdown reference |
-| [docs/90.references/research/0080-roadmap-v1/README.md](../../research/0080-roadmap-v1/README.md) | folder index |
 | [docs/90.references/research/0081-roadmap/README.md](../../research/0081-roadmap/README.md) | folder index |
 | [docs/90.references/research/0084-github-actions-platform/README.md](../../research/0084-github-actions-platform/README.md) | folder index |
 | [docs/90.references/research/README.md](../../research/README.md) | folder index |
@@ -982,6 +982,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |
+| [docs/98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
+| [docs/98.archive/superseded/90.references/audits/0033-readme/README.md](../../../98.archive/superseded/90.references/audits/0033-readme/README.md) | folder index |
+| [docs/98.archive/superseded/90.references/research/0080-roadmap-v1/README.md](../../../98.archive/superseded/90.references/research/0080-roadmap-v1/README.md) | folder index |
 
 ## Refresh
 

@@ -48,7 +48,7 @@ a `package-member` profile and so allocates no global identity.
 | [AUD-0030](./0030-sdlc-quality-formatting-implementation/README.md) | Reference: SDLC Quality Formatting Implementation | active |
 | [AUD-0031](./0031-security-framework-maturity/README.md) | Reference: Security Framework Maturity Coverage | active |
 | [AUD-0032](./0032-workspace-rules-environment-implementation/README.md) | Reference: Workspace Rules and Environment Implementation | active |
-| [AUD-0033](./0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
+| [AUD-0033](../../98.archive/superseded/90.references/audits/0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
 
 ## Canonical Current Audit
 
@@ -58,7 +58,7 @@ These reports remain point-in-time evidence, not policy authority.
 
 ## Dated Historical Snapshots
 
-The [superseded audit snapshot](0033-readme/README.md) retains its observation
+The [superseded audit snapshot](../../98.archive/superseded/90.references/audits/0033-readme/README.md) retains its observation
 date in metadata; current package paths remain date-free.
 
 ## Supersession Ledgers

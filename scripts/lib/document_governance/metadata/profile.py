@@ -2293,6 +2293,9 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             ),
             "allow_additional": False,
             "disposition": "registry-canonical",
+            # Carried through so a consumer can tell a managed authoring target
+            # from a preserved record whose contract was met while it was live.
+            "frontmatter_policy": profile.get("frontmatter_policy"),
             "path_pattern": profile.get("path_pattern"),
             "artifact_id_pattern": profile.get("artifact_id_pattern"),
             "identity_relation": profile.get("identity_relation"),

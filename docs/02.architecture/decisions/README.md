@@ -34,7 +34,6 @@ docs/02.architecture/decisions/
 ├── 0001-traefik-nginx-hybrid.md
 ├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
-├── 0027-stage-00-canonical-adapter-model.md
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0029-workspace-governance-authority.md
 ├── 0030-tombstone-retirement-record.md
@@ -45,7 +44,7 @@ docs/02.architecture/decisions/
 
 - `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
 - `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
-- [`ADR-0027`](./0027-stage-00-canonical-adapter-model.md):
+- [`ADR-0027`](../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md):
   ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence strategy.

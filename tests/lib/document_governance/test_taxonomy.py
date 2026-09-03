@@ -259,8 +259,21 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
+        # A superseded decision is preserved rather than deleted, so the
+        # declared set is covered by the live log together with the archive.
+        # Losing a decision from both still fails.
+        preserved = [
+            path
+            for path in tracked_paths("docs/98.archive")
+            if re.fullmatch(
+                r"docs/98\.archive/[a-z]+/02\.architecture/decisions/"
+                r"[0-9]{4}-[a-z0-9-]+\.md",
+                path,
+            )
+        ]
         self.assertEqual(
-            set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths}
+            set(ADR_TO_AD),
+            {metadata_for(path)["artifact_id"] for path in paths + preserved},
         )
         for path in paths:
             with self.subTest(path=path):

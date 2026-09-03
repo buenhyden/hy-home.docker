@@ -395,9 +395,13 @@ class ArchiveMinimizationTests(unittest.TestCase):
 
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
-        self.assertEqual(
-            ("README.md", "migrations", "tombstones"), inventory.root_entries
-        )
+        # A disposition subtree exists only once something is preserved into
+        # it, so the required roots are a subset and the whole is bounded by
+        # the registered set.
+        required = {"README.md", "migrations", "tombstones"}
+        allowed = required | set(self.archive.PRESERVED_DISPOSITIONS)
+        self.assertLessEqual(required, set(inventory.root_entries))
+        self.assertLessEqual(set(inventory.root_entries), allowed)
         self.assertEqual(3, len(inventory.migrations))
         tombstone_files = [
             path

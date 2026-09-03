@@ -15,6 +15,7 @@ from collections.abc import Mapping, Sequence
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
     load_architecture_documents,
+    load_preserved_architecture_documents,
     validate_supersession_graph,
 )
 from scripts.lib.document_governance.frontmatter import (
@@ -1172,6 +1173,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             if architecture_root.exists() or architecture_root.is_symlink():
                 architecture_documents = load_architecture_documents(
                     architecture_root,
+                    registry=registry,
+                )
+                # A preserved predecessor still owns its identity, so the graph
+                # sees both sides of a completed supersession.
+                architecture_documents += load_preserved_architecture_documents(
+                    root / "docs/98.archive",
                     registry=registry,
                 )
                 graph_findings = validate_supersession_graph(architecture_documents)

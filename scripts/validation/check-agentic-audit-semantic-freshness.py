@@ -38,8 +38,10 @@ EXPECTED_TOP_LEVEL_PATHS = {
     "overview": EXPECTED_OVERVIEW,
     "task_evidence": EXPECTED_TASK_EVIDENCE,
 }
+# The snapshot is superseded, so it is preserved under the archive rather than
+# kept in the live audit tree; its content is still the thing checked here.
 SUPERSEDED_2026_07_07_README = pathlib.Path(
-    "docs/90.references/audits/0033-readme/README.md"
+    "docs/98.archive/superseded/90.references/audits/0033-readme/README.md"
 )
 EXPECTED_ASSERTION_IDS = {
     "DML-01",

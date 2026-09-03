@@ -486,7 +486,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
         self.assertIn("configuration-error:", result.stderr)
         self.assertIn("supersession-successor-not-effective", result.stderr)
 
-    def test_archived_superseded_adr_is_reported(self) -> None:
+    def test_preserved_superseded_adr_still_resolves(self) -> None:
         architecture = _architecture_module()
         predecessor = architecture.ArchitectureDocument(
             pathlib.PurePosixPath("docs/98.archive/decisions/0027-predecessor.md"),
@@ -507,7 +507,10 @@ class ArchitectureDocumentTests(unittest.TestCase):
             None,
         )
         findings = architecture.validate_supersession_graph((predecessor, successor))
-        self.assertIn("superseded-adr-archived", {item.code for item in findings})
+        # Preservation moves a superseded ADR out of the decision log. Where it
+        # sits is the placement check's concern; this graph must only keep
+        # resolving both sides of the supersession.
+        self.assertEqual(set(), {item.code for item in findings})
 
     def test_restored_requirements_root_is_forbidden(self) -> None:
         architecture = _architecture_module()

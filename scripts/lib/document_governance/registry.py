@@ -35,6 +35,12 @@ MAX_REGISTRY_BYTES = 1024 * 1024
 MAX_SCHEMA_BYTES = 256 * 1024
 MAX_JSON_DEPTH = 64
 FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
+# Preserved records live only under this prefix. A record is kept as it was
+# when it was live, so its frontmatter is not managed against the current
+# contract; scoping that exemption to the archive keeps it off every live
+# profile.
+PRESERVED_RECORD_PREFIX = "docs/98.archive/"
+PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired")
 GIT_READ_TIMEOUT_SECONDS = 10
 MAX_GIT_STDERR_BYTES = 64 * 1024
 MAX_TRUSTED_REQUIREMENT_BYTES = 512 * 1024
@@ -554,6 +560,7 @@ def validate_registry(
             isinstance(path_pattern, str)
             and path_pattern.endswith(".md")
             and profile_id not in FALLBACK_PROFILE_IDS
+            and not path_pattern.startswith(PRESERVED_RECORD_PREFIX)
             and frontmatter_policy != "required"
         ):
             findings.append(
@@ -587,12 +594,20 @@ def validate_registry(
                     "frontmatter-absent profiles cannot declare frontmatter keys",
                 )
             )
-        elif frontmatter_policy == "unmanaged" and profile_id != "unsupported":
+        elif (
+            frontmatter_policy == "unmanaged"
+            and profile_id != "unsupported"
+            and not (
+                isinstance(path_pattern, str)
+                and path_pattern.startswith(PRESERVED_RECORD_PREFIX)
+            )
+        ):
             findings.append(
                 RegistryFinding(
                     "frontmatter-policy-invalid",
                     f"profiles.{index}",
-                    "only the unsupported fallback may leave frontmatter unmanaged",
+                    "only the unsupported fallback and preserved archive records "
+                    "may leave frontmatter unmanaged",
                 )
             )
         path_tokens = (
@@ -1563,7 +1578,7 @@ def validate_requirement_allocation_transition(
 
 _TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
-    r"|\{(?:slug|hook_slug|domain|stage|category|subpath)\}"
+    r"|\{(?:slug|hook_slug|domain|stage|category|subpath|archived_subpath)\}"
 )
 _ARTIFACT_TOKEN_PATTERN = re.compile(
     r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
@@ -1680,6 +1695,14 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
             )
         elif token == "{category}":
             rendered.append(r"(?:audits|data|research)")
+        elif token == "{archived_subpath}":
+            # A preserved record keeps the name it had when it was live, so the
+            # archive must express filenames current authoring patterns forbid:
+            # `README`, `01.setup`, three-digit package numbers. No live pattern
+            # uses this token, so nothing outside the archive is loosened.
+            rendered.append(
+                r"(?:[A-Za-z0-9][A-Za-z0-9._-]*/)*[A-Za-z0-9][A-Za-z0-9._-]*"
+            )
         elif token == "{subpath}":
             # One or more lowercase path segments, so one profile can own a
             # nested entrypoint tree without a profile per depth.
@@ -1690,6 +1713,25 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
     rendered.append(re.escape(pattern[cursor:]))
     rendered.append("$")
     return re.compile("".join(rendered))
+
+
+def preserved_origin_path(path: str | pathlib.PurePosixPath) -> str | None:
+    """Return the live path a preserved record was moved from, else None.
+
+    Preservation changes a document's location, never its identity or its type.
+    Callers that need the original contract — a parent-type check, a placement
+    correspondence — read it back through this mapping rather than from the
+    archive profile, which only says the record is frozen.
+    """
+
+    normalized = pathlib.PurePosixPath(path).as_posix()
+    if not normalized.startswith(PRESERVED_RECORD_PREFIX):
+        return None
+    remainder = normalized.removeprefix(PRESERVED_RECORD_PREFIX)
+    disposition, separator, rest = remainder.partition("/")
+    if not separator or disposition not in PRESERVED_DISPOSITIONS or not rest:
+        return None
+    return f"docs/{rest}"
 
 
 def path_matches_pattern(

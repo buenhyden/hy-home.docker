@@ -26,6 +26,11 @@ _ACTIVE_STAGE_PREFIXES = (
     "docs/03.specs/",
     "docs/05.operations/",
 )
+_PRESERVED_LINK_PREFIXES = (
+    "docs/98.archive/completed/",
+    "docs/98.archive/superseded/",
+    "docs/98.archive/retired/",
+)
 _ROOT_PREFIXES = (
     "docs/",
     "infra/",
@@ -547,6 +552,11 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             and target_text.startswith("docs/98.archive/")
             and target_text != "docs/98.archive/README.md"
             and not target_text.startswith("docs/98.archive/migrations/")
+            # The rule guards against an active document depending on content
+            # that is no longer there. A preserved record is there: a successor
+            # naming its predecessor, or an index showing where an entry went,
+            # resolves to a real file. A tombstone is still only a pointer.
+            and not target_text.startswith(_PRESERVED_LINK_PREFIXES)
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
         target_path, target_error = _regular_target(graph, link.target)

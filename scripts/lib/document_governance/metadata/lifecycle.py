@@ -17,7 +17,9 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.git_provenance import resolve_git_provenance
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    PRESERVED_RECORD_PREFIX,
     RegistryError,
+    preserved_origin_path,
     classify_path as classify_registered_path,
     document_type,
 )
@@ -103,6 +105,15 @@ def validate_record(
         legacy_profile = legacy_map.get(record.artifact_type)
         if isinstance(legacy_profile, dict):
             raw_profile = legacy_profile
+    if (
+        isinstance(raw_profile, dict)
+        and raw_profile.get("frontmatter_policy") == "unmanaged"
+        and record.path.as_posix().startswith(PRESERVED_RECORD_PREFIX)
+    ):
+        # A preserved record is history, not an authoring target. It satisfied
+        # its contract while it was live, and judging it against the current
+        # one would force edits to the record it exists to preserve.
+        return []
     profile_label = record.artifact_type
     if not isinstance(raw_profile, dict):
         return [
@@ -450,6 +461,14 @@ def validate_record(
                 )
             elif parent_record and allowed_parent_types:
                 parent_type = parent_record.artifact_type
+                # A preserved parent kept its identity and its type; only its
+                # location changed. Read the type back from the path it was
+                # moved from, so preservation never invalidates a live child.
+                origin = preserved_origin_path(parent_record.path.as_posix())
+                if origin is not None and isinstance(registry, DocumentRegistry):
+                    original_type = classify_registered_path(origin, registry)
+                    if original_type is not None:
+                        parent_type = original_type
                 if (
                     uses_legacy_parent_contract
                     and parent_type == "requirements-package"

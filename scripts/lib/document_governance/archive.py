@@ -15,6 +15,8 @@ from typing import Any
 
 import yaml
 
+from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
+
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 from scripts.lib.document_governance.git_provenance import (
     HistoricalDocument,
@@ -844,9 +846,14 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
     try:
         root_rows = _bounded_entries(root_fd, label="Stage 98", limit=MAX_ROOT_ENTRIES)
         entries = tuple(name for name, _ in root_rows)
-        if entries != ("README.md", "migrations", "tombstones"):
+        # A disposition subtree exists only once something is preserved into
+        # it, so each is optional; nothing outside this set may appear.
+        required_entries = {"README.md", "migrations", "tombstones"}
+        allowed_entries = required_entries | set(PRESERVED_DISPOSITIONS)
+        if not required_entries <= set(entries) or not set(entries) <= allowed_entries:
             raise ValueError(
-                "Stage 98 root must contain only README.md, migrations/, and tombstones/"
+                "Stage 98 root must contain README.md, migrations/, tombstones/, "
+                "and only the registered preservation subtrees"
             )
         root_metadata = dict(root_rows)
         if not stat.S_ISREG(root_metadata["README.md"].st_mode):
