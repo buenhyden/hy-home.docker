@@ -77,6 +77,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0161 | [Legacy Profile Layer Retirement](./0161-legacy-profile-layer-retirement/spec.md) | completed outcome Spec with retained [Plan](./0161-legacy-profile-layer-retirement/plan.md) and [Task](./0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md) |
 | SPEC-0162 | [Validation Blind Spot Closure](./0162-validation-blind-spot-closure/spec.md) | completed outcome Spec with retained [Plan](./0162-validation-blind-spot-closure/plan.md) and [Task](./0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md) |
 | SPEC-0163 | [Deferred Contract Enforcement](./0163-deferred-contract-enforcement/spec.md) | completed outcome Spec with retained [Plan](./0163-deferred-contract-enforcement/plan.md) and [Task](./0163-deferred-contract-enforcement/tasks/tsk-0001-deferred-items.md) |
+| SPEC-0164 | [Lifecycle Vocabulary Alignment](./0164-lifecycle-vocabulary-alignment/spec.md) | completed outcome Spec with retained [Plan](./0164-lifecycle-vocabulary-alignment/plan.md) and [Task](./0164-lifecycle-vocabulary-alignment/tasks/tsk-0001-vocabulary-alignment.md) |
 
 ## Role Contract
 
