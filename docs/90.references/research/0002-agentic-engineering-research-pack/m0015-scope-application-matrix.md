@@ -376,7 +376,6 @@ the other two findings it carried are separate from it. Re-derived 2026-08-19:
   rule in `.github/CODEOWNERS`. PRD changes also cross the `docs/01` to `docs/99`
   read-only boundary, so they need explicit approval regardless of who owns them.
 
-
 ## Scope Implications
 
 Applicable leaf names below refer to the flat twenty-leaf pack contract in

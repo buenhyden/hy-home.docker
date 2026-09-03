@@ -51,6 +51,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0010-FR-0001**: 모든 인프라 변경의 IaC 수용률 100%.

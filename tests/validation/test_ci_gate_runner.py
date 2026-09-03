@@ -848,7 +848,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
         }
         self.assertTrue(
             admitted_pairs.issubset(
-                {(path, argv) for path in forbidden_paths for argv in ((), ("check-diff-hygiene",))}
+                {
+                    (path, argv)
+                    for path in forbidden_paths
+                    for argv in ((), ("check-diff-hygiene",))
+                }
                 | {(runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",))}
             )
         )

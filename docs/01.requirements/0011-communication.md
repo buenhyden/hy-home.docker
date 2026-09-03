@@ -51,6 +51,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0011-FR-0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).

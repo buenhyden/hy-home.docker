@@ -55,6 +55,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0016-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.

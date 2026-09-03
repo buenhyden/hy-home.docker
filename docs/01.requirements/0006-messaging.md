@@ -52,6 +52,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0006-FR-0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`가 root-included 메시징 구성에서 실패 0건으로 통과한다.

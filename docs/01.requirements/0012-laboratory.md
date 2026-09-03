@@ -51,6 +51,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0012-FR-0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.

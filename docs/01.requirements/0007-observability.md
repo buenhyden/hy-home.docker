@@ -52,6 +52,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0007-FR-0001**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.

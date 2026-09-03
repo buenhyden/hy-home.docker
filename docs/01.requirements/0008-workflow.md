@@ -51,6 +51,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0008-FR-0001**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).

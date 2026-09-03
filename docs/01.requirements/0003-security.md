@@ -68,6 +68,7 @@ updated: 2026-08-13
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0003-FR-0001**: 현재 Vault/Agent compose와 문서가 root `security`/`core` profile 검증 및 hardening gate로 관리됨.

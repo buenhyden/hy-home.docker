@@ -1105,9 +1105,7 @@ class CiGateContractTests(unittest.TestCase):
         # The allowlist admits no key that no node declares.
         self.assertEqual(
             contract._ADMITTED_ENV_KEYS,
-            frozenset(
-                key for node in registry.nodes for key in node.allowed_env_keys
-            ),
+            frozenset(key for node in registry.nodes for key in node.allowed_env_keys),
         )
 
 

@@ -48,6 +48,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0023-FR-0001**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.

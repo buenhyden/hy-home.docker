@@ -665,7 +665,6 @@ rationale recorded beside it.
   Data 0082 are generated path removal only; both non-protected outputs remain
   scheduled for Task 6 deletion.
 
-
 ### 2026-09-02 amendment ruling
 
 Task 6 Steps 3 and 4 and two Task 8 file rows were withdrawn before execution
@@ -695,7 +694,6 @@ package with a registered Stage 99 profile is retained under it.
 
 A registered profile is the ownership test. An unregistered Stage 90 package
 outside `RES-0002` remains a convergence target.
-
 
 ### 2026-09-02 identity convergence observed evidence
 
@@ -749,7 +747,6 @@ carries its `## Preservation Declaration`, `references.py` derives protection
 from that declaration rather than from Migration 0003, and `test_archive.py`
 holds the archive-shape relations. Steps 3 and 4 are withdrawn by the
 2026-09-02 amendment ruling above.
-
 
 ### 2026-09-02 Task 7 observed evidence
 
@@ -806,7 +803,6 @@ integrity, the archive baseline and recovery commits are Stage 98 regular-blob
 recovery, the null SHA is a CI sentinel, and `TASK7_IMMUTABLE_MANIFEST_SHA256`
 guards a hand-authored `data.yaml` that no generator writes.
 
-
 ### 2026-09-02 Task 8 Step 1 observed evidence
 
 Running the Plan's command list exposed a validation surface the local gate
@@ -847,7 +843,6 @@ dispositions are zero.
 Frozen evidence: the fenced ledger blocks of all three Stage 98 Migrations are
 byte-identical to `origin/main`; only frontmatter parents moved, and the digest
 tripwires are repinned with that reason.
-
 
 ### 2026-09-02 Task 8 closure evidence
 

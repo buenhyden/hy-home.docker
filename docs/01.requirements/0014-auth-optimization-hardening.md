@@ -53,6 +53,7 @@ No separately numbered non-functional requirement was identified in the source p
 ## Interface Requirements
 
 No separately numbered solution-independent external interface requirement was identified in the source package.
+
 ## Acceptance Criteria
 
 - **REQ-0014-FR-0001**: `bash scripts/hardening/check-all-hardening.sh 02-auth`와 `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 모두 성공한다.
