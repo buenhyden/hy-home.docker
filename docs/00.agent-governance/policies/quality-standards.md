@@ -154,6 +154,25 @@ harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `policies/github-governance.md`.
 
+## 10. Formatting and Linting Ownership
+
+- Every tracked file type has exactly one formatting owner, and
+  `.pre-commit-config.yaml` is where that owner is named. A tool absent from it
+  does not govern this repository, whatever configuration it leaves behind.
+- Formatting settings are pinned in the repository, not left to a tool default
+  or to whichever version a machine has. `ruff.toml` pins Python.
+- An agent editor hook may format a file only in agreement with the registered
+  owner. Where a hook lives outside the repository and cannot be registered,
+  the repository states its own boundary in the tool's ignore file;
+  `.prettierignore` does this for Prettier.
+- Do not add a second tool over a file type that already has an owner. Two
+  formatters on one file type is a conflict, not redundancy.
+- A validator must not depend on where a line breaks. A check that a formatter
+  can break was satisfied by typography rather than by content, and the
+  exemption belongs on the line as a stated marker.
+- Adopting or changing a formatter reformats the corpus once, in its own
+  commit, after every check that the reformatting would break is fixed.
+
 ## Related Documents
 
 - `docs/00.agent-governance/policies/github-governance.md`
