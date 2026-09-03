@@ -37,6 +37,8 @@ updated: 2026-08-11
   - `req-retry`는 `attempts=2`, `initialInterval=100ms`를 사용한다.
   - `req-circuit-breaker`는 `NetworkErrorRatio() > 0.30`을 사용한다.
   - Traefik 서비스는 readonly 템플릿(`template-infra-readonly-med`)을 사용한다.
+  - Traefik은 상태를 보유하지 않는 stateless 구성요소로 운영한다.
+  - 설정은 Git에서 관리하고 배포 시 볼륨으로 마운트한다.
 - **Allowed**:
   - 신규 게이트웨이 소유 라우터에 동일 체인 적용
   - 운영 관측 결과 기반의 임계치 미세 조정(승인 후)

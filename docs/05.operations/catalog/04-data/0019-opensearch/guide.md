@@ -68,6 +68,8 @@ updated: 2026-08-11
 - HTTP로 `9200`을 호출하는 경우
 - admin password를 command line literal이나 문서에 남기는 경우
 
+- 인덱스는 도메인별 패턴을 따른다(예: `logs-*-*`).
+
 ## Common Checks
 
 - `test -f infra/04-data/analytics/opensearch/docker-compose.yml`

@@ -40,6 +40,7 @@ updated: 2026-08-11
 - root `docker-compose.yml`에서 mail include가 optional/commented 상태임을 확인한다.
 - `DEFAULT_COMMUNICATION_DIR`, `DEFAULT_URL`, Docker Secret `stalwart_password`, `secrets/certs` 경계가 운영 환경에 준비되어 있어야 한다.
 - Stalwart 직접 바인딩 포트 `25`, `465`, `587`, `993`, `4190`은 운영 승격 전에 호스트/방화벽/DNS 정책과 함께 검증한다.
+- MailHog Web UI는 포트 `8025`에서 캡처된 메일을 표시하며, 상태를 남기지 않는 개발용 서비스다.
 
 ### Step-by-step Instructions
 
