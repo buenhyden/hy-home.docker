@@ -229,9 +229,7 @@ _README_FORM_TYPES = frozenset({"common/readme"})
 _README_FORM_TYPE_SUFFIX = "-readme"
 
 
-def _is_registered_readme_form(
-    path: pathlib.Path, registry: DocumentRegistry
-) -> bool:
+def _is_registered_readme_form(path: pathlib.Path, registry: DocumentRegistry) -> bool:
     """Return whether one path carries a registered README form."""
 
     profile_id = classify_registered_path(path.as_posix(), registry)
@@ -239,8 +237,7 @@ def _is_registered_readme_form(
         return False
     declared = registry.profiles.get(profile_id, {}).get("type")
     return isinstance(declared, str) and (
-        declared in _README_FORM_TYPES
-        or declared.endswith(_README_FORM_TYPE_SUFFIX)
+        declared in _README_FORM_TYPES or declared.endswith(_README_FORM_TYPE_SUFFIX)
     )
 
 
