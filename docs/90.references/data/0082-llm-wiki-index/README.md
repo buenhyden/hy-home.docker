@@ -646,11 +646,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/operations/postmortem.template.md](../../../99.templates/templates/operations/postmortem.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/runbook.template.md](../../../99.templates/templates/operations/runbook.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/audit-pack.template.md](../../../99.templates/templates/references/audit-pack.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/audit-reference.template.md](../../../99.templates/templates/references/audit-reference.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/audit.template.md](../../../99.templates/templates/references/audit.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/data-pack.template.md](../../../99.templates/templates/references/data-pack.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/data-reference.template.md](../../../99.templates/templates/references/data-reference.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/data.template.md](../../../99.templates/templates/references/data.template.md) | Markdown reference |
 | [docs/99.templates/templates/references/research-pack.template.md](../../../99.templates/templates/references/research-pack.template.md) | Markdown reference |
-| [docs/99.templates/templates/references/research-reference.template.md](../../../99.templates/templates/references/research-reference.template.md) | Markdown reference |
+| [docs/99.templates/templates/references/research.template.md](../../../99.templates/templates/references/research.template.md) | Markdown reference |
 | [docs/99.templates/templates/requirements/requirement-package.template.md](../../../99.templates/templates/requirements/requirement-package.template.md) | Markdown reference |
 | [docs/99.templates/templates/runtime/claude-agent.template.md](../../../99.templates/templates/runtime/claude-agent.template.md) | Markdown reference |
 | [docs/99.templates/templates/runtime/codex-agent.template.toml](../../../99.templates/templates/runtime/codex-agent.template.toml) | source path |

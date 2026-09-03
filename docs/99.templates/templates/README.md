@@ -69,11 +69,11 @@ finished document must satisfy live with its owning stage.
 | `operation/postmortem` | [operations/postmortem.template.md](./operations/postmortem.template.md) |
 | `operation/domain-readme` | [common/readme-domain.template.md](./common/readme-domain.template.md) |
 | `reference/research-pack` | [references/research-pack.template.md](./references/research-pack.template.md) |
-| `reference/research` | [references/research-reference.template.md](./references/research-reference.template.md) |
+| `reference/research` | [references/research.template.md](./references/research.template.md) |
 | `reference/audit-pack` | [references/audit-pack.template.md](./references/audit-pack.template.md) |
-| `reference/audit` | [references/audit-reference.template.md](./references/audit-reference.template.md) |
+| `reference/audit` | [references/audit.template.md](./references/audit.template.md) |
 | `reference/data-pack` | [references/data-pack.template.md](./references/data-pack.template.md) |
-| `reference/data` | [references/data-reference.template.md](./references/data-reference.template.md) |
+| `reference/data` | [references/data.template.md](./references/data.template.md) |
 | `archive/migration` | [archive/migration.template.md](./archive/migration.template.md) |
 | `archive/tombstone` | [archive/tombstone.template.md](./archive/tombstone.template.md) |
 | `common/readme` | [common/readme-stage.template.md](./common/readme-stage.template.md) |

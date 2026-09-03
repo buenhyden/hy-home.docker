@@ -1920,7 +1920,7 @@
       "profile_id": "runbook"
     },
     "reference/audit": {
-      "source": "docs/99.templates/templates/references/audit-reference.template.md",
+      "source": "docs/99.templates/templates/references/audit.template.md",
       "profile_id": "audit-member"
     },
     "reference/audit-pack": {
@@ -1932,7 +1932,7 @@
       "profile_id": "reference-category-readme"
     },
     "reference/data": {
-      "source": "docs/99.templates/templates/references/data-reference.template.md",
+      "source": "docs/99.templates/templates/references/data.template.md",
       "profile_id": "generated"
     },
     "reference/data-pack": {
@@ -1940,7 +1940,7 @@
       "profile_id": "data"
     },
     "reference/research": {
-      "source": "docs/99.templates/templates/references/research-reference.template.md",
+      "source": "docs/99.templates/templates/references/research.template.md",
       "profile_id": "research-member"
     },
     "reference/research-pack": {
