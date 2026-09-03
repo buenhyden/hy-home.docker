@@ -93,18 +93,6 @@ updated: 2026-08-11
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Policy](policy.md) (`POL-0071`), [Runbook](runbook.md) (`RUN-0071`)
 
-## Traceability
-
-- Declared parent: [Laboratory Dashboard Operations Policy](policy.md) (`POL-0071`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0071`), [Runbook](runbook.md) (`RUN-0071`)
-
-## Traceability
-
-- Declared parent: [Laboratory Dashboard Operations Policy](policy.md) (`POL-0071`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0071`), [Runbook](runbook.md) (`RUN-0071`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

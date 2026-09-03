@@ -74,16 +74,6 @@ updated: 2026-08-11
 - Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
 
-## Traceability
-
-- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
-
-## Traceability
-
-- Declared parent: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](guide.md) (`GDE-0013`), [Runbook](runbook.md) (`RUN-0013`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

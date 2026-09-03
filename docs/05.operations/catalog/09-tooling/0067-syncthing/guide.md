@@ -129,18 +129,6 @@ To sync files with another device:
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0067`), [Runbook](runbook.md) (`RUN-0067`)
 
-## Traceability
-
-- Declared parent: [Syncthing Operations Policy](policy.md) (`POL-0067`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0067`), [Runbook](runbook.md) (`RUN-0067`)
-
-## Traceability
-
-- Declared parent: [Syncthing Operations Policy](policy.md) (`POL-0067`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0067`), [Runbook](runbook.md) (`RUN-0067`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

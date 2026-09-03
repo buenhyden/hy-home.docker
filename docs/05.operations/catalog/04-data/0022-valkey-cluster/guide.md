@@ -100,18 +100,6 @@ updated: 2026-08-11
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0022`), [Runbook](runbook.md) (`RUN-0022`)
 
-## Traceability
-
-- Declared parent: [Valkey Cluster Operations Policy](policy.md) (`POL-0022`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0022`), [Runbook](runbook.md) (`RUN-0022`)
-
-## Traceability
-
-- Declared parent: [Valkey Cluster Operations Policy](policy.md) (`POL-0022`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0022`), [Runbook](runbook.md) (`RUN-0022`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

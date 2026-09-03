@@ -86,18 +86,6 @@ updated: 2026-08-11
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Policy](policy.md) (`POL-0075`), [Runbook](runbook.md) (`RUN-0075`)
 
-## Traceability
-
-- Declared parent: [Portainer Operations Policy](policy.md) (`POL-0075`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0075`), [Runbook](runbook.md) (`RUN-0075`)
-
-## Traceability
-
-- Declared parent: [Portainer Operations Policy](policy.md) (`POL-0075`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0075`), [Runbook](runbook.md) (`RUN-0075`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

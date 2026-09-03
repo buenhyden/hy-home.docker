@@ -88,16 +88,6 @@ updated: 2026-08-11
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
 
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
-
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0030`), [Runbook](runbook.md) (`RUN-0030`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

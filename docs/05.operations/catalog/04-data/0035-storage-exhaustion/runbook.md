@@ -113,16 +113,6 @@ Escalate to the owning operator before destructive cleanup, when backup evidence
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
 
-## Traceability
-
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
-
-## Traceability
-
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

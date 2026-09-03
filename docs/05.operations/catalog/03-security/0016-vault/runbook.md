@@ -117,18 +117,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
 - Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
 
-## Traceability
-
-- Declared parent: [03-Security Vault Usage Guide](guide.md) (`GDE-0016`)
-- Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
-- Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
-
-## Traceability
-
-- Declared parent: [03-Security Vault Usage Guide](guide.md) (`GDE-0016`)
-- Governing authority: [Security Tier Architecture Description](../../../../02.architecture/descriptions/0003-security-architecture.md) (`AD-0003`)
-- Subject peers: [Guide](guide.md) (`GDE-0016`), [Policy](policy.md) (`POL-0016`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -86,16 +86,6 @@ N/A — 현재 승인된 예외 없음.
 - Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0062`), [Runbook](runbook.md) (`RUN-0062`)
 
-## Traceability
-
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0062`), [Runbook](runbook.md) (`RUN-0062`)
-
-## Traceability
-
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0062`), [Runbook](runbook.md) (`RUN-0062`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

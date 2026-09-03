@@ -101,18 +101,6 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0024`), [Runbook](runbook.md) (`RUN-0024`)
 
-## Traceability
-
-- Declared parent: [SeaweedFS Operations Policy](policy.md) (`POL-0024`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0024`), [Runbook](runbook.md) (`RUN-0024`)
-
-## Traceability
-
-- Declared parent: [SeaweedFS Operations Policy](policy.md) (`POL-0024`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0024`), [Runbook](runbook.md) (`RUN-0024`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

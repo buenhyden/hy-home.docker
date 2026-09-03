@@ -120,18 +120,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
 
-## Traceability
-
-- Declared parent: [04-Data Optimization Hardening Usage Guide](guide.md) (`GDE-0030`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
-
-## Traceability
-
-- Declared parent: [04-Data Optimization Hardening Usage Guide](guide.md) (`GDE-0030`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0030`), [Policy](policy.md) (`POL-0030`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

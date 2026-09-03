@@ -93,18 +93,6 @@ docker pull registry.hy-home.docker:5000/<project>/<image>:<tag>
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0065`), [Runbook](runbook.md) (`RUN-0065`)
 
-## Traceability
-
-- Declared parent: [Docker Registry Operations Policy](policy.md) (`POL-0065`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0065`), [Runbook](runbook.md) (`RUN-0065`)
-
-## Traceability
-
-- Declared parent: [Docker Registry Operations Policy](policy.md) (`POL-0065`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0065`), [Runbook](runbook.md) (`RUN-0065`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

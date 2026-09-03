@@ -140,14 +140,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 - Subject peers: none — `00-workspace/0002-developer-environment` holds this document alone.
 
-## Traceability
-
-- Subject peers: none — `00-workspace/0002-developer-environment` holds this document alone.
-
-## Traceability
-
-- Subject peers: none — `00-workspace/0002-developer-environment` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

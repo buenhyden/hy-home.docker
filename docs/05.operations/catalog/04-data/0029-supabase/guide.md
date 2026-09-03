@@ -100,18 +100,6 @@ updated: 2026-08-11
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0029`), [Runbook](runbook.md) (`RUN-0029`)
 
-## Traceability
-
-- Declared parent: [Supabase Operations Policy](policy.md) (`POL-0029`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0029`), [Runbook](runbook.md) (`RUN-0029`)
-
-## Traceability
-
-- Declared parent: [Supabase Operations Policy](policy.md) (`POL-0029`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0029`), [Runbook](runbook.md) (`RUN-0029`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

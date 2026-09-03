@@ -109,16 +109,6 @@ config, and alert-rule surfaces.
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0045`), [Runbook](runbook.md) (`RUN-0045`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0045`), [Runbook](runbook.md) (`RUN-0045`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0045`), [Runbook](runbook.md) (`RUN-0045`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -80,18 +80,6 @@ healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 - Governing authority: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
 - Subject peers: none — `00-workspace/0008-new-service-onboarding` holds this document alone.
 
-## Traceability
-
-- Declared parent: [Release Management Runbook](../0009-release-management/runbook.md) (`RUN-0009`)
-- Governing authority: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
-- Subject peers: none — `00-workspace/0008-new-service-onboarding` holds this document alone.
-
-## Traceability
-
-- Declared parent: [Release Management Runbook](../0009-release-management/runbook.md) (`RUN-0009`)
-- Governing authority: [Workspace Revalidation Outcome](../../../../03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
-- Subject peers: none — `00-workspace/0008-new-service-onboarding` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

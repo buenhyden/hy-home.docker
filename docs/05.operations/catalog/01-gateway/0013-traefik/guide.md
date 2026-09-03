@@ -78,18 +78,6 @@ updated: 2026-08-11
 - Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Policy](policy.md) (`POL-0013`), [Runbook](runbook.md) (`RUN-0013`)
 
-## Traceability
-
-- Declared parent: [01-Gateway Traefik Operations Policy](policy.md) (`POL-0013`)
-- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Policy](policy.md) (`POL-0013`), [Runbook](runbook.md) (`RUN-0013`)
-
-## Traceability
-
-- Declared parent: [01-Gateway Traefik Operations Policy](policy.md) (`POL-0013`)
-- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Policy](policy.md) (`POL-0013`), [Runbook](runbook.md) (`RUN-0013`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

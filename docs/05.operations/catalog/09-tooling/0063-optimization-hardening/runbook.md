@@ -117,18 +117,6 @@ Escalate to the tooling owner when hardening remains failed after focused restor
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
 
-## Traceability
-
-- Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
-
-## Traceability
-
-- Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

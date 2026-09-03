@@ -67,18 +67,6 @@ Dozzle을 통해 인프라 내 컨테이너 로그를 효율적으로 확인하�
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Policy](policy.md) (`POL-0072`), [Runbook](runbook.md) (`RUN-0072`)
 
-## Traceability
-
-- Declared parent: [Dozzle Operations Policy](policy.md) (`POL-0072`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0072`), [Runbook](runbook.md) (`RUN-0072`)
-
-## Traceability
-
-- Declared parent: [Dozzle Operations Policy](policy.md) (`POL-0072`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0072`), [Runbook](runbook.md) (`RUN-0072`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -102,18 +102,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
 
-## Traceability
-
-- Declared parent: [02-Auth Keycloak Usage Guide](guide.md) (`GDE-0014`)
-- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
-
-## Traceability
-
-- Declared parent: [02-Auth Keycloak Usage Guide](guide.md) (`GDE-0014`)
-- Governing authority: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](guide.md) (`GDE-0014`), [Policy](policy.md) (`POL-0014`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

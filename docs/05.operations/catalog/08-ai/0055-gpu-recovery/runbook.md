@@ -129,16 +129,6 @@ Stop and escalate to the owning operator when host `nvidia-smi` fails, NVIDIA Co
 - Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
 
-## Traceability
-
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
-
-## Traceability
-
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -97,18 +97,6 @@ updated: 2026-08-11
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0031`), [Runbook](runbook.md) (`RUN-0031`)
 
-## Traceability
-
-- Declared parent: [PostgreSQL Cluster Operations Policy](policy.md) (`POL-0031`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0031`), [Runbook](runbook.md) (`RUN-0031`)
-
-## Traceability
-
-- Declared parent: [PostgreSQL Cluster Operations Policy](policy.md) (`POL-0031`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0031`), [Runbook](runbook.md) (`RUN-0031`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

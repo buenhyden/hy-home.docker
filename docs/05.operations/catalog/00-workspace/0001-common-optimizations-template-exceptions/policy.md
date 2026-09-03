@@ -73,14 +73,6 @@ updated: 2026-08-11
 
 - Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
 
-## Traceability
-
-- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
-
-## Traceability
-
-- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

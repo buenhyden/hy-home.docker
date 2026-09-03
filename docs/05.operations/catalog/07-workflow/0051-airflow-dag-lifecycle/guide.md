@@ -95,18 +95,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Policy](policy.md) (`POL-0052`)
 
-## Traceability
-
-- Declared parent: [DAG Deployment Operations Policy](policy.md) (`POL-0052`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Policy](policy.md) (`POL-0052`)
-
-## Traceability
-
-- Declared parent: [DAG Deployment Operations Policy](policy.md) (`POL-0052`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Policy](policy.md) (`POL-0052`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

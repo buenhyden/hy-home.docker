@@ -88,18 +88,6 @@ Escalate to the owning operator when socket permission changes, auth/allowlist c
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
 
-## Traceability
-
-- Declared parent: [Dozzle Usage Guide](guide.md) (`GDE-0072`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
-
-## Traceability
-
-- Declared parent: [Dozzle Usage Guide](guide.md) (`GDE-0072`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0072`), [Policy](policy.md) (`POL-0072`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

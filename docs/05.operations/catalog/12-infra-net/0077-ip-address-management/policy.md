@@ -61,16 +61,6 @@ updated: 2026-09-01
 - Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
 - Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
 
-## Traceability
-
-- Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
-
-## Traceability
-
-- Declared parent: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- Subject peers: [Guide](guide.md) (`GDE-0077`), [Runbook](runbook.md) (`RUN-0077`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -133,18 +133,6 @@ Escalate to the owning operator when no leader can be identified, etcd quorum sy
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
 
-## Traceability
-
-- Declared parent: [PostgreSQL Cluster Usage Guide](guide.md) (`GDE-0031`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
-
-## Traceability
-
-- Declared parent: [PostgreSQL Cluster Usage Guide](guide.md) (`GDE-0031`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

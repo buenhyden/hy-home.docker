@@ -87,18 +87,6 @@ Escalate to the owning operator when cache mutation, connection credential chang
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
 
-## Traceability
-
-- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
-
-## Traceability
-
-- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

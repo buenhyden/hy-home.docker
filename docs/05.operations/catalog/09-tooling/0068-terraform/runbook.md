@@ -124,18 +124,6 @@ docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
 
-## Traceability
-
-- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
-
-## Traceability
-
-- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

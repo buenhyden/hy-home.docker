@@ -72,16 +72,6 @@ Open WebUI 서비스 운영 전반:
 - Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Guide](guide.md) (`GDE-0057`), [Runbook](runbook.md) (`RUN-0057`)
 
-## Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0057`), [Runbook](runbook.md) (`RUN-0057`)
-
-## Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0057`), [Runbook](runbook.md) (`RUN-0057`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

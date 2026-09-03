@@ -94,16 +94,6 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0039`), [Runbook](runbook.md) (`RUN-0039`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0039`), [Runbook](runbook.md) (`RUN-0039`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0039`), [Runbook](runbook.md) (`RUN-0039`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

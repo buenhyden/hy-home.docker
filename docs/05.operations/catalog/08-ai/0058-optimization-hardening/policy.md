@@ -83,16 +83,6 @@ updated: 2026-08-11
 - Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
 
-## Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
-
-## Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0058`), [Runbook](runbook.md) (`RUN-0058`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

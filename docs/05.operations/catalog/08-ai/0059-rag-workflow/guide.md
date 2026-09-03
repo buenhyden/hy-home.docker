@@ -76,16 +76,6 @@ updated: 2026-08-11
 - Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
 
-## Traceability
-
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
-
-## Traceability
-
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -155,18 +155,6 @@ verification이 실패하거나, secret exposure risk가 보이거나, retention
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0043`), [Policy](policy.md) (`POL-0043`)
 
-## Traceability
-
-- Declared parent: [Loki Usage Guide](guide.md) (`GDE-0043`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0043`), [Policy](policy.md) (`POL-0043`)
-
-## Traceability
-
-- Declared parent: [Loki Usage Guide](guide.md) (`GDE-0043`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0043`), [Policy](policy.md) (`POL-0043`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

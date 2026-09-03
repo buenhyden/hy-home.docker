@@ -87,16 +87,6 @@ updated: 2026-08-11
 - Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Guide](guide.md) (`GDE-0074`), [Runbook](runbook.md) (`RUN-0074`)
 
-## Traceability
-
-- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0074`), [Runbook](runbook.md) (`RUN-0074`)
-
-## Traceability
-
-- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0074`), [Runbook](runbook.md) (`RUN-0074`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

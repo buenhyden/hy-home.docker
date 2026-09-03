@@ -137,18 +137,6 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
 
-## Traceability
-
-- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
-
-## Traceability
-
-- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

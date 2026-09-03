@@ -87,18 +87,6 @@ updated: 2026-08-11
 - Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Policy](policy.md) (`POL-0018`), [Runbook](runbook.md) (`RUN-0018`)
 
-## Traceability
-
-- Declared parent: [ksqlDB Operations Policy](policy.md) (`POL-0018`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Policy](policy.md) (`POL-0018`), [Runbook](runbook.md) (`RUN-0018`)
-
-## Traceability
-
-- Declared parent: [ksqlDB Operations Policy](policy.md) (`POL-0018`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Policy](policy.md) (`POL-0018`), [Runbook](runbook.md) (`RUN-0018`)
-
 ## Related Documents
 
 - [Operations guides index](../../../README.md)

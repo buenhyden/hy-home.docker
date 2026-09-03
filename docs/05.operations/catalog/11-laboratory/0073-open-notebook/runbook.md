@@ -93,18 +93,6 @@ Escalate to the owning operator when verification fails, secret exposure risk ap
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
 
-## Traceability
-
-- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
-
-## Traceability
-
-- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

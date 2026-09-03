@@ -147,18 +147,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
 
-## Traceability
-
-- Declared parent: [Open WebUI Usage Guide](guide.md) (`GDE-0057`)
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
-
-## Traceability
-
-- Declared parent: [Open WebUI Usage Guide](guide.md) (`GDE-0057`)
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](guide.md) (`GDE-0057`), [Policy](policy.md) (`POL-0057`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -105,18 +105,6 @@ Escalate to the platform operator and target service owner when stopping load do
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
 
-## Traceability
-
-- Declared parent: [Performance Testing Usage Guide](guide.md) (`GDE-0064`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
-
-## Traceability
-
-- Declared parent: [Performance Testing Usage Guide](guide.md) (`GDE-0064`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0064`), [Policy](policy.md) (`POL-0064`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -139,18 +139,6 @@ sysctl -w vm.max_map_count=262144
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0066`), [Runbook](runbook.md) (`RUN-0066`)
 
-## Traceability
-
-- Declared parent: [SonarQube Operations Policy](policy.md) (`POL-0066`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0066`), [Runbook](runbook.md) (`RUN-0066`)
-
-## Traceability
-
-- Declared parent: [SonarQube Operations Policy](policy.md) (`POL-0066`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0066`), [Runbook](runbook.md) (`RUN-0066`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

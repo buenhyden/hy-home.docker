@@ -124,18 +124,6 @@ Escalate to the owning operator when membership does not show the expected three
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
 
-## Traceability
-
-- Declared parent: [CouchDB Usage Guide](guide.md) (`GDE-0026`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
-
-## Traceability
-
-- Declared parent: [CouchDB Usage Guide](guide.md) (`GDE-0026`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

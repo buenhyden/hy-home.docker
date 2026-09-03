@@ -110,18 +110,6 @@ Escalate when token provisioning or authenticated write acceptance is needed, he
 - Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
 
-## Traceability
-
-- Declared parent: [InfluxDB Usage Guide](guide.md) (`GDE-0017`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
-
-## Traceability
-
-- Declared parent: [InfluxDB Usage Guide](guide.md) (`GDE-0017`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
-
 ## Related Documents
 
 - [Operations runbooks index](../../../README.md)

@@ -82,18 +82,6 @@ Open Notebook UI에 접속해 개인/로컬 노트북 작업을 수행하고, �
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Policy](policy.md) (`POL-0073`), [Runbook](runbook.md) (`RUN-0073`)
 
-## Traceability
-
-- Declared parent: [Open Notebook Operations Policy](policy.md) (`POL-0073`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0073`), [Runbook](runbook.md) (`RUN-0073`)
-
-## Traceability
-
-- Declared parent: [Open Notebook Operations Policy](policy.md) (`POL-0073`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0073`), [Runbook](runbook.md) (`RUN-0073`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

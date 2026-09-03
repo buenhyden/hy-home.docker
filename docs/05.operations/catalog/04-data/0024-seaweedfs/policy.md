@@ -73,16 +73,6 @@ Review on any change to SeaweedFS compose services, image tag, routes, ports, pr
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0024`), [Runbook](runbook.md) (`RUN-0024`)
 
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0024`), [Runbook](runbook.md) (`RUN-0024`)
-
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0024`), [Runbook](runbook.md) (`RUN-0024`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

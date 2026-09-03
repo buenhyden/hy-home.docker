@@ -70,16 +70,6 @@ updated: 2026-08-11
 - Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
 
-## Traceability
-
-- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
-
-## Traceability
-
-- Declared parent: [02-Auth Architecture Description](../../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](guide.md) (`GDE-0014`), [Runbook](runbook.md) (`RUN-0014`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -89,18 +89,6 @@ updated: 2026-08-11
 - Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
 - Subject peers: [Policy](policy.md) (`POL-0037`), [Runbook](runbook.md) (`RUN-0037`)
 
-## Traceability
-
-- Declared parent: [05-Messaging Optimization Hardening Operations Policy](policy.md) (`POL-0037`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Policy](policy.md) (`POL-0037`), [Runbook](runbook.md) (`RUN-0037`)
-
-## Traceability
-
-- Declared parent: [05-Messaging Optimization Hardening Operations Policy](policy.md) (`POL-0037`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Policy](policy.md) (`POL-0037`), [Runbook](runbook.md) (`RUN-0037`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

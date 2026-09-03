@@ -120,18 +120,6 @@ Escalate to the owning operator when compose render fails, services remain unhea
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
 
-## Traceability
-
-- Declared parent: [SeaweedFS Usage Guide](guide.md) (`GDE-0024`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
-
-## Traceability
-
-- Declared parent: [SeaweedFS Usage Guide](guide.md) (`GDE-0024`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

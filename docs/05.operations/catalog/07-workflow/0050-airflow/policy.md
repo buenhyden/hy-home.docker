@@ -63,16 +63,6 @@ updated: 2026-08-11
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
 
-## Traceability
-
-- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
-
-## Traceability
-
-- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

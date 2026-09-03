@@ -86,18 +86,6 @@ updated: 2026-08-11
 - Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Policy](policy.md) (`POL-0017`), [Runbook](runbook.md) (`RUN-0017`)
 
-## Traceability
-
-- Declared parent: [InfluxDB Operations Policy](policy.md) (`POL-0017`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Policy](policy.md) (`POL-0017`), [Runbook](runbook.md) (`RUN-0017`)
-
-## Traceability
-
-- Declared parent: [InfluxDB Operations Policy](policy.md) (`POL-0017`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Policy](policy.md) (`POL-0017`), [Runbook](runbook.md) (`RUN-0017`)
-
 ## Related Documents
 
 - [Operations guides index](../../../README.md)

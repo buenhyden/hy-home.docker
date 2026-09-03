@@ -141,14 +141,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 - Subject peers: none — `00-workspace/0003-env-key-comparison` holds this document alone.
 
-## Traceability
-
-- Subject peers: none — `00-workspace/0003-env-key-comparison` holds this document alone.
-
-## Traceability
-
-- Subject peers: none — `00-workspace/0003-env-key-comparison` holds this document alone.
-
 ## Related Documents
 
 - [Secrets Key Comparison](../0010-sensitive-env-vars-comparison/guide.md)

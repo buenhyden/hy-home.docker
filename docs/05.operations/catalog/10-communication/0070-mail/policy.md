@@ -67,16 +67,6 @@ N/A — 현재 승인된 예외 없음.
 - Declared parent: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
 - Subject peers: [Guide](guide.md) (`GDE-0070`), [Runbook](runbook.md) (`RUN-0070`)
 
-## Traceability
-
-- Declared parent: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
-- Subject peers: [Guide](guide.md) (`GDE-0070`), [Runbook](runbook.md) (`RUN-0070`)
-
-## Traceability
-
-- Declared parent: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
-- Subject peers: [Guide](guide.md) (`GDE-0070`), [Runbook](runbook.md) (`RUN-0070`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

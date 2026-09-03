@@ -55,16 +55,6 @@ Manual FE metadata changes, backend add/drop operations, or destructive data cle
 - Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
 
-## Traceability
-
-- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
-
-## Traceability
-
-- Declared parent: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0020`), [Runbook](runbook.md) (`RUN-0020`)
-
 ## Related Documents
 
 - [Operations policies index](../../../README.md)

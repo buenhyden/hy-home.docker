@@ -88,16 +88,6 @@ updated: 2026-08-11
 - Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
 - Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
 
-## Traceability
-
-- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
-
-## Traceability
-
-- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -159,18 +159,6 @@ verification이 실패하거나, secret exposure risk가 보이거나, role mapp
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
 
-## Traceability
-
-- Declared parent: [Grafana Usage Guide](guide.md) (`GDE-0041`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
-
-## Traceability
-
-- Declared parent: [Grafana Usage Guide](guide.md) (`GDE-0041`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0041`), [Policy](policy.md) (`POL-0041`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

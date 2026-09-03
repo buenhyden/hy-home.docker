@@ -96,16 +96,6 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0041`), [Runbook](runbook.md) (`RUN-0041`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

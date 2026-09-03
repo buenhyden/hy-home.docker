@@ -278,14 +278,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 - Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
 
-## Traceability
-
-- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
-
-## Traceability
-
-- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

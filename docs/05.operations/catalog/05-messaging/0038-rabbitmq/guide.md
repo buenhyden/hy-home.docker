@@ -103,18 +103,6 @@ connection.close()
 - Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
 - Subject peers: [Policy](policy.md) (`POL-0038`), [Runbook](runbook.md) (`RUN-0038`)
 
-## Traceability
-
-- Declared parent: [RabbitMQ Operations Policy](policy.md) (`POL-0038`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Policy](policy.md) (`POL-0038`), [Runbook](runbook.md) (`RUN-0038`)
-
-## Traceability
-
-- Declared parent: [RabbitMQ Operations Policy](policy.md) (`POL-0038`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Policy](policy.md) (`POL-0038`), [Runbook](runbook.md) (`RUN-0038`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -153,12 +153,6 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0069`), [Policy](policy.md) (`POL-0069`)
 
-## Traceability
-
-- Declared parent: [Operations: Terrakube Policy Usage Guide](guide.md) (`GDE-0069`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0069`), [Policy](policy.md) (`POL-0069`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

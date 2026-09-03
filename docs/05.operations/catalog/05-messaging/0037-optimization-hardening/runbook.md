@@ -115,18 +115,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
 - Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
 
-## Traceability
-
-- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
-
-## Traceability
-
-- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

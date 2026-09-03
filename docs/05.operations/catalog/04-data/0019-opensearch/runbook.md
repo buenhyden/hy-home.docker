@@ -114,18 +114,6 @@ Escalate when health remains red/unavailable, shard mutation is needed, secrets 
 - Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
 
-## Traceability
-
-- Declared parent: [OpenSearch Usage Guide](guide.md) (`GDE-0019`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
-
-## Traceability
-
-- Declared parent: [OpenSearch Usage Guide](guide.md) (`GDE-0019`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
-
 ## Related Documents
 
 - [Operations runbooks index](../../../README.md)

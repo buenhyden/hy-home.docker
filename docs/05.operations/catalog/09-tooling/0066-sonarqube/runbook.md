@@ -155,12 +155,6 @@ Monitor these files for specific error patterns:
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0066`), [Policy](policy.md) (`POL-0066`)
 
-## Traceability
-
-- Declared parent: [SonarQube Usage Guide](guide.md) (`GDE-0066`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0066`), [Policy](policy.md) (`POL-0066`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

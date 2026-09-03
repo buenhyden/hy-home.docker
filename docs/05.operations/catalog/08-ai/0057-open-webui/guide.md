@@ -113,18 +113,6 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 - Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Policy](policy.md) (`POL-0057`), [Runbook](runbook.md) (`RUN-0057`)
 
-## Traceability
-
-- Declared parent: [Open WebUI Operations Policy](policy.md) (`POL-0057`)
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Policy](policy.md) (`POL-0057`), [Runbook](runbook.md) (`RUN-0057`)
-
-## Traceability
-
-- Declared parent: [Open WebUI Operations Policy](policy.md) (`POL-0057`)
-- Governing authority: [AI Infrastructure Architecture Description](../../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Policy](policy.md) (`POL-0057`), [Runbook](runbook.md) (`RUN-0057`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

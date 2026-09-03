@@ -97,18 +97,6 @@ updated: 2026-08-11
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](policy.md) (`POL-0049`), [Runbook](runbook.md) (`RUN-0049`)
 
-## Traceability
-
-- Declared parent: [Tempo Operations Policy](policy.md) (`POL-0049`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0049`), [Runbook](runbook.md) (`RUN-0049`)
-
-## Traceability
-
-- Declared parent: [Tempo Operations Policy](policy.md) (`POL-0049`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0049`), [Runbook](runbook.md) (`RUN-0049`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

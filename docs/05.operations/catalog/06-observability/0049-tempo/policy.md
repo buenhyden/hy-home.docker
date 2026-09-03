@@ -93,16 +93,6 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

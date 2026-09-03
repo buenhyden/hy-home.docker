@@ -94,18 +94,6 @@ verification이 실패하거나, 데이터 삭제/복구, production mail delive
 - Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
 - Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
 
-## Traceability
-
-- Declared parent: [Mail Usage Guide](guide.md) (`GDE-0070`)
-- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
-- Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
-
-## Traceability
-
-- Declared parent: [Mail Usage Guide](guide.md) (`GDE-0070`)
-- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
-- Subject peers: [Guide](guide.md) (`GDE-0070`), [Policy](policy.md) (`POL-0070`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

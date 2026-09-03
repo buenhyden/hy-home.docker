@@ -125,18 +125,6 @@ Escalate to the owning operator when no primary can be identified, `mongo-init` 
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
 
-## Traceability
-
-- Declared parent: [MongoDB Usage Guide](guide.md) (`GDE-0027`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
-
-## Traceability
-
-- Declared parent: [MongoDB Usage Guide](guide.md) (`GDE-0027`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

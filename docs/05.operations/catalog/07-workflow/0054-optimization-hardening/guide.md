@@ -93,18 +93,6 @@ updated: 2026-08-11
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Policy](policy.md) (`POL-0054`), [Runbook](runbook.md) (`RUN-0054`)
 
-## Traceability
-
-- Declared parent: [07-Workflow Optimization Hardening Operations Policy](policy.md) (`POL-0054`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Policy](policy.md) (`POL-0054`), [Runbook](runbook.md) (`RUN-0054`)
-
-## Traceability
-
-- Declared parent: [07-Workflow Optimization Hardening Operations Policy](policy.md) (`POL-0054`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Policy](policy.md) (`POL-0054`), [Runbook](runbook.md) (`RUN-0054`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

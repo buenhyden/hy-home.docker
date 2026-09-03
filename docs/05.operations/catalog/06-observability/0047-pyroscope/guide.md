@@ -92,18 +92,6 @@ updated: 2026-08-11
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](policy.md) (`POL-0047`), [Runbook](runbook.md) (`RUN-0047`)
 
-## Traceability
-
-- Declared parent: [Pyroscope Operations Policy](policy.md) (`POL-0047`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0047`), [Runbook](runbook.md) (`RUN-0047`)
-
-## Traceability
-
-- Declared parent: [Pyroscope Operations Policy](policy.md) (`POL-0047`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0047`), [Runbook](runbook.md) (`RUN-0047`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

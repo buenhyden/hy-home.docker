@@ -91,18 +91,6 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0025`), [Runbook](runbook.md) (`RUN-0025`)
 
-## Traceability
-
-- Declared parent: [Cassandra Operations Policy](policy.md) (`POL-0025`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0025`), [Runbook](runbook.md) (`RUN-0025`)
-
-## Traceability
-
-- Declared parent: [Cassandra Operations Policy](policy.md) (`POL-0025`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0025`), [Runbook](runbook.md) (`RUN-0025`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -91,18 +91,6 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](policy.md) (`POL-0027`), [Runbook](runbook.md) (`RUN-0027`)
 
-## Traceability
-
-- Declared parent: [MongoDB Operations Policy](policy.md) (`POL-0027`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0027`), [Runbook](runbook.md) (`RUN-0027`)
-
-## Traceability
-
-- Declared parent: [MongoDB Operations Policy](policy.md) (`POL-0027`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0027`), [Runbook](runbook.md) (`RUN-0027`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

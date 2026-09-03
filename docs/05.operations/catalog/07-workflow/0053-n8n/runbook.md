@@ -110,18 +110,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
 
-## Traceability
-
-- Declared parent: [n8n Usage Guide](guide.md) (`GDE-0053`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
-
-## Traceability
-
-- Declared parent: [n8n Usage Guide](guide.md) (`GDE-0053`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](guide.md) (`GDE-0053`), [Policy](policy.md) (`POL-0053`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -89,16 +89,6 @@ backup 책임 경계를 다룬다.
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: none — `06-observability/0048-telemetry-retention` holds this document alone.
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — `06-observability/0048-telemetry-retention` holds this document alone.
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — `06-observability/0048-telemetry-retention` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

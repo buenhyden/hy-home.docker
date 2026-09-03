@@ -113,18 +113,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
 
-## Traceability
-
-- Declared parent: [01-Gateway Nginx Usage Guide](guide.md) (`GDE-0011`)
-- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
-
-## Traceability
-
-- Declared parent: [01-Gateway Nginx Usage Guide](guide.md) (`GDE-0011`)
-- Governing authority: [Gateway Tier Architecture Description](../../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](guide.md) (`GDE-0011`), [Policy](policy.md) (`POL-0011`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

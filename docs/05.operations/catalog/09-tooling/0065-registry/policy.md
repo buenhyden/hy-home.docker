@@ -56,16 +56,6 @@ updated: 2026-08-11
 - Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0065`), [Runbook](runbook.md) (`RUN-0065`)
 
-## Traceability
-
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0065`), [Runbook](runbook.md) (`RUN-0065`)
-
-## Traceability
-
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0065`), [Runbook](runbook.md) (`RUN-0065`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -87,18 +87,6 @@ updated: 2026-08-11
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Policy](policy.md) (`POL-0076`), [Runbook](runbook.md) (`RUN-0076`)
 
-## Traceability
-
-- Declared parent: [RedisInsight Operations Policy](policy.md) (`POL-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0076`), [Runbook](runbook.md) (`RUN-0076`)
-
-## Traceability
-
-- Declared parent: [RedisInsight Operations Policy](policy.md) (`POL-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0076`), [Runbook](runbook.md) (`RUN-0076`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

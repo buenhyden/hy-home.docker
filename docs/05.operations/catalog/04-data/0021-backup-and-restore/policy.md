@@ -58,16 +58,6 @@ Backup exceptions require explicit owner approval and evidence showing why the d
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: none — `04-data/0021-backup-and-restore` holds this document alone.
 
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — `04-data/0021-backup-and-restore` holds this document alone.
-
-## Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — `04-data/0021-backup-and-restore` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

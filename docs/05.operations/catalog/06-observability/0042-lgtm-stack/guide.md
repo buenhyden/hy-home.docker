@@ -109,16 +109,6 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: none — `06-observability/0042-lgtm-stack` holds this document alone.
 
-## Traceability
-
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — `06-observability/0042-lgtm-stack` holds this document alone.
-
-## Traceability
-
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — `06-observability/0042-lgtm-stack` holds this document alone.
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

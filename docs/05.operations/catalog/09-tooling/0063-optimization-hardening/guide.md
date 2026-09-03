@@ -87,18 +87,6 @@ updated: 2026-08-11
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0063`), [Runbook](runbook.md) (`RUN-0063`)
 
-## Traceability
-
-- Declared parent: [09-Tooling Optimization Hardening Operations Policy](policy.md) (`POL-0063`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0063`), [Runbook](runbook.md) (`RUN-0063`)
-
-## Traceability
-
-- Declared parent: [09-Tooling Optimization Hardening Operations Policy](policy.md) (`POL-0063`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0063`), [Runbook](runbook.md) (`RUN-0063`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

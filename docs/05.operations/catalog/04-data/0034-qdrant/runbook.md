@@ -125,18 +125,6 @@ Escalate to the owning operator when `/readyz` fails after restart, logs show st
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
 
-## Traceability
-
-- Declared parent: [Qdrant Usage Guide](guide.md) (`GDE-0034`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
-
-## Traceability
-
-- Declared parent: [Qdrant Usage Guide](guide.md) (`GDE-0034`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

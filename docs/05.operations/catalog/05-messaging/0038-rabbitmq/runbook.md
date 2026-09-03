@@ -103,18 +103,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
 - Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
 
-## Traceability
-
-- Declared parent: [RabbitMQ Usage Guide](guide.md) (`GDE-0038`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
-
-## Traceability
-
-- Declared parent: [RabbitMQ Usage Guide](guide.md) (`GDE-0038`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0038`), [Policy](policy.md) (`POL-0038`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -95,16 +95,6 @@ updated: 2026-08-11
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0044`), [Runbook](runbook.md) (`RUN-0044`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

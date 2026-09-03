@@ -150,18 +150,6 @@ The container uses `infra_net`. If local services are unreachable, verify that r
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0068`), [Runbook](runbook.md) (`RUN-0068`)
 
-## Traceability
-
-- Declared parent: [Terraform Operations Policy](policy.md) (`POL-0068`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0068`), [Runbook](runbook.md) (`RUN-0068`)
-
-## Traceability
-
-- Declared parent: [Terraform Operations Policy](policy.md) (`POL-0068`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0068`), [Runbook](runbook.md) (`RUN-0068`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

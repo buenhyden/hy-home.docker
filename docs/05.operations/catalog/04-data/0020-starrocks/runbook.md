@@ -112,18 +112,6 @@ Escalate when FE metadata appears inconsistent, BE registration repeatedly fails
 - Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
 
-## Traceability
-
-- Declared parent: [StarRocks Usage Guide](guide.md) (`GDE-0020`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
-
-## Traceability
-
-- Declared parent: [StarRocks Usage Guide](guide.md) (`GDE-0020`)
-- Governing authority: [Analytics Tier Architecture Description](../../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
-
 ## Related Documents
 
 - [Operations runbooks index](../../../README.md)

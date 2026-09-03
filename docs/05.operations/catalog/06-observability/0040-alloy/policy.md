@@ -99,16 +99,6 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 - Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0040`), [Runbook](runbook.md) (`RUN-0040`)
 
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0040`), [Runbook](runbook.md) (`RUN-0040`)
-
-## Traceability
-
-- Declared parent: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0040`), [Runbook](runbook.md) (`RUN-0040`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

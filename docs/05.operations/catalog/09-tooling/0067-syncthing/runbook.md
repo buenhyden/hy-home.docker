@@ -154,12 +154,6 @@ If the admin password is lost:
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0067`), [Policy](policy.md) (`POL-0067`)
 
-## Traceability
-
-- Declared parent: [Syncthing Usage Guide](guide.md) (`GDE-0067`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0067`), [Policy](policy.md) (`POL-0067`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

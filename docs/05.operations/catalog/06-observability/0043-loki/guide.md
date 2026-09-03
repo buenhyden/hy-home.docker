@@ -106,18 +106,6 @@ updated: 2026-08-11
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](policy.md) (`POL-0043`), [Runbook](runbook.md) (`RUN-0043`)
 
-## Traceability
-
-- Declared parent: [Loki Operations Policy](policy.md) (`POL-0043`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0043`), [Runbook](runbook.md) (`RUN-0043`)
-
-## Traceability
-
-- Declared parent: [Loki Operations Policy](policy.md) (`POL-0043`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](policy.md) (`POL-0043`), [Runbook](runbook.md) (`RUN-0043`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

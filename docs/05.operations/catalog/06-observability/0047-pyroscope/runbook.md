@@ -141,18 +141,6 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 - Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](guide.md) (`GDE-0047`), [Policy](policy.md) (`POL-0047`)
 
-## Traceability
-
-- Declared parent: [Pyroscope Usage Guide](guide.md) (`GDE-0047`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0047`), [Policy](policy.md) (`POL-0047`)
-
-## Traceability
-
-- Declared parent: [Pyroscope Usage Guide](guide.md) (`GDE-0047`)
-- Governing authority: [Observability Architecture Description](../../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](guide.md) (`GDE-0047`), [Policy](policy.md) (`POL-0047`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)

@@ -115,18 +115,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
 
-## Traceability
-
-- Declared parent: [11-Laboratory Optimization Hardening Usage Guide](guide.md) (`GDE-0074`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
-
-## Traceability
-
-- Declared parent: [11-Laboratory Optimization Hardening Usage Guide](guide.md) (`GDE-0074`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0074`), [Policy](policy.md) (`POL-0074`)
-
 ## Related Documents
 
 - [Operations index](../../../README.md)
