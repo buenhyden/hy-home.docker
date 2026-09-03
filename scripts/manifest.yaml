@@ -1,5 +1,47 @@
 schema_version: 1
 files:
+- path: evals/README.md
+  kind: contract
+  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
+- path: evals/agent_output_eval.py
+  kind: validator
+  public_suites:
+  - agent-governance
+  execution_contexts: [local, pull_request, push, workflow_dispatch]
+  execution_argv:
+  - --check-fixtures
+  - --check-regressions
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - tests/validation/test_validator_entrypoints.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
+- path: evals/run-agent-output-eval-fixtures.sh
+  kind: runner
+  authority: docs/00.agent-governance/skills/provider-model-evaluation.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - tests/validation/test_agent_output_eval_fixtures.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_output_eval_fixtures.py
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/README.md
   kind: contract
   authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
@@ -732,24 +774,6 @@ files:
   tests:
   - tests/lib/supply_chain/test_grype_db_seed.py
   - tests/validation/test_supply_chain_policy.py
-- path: scripts/validation/agent_output_eval.py
-  kind: validator
-  public_suites:
-  - agent-governance
-  execution_contexts: [local, pull_request, push, workflow_dispatch]
-  execution_argv:
-  - --check-fixtures
-  - --check-regressions
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agent_output_eval_fixtures.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/agentic-audit-semantic-contract.json
   kind: contract
   authority: .github/workflow-contract.yml
@@ -1118,19 +1142,6 @@ files:
   - --check
   outputs:
   - docs/90.references/data/0072-provider-hook-parity-matrix/README.md
-- path: scripts/validation/run-agent-output-eval-fixtures.sh
-  kind: runner
-  authority: docs/00.agent-governance/skills/provider-model-evaluation.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  - tests/validation/test_agent_output_eval_fixtures.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agent_output_eval_fixtures.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
   authority: .github/workflow-contract.yml

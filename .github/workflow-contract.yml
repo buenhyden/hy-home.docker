@@ -1954,6 +1954,7 @@
       {
         "prefixes": [
           "README.md",
+          "_workspace/",
           "docs/01.requirements/",
           "docs/02.architecture/",
           "docs/03.specs/",
@@ -1986,6 +1987,7 @@
         "prefixes": [
           ".github/",
           ".pre-commit-config.yaml",
+          "evals/",
           "projects/",
           "scripts/",
           "tests/"

@@ -15,8 +15,8 @@ import unittest
 from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-MODULE = ROOT / "scripts/validation/agent_output_eval.py"
-RUNNER = ROOT / "scripts/validation/run-agent-output-eval-fixtures.sh"
+MODULE = ROOT / "evals/agent_output_eval.py"
+RUNNER = ROOT / "evals/run-agent-output-eval-fixtures.sh"
 CATALOG = ROOT / "docs/90.references/data/0064-agent-output-eval-fixtures/README.md"
 CONTRACT = ROOT / "docs/00.agent-governance/providers/registry.yaml"
 

@@ -272,7 +272,7 @@ def build_output() -> tuple[str, list[str]]:
         ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki.py"), pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")),
         ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/0061-tech-stack-version-provenance/README.md")),
         ("Provider governance contract", "AEA-AUTO-010", pathlib.Path("scripts/validation/check-agent-governance-contract.py"), None),
-        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/0064-agent-output-eval-fixtures/README.md")),
+        ("Agent-output eval runner", "AEA-AUTO-011", pathlib.Path("evals/run-agent-output-eval-fixtures.sh"), pathlib.Path("docs/90.references/data/0064-agent-output-eval-fixtures/README.md")),
         ("Security automation readiness", "AEA-AUTO-012", pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"), pathlib.Path("docs/90.references/data/0078-security-automation-readiness/README.md")),
         ("Audit implementation matrix", "AEA-AUTO-013", pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"), OUTPUT),
     ]

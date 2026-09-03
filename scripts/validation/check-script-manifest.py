@@ -68,6 +68,10 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/98.archive/",
     "graphify-out/",
 )
+# Automation roots the manifest governs. Declaration and coverage both read
+# this tuple, so a root can never become declarable without also becoming
+# required: the two rules cannot drift apart the way two literals would.
+MANIFEST_ROOTS = ("evals/", "scripts/")
 SELF_PATH = "scripts/validation/check-script-manifest.py"
 REQUIRED_LOCAL_PATHS = frozenset(
     {
@@ -182,8 +186,11 @@ def validate_manifest_document(
         return sorted(findings)
 
     declared: list[str] = []
+    manifest_root_names = {root.rstrip("/") for root in MANIFEST_ROOTS}
     tracked_scripts = {
-        path for path in tracked if path == "scripts" or path.startswith("scripts/")
+        path
+        for path in tracked
+        if path in manifest_root_names or path.startswith(MANIFEST_ROOTS)
     }
     for index, raw_row in enumerate(rows):
         if not isinstance(raw_row, dict):
@@ -205,9 +212,13 @@ def validate_manifest_document(
             findings.append(
                 _finding("fields-unknown", label, f"unknown fields: {sorted(unknown)}")
             )
-        if not _safe_repo_path(path) or not str(path).startswith("scripts/"):
+        if not _safe_repo_path(path) or not str(path).startswith(MANIFEST_ROOTS):
             findings.append(
-                _finding("path-invalid", label, "path must be below scripts/")
+                _finding(
+                    "path-invalid",
+                    label,
+                    f"path must be below one of {', '.join(MANIFEST_ROOTS)}",
+                )
             )
             continue
         path = str(path)

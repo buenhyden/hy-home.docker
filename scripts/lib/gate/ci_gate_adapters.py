@@ -629,6 +629,7 @@ def _check_shell_syntax(
             "ls-files",
             "-z",
             "--",
+            "evals/**/*.sh",
             "scripts/**/*.sh",
             ".claude/hooks/*.sh",
         ),
@@ -659,7 +660,7 @@ def _check_shell_syntax(
         pathlib.PurePosixPath(path).is_absolute()
         or ".." in pathlib.PurePosixPath(path).parts
         or not (
-            (path.startswith("scripts/") and path.endswith(".sh"))
+            (path.startswith(("evals/", "scripts/")) and path.endswith(".sh"))
             or (path.startswith(".claude/hooks/") and path.endswith(".sh"))
         )
         for path in paths
@@ -686,7 +687,7 @@ def _run_agent_output_eval(
     result = _run_child(
         (
             "bash",
-            "scripts/validation/run-agent-output-eval-fixtures.sh",
+            "evals/run-agent-output-eval-fixtures.sh",
             "--check-fixtures",
             "--check-regressions",
         ),

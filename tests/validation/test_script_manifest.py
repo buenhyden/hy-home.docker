@@ -175,9 +175,9 @@ def load_manifest_checker():
     return module
 
 
-def tracked_paths(pathspec: str) -> set[str]:
+def tracked_paths(*pathspecs: str) -> set[str]:
     paths = subprocess.run(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", pathspec],
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", *pathspecs],
         cwd=ROOT,
         text=True,
         check=True,
@@ -434,7 +434,11 @@ def stable_target_type(path: str) -> str | None:
 class ScriptManifestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.tracked = tracked_paths("scripts")
+        # Read the roots from the checker rather than restating "scripts": the
+        # manifest governs every root in MANIFEST_ROOTS, and a second literal
+        # here would let coverage and the contract drift apart.
+        roots = load_manifest_checker().MANIFEST_ROOTS
+        cls.tracked = tracked_paths(*(root.rstrip("/") for root in roots))
         cls.repository_paths = tracked_paths(":(top)")
         cls.manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         cls.rows = cls.manifest["files"]
@@ -901,6 +905,15 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIn("Do not invoke a `mutation: runtime` row", compact)
         self.assertIn("Do not invoke a default-write generator without", compact)
         self.assertIn("semantic invocation/import evidence", compact)
+
+    def test_evals_readme_states_its_manifest_registration_rule(self) -> None:
+        text = (ROOT / "evals/README.md").read_text(encoding="utf-8")
+        compact = re.sub(r"\s+", " ", text)
+        # `evals/` is a manifest root, so an unregistered executable added here
+        # must fail the gate exactly as it would under `scripts/`.
+        self.assertIn("MANIFEST_ROOTS", compact)
+        self.assertIn("scripts/manifest.yaml", compact)
+        self.assertIn("check-script-manifest.py", compact)
 
     def test_ledger_has_one_complete_sorted_row_for_every_migration_document(
         self,

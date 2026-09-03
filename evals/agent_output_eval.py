@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Iterable, Sequence
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE_REFERENCE = pathlib.PurePosixPath(
     "docs/90.references/data/0064-agent-output-eval-fixtures/README.md"
 )

@@ -44,7 +44,7 @@ _NORMATIVE_STAGES = ("stage 00", "stage 01", "stage 02", "stage 03", "stage 05")
 _ACTIVE_CONSUMER_PATHS = (
     pathlib.PurePosixPath("docs/99.templates/registry.json"),
     pathlib.PurePosixPath("scripts/lib/document_governance/operations_catalog.py"),
-    pathlib.PurePosixPath("scripts/validation/agent_output_eval.py"),
+    pathlib.PurePosixPath("evals/agent_output_eval.py"),
     pathlib.PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"),
     pathlib.PurePosixPath("scripts/lib/target_surface/target_surface_contract.py"),
 )

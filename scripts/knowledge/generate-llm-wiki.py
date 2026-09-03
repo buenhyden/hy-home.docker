@@ -414,7 +414,15 @@ def is_safe_candidate(path_text: str) -> bool:
     return (
         path_text in ROOT_ENTRYPOINTS
         or path_text.startswith(
-            (".claude/", ".codex/", ".github/", "docs/", "infra/", "scripts/")
+            (
+                ".claude/",
+                ".codex/",
+                ".github/",
+                "docs/",
+                "evals/",
+                "infra/",
+                "scripts/",
+            )
         )
         or path_text == "secrets/README.md"
     )
@@ -450,7 +458,9 @@ def classify(path_text: str) -> str:
         return "Reference and template docs"
     if path_text.startswith("infra/"):
         return "Infrastructure source"
-    if path_text.startswith("scripts/"):
+    if path_text.startswith(("evals/", "scripts/")):
+        # `evals/` is the second automation root the script manifest governs,
+        # so its files belong in the same category as the `scripts/` ones.
         return "Scripts and validators"
     if path_text.startswith(".github/"):
         return "GitHub workflow surface"

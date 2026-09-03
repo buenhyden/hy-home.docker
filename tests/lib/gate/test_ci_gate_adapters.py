@@ -130,7 +130,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 subprocess.CompletedProcess(
                     ("git",),
                     0,
-                    b"scripts/a.sh\0.claude/hooks/b.sh\0",
+                    b"evals/a.sh\0scripts/b.sh\0.claude/hooks/c.sh\0",
                     b"",
                 ),
                 subprocess.CompletedProcess(("bash",), 0, b"", b""),
@@ -143,13 +143,14 @@ class CiGateAdapterTests(unittest.TestCase):
                 "ls-files",
                 "-z",
                 "--",
+                "evals/**/*.sh",
                 "scripts/**/*.sh",
                 ".claude/hooks/*.sh",
             ),
             recorder.calls[0][0],
         )
         self.assertEqual(
-            ("bash", "-n", "scripts/a.sh", ".claude/hooks/b.sh"),
+            ("bash", "-n", "evals/a.sh", "scripts/b.sh", ".claude/hooks/c.sh"),
             recorder.calls[1][0],
         )
 
@@ -281,7 +282,7 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(
             (
                 "bash",
-                "scripts/validation/run-agent-output-eval-fixtures.sh",
+                "evals/run-agent-output-eval-fixtures.sh",
                 "--check-fixtures",
                 "--check-regressions",
             ),

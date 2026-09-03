@@ -249,14 +249,14 @@ repository/runtime/remote state, or read secrets.
 
 ```bash
 # List available fixtures
-bash scripts/validation/run-agent-output-eval-fixtures.sh --list
+bash evals/run-agent-output-eval-fixtures.sh --list
 
 # Verify the fixture catalog and semantic regression calibration together
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
 
 # Score explicitly classified synthetic text (sensitive-value patterns fail closed)
 printf '%s\n' '<synthetic output>' | \
-  bash scripts/validation/run-agent-output-eval-fixtures.sh \
+  bash evals/run-agent-output-eval-fixtures.sh \
     --fixture AOE-DOC-001 \
     --classification synthetic-fixture \
     --stdin
@@ -291,7 +291,7 @@ authoritative.
 - `Harness engineering research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf) - fixture and eval-harness background.
 - [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - provider parity source of truth.
 - [Automation candidates](../../audits/0021-automation-candidates/README.md) - `AEA-AUTO-003` implementation context.
-- [agent-output eval runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) - local advisory fixture runner.
+- [agent-output eval runner](../../../../evals/run-agent-output-eval-fixtures.sh) - local advisory fixture runner.
 
 ## Maintenance
 

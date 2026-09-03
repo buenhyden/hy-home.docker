@@ -943,6 +943,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 | Path | Role |
 | --- | --- |
+| [evals/README.md](../../../../evals/README.md) | folder index |
+| [evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/README.md](../../../../scripts/README.md) | folder index |
 | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh) | script |
 | [scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) | script |
@@ -976,7 +978,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/generate-security-automation-readiness.sh](../../../../scripts/validation/generate-security-automation-readiness.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../../scripts/validation/report-provider-hook-parity.sh) | script |
-| [scripts/validation/run-agent-output-eval-fixtures.sh](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/validation/run-agent-precommit-all-files.sh](../../../../scripts/validation/run-agent-precommit-all-files.sh) | script |
 | [scripts/validation/run-ci-precommit.sh](../../../../scripts/validation/run-ci-precommit.sh) | script |
 | [scripts/validation/run-compose-core-readiness.sh](../../../../scripts/validation/run-compose-core-readiness.sh) | script |

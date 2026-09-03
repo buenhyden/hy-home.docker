@@ -1196,7 +1196,7 @@ _ASSIGNMENT_RE: Final = re.compile(
 )
 _APPROVED_OWNER_SUBSTITUTION: Final = (
     "bash",
-    "scripts/validation/run-agent-output-eval-fixtures.sh",
+    "evals/run-agent-output-eval-fixtures.sh",
     "--check-fixtures",
     "--check-regressions",
 )

@@ -166,13 +166,13 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             for candidate in generator.collect_candidates(ROOT)
             if candidate.category == "Scripts and validators"
         }
-        # 39 as measured on 2026-08-30. The set is every `.sh` under
-        # `scripts/` plus this generator and five non-script companions; the
-        # two `.py` validators Gate 4 took with it were never members, so this
-        # drift predates SPEC-0155 and had gone uncaught because no registered
-        # gate runs this module. Repinning without registering would let it
-        # drift again; SPEC-0155 Task 8 owns the registration.
-        self.assertEqual(39, len(script_paths))
+        # 40 as measured on 2026-09-03: every `.sh` under the two automation
+        # roots plus this generator and the non-script companions. It was 39
+        # while `scripts/` was the only root; moving the agent-output eval
+        # harness to `evals/` removed one member and added two, because
+        # `evals/README.md` counts as a companion exactly as `scripts/README.md`
+        # does. `.py` validators are still not members in either root.
+        self.assertEqual(40, len(script_paths))
         self.assertIn(generator.GENERATOR_PATH, script_paths)
         self.assertNotIn("scripts/knowledge/generate-llm-wiki-index.sh", script_paths)
         self.assertNotIn(
