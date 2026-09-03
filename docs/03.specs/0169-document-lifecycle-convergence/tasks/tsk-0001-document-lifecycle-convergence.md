@@ -3,12 +3,12 @@ title: Document Lifecycle Convergence Task
 version: 1.0.0
 type: sdlc/task
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0169-TSK-0001
 parent_ids: [SPEC-0169, SPEC-0169-PLAN-0001]
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Document Lifecycle Convergence Task
@@ -124,6 +124,27 @@ Pre-existing and left alone under surgical-change discipline:
 `scripts/lib/document_governance/metadata/heading.py` imports `ProfileError`
 without using it; `ruff check` reports the same `F401` against the file as it
 stood before this work.
+
+### Findings placed with their owners (2026-09-04)
+
+The three findings this package could not decide are now recorded as
+`## Risks` in AD-0030, the description that owns the enforcement component:
+the unreachable `changed_boundary` route, the three-way disagreement over
+`<!-- Target:`, and the nine domains holding two living Stage 02 descriptions.
+The third is recorded as a known violation of `REQ-0026-FR-0005` rather than a
+new rule, because the rule it breaks already exists.
+
+Two observations are not placed, because no owner in this package's chain
+governs them: the PostgreSQL rehearsal test's wall-clock cleanup budget, and
+the pre-existing unused `ProfileError` import in `heading.py`.
+
+`REQ-0026-FR-0009` and the retention table said a completed package drops its
+execution members "by the same change that completes the package". That is
+unreachable: `execution-evidence-deletion-forbidden` reads each removed
+member's status from the comparison base, so a member marked terminal and
+deleted in one change is still observed as non-terminal there. Both now state
+the two-step sequence the mechanism enforces, and this change performs its
+first step.
 
 ## Commit Ledger
 

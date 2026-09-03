@@ -112,7 +112,7 @@ and its still-current meaning has moved to a canonical owner.
 | --- | --- | --- |
 | `draft` | keep every member | keep |
 | `active` | keep every member | keep |
-| `completed` | keep `spec.md`; `plan.md` and Tasks are removed by the same change that completes the package | not reachable in the `living` lifecycle |
+| `completed` | keep `spec.md`; mark `plan.md` and Tasks `completed` first, then remove them in a following change | not reachable in the `living` lifecycle |
 | `superseded` | keep `spec.md` with `superseded_by`; execution members may be removed | keep with `superseded_by` |
 | `retired` | remove the package and record one Tombstone | remove and record one Tombstone |
 

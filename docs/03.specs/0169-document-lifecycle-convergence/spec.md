@@ -3,37 +3,37 @@ title: Document Lifecycle Convergence Specification
 version: 1.0.0
 type: sdlc/spec
 layer: specs
-status: active
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0169
 parent_ids: [REQ-0026, AD-0030, ADR-0030]
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Document Lifecycle Convergence Specification
 
 ## Overview
 
-Three stages declare a section contract that nothing enforces. Two mutations
-prove it: adding an unregistered heading to a Stage 03 spec passes the gate, and
-deleting its required `Traceability` heading also passes. `validate_body_contract`
-checks sections only for profiles without a `template_id`, and every Stage 01,
+Three stages declared a section contract that nothing enforced. Two mutations
+proved it: adding an unregistered heading to a Stage 03 spec passed the gate, and
+deleting its required `Traceability` heading also passed. `validate_body_contract`
+checked sections only for profiles without a `template_id`, and every Stage 01,
 02, and 03 type declares one.
 
-The corpus drifted accordingly. Across 349 stage documents, 192 miss a required
-heading and 272 carry headings no profile registers. The damage has two distinct
-shapes, and they need different remedies.
+The corpus drifted accordingly. Across 349 stage documents, 192 missed a required
+heading and 272 carried headings no profile registered. The damage had two
+distinct shapes, and they needed different remedies.
 
-For the operations catalog the registry is wrong about the corpus. All 192
-`guide`, `policy`, and `runbook` documents miss required headings and carry
-unregistered ones, while the corpus itself is uniform: 59 of 66 guides share one
-signature. The registry and the three operations templates agree with each other
-and with nothing on disk.
+For the operations catalog the registry was wrong about the corpus. All 192
+`guide`, `policy`, and `runbook` documents missed required headings and carried
+unregistered ones, while the corpus itself was uniform: 59 of 66 guides shared
+one signature. The registry and the three operations templates agreed with each
+other and with nothing on disk.
 
-For Stages 01 to 03 the corpus is wrong about itself. Requirements, decisions,
-and descriptions carry two generations of section vocabulary stacked together,
-and Stage 01 holds nine `optimization-hardening` requirements whose clauses name
+For Stages 01 to 03 the corpus was wrong about itself. Requirements, decisions,
+and descriptions carried two generations of section vocabulary stacked together,
+and Stage 01 held nine `optimization-hardening` requirements whose clauses named
 Traefik middleware chains, healthcheck mechanisms, and compose declarations.
 Stage 01 owns solution-independent requirements; a requirement that breaks when
 the gateway changes is not one.

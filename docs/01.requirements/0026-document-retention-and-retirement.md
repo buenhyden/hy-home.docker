@@ -54,9 +54,13 @@ updated: 2026-09-01
   가지며, namespace가 없다는 사실이 은퇴를 막거나 Tombstone 없는 제거를
   정당화하지 않습니다.
 - **REQ-0026-FR-0009**: `completed` Spec Package는 `spec.md`만 유지합니다.
-  완료 선언 자체가 "결과가 canonical owner에 도달했다"는 주장이므로, 완료와
-  동시에 `plan.md`와 Task를 제거합니다. 이 규칙은 판단이 아니라 기계적으로
-  검사 가능한 상태입니다.
+  완료 선언 자체가 "결과가 canonical owner에 도달했다"는 주장이므로,
+  `plan.md`와 Task는 남지 않습니다. 제거는 두 단계입니다. 먼저 package와
+  execution member를 `completed`로 표시하고, 그다음 변경에서 member를
+  제거합니다. 실행 증거 삭제 check는 제거되는 member의 status를 비교 base에서
+  읽으므로, 한 변경 안에서 완료 표시와 제거를 함께 수행하면 그 member는 base에
+  여전히 비terminal로 관측되어 삭제가 거부됩니다. 이 규칙은 판단이 아니라
+  기계적으로 검사 가능한 상태입니다.
 - **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
   정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
   Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.

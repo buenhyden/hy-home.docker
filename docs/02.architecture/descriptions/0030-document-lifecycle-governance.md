@@ -95,6 +95,29 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 - 분리 가능: 보존 규칙은 Spec Package 없이 Stage 00에서 읽을 수 있고, 강제
   방식은 Task 없이 이 description에서 읽을 수 있습니다.
 
+## Risks
+
+- 두 번째 강제 경로가 실행되지 않습니다. `validate_body_contract`의
+  `changed_boundary` 분기는 template role의 heading 계약과 변경 target의 잔여
+  literal/token 검사를 담당하지만, production 호출부인
+  `scripts/lib/document_governance/metadata/reference.py`의 두 지점이 모두
+  `False`를 전달합니다. Registry section 계약이 이제 모든 profile에 직접
+  강제되므로 heading 검사는 중복이지만, `template-instruction-in-target`과
+  `template-body-token-in-target`은 다른 어떤 check도 대신하지 않습니다.
+- 잔여 marker 계약이 세 곳에서 서로 다릅니다. `TARGET_TEMPLATE_LITERALS`는
+  `<!-- Target:`을 변경 target에 남아서는 안 되는 잔여물로 선언하고, 현재 어떤
+  template도 이를 생성하지 않으며, `docs/99.templates` 아래 template source는
+  이를 담지 않도록 test로 강제됩니다. 그런데 추적 중인 문서 184개가 이를
+  담고 있고 `scripts/validation/check-document-metadata.py`는 자신의 생성
+  출력에 계속 기록합니다. 증거가 양방향을 가리키므로 marker를 제거할지
+  계약에서 내릴지는 아직 결정되지 않았습니다.
+- 9개 도메인이 살아 있는 Stage 02 Description을 둘씩 가집니다. base
+  description과 `*-optimization-hardening` description이 관계 선언 없이
+  공존하며 어느 쪽도 다른 쪽의 상위 집합이 아닙니다. REQ-0026-FR-0005는
+  capability마다 Stage 02 owner 하나를 요구하므로 이는 알려진 위반입니다.
+  hardening 서술의 조항 다수가 다른 문서에 없어 단순 은퇴로는 해소되지
+  않으며, 두 서술의 병합 또는 명시적 계층 선언이 필요합니다.
+
 ## Traceability
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
