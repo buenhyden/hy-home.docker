@@ -15,6 +15,8 @@ updated: 2026-08-10
 
 ## Context
 
+이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
+
 `09-tooling` 계층은 개발 및 운영 효율성을 극대화하기 위한 보조 도구들을 포함한다. 인프라 자동화(IaC), 코드 품질 분석, 성능 테스트, 데이터 동기화 등 다양한 요구사항을 충족하기 위해 검증된 오픈소스 솔루션들을 선정하고 통합해야 한다.
 
 ## Decision
@@ -32,11 +34,16 @@ updated: 2026-08-10
 5. **Data Synchronization**: **Syncthing**
    - 이유: 중앙 서버 없이 장치 간 P2P 파일 동기화를 지원하여, 분산된 개발 환경 간의 리소스 공유를 최적화한다.
 
-## Rationale
+### Rationale
 
 - **통합성**: 모든 서비스는 Keycloak SSO와 연동되어 단일 계정으로 접근 가능하다.
 - **지속성**: Terraform 상태 정보 및 분석 데이터는 `04-data` 계층(MinIO, PostgreSQL)에 저장되어 데이터 유실을 방지한다.
 - **표준화**: 각 서비스는 Docker Compose 및 사전에 정의된 환경 변수를 통해 일관된 방식으로 배포된다.
+
+### Decision Record
+
+Accepted (2026-03-26)
+
 
 ## Consequences
 
@@ -48,19 +55,12 @@ updated: 2026-08-10
   - 다양한 도구 운영에 따른 유지보수 리소스(메모리, CPU) 점유율이 증가한다.
   - 도구 간의 복잡한 네트워크 권한 설정이 필요하다.
 
-## Status
-
-Accepted (2026-03-26)
-
-## Overview
-
-이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
-
-## Explicit Non-goals
+### Explicit Non-goals
 
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
+
 
 ## Options Considered
 

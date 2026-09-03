@@ -13,17 +13,16 @@ updated: 2026-09-01
 ---
 # Messaging Architecture Description
 
-## Messaging Tier (05-messaging) Architecture Description
-
 ## Context and Stakeholders
 
 이 문서는 메시징 계층(`05-messaging`)의 참조 아키텍처와 품질 속성을 정의한다. 고가용성 Apache Kafka (KRaft mode) 클러스터와 경량 RabbitMQ 브로커가 결합된 폴리글랏 메시징 구조를 다룬다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 `hy-home.docker`의 메시징 계층은 시스템의 이벤트 중심 아키텍처(EDA)를 뒷받침한다. Kafka는 대용량 스트리밍 및 이벤트 로그 저장을 담당하며, RabbitMQ는 저지연 작업 큐잉 및 마이크로서비스 간의 단발성 비동기 통신을 담당한다.
+
 
 ## System Boundaries
 
@@ -64,6 +63,14 @@ updated: 2026-09-01
 
 메시징 계층은 Kafka REST Proxy를 통해 RESTful 접근도 지원하며, Schema Registry를 통해 Avro/JSON 기반의 데이터 정합성 보장을 가능하게 한다. ksqlDB는 현재 `04-data/analytics/ksql`의 downstream analytics component로 운영한다.
 
+### AI Agent Architecture
+
+- **Model/Provider Strategy**: N/A (인프라 계층 특성).
+- **Tooling Boundary**: Topic Manager Tool, Queue Monitor Tool.
+- **Memory & Context Strategy**: 최근 메시지 오프셋 저장 및 추적.
+- **Guardrail Boundary**: 대기열 소비율 임계치 기반 알림 호출.
+
+
 ## Data Flow
 
 ### Data and Control Flows
@@ -82,13 +89,6 @@ updated: 2026-09-01
 - **Runtime / Platform**: Docker Containers / Linux Host.
 - **Deployment Model**: root include path는 Kafka dev single broker + RabbitMQ 1 node를 렌더링한다. `infra/05-messaging/kafka/docker-compose.yml`은 service-local full 3 broker compose이며 root network/secret context가 필요하다.
 - **Operational Evidence**: `docker-compose.yml` 기반의 스테이트풀 서비스 관리.
-
-## AI Agent Architecture Descriptions (If Applicable)
-
-- **Model/Provider Strategy**: N/A (인프라 계층 특성).
-- **Tooling Boundary**: Topic Manager Tool, Queue Monitor Tool.
-- **Memory & Context Strategy**: 최근 메시지 오프셋 저장 및 추적.
-- **Guardrail Boundary**: 대기열 소비율 임계치 기반 알림 호출.
 
 ## Traceability
 

@@ -13,17 +13,16 @@ updated: 2026-08-10
 ---
 # Communication Tier Architecture Description
 
-## Communication Tier Reference Document
-
 ## Context and Stakeholders
 
 이 문서는 `10-communication` 계층의 참조 아키텍처와 품질 속성을 정의한다. 개발용 샌드박스와 실운영용 메일 서버 간의 격리, 보안 프로토콜, 그리고 데이터 지속성 전략을 다룬다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 `10-communication` 계층은 현재 구현된 메일 통신을 전담한다. 분리된 두 가지 핵심 엔진(sandbox, backend)으로 구성되며, 외부 네트워크로의 안전한 데이터 전송과 개발 편의성을 동시에 제공한다.
+
 
 ## System Boundaries
 

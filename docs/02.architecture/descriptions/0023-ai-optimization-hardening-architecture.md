@@ -17,7 +17,7 @@ updated: 2026-09-01
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, GPU concurrency 제어, stateful 운영 일관성, health 기반 관측 안정성, 카탈로그 기반 운영 확장 정책을 아키텍처 관점에서 정리한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -27,6 +27,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 - Open WebUI (사용자 인터페이스 + RAG 오케스트레이션)
 
 외부 진입은 Traefik TLS 경계에서 표준 middleware+SSO 체인을 공유한다.
+
 
 ## System Boundaries
 
@@ -102,7 +103,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - `scripts/hardening/check-all-hardening.sh 08-ai`
   - CI `infrastructure-hardening` job
 
-## Catalog-aligned Expansion Targets
+## Evolution
 
 - **Ollama**:
   - 모델 캐시/스토리지 운영 정책 명문화

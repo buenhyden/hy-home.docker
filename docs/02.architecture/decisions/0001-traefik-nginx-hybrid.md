@@ -13,11 +13,9 @@ updated: 2026-08-10
 ---
 # ADR-0001: Traefik & Nginx Hybrid Gateway Architecture
 
-## Overview
+## Context
 
 이 문서는 `hy-home.docker`의 진입점(Ingress)으로 Traefik과 Nginx를 혼합하여 사용하는 결정에 대한 아키텍처 결정 기록이다.
-
-## Context
 
 - 시스템에는 Docker 컨테이너 기반으로 동적으로 수량이 변하는 다수의 마이크로서비스가 존재함.
 - 동시에 Keycloak, MinIO와 같이 특정 경로(Path) 재작성 및 복잡한 헤더 조작이 필요한 인프라 서비스들이 존재함.
@@ -34,11 +32,6 @@ updated: 2026-08-10
   - Nginx 내부에서 상세한 Proxy Pass, Header 조작, Buffering 설정을 수행한다.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
-## Explicit Non-goals
-
-- 모든 내부 서비스 앞에 Nginx를 두는 방식 (불필요한 홉 증가 방지).
-- Nginx를 외부 Edge로 직접 노출하는 방식.
-
 ## Consequences
 
 - **Positive**:
@@ -48,6 +41,12 @@ updated: 2026-08-10
 - **Trade-offs**:
   - 특정 서비스에 대해 네트워크 홉(Hop)이 하나 추가됨 (Traefik -> Nginx).
   - 두 종류의 프록시 설정 문법을 모두 관리해야 하는 운영 부담.
+
+### Explicit Non-goals
+
+- 모든 내부 서비스 앞에 Nginx를 두는 방식 (불필요한 홉 증가 방지).
+- Nginx를 외부 Edge로 직접 노출하는 방식.
+
 
 ## Options Considered
 

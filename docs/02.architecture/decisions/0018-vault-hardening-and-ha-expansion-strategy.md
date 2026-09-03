@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0018: Vault Hardening and HA Expansion Strategy
 
-## Overview
+## Context
 
 이 문서는 `03-security` Vault 계층에 대해 즉시 하드닝 항목을 우선 적용하고, auto-unseal/원격 audit는 단계적 전환으로 관리하는 의사결정을 기록한다.
-
-## Context
 
 기존 Vault Agent 템플릿은 placeholder 경로를 사용하고 있었고, `vault-agent` 헬스체크/출력 지속성/전용 CI 게이트가 부재했다. 반면 auto-unseal 및 원격 audit는 운영 정책/승인/외부 의존성(KMS/HSM, 원격 저장소) 조율이 필요하여 즉시 구현 리스크가 높다.
 
@@ -34,12 +32,6 @@ updated: 2026-09-01
   - 내부 `infra_net`: HTTP
 - 기존 회귀(`scripts/hardening/check-all-hardening.sh 02-auth`)는 같은 변경 세트에서 복구한다.
 
-## Explicit Non-goals
-
-- 이번 변경에서 KMS/HSM auto-unseal 실구현
-- 이번 변경에서 원격 audit sink 실구현
-- Vault API/프로토콜 변경
-
 ## Consequences
 
 - **Positive**:
@@ -49,6 +41,18 @@ updated: 2026-09-01
 - **Trade-offs**:
   - auto-unseal/원격 audit 가치 실현은 다음 단계로 이연된다.
   - 단일 노드 raft 운영 리스크는 당분간 유지된다.
+
+### Explicit Non-goals
+
+- 이번 변경에서 KMS/HSM auto-unseal 실구현
+- 이번 변경에서 원격 audit sink 실구현
+- Vault API/프로토콜 변경
+
+### Agent-related Example Decisions
+
+- Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
+- Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
+
 
 ## Options Considered
 
@@ -66,11 +70,6 @@ updated: 2026-09-01
   - 단기 변경 리스크가 낮다.
 - Bad:
   - placeholder/헬스체크/CI 회귀가 계속 남는다.
-
-## Agent-related Example Decisions (If Applicable)
-
-- Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
-- Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
 
 ## Traceability
 

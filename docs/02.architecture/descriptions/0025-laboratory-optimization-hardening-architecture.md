@@ -17,7 +17,7 @@ updated: 2026-09-01
 
 이 문서는 `11-laboratory` 계층 최적화/하드닝 참조 아키텍처를 정의한다. 관리 UI를 gateway 보안 체인, SSO 인증, IP allowlist 경계 뒤에 배치하고 실험성 서비스 운영 드리프트를 CI 게이트로 통제하는 아키텍처 계약을 명시한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -27,6 +27,7 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 - Container/Log Admin UI: portainer, dozzle
 - Data Admin UI: redisinsight
 - Local notebook lab: open-notebook, surrealdb
+
 
 ## System Boundaries
 
@@ -92,7 +93,7 @@ This hardening Architecture Description does not introduce production data owner
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
   - CI `infrastructure-hardening` job
 
-## Catalog-aligned Expansion Targets
+## Evolution
 
 - **dashboard**: SSO+allowlist 유지, 실험성 서비스 자동 만료 정책(태그 기반 정리) 적용
 - **dozzle**: 로그 열람 범위 제한(운영 로그 접근 차단 규칙), 권한 최소화 지속 점검

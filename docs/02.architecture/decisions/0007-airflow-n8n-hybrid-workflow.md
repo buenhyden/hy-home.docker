@@ -13,11 +13,9 @@ updated: 2026-08-10
 ---
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy
 
-## Overview
+## Context
 
 이 문서는 워크플로 엔진으로 Apache Airflow와 n8n을 동시에 채택한 배경과 하이브리드 운영 전략에 대한 아키텍처 결정 기록이다.
-
-## Context
 
 프로젝트는 두 가지 상이한 워크플로 요구사항에 직면해 있다.
 
@@ -32,11 +30,6 @@ updated: 2026-08-10
 - **n8n**을 "Integration Automator"로 채택하여 외부 서비스 연합 및 이벤트 기반의 가벼운 자동화를 담당한다.
 - root-included dev compose는 shared `mng-valkey`와 management PostgreSQL을 사용하고, service-local compose는 Airflow/n8n dedicated Valkey 서비스를 선언하여 운영 경계를 분리한다.
 
-## Explicit Non-goals
-
-- 두 엔진 간의 직접적인 상호 호출 표준화 (필요 시 API를 통해서만 수행).
-- n8n을 대용량 데이터 처리용으로 사용하지 않음.
-
 ## Consequences
 
 - **Positive**:
@@ -46,6 +39,12 @@ updated: 2026-08-10
 - **Trade-offs**:
   - 두 종류의 엔진을 관리해야 하므로 운영 오버헤드 발생.
   - 리소스(메모리, CPU) 소비 증가.
+
+### Explicit Non-goals
+
+- 두 엔진 간의 직접적인 상호 호출 표준화 (필요 시 API를 통해서만 수행).
+- n8n을 대용량 데이터 처리용으로 사용하지 않음.
+
 
 ## Options Considered
 

@@ -17,13 +17,11 @@ updated: 2026-08-10
 
 ---
 
-## Analytics Tier Architecture Description
-
 ## Context and Stakeholders
 
 본 문서는 `04-data/analytics` 서브 티어의 기술적 뼈대와 시스템 아키텍처를 정의한다. 핵심 데이터 티어로부터 분리된 분석 전용 하이퍼스케일 엔진들(InfluxDB, ksqlDB, OpenSearch, StarRocks)의 배치 전략, 데이터 흐름, 그리고 플랫폼 통합 방식을 상세히 기술한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -31,6 +29,7 @@ updated: 2026-08-10
 - **Domain**: Data Architecture (Analytics)
 - **Primary Tech Stack**: InfluxDB 3 Core, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 - **Connectivity**: Private isolated `infra_net`.
+
 
 ## System Boundaries
 
@@ -94,6 +93,28 @@ graph LR
     SR_FE --- SR_BE
 ```
 
+### Infrastructure Strategy
+
+- **Networking**: `infra_net` 내부 통신만 허용하며, 외부 접근은 Gateway Tier의 Reverse Proxy를 통해서만 가능.
+- **Storage Bindings**:
+  - InfluxDB, ksqlDB, OpenSearch, OpenSearch Dashboards, StarRocks FE/BE는 bind-backed named volume을 사용한다.
+  - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/ksql`, `${DEFAULT_DATA_DIR}/opensearch`, `${DEFAULT_DATA_DIR}/starrocks` 계열이다.
+  - 고성능 디스크(NVMe) 활용은 권장 사항이며, 성능 수치의 완료 증거는 별도 benchmark evidence가 필요하다.
+- **Config Management**: Docker Secrets and environment variables are used where declared by each compose file. ksqlDB and StarRocks do not currently declare Docker Secrets.
+
+### AI Agent Architecture
+
+- **Metadata Access**: AI 에이전트는 분석용 스키마 정보와 메타데이터에 대한 읽기 권한을 가짐.
+- **Query Optimization**: 에이전트는 비효율적인 분석 쿼리 패턴을 감지하고 StarRocks 인덱싱 등의 최적화 제안 가능.
+
+#### Additional Boundaries and Constraints
+
+- **Owns**: The architecture scope already described in this document.
+- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
+- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this Architecture Description.
+- **Non-goals**: Semantic rewriting of the historical architecture record.
+
+
 ## Data Flow
 
 ### Data and Control Flows
@@ -107,30 +128,9 @@ graph LR
   - StarRocks: MPP(Massively Parallel Processing) 아키텍처의 컬럼형 스토리지.
 - **Consistency**: 최종 일관성(Eventual Consistency) 모델을 기본으로 채택하여 처리량 극대화.
 
-## Infrastructure Strategy
-
-- **Networking**: `infra_net` 내부 통신만 허용하며, 외부 접근은 Gateway Tier의 Reverse Proxy를 통해서만 가능.
-- **Storage Bindings**:
-  - InfluxDB, ksqlDB, OpenSearch, OpenSearch Dashboards, StarRocks FE/BE는 bind-backed named volume을 사용한다.
-  - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/ksql`, `${DEFAULT_DATA_DIR}/opensearch`, `${DEFAULT_DATA_DIR}/starrocks` 계열이다.
-  - 고성능 디스크(NVMe) 활용은 권장 사항이며, 성능 수치의 완료 증거는 별도 benchmark evidence가 필요하다.
-- **Config Management**: Docker Secrets and environment variables are used where declared by each compose file. ksqlDB and StarRocks do not currently declare Docker Secrets.
-
 ## Deployment View
 
 The existing infrastructure strategy section defines the deployment boundary for this existing Architecture Description. Runtime procedures and recovery steps remain in the linked operations documents.
-
-## AI Agent Architecture
-
-- **Metadata Access**: AI 에이전트는 분석용 스키마 정보와 메타데이터에 대한 읽기 권한을 가짐.
-- **Query Optimization**: 에이전트는 비효율적인 분석 쿼리 패턴을 감지하고 StarRocks 인덱싱 등의 최적화 제안 가능.
-
-### Additional Boundaries and Constraints
-
-- **Owns**: The architecture scope already described in this document.
-- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
-- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this Architecture Description.
-- **Non-goals**: Semantic rewriting of the historical architecture record.
 
 ## Traceability
 

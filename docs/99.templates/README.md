@@ -40,7 +40,39 @@ Stage 99 owns:
 Stage 99 does not own agent behavior, product truth, architecture decisions,
 implementation evidence, operating policy, or reference findings.
 
-## Authority Model
+## Structure
+
+```text
+docs/99.templates/
+├── README.md
+├── registry.json
+├── contracts/
+│   ├── frontmatter.schema.json
+│   └── document-profile.schema.json
+└── templates/
+    ├── governance/
+    ├── runtime/
+    ├── requirements/
+    ├── architecture/
+    ├── specs/
+    │   └── contracts/
+    ├── operations/
+    ├── references/
+    ├── archive/
+    └── common/
+```
+
+## How to Work in This Area
+
+1. Select a registered profile and template role.
+2. Copy the registered source without changing its `profile_id` contract.
+3. Allocate an ID above the persisted high-water mark.
+4. Replace placeholders and add full traceability IDs.
+5. Run the document-contract validator and the owning stage gate.
+6. Change Registry, schemas, templates, consumers, and tests in one reviewed
+   logical unit when the contract itself changes.
+
+### Authority Model
 
 | Surface | Authority | Purpose |
 | :--- | :--- | :--- |
@@ -61,15 +93,15 @@ generated, and repository-support Markdown without a dedicated copy template.
 frontmatter. `unmanaged` is reserved for the unsupported fallback and never
 defines a canonical target artifact.
 
-## Identity and Lifecycle Rules
+### Identity and Lifecycle Rules
 
-### Registered Identity Shapes
+#### Registered Identity Shapes
 
 `registry.json` states the identity shape per profile in `artifact_id_pattern`,
 and the owning container in `identity_relation`. This section states the rules
 those fields express, not the fields themselves.
 
-### Required Frontmatter Envelope
+#### Required Frontmatter Envelope
 
 A profile's `required_frontmatter` and `optional_frontmatter` state which keys a
 document declares; `common.frontmatter_order` states the order;
@@ -119,7 +151,7 @@ states each value's shape. The reasons behind that envelope are:
 Full Git-history allocation validation belongs to the full document-contract
 profile. Changed validation uses the persisted Registry allocation state.
 
-## Template Rules
+### Template Rules
 
 - Copy the source registered by `template_id`/template role.
 - Markdown template frontmatter declares the profile's `type` and contains no
@@ -134,37 +166,6 @@ profile. Changed validation uses the persisted Registry allocation state.
 - `DESIGN.md` remains the root UI/design-system authority and is not a Stage 03
   design artifact.
 
-## Structure
-
-```text
-docs/99.templates/
-├── README.md
-├── registry.json
-├── contracts/
-│   ├── frontmatter.schema.json
-│   └── document-profile.schema.json
-└── templates/
-    ├── governance/
-    ├── runtime/
-    ├── requirements/
-    ├── architecture/
-    ├── specs/
-    │   └── contracts/
-    ├── operations/
-    ├── references/
-    ├── archive/
-    └── common/
-```
-
-## How to Work in This Area
-
-1. Select a registered profile and template role.
-2. Copy the registered source without changing its `profile_id` contract.
-3. Allocate an ID above the persisted high-water mark.
-4. Replace placeholders and add full traceability IDs.
-5. Run the document-contract validator and the owning stage gate.
-6. Change Registry, schemas, templates, consumers, and tests in one reviewed
-   logical unit when the contract itself changes.
 
 ## Related Documents
 

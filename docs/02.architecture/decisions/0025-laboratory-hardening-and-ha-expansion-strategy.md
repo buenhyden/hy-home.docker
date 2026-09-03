@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0025: Laboratory Hardening and HA Expansion Strategy
 
-## Overview
+## Context
 
 이 문서는 `11-laboratory` 계층에서 즉시 적용 가능한 하드닝(ingress 경계 강화, direct 노출 제거, 네트워크 계약 정렬, 최소권한 개선, CI 게이트 도입)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 도입하는 결정을 기록한다.
-
-## Context
 
 Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강한 UI를 제공한다. 따라서 보안/운영 표준이 느슨하면 core tier 전체에 우회 경로를 만들 수 있다. 단기적으로는 경계 하드닝이 필요하고, 중기적으로는 실험성 서비스 운영 거버넌스(만료/승인/감사) 강화가 필요하다.
 
@@ -37,12 +35,6 @@ Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강�
   - redisinsight 최소권한/감사로그 정책
   - open-notebook notebook data retention/expiration and direct API/DB host-port exposure review
 
-## Explicit Non-goals
-
-- Laboratory 서비스군의 즉시 재플랫폼
-- Keycloak/Traefik 코어 정책 전면 재설계
-- 모든 카탈로그 확장 항목의 즉시 런타임 자동화
-
 ## Consequences
 
 - **Positive**:
@@ -52,6 +44,13 @@ Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강�
 - **Trade-offs**:
   - allowlist 기본값으로 원격 운영자 접근 시 환경변수 조정이 필요할 수 있다.
   - CI 게이트 추가로 PR 처리 시간이 소폭 증가한다.
+
+### Explicit Non-goals
+
+- Laboratory 서비스군의 즉시 재플랫폼
+- Keycloak/Traefik 코어 정책 전면 재설계
+- 모든 카탈로그 확장 항목의 즉시 런타임 자동화
+
 
 ## Options Considered
 

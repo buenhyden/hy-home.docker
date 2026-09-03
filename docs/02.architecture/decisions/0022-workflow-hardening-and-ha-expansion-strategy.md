@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0022: Workflow Hardening and HA Expansion Strategy
 
-## Overview
+## Context
 
 이 문서는 `07-workflow` 계층에 대해 즉시 적용 가능한 하드닝(경계 보안, health 기반 의존성, n8n 이미지 하드닝, CI 게이트)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
-
-## Context
 
 Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 race condition/image drift가 누적되면 장애 전파 가능성이 높다. 동시에 카탈로그는 Airflow/n8n 확장 항목을 요구하고 있어, 단기 안정화와 중기 확장을 분리한 의사결정이 필요하다.
 
@@ -33,12 +31,6 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
   - Airflow DAG quality gate/worker autoscale 기준 문서화 및 점진 도입
   - n8n workflow Git backup/Vault credential 연계 표준화
 
-## Explicit Non-goals
-
-- 즉시 multi-cluster workflow 아키텍처 전환
-- 신규 workflow service full production rollout 동시 추진
-- 개별 DAG/workflow 비즈니스 로직 리팩터링
-
 ## Consequences
 
 - **Positive**:
@@ -48,6 +40,18 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 - **Trade-offs**:
   - SSO 강화로 기존 자동화 접근 방식 일부 조정이 필요하다.
   - custom image build가 CI/개발 환경에서 추가 빌드 시간을 유발할 수 있다.
+
+### Explicit Non-goals
+
+- 즉시 multi-cluster workflow 아키텍처 전환
+- 신규 workflow service full production rollout 동시 추진
+- 개별 DAG/workflow 비즈니스 로직 리팩터링
+
+### Agent-related Example Decisions
+
+- Guardrail strategy: workflow 관리 경로는 gateway+SSO 체인 필수
+- Tool gating: workflow 하드닝 검증 스크립트를 정책 게이트로 강제
+
 
 ## Options Considered
 
@@ -64,11 +68,6 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
   - 구현 비용 단기 절감
 - Bad:
   - 실제 회귀 차단 능력 부족
-
-## Agent-related Example Decisions (If Applicable)
-
-- Guardrail strategy: workflow 관리 경로는 gateway+SSO 체인 필수
-- Tool gating: workflow 하드닝 검증 스크립트를 정책 게이트로 강제
 
 ## Traceability
 

@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0023: AI Hardening and HA Expansion Strategy
 
-## Overview
+## Context
 
 이 문서는 `08-ai` 계층에 대해 즉시 적용 가능한 하드닝(경계 보안, GPU concurrency 상한, stateful 템플릿 정렬, exporter health-gating, CI 게이트)을 우선 시행하고, 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)은 단계적으로 추진하는 결정을 기록한다.
-
-## Context
 
 AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루므로, 보안/가용성/운영 통제의 불균형이 빠르게 장애와 정책 위반으로 이어질 수 있다. 카탈로그는 08-ai에서 운영 표준 강화를 요구하고 있어, 단기 안정화와 중기 확장을 분리한 의사결정이 필요하다.
 
@@ -34,12 +32,6 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
   - Open WebUI 모델 접근 권한 분리 정책 수립
   - 대화 로그 보존/마스킹 정책 수립
 
-## Explicit Non-goals
-
-- 즉시 멀티노드 Ollama 클러스터 구축
-- 즉시 외부 상용 LLM 다중 공급자 표준화
-- Qdrant 데이터 모델 자체 변경
-
 ## Consequences
 
 - **Positive**:
@@ -50,6 +42,18 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
 - **Trade-offs**:
   - 동시성 상한 도입으로 단기 처리량이 제한될 수 있다.
   - SSO/접근 통제 강화로 기존 임시 테스트 경로 조정이 필요하다.
+
+### Explicit Non-goals
+
+- 즉시 멀티노드 Ollama 클러스터 구축
+- 즉시 외부 상용 LLM 다중 공급자 표준화
+- Qdrant 데이터 모델 자체 변경
+
+### Agent-related Example Decisions
+
+- Guardrail strategy: AI 공개 경로는 gateway+SSO 체인 필수
+- Tool gating: `check-all-hardening.sh 08-ai`를 AI tier 머지 전 필수 정책 게이트로 적용
+
 
 ## Options Considered
 
@@ -66,11 +70,6 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
   - 단기 구현 비용 절감
 - Bad:
   - 정책 위반/회귀를 자동 차단하지 못함
-
-## Agent-related Example Decisions (If Applicable)
-
-- Guardrail strategy: AI 공개 경로는 gateway+SSO 체인 필수
-- Tool gating: `check-all-hardening.sh 08-ai`를 AI tier 머지 전 필수 정책 게이트로 적용
 
 ## Traceability
 

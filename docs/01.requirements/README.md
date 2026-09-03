@@ -61,7 +61,7 @@ high-water를 낮추지 않는다.
 4. 구현 계약은 Stage 03 Spec, 운영 절차는 Stage 05에 둔다.
 5. 변경 후 metadata와 repository-local link 검증을 실행한다.
 
-## Documentation Standards
+### Documentation Standards
 
 - `profile_id: requirements-package`, `artifact_type: requirements-package`와
   안정 ID를 사용한다.
@@ -71,12 +71,13 @@ high-water를 낮추지 않는다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 
-## AI Agent Guidance
+### AI Agent Guidance
 
 Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호환 문서를
 만들지 않는다.
 연결된 Description, ADR, Spec 또는 Operations 문서가 실제로 존재할 때만
 추적성 링크를 추가한다.
+
 
 ## Related Documents
 

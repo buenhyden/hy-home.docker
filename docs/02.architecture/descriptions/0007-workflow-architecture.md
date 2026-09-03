@@ -17,7 +17,7 @@ updated: 2026-08-10
 
 이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이브리드 방식으로 운영하며, root-included dev compose와 service-local compose의 broker 경계를 명확히 분리한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -25,6 +25,7 @@ updated: 2026-08-10
 
 - **Airflow**: 프로그래밍 프레임워크 기반의 복잡한 데이터 파이프라인 관리.
 - **n8n**: 빠른 연동, API 중심 자동화, 비개발자 친화적인 워크플로 전용.
+
 
 ## System Boundaries
 

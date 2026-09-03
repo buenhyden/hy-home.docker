@@ -17,11 +17,12 @@ updated: 2026-09-01
 
 이 문서는 `02-auth` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. Keycloak과 OAuth2 Proxy의 책임 경계를 유지하면서, 시크릿 주입 표준화와 fail-closed 운영 모델을 아키텍처 기준으로 고정한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 `02-auth`는 중앙 IdP(Keycloak) + ForwardAuth 게이트(OAuth2 Proxy) 구조를 유지한다. 최적화의 핵심은 런타임 시크릿 주입 경로 단순화, 컨테이너 권한 최소화, 운영 검증 자동화, 그리고 문서-운영 실행 계층의 추적성 강화다.
+
 
 ## System Boundaries
 
@@ -70,6 +71,15 @@ updated: 2026-09-01
 - 인증 불가 상황에서 우회 허용하지 않음(fail-closed).
 - 운영자가 degraded-mode 여부를 명시 절차로 판단하고 제한적으로 수행.
 
+### AI Agent Architecture
+
+- **Model/Provider Strategy**: N/A
+- **Tooling Boundary**: 인프라/문서 변경 시 검증 스크립트 결과를 증적으로 남긴다.
+- **Memory & Context Strategy**: Plan/Task/Operation/Runbook 상호 링크를 유지한다.
+- **Guardrail Boundary**: 시크릿 평문 하드코딩 금지, fail-open 금지.
+- **Latency / Cost Budget**: N/A
+
+
 ## Data Flow
 
 ### Data and Control Flows
@@ -99,14 +109,6 @@ updated: 2026-09-01
   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
   - 서비스별 healthcheck 결과
-
-## AI Agent Architecture Descriptions (If Applicable)
-
-- **Model/Provider Strategy**: N/A
-- **Tooling Boundary**: 인프라/문서 변경 시 검증 스크립트 결과를 증적으로 남긴다.
-- **Memory & Context Strategy**: Plan/Task/Operation/Runbook 상호 링크를 유지한다.
-- **Guardrail Boundary**: 시크릿 평문 하드코딩 금지, fail-open 금지.
-- **Latency / Cost Budget**: N/A
 
 ## Traceability
 

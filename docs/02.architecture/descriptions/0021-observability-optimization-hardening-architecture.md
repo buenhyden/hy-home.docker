@@ -17,11 +17,12 @@ updated: 2026-09-01
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, 카탈로그 기반 확장 전략을 아키텍처 관점에서 정리한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 관측성 계층은 데이터 평면(수집/저장)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어+SSO 체인을 적용하고, 데이터 평면은 `infra_net` 내부 통신으로 유지한다.
+
 
 ## System Boundaries
 
@@ -95,7 +96,7 @@ updated: 2026-09-01
   - `scripts/hardening/check-all-hardening.sh 06-observability`
   - CI `infrastructure-hardening` job
 
-## Catalog-aligned Expansion Targets
+## Evolution
 
 - Prometheus: scrape budget + remote_write 계층화
 - Loki: label cardinality budget + retention/compactor 분리 운영

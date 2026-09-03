@@ -17,11 +17,9 @@ updated: 2026-08-10
 
 ---
 
-## Overview
+## Context
 
 이 문서는 `04-data/analytics` 티어에서 InfluxDB, ksqlDB, OpenSearch, StarRocks를 개별 분석 엔진으로 채택한 배경과 결정 사항을 기록한다. 대규모 시계열, 스트림, 로그, OLAP 데이터를 단일 범용 DB에서 처리할 때의 한계를 극복하고 각 도메인별 최적의 성능을 보장하기 위한 전략이다.
-
-## Context
 
 `hy-home.docker` 플랫폼은 스마트 홈 센서의 고밀도 시계열 데이터, 실시간 이벤트 스트림, 마이크로서비스의 대규모 로그, 그리고 복잡한 OLAP 분석 요구사항을 동시에 수용해야 한다. 기존 PostgreSQL만으로는 다음과 같은 한계가 발생한다:
 
@@ -41,11 +39,6 @@ updated: 2026-08-10
 Runtime image tags are implementation-pinned in the tracked Compose files; the
 current curated image registry is `infra/tech-stack.versions.json`.
 
-## Explicit Non-goals
-
-- 핵심 트랜잭션 데이터(사용자 정보, 시스템 설정 등)를 분석 엔진에 직접 저장하는 행위는 지양한다 (원본은 PostgreSQL에 유지).
-- 각 엔진 간의 중복된 데이터 저장 최소화.
-
 ## Consequences
 
 - **Positive**:
@@ -56,6 +49,12 @@ current curated image registry is `infra/tech-stack.versions.json`.
   - 운영 복잡성 증가 (엔진별 모니터링 및 백업 관리 필요).
   - 인프라 리소스(CPU/RAM) 추가 요구량 증가.
   - 엔진 간 데이터 동기화(CDC/Stream) 로직 구축 오버헤드.
+
+### Explicit Non-goals
+
+- 핵심 트랜잭션 데이터(사용자 정보, 시스템 설정 등)를 분석 엔진에 직접 저장하는 행위는 지양한다 (원본은 PostgreSQL에 유지).
+- 각 엔진 간의 중복된 데이터 저장 최소화.
+
 
 ## Options Considered
 

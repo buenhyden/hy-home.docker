@@ -44,12 +44,13 @@ docs/02.architecture/
 └── README.md
 ```
 
-## Current Inventory
+### Current Inventory
 
 - [`descriptions/`](descriptions/README.md): stakeholder concerns, boundaries,
   views, flows, quality scenarios, requirement disposition와 관련 결정.
 - [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
+
 
 ## How to Work in This Area
 
@@ -62,7 +63,7 @@ docs/02.architecture/
 5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고, 확인되지
    않은 아키텍처 사실을 만들지 않는다.
 
-## Documentation Standards
+### Documentation Standards
 
 - Description은 `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
   `artifact_type: architecture-description`을 일치시킨다.
@@ -70,6 +71,7 @@ docs/02.architecture/
   `artifact_type: adr`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
+
 
 ## Related Documents
 

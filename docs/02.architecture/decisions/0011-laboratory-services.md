@@ -13,11 +13,9 @@ updated: 2026-08-10
 ---
 # ADR-0011: Laboratory Services Selection and Configuration
 
-## Overview
+## Context
 
 이 문서는 `11-laboratory` 티어의 주요 관리 도구 선정에 대한 아키텍처 결정 기록이다.
-
-## Context
 
 시스템 운영 효율성을 높이기 위해 컨테이너 관리, 데이터베이스 조회, 서비스 내비게이션 환경을 구축해야 한다. 이를 위해 가볍고 신뢰할 수 있으며, Traefik 및 Keycloak과 원활하게 통합되는 도구들을 선정해야 한다.
 
@@ -39,11 +37,12 @@ updated: 2026-08-10
 - **Trade-offs**:
   - `docker.sock` 노출이 필요하므로, SSO를 통한 강력한 접근 제어가 필수적임.
 
-## Explicit Non-goals
+### Explicit Non-goals
 
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
+
 
 ## Options Considered
 

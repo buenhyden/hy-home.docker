@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0024: Tooling Hardening and HA Expansion Strategy
 
-## Overview
+## Context
 
 이 문서는 `09-tooling` 계층에 대해 즉시 적용 가능한 하드닝(공개 경로 SSO 체인 정렬, 네트워크 경계 명시, locust/k6 runtime 계약 보강, CI 게이트 도입)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
-
-## Context
 
 Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보안/품질/테스트 도구의 경계가 약하면 조직 전체 배포 안정성에 직접 영향을 준다. 동시에 카탈로그는 도구별 확장/정책 강화를 요구하고 있어, 단기 안정화와 중기 확장 분리가 필요하다.
 
@@ -36,12 +34,6 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
   - k6/locust 테스트 표준화
   - syncthing ACL/암호화/충돌 정책 강화
 
-## Explicit Non-goals
-
-- 즉시 전체 tooling stack 재플랫폼
-- 즉시 카탈로그 확장 항목의 런타임 전면 구현
-- 신규 도구 체인 도입
-
 ## Consequences
 
 - **Positive**:
@@ -52,6 +44,18 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
 - **Trade-offs**:
   - SSO 강화로 일부 기존 테스트 접근 경로 조정이 필요하다.
   - 정책 게이트 추가로 단기 PR 처리 시간이 증가할 수 있다.
+
+### Explicit Non-goals
+
+- 즉시 전체 tooling stack 재플랫폼
+- 즉시 카탈로그 확장 항목의 런타임 전면 구현
+- 신규 도구 체인 도입
+
+### Agent-related Example Decisions
+
+- Guardrail strategy: tooling 공개 라우터는 gateway+SSO 체인 필수
+- Tool gating: `check-all-hardening.sh 09-tooling`를 머지 전 필수 정책 게이트로 강제
+
 
 ## Options Considered
 
@@ -68,11 +72,6 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
   - 단기 구현 비용 절감
 - Bad:
   - 회귀 차단 능력 부족
-
-## Agent-related Example Decisions (If Applicable)
-
-- Guardrail strategy: tooling 공개 라우터는 gateway+SSO 체인 필수
-- Tool gating: `check-all-hardening.sh 09-tooling`를 머지 전 필수 정책 게이트로 강제
 
 ## Traceability
 

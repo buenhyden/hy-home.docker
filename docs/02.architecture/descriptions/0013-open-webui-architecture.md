@@ -15,17 +15,16 @@ updated: 2026-09-01
 
 ---
 
-## Open WebUI Architecture Description
-
 ## Context and Stakeholders
 
 이 문서는 Open WebUI의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름(Ollama 인터페이스, Qdrant RAG 통합), 운영 관점을 정리하는 기준 문서다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 Open WebUI acts as the presentation layer and orchestration hub for AI services. it bridges the gap between raw API backends (Ollama) and end-users, while also providing the logic for document-based RAG.
+
 
 ## System Boundaries
 
@@ -66,6 +65,14 @@ Open WebUI acts as the presentation layer and orchestration hub for AI services.
 
 Open WebUI is deployed as a Docker container within the `ai` tier. It sits behind Traefik, which provides TLS and SSO. It communicates internally via the `infra_net` with Ollama and Qdrant.
 
+### AI Agent Architecture
+
+- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.10.2-cuda`.
+- **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
+- **Memory & Context Strategy**: SQLite-based chat persistence.
+- **Guardrail Boundary**: SSO access control and GPU resource limits.
+
+
 ## Data Flow
 
 ### Data and Control Flows
@@ -86,13 +93,6 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 - **Runtime / Platform**: Docker (Linux / CUDA).
 - **Deployment Model**: `docker-compose` profile: `ai`.
 - **Operational Evidence**: `docker logs open-webui`, `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`.
-
-## AI Agent Architecture Descriptions (If Applicable)
-
-- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.10.2-cuda`.
-- **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
-- **Memory & Context Strategy**: SQLite-based chat persistence.
-- **Guardrail Boundary**: SSO access control and GPU resource limits.
 
 ## Traceability
 

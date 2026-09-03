@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy
 
-## Overview
+## Context
 
 이 문서는 `02-auth` 계층의 런타임 하드닝 방식과 인증 장애 시 fail-closed 정책을 결정한 기록이다.
-
-## Context
 
 `infra/02-auth`의 OAuth2 Proxy는 시크릿 주입을 Compose 인라인 셸로 처리하고 있었다. 이 방식은 변경 추적/재사용성이 낮고, 운영 표준(최소 권한 런타임, 명확한 엔트리포인트 계약)과 맞지 않았다. 또한 인증 장애 시 우회 허용 여부가 문서적으로 명확히 고정되지 않았다.
 
@@ -29,12 +27,6 @@ updated: 2026-09-01
 - degraded-mode는 정책/런북 절차에 의해 제한적으로만 수행하고, 사후 원복을 필수화한다.
 - Keycloak은 상태 저장 특성과 현재 리소스 기준을 고려해 `template-infra-high`를 유지한다(readonly 강제 전환하지 않음).
 
-## Explicit Non-goals
-
-- Keycloak/OAuth2 Proxy 외 인증 스택 추가 또는 교체
-- fail-open 기본 정책 도입
-- 신규 시크릿 백엔드 도입(Vault 강제 마이그레이션)
-
 ## Consequences
 
 - **Positive**:
@@ -44,6 +36,18 @@ updated: 2026-09-01
 - **Trade-offs**:
   - 엔트리포인트 스크립트 유지보수 책임이 생긴다.
   - fail-closed로 인해 IdP 장애 시 사용자 영향이 즉시 드러날 수 있다.
+
+### Explicit Non-goals
+
+- Keycloak/OAuth2 Proxy 외 인증 스택 추가 또는 교체
+- fail-open 기본 정책 도입
+- 신규 시크릿 백엔드 도입(Vault 강제 마이그레이션)
+
+### Agent-related Example Decisions
+
+- Tool gating: `scripts/hardening/check-all-hardening.sh 02-auth`를 CI 필수 게이트로 사용
+- Guardrail strategy: 시크릿 평문/우회 정책 금지
+
 
 ## Options Considered
 
@@ -61,11 +65,6 @@ updated: 2026-09-01
   - IdP 장애 시 단기 가용성은 높아질 수 있다.
 - Bad:
   - 인증 우회 리스크가 커지고 보안 경계가 무너진다.
-
-## Agent-related Example Decisions (If Applicable)
-
-- Tool gating: `scripts/hardening/check-all-hardening.sh 02-auth`를 CI 필수 게이트로 사용
-- Guardrail strategy: 시크릿 평문/우회 정책 금지
 
 ## Traceability
 

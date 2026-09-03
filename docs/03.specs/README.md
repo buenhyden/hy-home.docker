@@ -22,17 +22,6 @@ packet을 관리합니다. 각 package의 spec.md는 구현 경계와 acceptance
 - 제외: 운영 절차, 감사·조사 데이터, 과거 실행 본문, 이전 경로의 복제본과
   redirect. 해당 자료는 각 Stage의 현재 owner 또는 Git history가 소유합니다.
 
-## Package Lifecycle
-
-- Capability Spec은 구현이 current인 동안 active로 유지할 수 있으며 Plan이나
-  Task가 없어도 됩니다.
-- Change Spec은 승인 후 active가 되고 current Plan과 Task를 사용합니다.
-- Active Task는 active Spec과 active Plan을 parent로 가집니다.
-- 변경이 끝나면 outcome을 Spec과 다른 current owner에 먼저 write back하고
-  Spec을 completed로 전환합니다.
-- Terminal Plan과 Task는 current consumer가 없고 Git regular-blob recovery가
-  확인되면 삭제합니다. Body clone이나 redirect는 만들지 않습니다.
-
 ## Structure
 
 - docs/03.specs/README.md: stage index
@@ -45,7 +34,7 @@ packet을 관리합니다. 각 package의 spec.md는 구현 경계와 acceptance
 
 design.md, tests.md, singular task.md는 package role이 아닙니다.
 
-## Current Package Index
+### Current Package Index
 
 | ID | Package | Current roles |
 | --- | --- | --- |
@@ -72,14 +61,6 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0168 | [Entrypoint README Registration](./0168-entrypoint-readme-registration/spec.md) | completed outcome Spec; execution members removed at completion |
 | SPEC-0169 | [Document Lifecycle Convergence](./0169-document-lifecycle-convergence/spec.md) | active Spec with [Plan](./0169-document-lifecycle-convergence/plan.md) and [Task](./0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 
-## Role Contract
-
-| Role | Responsibility |
-| --- | --- |
-| Spec | current capability or completed change outcome |
-| Plan | approved prospective sequence, risk, rollback, completion criteria |
-| Task | actual work log, command result, review, commit, and deferral evidence |
-| Contract | registered executable interface owned by the Spec |
 
 ## How to Work in This Area
 
@@ -92,6 +73,27 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
    registered Gate profile.
 7. Terminalize the Spec and remove execution bodies only after recovery and
    inbound-consumer checks.
+
+### Package Lifecycle
+
+- Capability Spec은 구현이 current인 동안 active로 유지할 수 있으며 Plan이나
+  Task가 없어도 됩니다.
+- Change Spec은 승인 후 active가 되고 current Plan과 Task를 사용합니다.
+- Active Task는 active Spec과 active Plan을 parent로 가집니다.
+- 변경이 끝나면 outcome을 Spec과 다른 current owner에 먼저 write back하고
+  Spec을 completed로 전환합니다.
+- Terminal Plan과 Task는 current consumer가 없고 Git regular-blob recovery가
+  확인되면 삭제합니다. Body clone이나 redirect는 만들지 않습니다.
+
+### Role Contract
+
+| Role | Responsibility |
+| --- | --- |
+| Spec | current capability or completed change outcome |
+| Plan | approved prospective sequence, risk, rollback, completion criteria |
+| Task | actual work log, command result, review, commit, and deferral evidence |
+| Contract | registered executable interface owned by the Spec |
+
 
 ## Related Documents
 

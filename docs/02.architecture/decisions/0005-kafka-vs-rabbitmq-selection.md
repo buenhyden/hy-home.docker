@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 
-## Overview
+## Context
 
 이 문서는 `hy-home.docker` 플랫폼에서 Apache Kafka와 RabbitMQ를 모두 채택한 폴리글랏 메시징 전략에 대한 의사 결정 기록이다. 스트리밍 데이터와 비동기 태스크 큐의 서로 다른 요구사항을 충족하기 위한 선택이다.
-
-## Context
 
 현대적인 마이크로서비스 아키텍처는 두 가지 유형의 메시징 패턴이 혼재되어 상호작용한다:
 
@@ -36,11 +34,6 @@ updated: 2026-09-01
   - AMQP 표준을 기반으로 한 복잡한 라우팅 규칙(Exchange)이 필요한 경우.
 - **Kafka KRaft Mode**를 채택하여 Zookeeper 의존성을 제거하고 클러스터 관리를 단순화한다.
 
-## Explicit Non-goals
-
-- Redis Pub/Sub을 대체하지 않음 (Zustand/In-memory 상태 용도 제외).
-- Cloud Native Messaging (SQS/SNS) 연동 전략은 이 ADR 범위 밖.
-
 ## Consequences
 
 - **Positive**:
@@ -49,6 +42,12 @@ updated: 2026-09-01
 - **Trade-offs**:
   - 두 가지 솔루션을 모두 운영해야 하는 비용(이미지 크기, 메모리 사용량).
   - 개발자가 어떤 도구를 사용할지에 대한 가이드라인 숙지 필요.
+
+### Explicit Non-goals
+
+- Redis Pub/Sub을 대체하지 않음 (Zustand/In-memory 상태 용도 제외).
+- Cloud Native Messaging (SQS/SNS) 연동 전략은 이 ADR 범위 밖.
+
 
 ## Options Considered
 

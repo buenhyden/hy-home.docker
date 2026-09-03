@@ -15,11 +15,9 @@ updated: 2026-09-01
 
 ---
 
-## Overview
+## Context
 
 이 문서는 Open WebUI를 `hy-home.docker` 에코시스템의 기본 AI 인터페이스 및 RAG(Retrieval-Augmented Generation) 오케스트레이터로 선정함에 따른 아키텍처 결정 기록이다.
-
-## Context
 
 Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
 
@@ -31,14 +29,9 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 - **Decision 3**: Integrate with Traefik SSO middleware for auth.
 - **Decision 4**: Use Ollama as primary inference engine.
 
-## Follow-up Decisions
+## Follow-up
 
 performance.
-
-## Explicit Non-goals
-
-- Custom development of a chat UI from scratch.
-- Real-time multi-modal streaming without local model support.
 
 ## Consequences
 
@@ -49,6 +42,12 @@ performance.
 - **Trade-offs**:
   - Increased GPU/System memory consumption for the Svelte/Python backend.
   - Dependency on external vector stores for production-grade scaling.
+
+### Explicit Non-goals
+
+- Custom development of a chat UI from scratch.
+- Real-time multi-modal streaming without local model support.
+
 
 ## Options Considered
 

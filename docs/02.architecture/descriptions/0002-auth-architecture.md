@@ -21,18 +21,25 @@ updated: 2026-08-10
 
 `02-auth` 아키텍처는 사용자 식별 및 액세스 제어를 위한 두 가지 핵심 계층으로 구성된다. 중앙 IAM 역할을 수행하는 `Keycloak`과 트래픽 가로채기를 통해 SSO를 강제하는 `OAuth2 Proxy`가 긴밀하게 연동된다. 이 구조는 `Traefik`의 ForwardAuth 메커니즘을 활용하여 모든 백엔드 서비스에 대한 통일된 인증 게이트웨이를 제공한다.
 
-## Status
+### Status
 
 - **Proposed**: 2026-03-26
 - **Status**: Active (Standardized)
 - **Stakeholders**: AI Platform Team, DevOps Team, Security Team
 
-## Principles
+### Principles
 
 - **Zero-Trust Enforcement**: All requests must be explicitly authenticated.
 - **Protocol Standardization**: Use OIDC (OpenID Connect) for all internal integrations.
 - **Stateless Verification**: Leverage JWT (JSON Web Tokens) where applicable, backed by server-side sessions.
 - **High Availability**: Identity data and sessions must be resilient to container failures.
+
+### Stakeholders and Concerns
+
+요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+
+This section was added for template alignment. Existing architecture content in this existing Architecture Description remains the source of truth; no runtime behavior is changed.
+
 
 ## Components
 
@@ -62,6 +69,11 @@ graph TD
     Gateway -->|Authorized Request| InternalService["Internal Service"]
 ```
 
+### AI Agent Architecture
+
+Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
+
+
 ## Traceability
 
 - **IAM Engine**: Keycloak (Quarkus distribution) for robust OIDC/SAML support.
@@ -76,16 +88,6 @@ graph TD
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
 Refer to `docs/03.specs/0002-auth/spec.md` for detailed OIDC claims and realm structures.
-
-## AI Agent Architecture
-
-Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
-
-## Stakeholders and Concerns
-
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
-
-This section was added for template alignment. Existing architecture content in this existing Architecture Description remains the source of truth; no runtime behavior is changed.
 
 ## System Boundaries
 

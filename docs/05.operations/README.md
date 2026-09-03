@@ -73,7 +73,7 @@ owner: "@buenhyden"
 8. 문서를 추가, 이동, 삭제하면 owning domain `README.md`와 관련 inbound
    link를 함께 갱신한다.
 
-## Documentation Standards
+### Documentation Standards
 
 - 한 leaf 문서는 하나의 primary role만 수행한다.
 - Guide는 절차를 복제하지 않고 필요할 때 sibling Runbook으로 handoff한다.
@@ -82,6 +82,7 @@ owner: "@buenhyden"
 - root, catalog, domain README만 active Operations index를 발행한다.
 - 과거 경로와 실행 이력은 Git에서 복구하며 current Operations 권한으로
   사용하지 않는다.
+
 
 ## Related Documents
 

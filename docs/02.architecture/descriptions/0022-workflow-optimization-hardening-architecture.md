@@ -17,7 +17,7 @@ updated: 2026-09-01
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, health 기반 의존성, n8n 이미지 하드닝, 카탈로그 기반 확장 로드맵을 아키텍처 관점에서 정리한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -27,6 +27,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 - n8n (low-code automation)
 
 양 시스템의 관리 평면은 Traefik TLS 경계 뒤에서 표준 middleware+SSO를 공유한다.
+
 
 ## System Boundaries
 
@@ -99,7 +100,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
   - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - CI `infrastructure-hardening` job
 
-## Catalog-aligned Expansion Targets
+## Evolution
 
 - **Airflow**:
   - DAG quality gate (parse/schedule/delay) CI

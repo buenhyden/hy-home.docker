@@ -16,25 +16,27 @@ updated: 2026-08-13
 
 이 문서는 `09-tooling` 계층의 제품 요구사항을 정의한다. 이 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하며, IaC(Infrastructure as Code) 자동화, 코드 품질 분석, 그리고 대규모 성능 테스트를 지원하여 안정적이고 효율적인 개발 환경을 구축하는 것을 목표로 한다.
 
+### Problem Statement
+
+인프라 변경 사항이 수동으로 관리되어 추적이 어렵고, 코드 품질 및 성능 검증이 파편화되어 있어 시스템의 전체적인 안정성을 보장하기 위한 중앙 집중식 도구가 필요하다.
+
+
 ## Stakeholders and User Needs
 
 코드 품질 검사부터 인프라 프로비저닝 자동화까지 아우르는 통합 툴링 생태계를 구축하여, 수동 작업을 최소화하고 데이터 기반의 엔지니어링 의사결정을 지원한다.
 
-## Problem Statement
-
-인프라 변경 사항이 수동으로 관리되어 추적이 어렵고, 코드 품질 및 성능 검증이 파편화되어 있어 시스템의 전체적인 안정성을 보장하기 위한 중앙 집중식 도구가 필요하다.
-
-## Personas
+### Personas
 
 - **DevOps Engineer**: IaC 자동화를 통해 인프라를 일관되게 관리하고 배포 시간을 단축하고 싶어 한다.
 - **Developer**: 작업 중인 코드의 품질 지표를 실시간으로 확인하고, 로컬 파일 시스템을 원격지와 동기화하고 싶어 한다.
 - **QA/Performance Engineer**: 시스템의 한계 치를 측정하기 위해 대규모 부하 테스트를 쉽게 구성하고 실행하고 싶어 한다.
 
-## Key Use Cases
+### Key Use Cases
 
 - **STORY-01**: DevOps 엔지니어는 Terrakube를 통해 코드 변경 시마다 자동으로 인프라 계획(Plan)을 검토하고 배포한다.
 - **STORY-02**: 개발자는 소스 코드 푸시 시 SonarQube를 통해 버그, 취약점, 코드 스멜을 자동으로 분석받는다.
 - **STORY-03**: 성능 엔지니어는 Locust를 사용하여 분산 환경에서 수만 명의 동시 접속자를 시뮬레이션하고 병목 지점을 찾는다.
+
 
 ## Functional Requirements
 
@@ -70,14 +72,15 @@ No separately numbered solution-independent external interface requirement was i
 - **Non-goals**:
   - 범용 퍼블릭 클라우드 서비스 제공.
 
+### AI Agent Requirements
+
+N/A
+
+
 ## Risks
 
 - **Risks**: Terrakube API 장애 시 인프라 변경 차단 위험.
 - **Dependencies**: Terrakube/SonarQube/Syncthing 등 선택 서비스는 필요에 따라 `04-data` (PostgreSQL/MinIO/Valkey/InfluxDB) 및 `02-auth` (Keycloak/Dex)를 사용한다. Registry와 Terraform helper는 현재 local/bind-mount 중심이다.
-
-## AI Agent Requirements
-
-N/A
 
 ## Traceability
 

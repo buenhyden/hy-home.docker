@@ -17,11 +17,12 @@ updated: 2026-09-01
 
 이 문서는 `05-messaging` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. Kafka/RabbitMQ의 관리 트래픽 경로를 게이트웨이 표준 체인과 SSO 경계로 정렬하고, 운영 회귀를 CI 기준선 검증으로 차단하는 구조를 설명한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 메시징 계층은 데이터 평면(Kafka broker, RabbitMQ AMQP)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `infra_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
+
 
 ## System Boundaries
 
@@ -72,6 +73,15 @@ updated: 2026-09-01
 - Internal Path:
   - service-to-service traffic over `infra_net`
 
+### AI Agent Architecture
+
+- **Model/Provider Strategy**: N/A
+- **Tooling Boundary**: 메시징 변경은 하드닝/문서 추적성 검증 통과 필수
+- **Memory & Context Strategy**: Spec/Plan/Runbook/Catalog 링크를 실행 컨텍스트로 고정
+- **Guardrail Boundary**: 부동 태그, 무검증 middleware 변경, 무근거 노출 확대 금지
+- **Latency / Cost Budget**: 운영 정책에서 관리
+
+
 ## Data Flow
 
 ### Data and Control Flows
@@ -97,14 +107,6 @@ updated: 2026-09-01
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - `.github/workflows/ci-quality.yml`의 `infrastructure-hardening` job
-
-## AI Agent Architecture Descriptions (If Applicable)
-
-- **Model/Provider Strategy**: N/A
-- **Tooling Boundary**: 메시징 변경은 하드닝/문서 추적성 검증 통과 필수
-- **Memory & Context Strategy**: Spec/Plan/Runbook/Catalog 링크를 실행 컨텍스트로 고정
-- **Guardrail Boundary**: 부동 태그, 무검증 middleware 변경, 무근거 노출 확대 금지
-- **Latency / Cost Budget**: 운영 정책에서 관리
 
 ## Traceability
 

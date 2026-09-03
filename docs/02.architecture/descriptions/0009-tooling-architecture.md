@@ -13,17 +13,16 @@ updated: 2026-08-10
 ---
 # Tooling Tier Architecture Description
 
-## Tooling Tier Reference Document
-
 ## Context and Stakeholders
 
 이 문서는 `09-tooling` 계층의 참조 아키텍처와 품질 속성을 정의한다. 인프라 자동화, 품질 분석, 성능 테스트 도구들의 시스템 경계, 책임, 그리고 공통 인프라와의 연동 구조를 제공한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 `09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, MinIO, Valkey, InfluxDB 같은 data tier backend와 연동한다.
+
 
 ## System Boundaries
 

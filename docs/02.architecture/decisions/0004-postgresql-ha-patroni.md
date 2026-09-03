@@ -13,11 +13,9 @@ updated: 2026-09-01
 ---
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA
 
-## Overview
+## Context
 
 이 문서는 `hy-home.docker`의 데이터 무결성과 가동률을 보장하기 위해, 단일 PostgreSQL 인스턴스 대신 Patroni 및 Etcd 기반의 고가용성(HA) 클러스터 솔루션을 채택하는 아키텍처 결정 기록이다.
-
-## Context
 
 - 데이터 티어의 싱글 포인트 장애(SPOF) 방지 필요.
 - 자동 장애 조치(Failover) 및 복제 모니터링 자동화 요구.
@@ -31,15 +29,16 @@ updated: 2026-09-01
 - **Spilo Image**: Zalando에서 유지보수하는 검증된 PostgreSQL HA 이미지 사용.
 - **Etcd**: 강력한 일관성 저장소로서 클러스터 상태 관리.
 
-## Explicit Non-goals
-
-- 데이터베이스 샤딩 (본 ADR 범위 밖).
-- 애플리케이션 레벨의 데이터 마이그레이션 전략.
-
 ## Consequences
 
 - **Positive**: 장애 발생 시 데이터 손실 최소화 및 가동 시간 증대, 자동화된 장애 복구.
 - **Trade-offs**: 3개의 노드 구성으로 인한 리소스 소모 증가, HAProxy(pg-router)를 통한 복잡한 라우팅 설정 필요.
+
+### Explicit Non-goals
+
+- 데이터베이스 샤딩 (본 ADR 범위 밖).
+- 애플리케이션 레벨의 데이터 마이그레이션 전략.
+
 
 ## Options Considered
 

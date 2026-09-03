@@ -17,7 +17,7 @@ updated: 2026-09-01
 
 이 문서는 `09-tooling` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 관리 경로의 gateway+SSO 경계, tooling 네트워크 격리, 테스트 도구 runtime 안정성, 카탈로그 기반 확장 정책을 아키텍처 관점으로 정리한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
@@ -29,6 +29,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - Artifact/Data sync: registry/syncthing
 
 모든 공개 관리 경로는 Traefik TLS 경계 뒤에서 정책 통제되어야 한다.
+
 
 ## System Boundaries
 
@@ -102,7 +103,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
   - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - CI `infrastructure-hardening` job
 
-## Catalog-aligned Expansion Targets
+## Evolution
 
 - **terraform**: plan/apply 승인 게이트, state 잠금/백업 강화, drift 자동 탐지
 - **terrakube**: workspace 분리, 실행 권한 제어, 감사 로그 연동

@@ -42,7 +42,7 @@ docs/02.architecture/descriptions/
 └── README.md
 ```
 
-## Current Inventory
+### Current Inventory
 
 - `AD-0001`부터 `AD-0014`: 기본 tier와 서비스 아키텍처.
 - `AD-0018`부터 `AD-0026`: hardening, HA와 network 후속 아키텍처.
@@ -52,6 +52,7 @@ docs/02.architecture/descriptions/
   local-isolated readiness evidence architecture.
 - [`AD-0030`](./0030-document-lifecycle-governance.md):
   문서 lifecycle 거버넌스 아키텍처.
+
 
 ## How to Work in This Area
 
@@ -63,7 +64,7 @@ docs/02.architecture/descriptions/
    않는다.
 5. material choice는 [ADR](../decisions/README.md)에 기록한다.
 
-## Documentation Standards
+### Documentation Standards
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
   `artifact_type: architecture-description`을 일치시킨다.
@@ -71,11 +72,12 @@ docs/02.architecture/descriptions/
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.
 
-## AI Agent Guidance
+### AI Agent Guidance
 
 Agent는 기존 문서를 제자리에서 수정하고 대체·redirect 파일을 만들지 않는다.
 secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interface를
 아키텍처 사실로 기록하지 않는다.
+
 
 ## Related Documents
 

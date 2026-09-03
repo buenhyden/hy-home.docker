@@ -65,6 +65,12 @@ service names, environment variables는 원형을 유지합니다.
 > 첫 사고 발생 시 `incidents/2026/inc-####-<slug>/` 폴더를 생성하고,
 > 사고 기록과 사후 분석을 같은 incident packet 안에 저장한다.
 
+### Templates
+
+- [incident.template.md](../../99.templates/templates/operations/incident.template.md)
+- [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
+
+
 ## How to Work in This Area
 
 1. 새 사고는 `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`
@@ -76,11 +82,6 @@ service names, environment variables는 원형을 유지합니다.
 6. 사실, 가설, 조치, 후속 액션을 분리해서 기록하고 관련 증거 링크를 남깁니다.
 7. 본문은 한국어로 쓰되 timestamp, ID, command, evidence label, service name,
    environment variable은 원형을 유지합니다.
-
-## Templates
-
-- [incident.template.md](../../99.templates/templates/operations/incident.template.md)
-- [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
 
 ## Related Documents
 

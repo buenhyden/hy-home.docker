@@ -17,11 +17,12 @@ updated: 2026-09-01
 
 이 문서는 `hy-home.docker` 시스템의 통합 진입점인 Gateway 티어의 아키텍처를 정의한다. Traefik과 Nginx의 하이브리드 구성을 통해 동적 서비스 발견과 정교한 경로 라우팅을 동시에 달성하는 구조를 설명한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 현재 root compose는 Traefik을 active edge router로 포함하며, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 profile-only 보조 프록시 leaf로 유지한다.
+
 
 ## System Boundaries
 

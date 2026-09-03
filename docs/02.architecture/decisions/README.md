@@ -41,7 +41,7 @@ docs/02.architecture/decisions/
 └── README.md
 ```
 
-## Current Inventory
+### Current Inventory
 
 - `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
 - `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
@@ -54,6 +54,7 @@ docs/02.architecture/decisions/
 - [`ADR-0030`](./0030-tombstone-retirement-record.md):
   은퇴 기록으로서의 Tombstone decision.
 
+
 ## How to Work in This Area
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
@@ -63,7 +64,7 @@ docs/02.architecture/decisions/
 5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
    supersession을 명시한다.
 
-## Documentation Standards
+### Documentation Standards
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
   `artifact_type: adr`을 일치시킨다.
@@ -71,11 +72,12 @@ docs/02.architecture/decisions/
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
 - 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.
 
-## AI Agent Guidance
+### AI Agent Guidance
 
 Agent는 결정 내용을 요약하면서 alternatives, rationale, consequences 또는
 supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 ADR을 덮어쓰지
 말고 별도 승인된 ADR과 명시적 supersession을 사용한다.
+
 
 ## Related Documents
 

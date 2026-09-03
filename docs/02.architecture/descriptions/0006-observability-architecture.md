@@ -19,11 +19,12 @@ updated: 2026-09-01
 
 이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 참조 아키텍처를 정의한다. 로컬 환경에서 클라우드 수준의 관측성을 확보하기 위해 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus)을 Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope와 통합하여 구축한다.
 
-## Stakeholders and Concerns
+### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
 Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시각화하며, 장애 시 상관 분석(Correlation Analysis)을 통해 문제 해결을 가속화한다. 현재 compose는 OTLP trace ingress, Docker log discovery, Prometheus scrape/remote-write 경로를 제공하고, Loki/Tempo는 MinIO 기반 S3 백엔드 스토리지를 사용한다.
+
 
 ## System Boundaries
 
