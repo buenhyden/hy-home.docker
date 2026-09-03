@@ -63,6 +63,13 @@ Compose files, and registry references.
 - **Required automation candidates**: 13 `AEA-AUTO-*` rows are expected in `automation-candidates.md`.
 - **Closed with residual gap**: candidate has implementation evidence, but its row still names follow-up work that remains outside this generated snapshot.
 
+## Schema
+
+Each criterion row carries the exact ten-field schema named above: identifier,
+title, state, depth, disposition, evidence, owner, follow-up, source report,
+and prefix. Matrix tables below project subsets of those fields; the audit
+reports under the pack remain the field-level source.
+
 ## Snapshot Summary
 
 | Metric | Value |
@@ -82,6 +89,13 @@ Compose files, and registry references.
 | Semantic closure assertions passed | 11 |
 | Semantic closure assertion failures | 0 |
 | Generator-detected structural failures | 0 |
+
+## Inventory
+
+This package contains one generated document. Its inventory is the set of
+matrices below: implementation overview, audit report coverage, the complete
+criterion matrix, normalized and raw status counts, automation candidate
+closure, generated evidence surfaces, and residual gap signals.
 
 ## Implementation Overview Matrix
 
@@ -352,7 +366,7 @@ Compose files, and registry references.
 - Re-check the underlying audit reports before using this generated summary for prioritization.
 - Keep broader vulnerability scanning, SBOM, signing, attestation, Scorecard, and remote jobs in separate approved Stage 03/04 work.
 
-## Sources
+## Provenance
 
 - [implementation overview](../../../../docs/90.references/audits/0026-implementation-overview/README.md) - overview categories and residual cross-category gaps.
 - [automation candidates](../../../../docs/90.references/audits/0021-automation-candidates/README.md) - `AEA-AUTO-*` candidate rows and closure evidence.
@@ -361,11 +375,22 @@ Compose files, and registry references.
 - [audit criterion completeness contract](../../../../scripts/validation/audit_criterion_contract.py) - shared exact report/ID/schema/cardinality parser used by both audit scripts.
 - [audit implementation matrix generator](../../../../scripts/validation/generate-audit-implementation-matrix.sh) - generator for this snapshot.
 
-## Maintenance
+## Refresh
 
 - **Owner**: Documentation Specialist / QA Engineer.
 - **Review Cadence**: Review after audit-pack, generated-reference, or automation-candidate changes.
 - **Update Trigger**: Run the generator after changing Stage 90 implementation audit reports, generated evidence surfaces, or `AEA-AUTO-*` candidate rows.
+
+## Consumers
+
+Audit maintainers, documentation validators, and Stage 03 planning consume
+this package as consistency evidence only. It is never the audit conclusion.
+
+## Traceability
+
+- [implementation overview](../../../../docs/90.references/audits/0026-implementation-overview/README.md) - the audited overview categories
+- [automation candidates](../../../../docs/90.references/audits/0021-automation-candidates/README.md) - the audited candidate rows
+- [generator](../../../../scripts/validation/generate-audit-implementation-matrix.sh) - the script that produces this snapshot
 
 ## Related Documents
 
