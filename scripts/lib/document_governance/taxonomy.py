@@ -12,9 +12,7 @@ _YEAR_PART_PATTERN = re.compile(r"[0-9]{4}")
 _DATE_PREFIX_PATTERN = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-")
 _INCIDENT_YEAR_PATTERN = re.compile(r"[0-9]{4}")
 _INCIDENT_PACKET_PATTERN = re.compile(r"inc-[0-9]{4}-[a-z0-9][a-z0-9-]*")
-_INTERNAL_REQUIREMENT_ID_PATTERN = re.compile(
-    r"REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4}"
-)
+_INTERNAL_REQUIREMENT_ID_PATTERN = re.compile(r"REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4}")
 _REQUIREMENT_PACKAGE_PATH_PATTERN = re.compile(
     r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
@@ -218,7 +216,9 @@ def classify_path(
     """
 
     if profiles is None:
-        from scripts.lib.document_governance.registry import classify_path as classify_registered_path
+        from scripts.lib.document_governance.registry import (
+            classify_path as classify_registered_path,
+        )
 
         return classify_registered_path(path)
     candidates: list[str] = []
@@ -246,8 +246,7 @@ def find_dated_identity_parts(path: PurePosixPath) -> tuple[str, ...]:
     return tuple(
         part
         for part in path.parts
-        if _YEAR_PART_PATTERN.fullmatch(part)
-        or _DATE_PREFIX_PATTERN.match(part)
+        if _YEAR_PART_PATTERN.fullmatch(part) or _DATE_PREFIX_PATTERN.match(part)
     )
 
 
@@ -271,7 +270,9 @@ def _matches_path_identity(
         # An incident identity carries its year partition, which the packet
         # directory does not repeat: `inc-<year>-####` owns `inc-####-<slug>`.
         candidates = [artifact_id]
-        incident = re.fullmatch(r"inc-(?P<year>[0-9]{4})-(?P<number>[0-9]{4})", artifact_id)
+        incident = re.fullmatch(
+            r"inc-(?P<year>[0-9]{4})-(?P<number>[0-9]{4})", artifact_id
+        )
         if incident is not None and incident.group("year") in path.parts:
             candidates.append(f"inc-{incident.group('number')}")
         return any(
@@ -290,15 +291,12 @@ def _matches_path_identity(
         ):
             return False
         parent_match = re.compile(parent_id_pattern).fullmatch(path.parent.name)
-        artifact_match = re.compile(artifact_id_identity_pattern).fullmatch(
-            artifact_id
-        )
+        artifact_match = re.compile(artifact_id_identity_pattern).fullmatch(artifact_id)
         if parent_match is None or artifact_match is None:
             return False
         try:
-            return (
-                parent_match.group(identity_capture)
-                == artifact_match.group(identity_capture)
+            return parent_match.group(identity_capture) == artifact_match.group(
+                identity_capture
             )
         except IndexError:
             return False
@@ -341,9 +339,7 @@ def validate_stable_identity(
     elif artifact_pattern is None:
         valid_id = not artifact_id
     if not valid_id:
-        findings.append(
-            TaxonomyFinding("artifact-id-invalid", str(path), artifact_id)
-        )
+        findings.append(TaxonomyFinding("artifact-id-invalid", str(path), artifact_id))
     identity_relation = profile.get("identity_relation")
     path_matches = (
         # An inherited identity is derived from the retired document by the
@@ -363,15 +359,11 @@ def validate_stable_identity(
         or _matches_path_identity(path, artifact_id, profile)
     )
     if not path_matches:
-        findings.append(
-            TaxonomyFinding("path-id-mismatch", str(path), artifact_id)
-        )
+        findings.append(TaxonomyFinding("path-id-mismatch", str(path), artifact_id))
     incident_role = artifact_type in {"operation/incident", "operation/postmortem"}
     role_filename_valid = (
         artifact_type == "operation/incident" and path.name == "incident.md"
-    ) or (
-        artifact_type == "operation/postmortem" and path.name == "postmortem.md"
-    )
+    ) or (artifact_type == "operation/postmortem" and path.name == "postmortem.md")
     valid_incident_route = (
         incident_role and role_filename_valid and is_valid_incident_path(path)
     )
@@ -406,14 +398,18 @@ def _numeric_identity_matches(
         # validation establishes each identity shape independently and must
         # never equate their four-digit numbers.
         return "subject_number" in path_match.groupdict()
-    required = "number" if identity_relation == "direct" else next(
-        (
-            token
-            for token in ("package_number", "number")
-            if token in path_match.groupdict()
-            and token in artifact_match.groupdict()
-        ),
-        "",
+    required = (
+        "number"
+        if identity_relation == "direct"
+        else next(
+            (
+                token
+                for token in ("package_number", "number")
+                if token in path_match.groupdict()
+                and token in artifact_match.groupdict()
+            ),
+            "",
+        )
     )
     return (
         required in path_match.groupdict()
@@ -442,7 +438,7 @@ def _named_identity_pattern(pattern: str) -> re.Pattern[str]:
         rendered.append(re.escape(pattern[cursor : match.start()]))
         numeric_name, text_name = match.groups()
         if numeric_name is not None:
-            rendered.append(fr"(?P<{numeric_name}>[0-9]{{4}})")
+            rendered.append(rf"(?P<{numeric_name}>[0-9]{{4}})")
         elif text_name == "stage":
             rendered.append(
                 r"(?:00\.agent-governance|01\.requirements|02\.architecture|"

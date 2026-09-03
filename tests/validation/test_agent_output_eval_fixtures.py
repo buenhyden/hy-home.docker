@@ -64,7 +64,11 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         contract.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(CATALOG, catalog)
         shutil.copy2(CONTRACT, contract)
-        contexts = {path for fixture in load_eval_module().FIXTURES.values() for path in fixture.required_context}
+        contexts = {
+            path
+            for fixture in load_eval_module().FIXTURES.values()
+            for path in fixture.required_context
+        }
         for path in contexts:
             target = root / path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -76,8 +80,14 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         for mutation in ("missing", "empty", "oversized", "symlink"):
             with self.subTest(mutation=mutation):
                 holder, root = self.catalog_fixture()
-                with holder, contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as output:
-                    target = root / evaluator.FIXTURES["AOE-DOC-001"].required_context[0]
+                with (
+                    holder,
+                    contextlib.redirect_stdout(io.StringIO()),
+                    contextlib.redirect_stderr(io.StringIO()) as output,
+                ):
+                    target = (
+                        root / evaluator.FIXTURES["AOE-DOC-001"].required_context[0]
+                    )
                     if mutation == "missing":
                         target.unlink()
                     elif mutation == "empty":
@@ -101,7 +111,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             self.assertTrue(fixture.required_context)
             self.assertTrue(fixture.criteria)
 
-    def test_regression_catalog_has_exact_fourteen_positive_negative_cases(self) -> None:
+    def test_regression_catalog_has_exact_fourteen_positive_negative_cases(
+        self,
+    ) -> None:
         evaluator = load_eval_module()
 
         regressions = evaluator.REGRESSION_CASES
@@ -358,12 +370,8 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                     ),
                     "negative form must exercise the block grammar before exemption",
                 )
-                blocked = evaluator.score_text(
-                    fixture, evaluator._pass_text(positive)
-                )
-                allowed = evaluator.score_text(
-                    fixture, evaluator._pass_text(negative)
-                )
+                blocked = evaluator.score_text(fixture, evaluator._pass_text(positive))
+                allowed = evaluator.score_text(fixture, evaluator._pass_text(negative))
                 self.assertEqual("fail", blocked.result)
                 self.assertIn(block_code, blocked.block_codes)
                 self.assertEqual("pass", allowed.result)
@@ -581,7 +589,8 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "### AOE-DOC-001: Provider Surface Parity",
             ),
             "moved-context": lambda text: text.replace(
-                "`docs/99.templates/templates/references/research-pack.template.md`, ", ""
+                "`docs/99.templates/templates/references/research-pack.template.md`, ",
+                "",
             ),
             "calibration": lambda text: text.replace(
                 "`CAL-AOE-DOC-001`; pass threshold `0.50`",

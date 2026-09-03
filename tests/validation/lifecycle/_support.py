@@ -27,10 +27,7 @@ def run(*args: str, cwd: pathlib.Path) -> subprocess.CompletedProcess[str]:
     """Run a child while forwarding only a valid held repository descriptor."""
 
     pass_fds: tuple[int, ...] = ()
-    if (
-        len(args) > 1
-        and pathlib.Path(args[1]).resolve() == SCRIPT
-    ):
+    if len(args) > 1 and pathlib.Path(args[1]).resolve() == SCRIPT:
         pass_fds = gate_root_pass_fds(ROOT)
     return subprocess.run(
         list(args),

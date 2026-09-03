@@ -16,8 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LIBRARY = ROOT / "scripts/validation/compose-core-readiness.lib.sh"
 RUNNER = ROOT / "scripts/validation/run-compose-core-readiness.sh"
 OVERRIDE = (
-    ROOT
-    / "tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml"
+    ROOT / "tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml"
 )
 
 EXPECTED_SERVICES = {
@@ -190,9 +189,9 @@ main --scenario {scenario}
                 )
                 self.assertFalse((evidence / "readiness-verdict.json").exists())
                 verdict = json.loads(
-                    (
-                        evidence / f"readiness-verdict.{scenario}.json"
-                    ).read_text(encoding="utf-8")
+                    (evidence / f"readiness-verdict.{scenario}.json").read_text(
+                        encoding="utf-8"
+                    )
                 )
                 self.assertEqual("failed", verdict["overall_status"])
 
@@ -267,9 +266,9 @@ main --scenario {scenario}
             "host port": lambda model: model["services"]["traefik"]["ports"][0].update(
                 {"published": "80"}
             ),
-            "non-loopback binding": lambda model: model["services"]["traefik"][
-                "ports"
-            ][0].update({"host_ip": "0.0.0.0"}),
+            "non-loopback binding": lambda model: model["services"]["traefik"]["ports"][
+                0
+            ].update({"host_ip": "0.0.0.0"}),
             "external network": lambda model: model["networks"].update(
                 {"mng-pg": {"external": True}}
             ),
@@ -360,17 +359,16 @@ main --scenario {scenario}
                 self.assertNotEqual(0, result.returncode)
 
     def test_runtime_identity_is_collision_resistant_and_symlink_safe(self) -> None:
-        wrapper = (
-            ROOT / "scripts/validation/run-compose-core-readiness.sh"
-        ).read_text(encoding="utf-8")
+        wrapper = (ROOT / "scripts/validation/run-compose-core-readiness.sh").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("allocate_runtime_identity", wrapper)
         self.assertNotIn('CRR_PROJECT_NAME="${CRR_PROJECT_PREFIX}$$"', wrapper)
 
         with tempfile.TemporaryDirectory() as fake_root_raw:
             fake_root = Path(fake_root_raw)
             task_root = (
-                fake_root
-                / "_workspace/repo-support/"
+                fake_root / "_workspace/repo-support/"
                 "task-2026-07-19-compose-runtime-readiness-remediation"
             )
             task_root.mkdir(parents=True)
@@ -399,7 +397,7 @@ main --scenario {scenario}
                 "docker() { "
                 'if [ "$1" = container ] && [ "$2" = ls ]; then '
                 'case " $* " in *" -aq "*) printf stopped-id;; *) return 91;; esac; '
-                "elif [ \"$2\" = inspect ]; then printf wrong-owner; "
+                'elif [ "$2" = inspect ]; then printf wrong-owner; '
                 "else return 0; fi; }; "
                 f"crr_compose() {{ : >{marker!s}; }}; "
                 "cleanup_owned_project hyhome-crr-20260719-12345-abcd1234"
@@ -422,9 +420,7 @@ main --scenario {scenario}
         ):
             with self.subTest(label=label):
                 result = self.run_library(
-                    docker_body
-                    + compose_body
-                    + "cleanup_owned_project "
+                    docker_body + compose_body + "cleanup_owned_project "
                     "hyhome-crr-20260719-12345-abcd1234"
                 )
                 self.assertEqual(50, result.returncode)
@@ -455,9 +451,7 @@ main --scenario {scenario}
     ) -> None:
         with tempfile.TemporaryDirectory() as raw:
             evidence = Path(raw) / "evidence"
-            result = self.run_stubbed_scenario(
-                "vault-restart-recovery", evidence
-            )
+            result = self.run_stubbed_scenario("vault-restart-recovery", evidence)
 
             self.assertEqual(0, result.returncode, result.stderr)
             scenario = evidence / "readiness-verdict.vault-restart-recovery.json"
@@ -511,9 +505,7 @@ main --scenario {scenario}
         ):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as raw:
                 evidence = Path(raw) / "evidence"
-                result = self.run_stubbed_scenario(
-                    scenario, evidence, fail_at="daemon"
-                )
+                result = self.run_stubbed_scenario(scenario, evidence, fail_at="daemon")
                 self.assertEqual(10, result.returncode, result.stderr)
                 verdict = evidence / f"readiness-verdict.{scenario}.json"
                 self.assertTrue(verdict.exists())
@@ -531,9 +523,7 @@ main --scenario {scenario}
         for scenario, failure, exit_class in cases:
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as raw:
                 evidence = Path(raw) / "evidence"
-                result = self.run_stubbed_scenario(
-                    scenario, evidence, fail_at=failure
-                )
+                result = self.run_stubbed_scenario(scenario, evidence, fail_at=failure)
                 self.assertEqual(exit_class, result.returncode, result.stderr)
                 payload = json.loads(
                     (evidence / f"readiness-verdict.{scenario}.json").read_text(
@@ -570,8 +560,7 @@ main --scenario {scenario}
             with self.subTest(label=label), tempfile.TemporaryDirectory() as raw:
                 directory = Path(raw)
                 runtime = (
-                    Path("/tmp")
-                    / f"hyhome-crr-20260719-{os.getpid()}-marker01"
+                    Path("/tmp") / f"hyhome-crr-20260719-{os.getpid()}-marker01"
                     if owned_runtime
                     else directory / "runtime"
                 )
@@ -705,9 +694,9 @@ on_exit
         self,
     ) -> None:
         runner = RUNNER.read_text(encoding="utf-8")
-        runtime_body = runner.split("execute_runtime_scenario() {", maxsplit=1)[1].split(
-            "\n}\n\nmain()", maxsplit=1
-        )[0]
+        runtime_body = runner.split("execute_runtime_scenario() {", maxsplit=1)[
+            1
+        ].split("\n}\n\nmain()", maxsplit=1)[0]
         self.assertLess(
             runtime_body.index("assert_local_image_identities"),
             runtime_body.index('>"${CRR_RUNTIME_DIR}/cleanup-required"'),
@@ -795,9 +784,7 @@ on_exit
         expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
         inspection = json.dumps(
             {
-                "RepoDigests": [
-                    "example.invalid/readiness@sha256:" + "3" * 64
-                ],
+                "RepoDigests": ["example.invalid/readiness@sha256:" + "3" * 64],
                 "Id": manifest_digest,
                 "Descriptor": {
                     "digest": manifest_digest,
@@ -912,9 +899,7 @@ on_exit
 
     def test_preflight_dependency_check_does_not_require_daemon(self) -> None:
         docker_stub = (
-            "docker() { "
-            'if [ "${1-}" = compose ]; then return 0; fi; '
-            "return 55; }; "
+            'docker() { if [ "${1-}" = compose ]; then return 0; fi; return 55; }; '
         )
         preflight = self.run_library(docker_stub + "assert_docker_compose")
         self.assertEqual(0, preflight.returncode, preflight.stderr)
@@ -977,18 +962,14 @@ on_exit
                 ),
                 encoding="utf-8",
             )
-            degraded = self.run_library(
-                f"classify_readiness_status {services!s} false"
-            )
+            degraded = self.run_library(f"classify_readiness_status {services!s} false")
             self.assertEqual(0, degraded.returncode, degraded.stderr)
             self.assertEqual("degraded", degraded.stdout.strip())
 
             payload = json.loads(services.read_text(encoding="utf-8"))
             payload["vault"]["container"] = "exited"
             services.write_text(json.dumps(payload), encoding="utf-8")
-            failed = self.run_library(
-                f"classify_readiness_status {services!s} false"
-            )
+            failed = self.run_library(f"classify_readiness_status {services!s} false")
             self.assertEqual(0, failed.returncode, failed.stderr)
             self.assertEqual("failed", failed.stdout.strip())
 
@@ -1209,7 +1190,9 @@ on_exit
                 payload["producer_task"],
             )
             self.assertEqual("startup-readiness", payload["scenario"])
-            self.assertEqual("local-linked-worktree-docker-engine", payload["target_class"])
+            self.assertEqual(
+                "local-linked-worktree-docker-engine", payload["target_class"]
+            )
             self.assertEqual("ready", payload["observed_state"])
             self.assertEqual("not_applicable", payload["recovery_status"])
             self.assertEqual("passed", payload["teardown_status"])
@@ -1248,9 +1231,7 @@ on_exit
         }
         self.assertEqual(EXPECTED_SERVICES, declared_services)
         published_ports = {
-            port
-            for port in EXPECTED_PORTS
-            if f"127.0.0.1:{port}:" in text
+            port for port in EXPECTED_PORTS if f"127.0.0.1:{port}:" in text
         }
         self.assertEqual(EXPECTED_PORTS, published_ports)
 
@@ -1306,9 +1287,9 @@ on_exit
         )
 
     def test_vault_agent_output_preparation_order_and_identity(self) -> None:
-        wrapper = (
-            ROOT / "scripts/validation/run-compose-core-readiness.sh"
-        ).read_text(encoding="utf-8")
+        wrapper = (ROOT / "scripts/validation/run-compose-core-readiness.sh").read_text(
+            encoding="utf-8"
+        )
         self.assertLess(
             wrapper.index("initialize_unseal_and_configure_synthetic_vault"),
             wrapper.index("prepare_vault_agent_output_volume"),
@@ -1319,9 +1300,7 @@ on_exit
         )
 
         override = OVERRIDE.read_text(encoding="utf-8")
-        vault_agent_section = override.split(
-            "\n  vault-agent:\n", maxsplit=1
-        )[1]
+        vault_agent_section = override.split("\n  vault-agent:\n", maxsplit=1)[1]
         self.assertNotIn("    user: 0:0", vault_agent_section)
         self.assertNotIn("chmod 0777", LIBRARY.read_text(encoding="utf-8"))
 
@@ -1374,7 +1353,10 @@ on_exit
     def test_vault_commands_respect_image_entrypoint(self) -> None:
         text = OVERRIDE.read_text(encoding="utf-8")
         self.assertIn("    command: !override\n      - server\n", text)
-        self.assertIn("      - agent\n      - -config=/vault/config/vault-agent-readiness.hcl", text)
+        self.assertIn(
+            "      - agent\n      - -config=/vault/config/vault-agent-readiness.hcl",
+            text,
+        )
         self.assertNotIn("      - vault\n      - server", text)
         self.assertNotIn("      - vault\n      - agent", text)
 
@@ -1394,7 +1376,9 @@ on_exit
         self.assertIn("vault_exec_with_mounted_root_token", library)
         self.assertIn("unseal_vault_from_mounted_secret", library)
         self.assertNotIn("-e VAULT_TOKEN", library)
-        self.assertNotIn('unseal_key="$(<"${CRR_SECRET_DIR}/vault_unseal_key")"', library)
+        self.assertNotIn(
+            'unseal_key="$(<"${CRR_SECRET_DIR}/vault_unseal_key")"', library
+        )
 
 
 if __name__ == "__main__":

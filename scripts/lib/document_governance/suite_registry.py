@@ -42,7 +42,12 @@ _REJECTED_OPTIONS = frozenset({"--help"})
 COMPLETE_CAPABILITY_ARGV = MappingProxyType(
     {
         "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
-        "check-agent-governance-contract.py": ("--mode", "repository", "--section", "all"),
+        "check-agent-governance-contract.py": (
+            "--mode",
+            "repository",
+            "--section",
+            "all",
+        ),
         "check-document-links.py": ("--mode", "all"),
         "check-document-metadata.py": ("--mode", "check-changed"),
         "check-supply-chain-policy.py": ("--check",),
@@ -76,10 +81,14 @@ def validate_execution_argv(path: PurePosixPath, argv: tuple[str, ...]) -> None:
     expects_value = False
     for token in argv:
         if not token or len(token) > MAX_ARGUMENT_LENGTH:
-            raise SuiteRegistryError(f"{path}: execution argument has an unbounded length")
+            raise SuiteRegistryError(
+                f"{path}: execution argument has an unbounded length"
+            )
         if token.startswith("--"):
             if not _LONG_OPTION.match(token) or token in _REJECTED_OPTIONS:
-                raise SuiteRegistryError(f"{path}: {token!r} is not an admitted long option")
+                raise SuiteRegistryError(
+                    f"{path}: {token!r} is not an admitted long option"
+                )
             if token in seen:
                 raise SuiteRegistryError(f"{path}: {token!r} is repeated")
             seen.add(token)
@@ -144,8 +153,14 @@ def load_manifest_document(path: Path) -> object:
     """Read the execution authority through one bounded, no-follow YAML boundary."""
 
     def snapshot(value: os.stat_result) -> tuple[int, ...]:
-        return (value.st_dev, value.st_ino, value.st_mode, value.st_size,
-                value.st_mtime_ns, value.st_ctime_ns)
+        return (
+            value.st_dev,
+            value.st_ino,
+            value.st_mode,
+            value.st_size,
+            value.st_mtime_ns,
+            value.st_ctime_ns,
+        )
 
     def ancestor_snapshot(value: os.stat_result) -> tuple[int, ...]:
         # Identity, not content. What an ancestor must not do mid-read is
@@ -176,7 +191,8 @@ def load_manifest_document(path: Path) -> object:
         if not stat.S_ISREG(before.st_mode) or before.st_size > MAX_MANIFEST_BYTES:
             raise ValueError("expected a bounded regular file")
         descriptor = os.open(
-            absolute.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+            absolute.name,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
             dir_fd=parent,
         )
         descriptors.append(descriptor)
@@ -204,13 +220,19 @@ def load_manifest_document(path: Path) -> object:
         source = raw.decode("utf-8")
         depth = 0
         for event in yaml.parse(source):
-            if isinstance(event, yaml.events.AliasEvent) or getattr(event, "anchor", None):
+            if isinstance(event, yaml.events.AliasEvent) or getattr(
+                event, "anchor", None
+            ):
                 raise ValueError("YAML aliases and anchors are forbidden")
-            if isinstance(event, (yaml.events.MappingStartEvent, yaml.events.SequenceStartEvent)):
+            if isinstance(
+                event, (yaml.events.MappingStartEvent, yaml.events.SequenceStartEvent)
+            ):
                 depth += 1
                 if depth > MAX_MANIFEST_DEPTH:
                     raise ValueError("YAML depth limit exceeded")
-            elif isinstance(event, (yaml.events.MappingEndEvent, yaml.events.SequenceEndEvent)):
+            elif isinstance(
+                event, (yaml.events.MappingEndEvent, yaml.events.SequenceEndEvent)
+            ):
                 depth -= 1
         return safe_load_unique(source)
     except (OSError, UnicodeError, yaml.YAMLError, ValueError, RecursionError) as error:
@@ -267,9 +289,15 @@ def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
             )
             suites[public_suites[0]].append(row_path)
         elif "public_suites" in row:
-            raise SuiteRegistryError(f"{row_path}: only validators may declare public_suites")
-        if row.get("kind") == "library" and row_path.name != "__init__.py" and row_path.is_relative_to(
-            PurePosixPath("scripts/lib/document_governance")
+            raise SuiteRegistryError(
+                f"{row_path}: only validators may declare public_suites"
+            )
+        if (
+            row.get("kind") == "library"
+            and row_path.name != "__init__.py"
+            and row_path.is_relative_to(
+                PurePosixPath("scripts/lib/document_governance")
+            )
         ):
             modules.append(ProductionModule(row_path, tests))
 
@@ -279,13 +307,17 @@ def load(path: Path = Path("scripts/manifest.yaml")) -> SuiteRegistry:
 
     return SuiteRegistry(
         public_names=PUBLIC_SUITE_NAMES,
-        suites=tuple(PublicSuite(name, tuple(suites[name])) for name in PUBLIC_SUITE_NAMES),
+        suites=tuple(
+            PublicSuite(name, tuple(suites[name])) for name in PUBLIC_SUITE_NAMES
+        ),
         validators=tuple(validators),
         production_modules=tuple(modules),
     )
 
 
-def _paths(value: object, row_path: PurePosixPath, field: str) -> tuple[PurePosixPath, ...]:
+def _paths(
+    value: object, row_path: PurePosixPath, field: str
+) -> tuple[PurePosixPath, ...]:
     if not isinstance(value, list) or not all(
         isinstance(item, str) and item for item in value
     ):
@@ -298,7 +330,9 @@ def _paths(value: object, row_path: PurePosixPath, field: str) -> tuple[PurePosi
 
 def _suite_names(value: object, row_path: PurePosixPath) -> tuple[str, ...]:
     if not isinstance(value, list) or len(value) != 1 or not isinstance(value[0], str):
-        raise SuiteRegistryError(f"{row_path}: validator must map to exactly one public suite")
+        raise SuiteRegistryError(
+            f"{row_path}: validator must map to exactly one public suite"
+        )
     if value[0] not in PUBLIC_SUITE_NAMES:
         raise SuiteRegistryError(f"{row_path}: unknown public suite {value[0]!r}")
     return (value[0],)
@@ -314,7 +348,9 @@ def _optional_strings(
 
 def _execution_contexts(value: object, row_path: PurePosixPath) -> tuple[str, ...]:
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
-        raise SuiteRegistryError(f"{row_path}: execution_contexts must be a string list")
+        raise SuiteRegistryError(
+            f"{row_path}: execution_contexts must be a string list"
+        )
     contexts = tuple(value)
     expected_order = tuple(name for name in EXECUTION_CONTEXT_NAMES if name in contexts)
     if contexts != expected_order or len(contexts) != len(set(contexts)):

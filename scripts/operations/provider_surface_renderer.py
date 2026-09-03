@@ -109,7 +109,12 @@ def _rebase_destination(
     bracketed = destination.startswith("<") and destination.endswith(">")
     raw = destination[1:-1] if bracketed else destination
     parsed = urllib.parse.urlsplit(raw)
-    if not parsed.path or raw.startswith(("#", "/", "//")) or parsed.scheme or parsed.netloc:
+    if (
+        not parsed.path
+        or raw.startswith(("#", "/", "//"))
+        or parsed.scheme
+        or parsed.netloc
+    ):
         return destination
     target = posixpath.normpath(posixpath.join(source.parent.as_posix(), parsed.path))
     if target == ".." or target.startswith("../"):
@@ -143,7 +148,9 @@ def _yaml_scalar(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def _selection(state: AgentGovernanceState, role: RoleRecord, provider: str) -> Mapping[str, object]:
+def _selection(
+    state: AgentGovernanceState, role: RoleRecord, provider: str
+) -> Mapping[str, object]:
     profiles = state.registry.get("work_profiles")
     if not isinstance(profiles, dict):
         raise ValueError("provider work profiles are missing")
@@ -156,10 +163,16 @@ def _selection(state: AgentGovernanceState, role: RoleRecord, provider: str) -> 
 
 def _permission(state: AgentGovernanceState, role: RoleRecord, provider: str) -> str:
     permissions = state.registry.get("permissions")
-    profile = permissions.get(role.permission_profile) if isinstance(permissions, dict) else None
+    profile = (
+        permissions.get(role.permission_profile)
+        if isinstance(permissions, dict)
+        else None
+    )
     value = profile.get(provider) if isinstance(profile, dict) else None
     if not isinstance(value, str):
-        raise ValueError(f"provider permission missing: {role.permission_profile}/{provider}")
+        raise ValueError(
+            f"provider permission missing: {role.permission_profile}/{provider}"
+        )
     return value
 
 
@@ -226,7 +239,9 @@ def _codex_agent(
         "model_reasoning_effort": selection["value"],
         "sandbox_mode": _permission(state, role, "codex"),
     }
-    return "".join(f"{key} = {json.dumps(value)}\n" for key, value in values.items()).encode()
+    return "".join(
+        f"{key} = {json.dumps(value)}\n" for key, value in values.items()
+    ).encode()
 
 
 def _skill(skill: SkillRecord, output: pathlib.PurePosixPath) -> bytes:
@@ -283,7 +298,9 @@ def render_all(
         shared_path = pathlib.PurePosixPath(
             state.compatibility.agent_pattern.format(agent_id=role.agent_id)
         )
-        records.append(RenderRecord("shared", shared_path, _shared_agent(role, shared_path)))
+        records.append(
+            RenderRecord("shared", shared_path, _shared_agent(role, shared_path))
+        )
         for provider_id in SUPPORTED_PROVIDERS:
             provider = providers_by_id[provider_id]
             native_path = pathlib.PurePosixPath(
@@ -309,7 +326,9 @@ def render_all(
             if native_path in seen:
                 continue
             seen.add(native_path)
-            records.append(RenderRecord(provider_id, native_path, _skill(skill, native_path)))
+            records.append(
+                RenderRecord(provider_id, native_path, _skill(skill, native_path))
+            )
     projections = state.registry.get("projections")
     if not isinstance(projections, list):
         raise ValueError("projections must be a registered list")
@@ -319,17 +338,30 @@ def render_all(
         provider = str(projection["provider_id"])
         path = pathlib.PurePosixPath(str(projection["path"]))
         source = pathlib.PurePosixPath(str(projection["source"]))
-        title = "Shared Runtime Route" if provider == "shared" else f"{provider.title()} Runtime Route"
+        title = (
+            "Shared Runtime Route"
+            if provider == "shared"
+            else f"{provider.title()} Runtime Route"
+        )
         records.append(RenderRecord(provider, path, _pointer(title, source, path)))
     return tuple(sorted(records, key=lambda item: item.path.as_posix()))
 
 
 def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, bytes]:
-    return {pathlib.Path(item.path.as_posix()): item.content for item in render_all(root)}
+    return {
+        pathlib.Path(item.path.as_posix()): item.content for item in render_all(root)
+    }
 
 
-def expected_projection(root: pathlib.Path, provider: str) -> Mapping[pathlib.Path, bytes]:
-    aliases = {"agents-md": "shared", "shared": "shared", "claude": "claude", "codex": "codex"}
+def expected_projection(
+    root: pathlib.Path, provider: str
+) -> Mapping[pathlib.Path, bytes]:
+    aliases = {
+        "agents-md": "shared",
+        "shared": "shared",
+        "claude": "claude",
+        "codex": "codex",
+    }
     selected = aliases.get(provider)
     if selected is None:
         raise ValueError(f"unsupported provider: {provider}")
@@ -342,7 +374,9 @@ def expected_projection(root: pathlib.Path, provider: str) -> Mapping[pathlib.Pa
 
 def _managed_roots(state: AgentGovernanceState) -> tuple[pathlib.PurePosixPath, ...]:
     values = state.registry.get("generated_roots")
-    if not isinstance(values, list) or any(not isinstance(item, str) for item in values):
+    if not isinstance(values, list) or any(
+        not isinstance(item, str) for item in values
+    ):
         raise ValueError("generated_roots must be a string list")
     roots = tuple(pathlib.PurePosixPath(item) for item in values)
     if len(roots) != len(set(roots)) or any(
@@ -375,7 +409,9 @@ def _projection_namespaces(
     )
 
 
-def _current_managed_files(root: pathlib.Path, state: AgentGovernanceState) -> tuple[pathlib.PurePosixPath, ...]:
+def _current_managed_files(
+    root: pathlib.Path, state: AgentGovernanceState
+) -> tuple[pathlib.PurePosixPath, ...]:
     result: list[pathlib.PurePosixPath] = []
     for relative in _managed_roots(state):
         directory = root / relative
@@ -435,12 +471,16 @@ def _open_parent_descriptor(
     *,
     create: bool = False,
 ) -> int:
-    if relative.is_absolute() or any(part in {"", ".", ".."} for part in relative.parts):
+    if relative.is_absolute() or any(
+        part in {"", ".", ".."} for part in relative.parts
+    ):
         raise ValueError(f"unsafe projection path: {relative}")
     try:
         return _open_directory_descriptor(root, relative.parent.parts, create=create)
     except (OSError, ValueError) as error:
-        raise ValueError(f"projection parent changed or is unsafe: {relative}") from error
+        raise ValueError(
+            f"projection parent changed or is unsafe: {relative}"
+        ) from error
 
 
 def _scan_managed_directory(
@@ -451,20 +491,26 @@ def _scan_managed_directory(
     try:
         entries = tuple(os.scandir(descriptor))
     except OSError as error:
-        raise ValueError(f"managed root changed during traversal: {relative}") from error
+        raise ValueError(
+            f"managed root changed during traversal: {relative}"
+        ) from error
     for entry in sorted(entries, key=lambda item: item.name):
         child_relative = relative / entry.name
         try:
             metadata = entry.stat(follow_symlinks=False)
         except OSError as error:
-            raise ValueError(f"managed projection changed during traversal: {child_relative}") from error
+            raise ValueError(
+                f"managed projection changed during traversal: {child_relative}"
+            ) from error
         if stat.S_ISLNK(metadata.st_mode):
             raise ValueError(f"managed projection is a symlink: {child_relative}")
         if stat.S_ISDIR(metadata.st_mode):
             try:
                 child = os.open(entry.name, _directory_flags(), dir_fd=descriptor)
             except OSError as error:
-                raise ValueError(f"managed directory changed during traversal: {child_relative}") from error
+                raise ValueError(
+                    f"managed directory changed during traversal: {child_relative}"
+                ) from error
             try:
                 _scan_managed_directory(child, child_relative, result)
             finally:
@@ -538,18 +584,19 @@ def _is_codex_agent_projection(payload: bytes) -> bool:
     name = document["name"]
     if re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is None:
         return False
-    if re.fullmatch(
-        rf"Canonical .+ role for {re.escape(name)}; owned by Stage 00\.",
-        document["description"],
-        flags=re.DOTALL,
-    ) is None:
+    if (
+        re.fullmatch(
+            rf"Canonical .+ role for {re.escape(name)}; owned by Stage 00\.",
+            document["description"],
+            flags=re.DOTALL,
+        )
+        is None
+    ):
         return False
     instructions = document["developer_instructions"].splitlines()
     marker = instructions[0].encode("ascii", errors="strict") if instructions else b""
     source = _generated_marker_source(marker)
-    return source == pathlib.PurePosixPath(
-        f"docs/00.agent-governance/roles/{name}.md"
-    )
+    return source == pathlib.PurePosixPath(f"docs/00.agent-governance/roles/{name}.md")
 
 
 def _is_generated(payload: bytes) -> bool:
@@ -655,8 +702,12 @@ def _current_static_generated_files(
     return tuple(result)
 
 
-def _safe_projection_path(root: pathlib.Path, relative: pathlib.PurePosixPath) -> pathlib.Path:
-    if relative.is_absolute() or any(part in {"", ".", ".."} for part in relative.parts):
+def _safe_projection_path(
+    root: pathlib.Path, relative: pathlib.PurePosixPath
+) -> pathlib.Path:
+    if relative.is_absolute() or any(
+        part in {"", ".", ".."} for part in relative.parts
+    ):
         raise ValueError(f"unsafe projection path: {relative}")
     current = root
     for part in relative.parent.parts:
@@ -719,7 +770,9 @@ def _quarantine_owned_projection(
     try:
         parent_descriptor = _open_parent_descriptor(root.absolute(), relative)
     except ValueError as error:
-        raise ValueError(f"managed projection changed before deletion: {relative}") from error
+        raise ValueError(
+            f"managed projection changed before deletion: {relative}"
+        ) from error
     try:
         try:
             actual = _owned_projection_identity_at(parent_descriptor, relative)
@@ -727,7 +780,9 @@ def _quarantine_owned_projection(
                 relative.name, dir_fd=parent_descriptor, follow_symlinks=False
             )
         except (OSError, ValueError) as error:
-            raise ValueError(f"managed projection changed before deletion: {relative}") from error
+            raise ValueError(
+                f"managed projection changed before deletion: {relative}"
+            ) from error
         if actual != expected or (
             metadata.st_dev,
             metadata.st_ino,
@@ -745,7 +800,9 @@ def _quarantine_owned_projection(
             quarantine_metadata.st_uid != os.geteuid()
             or stat.S_IMODE(quarantine_metadata.st_mode) & 0o077
         ):
-            raise ValueError("isolated projection quarantine has unsafe ownership or mode")
+            raise ValueError(
+                "isolated projection quarantine has unsafe ownership or mode"
+            )
         quarantine = f"projection.delete-{secrets.token_hex(12)}"
         os.rename(
             relative.name,
@@ -758,9 +815,13 @@ def _quarantine_owned_projection(
             moved = _owned_projection_identity_at(quarantine_descriptor, quarantined)
             if moved != expected:
                 raise ValueError("projection identity changed during deletion")
-            confirmed = _owned_projection_identity_at(quarantine_descriptor, quarantined)
+            confirmed = _owned_projection_identity_at(
+                quarantine_descriptor, quarantined
+            )
             if confirmed != expected:
-                raise ValueError("projection identity changed after quarantine validation")
+                raise ValueError(
+                    "projection identity changed after quarantine validation"
+                )
             return pathlib.PurePosixPath(QUARANTINE_ROOT) / quarantine
         except (OSError, ValueError) as error:
             try:
@@ -793,15 +854,18 @@ def _pending_quarantine_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath
     try:
         metadata = os.fstat(descriptor)
         if metadata.st_uid != os.geteuid() or stat.S_IMODE(metadata.st_mode) & 0o077:
-            raise ValueError("isolated projection quarantine has unsafe ownership or mode")
+            raise ValueError(
+                "isolated projection quarantine has unsafe ownership or mode"
+            )
         result: list[pathlib.PurePosixPath] = []
         for entry in os.scandir(descriptor):
             entry_metadata = entry.stat(follow_symlinks=False)
-            if (
-                re.fullmatch(r"projection\.delete-[a-f0-9]{24}", entry.name) is None
-                or not stat.S_ISREG(entry_metadata.st_mode)
-            ):
-                raise ValueError("isolated projection quarantine contains unsafe content")
+            if re.fullmatch(
+                r"projection\.delete-[a-f0-9]{24}", entry.name
+            ) is None or not stat.S_ISREG(entry_metadata.st_mode):
+                raise ValueError(
+                    "isolated projection quarantine contains unsafe content"
+                )
             result.append(pathlib.PurePosixPath(QUARANTINE_ROOT) / entry.name)
         return tuple(sorted(result))
     finally:
@@ -839,7 +903,9 @@ def _cleanup_empty_directories_at(
                 f"managed directory changed during cleanup: {child_relative}"
             ) from error
         if stat.S_ISLNK(metadata.st_mode):
-            raise ValueError(f"managed root contains a replacement symlink: {child_relative}")
+            raise ValueError(
+                f"managed root contains a replacement symlink: {child_relative}"
+            )
         if not stat.S_ISDIR(metadata.st_mode):
             continue
         try:
@@ -860,7 +926,9 @@ def _cleanup_empty_directories_at(
                 f"managed directory changed during cleanup: {child_relative}"
             ) from error
         if (current.st_dev, current.st_ino) != (opened.st_dev, opened.st_ino):
-            raise ValueError(f"managed directory changed during cleanup: {child_relative}")
+            raise ValueError(
+                f"managed directory changed during cleanup: {child_relative}"
+            )
         try:
             os.rmdir(entry.name, dir_fd=descriptor)
         except OSError:
@@ -874,7 +942,9 @@ def _cleanup_empty_managed_directories(
         try:
             descriptor = _open_directory_descriptor(root, managed_root.parts)
         except OSError as error:
-            raise ValueError(f"managed root changed or is a symlink: {managed_root}") from error
+            raise ValueError(
+                f"managed root changed or is a symlink: {managed_root}"
+            ) from error
         try:
             _cleanup_empty_directories_at(descriptor, managed_root)
         finally:
@@ -932,8 +1002,7 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
     state = load_agent_governance(root)
     expected = expected_native_projection(root)
     findings = [
-        Finding(path, "pending-cleanup")
-        for path in _pending_quarantine_paths(root)
+        Finding(path, "pending-cleanup") for path in _pending_quarantine_paths(root)
     ]
     for path, content in expected.items():
         relative = pathlib.PurePosixPath(path.as_posix())
@@ -961,7 +1030,9 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
     return sorted(set(findings))
 
 
-def _atomic_write(root: pathlib.Path, relative: pathlib.PurePosixPath, content: bytes) -> None:
+def _atomic_write(
+    root: pathlib.Path, relative: pathlib.PurePosixPath, content: bytes
+) -> None:
     parent_descriptor = _open_parent_descriptor(root.absolute(), relative, create=True)
     temporary = f".{relative.name}.{secrets.token_hex(12)}"
     descriptor = -1
@@ -1020,8 +1091,7 @@ def write_native_projection(root: pathlib.Path) -> None:
             continue
         stale.append((path, _owned_projection_identity(root, path)))
     quarantined = [
-        _quarantine_owned_projection(root, path, identity)
-        for path, identity in stale
+        _quarantine_owned_projection(root, path, identity) for path, identity in stale
     ]
     if quarantined:
         rendered = ", ".join(path.as_posix() for path in quarantined)

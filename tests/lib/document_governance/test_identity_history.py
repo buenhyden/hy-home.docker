@@ -45,13 +45,25 @@ class IdentityHistoryTests(unittest.TestCase):
         root = pathlib.Path(__file__).resolve().parents[3]
         approved = _approved_migration_document(root)
         base = approved["baseline_commit"]
-        self.assertEqual("", self._git(root, "ls-tree", base, "--", "docs/99.templates/registry.json"))
+        self.assertEqual(
+            "",
+            self._git(root, "ls-tree", base, "--", "docs/99.templates/registry.json"),
+        )
         current = {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"}
-        self.assertEqual((), identity_history.validate_allocation_transition(root, load_registry(), current, base))
+        self.assertEqual(
+            (),
+            identity_history.validate_allocation_transition(
+                root, load_registry(), current, base
+            ),
+        )
         with self.assertRaises(IdentityHistoryError):
-            identity_history.validate_allocation_transition(root, load_registry(), current, "0" * 40)
+            identity_history.validate_allocation_transition(
+                root, load_registry(), current, "0" * 40
+            )
 
-    def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(self) -> None:
+    def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import registry as registry_module
 
         with tempfile.TemporaryDirectory() as directory:
@@ -70,12 +82,19 @@ class IdentityHistoryTests(unittest.TestCase):
             previous = self._git(root, "rev-parse", "HEAD").strip()
             registry = load_registry()
             current = {"docs/03.specs/0104-moved/spec.md": "SPEC-0104"}
-            self.assertEqual((), identity_history.validate_allocation_transition(root, registry, current, previous))
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root, registry, current, previous
+                ),
+            )
             spec.unlink()
             self._git(root, "add", "-u")
             self._git(root, "commit", "-qm", "retire identity")
             retired = self._git(root, "rev-parse", "HEAD").strip()
-            findings = identity_history.validate_allocation_transition(root, registry, current, retired)
+            findings = identity_history.validate_allocation_transition(
+                root, registry, current, retired
+            )
             self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
             # Derive the unallocated number rather than pin one. A literal here
             # is consumed the moment real work issues that identity, and the
@@ -85,16 +104,29 @@ class IdentityHistoryTests(unittest.TestCase):
             introduced = {
                 f"docs/03.specs/{unallocated:04d}-new/spec.md": f"SPEC-{unallocated:04d}"
             }
-            findings = identity_history.validate_allocation_transition(root, registry, introduced, retired)
-            self.assertIn("identity-allocation-not-advanced", {item.code for item in findings})
+            findings = identity_history.validate_allocation_transition(
+                root, registry, introduced, retired
+            )
+            self.assertIn(
+                "identity-allocation-not-advanced", {item.code for item in findings}
+            )
             spaces = dict(registry.identity_spaces)
             spaces["spec"] = dataclasses.replace(
                 spaces["spec"], high_water=unallocated, next_number=unallocated + 1
             )
-            advanced = dataclasses.replace(registry, identity_spaces=MappingProxyType(spaces))
-            self.assertEqual((), identity_history.validate_allocation_transition(root, advanced, introduced, retired))
+            advanced = dataclasses.replace(
+                registry, identity_spaces=MappingProxyType(spaces)
+            )
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root, advanced, introduced, retired
+                ),
+            )
 
-    def test_missing_predecessor_registry_is_not_a_generic_bootstrap_exception(self) -> None:
+    def test_missing_predecessor_registry_is_not_a_generic_bootstrap_exception(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self._git(root, "init", "-q")
@@ -110,7 +142,9 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "commit", "-qm", "delete registry")
             previous = self._git(root, "rev-parse", "HEAD").strip()
             with self.assertRaises(IdentityHistoryError):
-                identity_history.validate_allocation_transition(root, load_registry(), {}, previous)
+                identity_history.validate_allocation_transition(
+                    root, load_registry(), {}, previous
+                )
 
     def _git(self, root: pathlib.Path, *arguments: str) -> str:
         return subprocess.run(
@@ -190,8 +224,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
             tombstone = root / (
-                "docs/98.archive/tombstones/03.specs/"
-                "0153-retired-target.md"
+                "docs/98.archive/tombstones/03.specs/0153-retired-target.md"
             )
             tombstone.parent.mkdir(parents=True)
             tombstone.write_text(
@@ -241,9 +274,7 @@ class IdentityHistoryTests(unittest.TestCase):
             collect_issued_identities(root, refs=("HEAD",))
 
         history_commands = [
-            command
-            for command in commands
-            if command[:2] == ("rev-list", "--objects")
+            command for command in commands if command[:2] == ("rev-list", "--objects")
         ]
         self.assertEqual(
             [
@@ -253,13 +284,14 @@ class IdentityHistoryTests(unittest.TestCase):
             history_commands,
         )
         grep_commands = [
-            command
-            for command in commands
-            if command[:2] == ("grep", "-h")
+            command for command in commands if command[:2] == ("grep", "-h")
         ]
         self.assertTrue(grep_commands)
         self.assertTrue(
-            all(len(command) <= identity_history._GIT_GREP_BATCH_SIZE + 12 for command in grep_commands)
+            all(
+                len(command) <= identity_history._GIT_GREP_BATCH_SIZE + 12
+                for command in grep_commands
+            )
         )
         self.assertTrue(
             all(
@@ -344,7 +376,9 @@ class IdentityHistoryTests(unittest.TestCase):
         ):
             identity_history._terminate_and_reap(failed, None)
 
-    def test_history_rejects_an_issued_but_unregistered_package_child_space(self) -> None:
+    def test_history_rejects_an_issued_but_unregistered_package_child_space(
+        self,
+    ) -> None:
         registry = load_registry()
         requirement = registry.identity_spaces["requirement"]
         children = {
@@ -365,9 +399,7 @@ class IdentityHistoryTests(unittest.TestCase):
             ),
         )
         issued = IssuedIdentities(
-            MappingProxyType(
-                {"requirement.REQ-0001.FR": frozenset({4})}
-            )
+            MappingProxyType({"requirement.REQ-0001.FR": frozenset({4})})
         )
 
         self.assertIn(
@@ -427,9 +459,7 @@ if __name__ == "__main__":
 class GitPredicateTests(unittest.TestCase):
     """`git merge-base --is-ancestor` exits 1 to answer `false`, not to fail."""
 
-    def _repo_with_two_unrelated_commits(
-        self, root: pathlib.Path
-    ) -> tuple[str, str]:
+    def _repo_with_two_unrelated_commits(self, root: pathlib.Path) -> tuple[str, str]:
         def run(*args: str) -> subprocess.CompletedProcess[str]:
             return subprocess.run(
                 ["git", "-C", str(root), *args],

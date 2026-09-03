@@ -324,9 +324,16 @@ def _manifest_coverage_findings(
 
     # Coverage is historical. Current required claim paths are independently
     # checked by _active_claim_findings, including missing/nonregular files.
-    expected.update((*PHANTOM_CLAIM_PATHS, SAMPLE_SERVICE_PATH,
-                     OPENSEARCH_DUPLICATE_PATH, OPENSEARCH_RETAINED_PATH,
-                     SEAWEEDFS_DUPLICATE_PATH, SEAWEEDFS_RETAINED_PATH))
+    expected.update(
+        (
+            *PHANTOM_CLAIM_PATHS,
+            SAMPLE_SERVICE_PATH,
+            OPENSEARCH_DUPLICATE_PATH,
+            OPENSEARCH_RETAINED_PATH,
+            SEAWEEDFS_DUPLICATE_PATH,
+            SEAWEEDFS_RETAINED_PATH,
+        )
+    )
     missing = sorted(expected - rows.keys())
     return [
         Finding(

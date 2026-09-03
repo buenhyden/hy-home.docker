@@ -153,8 +153,7 @@ class OperationsAuthorityTests(unittest.TestCase):
 
     def test_current_drift_guides_exist_at_canonical_catalog_paths(self) -> None:
         expected = (
-            "docs/05.operations/catalog/00-workspace/"
-            "0003-env-key-comparison/guide.md",
+            "docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md",
             "docs/05.operations/catalog/00-workspace/"
             "0010-sensitive-env-vars-comparison/guide.md",
         )
@@ -174,9 +173,7 @@ class OperationsAuthorityTests(unittest.TestCase):
                 pathlib.PurePosixPath(
                     "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                 ),
-                pathlib.PurePosixPath(
-                    "scripts/validation/check-operations-catalog.py"
-                ),
+                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
             ),
             operations.validators,
         )
@@ -186,8 +183,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         rehearsal = next(
             row
             for row in manifest["files"]
-            if row["path"]
-            == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+            if row["path"] == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
         )
         self.assertEqual("validator", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])

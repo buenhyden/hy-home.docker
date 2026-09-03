@@ -30,6 +30,7 @@ from scripts.lib.document_governance.metadata.profile import (
     Record,
 )
 
+
 def _run_git(
     root: pathlib.Path,
     args: Sequence[str],
@@ -52,7 +53,9 @@ def _run_git(
 
 def _decode_git_paths(output: bytes, operation: str) -> list[pathlib.Path]:
     try:
-        return [pathlib.Path(item.decode("utf-8")) for item in output.split(b"\0") if item]
+        return [
+            pathlib.Path(item.decode("utf-8")) for item in output.split(b"\0") if item
+        ]
     except UnicodeDecodeError:
         raise ProfileError(
             f"cannot establish local Git snapshot: {operation} returned a non-UTF-8 path"
@@ -67,10 +70,14 @@ def _require_git_worktree(root: pathlib.Path) -> None:
         text=True,
     )
     if result.returncode != 0 or result.stdout.strip() != "true":
-        raise ProfileError("cannot establish local Git snapshot: --root is not a Git worktree")
+        raise ProfileError(
+            "cannot establish local Git snapshot: --root is not a Git worktree"
+        )
 
 
-def _tracked_markdown(root: pathlib.Path, *, require_git: bool = False) -> list[pathlib.Path]:
+def _tracked_markdown(
+    root: pathlib.Path, *, require_git: bool = False
+) -> list[pathlib.Path]:
     try:
         result = _run_git(
             root,
@@ -84,9 +91,13 @@ def _tracked_markdown(root: pathlib.Path, *, require_git: bool = False) -> list[
     if result is not None and result.returncode == 0:
         paths = _decode_git_paths(result.stdout, "tracked Markdown discovery")
     elif require_git:
-        raise ProfileError("cannot establish local Git snapshot: tracked Markdown discovery failed")
+        raise ProfileError(
+            "cannot establish local Git snapshot: tracked Markdown discovery failed"
+        )
     else:
-        paths = [path.relative_to(root) for path in root.rglob("*.md") if path.is_file()]
+        paths = [
+            path.relative_to(root) for path in root.rglob("*.md") if path.is_file()
+        ]
     return sorted(
         {
             path
@@ -105,11 +116,15 @@ def _tracked_repository_markdown(root: pathlib.Path) -> list[pathlib.Path]:
         operation="repository contract Markdown discovery",
     )
     if result.returncode != 0:
-        raise ProfileError("cannot establish local Git snapshot: repository contract Markdown discovery failed")
+        raise ProfileError(
+            "cannot establish local Git snapshot: repository contract Markdown discovery failed"
+        )
     return sorted(
         {
             path
-            for path in _decode_git_paths(result.stdout, "repository contract Markdown discovery")
+            for path in _decode_git_paths(
+                result.stdout, "repository contract Markdown discovery"
+            )
             if (root / path).is_file()
         },
         key=lambda path: path.as_posix(),
@@ -123,19 +138,22 @@ def _tracked_machine_templates(root: pathlib.Path) -> list[pathlib.Path]:
         operation="machine template discovery",
     )
     if result.returncode != 0:
-        raise ProfileError("cannot establish local Git snapshot: machine template discovery failed")
+        raise ProfileError(
+            "cannot establish local Git snapshot: machine template discovery failed"
+        )
     return sorted(
         {
             path
             for path in _decode_git_paths(result.stdout, "machine template discovery")
-            if _machine_template_path(path)
-            and (root / path).is_file()
+            if _machine_template_path(path) and (root / path).is_file()
         },
         key=lambda path: path.as_posix(),
     )
 
 
-def _registry_string_arrays(value: object, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], list[str]]]:
+def _registry_string_arrays(
+    value: object, path: tuple[str, ...] = ()
+) -> list[tuple[tuple[str, ...], list[str]]]:
     arrays: list[tuple[tuple[str, ...], list[str]]] = []
     if isinstance(value, dict):
         for key, member in value.items():
@@ -160,10 +178,10 @@ def _fenced_yaml_string_arrays(text: str) -> list[tuple[tuple[str, ...], list[st
 
 _PRD_PATH = re.compile(r"docs/01\.requirements/prd-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
 _SRS_PATH = re.compile(r"docs/01\.requirements/srs-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
-_IFR_PATH = re.compile(r"docs/01\.requirements/interface-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
-_LEVEL_TWO_SECTION = re.compile(
-    r"(?ms)^## (?P<name>[^\n]+)\n(?P<body>.*?)(?=^## |\Z)"
+_IFR_PATH = re.compile(
+    r"docs/01\.requirements/interface-(?P<number>[0-9]{4})-[a-z0-9-]+\.md"
 )
+_LEVEL_TWO_SECTION = re.compile(r"(?ms)^## (?P<name>[^\n]+)\n(?P<body>.*?)(?=^## |\Z)")
 _REQUIREMENT_LIST_PREFIX = r"[ \t]*(?:(?:[-*+]\s+)|(?:[0-9]+[.)]\s+))"
 _REQUIREMENT_BOLD_ITEM = re.compile(
     rf"^{_REQUIREMENT_LIST_PREFIX}\*\*(?P<label>[^*]+)\*\*:"
@@ -229,9 +247,9 @@ def validate_requirement_internal_id_contract(
     """Validate typed requirement IDs and references across Stage 01 roles."""
 
     path_text = path.as_posix()
-    selected: tuple[
-        re.Pattern[str], str, Mapping[str, str], Sequence[str]
-    ] | None = None
+    selected: tuple[re.Pattern[str], str, Mapping[str, str], Sequence[str]] | None = (
+        None
+    )
     match: re.Match[str] | None = None
     for candidate in _REQUIREMENT_INTERNAL_CONTRACTS:
         candidate_match = candidate[0].fullmatch(path_text)
@@ -293,8 +311,7 @@ def validate_requirement_internal_id_contract(
                     )
                 )
     token_counts = collections.Counter(
-        token.group("identity")
-        for token in _REQUIREMENT_INTERNAL_TOKEN.finditer(text)
+        token.group("identity") for token in _REQUIREMENT_INTERNAL_TOKEN.finditer(text)
     )
     for identity in sorted(token_counts):
         canonical = _REQUIREMENT_CANONICAL_INTERNAL.fullmatch(identity)
@@ -310,11 +327,7 @@ def validate_requirement_internal_id_contract(
         allowed_kind = canonical is not None and (
             prefix == "PRD" or canonical.group("kind") == "R"
         )
-        if (
-            canonical is None
-            or canonical.group("owner") != owner
-            or not allowed_kind
-        ):
+        if canonical is None or canonical.group("owner") != owner or not allowed_kind:
             findings.append(
                 Finding(
                     path_text,
@@ -344,13 +357,25 @@ def validate_requirement_internal_id_contract(
     return sorted(set(findings))
 
 
-def _reference_delegation_findings(root: pathlib.Path, profiles: dict[str, object]) -> list[Finding]:
+def _reference_delegation_findings(
+    root: pathlib.Path, profiles: dict[str, object]
+) -> list[Finding]:
     registry = profiles.get("_registry")
-    if not isinstance(registry, DocumentRegistry) or not (root / "docs/90.references").exists():
+    if (
+        not isinstance(registry, DocumentRegistry)
+        or not (root / "docs/90.references").exists()
+    ):
         return []
-    from scripts.lib.document_governance.references import delegated_member_paths, generated_reference_owners, validate_current_references
+    from scripts.lib.document_governance.references import (
+        delegated_member_paths,
+        generated_reference_owners,
+        validate_current_references,
+    )
 
-    rule = {"kind": "delegate-reference-members", "owner": "scripts/lib/document_governance/references.py"}
+    rule = {
+        "kind": "delegate-reference-members",
+        "owner": "scripts/lib/document_governance/references.py",
+    }
     if rule not in registry.profiles["readme"].get("exceptions", ()):
         raise ProfileError("Reference member delegation is not registered")
     try:
@@ -358,22 +383,35 @@ def _reference_delegation_findings(root: pathlib.Path, profiles: dict[str, objec
         findings = validate_current_references(root)
         profiles["_delegated_reference_paths"] = delegated_member_paths(root)
     except ValueError as error:
-        raise ProfileError(f"Reference delegation cannot be established: {error}") from error
+        raise ProfileError(
+            f"Reference delegation cannot be established: {error}"
+        ) from error
     return [Finding(item.path.as_posix(), item.code, item.detail) for item in findings]
 
 
-def _allocation_findings(root: pathlib.Path, profiles: dict[str, object], records: Sequence[Record], base_ref: str | None) -> list[Finding]:
+def _allocation_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    records: Sequence[Record],
+    base_ref: str | None,
+) -> list[Finding]:
     registry = profiles.get("_registry")
     if not isinstance(registry, DocumentRegistry):
         return []
     try:
         base = resolve_lifecycle_base(root, base_ref)
-        findings = validate_allocation_transition(root, registry, {
-            record.path.as_posix(): record.metadata["artifact_id"]
-            for record in records
-            if isinstance(record.metadata.get("artifact_id"), str)
-            and record.path.as_posix() not in profiles.get("_delegated_reference_paths", ())
-        }, base)
+        findings = validate_allocation_transition(
+            root,
+            registry,
+            {
+                record.path.as_posix(): record.metadata["artifact_id"]
+                for record in records
+                if isinstance(record.metadata.get("artifact_id"), str)
+                and record.path.as_posix()
+                not in profiles.get("_delegated_reference_paths", ())
+            },
+            base,
+        )
     except (IdentityHistoryError, SpecPackageError) as error:
         raise ProfileError(str(error)) from error
     return [Finding(item.path, item.code, item.message) for item in findings]

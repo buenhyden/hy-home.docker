@@ -34,9 +34,7 @@ def current_role_paths(root: pathlib.Path = ROOT) -> tuple[pathlib.PurePosixPath
     return tuple(
         pathlib.PurePosixPath(path.relative_to(root).as_posix())
         for path in sorted(
-            (root / "docs/05.operations/catalog").glob(
-                "*/[0-9][0-9][0-9][0-9]-*/*.md"
-            )
+            (root / "docs/05.operations/catalog").glob("*/[0-9][0-9][0-9][0-9]-*/*.md")
         )
         if path.name in {"guide.md", "policy.md", "runbook.md"}
     )
@@ -74,7 +72,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         self.addCleanup(context.close)
         return context, root
 
-    def test_current_operations_tree_is_self_authoritative_and_archive_free(self) -> None:
+    def test_current_operations_tree_is_self_authoritative_and_archive_free(
+        self,
+    ) -> None:
         self.assertEqual(set(), finding_codes())
         context, root = self._fixture()
         with context:
@@ -84,14 +84,18 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_prefixed_subject_is_rejected(self) -> None:
         context, root = self._fixture()
         with context:
-            subject = next((root / "docs/05.operations/catalog/00-workspace").glob("0001-*"))
+            subject = next(
+                (root / "docs/05.operations/catalog/00-workspace").glob("0001-*")
+            )
             subject.rename(subject.with_name(f"ops-{subject.name}"))
             self.assertIn("subject-path-invalid", finding_codes(root))
 
     def test_invalid_domain_route_is_rejected(self) -> None:
         context, root = self._fixture()
         with context:
-            subject = next((root / "docs/05.operations/catalog/00-workspace").glob("0001-*"))
+            subject = next(
+                (root / "docs/05.operations/catalog/00-workspace").glob("0001-*")
+            )
             invalid_domain = root / "docs/05.operations/catalog/workspace"
             invalid_domain.mkdir()
             (invalid_domain / "README.md").write_text("invalid\n", encoding="utf-8")
@@ -117,7 +121,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 encoding="utf-8",
             )
             codes = finding_codes(root)
-            self.assertTrue({"role-identity-invalid", "role-identity-duplicate"} <= codes)
+            self.assertTrue(
+                {"role-identity-invalid", "role-identity-duplicate"} <= codes
+            )
 
     def test_release_and_parallel_role_roots_are_rejected(self) -> None:
         for retired in ("releases", "guides"):
@@ -153,16 +159,24 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 with context:
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
-                    guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+                    guide = next(
+                        item
+                        for item in registry["profiles"]
+                        if item["profile_id"] == "guide"
+                    )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
-                    self.assertIn("registry-operations-profile-invalid", finding_codes(root))
+                    self.assertIn(
+                        "registry-operations-profile-invalid", finding_codes(root)
+                    )
 
         context, root = self._fixture()
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+            guide = next(
+                item for item in registry["profiles"] if item["profile_id"] == "guide"
+            )
             registry["profiles"].append(dict(guide))
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("registry-profile-duplicate", finding_codes(root))
@@ -185,17 +199,23 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+            guide = next(
+                item for item in registry["profiles"] if item["profile_id"] == "guide"
+            )
             guide["required_sections"].append("New Contract")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("role-sections-invalid", finding_codes(root))
 
-    def test_registry_schema_valid_optional_changes_do_not_require_a_python_mirror(self) -> None:
+    def test_registry_schema_valid_optional_changes_do_not_require_a_python_mirror(
+        self,
+    ) -> None:
         context, root = self._fixture()
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(item for item in registry["profiles"] if item["profile_id"] == "guide")
+            guide = next(
+                item for item in registry["profiles"] if item["profile_id"] == "guide"
+            )
             guide["optional_frontmatter"].append("generated_by")
             guide["optional_sections"].append("Operator Notes")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -270,7 +290,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
                     guide = next(
-                        item for item in registry["profiles"] if item["profile_id"] == "guide"
+                        item
+                        for item in registry["profiles"]
+                        if item["profile_id"] == "guide"
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -283,7 +305,11 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 "docs/05.operations/incidents/{year:4}/incident-{number:4}-{slug}.md",
                 "incident-path-profile-mismatch",
             ),
-            ("identity_relation", "subject-member", "incident-identity-relation-invalid"),
+            (
+                "identity_relation",
+                "subject-member",
+                "incident-identity-relation-invalid",
+            ),
         )
         for key, value, expected in mutations:
             with self.subTest(key=key):
@@ -293,7 +319,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
                     incident = next(
-                        item for item in registry["profiles"] if item["profile_id"] == "incident"
+                        item
+                        for item in registry["profiles"]
+                        if item["profile_id"] == "incident"
                     )
                     incident[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -305,26 +333,32 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
             profiles = {item["profile_id"]: item for item in registry["profiles"]}
-            profiles["policy"]["required_sections"] = list(profiles["guide"]["required_sections"])
+            profiles["policy"]["required_sections"] = list(
+                profiles["guide"]["required_sections"]
+            )
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("registry-role-purpose-duplicate", finding_codes(root))
 
     def test_role_profile_and_registry_grounded_sections_are_required(self) -> None:
         context, root = self._fixture()
         with context:
-            role = root / next(
-                path for path in self.role_paths
-            )
+            role = root / next(path for path in self.role_paths)
             text = role.read_text(encoding="utf-8")
-            role.write_text(text.split("---\n", 2)[0] + "---\n" + text.split("---\n", 2)[1] + "---\n# Arbitrary\n", encoding="utf-8")
+            role.write_text(
+                text.split("---\n", 2)[0]
+                + "---\n"
+                + text.split("---\n", 2)[1]
+                + "---\n# Arbitrary\n",
+                encoding="utf-8",
+            )
             self.assertIn("role-sections-invalid", finding_codes(root))
 
-    def test_role_profile_id_is_required_even_when_all_other_metadata_is_valid(self) -> None:
+    def test_role_profile_id_is_required_even_when_all_other_metadata_is_valid(
+        self,
+    ) -> None:
         context, root = self._fixture()
         with context:
-            role = root / next(
-                path for path in self.role_paths
-            )
+            role = root / next(path for path in self.role_paths)
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
             role.write_text(
@@ -336,9 +370,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_role_frontmatter_rejects_duplicate_same_value_profile_id(self) -> None:
         context, root = self._fixture()
         with context:
-            role = root / next(
-                path for path in self.role_paths
-            )
+            role = root / next(path for path in self.role_paths)
             role_name = role.stem
             text = role.read_text(encoding="utf-8")
             role.write_text(
@@ -363,7 +395,9 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         body: str | None = None,
     ) -> pathlib.Path:
         registry = json.loads((root / REGISTRY_PATH).read_text(encoding="utf-8"))
-        profile = next(item for item in registry["profiles"] if item["profile_id"] == "incident")
+        profile = next(
+            item for item in registry["profiles"] if item["profile_id"] == "incident"
+        )
         packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)
         metadata = (
@@ -372,9 +406,13 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             "created: 2026-08-23\nupdated: 2026-08-23\n"
             f"occurred_at: {occurred_at}\nresolved_at: {resolved_at}\n---\n"
         )
-        sections = body or "\n".join(f"## {section}\nEvidence." for section in profile["required_sections"])
+        sections = body or "\n".join(
+            f"## {section}\nEvidence." for section in profile["required_sections"]
+        )
         path = packet / "incident.md"
-        path.write_text(metadata + "# Fixture Incident\n\n" + sections + "\n", encoding="utf-8")
+        path.write_text(
+            metadata + "# Fixture Incident\n\n" + sections + "\n", encoding="utf-8"
+        )
         return path
 
     def test_incident_body_identity_year_and_date_relations_are_validated(self) -> None:
@@ -383,7 +421,10 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             ({"year": "2025"}, "incident-year-date-invalid"),
             ({"artifact_id": "inc-0002"}, "incident-identity-invalid"),
             (
-                {"occurred_at": "2026-08-23T02:00:00Z", "resolved_at": "2026-08-23T01:00:00Z"},
+                {
+                    "occurred_at": "2026-08-23T02:00:00Z",
+                    "resolved_at": "2026-08-23T01:00:00Z",
+                },
                 "incident-date-order-invalid",
             ),
             ({"status": "active"}, "incident-status-invalid"),
@@ -410,7 +451,12 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     target.write_text("invalid", encoding="utf-8")
                     codes = finding_codes(root)
                     self.assertTrue(
-                        codes & {"incident-year-invalid", "incident-packet-invalid", "incident-roles-invalid"}
+                        codes
+                        & {
+                            "incident-year-invalid",
+                            "incident-packet-invalid",
+                            "incident-roles-invalid",
+                        }
                     )
 
     def test_role_symlink_and_nonregular_inputs_are_rejected(self) -> None:
@@ -472,15 +518,18 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         ):
             self.assertIn("catalog-bounds", finding_codes())
 
-    def test_operations_root_domain_and_subject_enumeration_are_independently_bounded(self) -> None:
+    def test_operations_root_domain_and_subject_enumeration_are_independently_bounded(
+        self,
+    ) -> None:
         mutations = (
             ("MAX_OPERATIONS_ROOT_ENTRIES", "operations-root-bounds"),
             ("MAX_DOMAIN_ENTRIES", "domain-bounds"),
             ("MAX_SUBJECT_ENTRIES", "subject-bounds"),
         )
         for constant, expected in mutations:
-            with self.subTest(constant=constant), mock.patch.object(
-                operations_catalog, constant, 1
+            with (
+                self.subTest(constant=constant),
+                mock.patch.object(operations_catalog, constant, 1),
             ):
                 self.assertIn(expected, finding_codes())
 
@@ -647,7 +696,11 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-        subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+        subprocess.run(
+            ["git", "config", "user.email", "test@example.invalid"],
+            cwd=root,
+            check=True,
+        )
         subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
         return directory
 
@@ -656,8 +709,8 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
             root = pathlib.Path(directory)
             alias = (
                 "alias.noisy=!python3 -c 'import sys;"
-                "sys.stdout.write(\"o\"*65536);sys.stdout.flush();"
-                "sys.stderr.write(\"e\"*65536);sys.stderr.flush()'"
+                'sys.stdout.write("o"*65536);sys.stdout.flush();'
+                'sys.stderr.write("e"*65536);sys.stderr.flush()\''
             )
             result = _run_git_bounded(
                 root,
@@ -693,7 +746,9 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
             with self.assertRaisesRegex(OperationsAuthorityError, "stderr"):
                 _run_git_bounded(root, ["show", "HEAD:missing"], max_stderr=8)
 
-    def test_active_scan_allows_deletion_but_rejects_nonregular_tracked_paths(self) -> None:
+    def test_active_scan_allows_deletion_but_rejects_nonregular_tracked_paths(
+        self,
+    ) -> None:
         mutations = ("broken-symlink", "directory")
         for mutation in mutations:
             with self.subTest(mutation=mutation), self._repo() as directory:
@@ -701,7 +756,9 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
                 path = root / "tracked.md"
                 path.write_text("tracked", encoding="utf-8")
                 subprocess.run(["git", "add", "tracked.md"], cwd=root, check=True)
-                subprocess.run(["git", "commit", "-qm", "fixture"], cwd=root, check=True)
+                subprocess.run(
+                    ["git", "commit", "-qm", "fixture"], cwd=root, check=True
+                )
                 path.unlink()
                 if mutation == "broken-symlink":
                     path.symlink_to("missing.md")

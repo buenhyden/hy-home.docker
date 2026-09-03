@@ -48,9 +48,7 @@ class LivePublicGateContractTests(unittest.TestCase):
 
         plan = ci_gate_runner.build_public_validation_plan(
             self.gates,
-            ci_gate_contract.public_root_gate_ids(
-                self.public, self.public.suite_names
-            ),
+            ci_gate_contract.public_root_gate_ids(self.public, self.public.suite_names),
             self.manifest,
             self.public.suite_names,
             ci_gate_runner.ExecutionContext.LOCAL,
@@ -305,15 +303,24 @@ class LivePublicGateMutationTests(unittest.TestCase):
         original = yaml.safe_load(contract._read_surface(ROOT, path))
         bootstrap = "python3 -m pip install -r scripts/requirements.txt"
         self.assertEqual([], contract._workflow_findings(ROOT))
-        for job_id, command in (("validation-changed", contract.CHANGED_COMMAND),
-                                ("validation-full", contract.FULL_COMMAND)):
+        for job_id, command in (
+            ("validation-changed", contract.CHANGED_COMMAND),
+            ("validation-full", contract.FULL_COMMAND),
+        ):
             cases = (
-                [command], [bootstrap], [bootstrap, bootstrap, command],
-                [command, bootstrap], [bootstrap, command, command],
+                [command],
+                [bootstrap],
+                [bootstrap, bootstrap, command],
+                [command, bootstrap],
+                [bootstrap, command, command],
                 ["python3 -m pip install pyyaml", command],
                 [bootstrap + " --upgrade", command],
                 [bootstrap + "\necho extra", command],
-                [bootstrap, command, "python3 scripts/validation/check-document-links.py --mode all"],
+                [
+                    bootstrap,
+                    command,
+                    "python3 scripts/validation/check-document-links.py --mode all",
+                ],
                 [bootstrap, "echo extra", command],
             )
             for runs in cases:
@@ -323,7 +330,11 @@ class LivePublicGateMutationTests(unittest.TestCase):
                     document["jobs"][job_id]["steps"] = [
                         step for step in steps if "run" not in step
                     ] + [{"run": run} for run in runs]
-                    with mock.patch.object(contract, "_read_surface", return_value=yaml.safe_dump(document, sort_keys=False)):
+                    with mock.patch.object(
+                        contract,
+                        "_read_surface",
+                        return_value=yaml.safe_dump(document, sort_keys=False),
+                    ):
                         findings = contract._workflow_findings(ROOT)
                     self.assertEqual(
                         [("public-workflow-route", f"{path}#{job_id}")],
@@ -333,10 +344,13 @@ class LivePublicGateMutationTests(unittest.TestCase):
     def test_advisory_mode_cannot_downgrade_findings(self) -> None:
         finding = contract.DeltaFinding("test", "surface", "failure")
         for mode in ("advisory", "blocking"):
-            with self.subTest(mode=mode), mock.patch.object(
-                contract,
-                "validate_repository",
-                return_value=(finding,),
+            with (
+                self.subTest(mode=mode),
+                mock.patch.object(
+                    contract,
+                    "validate_repository",
+                    return_value=(finding,),
+                ),
             ):
                 stderr = io.StringIO()
                 with contextlib.redirect_stderr(stderr):

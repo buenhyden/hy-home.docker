@@ -267,14 +267,9 @@ def complete_registry() -> contract.GateRegistry:
 
     roots_by_profile = {
         "ci": tuple(REQUIRED_JOB_ROOTS.values()),
-        **{
-            profile.profile: profile.root_gate_ids
-            for profile in PROFILE_ROOTS
-        },
+        **{profile.profile: profile.root_gate_ids for profile in PROFILE_ROOTS},
     }
-    reached_by_profile: dict[str, set[str]] = {
-        gate_id: set() for gate_id in nodes
-    }
+    reached_by_profile: dict[str, set[str]] = {gate_id: set() for gate_id in nodes}
     for profile, roots in roots_by_profile.items():
         pending = list(reversed(roots))
         seen: set[str] = set()
@@ -312,13 +307,9 @@ def registry(
     default = complete_registry()
     return contract.GateRegistry(
         nodes=nodes if nodes is not None else default.nodes,
-        job_roots=(
-            job_roots if job_roots is not None else default.job_roots
-        ),
+        job_roots=(job_roots if job_roots is not None else default.job_roots),
         profile_roots=(
-            profile_roots
-            if profile_roots is not None
-            else default.profile_roots
+            profile_roots if profile_roots is not None else default.profile_roots
         ),
     )
 
@@ -331,7 +322,9 @@ class CiGateContractTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
 
-    def test_operations_catalog_current_authority_is_an_exact_required_ci_leaf(self) -> None:
+    def test_operations_catalog_current_authority_is_an_exact_required_ci_leaf(
+        self,
+    ) -> None:
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT),
             ".github/workflow-contract.yml",
@@ -472,10 +465,10 @@ class CiGateContractTests(unittest.TestCase):
         invalid_nodes = (
             (
                 {
-                "gate_id": "aggregate.invalid",
-                "kind": "aggregate",
-                "children": [],
-                "entrypoint": "scripts/check.py",
+                    "gate_id": "aggregate.invalid",
+                    "kind": "aggregate",
+                    "children": [],
+                    "entrypoint": "scripts/check.py",
                 },
                 "ci-gate-kind-fields",
             ),
@@ -485,16 +478,16 @@ class CiGateContractTests(unittest.TestCase):
             ),
             (
                 {
-                "gate_id": "setup.invalid",
-                "kind": "setup",
-                "suite_key": "invalid",
-                "entrypoint": "scripts/check.py",
-                "argv": [],
-                "cwd": ".",
-                "allowed_env_keys": [],
-                "timeout_minutes": 10,
-                "profiles": ["ci"],
-                "opaque": False,
+                    "gate_id": "setup.invalid",
+                    "kind": "setup",
+                    "suite_key": "invalid",
+                    "entrypoint": "scripts/check.py",
+                    "argv": [],
+                    "cwd": ".",
+                    "allowed_env_keys": [],
+                    "timeout_minutes": 10,
+                    "profiles": ["ci"],
+                    "opaque": False,
                 },
                 "ci-gate-kind-fields",
             ),
@@ -712,9 +705,7 @@ class CiGateContractTests(unittest.TestCase):
             ),
             (
                 "missing-workflow-job-id",
-                dataclasses.replace(
-                    candidate.job_roots[0], job_id="not-in-workflow"
-                ),
+                dataclasses.replace(candidate.job_roots[0], job_id="not-in-workflow"),
             ),
         ):
             with self.subTest(label=label):
@@ -726,9 +717,7 @@ class CiGateContractTests(unittest.TestCase):
                 self.assert_codes(
                     contract.validate_gate_registry(
                         ROOT,
-                        dataclasses.replace(
-                            candidate, job_roots=mutated_jobs
-                        ),
+                        dataclasses.replace(candidate, job_roots=mutated_jobs),
                     ),
                     "ci-gate-required-job-roots",
                 )
@@ -823,9 +812,7 @@ class CiGateContractTests(unittest.TestCase):
         leaf_fields = {
             "kind": "leaf",
             "suite_key": "first",
-            "entrypoint": (
-                "scripts/validation/check-target-surface-delta-contract.py"
-            ),
+            "entrypoint": ("scripts/validation/check-target-surface-delta-contract.py"),
             "argv": [],
             "cwd": ".",
             "allowed_env_keys": [],
@@ -887,9 +874,7 @@ class CiGateContractTests(unittest.TestCase):
         self.assertEqual("ci-gate-profile-fields", caught.exception.code)
 
         wrong_classification = json.loads(json.dumps(ordered_document))
-        wrong_classification["profile_roots"][0]["classification"] = (
-            "local-override"
-        )
+        wrong_classification["profile_roots"][0]["classification"] = "local-override"
         with self.subTest(boundary="profile-classification"):
             with self.assertRaises(contract.GateContractError) as caught:
                 contract.parse_gate_registry(
@@ -1006,9 +991,7 @@ class CiGateContractTests(unittest.TestCase):
                         "open",
                         side_effect=OSError(error_number, "sensitive"),
                     ):
-                        with self.assertRaises(
-                            contract.GateContractError
-                        ) as caught:
+                        with self.assertRaises(contract.GateContractError) as caught:
                             contract.load_contract_document(real_root)
                     self.assertEqual(expected_code, caught.exception.code)
                     self.assertNotIn("sensitive", str(caught.exception))
@@ -1019,9 +1002,7 @@ class CiGateContractTests(unittest.TestCase):
                     "read",
                     side_effect=OSError(errno.EIO, "sensitive"),
                 ):
-                    with self.assertRaises(
-                        contract.GateContractError
-                    ) as caught:
+                    with self.assertRaises(contract.GateContractError) as caught:
                         contract.load_contract_document(real_root)
                 self.assertEqual(
                     "ci-gate-input-unreadable",
@@ -1124,11 +1105,7 @@ class CiGateContractTests(unittest.TestCase):
                 "SKIP",
                 "TEMPLATE_GATE_BASE",
             },
-            {
-                key
-                for node in registry.nodes
-                for key in node.allowed_env_keys
-            },
+            {key for node in registry.nodes for key in node.allowed_env_keys},
         )
 
 

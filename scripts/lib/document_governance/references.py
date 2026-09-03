@@ -137,7 +137,9 @@ def protected_research_paths(root: pathlib.Path) -> frozenset[str]:
             continue
         relative = pathlib.PurePosixPath(match.group(1))
         if relative.is_absolute() or ".." in relative.parts:
-            raise ValueError(f"protected research declaration path is unsafe: {relative}")
+            raise ValueError(
+                f"protected research declaration path is unsafe: {relative}"
+            )
         declared.add((PROTECTED_RESEARCH_PACKAGE / relative).as_posix())
     if not declared:
         raise ValueError("protected research declaration lists no path")
@@ -168,11 +170,19 @@ def validate_protected_research(
     findings: list[Finding] = []
     for relative in sorted(declared - observed):
         findings.append(
-            _finding("protected-research-missing", pathlib.PurePosixPath(relative), "declared but absent")
+            _finding(
+                "protected-research-missing",
+                pathlib.PurePosixPath(relative),
+                "declared but absent",
+            )
         )
     for relative in sorted(observed - declared):
         findings.append(
-            _finding("protected-research-undeclared", pathlib.PurePosixPath(relative), "present but undeclared")
+            _finding(
+                "protected-research-undeclared",
+                pathlib.PurePosixPath(relative),
+                "present but undeclared",
+            )
         )
     return tuple(findings)
 
@@ -184,7 +194,9 @@ class _LoadBudget:
     packages: int = 0
 
 
-def _directory_snapshot(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
+def _directory_snapshot(
+    metadata: os.stat_result,
+) -> tuple[int, int, int, int, int, int]:
     return (
         metadata.st_dev,
         metadata.st_ino,
@@ -215,7 +227,9 @@ def _directory_flags() -> int:
     )
 
 
-def _open_directory_at(parent: int, name: str, label: str) -> tuple[int, tuple[int, int, int, int, int, int]]:
+def _open_directory_at(
+    parent: int, name: str, label: str
+) -> tuple[int, tuple[int, int, int, int, int, int]]:
     try:
         before = os.stat(name, dir_fd=parent, follow_symlinks=False)
     except OSError as exc:
@@ -227,13 +241,17 @@ def _open_directory_at(parent: int, name: str, label: str) -> tuple[int, tuple[i
     except OSError as exc:
         raise ReferenceCorpusError(f"cannot open {label}: {exc}") from exc
     opened = os.fstat(descriptor)
-    if not stat.S_ISDIR(opened.st_mode) or _directory_snapshot(opened) != _directory_snapshot(before):
+    if not stat.S_ISDIR(opened.st_mode) or _directory_snapshot(
+        opened
+    ) != _directory_snapshot(before):
         os.close(descriptor)
         raise ReferenceCorpusError(f"{label} changed while opening")
     return descriptor, _directory_snapshot(opened)
 
 
-def _open_directory_path(path: pathlib.Path, label: str) -> tuple[int, int, str, tuple[int, int, int, int, int, int]]:
+def _open_directory_path(
+    path: pathlib.Path, label: str
+) -> tuple[int, int, str, tuple[int, int, int, int, int, int]]:
     absolute = pathlib.Path(os.path.abspath(path))
     if not absolute.is_absolute() or len(absolute.parts) < 2:
         raise ReferenceCorpusError(f"{label} must be an absolute contained path")
@@ -253,7 +271,13 @@ def _open_directory_path(path: pathlib.Path, label: str) -> tuple[int, int, str,
         raise
 
 
-def _verify_directory(parent: int, name: str, descriptor: int, snapshot: tuple[int, int, int, int, int, int], label: str) -> None:
+def _verify_directory(
+    parent: int,
+    name: str,
+    descriptor: int,
+    snapshot: tuple[int, int, int, int, int, int],
+    label: str,
+) -> None:
     try:
         current = os.stat(name, dir_fd=parent, follow_symlinks=False)
         opened = os.fstat(descriptor)
@@ -268,7 +292,9 @@ def _verify_directory(parent: int, name: str, descriptor: int, snapshot: tuple[i
         raise ReferenceCorpusError(f"{label} changed while loading")
 
 
-def _bounded_names(descriptor: int, *, label: str, limit: int, budget: _LoadBudget) -> tuple[tuple[str, ...], _LoadBudget]:
+def _bounded_names(
+    descriptor: int, *, label: str, limit: int, budget: _LoadBudget
+) -> tuple[tuple[str, ...], _LoadBudget]:
     before = _directory_snapshot(os.fstat(descriptor))
     names: list[str] = []
     current = budget
@@ -278,7 +304,9 @@ def _bounded_names(descriptor: int, *, label: str, limit: int, budget: _LoadBudg
                 if len(names) >= limit:
                     raise ReferenceCorpusError(f"{label} exceeds its entry limit")
                 if current.entries >= MAX_TOTAL_REFERENCE_ENTRIES:
-                    raise ReferenceCorpusError("Stage 90 exceeds the aggregate entry limit")
+                    raise ReferenceCorpusError(
+                        "Stage 90 exceeds the aggregate entry limit"
+                    )
                 if entry.name in {"", ".", ".."}:
                     raise ReferenceCorpusError(f"{label} contains an unsafe entry")
                 names.append(entry.name)
@@ -302,7 +330,9 @@ def _entry_metadata(parent: int, name: str, label: str) -> os.stat_result:
     return metadata
 
 
-def _read_regular_utf8(parent: int, name: str, label: str, budget: _LoadBudget) -> tuple[str, _LoadBudget]:
+def _read_regular_utf8(
+    parent: int, name: str, label: str, budget: _LoadBudget
+) -> tuple[str, _LoadBudget]:
     before = _entry_metadata(parent, name, label)
     if not stat.S_ISREG(before.st_mode):
         raise ReferenceCorpusError(f"{label} must be a regular file")
@@ -320,12 +350,16 @@ def _read_regular_utf8(parent: int, name: str, label: str, budget: _LoadBudget) 
         descriptor = os.open(name, flags, dir_fd=parent)
         try:
             opened = os.fstat(descriptor)
-            if not stat.S_ISREG(opened.st_mode) or _file_snapshot(opened) != _file_snapshot(before):
+            if not stat.S_ISREG(opened.st_mode) or _file_snapshot(
+                opened
+            ) != _file_snapshot(before):
                 raise ReferenceCorpusError(f"{label} changed while opening")
             chunks: list[bytes] = []
             length = 0
             while True:
-                chunk = os.read(descriptor, min(64 * 1024, MAX_REFERENCE_FILE_BYTES + 1 - length))
+                chunk = os.read(
+                    descriptor, min(64 * 1024, MAX_REFERENCE_FILE_BYTES + 1 - length)
+                )
                 if not chunk:
                     break
                 chunks.append(chunk)
@@ -352,7 +386,9 @@ def _read_regular_utf8(parent: int, name: str, label: str, budget: _LoadBudget) 
         text = payload.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ReferenceCorpusError(f"{label} must be UTF-8") from exc
-    return text, dataclasses.replace(budget, file_bytes=budget.file_bytes + len(payload))
+    return text, dataclasses.replace(
+        budget, file_bytes=budget.file_bytes + len(payload)
+    )
 
 
 def _load_package(
@@ -364,7 +400,9 @@ def _load_package(
     if budget.packages >= MAX_REFERENCE_PACKAGES:
         raise ReferenceCorpusError("Stage 90 exceeds the package limit")
     relative_package = f"{category}/{package_name}"
-    descriptor, snapshot = _open_directory_at(category_descriptor, package_name, relative_package)
+    descriptor, snapshot = _open_directory_at(
+        category_descriptor, package_name, relative_package
+    )
     try:
         names, current = _bounded_names(
             descriptor,
@@ -380,23 +418,33 @@ def _load_package(
         for name in names:
             metadata = _entry_metadata(descriptor, name, f"{relative_package}/{name}")
             if not stat.S_ISREG(metadata.st_mode):
-                raise ReferenceCorpusError(f"{relative_package}/{name} must be a regular file")
-            text, current = _read_regular_utf8(descriptor, name, f"{relative_package}/{name}", current)
+                raise ReferenceCorpusError(
+                    f"{relative_package}/{name} must be a regular file"
+                )
+            text, current = _read_regular_utf8(
+                descriptor, name, f"{relative_package}/{name}", current
+            )
             relative = pathlib.PurePosixPath(relative_package) / name
             files.append(relative)
             if name.endswith(".md"):
                 documents.append(
-                    ReferenceDocument(pathlib.PurePosixPath("docs/90.references") / relative, text)
+                    ReferenceDocument(
+                        pathlib.PurePosixPath("docs/90.references") / relative, text
+                    )
                 )
             if name == "README.md":
                 readme_text = text
-        _verify_directory(category_descriptor, package_name, descriptor, snapshot, relative_package)
+        _verify_directory(
+            category_descriptor, package_name, descriptor, snapshot, relative_package
+        )
     finally:
         os.close(descriptor)
     try:
         metadata = parse_frontmatter_text(readme_text)
     except FrontmatterError as exc:
-        raise ReferenceCorpusError(f"invalid package frontmatter: {relative_package}: {exc}") from exc
+        raise ReferenceCorpusError(
+            f"invalid package frontmatter: {relative_package}: {exc}"
+        ) from exc
     return (
         ReferencePackage(
             category=category,
@@ -430,7 +478,9 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
         if "README.md" not in root_names:
             raise ReferenceCorpusError("docs/90.references is missing README.md")
         for name in root_names:
-            metadata = _entry_metadata(root_descriptor, name, f"docs/90.references/{name}")
+            metadata = _entry_metadata(
+                root_descriptor, name, f"docs/90.references/{name}"
+            )
             if name == "README.md":
                 text, budget = _read_regular_utf8(
                     root_descriptor, name, "docs/90.references/README.md", budget
@@ -438,12 +488,16 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                 relative = pathlib.PurePosixPath("README.md")
                 files.append(relative)
                 documents.append(
-                    ReferenceDocument(pathlib.PurePosixPath("docs/90.references") / relative, text)
+                    ReferenceDocument(
+                        pathlib.PurePosixPath("docs/90.references") / relative, text
+                    )
                 )
             elif stat.S_ISDIR(metadata.st_mode):
                 category_names.append(name)
             else:
-                raise ReferenceCorpusError(f"docs/90.references/{name} must be a category directory")
+                raise ReferenceCorpusError(
+                    f"docs/90.references/{name} must be a category directory"
+                )
 
         for category in CATEGORIES:
             if category not in category_names:
@@ -459,10 +513,14 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                     budget=budget,
                 )
                 if "README.md" not in names:
-                    raise ReferenceCorpusError(f"docs/90.references/{category} is missing README.md")
+                    raise ReferenceCorpusError(
+                        f"docs/90.references/{category} is missing README.md"
+                    )
                 for name in names:
                     metadata = _entry_metadata(
-                        category_descriptor, name, f"docs/90.references/{category}/{name}"
+                        category_descriptor,
+                        name,
+                        f"docs/90.references/{category}/{name}",
                     )
                     if name == "README.md":
                         text, budget = _read_regular_utf8(
@@ -474,7 +532,10 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                         relative = pathlib.PurePosixPath(category) / name
                         files.append(relative)
                         documents.append(
-                            ReferenceDocument(pathlib.PurePosixPath("docs/90.references") / relative, text)
+                            ReferenceDocument(
+                                pathlib.PurePosixPath("docs/90.references") / relative,
+                                text,
+                            )
                         )
                     elif stat.S_ISDIR(metadata.st_mode):
                         package, package_files, budget = _load_package(
@@ -496,7 +557,9 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                 )
             finally:
                 os.close(category_descriptor)
-        _verify_directory(parent, root_name, root_descriptor, root_snapshot, "docs/90.references")
+        _verify_directory(
+            parent, root_name, root_descriptor, root_snapshot, "docs/90.references"
+        )
     finally:
         os.close(root_descriptor)
         os.close(parent)
@@ -522,16 +585,27 @@ def _rendered_lines(text: str) -> tuple[str, ...]:
 
 def _asserts_normative_authority(text: str) -> bool:
     prose = " ".join(_rendered_lines(text)).lower().replace("’", "'")
-    prose = re.sub(r"stage\s*([0-9]{1,2})", lambda item: f"stage {int(item.group(1)):02d}", prose)
+    prose = re.sub(
+        r"stage\s*([0-9]{1,2})", lambda item: f"stage {int(item.group(1)):02d}", prose
+    )
     prose = prose.replace("stage 90", "stage90")
     for stage in _NORMATIVE_STAGES:
         prose = prose.replace(stage, stage.replace(" ", ""))
 
     def negated(tokens: list[str], verb_index: int) -> bool:
         authority_predicates = {
-            "override", "overrides", "overrode", "overridden", "supersede",
-            "supersedes", "superseded", "govern", "governs", "authoritative",
-            "normative", "precedence",
+            "override",
+            "overrides",
+            "overrode",
+            "overridden",
+            "supersede",
+            "supersedes",
+            "superseded",
+            "govern",
+            "governs",
+            "authoritative",
+            "normative",
+            "precedence",
         }
         boundaries: set[int] = set()
         for index, token in enumerate(tokens[:verb_index]):
@@ -556,20 +630,32 @@ def _asserts_normative_authority(text: str) -> bool:
         for target in (stage.replace(" ", "") for stage in _NORMATIVE_STAGES):
             if target not in tokens:
                 continue
-            for stage90_index in (index for index, token in enumerate(tokens) if token == "stage90"):
-                for target_index in (index for index, token in enumerate(tokens) if token == target):
+            for stage90_index in (
+                index for index, token in enumerate(tokens) if token == "stage90"
+            ):
+                for target_index in (
+                    index for index, token in enumerate(tokens) if token == target
+                ):
                     if stage90_index < target_index:
                         segment = tokens[stage90_index + 1 : target_index]
                         for index, token in enumerate(segment):
                             if token in {
-                                "override", "overrides", "overrode", "supersede",
-                                "supersedes", "superseded", "govern", "governs",
-                                "authoritative", "normative",
+                                "override",
+                                "overrides",
+                                "overrode",
+                                "supersede",
+                                "supersedes",
+                                "superseded",
+                                "govern",
+                                "governs",
+                                "authoritative",
+                                "normative",
                             } and not negated(segment, index):
                                 return True
                             if (
                                 token in {"take", "takes"}
-                                and segment[index : index + 3] in (
+                                and segment[index : index + 3]
+                                in (
                                     ["take", "precedence", "over"],
                                     ["takes", "precedence", "over"],
                                 )
@@ -620,14 +706,10 @@ def _is_redirect_only(text: str) -> bool:
         links = parse_local_markdown_links(source_path, destination)
         if len(links) == 1:
             link = links[0]
-            if (
-                destination
-                in {
-                    f"[{link.label}]({link.raw_target})",
-                    f"[{link.label}](<{link.raw_target}>)",
-                }
-                and _is_confined_redirect_target(link)
-            ):
+            if destination in {
+                f"[{link.label}]({link.raw_target})",
+                f"[{link.label}](<{link.raw_target}>)",
+            } and _is_confined_redirect_target(link):
                 continue
             return False
         if not re.fullmatch(r"[A-Za-z0-9._~%/-]+", destination):
@@ -646,9 +728,17 @@ def _is_redirect_only(text: str) -> bool:
 
 def _document_links(document: ReferenceDocument):
     ordinary = parse_local_markdown_links(document.path, document.text)
-    with_images = parse_local_markdown_links(document.path, document.text.replace("![", "["))
+    with_images = parse_local_markdown_links(
+        document.path, document.text.replace("![", "[")
+    )
     unique = {
-        (item.line, item.raw_target, item.target.as_posix(), item.absolute, item.outside_repository): item
+        (
+            item.line,
+            item.raw_target,
+            item.target.as_posix(),
+            item.absolute,
+            item.outside_repository,
+        ): item
         for item in (*ordinary, *with_images)
     }
     return tuple(unique[key] for key in sorted(unique))
@@ -660,9 +750,10 @@ def _is_retired_reference_target(target: pathlib.PurePosixPath) -> bool:
             return True
         if target.parts[2] == "data" and len(target.parts) >= 4:
             package = target.parts[3]
-            return package != "README.md" and PACKAGE_PATH.fullmatch(
-                f"data/{package}"
-            ) is None
+            return (
+                package != "README.md"
+                and PACKAGE_PATH.fullmatch(f"data/{package}") is None
+            )
     return False
 
 
@@ -704,18 +795,24 @@ def validate_active_reference_consumers(
     total = 0
     for relative in sorted(set(paths), key=lambda item: item.as_posix()):
         try:
-            raw = read_bounded_regular(root, relative, max_bytes=MAX_ACTIVE_CONSUMER_BYTES)
+            raw = read_bounded_regular(
+                root, relative, max_bytes=MAX_ACTIVE_CONSUMER_BYTES
+            )
             text = raw.decode("utf-8")
         except (OSError, UnicodeError, ValueError) as exc:
             findings.append(_finding("active-consumer-unreadable", relative, str(exc)))
             continue
         total += len(raw)
         if total > MAX_ACTIVE_CONSUMER_BYTES:
-            findings.append(_finding("active-consumer-limit", relative, "aggregate byte limit"))
+            findings.append(
+                _finding("active-consumer-limit", relative, "aggregate byte limit")
+            )
             break
         for retired in _RETIRED_ACTIVE_PATHS:
             if retired in text:
-                findings.append(_finding("retired-active-reference-path", relative, retired))
+                findings.append(
+                    _finding("retired-active-reference-path", relative, retired)
+                )
     return tuple(findings)
 
 
@@ -730,9 +827,12 @@ def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
     for entry in manifest["files"]:
         if not isinstance(entry, dict):
             raise ValueError("generated manifest entry must be a mapping")
-        if (entry.get("kind") not in {"generator", "validator"}
-                or entry.get("mutation") != "check-write"
-                or entry.get("lifecycle") != "active" or entry.get("disposition") != "retain"):
+        if (
+            entry.get("kind") not in {"generator", "validator"}
+            or entry.get("mutation") != "check-write"
+            or entry.get("lifecycle") != "active"
+            or entry.get("disposition") != "retain"
+        ):
             continue
         outputs = entry.get("outputs", [])
         if not isinstance(outputs, list):
@@ -741,13 +841,23 @@ def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
         for output in outputs:
             if not isinstance(output, str):
                 raise ValueError("generated output must be a path")
-            if not output.startswith("docs/90.references/data/") or not output.endswith(".md"):
+            if not output.startswith("docs/90.references/data/") or not output.endswith(
+                ".md"
+            ):
                 continue
-            for path, prefix in ((owner, "scripts/"), (output, "docs/90.references/data/")):
-                if (not isinstance(path, str) or not path.startswith(prefix)
-                        or pathlib.PurePosixPath(path).as_posix() != path
-                        or any(part in {".", ".."} for part in path.split("/"))
-                        or "\\" in path or ":" in path or any(ord(char) < 32 or ord(char) == 127 for char in path)):
+            for path, prefix in (
+                (owner, "scripts/"),
+                (output, "docs/90.references/data/"),
+            ):
+                if (
+                    not isinstance(path, str)
+                    or not path.startswith(prefix)
+                    or pathlib.PurePosixPath(path).as_posix() != path
+                    or any(part in {".", ".."} for part in path.split("/"))
+                    or "\\" in path
+                    or ":" in path
+                    or any(ord(char) < 32 or ord(char) == 127 for char in path)
+                ):
                     raise ValueError("generated ownership path is unsafe")
             if output in owners or len(owners) >= 128:
                 raise ValueError("generated ownership is duplicate or exceeds bound")
@@ -760,9 +870,17 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     references_root = root / "docs/90.references"
 
     try:
-        generated_paths = frozenset(map(pathlib.PurePosixPath, generated_reference_owners(root)))
+        generated_paths = frozenset(
+            map(pathlib.PurePosixPath, generated_reference_owners(root))
+        )
     except ValueError:
-        findings.append(_finding("generated-manifest-invalid", "scripts/manifest.yaml", "generated ownership cannot be established"))
+        findings.append(
+            _finding(
+                "generated-manifest-invalid",
+                "scripts/manifest.yaml",
+                "generated ownership cannot be established",
+            )
+        )
         generated_paths = frozenset()
 
     try:
@@ -771,7 +889,13 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
         return (_finding("reference-corpus-invalid", "docs/90.references", str(exc)),)
 
     if corpus.category_names != CATEGORIES:
-        findings.append(_finding("category-root-invalid", "docs/90.references", repr(corpus.category_names)))
+        findings.append(
+            _finding(
+                "category-root-invalid",
+                "docs/90.references",
+                repr(corpus.category_names),
+            )
+        )
     for retired in _RETIRED_ROOTS:
         if retired in corpus.category_names:
             findings.append(
@@ -814,24 +938,55 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     )
     for relative in corpus.files:
         if relative not in allowed_files:
-            findings.append(_finding("unregistered-reference-file", pathlib.PurePosixPath("docs/90.references") / relative, "not a package README, protected leaf, or generated owner"))
+            findings.append(
+                _finding(
+                    "unregistered-reference-file",
+                    pathlib.PurePosixPath("docs/90.references") / relative,
+                    "not a package README, protected leaf, or generated owner",
+                )
+            )
 
     for item in corpus.packages:
-        path = pathlib.PurePosixPath("docs/90.references") / item.relative_package / "README.md"
-        if not PACKAGE_PATH.fullmatch(item.relative_package) or _DATED_PACKAGE.search(item.relative_package):
-            findings.append(_finding("package-path-invalid", path, item.relative_package))
+        path = (
+            pathlib.PurePosixPath("docs/90.references")
+            / item.relative_package
+            / "README.md"
+        )
+        if not PACKAGE_PATH.fullmatch(item.relative_package) or _DATED_PACKAGE.search(
+            item.relative_package
+        ):
+            findings.append(
+                _finding("package-path-invalid", path, item.relative_package)
+            )
         number = item.relative_package.split("/", 1)[1].split("-", 1)[0]
         expected_id = f"{PREFIX_BY_CATEGORY[item.category]}{number}"
-        if item.artifact_id != expected_id or item.profile_id != PROFILE_BY_CATEGORY[item.category]:
-            findings.append(_finding("package-identity-invalid", path, f"expected {expected_id}"))
+        if (
+            item.artifact_id != expected_id
+            or item.profile_id != PROFILE_BY_CATEGORY[item.category]
+        ):
+            findings.append(
+                _finding("package-identity-invalid", path, f"expected {expected_id}")
+            )
     for document in corpus.documents:
         try:
             parse_frontmatter_text(document.text)
         except FrontmatterError as exc:
-            findings.append(_finding("reference-member-frontmatter-invalid", document.path, str(exc)))
-        headings = [line for _, line in _unfenced_lines(document.text) if line.startswith("# ")]
+            findings.append(
+                _finding(
+                    "reference-member-frontmatter-invalid", document.path, str(exc)
+                )
+            )
+        headings = [
+            line for _, line in _unfenced_lines(document.text) if line.startswith("# ")
+        ]
         if len(headings) != 1:
-            findings.append(_finding("reference-member-heading-invalid", document.path, "Markdown member requires one H1"))
+            findings.append(
+                _finding(
+                    "reference-member-heading-invalid",
+                    document.path,
+                    "Markdown member requires one H1",
+                )
+            )
         if _asserts_normative_authority(document.text):
             findings.append(
                 _finding(
@@ -842,7 +997,9 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
             )
         if _is_redirect_only(document.text):
             findings.append(
-                _finding("redirect-document-present", document.path, "redirect-only document")
+                _finding(
+                    "redirect-document-present", document.path, "redirect-only document"
+                )
             )
         for target in _retired_links(document):
             findings.append(_finding("retired-link-present", document.path, target))
@@ -861,11 +1018,13 @@ def delegated_member_paths(root: pathlib.Path) -> frozenset[str]:
 
     prefix = pathlib.PurePosixPath("docs/90.references")
     corpus = load_reference_packages(pathlib.Path(root) / prefix)
-    return frozenset({
-        *((prefix / category / "README.md").as_posix() for category in CATEGORIES),
-        *(
-            (prefix / relative).as_posix()
-            for relative in corpus.files
-            if relative.suffix == ".md" and relative.name != "README.md"
-        ),
-    })
+    return frozenset(
+        {
+            *((prefix / category / "README.md").as_posix() for category in CATEGORIES),
+            *(
+                (prefix / relative).as_posix()
+                for relative in corpus.files
+                if relative.suffix == ".md" and relative.name != "README.md"
+            ),
+        }
+    )

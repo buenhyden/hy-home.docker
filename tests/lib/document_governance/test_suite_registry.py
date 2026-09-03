@@ -22,7 +22,9 @@ class SuiteRegistryTests(unittest.TestCase):
         """The predicate, not the registry, enforces its complete capability."""
 
         path = "scripts/validation/check-supply-chain-policy.py"
-        owner = next(item for item in load(MANIFEST).validators if str(item.path) == path)
+        owner = next(
+            item for item in load(MANIFEST).validators if str(item.path) == path
+        )
         self.assertEqual(("--check",), owner.execution_argv)
         for argv in ([], ["--write"], ["--oci-archive-config-digest", "archive"]):
             with self.subTest(argv=argv):
@@ -66,12 +68,8 @@ class SuiteRegistryTests(unittest.TestCase):
         self.assertEqual("document-contract", moved[path])
 
         document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
-        document["files"] = [
-            row for row in document["files"] if row["path"] != path
-        ]
-        dropped = {
-            item.path.as_posix() for item in self._load(document).validators
-        }
+        document["files"] = [row for row in document["files"] if row["path"] != path]
+        dropped = {item.path.as_posix() for item in self._load(document).validators}
         self.assertNotIn(path, dropped)
         self.assertEqual(len(baseline) - 1, len(dropped))
 
@@ -112,10 +110,14 @@ class SuiteRegistryTests(unittest.TestCase):
                 next(row for row in document["files"] if row["path"] == path)[
                     "execution_argv"
                 ] = argv
-                with self.assertRaisesRegex(SuiteRegistryError, "complete validation capability"):
+                with self.assertRaisesRegex(
+                    SuiteRegistryError, "complete validation capability"
+                ):
                     self._load(document)
 
-    def test_manifest_input_rejects_ambiguous_unbounded_and_nonregular_bytes(self) -> None:
+    def test_manifest_input_rejects_ambiguous_unbounded_and_nonregular_bytes(
+        self,
+    ) -> None:
         from tests.lib.document_governance.test_links import load_script_manifest_cli
 
         checker = load_script_manifest_cli()
@@ -150,7 +152,9 @@ class SuiteRegistryTests(unittest.TestCase):
                 load(path)
             self.assertIn("_load_error", checker._load_manifest(path))
 
-    def test_manifest_ancestor_symlink_and_regular_to_fifo_race_fail_closed(self) -> None:
+    def test_manifest_ancestor_symlink_and_regular_to_fifo_race_fail_closed(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import suite_registry
         from tests.lib.document_governance.test_links import load_script_manifest_cli
 
@@ -161,7 +165,10 @@ class SuiteRegistryTests(unittest.TestCase):
             path = source / "manifest.yaml"
             path.write_text("files: []\n", encoding="utf-8")
             (root / "alias").symlink_to(source, target_is_directory=True)
-            for read in (suite_registry.load, load_script_manifest_cli()._load_manifest):
+            for read in (
+                suite_registry.load,
+                load_script_manifest_cli()._load_manifest,
+            ):
                 with self.subTest(read=read.__name__):
                     if read is suite_registry.load:
                         with self.assertRaises(SuiteRegistryError):
@@ -177,7 +184,9 @@ class SuiteRegistryTests(unittest.TestCase):
                     self.assertTrue(flags & os.O_NONBLOCK, "FIFO open must not block")
                 return real_open(name, flags, *args, **kwargs)
 
-            with mock.patch.object(suite_registry.os, "open", side_effect=swap_before_open):
+            with mock.patch.object(
+                suite_registry.os, "open", side_effect=swap_before_open
+            ):
                 with self.assertRaises(SuiteRegistryError):
                     load(path)
 
@@ -194,8 +203,12 @@ class SuiteRegistryTests(unittest.TestCase):
                 "repository-integrity",
             ),
         )
-        self.assertTrue(all(len(item.public_suites) == 1 for item in registry.validators))
-        self.assertTrue(all(item.has_mirrored_test for item in registry.production_modules))
+        self.assertTrue(
+            all(len(item.public_suites) == 1 for item in registry.validators)
+        )
+        self.assertTrue(
+            all(item.has_mirrored_test for item in registry.production_modules)
+        )
 
     def test_rejects_duplicate_behavioral_consumers_and_suite_ownership(self) -> None:
         document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
@@ -234,5 +247,7 @@ class SuiteRegistryTests(unittest.TestCase):
     def _load(self, document: dict[str, object]):
         with tempfile.TemporaryDirectory() as directory:
             manifest = Path(directory) / "manifest.yaml"
-            manifest.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+            manifest.write_text(
+                yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
+            )
             return load(manifest)

@@ -27,7 +27,10 @@ class SharedFrontmatterExtractionTests(unittest.TestCase):
         from scripts.lib.document_governance import frontmatter
 
         self.assertIs(frontmatter.read_frontmatter_values, metadata.parse_frontmatter)
-        self.assertIs(frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text)
+        self.assertIs(
+            frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text
+        )
+
 
 class FrontmatterParsingTests(unittest.TestCase):
     def test_valid_yaml_frontmatter_is_parsed(self) -> None:
@@ -55,7 +58,9 @@ class FrontmatterParsingTests(unittest.TestCase):
     def test_duplicate_yaml_key_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "duplicate.md"
-            path.write_text("---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8")
+            path.write_text(
+                "---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8"
+            )
             with self.assertRaises(metadata.FrontmatterError):
                 metadata.parse_frontmatter(path)
 
@@ -67,6 +72,7 @@ class FrontmatterParsingTests(unittest.TestCase):
                 metadata.parse_frontmatter(path)
             self.assertEqual("malformed-yaml", context.exception.code)
 
+
 class CurrentRegistryContractTests(unittest.TestCase):
     def test_current_requirement_packages_satisfy_repository_contracts(self) -> None:
         from scripts.lib.document_governance.requirements import (
@@ -77,6 +83,7 @@ class CurrentRegistryContractTests(unittest.TestCase):
         result = run_checker(ROOT, "check-contracts", profiles=REGISTRY)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertIn("metadata repository contracts: violations=0", result.stdout)
+
 
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
@@ -136,12 +143,14 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/not-a-stage/README.md",
             "docs/02.architecture/unknown/README.md",
         ):
-            with self.subTest(path=path_text), self.assertRaises(
-                profile_module.ProfileError
+            with (
+                self.subTest(path=path_text),
+                self.assertRaises(profile_module.ProfileError),
             ):
                 profile_module.classify_template_role(
                     pathlib.Path(path_text), "readme", self.profiles
                 )
+
 
 class TemplateMetadataTests(unittest.TestCase):
     @classmethod
@@ -151,18 +160,24 @@ class TemplateMetadataTests(unittest.TestCase):
         cls.profiles = current_profiles()
         cls.registry = load_registry(REGISTRY)
 
-    def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(self) -> None:
+    def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(
+        self,
+    ) -> None:
         for role_name, role in self.registry.template_roles.items():
             with self.subTest(role=role_name):
                 source = ROOT / str(role["source"])
                 if source.suffix != ".md":
                     continue
                 text = source.read_text(encoding="utf-8")
-                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+                self.assertEqual(
+                    1, sum(line.startswith("# ") for line in text.splitlines())
+                )
                 self.assertNotIn("> Rules:", text)
                 self.assertNotIn("<!-- Target:", text)
 
-    def test_task_2_forms_match_their_registered_required_heading_envelopes(self) -> None:
+    def test_task_2_forms_match_their_registered_required_heading_envelopes(
+        self,
+    ) -> None:
         for role_name, role in self.registry.template_roles.items():
             with self.subTest(role=role_name):
                 source = ROOT / str(role["source"])
@@ -170,7 +185,9 @@ class TemplateMetadataTests(unittest.TestCase):
                     continue
                 profile = self.registry.profiles[str(role["profile_id"])]
                 text = source.read_text(encoding="utf-8")
-                headings = [line for line in text.splitlines() if line.startswith("## ")]
+                headings = [
+                    line for line in text.splitlines() if line.startswith("## ")
+                ]
                 required = [f"## {item}" for item in profile["required_sections"]]
                 optional = [f"## {item}" for item in profile["optional_sections"]]
                 self.assertLessEqual(set(required), set(headings))
@@ -189,9 +206,7 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_task_has_one_source_and_no_harness_competitor(self) -> None:
         roles = self.registry.template_roles
         task_sources = [
-            role["source"]
-            for role in roles.values()
-            if role["profile_id"] == "task"
+            role["source"] for role in roles.values() if role["profile_id"] == "task"
         ]
         self.assertEqual(
             ["docs/99.templates/templates/specs/task.template.md"],
@@ -205,9 +220,9 @@ class TemplateMetadataTests(unittest.TestCase):
         )
 
     def test_task_form_contains_protected_surface_and_qa_evidence(self) -> None:
-        text = (
-            ROOT / "docs/99.templates/templates/specs/task.template.md"
-        ).read_text(encoding="utf-8")
+        text = (ROOT / "docs/99.templates/templates/specs/task.template.md").read_text(
+            encoding="utf-8"
+        )
         for heading in (
             "## Objective",
             "## Inputs",
@@ -221,8 +236,7 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_deleted_harness_task_source_has_no_active_route(self) -> None:
         deleted_path = (
-            "docs/99.templates/templates/governance/"
-            "harness-task-contract.template.md"
+            "docs/99.templates/templates/governance/harness-task-contract.template.md"
         )
         active_route_files = (
             "docs/00.agent-governance/README.md",
@@ -245,9 +259,10 @@ class TemplateMetadataTests(unittest.TestCase):
         text = (
             ROOT / "docs/00.agent-governance/policies/approval-boundaries.md"
         ).read_text(encoding="utf-8")
-        self.assertEqual(["## Related Documents"], [
-            line for line in text.splitlines() if line.startswith("## ")
-        ])
+        self.assertEqual(
+            ["## Related Documents"],
+            [line for line in text.splitlines() if line.startswith("## ")],
+        )
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)
 
@@ -279,7 +294,9 @@ class TemplateMetadataTests(unittest.TestCase):
                 )
                 self.assertNotIn("Release template", text)
 
-    def test_registered_templates_declare_profile_ids_without_target_paths(self) -> None:
+    def test_registered_templates_declare_profile_ids_without_target_paths(
+        self,
+    ) -> None:
         for role_name, role in self.registry.template_roles.items():
             source = ROOT / str(role["source"])
             with self.subTest(role=role_name):
@@ -294,7 +311,9 @@ class TemplateMetadataTests(unittest.TestCase):
                     self.assertIn("description", values)
                     self.assertIsNone(values.get("type"))
                     continue
-                self.assertEqual(document_type(str(role["profile_id"])), values.get("type"))
+                self.assertEqual(
+                    document_type(str(role["profile_id"])), values.get("type")
+                )
                 text = source.read_text(encoding="utf-8")
                 for target_prefix in (
                     "docs/01.requirements/",
@@ -306,8 +325,9 @@ class TemplateMetadataTests(unittest.TestCase):
                 ):
                     self.assertNotIn(target_prefix, text)
 
-
-    def test_registered_markdown_templates_cover_profile_section_contracts(self) -> None:
+    def test_registered_markdown_templates_cover_profile_section_contracts(
+        self,
+    ) -> None:
         for role_name, role in self.registry.template_roles.items():
             source = ROOT / str(role["source"])
             if source.suffix != ".md":
@@ -321,8 +341,9 @@ class TemplateMetadataTests(unittest.TestCase):
             }
             with self.subTest(role=role_name):
                 self.assertLessEqual(set(profile["required_sections"]), headings)
-                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
-
+                self.assertEqual(
+                    1, sum(line.startswith("# ") for line in text.splitlines())
+                )
 
     def test_release_authority_is_absent(self) -> None:
         self.assertNotIn("release", self.registry.profiles)
@@ -330,7 +351,9 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertNotIn("release", self.profiles["profiles"])
         self.assertNotIn("release", self.profiles["template_roles"])
         self.assertFalse(
-            (ROOT / "docs/99.templates/templates/operations/release.template.md").exists()
+            (
+                ROOT / "docs/99.templates/templates/operations/release.template.md"
+            ).exists()
         )
         self.assertFalse((ROOT / "docs/05.operations/releases").exists())
 

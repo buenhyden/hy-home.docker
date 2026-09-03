@@ -30,7 +30,6 @@ def _child_env() -> dict[str, str]:
     return environment
 
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
@@ -55,9 +54,7 @@ def _document_text(
     artifact_id = artifact_id or f"{prefix}-{number}"
     if parent_ids is None:
         parent_ids = (
-            ("REQ-0001",)
-            if profile_id == "architecture-description"
-            else ("AD-0001",)
+            ("REQ-0001",) if profile_id == "architecture-description" else ("AD-0001",)
         )
     parent_lines = "\n".join(f"  - {item}" for item in parent_ids)
     supersedes_lines = (
@@ -229,11 +226,16 @@ class ArchitectureDocumentTests(unittest.TestCase):
             ):
                 architecture.load_architecture_documents(stage_root)
 
-    def test_symlink_non_regular_oversized_and_non_utf8_inputs_fail_closed(self) -> None:
+    def test_symlink_non_regular_oversized_and_non_utf8_inputs_fail_closed(
+        self,
+    ) -> None:
         architecture = _architecture_module()
         mutations = ("symlink", "non-regular", "oversized", "non-utf8")
         for mutation in mutations:
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 stage_root = pathlib.Path(directory) / "docs/02.architecture"
                 _write_minimal_corpus(stage_root)
                 target = stage_root / "decisions/0001-example.md"
@@ -273,19 +275,25 @@ class ArchitectureDocumentTests(unittest.TestCase):
                     mutated = True
                 return chunk
 
-            with mock.patch.object(
-                architecture.os,
-                "read",
-                side_effect=mutate_after_first_chunk,
-            ), self.assertRaisesRegex(
-                architecture.ArchitectureDocumentError,
-                "changed|read",
+            with (
+                mock.patch.object(
+                    architecture.os,
+                    "read",
+                    side_effect=mutate_after_first_chunk,
+                ),
+                self.assertRaisesRegex(
+                    architecture.ArchitectureDocumentError,
+                    "changed|read",
+                ),
             ):
                 architecture._read_regular_utf8(target)
 
             final = target.stat()
             self.assertTrue(mutated)
-            self.assertEqual((initial.st_dev, initial.st_ino, initial.st_size), (final.st_dev, final.st_ino, final.st_size))
+            self.assertEqual(
+                (initial.st_dev, initial.st_ino, initial.st_size),
+                (final.st_dev, final.st_ino, final.st_size),
+            )
 
     def test_dangling_and_asymmetric_supersession_are_reported(self) -> None:
         architecture = _architecture_module()
@@ -310,9 +318,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             )
             corpus = architecture.load_architecture_documents(stage_root)
             asymmetric = architecture.validate_supersession_graph(corpus)
-            self.assertIn(
-                "supersession-asymmetric", {item.code for item in asymmetric}
-            )
+            self.assertIn("supersession-asymmetric", {item.code for item in asymmetric})
 
     def test_cyclic_supersession_is_reported(self) -> None:
         architecture = _architecture_module()
@@ -347,7 +353,9 @@ class ArchitectureDocumentTests(unittest.TestCase):
             findings = architecture.validate_supersession_graph(corpus)
         self.assertIn("supersession-cycle", {item.code for item in findings})
 
-    def test_supersession_edges_require_effective_successor_and_superseded_predecessor(self) -> None:
+    def test_supersession_edges_require_effective_successor_and_superseded_predecessor(
+        self,
+    ) -> None:
         architecture = _architecture_module()
         predecessor = architecture.ArchitectureDocument(
             pathlib.PurePosixPath("docs/02.architecture/decisions/0027-predecessor.md"),
@@ -361,7 +369,9 @@ class ArchitectureDocumentTests(unittest.TestCase):
         for status in ("rejected", "draft", "retired"):
             with self.subTest(status=status):
                 successor = architecture.ArchitectureDocument(
-                    pathlib.PurePosixPath("docs/02.architecture/decisions/0029-successor.md"),
+                    pathlib.PurePosixPath(
+                        "docs/02.architecture/decisions/0029-successor.md"
+                    ),
                     "ADR-0029",
                     "adr",
                     status,

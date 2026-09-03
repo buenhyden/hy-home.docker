@@ -30,37 +30,93 @@ class PublicSuiteModelTests(unittest.TestCase):
         suites = contract.load_public_suite_registry()
         public = contract.parse_public_gate_contract(document, suites)
         selected = ("repository-integrity",)
-        plan = runner.build_public_validation_plan(gates, contract.public_root_gate_ids(public, selected), suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+        plan = runner.build_public_validation_plan(
+            gates,
+            contract.public_root_gate_ids(public, selected),
+            suites,
+            selected,
+            runner.ExecutionContext.LOCAL,
+            profile="full",
+        )
         path = pathlib.PurePosixPath("scripts/validation/check-supply-chain-policy.py")
         actual = next(item for item in plan if item.entrypoint == path)
-        expected = next(item for item in gates.nodes if item.gate_id == "leaf.supply-chain-deterministic-policy")
+        expected = next(
+            item
+            for item in gates.nodes
+            if item.gate_id == "leaf.supply-chain-deterministic-policy"
+        )
         self.assertEqual(("--check",), actual.argv)
         self.assertEqual(expected.argv, actual.argv)
-        self.assertTrue(any(str(path) in line for line in runner.render_public_validation_plan(plan, suites, selected, runner.ExecutionContext.LOCAL, profile="full")))
-        for argv in ((), ("--help",), ("--write",), ("--oci-archive-config-digest", "archive")):
+        self.assertTrue(
+            any(
+                str(path) in line
+                for line in runner.render_public_validation_plan(
+                    plan,
+                    suites,
+                    selected,
+                    runner.ExecutionContext.LOCAL,
+                    profile="full",
+                )
+            )
+        )
+        for argv in (
+            (),
+            ("--help",),
+            ("--write",),
+            ("--oci-archive-config-digest", "archive"),
+        ):
             with self.subTest(argv=argv):
-                changed = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item for item in plan)
+                changed = tuple(
+                    dataclasses.replace(item, argv=argv)
+                    if item.entrypoint == path
+                    else item
+                    for item in plan
+                )
                 with self.assertRaises(contract.GateContractError):
-                    runner.render_public_validation_plan(changed, suites, selected, runner.ExecutionContext.LOCAL, profile="full")
+                    runner.render_public_validation_plan(
+                        changed,
+                        suites,
+                        selected,
+                        runner.ExecutionContext.LOCAL,
+                        profile="full",
+                    )
 
     def test_ci_bootstraps_declared_dependencies_before_runner_import(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2]
-        jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())["jobs"]
+        jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
+            "jobs"
+        ]
         for name, job in jobs.items():
             steps = job["steps"]
-            runner_index = next(i for i, step in enumerate(steps)
-                                if "scripts/validation/run-ci-gate.py" in step.get("run", ""))
-            bootstrap = [i for i, step in enumerate(steps)
-                         if step.get("run") == "python3 -m pip install -r scripts/requirements.txt"]
+            runner_index = next(
+                i
+                for i, step in enumerate(steps)
+                if "scripts/validation/run-ci-gate.py" in step.get("run", "")
+            )
+            bootstrap = [
+                i
+                for i, step in enumerate(steps)
+                if step.get("run")
+                == "python3 -m pip install -r scripts/requirements.txt"
+            ]
             self.assertEqual(len(bootstrap), 1, name)
             self.assertLess(bootstrap[0], runner_index)
         # No package installation: explicitly expose the already-installed site
         # dependencies to an otherwise clean interpreter, then import the runner.
         result = subprocess.run(
-            ["python3", "-B", "-S", "-c",
-             "import site, sys; site.main(); sys.path.insert(0, sys.argv[1]); "
-             "import scripts.validation.ci_gate_runner", str(root)],
-            cwd=root, capture_output=True, text=True, timeout=10,
+            [
+                "python3",
+                "-B",
+                "-S",
+                "-c",
+                "import site, sys; site.main(); sys.path.insert(0, sys.argv[1]); "
+                "import scripts.validation.ci_gate_runner",
+                str(root),
+            ],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
@@ -73,28 +129,51 @@ class PublicSuiteModelTests(unittest.TestCase):
         path = pathlib.PurePosixPath("scripts/validation/check-document-links.py")
         original_plan = _real_public_plan(("document-graph",), {})
         manifest = yaml.safe_load((root / "scripts/manifest.yaml").read_text())
-        for argv in (("--help",), ("--root", "/tmp"), ("--write",), ("--mode", "traceability"), ()):
+        for argv in (
+            ("--help",),
+            ("--root", "/tmp"),
+            ("--write",),
+            ("--mode", "traceability"),
+            (),
+        ):
             with self.subTest(argv=argv), tempfile.TemporaryDirectory() as directory:
                 row = next(row for row in manifest["files"] if row["path"] == str(path))
                 row["execution_argv"] = list(argv)
                 source = pathlib.Path(directory) / "manifest.yaml"
-                source.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+                source.write_text(
+                    yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8"
+                )
                 with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
                     runner.public_suite_registry.load(source)
-                rebound = dataclasses.replace(suites, validators=tuple(
-                    dataclasses.replace(item, execution_argv=argv) if item.path == path else item
-                    for item in suites.validators
-                ))
+                rebound = dataclasses.replace(
+                    suites,
+                    validators=tuple(
+                        dataclasses.replace(item, execution_argv=argv)
+                        if item.path == path
+                        else item
+                        for item in suites.validators
+                    ),
+                )
                 with self.assertRaises(contract.GateContractError):
                     runner.build_public_validation_plan(
-                        gates, contract.public_root_gate_ids(public, ("document-graph",)),
-                        rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                        gates,
+                        contract.public_root_gate_ids(public, ("document-graph",)),
+                        rebound,
+                        ("document-graph",),
+                        runner.ExecutionContext.LOCAL,
                     )
-                plan = tuple(dataclasses.replace(item, argv=argv) if item.entrypoint == path else item
-                             for item in original_plan)
+                plan = tuple(
+                    dataclasses.replace(item, argv=argv)
+                    if item.entrypoint == path
+                    else item
+                    for item in original_plan
+                )
                 with self.assertRaises(contract.GateContractError):
                     runner.render_public_validation_plan(
-                        plan, rebound, ("document-graph",), runner.ExecutionContext.LOCAL,
+                        plan,
+                        rebound,
+                        ("document-graph",),
+                        runner.ExecutionContext.LOCAL,
                     )
 
     def test_runner_reads_the_closed_public_suite_model(self) -> None:
@@ -128,7 +207,9 @@ class PublicSuiteModelTests(unittest.TestCase):
         self.assertCountEqual(expected_paths, rendered_paths)
         self.assertEqual(len(expected_paths), len(set(rendered_paths)))
 
-    def test_full_plan_routes_task5_regressions_through_their_public_owner(self) -> None:
+    def test_full_plan_routes_task5_regressions_through_their_public_owner(
+        self,
+    ) -> None:
         expected_by_suite = {
             "agent-governance": {
                 "tests.lib.agent_governance.test_agent_governance_contract",
@@ -177,9 +258,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         """Ownership is whatever the manifest declares, checked by shape not by count."""
 
         registry = contract.load_public_suite_registry()
-        actual = {
-            item.path: item.public_suites[0] for item in registry.validators
-        }
+        actual = {item.path: item.public_suites[0] for item in registry.validators}
 
         document = yaml.safe_load(
             pathlib.Path("scripts/manifest.yaml").read_text(encoding="utf-8")
@@ -191,9 +270,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         }
         self.assertEqual(declared, actual)
         self.assertTrue(actual)
-        self.assertLessEqual(
-            set(actual.values()), set(registry.public_names)
-        )
+        self.assertLessEqual(set(actual.values()), set(registry.public_names))
         self.assertEqual(len(actual), len(set(actual)))
 
         document = yaml.safe_load(
@@ -227,7 +304,9 @@ class PublicSuiteModelTests(unittest.TestCase):
                 path.write_text(yaml.safe_dump(mutated), encoding="utf-8")
                 if mode == "context":
                     # execution_contexts remain a retained safety policy.
-                    with self.assertRaises(runner.public_suite_registry.SuiteRegistryError):
+                    with self.assertRaises(
+                        runner.public_suite_registry.SuiteRegistryError
+                    ):
                         runner.public_suite_registry.load(path)
                     continue
                 # kind, suite, and missing are legal manifest edits: they must
@@ -384,10 +463,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "allowed_env_keys",
                 "timeout_seconds",
             ),
-            tuple(
-                field.name
-                for field in dataclasses.fields(runner.GateInvocation)
-            ),
+            tuple(field.name for field in dataclasses.fields(runner.GateInvocation)),
         )
 
     def test_build_plan_preserves_order_and_deduplicates_gate_ids(self) -> None:
@@ -502,7 +578,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
         root = pathlib.Path(__file__).resolve().parents[2]
         with (
             mock.patch("sys.stderr", stderr),
-            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
+            mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+            ),
         ):
             self.assertEqual(1, runner.main(["--profile", "local-harness"]))
         self.assertIn("ci-gate-profile-unknown", stderr.getvalue())
@@ -520,7 +598,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
         with (
             mock.patch.object(runner, "execute_execution_plan") as execute,
             mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            mock.patch.dict(os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False),
+            mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+            ),
         ):
             self.assertEqual(0, runner.main(["--profile", "full", "--explain"]))
         execute.assert_not_called()
@@ -547,8 +627,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         validator_paths = {
             item.path
             for item in suites.validators
-            if item.public_suites[0] in selected
-            and "local" in item.execution_contexts
+            if item.public_suites[0] in selected and "local" in item.execution_contexts
         }
         executed_validators = tuple(
             path.as_posix() for path in executed if path in validator_paths
@@ -562,33 +641,34 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         )
 
-    def test_public_validator_missing_or_duplicate_invocation_fails_closed(self) -> None:
+    def test_public_validator_missing_or_duplicate_invocation_fails_closed(
+        self,
+    ) -> None:
         suites = contract.load_public_suite_registry()
         selected = suites.public_names
         plan = _real_public_plan(selected, {})
         validator_path = next(
-            item.path for item in suites.validators if "local" in item.execution_contexts
+            item.path
+            for item in suites.validators
+            if "local" in item.execution_contexts
         )
-        invocation = next(
-            item for item in plan if item.entrypoint == validator_path
-        )
+        invocation = next(item for item in plan if item.entrypoint == validator_path)
         mutations = (
             tuple(item for item in plan if item is not invocation),
             (*plan, invocation),
         )
         for mutated in mutations:
-            with self.subTest(size=len(mutated)), self.assertRaises(
-                contract.GateContractError
-            ) as raised:
+            with (
+                self.subTest(size=len(mutated)),
+                self.assertRaises(contract.GateContractError) as raised,
+            ):
                 runner.validate_public_execution_parity(
                     suites,
                     selected,
                     mutated,
                     runner.ExecutionContext.LOCAL,
                 )
-            self.assertEqual(
-                "ci-gate-public-execution-parity", raised.exception.code
-            )
+            self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
         duplicate_ownership = dataclasses.replace(
             suites,
             validators=(*suites.validators, suites.validators[0]),
@@ -600,9 +680,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 plan,
                 runner.ExecutionContext.LOCAL,
             )
-        self.assertEqual(
-            "ci-gate-public-execution-parity", raised.exception.code
-        )
+        self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
 
     def test_real_execution_contexts_filter_only_their_admitted_leaves(self) -> None:
         suites = contract.load_public_suite_registry()
@@ -670,10 +748,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     root,
                     plans[name],
                     {"PATH": os.defpath},
-                    executor=lambda invocation: executed.append(
-                        invocation.entrypoint
-                    )
-                    or 0,
+                    executor=lambda invocation: (
+                        executed.append(invocation.entrypoint) or 0
+                    ),
                 ),
             )
             explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
@@ -687,9 +764,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             }
             self.assertEqual(
                 explained_paths,
-                tuple(
-                    path.as_posix() for path in executed if path in validator_paths
-                ),
+                tuple(path.as_posix() for path in executed if path in validator_paths),
             )
         manual_only = {
             item.path.as_posix()
@@ -701,9 +776,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             manual_only,
         )
         self.assertIn("scripts/lib/ops/validate-harness.sh", manual_only)
-        gates = contract.parse_gate_registry(
-            document, ".github/workflow-contract.yml"
-        )
+        gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
         node_by_id = {node.gate_id: node for node in gates.nodes}
         for name in ("local-changed", "local-full"):
             gate_ids = {item.gate_id for item in plans[name]}
@@ -756,11 +829,15 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual(9, len(manual_paths))
         forbidden_paths = (
             *manual_paths,
-            pathlib.PurePosixPath("scripts/operations/rehearse-sample-service-delivery.sh"),
+            pathlib.PurePosixPath(
+                "scripts/operations/rehearse-sample-service-delivery.sh"
+            ),
             pathlib.PurePosixPath("scripts/validation/run-ci-gate.py"),
             pathlib.PurePosixPath("scripts/validation/run-local-qa-gates.sh"),
             pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
-            pathlib.PurePosixPath("scripts/validation/run-agent-precommit-all-files.sh"),
+            pathlib.PurePosixPath(
+                "scripts/validation/run-agent-precommit-all-files.sh"
+            ),
         )
         for context in runner.ExecutionContext:
             for path in forbidden_paths:
@@ -771,7 +848,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         with self.assertRaises(contract.GateContractError) as raised:
                             runner.build_public_validation_plan(
                                 _rebind_diff_gate(gates, path, argv),
-                                contract.public_root_gate_ids(public, suites.public_names),
+                                contract.public_root_gate_ids(
+                                    public, suites.public_names
+                                ),
                                 suites,
                                 suites.public_names,
                                 context,
@@ -801,16 +880,31 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 with self.assertRaises(contract.GateContractError) as raised:
                     runner.build_public_validation_plan(
                         _rebind_diff_gate(gates, runner._INTERNAL_ADAPTER_PATH, argv),
-                        roots, suites, suites.public_names, context,
+                        roots,
+                        suites,
+                        suites.public_names,
+                        context,
                     )
-                self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
+                self.assertEqual(
+                    "ci-gate-public-execution-parity", raised.exception.code
+                )
         for context, argv in (
             (runner.ExecutionContext.LOCAL, ("check-diff-hygiene",)),
-            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.validation.test_ci_gate_runner", "-v")),
+            (
+                runner.ExecutionContext.LOCAL,
+                ("run-unittest", "tests.validation.test_ci_gate_runner", "-v"),
+            ),
             # A single well-shaped module is admitted by the grammar. Splitting
             # a batch cannot hide a module: test_surface_ownership proves the
             # full profile runs every on-disk module exactly once.
-            (runner.ExecutionContext.LOCAL, ("run-unittest", "tests.lib.ops.test_postgres_logical_upgrade_rehearsal", "-v")),
+            (
+                runner.ExecutionContext.LOCAL,
+                (
+                    "run-unittest",
+                    "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+                    "-v",
+                ),
+            ),
             (runner.ExecutionContext.PULL_REQUEST, ("check-git-flow",)),
             (runner.ExecutionContext.PUSH, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.WORKFLOW_DISPATCH, ("install-playwright",)),
@@ -818,14 +912,19 @@ class CiGateRunnerContractTests(unittest.TestCase):
             with self.subTest(context=context, argv=argv):
                 plan = runner.build_public_validation_plan(
                     _rebind_diff_gate(gates, runner._INTERNAL_ADAPTER_PATH, argv),
-                    roots, suites, suites.public_names, context,
+                    roots,
+                    suites,
+                    suites.public_names,
+                    context,
                 )
                 self.assertIn(
                     ("leaf.local-diff-hygiene", runner._INTERNAL_ADAPTER_PATH, argv),
                     {(item.gate_id, item.entrypoint, item.argv) for item in plan},
                 )
 
-    def test_final_parity_and_explain_reject_hidden_or_mutated_invocations(self) -> None:
+    def test_final_parity_and_explain_reject_hidden_or_mutated_invocations(
+        self,
+    ) -> None:
         suites = contract.load_public_suite_registry()
         plan = _real_public_plan(suites.public_names, {})
         forbidden = [
@@ -834,12 +933,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
             if "local" not in item.execution_contexts
         ]
         forbidden.extend(
-            dataclasses.replace(
-                _invocation("leaf.injected", path), argv=argv
-            )
+            dataclasses.replace(_invocation("leaf.injected", path), argv=argv)
             for path, argv in (
                 ("scripts/validation/run-ci-gate.py", ("--profile", "full")),
-                ("scripts/operations/rehearse-sample-service-delivery.sh", ("rehearse",)),
+                (
+                    "scripts/operations/rehearse-sample-service-delivery.sh",
+                    ("rehearse",),
+                ),
                 ("scripts/knowledge/generate-llm-wiki.py", ("--write",)),
                 ("scripts/validation/report-provider-hook-parity.sh", ()),
                 ("scripts/lib/gate/ci_gate_adapters.py", ("run-zizmor-sarif",)),
@@ -848,22 +948,32 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for invocation in forbidden:
             for validate in (
                 lambda candidate: runner.validate_public_execution_parity(
-                    suites, suites.public_names, candidate, runner.ExecutionContext.LOCAL
+                    suites,
+                    suites.public_names,
+                    candidate,
+                    runner.ExecutionContext.LOCAL,
                 ),
                 lambda candidate: runner.render_public_validation_plan(
-                    candidate, suites, suites.public_names, runner.ExecutionContext.LOCAL
+                    candidate,
+                    suites,
+                    suites.public_names,
+                    runner.ExecutionContext.LOCAL,
                 ),
             ):
                 with self.subTest(invocation=invocation, validate=validate):
                     with self.assertRaises(contract.GateContractError) as raised:
                         validate((*plan, invocation))
-                    self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
+                    self.assertEqual(
+                        "ci-gate-public-execution-parity", raised.exception.code
+                    )
 
     def test_runtime_rebind_fails_before_cli_execution(self) -> None:
         document = contract.load_contract_document(pathlib.Path.cwd())
         for node in document["gate_nodes"]:
             if node["gate_id"] == "leaf.local-diff-hygiene":
-                node["entrypoint"] = "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                node["entrypoint"] = (
+                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                )
                 node["argv"] = []
         with (
             mock.patch.object(runner, "load_contract_document", return_value=document),
@@ -904,9 +1014,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
             },
         )
         for environ in invalid:
-            with self.subTest(environ=environ), self.assertRaises(
-                contract.GateContractError
-            ) as raised:
+            with (
+                self.subTest(environ=environ),
+                self.assertRaises(contract.GateContractError) as raised,
+            ):
                 runner.derive_execution_context(environ)
             self.assertEqual("ci-gate-execution-context", raised.exception.code)
 
@@ -942,9 +1053,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     environ,
                 )
                 invocation = next(
-                    item
-                    for item in plan
-                    if item.gate_id == "leaf.repo-metadata-base"
+                    item for item in plan if item.gate_id == "leaf.repo-metadata-base"
                 )
                 with tempfile.TemporaryDirectory(dir="/tmp") as directory:
                     child = runner._child_environment(
@@ -956,14 +1065,25 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         python_bootstrap=pathlib.Path(directory),
                     )
                 self.assertEqual(expected_base, child["TEMPLATE_GATE_BASE"])
-                for name in ("check-document-metadata.py", "check-document-corpus-lifecycle.py"):
-                    validator = next(item for item in plan if item.entrypoint.name == name)
+                for name in (
+                    "check-document-metadata.py",
+                    "check-document-corpus-lifecycle.py",
+                ):
+                    validator = next(
+                        item for item in plan if item.entrypoint.name == name
+                    )
                     with tempfile.TemporaryDirectory(dir="/tmp") as directory:
                         validator_child = runner._child_environment(
-                            root, pathlib.Path(directory), validator, "python", environ,
+                            root,
+                            pathlib.Path(directory),
+                            validator,
+                            "python",
+                            environ,
                             python_bootstrap=pathlib.Path(directory),
                         )
-                    self.assertEqual(expected_base, validator_child["TEMPLATE_GATE_BASE"])
+                    self.assertEqual(
+                        expected_base, validator_child["TEMPLATE_GATE_BASE"]
+                    )
                 with mock.patch.object(
                     adapters,
                     "_run_child",
@@ -971,9 +1091,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 ) as run_child:
                     self.assertEqual(
                         0,
-                        adapters.run_adapter(
-                            root, ("verify-metadata-base",), child
-                        ),
+                        adapters.run_adapter(root, ("verify-metadata-base",), child),
                     )
                 self.assertEqual(2, run_child.call_count)
 
@@ -1207,7 +1325,13 @@ class DescriptorExecutionTests(unittest.TestCase):
         directory = self.root / "scripts/validation/not-regular.py"
         directory.mkdir()
         REAL_SUBPROCESS_RUN(
-            ["git", "add", "--intent-to-add", "--", str(directory.relative_to(self.root))],
+            [
+                "git",
+                "add",
+                "--intent-to-add",
+                "--",
+                str(directory.relative_to(self.root)),
+            ],
             cwd=self.root,
             check=False,
         )
@@ -1360,9 +1484,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        adapter_source = pathlib.Path(adapters.__file__).read_text(
-            encoding="utf-8"
-        )
+        adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
@@ -1421,9 +1543,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        adapter_source = pathlib.Path(adapters.__file__).read_text(
-            encoding="utf-8"
-        )
+        adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
@@ -1448,12 +1568,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             runner.execute_execution_plan(
                 self.root,
                 (invocation,),
-                {
-                    "PATH": (
-                        f"{fake_bin}:"
-                        f"{os.environ.get('PATH', os.defpath)}"
-                    )
-                },
+                {"PATH": (f"{fake_bin}:{os.environ.get('PATH', os.defpath)}")},
             ),
         )
         self.assertFalse(injected.exists())
@@ -1464,9 +1579,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         (self.root / "results.sarif").unlink()
 
     def _assert_registered_adapter_integrations(self) -> None:
-        adapter_source = pathlib.Path(adapters.__file__).read_text(
-            encoding="utf-8"
-        )
+        adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
@@ -1509,12 +1622,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             runner.execute_execution_plan(
                 self.root,
                 plan,
-                {
-                    "PATH": (
-                        f"{fake_bin}:"
-                        f"{os.environ.get('PATH', os.defpath)}"
-                    )
-                },
+                {"PATH": (f"{fake_bin}:{os.environ.get('PATH', os.defpath)}")},
             ),
         )
         self.assertEqual(
@@ -1554,10 +1662,10 @@ class DescriptorExecutionTests(unittest.TestCase):
             "import os,pathlib,signal,subprocess,sys,time\n"
             "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
-            "grand_source=\"import pathlib,signal,sys,time; \"\n"
-            "grand_source+=\"signal.signal(signal.SIGTERM, signal.SIG_IGN); \"\n"
-            "grand_source+=\"release=pathlib.Path(sys.argv[1]); \"\n"
-            "grand_source+=\"\\nwhile not release.exists(): time.sleep(0.01)\"\n"
+            'grand_source="import pathlib,signal,sys,time; "\n'
+            'grand_source+="signal.signal(signal.SIGTERM, signal.SIG_IGN); "\n'
+            'grand_source+="release=pathlib.Path(sys.argv[1]); "\n'
+            'grand_source+="\\nwhile not release.exists(): time.sleep(0.01)"\n'
             "grand=subprocess.Popen([sys.executable,'-c',grand_source,release])\n"
             "with open(ready,'w',encoding='ascii') as stream:\n"
             "    stream.write(f'{os.getpid()} {grand.pid}\\n')\n"
@@ -1606,9 +1714,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             "    raise SystemExit(2)\n"
             "raise SystemExit(result.returncode)\n"
         )
-        adapter_source = pathlib.Path(adapters.__file__).read_text(
-            encoding="utf-8"
-        )
+        adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
@@ -1677,9 +1783,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                     self.assertTrue(ready_poll.poll(5000))
                     pids = tuple(
                         int(value)
-                        for value in os.read(ready_fd, 128)
-                        .decode("ascii")
-                        .split()
+                        for value in os.read(ready_fd, 128).decode("ascii").split()
                     )
                     self.assertEqual(2, len(pids))
                     pidfds = [os.pidfd_open(pid) for pid in pids]
@@ -1725,7 +1829,8 @@ class DescriptorExecutionTests(unittest.TestCase):
                 def wait(timeout: float) -> int:
                     trace.append(("wait", timeout))
                     if outcome == "timeout" and not any(
-                        entry in {
+                        entry
+                        in {
                             ("signal", signal.SIGTERM),
                             ("signal", signal.SIGKILL),
                         }
@@ -1741,11 +1846,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                 process.communicate.side_effect = AssertionError(
                     "communicate before identity-safe finalization"
                 )
-                readiness = (
-                    [False, False, True]
-                    if outcome == "timeout"
-                    else [True]
-                )
+                readiness = [False, False, True] if outcome == "timeout" else [True]
 
                 def pidfd_ready(
                     descriptor: int,
@@ -1755,7 +1856,10 @@ class DescriptorExecutionTests(unittest.TestCase):
                     return readiness.pop(0)
 
                 def signal_group(pgid: int, signum: int) -> None:
-                    self.assertNotIn("wait", [entry[0] for entry in trace if isinstance(entry, tuple)])
+                    self.assertNotIn(
+                        "wait",
+                        [entry[0] for entry in trace if isinstance(entry, tuple)],
+                    )
                     trace.append(("signal", signum))
 
                 def members(
@@ -1765,7 +1869,10 @@ class DescriptorExecutionTests(unittest.TestCase):
                 ) -> tuple[int, ...]:
                     self.assertEqual(43210, pgid)
                     self.assertEqual(43210, leader_pid)
-                    self.assertNotIn("wait", [entry[0] for entry in trace if isinstance(entry, tuple)])
+                    self.assertNotIn(
+                        "wait",
+                        [entry[0] for entry in trace if isinstance(entry, tuple)],
+                    )
                     trace.append(("members", pgid))
                     return ()
 
@@ -1778,10 +1885,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                     mock.patch.object(
                         runner.os,
                         "pidfd_open",
-                        side_effect=lambda pid: trace.append(
-                            ("pidfd-open", pid)
-                        )
-                        or 91,
+                        side_effect=lambda pid: trace.append(("pidfd-open", pid)) or 91,
                     ) as pidfd_open,
                     mock.patch.object(
                         runner,
@@ -1846,10 +1950,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                     if isinstance(entry, tuple) and entry[0] == "wait"
                 )
                 for index, entry in enumerate(trace):
-                    if (
-                        isinstance(entry, tuple)
-                        and entry[0] in {"signal", "members"}
-                    ):
+                    if isinstance(entry, tuple) and entry[0] in {"signal", "members"}:
                         self.assertLess(index, wait_index)
         self._assert_runner_recovery_and_proc_contracts(item)
 
@@ -1884,9 +1985,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                         "ci-gate-child-exec",
                         getattr(caught, "code", None),
                     )
-                    rendered = "".join(
-                        traceback.format_exception(caught)
-                    )
+                    rendered = "".join(traceback.format_exception(caught))
                     self.assertNotIn("private", rendered)
                 else:
                     self.fail("ordinary pre-bind failure did not fail closed")
@@ -1931,9 +2030,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         for phase in phases:
             with self.subTest(phase_owned_transition=phase):
                 if lifecycle_type is None:
-                    self.fail(
-                        "the runner lacks a phase-owned lifecycle state"
-                    )
+                    self.fail("the runner lacks a phase-owned lifecycle state")
                 self._exercise_runner_phase_owned_transition(
                     item,
                     lifecycle_type,
@@ -1948,9 +2045,7 @@ class DescriptorExecutionTests(unittest.TestCase):
     ) -> None:
         process = mock.Mock(pid=43210)
         process.poll.side_effect = AssertionError("forbidden poll")
-        process.communicate.side_effect = AssertionError(
-            "forbidden communicate"
-        )
+        process.communicate.side_effect = AssertionError("forbidden communicate")
         trace: list[tuple[str, object]] = []
         interruption_by_phase: dict[str, BaseException] = {
             "bound-process-before-pidfd": KeyboardInterrupt(
@@ -1965,9 +2060,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             "reap-started-before-wait": KeyboardInterrupt(
                 "private reap-started interruption"
             ),
-            "wait-interruption": GeneratorExit(
-                "private wait interruption"
-            ),
+            "wait-interruption": GeneratorExit("private wait interruption"),
             "close-started-interruption": SystemExit(
                 "private close-started interruption"
             ),
@@ -1987,10 +2080,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             "mark_reap_started": "reap-started",
             "mark_pidfd_close_attempted": "pidfd-close-started",
         }
-        originals = {
-            name: getattr(lifecycle_type, name)
-            for name in transition_methods
-        }
+        originals = {name: getattr(lifecycle_type, name) for name in transition_methods}
 
         def transition_wrapper(
             method_name: str,
@@ -2014,9 +2104,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                 elif event_name == "reap-started":
                     self.assertTrue(getattr(state, "reap_started"))
                 else:
-                    self.assertTrue(
-                        getattr(state, "pidfd_close_attempted")
-                    )
+                    self.assertTrue(getattr(state, "pidfd_close_attempted"))
                 trace.append((event_name, True))
                 if transition_for_phase == event_name:
                     raise interruption
@@ -2140,8 +2228,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         if "reap-started" in labels:
             reap_index = labels.index("reap-started")
             self.assertFalse(
-                {"signal", "ready", "members"}
-                & set(labels[reap_index + 1 :]),
+                {"signal", "ready", "members"} & set(labels[reap_index + 1 :]),
                 "post-reap numeric or observation action is forbidden",
             )
             if "wait" in labels:
@@ -2182,15 +2269,11 @@ class DescriptorExecutionTests(unittest.TestCase):
             self.fail("the runner lacks recovery-owned lifecycle state")
         required_methods = {
             "mark_recovery_kill_completed": "recovery-kill-completed",
-            "mark_recovery_readiness_completed": (
-                "recovery-readiness-completed"
-            ),
+            "mark_recovery_readiness_completed": ("recovery-readiness-completed"),
             "mark_reap_completed": "reap-completed",
         }
         missing = [
-            name
-            for name in required_methods
-            if not hasattr(lifecycle_type, name)
+            name for name in required_methods if not hasattr(lifecycle_type, name)
         ]
         if missing:
             self.fail(
@@ -2221,23 +2304,16 @@ class DescriptorExecutionTests(unittest.TestCase):
     ) -> None:
         process = mock.Mock(pid=43210)
         process.poll.side_effect = AssertionError("forbidden poll")
-        process.communicate.side_effect = AssertionError(
-            "forbidden communicate"
-        )
+        process.communicate.side_effect = AssertionError("forbidden communicate")
         trace: list[tuple[str, object]] = []
         interruption = KeyboardInterrupt(f"private {phase} interruption")
         transition_for_phase = {
             "no-pidfd-kill-completed": "recovery-kill-completed",
             "pidfd-kill-completed": "recovery-kill-completed",
-            "recovery-readiness-completed": (
-                "recovery-readiness-completed"
-            ),
+            "recovery-readiness-completed": ("recovery-readiness-completed"),
             "reap-completed-before-close": "reap-completed",
         }[phase]
-        originals = {
-            name: getattr(lifecycle_type, name)
-            for name in transition_methods
-        }
+        originals = {name: getattr(lifecycle_type, name) for name in transition_methods}
 
         def transition_wrapper(
             method_name: str,
@@ -2252,16 +2328,10 @@ class DescriptorExecutionTests(unittest.TestCase):
             ) -> object:
                 result = original(state, *args, **kwargs)
                 if event_name == "recovery-kill-completed":
-                    self.assertTrue(
-                        getattr(state, "recovery_kill_completed")
-                    )
+                    self.assertTrue(getattr(state, "recovery_kill_completed"))
                 elif event_name == "recovery-readiness-completed":
-                    self.assertTrue(
-                        getattr(state, "recovery_readiness_completed")
-                    )
-                    self.assertTrue(
-                        getattr(state, "recovery_leader_ready")
-                    )
+                    self.assertTrue(getattr(state, "recovery_readiness_completed"))
+                    self.assertTrue(getattr(state, "recovery_leader_ready"))
                 else:
                     self.assertTrue(getattr(state, "reap_completed"))
                 trace.append((event_name, True))
@@ -2470,9 +2540,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                         return_value=None,
                     ),
                     mock.patch.object(runner.os, "close") as close,
-                    self.assertRaises(
-                        contract.GateContractError
-                    ) as caught,
+                    self.assertRaises(contract.GateContractError) as caught,
                 ):
                     runner._run_verified_child(
                         41,
@@ -2516,9 +2584,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                 process.wait.side_effect = acquisition_wait
 
                 def acquisition_signal(_pgid: int, signum: int) -> None:
-                    self.assertFalse(
-                        any(event[0] == "wait" for event in trace)
-                    )
+                    self.assertFalse(any(event[0] == "wait" for event in trace))
                     trace.append(("signal", signum))
 
                 with (
@@ -2540,9 +2606,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                     mock.patch.object(runner.os, "close") as close,
                 ):
                     if expected_code is not None:
-                        with self.assertRaises(
-                            contract.GateContractError
-                        ) as caught:
+                        with self.assertRaises(contract.GateContractError) as caught:
                             runner._run_verified_child(
                                 41,
                                 item,
@@ -2608,9 +2672,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         )
         self.assertNotIn("private", str(observed_acquisition_error))
         killpg.assert_called_once_with(43210, signal.SIGKILL)
-        process.wait.assert_called_once_with(
-            timeout=runner._TERMINATION_GRACE_SECONDS
-        )
+        process.wait.assert_called_once_with(timeout=runner._TERMINATION_GRACE_SECONDS)
         close.assert_not_called()
 
         def exercise_later_case(
@@ -2629,9 +2691,7 @@ class DescriptorExecutionTests(unittest.TestCase):
         ) -> None:
             process = mock.Mock(pid=43210)
             process.poll.side_effect = AssertionError("forbidden poll")
-            process.communicate.side_effect = AssertionError(
-                "forbidden communicate"
-            )
+            process.communicate.side_effect = AssertionError("forbidden communicate")
             member_queue = list(member_effects or [()])
             trace: list[tuple[str, object]] = []
 
@@ -2894,9 +2954,9 @@ class DescriptorExecutionTests(unittest.TestCase):
                 (directory / "stat").write_bytes(
                     payload
                     if payload is not None
-                    else (
-                        f"{pid} (worker ({pid})) S 1 {pgrp} 1 0 0 0\n"
-                    ).encode("ascii")
+                    else (f"{pid} (worker ({pid})) S 1 {pgrp} 1 0 0 0\n").encode(
+                        "ascii"
+                    )
                 )
 
             write_stat(43210, 43210)
@@ -2921,9 +2981,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                 numeric = proc_root / "126"
                 numeric.mkdir()
                 (numeric / "stat").write_bytes(payload)
-                with self.assertRaises(
-                    contract.GateContractError
-                ) as caught:
+                with self.assertRaises(contract.GateContractError) as caught:
                     scanner(43210, 43210, proc_root=proc_root)
                 self.assertEqual(
                     "ci-gate-runner-proc-scan",
@@ -2935,9 +2993,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             proc_root = pathlib.Path(proc_temporary)
             target = proc_root / "target"
             target.mkdir()
-            (target / "stat").write_bytes(
-                b"127 (worker) S 1 43210 1 0\n"
-            )
+            (target / "stat").write_bytes(b"127 (worker) S 1 43210 1 0\n")
             (proc_root / "127").symlink_to(target, target_is_directory=True)
             with self.assertRaises(contract.GateContractError) as caught:
                 scanner(43210, 43210, proc_root=proc_root)
@@ -2951,9 +3007,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             real_open = os.open
             numeric = proc_root / "128"
             numeric.mkdir()
-            (numeric / "stat").write_bytes(
-                b"128 (worker) S 1 43210 1 0\n"
-            )
+            (numeric / "stat").write_bytes(b"128 (worker) S 1 43210 1 0\n")
 
             def deny_stat(
                 path: str | pathlib.Path,
@@ -2981,9 +3035,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             proc_root = pathlib.Path(proc_temporary)
             numeric = proc_root / "129"
             numeric.mkdir()
-            (numeric / "stat").write_bytes(
-                b"129 (worker) S 1 43210 1 0\n"
-            )
+            (numeric / "stat").write_bytes(b"129 (worker) S 1 43210 1 0\n")
             real_read = os.read
 
             def fail_stat_read(descriptor: int, size: int) -> bytes:
@@ -3008,9 +3060,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             SystemExit("private stat close exit"),
             GeneratorExit("private stat close generator"),
         ):
-            with self.subTest(
-                proc_descriptor_close=type(close_interruption).__name__
-            ):
+            with self.subTest(proc_descriptor_close=type(close_interruption).__name__):
                 close_attempts: list[int] = []
 
                 def open_proc_entry(
@@ -3160,8 +3210,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                     return (
                         FakeEntry(str(pid))
                         for pid in range(
-                            getattr(runner, "_MAX_PROC_PID_ENTRIES", 65536)
-                            + 1
+                            getattr(runner, "_MAX_PROC_PID_ENTRIES", 65536) + 1
                         )
                     )
 
@@ -3187,9 +3236,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             proc_link = self.root / "proc-link"
             proc_link.symlink_to(target, target_is_directory=True)
             try:
-                with self.assertRaises(
-                    contract.GateContractError
-                ) as caught:
+                with self.assertRaises(contract.GateContractError) as caught:
                     scanner(43210, 43210, proc_root=proc_link)
                 self.assertEqual(
                     "ci-gate-runner-proc-scan",

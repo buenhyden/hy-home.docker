@@ -34,11 +34,10 @@ def _repository_root() -> pathlib.Path:
         direct = fallback.stat()
     except (OSError, ValueError, OverflowError):
         raise SystemExit(_ROOT_ERROR) from None
-    if (
-        not stat.S_ISDIR(descriptor.st_mode)
-        or (descriptor.st_dev, descriptor.st_ino)
-        != (direct.st_dev, direct.st_ino)
-    ):
+    if not stat.S_ISDIR(descriptor.st_mode) or (
+        descriptor.st_dev,
+        descriptor.st_ino,
+    ) != (direct.st_dev, direct.st_ino):
         raise SystemExit(_ROOT_ERROR)
     return pathlib.Path(override)
 
@@ -652,7 +651,14 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/99.templates/",
 )
 MIGRATION_TYPED_KEYS = frozenset(
-    {"artifact_id", "artifact_type", "parent_ids", "supersedes", "reviewed_at", "next_review_at"}
+    {
+        "artifact_id",
+        "artifact_type",
+        "parent_ids",
+        "supersedes",
+        "reviewed_at",
+        "next_review_at",
+    }
 )
 APPROVED_MIGRATION_PATHS = frozenset(
     {
@@ -706,10 +712,10 @@ OPENAPI_BEARER_VALUE = re.compile(
     r"(?i)\b(?:bearer|basic|oauth2?|openidconnect)[ \t]+"
     r"(?!__[A-Z][A-Z0-9_]*__)[A-Za-z0-9._~+/-]+"
 )
-OPENAPI_JWT_VALUE = re.compile(
-    r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
+OPENAPI_JWT_VALUE = re.compile(r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b")
+OPENAPI_AUTH_SCHEMES = frozenset(
+    {"basic", "bearer", "oauth", "oauth2", "openidconnect"}
 )
-OPENAPI_AUTH_SCHEMES = frozenset({"basic", "bearer", "oauth", "oauth2", "openidconnect"})
 OPENAPI_CREDENTIAL_VALUE_KEYS = frozenset(
     {"default", "example", "examples", "const", "enum"}
 )
@@ -766,8 +772,6 @@ class TransitionOverride:
     reason: str
 
 
-
-
 @dataclasses.dataclass(frozen=True)
 class OpenApiInspection:
     """Safe, value-free result of inspecting a parsed OpenAPI template."""
@@ -803,7 +807,9 @@ def registered_generated_owner(
     if not isinstance(profiles, Mapping):
         return None
     common = profiles.get("common")
-    generated_outputs = common.get("generated_outputs") if isinstance(common, Mapping) else None
+    generated_outputs = (
+        common.get("generated_outputs") if isinstance(common, Mapping) else None
+    )
     if not isinstance(generated_outputs, Mapping):
         return None
     owner = generated_outputs.get(path.as_posix())
@@ -875,9 +881,9 @@ def infer_artifact_type(
             return "audit"
         if normalized.startswith("docs/90.references/"):
             return "reference"
-        if normalized.startswith("docs/99.templates/templates/") and normalized.endswith(
-            ".template.md"
-        ):
+        if normalized.startswith(
+            "docs/99.templates/templates/"
+        ) and normalized.endswith(".template.md"):
             return "template-source"
         return "unsupported"
     name = pathlib.PurePosixPath(normalized).name
@@ -885,7 +891,9 @@ def infer_artifact_type(
         return "generated"
     if name == "README.md":
         return "readme"
-    if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
+    if normalized.startswith("docs/99.templates/templates/") and name.endswith(
+        ".template.md"
+    ):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
         return "governance"
@@ -939,10 +947,7 @@ LEGACY_REQUIREMENT_RELATION_ID = re.compile(r"prd-[0-9]{4}")
 def _legacy_spec_relation_alias(record: Record) -> str | None:
     """Return the one-way canonical relation alias for a valid legacy Spec."""
 
-    if (
-        record.artifact_type != "spec"
-        or record.metadata.get("type") != "sdlc/spec"
-    ):
+    if record.artifact_type != "spec" or record.metadata.get("type") != "sdlc/spec":
         return None
     path_match = LEGACY_SPEC_RELATION_PATH.fullmatch(record.path.as_posix())
     artifact_id = record.metadata.get("artifact_id")
@@ -963,9 +968,7 @@ def _legacy_requirement_relation_alias(record: Record) -> str | None:
 
     if record.artifact_type != "requirements-package":
         return None
-    path_match = CANONICAL_REQUIREMENT_RELATION_PATH.fullmatch(
-        record.path.as_posix()
-    )
+    path_match = CANONICAL_REQUIREMENT_RELATION_PATH.fullmatch(record.path.as_posix())
     artifact_id = record.metadata.get("artifact_id")
     id_match = (
         CANONICAL_REQUIREMENT_RELATION_ID.fullmatch(artifact_id)
@@ -994,7 +997,9 @@ def _legacy_requirement_reference_permitted(
     )
 
 
-def build_manifest(records: Sequence[Record], *, retired_records: Sequence[Record] = ()) -> dict[str, pathlib.Path]:
+def build_manifest(
+    records: Sequence[Record], *, retired_records: Sequence[Record] = ()
+) -> dict[str, pathlib.Path]:
     """Build a deterministic artifact-ID manifest and retain duplicate context."""
 
     paths_by_id: dict[str, list[pathlib.Path]] = collections.defaultdict(list)
@@ -1006,7 +1011,10 @@ def build_manifest(records: Sequence[Record], *, retired_records: Sequence[Recor
         normalized_id = artifact_id.strip()
         paths_by_id[normalized_id].append(record.path)
         records_by_id.setdefault(normalized_id, record)
-    values = {artifact_id: sorted(paths)[0] for artifact_id, paths in sorted(paths_by_id.items())}
+    values = {
+        artifact_id: sorted(paths)[0]
+        for artifact_id, paths in sorted(paths_by_id.items())
+    }
     duplicates = {
         artifact_id: tuple(sorted(paths))
         for artifact_id, paths in sorted(paths_by_id.items())
@@ -1027,10 +1035,7 @@ def build_manifest(records: Sequence[Record], *, retired_records: Sequence[Recor
     relation_records_by_id: dict[str, Record] = {}
     relation_conflicts: dict[str, tuple[pathlib.Path, ...]] = {}
     for relation_id, candidates in sorted(relation_candidates.items()):
-        unique = {
-            candidate.path.as_posix(): candidate
-            for candidate in candidates
-        }
+        unique = {candidate.path.as_posix(): candidate for candidate in candidates}
         if len(unique) == 1:
             relation_records_by_id[relation_id] = next(iter(unique.values()))
         else:
@@ -1051,7 +1056,9 @@ def build_manifest(records: Sequence[Record], *, retired_records: Sequence[Recor
     )
 
 
-def _profile_mapping(profiles: dict[str, object]) -> tuple[dict[str, object], dict[str, object]]:
+def _profile_mapping(
+    profiles: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object]]:
     common = profiles.get("common", {})
     profile_map = profiles.get("profiles", {})
     if not isinstance(common, dict) or not isinstance(profile_map, dict):
@@ -1059,7 +1066,9 @@ def _profile_mapping(profiles: dict[str, object]) -> tuple[dict[str, object], di
     return common, profile_map
 
 
-def build_current_manifest(root: pathlib.Path, records: Sequence[Record]) -> dict[str, pathlib.Path]:
+def build_current_manifest(
+    root: pathlib.Path, records: Sequence[Record]
+) -> dict[str, pathlib.Path]:
     """Resolve retired Spec lineage only through exact verified compact evidence."""
 
     current = build_manifest(records)
@@ -1067,10 +1076,27 @@ def build_current_manifest(root: pathlib.Path, records: Sequence[Record]) -> dic
     for record in records:
         for field in ("parent_ids", "supersedes", "superseded_by"):
             value = record.metadata.get(field)
-            values = [value] if isinstance(value, str) else value if isinstance(value, list) else []
-            needed.update(item for item in values if isinstance(item, str)
-                          and item.startswith("SPEC-") and item not in current)
-    if not needed or not (root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md").exists():
+            values = (
+                [value]
+                if isinstance(value, str)
+                else value
+                if isinstance(value, list)
+                else []
+            )
+            needed.update(
+                item
+                for item in values
+                if isinstance(item, str)
+                and item.startswith("SPEC-")
+                and item not in current
+            )
+    if (
+        not needed
+        or not (
+            root
+            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+        ).exists()
+    ):
         return current
     from scripts.lib.document_governance.archive import _migration_document
     from scripts.lib.document_governance.git_provenance import HistoricalDocument
@@ -1081,29 +1107,44 @@ def build_current_manifest(root: pathlib.Path, records: Sequence[Record]) -> dic
         if migration["schema_version"] == 3:
             for row in migration["rows"]:
                 source = row["source_path"]
-                if (row["action"] != "delete" or row["artifact_id"] not in needed
-                        or not source.endswith("/spec.md") or (root / source).exists()):
+                if (
+                    row["action"] != "delete"
+                    or row["artifact_id"] not in needed
+                    or not source.endswith("/spec.md")
+                    or (root / source).exists()
+                ):
                     continue
-                text = HistoricalDocument(root, row["recovery_commit"], source).read_text()
+                text = HistoricalDocument(
+                    root, row["recovery_commit"], source
+                ).read_text()
                 values = _parse_frontmatter_text(text)
                 # Read at its recovery commit, where the role key was still
                 # `artifact_type`; the blob is frozen and never re-typed.
-                if values.get("artifact_id") != row["artifact_id"] or values.get(
-                    "artifact_type"
-                ) != "spec":
+                if (
+                    values.get("artifact_id") != row["artifact_id"]
+                    or values.get("artifact_type") != "spec"
+                ):
                     raise ValueError("retired Spec identity does not match recovery")
-                retired.append(Record(pathlib.Path(source), {**values, "status": "retired"}, "spec"))
+                retired.append(
+                    Record(
+                        pathlib.Path(source), {**values, "status": "retired"}, "spec"
+                    )
+                )
         return build_manifest(records, retired_records=retired)
     except ValueError as error:
         raise ProfileError("retired Spec lineage recovery is invalid") from error
 
 
-def _finding(record: Record, code: str, message: str, severity: str = "error") -> Finding:
+def _finding(
+    record: Record, code: str, message: str, severity: str = "error"
+) -> Finding:
     return Finding(record.path.as_posix(), code, message, severity)
 
 
 def _string_list(value: object) -> list[str] | None:
-    if not isinstance(value, list) or not all(isinstance(item, str) and item.strip() for item in value):
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item.strip() for item in value
+    ):
         return None
     return [item.strip() for item in value]
 
@@ -1148,13 +1189,19 @@ def _safe_repo_path(value: object, required_prefix: str | None = None) -> bool:
     if not isinstance(value, str) or not value or "\\" in value or "://" in value:
         return False
     pure = pathlib.PurePosixPath(value)
-    if pure.is_absolute() or value != pure.as_posix() or any(part in {"", ".", ".."} for part in pure.parts):
+    if (
+        pure.is_absolute()
+        or value != pure.as_posix()
+        or any(part in {"", ".", ".."} for part in pure.parts)
+    ):
         return False
     return required_prefix is None or value.startswith(required_prefix)
 
 
 def _valid_lowercase_object_id(value: object) -> bool:
-    return isinstance(value, str) and LOWERCASE_OBJECT_ID_RE.fullmatch(value) is not None
+    return (
+        isinstance(value, str) and LOWERCASE_OBJECT_ID_RE.fullmatch(value) is not None
+    )
 
 
 def _valid_lowercase_sha256(value: object) -> bool:
@@ -1217,7 +1264,9 @@ def _safe_target_glob(value: object) -> bool:
     without_digit_classes = value.replace("[0-9]", "")
     if any(marker in without_digit_classes for marker in "?[]{}"):
         return False
-    return all("***" not in part and ("**" not in part or part == "**") for part in pure.parts)
+    return all(
+        "***" not in part and ("**" not in part or part == "**") for part in pure.parts
+    )
 
 
 def _target_glob_matches(path: pathlib.PurePosixPath, pattern: str) -> bool:
@@ -1293,7 +1342,9 @@ def _segment_glob_intersection_witness(left: str, right: str) -> str | None:
             continue
 
         left_star = left_index < len(left_tokens) and left_tokens[left_index] == "*"
-        right_star = right_index < len(right_tokens) and right_tokens[right_index] == "*"
+        right_star = (
+            right_index < len(right_tokens) and right_tokens[right_index] == "*"
+        )
         if left_star:
             queue.append((left_index + 1, right_index, witness))
         if right_star:
@@ -1337,7 +1388,9 @@ def _target_glob_intersection_witness(left: str, right: str) -> str | None:
             return pathlib.PurePosixPath(*witness).as_posix()
 
         left_globstar = left_index < len(left_parts) and left_parts[left_index] == "**"
-        right_globstar = right_index < len(right_parts) and right_parts[right_index] == "**"
+        right_globstar = (
+            right_index < len(right_parts) and right_parts[right_index] == "**"
+        )
         if left_globstar:
             queue.append((left_index + 1, right_index, witness))
         if right_globstar:
@@ -1373,7 +1426,9 @@ def matching_template_roles(
     """Return sorted template roles matching one target path and profile."""
 
     normalized = pathlib.PurePosixPath(path.as_posix())
-    if normalized.is_absolute() or any(part in {"", ".", ".."} for part in normalized.parts):
+    if normalized.is_absolute() or any(
+        part in {"", ".", ".."} for part in normalized.parts
+    ):
         return []
     registry = profiles.get("_registry")
     if isinstance(registry, DocumentRegistry):
@@ -1476,9 +1531,7 @@ def _relation_record(
     if (
         referencing_record is not None
         and artifact_id not in manifest.records_by_id
-        and not _legacy_requirement_reference_permitted(
-            referencing_record, artifact_id
-        )
+        and not _legacy_requirement_reference_permitted(referencing_record, artifact_id)
     ):
         return None
     if artifact_id in manifest.relation_conflicts:
@@ -1497,15 +1550,10 @@ def _relation_reference_exists(
         (
             referencing_record is None
             or artifact_id in manifest.records_by_id
-            or _legacy_requirement_reference_permitted(
-                referencing_record, artifact_id
-            )
+            or _legacy_requirement_reference_permitted(referencing_record, artifact_id)
         )
         and artifact_id not in manifest.relation_conflicts
-        and (
-            artifact_id in manifest.relation_records_by_id
-            or artifact_id in manifest
-        )
+        and (artifact_id in manifest.relation_records_by_id or artifact_id in manifest)
     )
 
 
@@ -1523,7 +1571,9 @@ def _relation_ids_for_record(record: Record) -> frozenset[str]:
     return frozenset(relation_ids)
 
 
-def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest) -> bool:
+def _has_parent_cycle(
+    record: Record, parent_ids: list[str], manifest: Manifest
+) -> bool:
     relation_ids = _relation_ids_for_record(record)
     if not relation_ids:
         return False
@@ -1568,9 +1618,11 @@ def _contains_template_placeholder(value: object, angle_tokens: set[str]) -> boo
     if isinstance(value, list):
         return any(_contains_template_placeholder(item, angle_tokens) for item in value)
     if isinstance(value, dict):
-        return any(_contains_template_placeholder(item, angle_tokens) for item in value.values())
+        return any(
+            _contains_template_placeholder(item, angle_tokens)
+            for item in value.values()
+        )
     return False
-
 
 
 def _exact_string_list(
@@ -1608,8 +1660,6 @@ def _canonical_partition_plan_path(value: object) -> bool:
         and _safe_contract_path(value)
         and CANONICAL_PARTITION_PLAN_PATH.fullmatch(value) is not None
     )
-
-
 
 
 def _require_exact_mapping(
@@ -1659,7 +1709,9 @@ def _profile_field_ownership(
         if not isinstance(members, list) or not all(
             isinstance(member, str) for member in members
         ):
-            raise ProfileError(f"{label} selected profile has invalid {group} ownership")
+            raise ProfileError(
+                f"{label} selected profile has invalid {group} ownership"
+            )
         if field in members:
             owners.append(group)
     if len(owners) != 1:
@@ -1683,11 +1735,16 @@ def _validate_static_migration_manifest_v2(
         EXPECTED_MANIFEST_SCHEMA_V2["top_level_fields"],
         "migration manifest",
     )
-    if type(manifest.get("schema_version")) is not int or manifest.get("schema_version") != 2:
+    if (
+        type(manifest.get("schema_version")) is not int
+        or manifest.get("schema_version") != 2
+    ):
         raise ProfileError("manifest schema_version must be the integer 2")
     _non_empty_string(manifest.get("wave"), "manifest wave")
     if not _valid_lowercase_object_id(manifest.get("baseline_commit")):
-        raise ProfileError("manifest baseline_commit must be a lowercase full object ID")
+        raise ProfileError(
+            "manifest baseline_commit must be a lowercase full object ID"
+        )
     _non_empty_string(manifest.get("generated_by"), "manifest generated_by")
     if manifest.get("enforcement") not in {"advisory", "blocking"}:
         raise ProfileError("manifest enforcement must be advisory or blocking")
@@ -1700,7 +1757,9 @@ def _validate_static_migration_manifest_v2(
     allowed_statuses = set(raw_common.get("allowed_statuses", []))
     raw_manifest_contract = contract.get("manifest")
     raw_archive_contract = contract.get("archive")
-    if not isinstance(raw_manifest_contract, Mapping) or not isinstance(raw_archive_contract, Mapping):
+    if not isinstance(raw_manifest_contract, Mapping) or not isinstance(
+        raw_archive_contract, Mapping
+    ):
         raise ProfileError("manifest validation requires disposition registries")
     dispositions = set(raw_manifest_contract.get("dispositions", []))
     preservation_classes = set(raw_archive_contract.get("preservation_classes", []))
@@ -1710,7 +1769,9 @@ def _validate_static_migration_manifest_v2(
     replacement_required = set(replacement_requirements.get("required_for", []))
     replacement_optional = set(replacement_requirements.get("optional_for", []))
     replacement_forbidden = set(replacement_requirements.get("forbidden_for", []))
-    destructive = set(EXPECTED_MANIFEST_SCHEMA_V2["destructive_execution"]["dispositions"])
+    destructive = set(
+        EXPECTED_MANIFEST_SCHEMA_V2["destructive_execution"]["dispositions"]
+    )
     verdict_values = set(EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_values"])
 
     entries = manifest.get("entries")
@@ -1737,8 +1798,13 @@ def _validate_static_migration_manifest_v2(
         if disposition in {"move", "merge", "archive"} and (
             target_path is None or target_path == source_path
         ):
-            raise ProfileError(f"{label} target_path must be distinct for its disposition")
-        if disposition in {"migrate", "preserve", "regenerate", "exempt"} and target_path != source_path:
+            raise ProfileError(
+                f"{label} target_path must be distinct for its disposition"
+            )
+        if (
+            disposition in {"migrate", "preserve", "regenerate", "exempt"}
+            and target_path != source_path
+        ):
             raise ProfileError(f"{label} target_path must equal source_path")
 
         surface_class = entry.get("surface_class")
@@ -1751,11 +1817,20 @@ def _validate_static_migration_manifest_v2(
             and source_path.startswith("docs/02.architecture/requirements/")
             and source_path in TARGET_SURFACE_DIRECT_SOURCE_PATHS
         )
-        for field, value in (("artifact_type_before", before), ("artifact_type_after", after)):
-            if value is not None and value not in artifact_types and not bounded_legacy_source_type:
+        for field, value in (
+            ("artifact_type_before", before),
+            ("artifact_type_after", after),
+        ):
+            if (
+                value is not None
+                and value not in artifact_types
+                and not bounded_legacy_source_type
+            ):
                 raise ProfileError(f"{label} {field} must be null or registered")
         if surface_class == "content-archive" and after != "archive":
-            raise ProfileError(f"{label} content-archive must converge to semantic archive")
+            raise ProfileError(
+                f"{label} content-archive must converge to semantic archive"
+            )
         selected_type = after if isinstance(after, str) else before
         artifact_id = entry.get("artifact_id")
         if artifact_id is not None and not _valid_metadata_artifact_id(artifact_id):
@@ -1778,7 +1853,10 @@ def _validate_static_migration_manifest_v2(
             raise ProfileError(f"{label} canonical_replacement is required")
         if disposition in replacement_forbidden and replacement is not None:
             raise ProfileError(f"{label} canonical_replacement must be null")
-        if disposition not in replacement_required | replacement_optional | replacement_forbidden:
+        if (
+            disposition
+            not in replacement_required | replacement_optional | replacement_forbidden
+        ):
             raise ProfileError(f"{label} disposition lacks replacement semantics")
         partition_plan = entry.get("partition_plan")
         if partition_plan is not None and not _canonical_partition_plan_path(
@@ -1788,13 +1866,20 @@ def _validate_static_migration_manifest_v2(
                 f"{label} partition_plan must be a canonical Spec Package Plan path"
             )
         preservation_class = entry.get("preservation_class")
-        if preservation_class is not None and preservation_class not in preservation_classes:
+        if (
+            preservation_class is not None
+            and preservation_class not in preservation_classes
+        ):
             raise ProfileError(f"{label} preservation_class must be registered")
         evidence = _require_exact_mapping(
-            entry.get("evidence"), EXPECTED_MANIFEST_SCHEMA_V2["evidence_fields"], f"{label} evidence"
+            entry.get("evidence"),
+            EXPECTED_MANIFEST_SCHEMA_V2["evidence_fields"],
+            f"{label} evidence",
         )
         evidence_lists = {
-            field: _deterministic_string_list(evidence.get(field), f"{label} evidence.{field}")
+            field: _deterministic_string_list(
+                evidence.get(field), f"{label} evidence.{field}"
+            )
             for field in EXPECTED_MANIFEST_SCHEMA_V2["evidence_fields"]
         }
         review = _require_exact_mapping(
@@ -1802,16 +1887,25 @@ def _validate_static_migration_manifest_v2(
             EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_fields"],
             f"{label} review_verdict",
         )
-        if any(review.get(field) not in verdict_values for field in EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_fields"]):
+        if any(
+            review.get(field) not in verdict_values
+            for field in EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_fields"]
+        ):
             raise ProfileError(f"{label} review_verdict values must be registered")
         if disposition in destructive:
             if preservation_class is None:
-                raise ProfileError(f"{label} destructive row requires preservation_class")
+                raise ProfileError(
+                    f"{label} destructive row requires preservation_class"
+                )
             if any(not evidence_lists[field] for field in evidence_lists):
-                raise ProfileError(f"{label} destructive evidence lists must not be empty")
+                raise ProfileError(
+                    f"{label} destructive evidence lists must not be empty"
+                )
             if review != {"specification": "pass", "quality": "pass"}:
                 raise ProfileError(f"{label} destructive row requires pass/pass review")
-    if source_paths != sorted(source_paths) or len(source_paths) != len(set(source_paths)):
+    if source_paths != sorted(source_paths) or len(source_paths) != len(
+        set(source_paths)
+    ):
         raise ProfileError("manifest entries must be uniquely ordered by source_path")
 
 
@@ -1833,11 +1927,16 @@ def validate_static_migration_manifest(
         EXPECTED_MANIFEST_SCHEMA["top_level_fields"],
         "migration manifest",
     )
-    if type(manifest.get("schema_version")) is not int or manifest.get("schema_version") != 1:
+    if (
+        type(manifest.get("schema_version")) is not int
+        or manifest.get("schema_version") != 1
+    ):
         raise ProfileError("manifest schema_version must be the integer 1")
     _non_empty_string(manifest.get("wave"), "manifest wave")
     if not _valid_lowercase_object_id(manifest.get("baseline_commit")):
-        raise ProfileError("manifest baseline_commit must be a lowercase full object ID")
+        raise ProfileError(
+            "manifest baseline_commit must be a lowercase full object ID"
+        )
     _non_empty_string(manifest.get("generated_by"), "manifest generated_by")
     enforcement = manifest.get("enforcement")
     if not isinstance(enforcement, str) or enforcement not in {"advisory", "blocking"}:
@@ -1878,9 +1977,7 @@ def validate_static_migration_manifest(
     evidence_fields = EXPECTED_MANIFEST_SCHEMA["evidence_fields"]
     review_fields = EXPECTED_MANIFEST_SCHEMA["review_verdict_fields"]
     verdict_values = set(EXPECTED_MANIFEST_SCHEMA["review_verdict_values"])
-    destructive = set(
-        EXPECTED_MANIFEST_SCHEMA["destructive_execution"]["dispositions"]
-    )
+    destructive = set(EXPECTED_MANIFEST_SCHEMA["destructive_execution"]["dispositions"])
 
     for index, raw_entry in enumerate(entries):
         label = f"manifest entry {index}"
@@ -1896,13 +1993,17 @@ def validate_static_migration_manifest(
 
         target_path = entry.get("target_path")
         if target_path is not None and not _safe_contract_path(target_path):
-            raise ProfileError(f"{label} target_path must be null or a safe repository path")
+            raise ProfileError(
+                f"{label} target_path must be null or a safe repository path"
+            )
         if disposition == "delete" and target_path is not None:
             raise ProfileError(f"{label} delete target_path must be null")
         if disposition in {"move", "merge", "archive"} and (
             target_path is None or target_path == source_path
         ):
-            raise ProfileError(f"{label} target_path must be distinct for its disposition")
+            raise ProfileError(
+                f"{label} target_path must be distinct for its disposition"
+            )
         if disposition in {"migrate", "preserve", "regenerate", "exempt"} and (
             target_path != source_path
         ):
@@ -1964,7 +2065,10 @@ def validate_static_migration_manifest(
             raise ProfileError(f"{label} canonical_replacement is required")
         if disposition in replacement_forbidden and replacement is not None:
             raise ProfileError(f"{label} canonical_replacement must be null")
-        if disposition not in replacement_required | replacement_optional | replacement_forbidden:
+        if (
+            disposition
+            not in replacement_required | replacement_optional | replacement_forbidden
+        ):
             raise ProfileError(f"{label} disposition lacks replacement semantics")
 
         partition_plan = entry.get("partition_plan")
@@ -2001,15 +2105,23 @@ def validate_static_migration_manifest(
 
         if disposition in destructive:
             if preservation_class is None:
-                raise ProfileError(f"{label} destructive row requires preservation_class")
+                raise ProfileError(
+                    f"{label} destructive row requires preservation_class"
+                )
             if not evidence_lists["consumer_scan"]:
-                raise ProfileError(f"{label} consumer enumeration requires scan evidence")
+                raise ProfileError(
+                    f"{label} consumer enumeration requires scan evidence"
+                )
             if any(not evidence_lists[field] for field in evidence_fields):
-                raise ProfileError(f"{label} destructive evidence lists must not be empty")
+                raise ProfileError(
+                    f"{label} destructive evidence lists must not be empty"
+                )
             if review != {"specification": "pass", "quality": "pass"}:
                 raise ProfileError(f"{label} destructive row requires pass/pass review")
 
-    if source_paths != sorted(source_paths) or len(source_paths) != len(set(source_paths)):
+    if source_paths != sorted(source_paths) or len(source_paths) != len(
+        set(source_paths)
+    ):
         raise ProfileError("manifest entries must be uniquely ordered by source_path")
 
 
@@ -2023,10 +2135,14 @@ def validate_static_exception_document(
 
     if contract.get("exception_schema") != EXPECTED_EXCEPTION_SCHEMA:
         raise ProfileError("exception contract must use the exact bounded schema")
-    if isinstance(validation_date, dt.datetime) or not isinstance(validation_date, dt.date):
+    if isinstance(validation_date, dt.datetime) or not isinstance(
+        validation_date, dt.date
+    ):
         raise ProfileError("exception validation_date must be a date")
     known_codes = set(known_finding_codes)
-    if not known_codes or not all(isinstance(code, str) and code for code in known_codes):
+    if not known_codes or not all(
+        isinstance(code, str) and code for code in known_codes
+    ):
         raise ProfileError("known finding codes must be a non-empty string set")
 
     exception_document = _require_exact_mapping(
@@ -2053,7 +2169,9 @@ def validate_static_exception_document(
             EXPECTED_EXCEPTION_SCHEMA["entry_fields"],
             label,
         )
-        finding_code = _non_empty_string(exception.get("finding_code"), f"{label} finding_code")
+        finding_code = _non_empty_string(
+            exception.get("finding_code"), f"{label} finding_code"
+        )
         if finding_code in global_scopes or finding_code not in known_codes:
             raise ProfileError(f"{label} finding_code must be a known specific code")
 
@@ -2090,14 +2208,12 @@ def validate_static_exception_document(
             safe_paths=True,
         )
 
-    if ordering_keys != sorted(ordering_keys) or len(ordering_keys) != len(set(ordering_keys)):
-        raise ProfileError("exceptions must be uniquely ordered by finding_code and scope_paths")
-
-
-
-
-
-
+    if ordering_keys != sorted(ordering_keys) or len(ordering_keys) != len(
+        set(ordering_keys)
+    ):
+        raise ProfileError(
+            "exceptions must be uniquely ordered by finding_code and scope_paths"
+        )
 
 
 def load_profiles(
@@ -2158,9 +2274,7 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
         transitions = (
             {
                 status: list(targets)
-                for status, targets in registry.transitions.get(
-                    profile_id, {}
-                ).items()
+                for status, targets in registry.transitions.get(profile_id, {}).items()
             }
             if profile_id in registry.transitions
             else {}
@@ -2191,7 +2305,9 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
     for role_id, role in registry.template_roles.items():
         profile_id = role.get("profile_id")
         profile = registry.profiles.get(str(profile_id))
-        path_pattern = profile.get("path_pattern") if isinstance(profile, Mapping) else None
+        path_pattern = (
+            profile.get("path_pattern") if isinstance(profile, Mapping) else None
+        )
         if not isinstance(profile, Mapping) or not isinstance(path_pattern, str):
             continue
         additional_paths = profile.get("additional_paths", ())
@@ -2229,7 +2345,6 @@ def _registry_path_glob(pattern: str) -> str:
         "*",
         rendered.replace("{subpath}", "**"),
     )
-
 
 
 def _normalized_target_path(path_text: str) -> pathlib.Path | None:

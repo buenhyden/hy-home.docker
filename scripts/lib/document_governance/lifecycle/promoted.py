@@ -151,9 +151,11 @@ def _task5_migration_rows(root: pathlib.Path) -> dict[str, dict[str, object]]:
         return {}
     try:
         text = payload.decode("utf-8")
-        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
-            "```", 1
-        )[0]
+        fenced = (
+            text.split("## Archive Ledger", 1)[1]
+            .split("```yaml", 1)[1]
+            .split("```", 1)[0]
+        )
         document = metadata._safe_load_unique(fenced)
     except (
         IndexError,
@@ -205,9 +207,11 @@ def _task7_ledger_groups(
         return [], []
     try:
         text = payload.decode("utf-8")
-        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
-            "```", 1
-        )[0]
+        fenced = (
+            text.split("## Archive Ledger", 1)[1]
+            .split("```yaml", 1)[1]
+            .split("```", 1)[0]
+        )
         document = metadata._safe_load_unique(fenced)
     except (
         IndexError,
@@ -225,14 +229,15 @@ def _task7_ledger_groups(
     if len(baseline) != 796 or len(extension) != 3:
         return [], []
     values = [*baseline, *extension]
-    if any(not isinstance(row, dict) or set(row) != TASK7_LEDGER_FIELDS for row in values):
+    if any(
+        not isinstance(row, dict) or set(row) != TASK7_LEDGER_FIELDS for row in values
+    ):
         return [], []
     typed_rows = [row for row in values if isinstance(row, dict)]
     legacy_paths = [row.get("legacy_path") for row in typed_rows]
-    if (
-        any(not isinstance(path, str) or not _safe_path(path) for path in legacy_paths)
-        or len(legacy_paths) != len(set(legacy_paths))
-    ):
+    if any(
+        not isinstance(path, str) or not _safe_path(path) for path in legacy_paths
+    ) or len(legacy_paths) != len(set(legacy_paths)):
         return [], []
     actual_extension = tuple(
         (
@@ -255,10 +260,7 @@ def _task7_ledger_groups(
 
 def _task7_all_migration_rows(root: pathlib.Path) -> dict[str, dict[str, object]]:
     baseline, extension = _task7_ledger_groups(root)
-    return {
-        str(row["legacy_path"]): row
-        for row in [*baseline, *extension]
-    }
+    return {str(row["legacy_path"]): row for row in [*baseline, *extension]}
 
 
 def _task7_migration_rows(root: pathlib.Path) -> dict[str, dict[str, object]]:
@@ -321,7 +323,11 @@ def _task7_dispositions_executed(
                 path = raw_path.decode("utf-8")
             except UnicodeDecodeError:
                 return False
-            if len(fields) == 3 and fields[0] in {b"100644", b"100755"} and fields[1] == b"blob":
+            if (
+                len(fields) == 3
+                and fields[0] in {b"100644", b"100755"}
+                and fields[1] == b"blob"
+            ):
                 regular.add(path)
         if regular != set(paths):
             return False
@@ -335,7 +341,9 @@ def _task7_current_links_resolve(root: pathlib.Path) -> bool:
     if result.returncode != 0:
         return False
     try:
-        paths = tuple(item.decode("utf-8") for item in result.stdout.split(b"\0") if item)
+        paths = tuple(
+            item.decode("utf-8") for item in result.stdout.split(b"\0") if item
+        )
     except UnicodeDecodeError:
         return False
     resolved_root = root.resolve()
@@ -398,10 +406,14 @@ def _task7_reconciliation_ready(
     all_rows = _task7_all_migration_rows(root)
     selected = _task7_migration_rows(root)
     selected_targets = [
-        row.get("stable_path") for row in selected.values() if row.get("stable_path") is not None
+        row.get("stable_path")
+        for row in selected.values()
+        if row.get("stable_path") is not None
     ]
     selected_ids = [
-        row.get("artifact_id") for row in selected.values() if row.get("artifact_id") is not None
+        row.get("artifact_id")
+        for row in selected.values()
+        if row.get("artifact_id") is not None
     ]
     tracked = _run_git(
         root,
@@ -481,7 +493,9 @@ def _task7_target_missing_is_reconciled(
     if row is None:
         return False
     action = row.get("action")
-    destination = row.get("replacement") if action == "delete" else row.get("stable_path")
+    destination = (
+        row.get("replacement") if action == "delete" else row.get("stable_path")
+    )
     return (
         action in TASK7_LEDGER_ACTION_COUNTS
         and not (root / source).exists()
@@ -548,10 +562,7 @@ def _task7_immutable_expected_document(
     ):
         return None
     baseline, extension = _task7_ledger_groups(root)
-    all_rows = {
-        str(row["legacy_path"]): row
-        for row in [*baseline, *extension]
-    }
+    all_rows = {str(row["legacy_path"]): row for row in [*baseline, *extension]}
     owner = next(
         (
             row
@@ -775,16 +786,17 @@ def _reconcile_task5_promoted_findings(
         root, contract, document, manifest_path
     )
     task5_ready = _task5_reconciliation_ready(root, contract)
-    task7_ready = (
-        task7_candidate_is_registered
-        and _task7_reconciliation_ready(root, contract)
+    task7_ready = task7_candidate_is_registered and _task7_reconciliation_ready(
+        root, contract
     )
     if not task5_ready and not task7_ready:
         return sorted(set(values))
     task5_rows = _task5_migration_rows(root)
     task7_rows = _task7_migration_rows(root)
     foundation = waves.get("foundation") if isinstance(waves, dict) else None
-    source_paths = foundation.get("source_paths") if isinstance(foundation, dict) else []
+    source_paths = (
+        foundation.get("source_paths") if isinstance(foundation, dict) else []
+    )
     foundation_sources = {
         path for path in source_paths if isinstance(path, str) and _safe_path(path)
     }
@@ -814,9 +826,7 @@ def _reconcile_task5_promoted_findings(
             task7_ready
             and document.wave == "target-surface-convergence"
             and finding.code == "manifest-target-missing"
-            and _task7_target_missing_is_reconciled(
-                root, finding.path, task7_rows
-            )
+            and _task7_target_missing_is_reconciled(root, finding.path, task7_rows)
         ):
             continue
         if (
@@ -824,9 +834,7 @@ def _reconcile_task5_promoted_findings(
             and document.wave == "target-surface-convergence"
             and finding.path == "archive/Windows-Network-IP.md"
             and finding.code == "manifest-transition-invalid"
-            and _task7_target_missing_is_reconciled(
-                root, finding.path, task7_rows
-            )
+            and _task7_target_missing_is_reconciled(root, finding.path, task7_rows)
         ):
             continue
         if (
@@ -842,14 +850,11 @@ def _reconcile_task5_promoted_findings(
         if (
             document.wave in {"foundation", "target-surface-convergence"}
             and finding.code == "manifest-target-missing"
-            and _task5_target_missing_is_reconciled(
-                root, finding.path, task5_rows
-            )
+            and _task5_target_missing_is_reconciled(root, finding.path, task5_rows)
         ):
             continue
         reconciled.append(finding)
     return sorted(set(reconciled))
-
 
 
 def _validate_surface_manifest_semantics(
@@ -881,9 +886,8 @@ def _validate_surface_manifest_semantics(
                 isinstance(next_statuses, list) and row.status_after in next_statuses
             )
         if row.disposition == "archive":
-            transition_valid = (
-                result_valid
-                and row.review_verdict == ReviewVerdict("pass", "pass")
+            transition_valid = result_valid and row.review_verdict == ReviewVerdict(
+                "pass", "pass"
             )
         if (
             not transition_valid
@@ -894,10 +898,7 @@ def _validate_surface_manifest_semantics(
                 document.enforcement == "advisory"
                 and row.disposition == "preserve"
                 and row.review_verdict == ReviewVerdict("pending", "pending")
-            ) or (
-                result_valid
-                and row.review_verdict == ReviewVerdict("pass", "pass")
-            )
+            ) or (result_valid and row.review_verdict == ReviewVerdict("pass", "pass"))
         if not transition_valid:
             findings.append(
                 _finding(
@@ -906,12 +907,9 @@ def _validate_surface_manifest_semantics(
                     "status transition is not canonical",
                 )
             )
-        findings.extend(
-            _surface_replacement_findings(root, profiles, document, row)
-        )
+        findings.extend(_surface_replacement_findings(root, profiles, document, row))
         rollback_invalid = (
-            row.disposition in DESTRUCTIVE_DISPOSITIONS
-            and not row.evidence.rollback
+            row.disposition in DESTRUCTIVE_DISPOSITIONS and not row.evidence.rollback
         ) or (
             bool(row.evidence.rollback)
             and not _surface_rollback_valid(root, row.evidence.rollback)
@@ -1017,12 +1015,22 @@ def _validate_surface_manifest(
     try:
         wave = _wave_mapping(contract, document.wave)
     except ProfileError:
-        return [_finding("manifest", "manifest-wave-invalid", "manifest wave is not declared")]
+        return [
+            _finding(
+                "manifest", "manifest-wave-invalid", "manifest wave is not declared"
+            )
+        ]
     if document.schema_version != 2:
-        findings.append(_finding("manifest", "manifest-schema-invalid", "schema version must be 2"))
+        findings.append(
+            _finding("manifest", "manifest-schema-invalid", "schema version must be 2")
+        )
     if document.enforcement not in {"advisory", "blocking"}:
         findings.append(
-            _finding("manifest", "manifest-enforcement-invalid", "enforcement is not registered")
+            _finding(
+                "manifest",
+                "manifest-enforcement-invalid",
+                "enforcement is not registered",
+            )
         )
     if document.enforcement != wave.get("enforcement"):
         findings.append(
@@ -1067,16 +1075,28 @@ def _validate_surface_manifest(
     }
     counts = collections.Counter(row.source_path.as_posix() for row in document.entries)
     for source in sorted(set(expected_by_path) - set(counts)):
-        findings.append(_finding(source, "manifest-source-missing", "selected source has no manifest row"))
+        findings.append(
+            _finding(
+                source, "manifest-source-missing", "selected source has no manifest row"
+            )
+        )
     for source, count in sorted(counts.items()):
         display = source if _safe_path(source) else "manifest"
         if count > 1:
             findings.append(
-                _finding(display, "manifest-source-duplicate", "selected source has multiple rows")
+                _finding(
+                    display,
+                    "manifest-source-duplicate",
+                    "selected source has multiple rows",
+                )
             )
         if source not in expected_by_path:
             findings.append(
-                _finding(display, "manifest-source-unexpected", "row is outside selected wave scope")
+                _finding(
+                    display,
+                    "manifest-source-unexpected",
+                    "row is outside selected wave scope",
+                )
             )
     for row in document.entries:
         source = row.source_path.as_posix()
@@ -1085,42 +1105,69 @@ def _validate_surface_manifest(
             continue
         if row.surface_class != expected.surface_class:
             findings.append(
-                _finding(source, "manifest-surface-class-mismatch", "surface class differs from baseline path/mode truth")
+                _finding(
+                    source,
+                    "manifest-surface-class-mismatch",
+                    "surface class differs from baseline path/mode truth",
+                )
             )
         if row.artifact_type_before != expected.artifact_type_before:
             findings.append(
-                _finding(source, "manifest-artifact-type-mismatch", "artifact_type_before differs from typed baseline truth")
+                _finding(
+                    source,
+                    "manifest-artifact-type-mismatch",
+                    "artifact_type_before differs from typed baseline truth",
+                )
             )
         target_metadata_owned = (
             row.disposition == "migrate"
             and row.surface_class in TYPED_SURFACE_CLASSES
             and row.surface_class != "content-archive"
         )
-        expected_after = None if row.disposition == "delete" else (
-            "archive"
-            if row.surface_class == "content-archive"
-            else row.artifact_type_before
+        expected_after = (
+            None
+            if row.disposition == "delete"
+            else (
+                "archive"
+                if row.surface_class == "content-archive"
+                else row.artifact_type_before
+            )
         )
         if not target_metadata_owned and row.artifact_type_after != expected_after:
             findings.append(
-                _finding(source, "manifest-artifact-transition-invalid", "artifact type transition is not admitted")
+                _finding(
+                    source,
+                    "manifest-artifact-transition-invalid",
+                    "artifact type transition is not admitted",
+                )
             )
         if row.status_before != expected.status_before:
             findings.append(
-                _finding(source, "manifest-baseline-status-mismatch", "status_before differs from baseline truth")
+                _finding(
+                    source,
+                    "manifest-baseline-status-mismatch",
+                    "status_before differs from baseline truth",
+                )
             )
         target_identity_owned = row.surface_class == "content-archive" or (
-            row.disposition == "migrate"
-            and row.surface_class in TYPED_SURFACE_CLASSES
+            row.disposition == "migrate" and row.surface_class in TYPED_SURFACE_CLASSES
         )
         if not target_identity_owned and row.artifact_id != expected.artifact_id:
             findings.append(
-                _finding(source, "manifest-baseline-artifact-id-mismatch", "artifact identity differs from baseline truth")
+                _finding(
+                    source,
+                    "manifest-baseline-artifact-id-mismatch",
+                    "artifact identity differs from baseline truth",
+                )
             )
     entry_order = [row.source_path.as_posix() for row in document.entries]
     if entry_order != sorted(entry_order):
         findings.append(
-            _finding("manifest", "manifest-order-invalid", "entries are not ordered by source_path")
+            _finding(
+                "manifest",
+                "manifest-order-invalid",
+                "entries are not ordered by source_path",
+            )
         )
     findings.extend(
         _validate_surface_manifest_semantics(root, profiles, contract, document)
@@ -1164,21 +1211,31 @@ def validate_migration_manifest(
     try:
         wave = _wave_mapping(contract, document.wave)
     except ProfileError:
-        return [_finding(path, "manifest-wave-invalid", "manifest wave is not declared")]
+        return [
+            _finding(path, "manifest-wave-invalid", "manifest wave is not declared")
+        ]
     if document.schema_version != 1:
-        findings.append(_finding(path, "manifest-schema-invalid", "schema version must be 1"))
+        findings.append(
+            _finding(path, "manifest-schema-invalid", "schema version must be 1")
+        )
     if not document.generated_by.strip():
         findings.append(
-            _finding(path, "manifest-generated-by-invalid", "generated_by must be non-empty")
+            _finding(
+                path, "manifest-generated-by-invalid", "generated_by must be non-empty"
+            )
         )
     entry_order = [row.source_path.as_posix() for row in document.entries]
     if entry_order != sorted(entry_order):
         findings.append(
-            _finding(path, "manifest-order-invalid", "entries are not ordered by source_path")
+            _finding(
+                path, "manifest-order-invalid", "entries are not ordered by source_path"
+            )
         )
     if document.enforcement not in {"advisory", "blocking"}:
         findings.append(
-            _finding(path, "manifest-enforcement-invalid", "enforcement is not registered")
+            _finding(
+                path, "manifest-enforcement-invalid", "enforcement is not registered"
+            )
         )
     registry_enforcement = wave.get("enforcement")
     if document.enforcement != registry_enforcement:
@@ -1207,25 +1264,39 @@ def validate_migration_manifest(
     counts = collections.Counter(row.source_path.as_posix() for row in document.entries)
     for source in sorted(expected - set(counts)):
         findings.append(
-            _finding(source, "manifest-source-missing", "selected source has no manifest row")
+            _finding(
+                source, "manifest-source-missing", "selected source has no manifest row"
+            )
         )
     for source, count in sorted(counts.items()):
         display_source = source if _safe_path(source) else "manifest"
         if count > 1:
             findings.append(
-                _finding(display_source, "manifest-source-duplicate", "selected source has multiple rows")
+                _finding(
+                    display_source,
+                    "manifest-source-duplicate",
+                    "selected source has multiple rows",
+                )
             )
         if source not in expected:
             findings.append(
-                _finding(display_source, "manifest-source-unexpected", "row is outside selected wave scope")
+                _finding(
+                    display_source,
+                    "manifest-source-unexpected",
+                    "row is outside selected wave scope",
+                )
             )
 
     common = profiles.get("common")
-    allowed_statuses = set(common.get("allowed_statuses", [])) if isinstance(common, dict) else set()
+    allowed_statuses = (
+        set(common.get("allowed_statuses", [])) if isinstance(common, dict) else set()
+    )
     profile_map = profiles.get("profiles")
     registered_types = set(profile_map) if isinstance(profile_map, dict) else set()
     dispositions = set(contract.get("manifest", {}).get("dispositions", []))  # type: ignore[union-attr]
-    preservation_classes = set(contract.get("archive", {}).get("preservation_classes", []))  # type: ignore[union-attr]
+    preservation_classes = set(
+        contract.get("archive", {}).get("preservation_classes", [])
+    )  # type: ignore[union-attr]
     needs_canonical_snapshot = any(
         row.disposition == "archive" or row.canonical_replacement is not None
         for row in document.entries
@@ -1287,7 +1358,9 @@ def validate_migration_manifest(
                 shown = _run_git(root, ["show", f"{baseline}:{source}"])
                 if shown.returncode == 0:
                     try:
-                        baseline_metadata = metadata._parse_frontmatter_text(shown.stdout)
+                        baseline_metadata = metadata._parse_frontmatter_text(
+                            shown.stdout
+                        )
                     except metadata.FrontmatterError:
                         findings.append(
                             _finding(
@@ -1300,7 +1373,9 @@ def validate_migration_manifest(
                         expected_type = (
                             "generated"
                             if "generated_by" in baseline_metadata
-                            else metadata.infer_artifact_type(pathlib.Path(source), profiles)
+                            else metadata.infer_artifact_type(
+                                pathlib.Path(source), profiles
+                            )
                         )
                         if row.artifact_type != expected_type:
                             findings.append(
@@ -1323,7 +1398,9 @@ def validate_migration_manifest(
                             )
                         baseline_status = baseline_metadata.get("status")
                         expected_status = (
-                            baseline_status if isinstance(baseline_status, str) else None
+                            baseline_status
+                            if isinstance(baseline_status, str)
+                            else None
                         )
                         if row.status_before != expected_status:
                             findings.append(
@@ -1336,13 +1413,23 @@ def validate_migration_manifest(
         target = _safe_path_text(row.target_path)
         if target is not None and not _safe_path(target):
             findings.append(
-                _finding(source, "manifest-target-path-invalid", "target path is not repository-safe")
+                _finding(
+                    source,
+                    "manifest-target-path-invalid",
+                    "target path is not repository-safe",
+                )
             )
         if row.artifact_type not in registered_types:
             findings.append(
-                _finding(source, "manifest-artifact-type-invalid", "artifact type is not registered")
+                _finding(
+                    source,
+                    "manifest-artifact-type-invalid",
+                    "artifact type is not registered",
+                )
             )
-        common_transitions = common.get("transitions") if isinstance(common, dict) else None
+        common_transitions = (
+            common.get("transitions") if isinstance(common, dict) else None
+        )
         transition_valid = row.status_before == row.status_after
         if (
             not transition_valid
@@ -1356,15 +1443,30 @@ def validate_migration_manifest(
             )
         archive_result_valid = False
         required = _profile_required_fields(profiles, row.artifact_type)
-        if "artifact_id" in required and not metadata._valid_metadata_artifact_id(row.artifact_id):
+        if "artifact_id" in required and not metadata._valid_metadata_artifact_id(
+            row.artifact_id
+        ):
             findings.append(
-                _finding(source, "manifest-artifact-id-invalid", "selected profile requires artifact identity")
+                _finding(
+                    source,
+                    "manifest-artifact-id-invalid",
+                    "selected profile requires artifact identity",
+                )
             )
-        elif row.artifact_id is not None and not metadata._valid_metadata_artifact_id(row.artifact_id):
+        elif row.artifact_id is not None and not metadata._valid_metadata_artifact_id(
+            row.artifact_id
+        ):
             findings.append(
-                _finding(source, "manifest-artifact-id-invalid", "artifact identity is invalid")
+                _finding(
+                    source,
+                    "manifest-artifact-id-invalid",
+                    "artifact identity is invalid",
+                )
             )
-        for label, status in (("before", row.status_before), ("after", row.status_after)):
+        for label, status in (
+            ("before", row.status_before),
+            ("after", row.status_after),
+        ):
             if ("status" in required and status is None) or (
                 status is not None and status not in allowed_statuses
             ):
@@ -1377,12 +1479,20 @@ def validate_migration_manifest(
                 )
         if row.disposition not in dispositions:
             findings.append(
-                _finding(source, "manifest-disposition-invalid", "disposition is not registered")
+                _finding(
+                    source,
+                    "manifest-disposition-invalid",
+                    "disposition is not registered",
+                )
             )
             continue
         if row.disposition == "delete" and target is not None:
             findings.append(
-                _finding(source, "manifest-delete-target-invalid", "delete requires a null target")
+                _finding(
+                    source,
+                    "manifest-delete-target-invalid",
+                    "delete requires a null target",
+                )
             )
         elif row.disposition in TARGET_DISTINCT:
             if target is None:
@@ -1421,7 +1531,11 @@ def validate_migration_manifest(
                 payloads=canonical_payloads,
             )
             findings.extend(replacement_findings)
-            if merge_replacement is not None and baseline is not None and target is not None:
+            if (
+                merge_replacement is not None
+                and baseline is not None
+                and target is not None
+            ):
                 findings.extend(
                     _baseline_merge_owner_findings(
                         root=root,
@@ -1544,9 +1658,7 @@ def validate_migration_manifest(
                             if isinstance(archive_disposition_value, str)
                             else None
                         )
-                        required_archive = _profile_required_fields(
-                            profiles, "archive"
-                        )
+                        required_archive = _profile_required_fields(profiles, "archive")
                         if (
                             target_type != "archive"
                             or target_metadata.get("type") != "archive/migration"
@@ -1629,10 +1741,7 @@ def validate_migration_manifest(
                             if baseline is not None
                             else None
                         )
-                        if (
-                            baseline_blob is None
-                            or archived_blob != baseline_blob
-                        ):
+                        if baseline_blob is None or archived_blob != baseline_blob:
                             archive_findings.append(
                                 _finding(
                                     target,
@@ -1711,12 +1820,13 @@ def validate_migration_manifest(
             )
         if row.disposition == "merge" and not row.canonical_replacement:
             findings.append(
-                _finding(source, "manifest-replacement-required", "destructive row requires a replacement")
+                _finding(
+                    source,
+                    "manifest-replacement-required",
+                    "destructive row requires a replacement",
+                )
             )
-        if (
-            row.disposition == "delete"
-            and row.canonical_replacement is not None
-        ):
+        if row.disposition == "delete" and row.canonical_replacement is not None:
             findings.extend(
                 _canonical_replacement_findings(
                     profiles,
@@ -1729,23 +1839,45 @@ def validate_migration_manifest(
                     payloads=canonical_payloads,
                 )
             )
-        if row.disposition in SOURCE_EQUALS_TARGET | {"move"} and row.canonical_replacement is not None:
+        if (
+            row.disposition in SOURCE_EQUALS_TARGET | {"move"}
+            and row.canonical_replacement is not None
+        ):
             findings.append(
-                _finding(source, "manifest-replacement-forbidden", "disposition forbids a replacement")
+                _finding(
+                    source,
+                    "manifest-replacement-forbidden",
+                    "disposition forbids a replacement",
+                )
             )
-        if row.preservation_class is not None and row.preservation_class not in preservation_classes:
+        if (
+            row.preservation_class is not None
+            and row.preservation_class not in preservation_classes
+        ):
             findings.append(
-                _finding(source, "manifest-preservation-invalid", "preservation class is not registered")
+                _finding(
+                    source,
+                    "manifest-preservation-invalid",
+                    "preservation class is not registered",
+                )
             )
         for consumer in row.active_consumers:
             if not _safe_path(consumer.as_posix()):
                 findings.append(
-                    _finding(source, "manifest-consumer-path-invalid", "consumer path is not repository-safe")
+                    _finding(
+                        source,
+                        "manifest-consumer-path-invalid",
+                        "consumer path is not repository-safe",
+                    )
                 )
         for repository_path in row.evidence.repository_paths:
             if not _safe_path(repository_path.as_posix()):
                 findings.append(
-                    _finding(source, "manifest-evidence-path-invalid", "evidence path is not repository-safe")
+                    _finding(
+                        source,
+                        "manifest-evidence-path-invalid",
+                        "evidence path is not repository-safe",
+                    )
                 )
         evidence_values = (
             *row.evidence.commands,
@@ -1782,7 +1914,10 @@ def validate_migration_manifest(
             row.evidence.consumer_scan,
             row.evidence.rollback,
         )
-        if any(values != tuple(sorted(values)) or len(values) != len(set(values)) for values in deterministic_lists):
+        if any(
+            values != tuple(sorted(values)) or len(values) != len(set(values))
+            for values in deterministic_lists
+        ):
             findings.append(
                 _finding(
                     source,
@@ -1790,7 +1925,10 @@ def validate_migration_manifest(
                     "manifest list values must be unique and deterministically ordered",
                 )
             )
-        if row.canonical_replacement is not None and not row.canonical_replacement.strip():
+        if (
+            row.canonical_replacement is not None
+            and not row.canonical_replacement.strip()
+        ):
             findings.append(
                 _finding(
                     source,
@@ -1798,14 +1936,25 @@ def validate_migration_manifest(
                     "canonical replacement must be non-empty when present",
                 )
             )
-        if row.review_verdict.specification not in REVIEW_VALUES or row.review_verdict.quality not in REVIEW_VALUES:
+        if (
+            row.review_verdict.specification not in REVIEW_VALUES
+            or row.review_verdict.quality not in REVIEW_VALUES
+        ):
             findings.append(
-                _finding(source, "manifest-review-verdict-invalid", "review verdict is not registered")
+                _finding(
+                    source,
+                    "manifest-review-verdict-invalid",
+                    "review verdict is not registered",
+                )
             )
         if row.disposition in DESTRUCTIVE_DISPOSITIONS:
             if row.preservation_class is None:
                 findings.append(
-                    _finding(source, "manifest-preservation-required", "destructive row requires preservation")
+                    _finding(
+                        source,
+                        "manifest-preservation-required",
+                        "destructive row requires preservation",
+                    )
                 )
             evidence_lists = (
                 row.evidence.commands,
@@ -1837,7 +1986,6 @@ def validate_migration_manifest(
         findings,
         manifest_path=manifest_path,
     )
-
 
 
 def _load_declared_manifests(
@@ -1874,13 +2022,21 @@ def _load_declared_manifests(
             continue
         if not isinstance(manifest_path, str) or not _safe_path(manifest_path):
             findings.append(
-                _finding(wave_name, "promoted-manifest-path-invalid", "manifest path is unsafe")
+                _finding(
+                    wave_name,
+                    "promoted-manifest-path-invalid",
+                    "manifest path is unsafe",
+                )
             )
             continue
         absolute = root / manifest_path
         if not os.path.lexists(absolute):
             findings.append(
-                _finding(manifest_path, "promoted-manifest-missing", "declared manifest does not exist")
+                _finding(
+                    manifest_path,
+                    "promoted-manifest-missing",
+                    "declared manifest does not exist",
+                )
             )
             continue
         try:
@@ -1911,7 +2067,11 @@ def _load_declared_manifests(
             continue
         if document.wave != wave_name:
             findings.append(
-                _finding(manifest_path, "promoted-wave-mismatch", "manifest wave differs from registry")
+                _finding(
+                    manifest_path,
+                    "promoted-wave-mismatch",
+                    "manifest wave differs from registry",
+                )
             )
         if document.enforcement != enforcement:
             findings.append(
@@ -1936,11 +2096,14 @@ def _load_declared_manifests(
             render_migration_manifest(document),
         ):
             findings.append(
-                _finding(manifest_path, "manifest-serialization-stale", "manifest bytes are not canonical")
+                _finding(
+                    manifest_path,
+                    "manifest-serialization-stale",
+                    "manifest bytes are not canonical",
+                )
             )
         documents.append(document)
     return tuple(documents), sorted(set(findings))
-
 
 
 def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
@@ -1953,17 +2116,34 @@ def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
 
     findings: list[Finding] = []
     migration = archive_authority._migration_document(root)
-    selected = [row for row in migration["rows"] if row.get("artifact_id") in {"DATA-0067", "DATA-0069"}]
-    if len(selected) != 2 or {row["artifact_id"] for row in selected} != {"DATA-0067", "DATA-0069"}:
+    selected = [
+        row
+        for row in migration["rows"]
+        if row.get("artifact_id") in {"DATA-0067", "DATA-0069"}
+    ]
+    if len(selected) != 2 or {row["artifact_id"] for row in selected} != {
+        "DATA-0067",
+        "DATA-0069",
+    }:
         raise ProfileError("promoted historical evidence mappings are incomplete")
     for row in selected:
         target = row["target_path"]
-        recovery = row["recovery_commit"] if row["recovery_commit"] is not None else migration["baseline_commit"]
+        recovery = (
+            row["recovery_commit"]
+            if row["recovery_commit"] is not None
+            else migration["baseline_commit"]
+        )
         historical = HistoricalDocument(root, recovery, row["source_path"])
         expected = historical.read_bytes()
         # Parse exact historical shape, rejecting duplicate keys and unsafe paths.
         _load_migration_manifest_text(expected.decode("utf-8"))
         observed = _read_regular_repo_bytes(root, target, require_tracked=True)
         if observed != expected:
-            findings.append(_finding(target, "historical-manifest-drift", "historical evidence differs from its verified recovery blob"))
+            findings.append(
+                _finding(
+                    target,
+                    "historical-manifest-drift",
+                    "historical evidence differs from its verified recovery blob",
+                )
+            )
     return findings

@@ -64,6 +64,8 @@ def load_public_suite_registry(
     """Expose the immutable validator-suite registry to gate contracts."""
 
     return suite_registry.load(manifest_path)
+
+
 _INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.docs-implementation-alignment": (
@@ -106,9 +108,7 @@ _INTERNAL_ROOT_CHILDREN = {
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness",
     ),
-    "ci.dependency-vulnerability-audit": (
-        "leaf.dependency-vulnerability-audit",
-    ),
+    "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),
     "ci.git-flow-contract": ("leaf.git-flow-contract",),
     "ci.compose-validation": (
         "setup.compose-env",
@@ -170,13 +170,9 @@ _INTERNAL_ROOT_SUITES = {
     for job_id, root_gate_id in _INTERNAL_CI_ROOTS.items()
 }
 _ALL_CI_SUITES = tuple(
-    suite
-    for job_id in _INTERNAL_CI_ROOTS
-    for suite in _INTERNAL_ROOT_SUITES[job_id]
+    suite for job_id in _INTERNAL_CI_ROOTS for suite in _INTERNAL_ROOT_SUITES[job_id]
 )
-_REQUIRED_JOB_SUITES = {
-    job_id: _ALL_CI_SUITES for job_id in _REQUIRED_JOB_ROOTS
-}
+_REQUIRED_JOB_SUITES = {job_id: _ALL_CI_SUITES for job_id in _REQUIRED_JOB_ROOTS}
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
         "leaf.local-document-corpus-lifecycle-tests",
@@ -214,9 +210,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.operations-catalog",
     ),
     "local.compose-validation": ("leaf.compose-validation",),
-    "local.compose-all-profiles-validation": (
-        "leaf.compose-all-profiles-validation",
-    ),
+    "local.compose-all-profiles-validation": ("leaf.compose-all-profiles-validation",),
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
@@ -560,7 +554,13 @@ def parse_gate_registry(
     document: Mapping[str, object],
     path: str,
 ) -> GateRegistry:
-    _require_fields(document, _TOP_LEVEL_FIELDS, {"schema_version", "gate_nodes", "job_roots", "profile_roots"}, "ci-gate-document-fields", path)
+    _require_fields(
+        document,
+        _TOP_LEVEL_FIELDS,
+        {"schema_version", "gate_nodes", "job_roots", "profile_roots"},
+        "ci-gate-document-fields",
+        path,
+    )
     if type(document["schema_version"]) is not int or document["schema_version"] != 2:
         raise GateContractError(
             "ci-gate-schema-version",
@@ -680,8 +680,10 @@ def parse_public_gate_contract(
             "ci-gate-public-suite-roots",
             f"public_gate/suite_roots/{name}",
         )
-        if not roots or len(roots) != len(set(roots)) or any(
-            root not in node_ids or root in assigned_roots for root in roots
+        if (
+            not roots
+            or len(roots) != len(set(roots))
+            or any(root not in node_ids or root in assigned_roots for root in roots)
         ):
             raise GateContractError(
                 "ci-gate-public-suite-roots",
@@ -983,16 +985,12 @@ def validate_gate_registry(
             return tuple(findings)
 
     profile_mapping = {
-        profile.profile: profile.root_gate_ids
-        for profile in registry.profile_roots
+        profile.profile: profile.root_gate_ids for profile in registry.profile_roots
     }
     if (
         len(profile_mapping) != len(registry.profile_roots)
         or profile_mapping != _EXPECTED_PROFILE_ROOTS
-        or any(
-            profile.classification != "local"
-            for profile in registry.profile_roots
-        )
+        or any(profile.classification != "local" for profile in registry.profile_roots)
     ):
         finding(
             "ci-gate-profile-roots",
@@ -1002,9 +1000,7 @@ def validate_gate_registry(
         return tuple(findings)
 
     for profile in registry.profile_roots:
-        local_reachable = set(
-            _expanded_all_ids(node_by_id, profile.root_gate_ids)
-        )
+        local_reachable = set(_expanded_all_ids(node_by_id, profile.root_gate_ids))
         if local_reachable & _LOCAL_FORBIDDEN_GATE_IDS:
             finding(
                 "ci-gate-local-unsafe",
@@ -1022,14 +1018,10 @@ def validate_gate_registry(
             )
             return tuple(findings)
 
-    computed_profiles: dict[str, list[str]] = {
-        gate_id: [] for gate_id in node_by_id
-    }
+    computed_profiles: dict[str, list[str]] = {gate_id: [] for gate_id in node_by_id}
     for profile in _NODE_PROFILES:
         profile_roots = (
-            tuple(job_mapping.values())
-            if profile == "ci"
-            else profile_mapping[profile]
+            tuple(job_mapping.values()) if profile == "ci" else profile_mapping[profile]
         )
         for gate_id in _expanded_all_ids(node_by_id, profile_roots):
             computed_profiles[gate_id].append(profile)
@@ -1105,9 +1097,7 @@ def expand_gate_ids(
             "gate identifiers must be unique",
         )
     if any(
-        child not in node_by_id
-        for node in registry.nodes
-        for child in node.children
+        child not in node_by_id for node in registry.nodes for child in node.children
     ):
         raise GateContractError(
             "ci-gate-child-missing",
@@ -1184,11 +1174,20 @@ def _strings(
     return tuple(value)
 
 
-def _relative_path(value: object, code: str, path: str, *, dot: bool = False) -> pathlib.PurePosixPath:
+def _relative_path(
+    value: object, code: str, path: str, *, dot: bool = False
+) -> pathlib.PurePosixPath:
     source = _string(value, code, path)
     candidate = pathlib.PurePosixPath(source)
-    if candidate.is_absolute() or ".." in candidate.parts or (source == "." and not dot) or candidate.as_posix() != source:
-        raise GateContractError(code, path, "the field must be a canonical repository path")
+    if (
+        candidate.is_absolute()
+        or ".." in candidate.parts
+        or (source == "." and not dot)
+        or candidate.as_posix() != source
+    ):
+        raise GateContractError(
+            code, path, "the field must be a canonical repository path"
+        )
     return candidate
 
 
@@ -1203,22 +1202,56 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
     try:
         kind = GateKind(record.get("kind"))
     except (TypeError, ValueError):
-        raise GateContractError("ci-gate-kind", path, "the gate kind is invalid") from None
+        raise GateContractError(
+            "ci-gate-kind", path, "the gate kind is invalid"
+        ) from None
     common = {"gate_id", "kind", "profiles", "opaque"}
     if kind is GateKind.AGGREGATE:
-        _require_fields(record, frozenset(common | {"children"}), common | {"children"}, "ci-gate-kind-fields", path)
+        _require_fields(
+            record,
+            frozenset(common | {"children"}),
+            common | {"children"},
+            "ci-gate-kind-fields",
+            path,
+        )
         children = _strings(record["children"], "ci-gate-children", path)
         if not children or record["opaque"] is not False:
-            raise GateContractError("ci-gate-kind-fields", path, "aggregate fields are invalid")
-        return GateNode(gate_id, kind, None, None, (), None, (), None, _profiles(record["profiles"], path), False, children)
-    execution = common | {"entrypoint", "argv", "cwd", "allowed_env_keys", "timeout_minutes"}
+            raise GateContractError(
+                "ci-gate-kind-fields", path, "aggregate fields are invalid"
+            )
+        return GateNode(
+            gate_id,
+            kind,
+            None,
+            None,
+            (),
+            None,
+            (),
+            None,
+            _profiles(record["profiles"], path),
+            False,
+            children,
+        )
+    execution = common | {
+        "entrypoint",
+        "argv",
+        "cwd",
+        "allowed_env_keys",
+        "timeout_minutes",
+    }
     required = execution | ({"suite_key"} if kind is GateKind.LEAF else set())
     _require_fields(record, frozenset(required), required, "ci-gate-kind-fields", path)
     opaque = record["opaque"]
     if opaque is not (kind is GateKind.LEAF):
-        raise GateContractError("ci-gate-kind-fields", path, "executable gate fields are invalid")
+        raise GateContractError(
+            "ci-gate-kind-fields", path, "executable gate fields are invalid"
+        )
     timeout = record["timeout_minutes"]
-    if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 60:
+    if (
+        not isinstance(timeout, int)
+        or isinstance(timeout, bool)
+        or not 1 <= timeout <= 60
+    ):
         raise GateContractError("ci-gate-timeout", path, "the timeout is invalid")
     env_keys = _strings(record["allowed_env_keys"], "ci-gate-env", path)
     if any(
@@ -1227,10 +1260,18 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         or key not in _ADMITTED_ENV_KEYS
         for key in env_keys
     ):
-        raise GateContractError("ci-gate-env", path, "an environment key is not admitted")
-    suite_key = _string(record["suite_key"], "ci-gate-suite-key", path) if kind is GateKind.LEAF else None
+        raise GateContractError(
+            "ci-gate-env", path, "an environment key is not admitted"
+        )
+    suite_key = (
+        _string(record["suite_key"], "ci-gate-suite-key", path)
+        if kind is GateKind.LEAF
+        else None
+    )
     if suite_key is not None and gate_id != f"leaf.{suite_key}":
-        raise GateContractError("ci-gate-suite-id", path, "leaf identity must match its suite key")
+        raise GateContractError(
+            "ci-gate-suite-id", path, "leaf identity must match its suite key"
+        )
     return GateNode(
         gate_id,
         kind,
@@ -1248,7 +1289,9 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
 
 def _profiles(value: object, path: str) -> tuple[str, ...]:
     profiles = _strings(value, "ci-gate-profiles", path)
-    if any(profile not in _NODE_PROFILES for profile in profiles) or profiles != tuple(profile for profile in _NODE_PROFILES if profile in profiles):
+    if any(profile not in _NODE_PROFILES for profile in profiles) or profiles != tuple(
+        profile for profile in _NODE_PROFILES if profile in profiles
+    ):
         raise GateContractError("ci-gate-profiles", path, "node profiles are invalid")
     return profiles
 
@@ -1286,7 +1329,9 @@ def _parse_profile_root(record: Mapping[str, object], path: str) -> ProfileRoot:
     )
 
 
-def _expanded_all_ids(node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]) -> tuple[str, ...]:
+def _expanded_all_ids(
+    node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]
+) -> tuple[str, ...]:
     ordered: list[str] = []
     seen: set[str] = set()
     pending = list(reversed(roots))
@@ -1306,7 +1351,9 @@ def _expanded_all_ids(node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]
     return tuple(ordered)
 
 
-def _expanded_ids(node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]) -> tuple[str, ...]:
+def _expanded_ids(
+    node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]
+) -> tuple[str, ...]:
     return tuple(
         gate_id
         for gate_id in _expanded_all_ids(node_by_id, roots)
@@ -1344,11 +1391,7 @@ def _topological_ids(node_by_id: Mapping[str, GateNode]) -> tuple[str, ...]:
     for node in node_by_id.values():
         for child in node.children:
             indegree[child] += 1
-    pending = [
-        gate_id
-        for gate_id in node_by_id
-        if indegree[gate_id] == 0
-    ]
+    pending = [gate_id for gate_id in node_by_id if indegree[gate_id] == 0]
     ordered: list[str] = []
     index = 0
     while index < len(pending):
@@ -1438,7 +1481,11 @@ def _tracked_regular_file(root: pathlib.Path, path: pathlib.PurePosixPath) -> bo
 def _canonical_directory(root: pathlib.Path, path: pathlib.PurePosixPath) -> bool:
     candidate = root if path.as_posix() == "." else root.joinpath(*path.parts)
     try:
-        return not candidate.is_symlink() and candidate.is_dir() and candidate.resolve() == candidate
+        return (
+            not candidate.is_symlink()
+            and candidate.is_dir()
+            and candidate.resolve() == candidate
+        )
     except OSError:
         return False
 

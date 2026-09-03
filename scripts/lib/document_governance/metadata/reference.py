@@ -263,9 +263,7 @@ def validate_repository_contracts(
             require_git=True,
         )
         manifest = build_current_manifest(root, records)
-        findings.extend(
-            _index_membership_findings(root, active_registry, records)
-        )
+        findings.extend(_index_membership_findings(root, active_registry, records))
         findings.extend(_template_catalog_findings(root, active_registry))
         for record in records:
             # Gating on `status == "active"` made `invalid-status` unreachable:
@@ -298,7 +296,11 @@ def validate_repository_contracts(
         )
         if spec_package_authority.is_file():
             try:
-                spec_packages = load_spec_packages(spec_root, registry=active_registry) if spec_root.exists() or spec_root.is_symlink() else ()
+                spec_packages = (
+                    load_spec_packages(spec_root, registry=active_registry)
+                    if spec_root.exists() or spec_root.is_symlink()
+                    else ()
+                )
                 spec_lifecycle_findings = validate_repository_spec_package_lifecycle(
                     root,
                     spec_packages,
@@ -318,7 +320,7 @@ def validate_repository_contracts(
                     for finding in spec_lifecycle_findings
                 )
 
-    for path in (() if registry_native else tracked_markdown):
+    for path in () if registry_native else tracked_markdown:
         if not any(
             pattern.fullmatch(path.as_posix())
             for pattern, _, _, _ in _REQUIREMENT_INTERNAL_CONTRACTS
@@ -353,9 +355,10 @@ def validate_repository_contracts(
         else:
             findings.extend(validate_requirement_internal_id_contract(path, text))
 
-    if any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES) or _normalized_target_path(
-        "_workspace/README.md"
-    ) is not None:
+    if (
+        any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
+        or _normalized_target_path("_workspace/README.md") is not None
+    ):
         findings.append(
             Finding(
                 "scripts/validation/check-document-metadata.py",
@@ -376,9 +379,7 @@ def validate_repository_contracts(
         if registry_native:
             active_registry = profiles.get("_registry")
             assert isinstance(active_registry, DocumentRegistry)
-            readme_profile = classify_registered_path(
-                path.as_posix(), active_registry
-            )
+            readme_profile = classify_registered_path(path.as_posix(), active_registry)
             if readme_profile is None:
                 continue
             # Each README profile declares its own required_sections. Checking
@@ -437,7 +438,9 @@ def validate_repository_contracts(
             text = (root / path).read_text(encoding="utf-8")
             values = _parse_frontmatter_text(text)
         except FrontmatterError as error:
-            findings.append(Finding(path.as_posix(), "template-source-invalid", str(error)))
+            findings.append(
+                Finding(path.as_posix(), "template-source-invalid", str(error))
+            )
             continue
         findings.extend(
             validate_body_contract(
@@ -466,7 +469,10 @@ def validate_repository_contracts(
                 )
             )
             continue
-        if not isinstance(declared_type, str) or declared_type not in template_target_types:
+        if (
+            not isinstance(declared_type, str)
+            or declared_type not in template_target_types
+        ):
             findings.append(
                 Finding(
                     path.as_posix(),
@@ -476,7 +482,11 @@ def validate_repository_contracts(
             )
         if mapped_type is None:
             findings.append(
-                Finding(path.as_posix(), "template-source-unmapped", "typed Markdown template is not registered")
+                Finding(
+                    path.as_posix(),
+                    "template-source-unmapped",
+                    "typed Markdown template is not registered",
+                )
             )
         if mapped_type is not None and declared_type != mapped_type:
             findings.append(
@@ -490,14 +500,20 @@ def validate_repository_contracts(
         for source_path in sorted(roles_by_source):
             if not (root / source_path).is_file():
                 findings.append(
-                    Finding(source_path, "template-source-missing", "registered Markdown template does not exist")
+                    Finding(
+                        source_path,
+                        "template-source-missing",
+                        "registered Markdown template does not exist",
+                    )
                 )
 
-    for path in (() if registry_native else _tracked_machine_templates(root)):
+    for path in () if registry_native else _tracked_machine_templates(root):
         try:
             text = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
-            findings.append(Finding(path.as_posix(), "machine-template-unreadable", str(error)))
+            findings.append(
+                Finding(path.as_posix(), "machine-template-unreadable", str(error))
+            )
             continue
         findings.extend(
             validate_body_contract(
@@ -518,7 +534,9 @@ def validate_repository_contracts(
             and path.suffix == ".md"
         ]
     )
-    registry_arrays_by_key: dict[str, list[tuple[tuple[str, ...], list[str]]]] = collections.defaultdict(list)
+    registry_arrays_by_key: dict[str, list[tuple[tuple[str, ...], list[str]]]] = (
+        collections.defaultdict(list)
+    )
     for registry_path, members in _registry_string_arrays(profiles):
         if registry_path:
             registry_arrays_by_key[registry_path[-1]].append((registry_path, members))
@@ -526,13 +544,17 @@ def validate_repository_contracts(
         try:
             text = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
-            findings.append(Finding(path.as_posix(), "support-contract-unreadable", str(error)))
+            findings.append(
+                Finding(path.as_posix(), "support-contract-unreadable", str(error))
+            )
             continue
         duplicated: set[str] = set()
         for candidate_path, candidate_members in _fenced_yaml_string_arrays(text):
             if not candidate_path:
                 continue
-            for registry_path, registry_members in registry_arrays_by_key.get(candidate_path[-1], []):
+            for registry_path, registry_members in registry_arrays_by_key.get(
+                candidate_path[-1], []
+            ):
                 if candidate_members == registry_members:
                     duplicated.add(".".join(registry_path))
         if duplicated:
@@ -547,7 +569,6 @@ def validate_repository_contracts(
     return sorted(set(findings))
 
 
-
 def _relation_impact_findings(
     selected_paths: set[str],
     records_by_path: Mapping[str, Record],
@@ -560,19 +581,28 @@ def _relation_impact_findings(
 
     removed_ids: set[str] = set()
     for path in sorted(selected_paths):
-        for previous in (head_records_by_path.get(path), base_records_by_path.get(path)):
+        for previous in (
+            head_records_by_path.get(path),
+            base_records_by_path.get(path),
+        ):
             artifact_id = previous.metadata.get("artifact_id") if previous else None
-            if isinstance(artifact_id, str) and artifact_id.strip() and artifact_id.strip() not in manifest:
+            if (
+                isinstance(artifact_id, str)
+                and artifact_id.strip()
+                and artifact_id.strip() not in manifest
+            ):
                 removed_ids.add(artifact_id.strip())
     if not removed_ids:
         return {}
 
     expected_messages = {
         "unresolved-parent": {
-            f"parent artifact_id is unresolved: {artifact_id}" for artifact_id in removed_ids
+            f"parent artifact_id is unresolved: {artifact_id}"
+            for artifact_id in removed_ids
         },
         "unresolved-supersedes": {
-            f"superseded artifact_id is unresolved: {artifact_id}" for artifact_id in removed_ids
+            f"superseded artifact_id is unresolved: {artifact_id}"
+            for artifact_id in removed_ids
         },
     }
     impacted: dict[str, list[Finding]] = {}
@@ -635,7 +665,9 @@ def _relation_state(record: Record, profile: dict[str, object], codes: set[str])
         parent_state = "not-applicable"
         order_state = "not-applicable"
     elif "parent_ids" not in record.metadata:
-        parent_state = "missing" if "parent_ids" in required else "not-provided-optional"
+        parent_state = (
+            "missing" if "parent_ids" in required else "not-provided-optional"
+        )
         order_state = "not-provided"
     else:
         relation_errors = sorted(
@@ -660,12 +692,20 @@ def _relation_state(record: Record, profile: dict[str, object], codes: set[str])
             parent_state = "root-permitted"
     if "supersedes" not in record.metadata:
         return f"parents={parent_state}; order={order_state}; supersedes=not-provided"
-    supersession_errors = sorted(code for code in codes if "supersed" in code or "supersession" in code)
-    supersedes_state = "invalid:" + ",".join(supersession_errors) if supersession_errors else "resolved"
+    supersession_errors = sorted(
+        code for code in codes if "supersed" in code or "supersession" in code
+    )
+    supersedes_state = (
+        "invalid:" + ",".join(supersession_errors)
+        if supersession_errors
+        else "resolved"
+    )
     return f"parents={parent_state}; order={order_state}; supersedes={supersedes_state}"
 
 
-def _lifecycle_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+def _lifecycle_state(
+    record: Record, profile: dict[str, object], codes: set[str]
+) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
     required, optional, forbidden = _profile_sets(profile)
@@ -675,7 +715,13 @@ def _lifecycle_state(record: Record, profile: dict[str, object], codes: set[str]
     if status is None:
         return "missing" if "status" in required else "not-provided-optional"
     signals = sorted(
-        codes & {"invalid-status", "stale-active", "replacement-free-supersession", "archived-outside-stage-98"}
+        codes
+        & {
+            "invalid-status",
+            "stale-active",
+            "replacement-free-supersession",
+            "archived-outside-stage-98",
+        }
     )
     state = "invalid" if "invalid-status" in signals else "allowed"
     suffix = "; signals=" + ",".join(signals) if signals else ""
@@ -683,10 +729,18 @@ def _lifecycle_state(record: Record, profile: dict[str, object], codes: set[str]
     return f"status={rendered_status}; {state}{suffix}"
 
 
-def _transition_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+def _transition_state(
+    record: Record, profile: dict[str, object], codes: set[str]
+) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
-    if record.artifact_type in {"readme", "generated", "template-source", "governance", "unsupported"}:
+    if record.artifact_type in {
+        "readme",
+        "generated",
+        "template-source",
+        "governance",
+        "unsupported",
+    }:
         return "not-applicable"
     required, optional, forbidden = _profile_sets(profile)
     if "status" in forbidden or "status" not in required | optional:
@@ -702,14 +756,25 @@ def _transition_state(record: Record, profile: dict[str, object], codes: set[str
     return f"available:{record.previous_status}->{status}; {verdict}"
 
 
-def _freshness_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+def _freshness_state(
+    record: Record, profile: dict[str, object], codes: set[str]
+) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
     required, optional, forbidden = _profile_sets(profile)
     states: list[str] = []
-    invalid_codes = {"reviewed_at": "invalid-reviewed-at", "next_review_at": "invalid-review-cycle"}
+    invalid_codes = {
+        "reviewed_at": "invalid-reviewed-at",
+        "next_review_at": "invalid-review-cycle",
+    }
     for key in ("reviewed_at", "next_review_at"):
-        disposition = "required" if key in required else "optional" if key in optional else "forbidden"
+        disposition = (
+            "required"
+            if key in required
+            else "optional"
+            if key in optional
+            else "forbidden"
+        )
         if key in forbidden and key not in record.metadata:
             evidence = "not-applicable"
         elif key not in record.metadata:
@@ -722,7 +787,9 @@ def _freshness_state(record: Record, profile: dict[str, object], codes: set[str]
     return "; ".join(states)
 
 
-def _exception_context(record: Record, codes: set[str], profiles: dict[str, object]) -> str:
+def _exception_context(
+    record: Record, codes: set[str], profiles: dict[str, object]
+) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
     if record.artifact_type == "readme":
@@ -733,16 +800,27 @@ def _exception_context(record: Record, codes: set[str], profiles: dict[str, obje
             else None
         )
         if profile_name is None:
-            return "README profile=unclassified; consumer=unavailable; role=folder-index"
+            return (
+                "README profile=unclassified; consumer=unavailable; role=folder-index"
+            )
         return f"README profile={profile_name}; consumer=registry; role=folder-index"
     if record.artifact_type == "generated":
         owner = record.metadata.get("generated_by") or registered_generated_owner(
             record.path,
             profiles,
         )
-        rendered = owner if isinstance(owner, str) and "invalid-generator" not in codes else "invalid-or-missing"
+        rendered = (
+            owner
+            if isinstance(owner, str) and "invalid-generator" not in codes
+            else "invalid-or-missing"
+        )
         return f"generated profile; owner={rendered}"
-    if record.artifact_type in {"template-source", "governance", "archive", "unsupported"}:
+    if record.artifact_type in {
+        "template-source",
+        "governance",
+        "archive",
+        "unsupported",
+    }:
         return f"{record.artifact_type} profile"
     return "not-applicable"
 
@@ -813,10 +891,16 @@ def render_report(
         "| Profile | Records |",
         "| --- | ---: |",
     ]
-    lines.extend(f"| `{name}` | {count} |" for name, count in sorted(profile_counts.items()))
-    lines.extend(["", "## Finding Summary", "", "| Finding | Count |", "| --- | ---: |"])
+    lines.extend(
+        f"| `{name}` | {count} |" for name, count in sorted(profile_counts.items())
+    )
+    lines.extend(
+        ["", "## Finding Summary", "", "| Finding | Count |", "| --- | ---: |"]
+    )
     if finding_counts:
-        lines.extend(f"| `{code}` | {count} |" for code, count in sorted(finding_counts.items()))
+        lines.extend(
+            f"| `{code}` | {count} |" for code, count in sorted(finding_counts.items())
+        )
     else:
         lines.append("| `none` | 0 |")
     lines.extend(
@@ -833,7 +917,11 @@ def render_report(
         code_set = {finding.code for finding in findings}
         codes = ", ".join(sorted(code_set)) or "none"
         raw_profile = profile_map.get(record.artifact_type, {})
-        disposition = raw_profile.get("disposition", "advisory-only") if isinstance(raw_profile, dict) else "advisory-only"
+        disposition = (
+            raw_profile.get("disposition", "advisory-only")
+            if isinstance(raw_profile, dict)
+            else "advisory-only"
+        )
         row = [
             f"`{record.path.as_posix()}`",
             f"`{record.artifact_type}`",
@@ -896,7 +984,15 @@ def _changed_paths(
         ),
         (
             "staged Markdown discovery",
-            ["diff", "--cached", "--name-only", "-z", "--diff-filter=ACDMRT", "--", "*.md"],
+            [
+                "diff",
+                "--cached",
+                "--name-only",
+                "-z",
+                "--diff-filter=ACDMRT",
+                "--",
+                "*.md",
+            ],
         ),
         (
             "untracked Markdown discovery",
@@ -922,7 +1018,9 @@ def _changed_paths(
     for operation, command in commands:
         result = _run_git(root, command, operation=operation)
         if result.returncode != 0:
-            raise ProfileError(f"cannot establish local Git snapshot: {operation} failed")
+            raise ProfileError(
+                f"cannot establish local Git snapshot: {operation} failed"
+            )
         changed.update(
             normalized.as_posix()
             for path in _decode_git_paths(result.stdout, operation)
@@ -965,9 +1063,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Stage 99 registry (legacy --profiles remains a transition alias)",
     )
     parser.add_argument("--output", type=pathlib.Path)
-    parser.add_argument("--check", action="store_true", help="compare --output without writing")
+    parser.add_argument(
+        "--check", action="store_true", help="compare --output without writing"
+    )
     parser.add_argument("--changed-path", action="append", default=[])
-    parser.add_argument("--base-ref", default=None, help="optional Git ref for lifecycle transition comparison")
+    parser.add_argument(
+        "--base-ref",
+        default=None,
+        help="optional Git ref for lifecycle transition comparison",
+    )
     parser.add_argument(
         "--history-scope",
         choices=("changed", "full"),
@@ -1004,14 +1108,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             if stat.S_ISLNK(profile_status.st_mode) or not stat.S_ISREG(
                 profile_status.st_mode
             ):
-                raise RegistryError(
-                    "registry input must be a regular non-symlink file"
-                )
-            allocation_transition_mode = (
-                args.mode in {"check-changed", "check-contracts"}
-                and args.profiles.resolve(strict=False)
-                == canonical_registry_path.resolve(strict=False)
-            )
+                raise RegistryError("registry input must be a regular non-symlink file")
+            allocation_transition_mode = args.mode in {
+                "check-changed",
+                "check-contracts",
+            } and args.profiles.resolve(
+                strict=False
+            ) == canonical_registry_path.resolve(strict=False)
             if allocation_transition_mode:
                 revision = resolve_lifecycle_base(root, args.base_ref)
                 if revision is None:
@@ -1019,9 +1122,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "Requirement allocation transition requires a trusted base commit"
                     )
                 trusted_requirement_baseline = (
-                    load_trusted_requirement_allocation_baseline(
-                        revision, root=root
-                    )
+                    load_trusted_requirement_allocation_baseline(revision, root=root)
                 )
             registry = load_registry(
                 args.profiles,
@@ -1072,14 +1173,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             template = root / source
             if not template.is_file() or template.is_symlink():
                 contract_findings.append(
-                    Finding(source, "template-source-missing", f"registered role is unavailable: {role}")
+                    Finding(
+                        source,
+                        "template-source-missing",
+                        f"registered role is unavailable: {role}",
+                    )
                 )
                 continue
             try:
                 text = template.read_text(encoding="utf-8")
             except (OSError, UnicodeError):
                 contract_findings.append(
-                    Finding(source, "template-source-unreadable", "registered template is not readable UTF-8")
+                    Finding(
+                        source,
+                        "template-source-unreadable",
+                        "registered template is not readable UTF-8",
+                    )
                 )
                 continue
             if template.suffix == ".md":
@@ -1102,7 +1211,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
                     continue
                 provider_owned = _declares_provider_binding(profile)
-                if not provider_owned and values.get("type") != document_type(profile_id):
+                if not provider_owned and values.get("type") != document_type(
+                    profile_id
+                ):
                     # A provider-owned template declares the runtime's own keys,
                     # so it carries no `type` and no lifecycle status.
                     contract_findings.append(
@@ -1134,8 +1245,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     schema_values = resolve_template_placeholders(values)
                     schema_findings = validate_frontmatter(
                         schema_values,
-                        root
-                        / "docs/99.templates/contracts/frontmatter.schema.json",
+                        root / "docs/99.templates/contracts/frontmatter.schema.json",
                     )
                 except RegistryError:
                     contract_findings.append(
@@ -1275,7 +1385,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 file=sys.stderr,
             )
     elif args.transition_override_file:
-        print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
+        print(
+            "configuration-error: --transition-override-file requires --mode check-changed",
+            file=sys.stderr,
+        )
         return 2
     base_records: list[Record] = []
     verified_task10_move_targets: set[str] = set()
@@ -1307,7 +1420,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             previous_records=base_records_by_path,
             require_git=args.mode == "check-changed",
         )
-        manifest = build_current_manifest(root, records) if registry is not None else build_manifest(records)
+        manifest = (
+            build_current_manifest(root, records)
+            if registry is not None
+            else build_manifest(records)
+        )
     except ProfileError as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
@@ -1316,10 +1433,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             native_findings.extend(_reference_delegation_findings(root, profiles))
             if args.mode == "check-changed":
-                native_findings.extend(_allocation_findings(root, profiles, records, args.base_ref))
+                native_findings.extend(
+                    _allocation_findings(root, profiles, records, args.base_ref)
+                )
                 stage = root / "docs/03.specs"
-                packages = load_spec_packages(stage, registry=registry) if stage.exists() or stage.is_symlink() else ()
-                native_findings.extend(Finding(item.path, item.code, item.message) for item in validate_repository_spec_package_lifecycle(root, packages, base_ref=args.base_ref))
+                packages = (
+                    load_spec_packages(stage, registry=registry)
+                    if stage.exists() or stage.is_symlink()
+                    else ()
+                )
+                native_findings.extend(
+                    Finding(item.path, item.code, item.message)
+                    for item in validate_repository_spec_package_lifecycle(
+                        root, packages, base_ref=args.base_ref
+                    )
+                )
         except (ProfileError, SpecPackageError) as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -1337,7 +1465,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             transition_overrides=transition_overrides,
             migration_compaction_witness=(
                 _native_migration_compaction_witness(root, record, base.merge_base)
-                if args.mode == "check-changed" else None
+                if args.mode == "check-changed"
+                else None
             ),
         )
         for record in records
@@ -1355,7 +1484,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 current_text = (root / record.path).read_text(encoding="utf-8")
             except (OSError, UnicodeError) as error:
                 changed_body_findings[path_text] = [
-                    _finding(record, "body-unreadable", f"cannot read UTF-8 Markdown body: {error}")
+                    _finding(
+                        record,
+                        "body-unreadable",
+                        f"cannot read UTF-8 Markdown body: {error}",
+                    )
                 ]
                 continue
             base_record = base_records_by_path.get(path_text)
@@ -1430,7 +1563,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"metadata inventory is stale: {output}", file=sys.stderr)
                 return 1
             action = "fresh" if args.check else "generated"
-            print(f"metadata inventory {action}: records={len(records)} findings={sum(map(len, findings_by_path.values()))}")
+            print(
+                f"metadata inventory {action}: records={len(records)} findings={sum(map(len, findings_by_path.values()))}"
+            )
         else:
             sys.stdout.write(rendered)
         return 2 if parser_failures else 0
@@ -1438,7 +1573,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     directly_selected_paths = (
         changed_selection
         if args.mode == "check-changed"
-        else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
+        else {
+            record.path.as_posix()
+            for record in records
+            if record.metadata.get("status") == "active"
+        }
     )
     selected_paths = directly_selected_paths | set(relation_impact_findings)
     task5_legacy_parent_ids = _task5_legacy_parent_ids(root)
@@ -1468,7 +1607,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
     selected_findings = sorted(
-        set(native_findings) | {
+        set(native_findings)
+        | {
             finding
             for path in directly_selected_paths - legacy_exceptions
             for finding in findings_by_path.get(path, [])

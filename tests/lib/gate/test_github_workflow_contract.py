@@ -33,20 +33,11 @@ SUPPLY_CHAIN_SEMANTIC_COMMANDS = (
         "tests.validation.test_sample_service_delivery_rehearsal -v"
     ),
     "python3 scripts/validation/check-supply-chain-policy.py --check",
-    (
-        "bash scripts/security/"
-        "generate-supply-chain-sample-service-summary.sh --check"
-    ),
+    ("bash scripts/security/generate-supply-chain-sample-service-summary.sh --check"),
 )
 CONTROL_PLANE_SEMANTIC_COMMANDS = (
-    (
-        "python3 -m unittest "
-        "tests.validation.test_agent_governance_ci_routing -v"
-    ),
-    (
-        "python3 -m unittest "
-        "tests.validation.test_agent_output_eval_fixtures -v"
-    ),
+    ("python3 -m unittest tests.validation.test_agent_governance_ci_routing -v"),
+    ("python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v"),
 )
 
 
@@ -75,25 +66,50 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
                 with self.subTest(path=path):
                     result = subprocess.run(
-                        ["bash", path], cwd=ROOT, env=env,
-                        pass_fds=(held.fileno(),), capture_output=True,
-                        text=True, check=False,
+                        ["bash", path],
+                        cwd=ROOT,
+                        env=env,
+                        pass_fds=(held.fileno(),),
+                        capture_output=True,
+                        text=True,
+                        check=False,
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
 
-    def test_storybook_shell_rejects_lost_routes_and_changed_quality_contracts(self) -> None:
-        for case in ("full-command", "public-route", "full-child", "npm-argv", "threshold"):
+    def test_storybook_shell_rejects_lost_routes_and_changed_quality_contracts(
+        self,
+    ) -> None:
+        for case in (
+            "full-command",
+            "public-route",
+            "full-child",
+            "npm-argv",
+            "threshold",
+        ):
             with self.subTest(case=case), self.workflow_fixture() as root:
                 subprocess.run(["git", "init", "-q", str(root)], check=True)
                 (root / "tests/validation").mkdir(parents=True)
-                shutil.copy2(ROOT / "tests/validation/test_run_ci_precommit.sh", root / "tests/validation/test_run_ci_precommit.sh")
-                subprocess.run(["git", "-C", str(root), "add", "scripts", ".github", "tests"], check=True)
+                shutil.copy2(
+                    ROOT / "tests/validation/test_run_ci_precommit.sh",
+                    root / "tests/validation/test_run_ci_precommit.sh",
+                )
+                subprocess.run(
+                    ["git", "-C", str(root), "add", "scripts", ".github", "tests"],
+                    check=True,
+                )
                 project = root / "projects/storybook/nextjs"
                 project.mkdir(parents=True)
                 for name in ("package.json", "vitest.config.ts"):
-                    shutil.copy2(ROOT / "projects/storybook/nextjs" / name, project / name)
-                command = ["bash", str(root / "scripts/validation/check-storybook-contract.sh")]
-                baseline = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
+                    shutil.copy2(
+                        ROOT / "projects/storybook/nextjs" / name, project / name
+                    )
+                command = [
+                    "bash",
+                    str(root / "scripts/validation/check-storybook-contract.sh"),
+                ]
+                baseline = subprocess.run(
+                    command, cwd=root, capture_output=True, text=True, check=False
+                )
                 self.assertEqual(0, baseline.returncode, baseline.stderr)
                 if case == "full-command":
                     path = root / ".github/workflows/ci-quality.yml"
@@ -105,21 +121,35 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     path = project / "vitest.config.ts"
                     text = path.read_text(encoding="utf-8")
                     self.assertIn("statements: 90", text)
-                    path.write_text(text.replace("statements: 90", "statements: 80", 1), encoding="utf-8")
+                    path.write_text(
+                        text.replace("statements: 90", "statements: 80", 1),
+                        encoding="utf-8",
+                    )
                 else:
                     data = self.load_contract_document(root)
                     if case == "public-route":
-                        data["public_gate"]["suite_roots"]["repository-integrity"].remove("ci.storybook-coverage")
+                        data["public_gate"]["suite_roots"][
+                            "repository-integrity"
+                        ].remove("ci.storybook-coverage")
                     else:
-                        node = next(node for node in data["gate_nodes"] if node["gate_id"] == (
-                            "ci.validation-full" if case == "full-child" else "leaf.storybook-coverage"
-                        ))
+                        node = next(
+                            node
+                            for node in data["gate_nodes"]
+                            if node["gate_id"]
+                            == (
+                                "ci.validation-full"
+                                if case == "full-child"
+                                else "leaf.storybook-coverage"
+                            )
+                        )
                         if case == "full-child":
                             node["children"].remove("ci.storybook-coverage")
                         else:
                             node["argv"][2] = "test"
                     self.write_contract_document(root, data)
-                result = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
+                result = subprocess.run(
+                    command, cwd=root, capture_output=True, text=True, check=False
+                )
                 self.assertEqual(1, result.returncode, result.stderr)
                 self.assertIn("FAIL:", result.stderr)
 
@@ -196,7 +226,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for name, fields in expected.items():
             with self.subTest(name=name):
                 cls = getattr(self.module, name)
-                self.assertEqual(fields, tuple(field.name for field in dataclasses.fields(cls)))
+                self.assertEqual(
+                    fields, tuple(field.name for field in dataclasses.fields(cls))
+                )
 
     def test_repository_workflows_match_the_exact_contract(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
@@ -238,9 +270,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(2, len(contract.gate_registry.job_roots))
         self.assertEqual(
             REQUIRED_CI_JOBS,
-            frozenset(
-                job.job_id for job in contract.gate_registry.job_roots
-            ),
+            frozenset(job.job_id for job in contract.gate_registry.job_roots),
         )
         self.assertEqual(3, len(contract.gate_registry.profile_roots))
         self.assertEqual(
@@ -269,9 +299,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertFalse(hasattr(self.module, "ExpensiveCommandOwner"))
         self.assertFalse(hasattr(self.module, "_EXPENSIVE_COMMAND_BASELINE"))
         document = json.loads(
-            (ROOT / ".github/workflow-contract.yml").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
         )
         self.assertNotIn("expensive_commands", document)
         for workflow in document["workflows"].values():
@@ -315,9 +343,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             check=True,
         )
         modes = {
-            record.split(b"\t", 1)[1].decode("utf-8"): record.split(
-                b" ", 1
-            )[0].decode("ascii")
+            record.split(b"\t", 1)[1].decode("utf-8"): record.split(b" ", 1)[0].decode(
+                "ascii"
+            )
             for record in result.stdout.rstrip(b"\0").split(b"\0")
         }
         self.assertEqual(set(entrypoints), set(modes))
@@ -337,8 +365,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.assertEqual("approved-node24", action.security_disposition)
 
         workflows = {
-            workflow.path: workflow
-            for workflow in self.module.load_workflows(ROOT)
+            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
         }
         ci_jobs = workflows[".github/workflows/ci-quality.yml"].data["jobs"]
         self.assertIsInstance(ci_jobs, dict)
@@ -359,18 +386,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
             changed_steps[1]["uses"],
         )
         self.assertEqual(
-            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile changed"),
+            (
+                self.module.CI_DEPENDENCY_BOOTSTRAP,
+                "python3 scripts/validation/run-ci-gate.py --profile changed",
+            ),
             (changed_steps[3]["run"], changed_steps[4]["run"]),
         )
         self.assertEqual(
-            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile full"),
+            (
+                self.module.CI_DEPENDENCY_BOOTSTRAP,
+                "python3 scripts/validation/run-ci-gate.py --profile full",
+            ),
             (full_steps[4]["run"], full_steps[5]["run"]),
         )
         self.assertEqual(
             "pre-commit==4.6.1\n",
-            (ROOT / "scripts/requirements-pre-commit.txt").read_text(
-                encoding="utf-8"
-            ),
+            (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
 
     def test_forbidden_trigger_and_action_mutations_fail_closed(self) -> None:
@@ -400,8 +431,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
     @staticmethod
     def _required_quality_jobs(module, root: pathlib.Path):
         workflows = {
-            workflow.path: workflow
-            for workflow in module.load_workflows(root)
+            workflow.path: workflow for workflow in module.load_workflows(root)
         }
         jobs = workflows[".github/workflows/ci-quality.yml"].data["jobs"]
         if not isinstance(jobs, dict):
@@ -439,7 +469,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 r"\Apython3 scripts/validation/run-ci-gate\.py "
                 r"--profile (changed|full)\Z",
             )
-        self.assertCountEqual(("bootstrap", "changed", "bootstrap", "full"), map(self._static_gate_profile, programs))
+        self.assertCountEqual(
+            ("bootstrap", "changed", "bootstrap", "full"),
+            map(self._static_gate_profile, programs),
+        )
 
     def test_required_jobs_select_their_public_profiles_once(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
@@ -455,47 +488,115 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
             )
             with self.subTest(job_id=job_id):
-                self.assertEqual(("bootstrap", expected[job_id]), tuple(map(self._static_gate_profile, programs)))
+                self.assertEqual(
+                    ("bootstrap", expected[job_id]),
+                    tuple(map(self._static_gate_profile, programs)),
+                )
 
     def test_bootstrap_projection_is_exact_and_ordered(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        document = next(item for item in self.module.load_workflows(ROOT) if item.path == ".github/workflows/ci-quality.yml")
-        self.assertEqual((), self.module._workflow_projection_findings(document.path, document.data, document.data["jobs"], contract))
+        document = next(
+            item
+            for item in self.module.load_workflows(ROOT)
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        self.assertEqual(
+            (),
+            self.module._workflow_projection_findings(
+                document.path, document.data, document.data["jobs"], contract
+            ),
+        )
         bootstrap = "python3 -m pip install -r scripts/requirements.txt"
-        for job_id, profile in (("validation-changed", "changed"), ("validation-full", "full")):
+        for job_id, profile in (
+            ("validation-changed", "changed"),
+            ("validation-full", "full"),
+        ):
             command = f"python3 scripts/validation/run-ci-gate.py --profile {profile}"
-            for runs in ([command], [bootstrap], [bootstrap, bootstrap, command],
-                         [command, bootstrap], [bootstrap, command, command],
-                         [bootstrap + " --upgrade", command],
-                         ["python3 -m pip install pyyaml", command],
-                         [bootstrap + "\ntrue", command], [bootstrap, "true", command]):
+            for runs in (
+                [command],
+                [bootstrap],
+                [bootstrap, bootstrap, command],
+                [command, bootstrap],
+                [bootstrap, command, command],
+                [bootstrap + " --upgrade", command],
+                ["python3 -m pip install pyyaml", command],
+                [bootstrap + "\ntrue", command],
+                [bootstrap, "true", command],
+            ):
                 with self.subTest(job=job_id, runs=runs):
                     data = copy.deepcopy(document.data)
                     steps = data["jobs"][job_id]["steps"]
-                    data["jobs"][job_id]["steps"] = [step for step in steps if "run" not in step] + [{"run": run} for run in runs]
-                    codes = {finding.code for finding in self.module._workflow_projection_findings(document.path, data, data["jobs"], contract)}
-                    self.assertTrue(codes & {"workflow-gate-projection-invalid", "workflow-gate-projection-mismatch"}, codes)
+                    data["jobs"][job_id]["steps"] = [
+                        step for step in steps if "run" not in step
+                    ] + [{"run": run} for run in runs]
+                    codes = {
+                        finding.code
+                        for finding in self.module._workflow_projection_findings(
+                            document.path, data, data["jobs"], contract
+                        )
+                    }
+                    self.assertTrue(
+                        codes
+                        & {
+                            "workflow-gate-projection-invalid",
+                            "workflow-gate-projection-mismatch",
+                        },
+                        codes,
+                    )
 
     def test_bootstrap_retains_step_context_and_checkout_guards(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         documents = self.module.load_workflows(ROOT)
-        document = next(item for item in documents if item.path == ".github/workflows/ci-quality.yml")
+        document = next(
+            item
+            for item in documents
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
         for job_id in ("validation-changed", "validation-full"):
-            for key, value in (("if", False), ("env", {"X": "Y"}), ("shell", "bash"),
-                               ("working-directory", "scripts"), ("continue-on-error", True), ("checkout-order", True)):
+            for key, value in (
+                ("if", False),
+                ("env", {"X": "Y"}),
+                ("shell", "bash"),
+                ("working-directory", "scripts"),
+                ("continue-on-error", True),
+                ("checkout-order", True),
+            ):
                 with self.subTest(job=job_id, key=key):
                     data = copy.deepcopy(document.data)
                     steps = data["jobs"][job_id]["steps"]
-                    step = next(step for step in steps if step.get("run") == "python3 -m pip install -r scripts/requirements.txt")
+                    step = next(
+                        step
+                        for step in steps
+                        if step.get("run")
+                        == "python3 -m pip install -r scripts/requirements.txt"
+                    )
                     if key == "checkout-order":
                         steps.remove(step)
                         steps.insert(0, step)
                     else:
                         step[key] = value
                     changed = dataclasses.replace(document, data=data)
-                    with mock.patch.object(self.module, "load_workflows", return_value=tuple(changed if item.path == document.path else item for item in documents)):
-                        codes = {finding.code for finding in self.module.validate_workflows(ROOT, contract)}
-                    expected = "workflow-gate-checkout-required" if key == "checkout-order" else "workflow-continue-on-error-forbidden" if key == "continue-on-error" else "workflow-gate-execution-context-invalid"
+                    with mock.patch.object(
+                        self.module,
+                        "load_workflows",
+                        return_value=tuple(
+                            changed if item.path == document.path else item
+                            for item in documents
+                        ),
+                    ):
+                        codes = {
+                            finding.code
+                            for finding in self.module.validate_workflows(
+                                ROOT, contract
+                            )
+                        }
+                    expected = (
+                        "workflow-gate-checkout-required"
+                        if key == "checkout-order"
+                        else "workflow-continue-on-error-forbidden"
+                        if key == "continue-on-error"
+                        else "workflow-gate-execution-context-invalid"
+                    )
                     self.assertIn(expected, codes)
 
     def test_workflow_projection_rejects_dynamic_ids_and_free_form_shell(
@@ -619,9 +720,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         contract = self.module.load_workflow_contract(ROOT)
         jobs = self._required_quality_jobs(self.module, ROOT)
         checkout = next(
-            action
-            for action in contract.actions
-            if action.action == "actions/checkout"
+            action for action in contract.actions if action.action == "actions/checkout"
         )
         expected_checkout = {
             "name": "Checkout repository",
@@ -637,8 +736,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             workflow = root / ".github/workflows/ci-quality.yml"
             workflow.write_text(
                 workflow.read_text(encoding="utf-8").replace(
-                    "run: python3 scripts/validation/run-ci-gate.py "
-                    "--profile changed",
+                    "run: python3 scripts/validation/run-ci-gate.py --profile changed",
                     "run: python3 scripts/validation/run-ci-gate.py "
                     "--profile ci --gate leaf.docs-implementation-alignment",
                     1,
@@ -703,9 +801,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             all_profiles - script_backed,
         )
         self.assertEqual(set(), script_backed - all_profiles)
-        node_by_id = {
-            node.gate_id: node for node in contract.gate_registry.nodes
-        }
+        node_by_id = {node.gate_id: node for node in contract.gate_registry.nodes}
         for profile, shared_ids in expected_shared.items():
             profile_nodes = {
                 gate_id: node_by_id[gate_id]
@@ -741,9 +837,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 if record["profile"] == "local-script-backed"
             )
             profile["root_gate_ids"] = [
-                parallel["gate_id"]
-                if gate_id == "ci.docs-traceability"
-                else gate_id
+                parallel["gate_id"] if gate_id == "ci.docs-traceability" else gate_id
                 for gate_id in profile["root_gate_ids"]
             ]
             self.write_contract_document(root, document)
@@ -767,7 +861,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if isinstance(step, dict) and isinstance(step.get("run"), str)
         )
         self.assertEqual(
-            (self.module.CI_DEPENDENCY_BOOTSTRAP, "python3 scripts/validation/run-ci-gate.py --profile full"),
+            (
+                self.module.CI_DEPENDENCY_BOOTSTRAP,
+                "python3 scripts/validation/run-ci-gate.py --profile full",
+            ),
             programs,
         )
         document = self.load_contract_document(ROOT)
@@ -794,10 +891,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         document = self.load_contract_document(ROOT)
-        nodes = {
-            node["gate_id"]: node
-            for node in document["gate_nodes"]
-        }
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
         gate_id = "leaf.agent-governance-regressions"
         self.assertEqual(
             [
@@ -831,9 +925,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def load_contract_document(self, root: pathlib.Path) -> dict[str, object]:
         return json.loads(
-            (root / ".github/workflow-contract.yml").read_text(
-                encoding="utf-8"
-            )
+            (root / ".github/workflow-contract.yml").read_text(encoding="utf-8")
         )
 
     def write_contract_document(
@@ -853,10 +945,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
     ) -> None:
         aggregate = root / "scripts/validation/check-repo-contracts.sh"
         aggregate.write_text(
-            aggregate.read_text(encoding="utf-8")
-            + "\n"
-            + program.rstrip()
-            + "\n",
+            aggregate.read_text(encoding="utf-8") + "\n" + program.rstrip() + "\n",
             encoding="utf-8",
         )
 
@@ -870,11 +959,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
         workflow = root / ".github/workflows/ci-quality.yml"
         text = workflow.read_text(encoding="utf-8")
         anchor = "      - name: Check docs traceability sync\n"
-        step = (
-            f"      - name: {name}\n"
-            "        shell: bash\n"
-            "        run: |\n"
-            + "".join(f"          {line}\n" for line in program.splitlines())
+        step = f"      - name: {name}\n        shell: bash\n        run: |\n" + "".join(
+            f"          {line}\n" for line in program.splitlines()
         )
         self.assertIn(anchor, text)
         workflow.write_text(
@@ -1064,16 +1150,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "top-contents-write",
                 "permissions:\n  contents: read\n\nconcurrency:\n",
                 "permissions:\n  contents: write\n\nconcurrency:\n",
-                (
-                    "    permissions:\n"
-                    "      contents: read\n"
-                    "    concurrency:\n"
-                ),
-                (
-                    "    permissions:\n"
-                    "      contents: write\n"
-                    "    concurrency:\n"
-                ),
+                ("    permissions:\n      contents: read\n    concurrency:\n"),
+                ("    permissions:\n      contents: write\n    concurrency:\n"),
             ),
             (
                 "job-contents-write",
@@ -1133,23 +1211,19 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     encoding="utf-8",
                 )
                 document = self.load_contract_document(root)
-                ci = document["workflows"][
-                    ".github/workflows/ci-quality.yml"
-                ]
+                ci = document["workflows"][".github/workflows/ci-quality.yml"]
                 if label == "top-contents-write":
                     ci["permissions"]["contents"] = "write"
                 elif label == "full-extra-write":
                     ci["jobs"]["validation-full"]["permissions"]["packages"] = "write"
                 else:
-                    permissions = ci["jobs"]["validation-changed"][
-                        "permissions"
-                    ]
+                    permissions = ci["jobs"]["validation-changed"]["permissions"]
                     if label == "job-contents-write":
                         permissions["contents"] = "write"
                     else:
-                        permissions[label.removeprefix("job-").removesuffix(
-                            "-write"
-                        )] = "write"
+                        permissions[
+                            label.removeprefix("job-").removesuffix("-write")
+                        ] = "write"
                 self.write_contract_document(root, document)
                 contract = self.module.load_workflow_contract(root)
                 findings = self.module.validate_workflows(root, contract)
@@ -1163,16 +1237,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         workflows = {
-            workflow.path: workflow
-            for workflow in self.module.load_workflows(ROOT)
+            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
         }
-        repo_steps = workflows[
-            ".github/workflows/ci-quality.yml"
-        ].data["jobs"]["repo-contracts"]["steps"]
+        repo_steps = workflows[".github/workflows/ci-quality.yml"].data["jobs"][
+            "repo-contracts"
+        ]["steps"]
         repo_commands = "\n".join(
-            str(step.get("run", ""))
-            for step in repo_steps
-            if isinstance(step, dict)
+            str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
         )
         for marker in (
             "scripts/validation/check-target-surface-contract.py",
@@ -1204,9 +1275,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         encoding="utf-8",
                     )
                 else:
-                    aggregate = (
-                        root / "scripts/validation/check-repo-contracts.sh"
-                    )
+                    aggregate = root / "scripts/validation/check-repo-contracts.sh"
                     aggregate.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(
                         ROOT / "scripts/validation/check-repo-contracts.sh",
@@ -1239,8 +1308,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             with self.subTest(command=command), self.workflow_fixture() as root:
                 aggregate = root / "scripts/validation/check-repo-contracts.sh"
                 aggregate.write_text(
-                    aggregate.read_text(encoding="utf-8")
-                    + f"\n{command}\n",
+                    aggregate.read_text(encoding="utf-8") + f"\n{command}\n",
                     encoding="utf-8",
                 )
                 findings = self.module.validate_workflows(
@@ -1286,10 +1354,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             with self.subTest(identifier=identifier), self.workflow_fixture() as root:
                 workflow = root / ".github/workflows/ci-quality.yml"
                 workflow_text = workflow.read_text(encoding="utf-8")
-                workflow_step = (
-                    f"      - name: {step_name}\n"
-                    f"        run: {command}\n"
-                )
+                workflow_step = f"      - name: {step_name}\n        run: {command}\n"
                 self.assertIn(workflow_step, workflow_text)
                 workflow.write_text(
                     workflow_text.replace(workflow_step, "", 1),
@@ -1315,9 +1380,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     ),
                     encoding="utf-8",
                 )
-                with self.assertRaises(
-                    self.module.WorkflowContractError
-                ) as raised:
+                with self.assertRaises(self.module.WorkflowContractError) as raised:
                     self.module.load_workflow_contract(root)
                 self.assertEqual(
                     "contract-expensive-owner-baseline-invalid",
@@ -1362,11 +1425,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "quoted-heredoc-lookalike-before-executable",
-                (
-                    "printf '%s\\n' '<<REPORT'\n"
-                    f"./{marker}\n"
-                    "REPORT\n"
-                ),
+                (f"printf '%s\\n' '<<REPORT'\n./{marker}\nREPORT\n"),
                 {"workflow-aggregate-source-invalid"},
             ),
         )
@@ -1374,9 +1433,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             with self.subTest(label=label), self.workflow_fixture() as root:
                 aggregate = root / "scripts/validation/check-repo-contracts.sh"
                 aggregate.write_text(
-                    aggregate.read_text(encoding="utf-8")
-                    + "\n"
-                    + mutation,
+                    aggregate.read_text(encoding="utf-8") + "\n" + mutation,
                     encoding="utf-8",
                 )
                 findings = self.module.validate_workflows(
@@ -1406,7 +1463,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "literal-assignment-same-line-direct",
-                f"checker={marker}; bash \"${{checker}}\"",
+                f'checker={marker}; bash "${{checker}}"',
             ),
         )
         for label, program in safe_cases:
@@ -1432,25 +1489,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "variable-indirection",
-                (
-                    f'checker="{marker}"\n'
-                    'pointer=checker\n'
-                    'bash "${!pointer}"'
-                ),
+                (f'checker="{marker}"\npointer=checker\nbash "${{!pointer}}"'),
             ),
             (
                 "unresolved-variable",
-                (
-                    f'expected="{marker}"\n'
-                    'bash "$unresolved_checker" "$expected"'
-                ),
+                (f'expected="{marker}"\nbash "$unresolved_checker" "$expected"'),
             ),
             (
                 "dynamic-direct-executable",
-                (
-                    'checker="${DYNAMIC_CHECKER:-}"\n'
-                    '"$checker"'
-                ),
+                ('checker="${DYNAMIC_CHECKER:-}"\n"$checker"'),
             ),
         )
         for label, program in ambiguous_cases:
@@ -1538,10 +1585,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "noncanonical-dot-dot",
-                (
-                    "bash scripts/validation/../hardening/"
-                    "check-all-hardening.sh"
-                ),
+                ("bash scripts/validation/../hardening/check-all-hardening.sh"),
             ),
             (
                 "noncanonical-double-slash",
@@ -1549,7 +1593,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "noncanonical-absolute",
-                f"bash \"$PWD/{marker}\"",
+                f'bash "$PWD/{marker}"',
             ),
         )
         for label, program in cases:
@@ -1564,10 +1608,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     {finding.code for finding in findings},
                 )
                 self.assertTrue(
-                    all(
-                        sentinel not in finding.message
-                        for finding in findings
-                    )
+                    all(sentinel not in finding.message for finding in findings)
                 )
 
     @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
@@ -1578,29 +1619,17 @@ class GithubWorkflowContractTests(unittest.TestCase):
         cases = (
             (
                 "quoted-heredoc-data",
-                (
-                    "cat <<'REPORT'\n"
-                    f"$(bash {marker})\n"
-                    "REPORT"
-                ),
+                (f"cat <<'REPORT'\n$(bash {marker})\nREPORT"),
                 set(),
             ),
             (
                 "unquoted-heredoc-command-substitution",
-                (
-                    "cat <<REPORT\n"
-                    f"$(bash {marker})\n"
-                    "REPORT"
-                ),
+                (f"cat <<REPORT\n$(bash {marker})\nREPORT"),
                 {"workflow-aggregate-source-invalid"},
             ),
             (
                 "unquoted-heredoc-backtick-substitution",
-                (
-                    "cat <<REPORT\n"
-                    f"`bash {marker}`\n"
-                    "REPORT"
-                ),
+                (f"cat <<REPORT\n`bash {marker}`\nREPORT"),
                 {"workflow-aggregate-source-invalid"},
             ),
         )
@@ -1629,9 +1658,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         f"#!/usr/bin/env bash\nbash {marker}\n",
                         encoding="utf-8",
                     )
-                    expected = {
-                        "expensive-command-ownership-duplicate"
-                    }
+                    expected = {"expensive-command-ownership-duplicate"}
                 elif label == "nested-helper":
                     first.write_text(
                         (
@@ -1645,9 +1672,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         f"#!/usr/bin/env bash\nbash {marker}\n",
                         encoding="utf-8",
                     )
-                    expected = {
-                        "expensive-command-ownership-duplicate"
-                    }
+                    expected = {"expensive-command-ownership-duplicate"}
                 elif label == "python-helper":
                     first = first.with_suffix(".py")
                     first.write_text(
@@ -1661,9 +1686,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         ),
                         encoding="utf-8",
                     )
-                    expected = {
-                        "expensive-command-ownership-duplicate"
-                    }
+                    expected = {"expensive-command-ownership-duplicate"}
                 else:
                     first.write_text(
                         (
@@ -1685,18 +1708,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.append_aggregate_program(
                     root,
                     (
-                        "python3 scripts/validation/"
-                        "task4-semantic-helper-a.py"
+                        "python3 scripts/validation/task4-semantic-helper-a.py"
                         if label == "python-helper"
-                        else (
-                            "bash scripts/validation/"
-                            "task4-semantic-helper-a.sh"
-                        )
+                        else ("bash scripts/validation/task4-semantic-helper-a.sh")
                     ),
                 )
-                self.assertTrue(
-                    expected.issubset(self.semantic_finding_codes(root))
-                )
+                self.assertTrue(expected.issubset(self.semantic_finding_codes(root)))
 
     @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
     def test_semantic_helper_depth_file_byte_and_symlink_limits_fail_closed(
@@ -1722,9 +1739,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 elif label == "files":
                     invocations: list[str] = []
                     for index in range(65):
-                        relative = (
-                            f"scripts/validation/task4-file-{index}.sh"
-                        )
+                        relative = f"scripts/validation/task4-file-{index}.sh"
                         (root / relative).write_text(
                             "#!/usr/bin/env bash\ntrue\n",
                             encoding="utf-8",
@@ -1734,9 +1749,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 elif label == "bytes":
                     relative = "scripts/validation/task4-large-helper.sh"
                     (root / relative).write_text(
-                        "#!/usr/bin/env bash\n#"
-                        + ("x" * (256 * 1024))
-                        + "\n",
+                        "#!/usr/bin/env bash\n#" + ("x" * (256 * 1024)) + "\n",
                         encoding="utf-8",
                     )
                     entry = f"bash {relative}"
@@ -1748,9 +1761,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     )
                     link = helper_root / "task4-helper-link.sh"
                     os.symlink(target.name, link)
-                    entry = (
-                        "bash scripts/validation/task4-helper-link.sh"
-                    )
+                    entry = "bash scripts/validation/task4-helper-link.sh"
                 self.append_aggregate_program(root, entry)
                 self.assertIn(
                     "workflow-aggregate-source-invalid",
@@ -1761,9 +1772,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_direct_local_executable_requires_tracked_mode_and_admitted_shebang(
         self,
     ) -> None:
-        marker = pathlib.PurePosixPath(
-            "scripts/hardening/check-all-hardening.sh"
-        )
+        marker = pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
         cases = (
             (
                 "tracked-executable",
@@ -1838,11 +1847,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                             [
                                 "git",
                                 "update-index",
-                                (
-                                    "--chmod=+x"
-                                    if executable
-                                    else "--chmod=-x"
-                                ),
+                                ("--chmod=+x" if executable else "--chmod=-x"),
                                 marker.as_posix(),
                             ],
                             cwd=root,
@@ -1870,9 +1875,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     text.replace("on:\n", f"{spelling}:\n", 1),
                     encoding="utf-8",
                 )
-                with self.assertRaises(
-                    self.module.WorkflowContractError
-                ) as raised:
+                with self.assertRaises(self.module.WorkflowContractError) as raised:
                     self.module.load_workflows(root)
                 self.assertEqual(
                     "workflow-trigger-key-invalid",
@@ -1885,10 +1888,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             with self.subTest(label=label), self.workflow_fixture() as root:
                 workflow = root / ".github/workflows/ci-quality.yml"
                 text = workflow.read_text(encoding="utf-8")
-                step = (
-                    "      - name: Additional Action probe\n"
-                    "        uses: "
-                )
+                step = "      - name: Additional Action probe\n        uses: "
                 if label == "ninth-registered-action":
                     action = "example/action"
                     sha = "0000000000000000000000000000000000000000"
@@ -1902,9 +1902,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                             f"{action}/{sha}/action.yml"
                         ),
                         "retrieved_at": "2026-09-02",
-                        "consumers": [
-                            ".github/workflows/ci-quality.yml"
-                        ],
+                        "consumers": [".github/workflows/ci-quality.yml"],
                         "security_disposition": "approved-node24",
                     }
                     contract_data["actions"] = dict(
@@ -1980,8 +1978,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for workflow in self.module.load_workflow_contract(ROOT).workflows
         }
         documents = {
-            workflow.path: workflow
-            for workflow in self.module.load_workflows(ROOT)
+            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
         }
         actual_write_owners: set[tuple[str, str, str]] = set()
         for path, (top_level, jobs) in expected.items():
@@ -2054,10 +2051,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "    runs-on: ubuntu-latest\n"
                 ),
                 "      changelog:\n        permissions: null\n",
-                (
-                    "      changelog:\n"
-                    "        permissions: {issues: write}\n"
-                ),
+                ("      changelog:\n        permissions: {issues: write}\n"),
             ),
             (
                 "greetings",
@@ -2154,21 +2148,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "tech-stack-version-sync",
                 ".github/workflows/tech-stack-version-sync.yml",
-                (
-                    "  drift-gate:\n"
-                    "    permissions:\n"
-                    "      contents: read\n"
-                ),
+                ("  drift-gate:\n    permissions:\n      contents: read\n"),
                 (
                     "  drift-gate:\n"
                     "    permissions:\n"
                     "      contents: read\n"
                     "      pull-requests: write\n"
                 ),
-                (
-                    "      drift-gate:\n"
-                    "        permissions: {contents: read}\n"
-                ),
+                ("      drift-gate:\n        permissions: {contents: read}\n"),
                 (
                     "      drift-gate:\n"
                     "        permissions: {contents: read, pull-requests: write}\n"
@@ -2215,8 +2202,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 baseline_findings = [
                     finding
                     for finding in findings
-                    if finding.code
-                    == "workflow-permission-baseline-invalid"
+                    if finding.code == "workflow-permission-baseline-invalid"
                 ]
                 self.assertTrue(baseline_findings)
                 self.assertEqual(
@@ -2255,9 +2241,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     workflow.parent.symlink_to(outside, target_is_directory=True)
                     expected = "yaml-file-unsafe"
                 else:
-                    workflow.write_bytes(
-                        b"x" * (self.module.MAX_YAML_BYTES + 1)
-                    )
+                    workflow.write_bytes(b"x" * (self.module.MAX_YAML_BYTES + 1))
                     expected = "yaml-file-oversize"
                 with self.assertRaises(self.module.WorkflowContractError) as raised:
                     self.module.load_workflows(root)
@@ -2274,8 +2258,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "  workflow_dispatch:\n"
         )
         malicious_trigger = (
-            "  pull_request_target:\n"
-            "    types: [private-trigger-sentinel]\n"
+            "  pull_request_target:\n    types: [private-trigger-sentinel]\n"
         )
         cases = (
             (
@@ -2286,9 +2269,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "unquoted-matching-first",
-                matching_trigger
-                + "'on':\n"
-                + malicious_trigger,
+                matching_trigger + "'on':\n" + malicious_trigger,
             ),
         )
         for label, replacement in cases:
@@ -2300,9 +2281,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     text.replace(matching_trigger, replacement, 1),
                     encoding="utf-8",
                 )
-                with self.assertRaises(
-                    self.module.WorkflowContractError
-                ) as raised:
+                with self.assertRaises(self.module.WorkflowContractError) as raised:
                     self.module.load_workflows(root)
                 self.assertEqual(
                     "workflow-trigger-key-ambiguous",
@@ -2323,9 +2302,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if workflow.path == ".github/workflows/ci-quality.yml"
         )
         self.assertIn("on", ci.data)
-        self.assertFalse(
-            any(type(key) is bool and key is True for key in ci.data)
-        )
+        self.assertFalse(any(type(key) is bool and key is True for key in ci.data))
         unrelated_value = object()
         normalized: dict[object, object] = {
             False: unrelated_value,
@@ -2376,12 +2353,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_contract_rejects_noncanonical_workflow_paths(self) -> None:
         with self.workflow_fixture() as root:
             document = self.load_contract_document(root)
-            workflow = document["workflows"].pop(
-                ".github/workflows/ci-quality.yml"
-            )
-            document["workflows"][
-                ".github/workflows/../ci-quality.yml"
-            ] = workflow
+            workflow = document["workflows"].pop(".github/workflows/ci-quality.yml")
+            document["workflows"][".github/workflows/../ci-quality.yml"] = workflow
             self.write_contract_document(root, document)
             with self.assertRaises(self.module.WorkflowContractError) as raised:
                 self.module.load_workflow_contract(root)

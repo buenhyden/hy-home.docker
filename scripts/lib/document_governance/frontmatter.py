@@ -91,7 +91,11 @@ def parse_frontmatter_text(text: str) -> dict[str, object]:
     except yaml.YAMLError as error:
         summary = str(error).splitlines()[0]
         problem = getattr(error, "problem", "")
-        code = "duplicate-key" if problem.startswith("duplicate key:") else "malformed-yaml"
+        code = (
+            "duplicate-key"
+            if problem.startswith("duplicate key:")
+            else "malformed-yaml"
+        )
         raise FrontmatterError(
             f"invalid YAML frontmatter: {summary}", code=code
         ) from error
@@ -121,10 +125,7 @@ def _freeze(value: object, active: set[int] | None = None) -> object:
     try:
         if isinstance(value, Mapping):
             return MappingProxyType(
-                {
-                    str(key): _freeze(item, ancestors)
-                    for key, item in value.items()
-                }
+                {str(key): _freeze(item, ancestors) for key, item in value.items()}
             )
         if isinstance(value, (list, tuple)):
             return tuple(_freeze(item, ancestors) for item in value)

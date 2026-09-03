@@ -17,7 +17,11 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
-from scripts.lib.document_governance.registry import document_type, DocumentRegistry, load_registry
+from scripts.lib.document_governance.registry import (
+    document_type,
+    DocumentRegistry,
+    load_registry,
+)
 
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
@@ -32,9 +36,7 @@ GIT_REAP_TIMEOUT_SECONDS = 1.0
 GIT_STREAM_CHUNK_BYTES = 64 * 1024
 
 _PACKAGE_PATH = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)")
-_TASK_PATH = re.compile(
-    r"tsk-(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md"
-)
+_TASK_PATH = re.compile(r"tsk-(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md")
 _SPEC_ID = re.compile(r"SPEC-[0-9]{4}")
 _PLAN_ID = re.compile(r"SPEC-[0-9]{4}-PLAN-[0-9]{4}")
 _TASK_ID = re.compile(r"SPEC-[0-9]{4}-TSK-[0-9]{4}")
@@ -60,13 +62,14 @@ _EXPECTED_PROFILES = {
         "execution",
     ),
     "task": (
-        "docs/03.specs/{package_number:4}-{slug}/tasks/"
-        "tsk-{task_number:4}-{slug}.md",
+        "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
         "SPEC-{package_number:4}-TSK-{task_number:4}",
         "package-member",
         "execution",
     ),
 }
+
+
 class SpecPackageError(ValueError):
     """Raised when the Stage 03 package surface cannot be trusted."""
 
@@ -110,7 +113,9 @@ class _LoadBudget:
     file_bytes: int = 0
 
 
-def _directory_snapshot(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
+def _directory_snapshot(
+    metadata: os.stat_result,
+) -> tuple[int, int, int, int, int, int]:
     return (
         metadata.st_dev,
         metadata.st_ino,
@@ -143,10 +148,9 @@ def _open_directory_at(
     except OSError as error:
         raise SpecPackageError(f"cannot open {label}: {error}") from error
     opened = os.fstat(descriptor)
-    if (
-        not stat.S_ISDIR(opened.st_mode)
-        or _directory_snapshot(opened) != _directory_snapshot(metadata)
-    ):
+    if not stat.S_ISDIR(opened.st_mode) or _directory_snapshot(
+        opened
+    ) != _directory_snapshot(metadata):
         os.close(descriptor)
         raise SpecPackageError(f"{label} changed while opening")
     return descriptor, _directory_snapshot(opened)
@@ -224,7 +228,9 @@ def _bounded_directory_names(
                 if len(names) >= limit:
                     raise SpecPackageError(limit_message)
                 if current.entries >= MAX_TOTAL_ENTRIES:
-                    raise SpecPackageError("Stage 03 exceeds the aggregate entry budget")
+                    raise SpecPackageError(
+                        "Stage 03 exceeds the aggregate entry budget"
+                    )
                 if entry.name in {"", ".", ".."}:
                     raise SpecPackageError(f"{label} contains an unsafe entry")
                 names.append(entry.name)
@@ -267,7 +273,12 @@ def _read_regular_utf8_at(
         raise SpecPackageError(f"{label} must be a regular non-symlink file")
     if metadata.st_size > MAX_SPEC_FILE_BYTES:
         raise SpecPackageError(f"{label} exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | os.O_NONBLOCK
+    )
     try:
         descriptor = os.open(name, flags, dir_fd=parent_descriptor)
         try:
@@ -302,9 +313,8 @@ def _read_regular_utf8_at(
                     f"{label} changed while reading or produced a short read"
                 )
             final = os.stat(name, dir_fd=parent_descriptor, follow_symlinks=False)
-            if (
-                stat.S_ISLNK(final.st_mode)
-                or _file_snapshot(final) != _file_snapshot(opened)
+            if stat.S_ISLNK(final.st_mode) or _file_snapshot(final) != _file_snapshot(
+                opened
             ):
                 raise SpecPackageError(
                     f"{label} changed or became a symlink while reading"
@@ -345,9 +355,7 @@ def _validate_registry_contract(registry: DocumentRegistry) -> None:
             raise SpecPackageError(f"Stage 99 lifecycle is missing: {lifecycle_id}")
     for filename, profile_id in _CONTRACT_PROFILES.items():
         profile = registry.profiles.get(profile_id)
-        expected_path = (
-            "docs/03.specs/{package_number:4}-{slug}/contracts/" + filename
-        )
+        expected_path = "docs/03.specs/{package_number:4}-{slug}/contracts/" + filename
         if (
             not isinstance(profile, Mapping)
             or profile.get("path_pattern") != expected_path
@@ -362,7 +370,9 @@ def _string_tuple(value: object, field: str) -> tuple[str, ...]:
     if not isinstance(value, tuple) or not all(
         isinstance(item, str) and item for item in value
     ):
-        raise SpecPackageError(f"Spec Package frontmatter {field} must be a string list")
+        raise SpecPackageError(
+            f"Spec Package frontmatter {field} must be a string list"
+        )
     if len(value) != len(set(value)):
         raise SpecPackageError(
             f"Spec Package frontmatter {field} contains duplicate identities"
@@ -379,7 +389,9 @@ def _allowed_statuses(
     if not isinstance(statuses, tuple):
         raise SpecPackageError(f"Stage 99 lifecycle is missing: {lifecycle_id}")
     if not all(isinstance(status, str) for status in statuses):
-        raise SpecPackageError(f"Stage 99 lifecycle statuses are malformed: {lifecycle_id}")
+        raise SpecPackageError(
+            f"Stage 99 lifecycle statuses are malformed: {lifecycle_id}"
+        )
     return statuses
 
 
@@ -425,7 +437,9 @@ def _parse_document(
 
 
 def _validate_spec_parents(document: SpecDocument) -> None:
-    if any(_EXTERNAL_PARENT_ID.fullmatch(parent) is None for parent in document.parent_ids):
+    if any(
+        _EXTERNAL_PARENT_ID.fullmatch(parent) is None for parent in document.parent_ids
+    ):
         raise SpecPackageError(
             f"{document.path} Spec parents must use canonical uppercase stable IDs"
         )
@@ -471,17 +485,11 @@ def _validate_execution_states(
         if task.status != "active":
             continue
         if spec.status != "active":
-            raise SpecPackageError(
-                f"{task.path} active Task requires active Spec"
-            )
+            raise SpecPackageError(f"{task.path} active Task requires active Spec")
         if plan is not None and plan.status != "active":
-            raise SpecPackageError(
-                f"{task.path} active Task requires active Plan"
-            )
+            raise SpecPackageError(f"{task.path} active Task requires active Plan")
     if plan is not None and plan.status == "active" and spec.status != "active":
-        raise SpecPackageError(
-            f"{plan.path} active Plan requires active Spec"
-        )
+        raise SpecPackageError(f"{plan.path} active Plan requires active Spec")
 
 
 def _load_contracts(
@@ -782,7 +790,9 @@ def _documents(
             members.append(package.plan)
         for member in members:
             if member.path in result:
-                raise SpecPackageError(f"duplicate Spec Package member path: {member.path}")
+                raise SpecPackageError(
+                    f"duplicate Spec Package member path: {member.path}"
+                )
             result[member.path] = member
     return result
 
@@ -860,7 +870,9 @@ def _bounded_git(
         try:
             process.wait(timeout=GIT_REAP_TIMEOUT_SECONDS)
         except subprocess.TimeoutExpired as error:
-            raise SpecPackageError("cannot reap Spec Package Git snapshot process") from error
+            raise SpecPackageError(
+                "cannot reap Spec Package Git snapshot process"
+            ) from error
 
     try:
         process = subprocess.Popen(
@@ -883,11 +895,15 @@ def _bounded_git(
         while selector.get_map():
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                raise SpecPackageError("Spec Package Git snapshot exceeded its deadline")
+                raise SpecPackageError(
+                    "Spec Package Git snapshot exceeded its deadline"
+                )
             events = selector.select(remaining)
             if not events:
                 if time.monotonic() >= deadline:
-                    raise SpecPackageError("Spec Package Git snapshot exceeded its deadline")
+                    raise SpecPackageError(
+                        "Spec Package Git snapshot exceeded its deadline"
+                    )
                 continue
             for key, _ in events:
                 try:
@@ -925,7 +941,9 @@ def _bounded_git(
         raise
     except OSError as error:
         reap()
-        raise SpecPackageError(f"cannot read Spec Package Git snapshot: {error}") from error
+        raise SpecPackageError(
+            f"cannot read Spec Package Git snapshot: {error}"
+        ) from error
     finally:
         selector.close()
         for stream in streams:
@@ -946,7 +964,9 @@ def _snapshot_document(
     path: pathlib.PurePosixPath,
     text: str,
 ) -> SpecDocument | None:
-    package_match = _PACKAGE_PATH.fullmatch(path.parts[2]) if len(path.parts) >= 4 else None
+    package_match = (
+        _PACKAGE_PATH.fullmatch(path.parts[2]) if len(path.parts) >= 4 else None
+    )
     if path.parts[:2] != ("docs", "03.specs") or package_match is None:
         return None
     number = package_match.group("number")
@@ -969,7 +989,9 @@ def _snapshot_document(
     try:
         record = frontmatter_record_from_text(pathlib.Path(path.as_posix()), text)
     except FrontmatterError as error:
-        raise SpecPackageError(f"cannot parse base Spec Package member: {path}") from error
+        raise SpecPackageError(
+            f"cannot parse base Spec Package member: {path}"
+        ) from error
     status = record.metadata.get("status")
     parents = record.metadata.get("parent_ids")
     if not isinstance(status, str) or not isinstance(parents, tuple):
@@ -985,13 +1007,17 @@ def _load_base_spec_packages(
     *,
     base_ref: str,
 ) -> tuple[SpecPackage, ...]:
-    commit = _bounded_git(
-        root,
-        "rev-parse",
-        "--verify",
-        f"{base_ref}^{{commit}}",
-        byte_limit=256,
-    ).decode("ascii").strip()
+    commit = (
+        _bounded_git(
+            root,
+            "rev-parse",
+            "--verify",
+            f"{base_ref}^{{commit}}",
+            byte_limit=256,
+        )
+        .decode("ascii")
+        .strip()
+    )
     if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
         raise SpecPackageError("Spec Package base ref did not resolve to a commit")
     tree = _bounded_git(
@@ -1028,7 +1054,9 @@ def _load_base_spec_packages(
         ):
             continue
         if mode not in {b"100644", b"100755"}:
-            raise SpecPackageError(f"base Spec Package member is not a regular blob: {source}")
+            raise SpecPackageError(
+                f"base Spec Package member is not a regular blob: {source}"
+            )
         payload = _bounded_git(
             root,
             "show",
@@ -1045,14 +1073,18 @@ def _load_base_spec_packages(
         try:
             text = payload.decode("utf-8")
         except UnicodeDecodeError as error:
-            raise SpecPackageError(f"base Spec Package member is not UTF-8: {source}") from error
+            raise SpecPackageError(
+                f"base Spec Package member is not UTF-8: {source}"
+            ) from error
         document = _snapshot_document(path, text)
         if document is not None:
             if path in documents:
                 raise SpecPackageError(f"duplicate base Spec Package member: {path}")
             documents[path] = document
         if len(documents) > MAX_TOTAL_ENTRIES:
-            raise SpecPackageError("base Spec Package snapshot exceeds aggregate entries")
+            raise SpecPackageError(
+                "base Spec Package snapshot exceeds aggregate entries"
+            )
     grouped: dict[str, list[SpecDocument]] = {}
     for document in documents.values():
         grouped.setdefault(document.path.parts[2], []).append(document)
@@ -1062,12 +1094,16 @@ def _load_base_spec_packages(
         assert match is not None
         specs = [member for member in members if member.profile_id == "spec"]
         plans = [member for member in members if member.profile_id == "plan"]
-        tasks = tuple(sorted(
-            (member for member in members if member.profile_id == "task"),
-            key=lambda member: member.path.as_posix(),
-        ))
+        tasks = tuple(
+            sorted(
+                (member for member in members if member.profile_id == "task"),
+                key=lambda member: member.path.as_posix(),
+            )
+        )
         if len(specs) != 1 or len(plans) > 1:
-            raise SpecPackageError(f"base Spec Package ownership is incomplete: {package_name}")
+            raise SpecPackageError(
+                f"base Spec Package ownership is incomplete: {package_name}"
+            )
         packages.append(
             SpecPackage(
                 root / "docs/03.specs" / package_name,
@@ -1119,15 +1155,31 @@ def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:
     """Pin the explicit/CI base; local no-base compares HEAD to working bytes."""
 
-    selected = explicit if explicit is not None else os.environ.get("TEMPLATE_GATE_BASE")
+    selected = (
+        explicit if explicit is not None else os.environ.get("TEMPLATE_GATE_BASE")
+    )
     if selected is None:
         if os.environ.get("EVENT_NAME") in {"pull_request", "push"}:
             raise SpecPackageError("CI lifecycle comparison requires a trusted base")
         selected = "HEAD"
-    if not selected or selected.startswith("-") or any(ord(character) < 32 for character in selected):
+    if (
+        not selected
+        or selected.startswith("-")
+        or any(ord(character) < 32 for character in selected)
+    ):
         raise SpecPackageError("lifecycle comparison base is invalid")
-    commit = _bounded_git(root, "rev-parse", "--verify", "--end-of-options",
-                          f"{selected}^{{commit}}", byte_limit=256).decode("ascii").strip()
+    commit = (
+        _bounded_git(
+            root,
+            "rev-parse",
+            "--verify",
+            "--end-of-options",
+            f"{selected}^{{commit}}",
+            byte_limit=256,
+        )
+        .decode("ascii")
+        .strip()
+    )
     if _RECOVERY_COMMIT.fullmatch(commit) is None:
         raise SpecPackageError("lifecycle comparison base is not a commit")
     return commit

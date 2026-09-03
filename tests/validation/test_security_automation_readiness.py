@@ -10,28 +10,36 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 GENERATOR = "scripts/validation/generate-security-automation-readiness.sh"
 AUTOMATION_AUDIT = (
-    ROOT
-    / "docs/90.references/audits/0021-automation-candidates/README.md"
+    ROOT / "docs/90.references/audits/0021-automation-candidates/README.md"
 )
 SECURITY_AUDIT = (
-    ROOT
-    / "docs/90.references/audits/0031-security-framework-maturity/README.md"
+    ROOT / "docs/90.references/audits/0031-security-framework-maturity/README.md"
 )
 
 
 class SecurityAutomationReadinessTests(unittest.TestCase):
     maxDiff = None
 
-    def test_safe_python_check_and_dry_run_are_read_only_without_ambient_path(self) -> None:
-        output = ROOT / "docs/90.references/data/0078-security-automation-readiness/README.md"
+    def test_safe_python_check_and_dry_run_are_read_only_without_ambient_path(
+        self,
+    ) -> None:
+        output = (
+            ROOT
+            / "docs/90.references/data/0078-security-automation-readiness/README.md"
+        )
         before = output.read_bytes()
         environment = {**os.environ, "PYTHONSAFEPATH": "1"}
         environment.pop("PYTHONPATH", None)
         for mode in ("--check", "--dry-run"):
             with self.subTest(mode=mode):
                 result = subprocess.run(
-                    ["bash", GENERATOR, mode], cwd=ROOT, env=environment,
-                    capture_output=True, text=True, check=False, timeout=30,
+                    ["bash", GENERATOR, mode],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=30,
                 )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertEqual(before, output.read_bytes())
@@ -85,9 +93,7 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             "Stage 98 migration lookup: "
             "`docs/98.archive/migrations/0003-workspace-governance-simplification.md`"
         )
-        for control_id in (
-            "SEC-AUTO-012",
-        ):
+        for control_id in ("SEC-AUTO-012",):
             self.assertRegex(
                 output,
                 rf"(?m)^\| `{control_id}` \|.*\| {re.escape(migration)} \|$",

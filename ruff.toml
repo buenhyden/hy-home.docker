@@ -1,0 +1,20 @@
+# Python formatting authority for this repository.
+#
+# `ruff format` is the only Python formatter that runs here, and until this
+# file existed it ran with tool defaults from an agent editor hook outside the
+# repository. 88 of 106 tracked files disagreed with it, so an edit to any of
+# them produced a whole-file diff around the intended change. Pinning the
+# settings makes the repository, not the machine, decide the format.
+#
+# The values are ruff's defaults, chosen by measurement: line lengths 79, 100,
+# and 120 each left more files to reformat than 88, and `quote-style = "single"`
+# left 105 of 106.
+
+line-length = 88
+target-version = "py311"
+extend-exclude = ["graphify-out"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

@@ -15,6 +15,7 @@ from scripts.lib.document_governance.lifecycle.contract import (
     metadata,
 )
 
+
 def _spec_package_lifecycle_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -30,7 +31,11 @@ def _spec_package_lifecycle_findings(
     if not isinstance(registry, metadata.DocumentRegistry):
         return findings
     try:
-        packages = load_spec_packages(stage03, registry=registry) if stage03.exists() or stage03.is_symlink() else ()
+        packages = (
+            load_spec_packages(stage03, registry=registry)
+            if stage03.exists() or stage03.is_symlink()
+            else ()
+        )
         lifecycle_findings = validate_repository_spec_package_lifecycle(
             root,
             packages,

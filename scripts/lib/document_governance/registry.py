@@ -140,11 +140,13 @@ class DocumentRegistry:
 def _registered_types() -> Mapping[str, str]:
     """Cache the Registry-declared family/kind document type per profile."""
 
-    return MappingProxyType({
-        profile_id: str(profile["type"])
-        for profile_id, profile in load_registry().profiles.items()
-        if isinstance(profile.get("type"), str)
-    })
+    return MappingProxyType(
+        {
+            profile_id: str(profile["type"])
+            for profile_id, profile in load_registry().profiles.items()
+            if isinstance(profile.get("type"), str)
+        }
+    )
 
 
 def document_type(profile_id: str) -> str:
@@ -273,7 +275,9 @@ def _require_bounded_depth(value: object, depth: int = 0) -> None:
 
 def _freeze(value: object) -> object:
     if isinstance(value, Mapping):
-        return MappingProxyType({str(key): _freeze(item) for key, item in value.items()})
+        return MappingProxyType(
+            {str(key): _freeze(item) for key, item in value.items()}
+        )
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         return tuple(_freeze(item) for item in value)
     return value
@@ -316,7 +320,9 @@ def validate_registry(
     except RegistryError as error:
         return (RegistryFinding("schema-unavailable", "$", str(error)),)
     if not isinstance(schema, Mapping):
-        return (RegistryFinding("schema-invalid", "$", "profile schema is not a mapping"),)
+        return (
+            RegistryFinding("schema-invalid", "$", "profile schema is not a mapping"),
+        )
     try:
         Draft202012Validator.check_schema(schema)
     except SchemaError:
@@ -326,7 +332,9 @@ def validate_registry(
             ),
         )
     validator = Draft202012Validator(schema)
-    for error in sorted(validator.iter_errors(raw), key=lambda item: tuple(map(str, item.path))):
+    for error in sorted(
+        validator.iter_errors(raw), key=lambda item: tuple(map(str, item.path))
+    ):
         location = ".".join(map(str, error.path)) or "$"
         findings.append(RegistryFinding("schema-invalid", location, error.message))
     if findings:
@@ -350,13 +358,17 @@ def validate_registry(
                 if profile_id == "release":
                     findings.append(
                         RegistryFinding(
-                            "retired-profile", f"profiles.{index}", "Release is not an active profile"
+                            "retired-profile",
+                            f"profiles.{index}",
+                            "Release is not an active profile",
                         )
                     )
             path_pattern = profile.get("path_pattern")
             if isinstance(path_pattern, str) and not _safe_path_pattern(path_pattern):
                 findings.append(
-                    RegistryFinding("path-pattern-invalid", f"profiles.{index}", path_pattern)
+                    RegistryFinding(
+                        "path-pattern-invalid", f"profiles.{index}", path_pattern
+                    )
                 )
             artifact_pattern = profile.get("artifact_id_pattern")
             if isinstance(artifact_pattern, str) and not _safe_artifact_pattern(
@@ -409,17 +421,34 @@ def validate_registry(
         if not isinstance(additional, (list, tuple)):
             continue
         for path in additional:
-            if (not isinstance(path, str) or not _registry_owned_root(path)
-                    or not _safe_path_pattern(path) or "{" in path or "}" in path
-                    or profile.get("identity_relation") != "none"):
-                findings.append(RegistryFinding("additional-path-invalid", f"profiles.{index}", "additional paths must be exact safe identity-free routes"))
+            if (
+                not isinstance(path, str)
+                or not _registry_owned_root(path)
+                or not _safe_path_pattern(path)
+                or "{" in path
+                or "}" in path
+                or profile.get("identity_relation") != "none"
+            ):
+                findings.append(
+                    RegistryFinding(
+                        "additional-path-invalid",
+                        f"profiles.{index}",
+                        "additional paths must be exact safe identity-free routes",
+                    )
+                )
                 continue
-            owners = [other.get("profile_id") for _, other in profile_entries
-                      if other is not profile and other.get("profile_id") != "unsupported"
-                      and isinstance(other.get("path_pattern"), str)
-                      and _path_regex(other["path_pattern"]).fullmatch(path)]
+            owners = [
+                other.get("profile_id")
+                for _, other in profile_entries
+                if other is not profile
+                and other.get("profile_id") != "unsupported"
+                and isinstance(other.get("path_pattern"), str)
+                and _path_regex(other["path_pattern"]).fullmatch(path)
+            ]
             if owners or path in additional_owners:
-                findings.append(RegistryFinding("profile-path-overlap", f"profiles.{index}", path))
+                findings.append(
+                    RegistryFinding("profile-path-overlap", f"profiles.{index}", path)
+                )
             additional_owners[path] = str(profile.get("profile_id"))
     roles = raw.get("template_roles")
     known_roles = set(roles) if isinstance(roles, Mapping) else set()
@@ -431,11 +460,19 @@ def validate_registry(
             extra = set(definition) - {"source", "profile_id"}
             if extra:
                 findings.append(
-                    RegistryFinding("template-target-forbidden", f"template_roles.{role}", ",".join(sorted(extra)))
+                    RegistryFinding(
+                        "template-target-forbidden",
+                        f"template_roles.{role}",
+                        ",".join(sorted(extra)),
+                    )
                 )
             if definition.get("profile_id") not in known_profiles:
                 findings.append(
-                    RegistryFinding("template-profile-unknown", f"template_roles.{role}", str(definition.get("profile_id")))
+                    RegistryFinding(
+                        "template-profile-unknown",
+                        f"template_roles.{role}",
+                        str(definition.get("profile_id")),
+                    )
                 )
             source = definition.get("source")
             if isinstance(source, str):
@@ -448,7 +485,9 @@ def validate_registry(
                             "template source must be a canonical Stage 99 path",
                         )
                     )
-    for source in sorted({item for item in role_sources if role_sources.count(item) > 1}):
+    for source in sorted(
+        {item for item in role_sources if role_sources.count(item) > 1}
+    ):
         findings.append(
             RegistryFinding("template-source-duplicate", "template_roles", source)
         )
@@ -460,7 +499,9 @@ def validate_registry(
             if template_id not in known_roles or not isinstance(definition, Mapping):
                 findings.append(
                     RegistryFinding(
-                        "profile-template-unknown", f"profiles.{index}", str(template_id)
+                        "profile-template-unknown",
+                        f"profiles.{index}",
+                        str(template_id),
                     )
                 )
             elif definition.get("profile_id") != profile_id:
@@ -565,27 +606,27 @@ def validate_registry(
             else set()
         )
         relation_valid = (
-            identity_relation == "none" and artifact_pattern is None
-        ) or (
-            # A tombstone reuses the retired document's identity instead of
-            # allocating a new one; its owner script derives the exact value.
-            identity_relation == "inherited"
-            and "retired_artifact_id" in artifact_tokens
-        ) or (
-            identity_relation == "direct"
-            and "number" in path_tokens
-            and "number" in artifact_tokens
-        ) or (
-            identity_relation == "package-member"
-            and bool(
-                {"package_number", "number"}
-                & path_tokens
-                & artifact_tokens
+            (identity_relation == "none" and artifact_pattern is None)
+            or (
+                # A tombstone reuses the retired document's identity instead of
+                # allocating a new one; its owner script derives the exact value.
+                identity_relation == "inherited"
+                and "retired_artifact_id" in artifact_tokens
             )
-        ) or (
-            identity_relation == "subject-member"
-            and "subject_number" in path_tokens
-            and "number" in artifact_tokens
+            or (
+                identity_relation == "direct"
+                and "number" in path_tokens
+                and "number" in artifact_tokens
+            )
+            or (
+                identity_relation == "package-member"
+                and bool({"package_number", "number"} & path_tokens & artifact_tokens)
+            )
+            or (
+                identity_relation == "subject-member"
+                and "subject_number" in path_tokens
+                and "number" in artifact_tokens
+            )
         )
         if not relation_valid:
             findings.append(
@@ -597,7 +638,9 @@ def validate_registry(
             )
         if isinstance(template_id, str) and isinstance(roles, Mapping):
             definition = roles.get(template_id)
-            source = definition.get("source") if isinstance(definition, Mapping) else None
+            source = (
+                definition.get("source") if isinstance(definition, Mapping) else None
+            )
             if isinstance(source, str) and not source.endswith(".template.md"):
                 media_type = profile.get("media_type")
                 if not isinstance(media_type, str) or not media_type:
@@ -619,12 +662,20 @@ def validate_registry(
             if isinstance(transitions, Mapping):
                 if set(transitions) != status_set:
                     findings.append(
-                        RegistryFinding("lifecycle-incomplete", f"lifecycles.{lifecycle_id}", "every status requires one transition entry")
+                        RegistryFinding(
+                            "lifecycle-incomplete",
+                            f"lifecycles.{lifecycle_id}",
+                            "every status requires one transition entry",
+                        )
                     )
                 for source, targets in transitions.items():
                     if isinstance(targets, list) and not set(targets) <= status_set:
                         findings.append(
-                            RegistryFinding("transition-unregistered", f"lifecycles.{lifecycle_id}.{source}", "transition target is not a registered status")
+                            RegistryFinding(
+                                "transition-unregistered",
+                                f"lifecycles.{lifecycle_id}.{source}",
+                                "transition target is not a registered status",
+                            )
                         )
     spaces = raw.get("identity_spaces")
     if isinstance(spaces, Mapping):
@@ -644,9 +695,19 @@ def validate_registry(
     if isinstance(transitions, Mapping):
         for profile_id, lifecycle_id in transitions.items():
             if profile_id not in known_profiles:
-                findings.append(RegistryFinding("transition-profile-unknown", "transitions", str(profile_id)))
+                findings.append(
+                    RegistryFinding(
+                        "transition-profile-unknown", "transitions", str(profile_id)
+                    )
+                )
             if not isinstance(lifecycles, Mapping) or lifecycle_id not in lifecycles:
-                findings.append(RegistryFinding("transition-lifecycle-unknown", f"transitions.{profile_id}", str(lifecycle_id)))
+                findings.append(
+                    RegistryFinding(
+                        "transition-lifecycle-unknown",
+                        f"transitions.{profile_id}",
+                        str(lifecycle_id),
+                    )
+                )
         for profile_id, lifecycle_id in profile_lifecycles.items():
             mapped_lifecycle = transitions.get(profile_id)
             if lifecycle_id is None and mapped_lifecycle is not None:
@@ -679,11 +740,13 @@ def validate_registry(
     return tuple(sorted(set(findings)))
 
 
-TEMPLATE_PLACEHOLDER_SENTINELS: Mapping[str, str] = MappingProxyType({
-    "YYYY-MM-DDTHH:MM:SSZ": "2000-01-01T00:00:00Z",
-    "YYYY-MM-DD": "2000-01-01",
-    "#.#.#": "0.0.0",
-})
+TEMPLATE_PLACEHOLDER_SENTINELS: Mapping[str, str] = MappingProxyType(
+    {
+        "YYYY-MM-DDTHH:MM:SSZ": "2000-01-01T00:00:00Z",
+        "YYYY-MM-DD": "2000-01-01",
+        "#.#.#": "0.0.0",
+    }
+)
 
 
 def resolve_template_placeholders(values: Mapping[str, object]) -> dict[str, object]:
@@ -802,9 +865,7 @@ def _validate_identity_spaces(
                         "reserved_history numbers can never be currently issued again",
                     )
                 )
-            if current_numbers | reserved_numbers != set(
-                range(1, high_water + 1)
-            ):
+            if current_numbers | reserved_numbers != set(range(1, high_water + 1)):
                 findings.append(
                     RegistryFinding(
                         "identity-allocation-history-incomplete",
@@ -814,7 +875,9 @@ def _validate_identity_spaces(
                 )
         children = value.get("child_spaces")
         if isinstance(children, Mapping):
-            _validate_identity_spaces(children, f"{location}.{name}.child_spaces", findings)
+            _validate_identity_spaces(
+                children, f"{location}.{name}.child_spaces", findings
+            )
 
 
 def _validate_identity_space_bounds(
@@ -1027,7 +1090,9 @@ def _run_bounded_process(
         returncode = process.wait(timeout=remaining)
         return returncode, bytes(buffers["stdout"]), bytes(buffers["stderr"])
     except (OSError, subprocess.TimeoutExpired) as error:
-        raise RegistryError(f"cannot read trusted subprocess output: {error}") from error
+        raise RegistryError(
+            f"cannot read trusted subprocess output: {error}"
+        ) from error
     finally:
         _terminate_process(process)
         streams.close()
@@ -1043,7 +1108,9 @@ def _git_read(args: Sequence[str], *, root: pathlib.Path = ROOT) -> str:
             stderr_limit=MAX_GIT_STDERR_BYTES,
         )
     except RegistryError as error:
-        raise RegistryError(f"cannot read trusted Git allocation state: {error}") from error
+        raise RegistryError(
+            f"cannot read trusted Git allocation state: {error}"
+        ) from error
     if returncode != 0:
         message = stderr.decode("utf-8", errors="replace").strip()
         raise RegistryError(
@@ -1090,7 +1157,9 @@ def _trusted_blob_snapshot(
             root=root,
         ).strip()
         if _GIT_OID.fullmatch(resolved) is None:
-            raise RegistryError("trusted Git predecessor did not resolve to a commit OID")
+            raise RegistryError(
+                "trusted Git predecessor did not resolve to a commit OID"
+            )
         source = resolved
         listing = _git_read(
             [
@@ -1124,15 +1193,21 @@ def _trusted_blob_snapshot(
             and path != "docs/01.requirements/README.md"
             and _trusted_requirement_path_match(path) is None
         ):
-            raise RegistryError(f"trusted Requirement predecessor path is not canonical: {path}")
+            raise RegistryError(
+                f"trusted Requirement predecessor path is not canonical: {path}"
+            )
         if revision == ":" and match.group("stage") != "0":
             raise RegistryError("trusted Git index allocation snapshot is conflicted")
         if revision != ":" and match.group("type") != "blob":
             raise RegistryError("trusted Git allocation snapshot contains a non-blob")
         if match.group("mode") not in {"100644", "100755"}:
-            raise RegistryError("trusted Git allocation snapshot contains a non-regular blob")
+            raise RegistryError(
+                "trusted Git allocation snapshot contains a non-regular blob"
+            )
         if path in blobs:
-            raise RegistryError("trusted Git allocation snapshot contains duplicate paths")
+            raise RegistryError(
+                "trusted Git allocation snapshot contains duplicate paths"
+            )
         blobs[path] = match.group("oid")
     registry_oid = blobs.pop("docs/99.templates/registry.json", None)
     blobs.pop("docs/01.requirements/README.md", None)
@@ -1143,7 +1218,9 @@ def _trusted_blob_snapshot(
     for path, oid in sorted(blobs.items()):
         text = _git_read(["cat-file", "blob", oid], root=root)
         if len(text.encode("utf-8")) > MAX_TRUSTED_REQUIREMENT_BYTES:
-            raise RegistryError(f"trusted Requirement predecessor exceeds the byte limit: {path}")
+            raise RegistryError(
+                f"trusted Requirement predecessor exceeds the byte limit: {path}"
+            )
         package_texts[path] = text
     return source, registry_text, MappingProxyType(package_texts)
 
@@ -1155,13 +1232,13 @@ def load_trusted_requirement_allocation_baseline(
 ) -> RequirementAllocationBaseline:
     """Derive immutable history from an explicit index marker or commit."""
 
-    source, registry_text, package_texts = _trusted_blob_snapshot(
-        revision, root=root
-    )
+    source, registry_text, package_texts = _trusted_blob_snapshot(revision, root=root)
     try:
         raw = json.loads(registry_text, object_pairs_hook=_unique_object)
     except (json.JSONDecodeError, RegistryError) as error:
-        raise RegistryError(f"trusted Registry predecessor is invalid: {error}") from error
+        raise RegistryError(
+            f"trusted Registry predecessor is invalid: {error}"
+        ) from error
     if not isinstance(raw, Mapping):
         raise RegistryError("trusted Registry predecessor must be a mapping")
     identity_spaces = raw.get("identity_spaces")
@@ -1170,8 +1247,12 @@ def load_trusted_requirement_allocation_baseline(
         if isinstance(identity_spaces, Mapping)
         else None
     )
-    children = requirement.get("child_spaces") if isinstance(requirement, Mapping) else None
-    package_high_water = requirement.get("high_water") if isinstance(requirement, Mapping) else None
+    children = (
+        requirement.get("child_spaces") if isinstance(requirement, Mapping) else None
+    )
+    package_high_water = (
+        requirement.get("high_water") if isinstance(requirement, Mapping) else None
+    )
     package_next_number = (
         requirement.get("next_number") if isinstance(requirement, Mapping) else None
     )
@@ -1247,8 +1328,7 @@ def load_trusted_requirement_allocation_baseline(
             for expected_kind, body in bodies:
                 for match in child_pattern.finditer(body):
                     if match.group("package") != package_number or (
-                        not legacy_predecessor
-                        and match.group("kind") != expected_kind
+                        not legacy_predecessor and match.group("kind") != expected_kind
                     ):
                         raise RegistryError(
                             f"trusted Requirement predecessor has a foreign child ID: {path}"
@@ -1362,7 +1442,10 @@ def _validate_requirement_allocation_transition(
     if not isinstance(children, Mapping):
         return
     package_high_water = requirement.get("high_water")
-    if type(package_high_water) is int and package_high_water < baseline.package_high_water:
+    if (
+        type(package_high_water) is int
+        and package_high_water < baseline.package_high_water
+    ):
         findings.append(
             RegistryFinding(
                 "requirement-package-high-water-regressed",
@@ -1527,7 +1610,9 @@ def _safe_artifact_pattern(value: str) -> bool:
     rendered = _ARTIFACT_TOKEN_PATTERN.sub("0000", value)
     return bool(
         tokens
-        and all(_ARTIFACT_TOKEN_PATTERN.fullmatch(token) is not None for token in tokens)
+        and all(
+            _ARTIFACT_TOKEN_PATTERN.fullmatch(token) is not None for token in tokens
+        )
         and re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", rendered) is not None
     )
 
@@ -1540,15 +1625,21 @@ def _safe_template_source(value: str) -> bool:
         and "\\" not in value
         and ".." not in path.parts
         and path.as_posix() == value
-        and value.endswith((".template.md", ".template.yaml", ".template.graphql", ".template.proto", ".template.toml"))
+        and value.endswith(
+            (
+                ".template.md",
+                ".template.yaml",
+                ".template.graphql",
+                ".template.proto",
+                ".template.toml",
+            )
+        )
     )
 
 
 # Artifact patterns may also carry the inherited-identity token, which never
 # appears in a path pattern.
-_RENDER_TOKEN_PATTERN = re.compile(
-    _TOKEN_PATTERN.pattern + r"|\{retired_artifact_id\}"
-)
+_RENDER_TOKEN_PATTERN = re.compile(_TOKEN_PATTERN.pattern + r"|\{retired_artifact_id\}")
 
 
 def _path_regex(pattern: str) -> re.Pattern[str]:
@@ -1566,7 +1657,9 @@ def _path_regex(pattern: str) -> re.Pattern[str]:
         elif token == "{slug}":
             rendered.append(r"[a-z0-9][a-z0-9-]*")
         elif token == "{stage}":
-            rendered.append(r"(?:00\.agent-governance|01\.requirements|02\.architecture|03\.specs|05\.operations|90\.references|98\.archive|99\.templates)")
+            rendered.append(
+                r"(?:00\.agent-governance|01\.requirements|02\.architecture|03\.specs|05\.operations|90\.references|98\.archive|99\.templates)"
+            )
         elif token == "{category}":
             rendered.append(r"(?:audits|data|research)")
         elif token == "{subpath}":

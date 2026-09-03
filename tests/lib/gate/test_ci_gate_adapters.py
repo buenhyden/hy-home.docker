@@ -240,9 +240,7 @@ class CiGateAdapterTests(unittest.TestCase):
                         ("run-unittest", module, "-v"),
                         {"PATH": "/usr/bin"},
                     )
-                self.assertEqual(
-                    "ci-gate-adapter-arguments", caught.exception.code
-                )
+                self.assertEqual("ci-gate-adapter-arguments", caught.exception.code)
 
     def test_run_agent_output_eval_checks_markers_and_emits_output_once(
         self,
@@ -308,9 +306,7 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         for command in commands:
             with self.subTest(command=command):
-                result, recorder = self.run_with_recorder(
-                    ("run-npm", *command)
-                )
+                result, recorder = self.run_with_recorder(("run-npm", *command))
                 self.assertEqual(0, result)
                 self.assertEqual(("npm", *command), recorder.calls[0][0])
 
@@ -835,9 +831,7 @@ class CiGateAdapterTests(unittest.TestCase):
             self.assertNotEqual(root_fd, adopted_fd)
             self.assertTrue(os.path.isdir(child_root))
             self.assertFalse(os.get_inheritable(adopted_fd))
-            self.assertTrue(
-                fcntl.fcntl(adopted_fd, fcntl.F_GETFD) & fcntl.FD_CLOEXEC
-            )
+            self.assertTrue(fcntl.fcntl(adopted_fd, fcntl.F_GETFD) & fcntl.FD_CLOEXEC)
             self.assertEqual((adopted_fd,), adapters._root_pass_fds(child_root))
             self.assertEqual(
                 child_root.as_posix(),

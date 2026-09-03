@@ -16,9 +16,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
 CONTRACT = pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json")
-TASK_EVIDENCE_FIXTURE = (
-    ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
-)
+TASK_EVIDENCE_FIXTURE = ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
 sys.path.insert(0, str(SCRIPT.parent))
 
 spec = importlib.util.spec_from_file_location(
@@ -39,9 +37,7 @@ def _assert_task5_integration_contract(
     generator: str,
     matrix: str,
 ) -> None:
-    changed_command = (
-        "python3 scripts/validation/run-ci-gate.py --profile changed"
-    )
+    changed_command = "python3 scripts/validation/run-ci-gate.py --profile changed"
     full_command = "python3 scripts/validation/run-ci-gate.py --profile full"
     semantic_command = (
         "python3 scripts/validation/check-agentic-audit-semantic-freshness.py"
@@ -201,9 +197,9 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/ci-quality.yml").read_text(
             encoding="utf-8"
         )
-        workflow_contract = (
-            ROOT / ".github/workflow-contract.yml"
-        ).read_text(encoding="utf-8")
+        workflow_contract = (ROOT / ".github/workflow-contract.yml").read_text(
+            encoding="utf-8"
+        )
         manifest = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         generator = (
             ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
@@ -239,9 +235,9 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             "  - repository-integrity\n"
         )
         missing_workflow_root = json.loads(workflow_contract)
-        missing_workflow_root["public_gate"]["suite_roots"]["repository-integrity"].remove(
-            "local.workflow-harness"
-        )
+        missing_workflow_root["public_gate"]["suite_roots"][
+            "repository-integrity"
+        ].remove("local.workflow-harness")
         mutations = {
             "duplicate changed workflow route": (
                 workflow
@@ -252,8 +248,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
                 matrix,
             ),
             "copied atomic workflow command": (
-                workflow
-                + "\n# python3 scripts/validation/"
+                workflow + "\n# python3 scripts/validation/"
                 "check-agentic-audit-semantic-freshness.py\n",
                 workflow_contract,
                 manifest,
@@ -360,28 +355,63 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         task_path.write_text(text.replace("T-AER-009", "T-AER-X09"), encoding="utf-8")
         self.assert_failure("QAF-12", "completed task T-AER-009")
 
-    def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(self) -> None:
+    def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import archive
 
         task_path = self.repo / self.contract["task_evidence"]
         expected = task_path.read_text(encoding="utf-8")
-        subprocess.run(["git", "add", "--", self.contract["task_evidence"]], cwd=self.repo, check=True)
-        subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "task evidence"], cwd=self.repo, check=True)
-        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.repo, text=True).strip()
+        subprocess.run(
+            ["git", "add", "--", self.contract["task_evidence"]],
+            cwd=self.repo,
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit",
+                "-qm",
+                "task evidence",
+            ],
+            cwd=self.repo,
+            check=True,
+        )
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=self.repo, text=True
+        ).strip()
         task_path.unlink()
-        row = {"source_path": self.contract["task_evidence"], "target_path": None,
-               "artifact_id": None, "action": "delete", "recovery_commit": commit}
+        row = {
+            "source_path": self.contract["task_evidence"],
+            "target_path": None,
+            "artifact_id": None,
+            "action": "delete",
+            "recovery_commit": commit,
+        }
         compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [row]}
         with mock.patch.object(archive, "_migration_document", return_value=compact):
             errors = []
-            self.assertEqual(expected, module._read_task_evidence(self.repo, self.contract, errors))
+            self.assertEqual(
+                expected, module._read_task_evidence(self.repo, self.contract, errors)
+            )
             self.assertEqual([], errors)
-            for key, value in (("action", "rename"), ("recovery_commit", None),
-                               ("recovery_commit", "0" * 40), ("source_path", "../outside")):
-                original = row[key]; row[key] = value
+            for key, value in (
+                ("action", "rename"),
+                ("recovery_commit", None),
+                ("recovery_commit", "0" * 40),
+                ("source_path", "../outside"),
+            ):
+                original = row[key]
+                row[key] = value
                 with self.subTest(field=key):
                     errors = []
-                    self.assertIsNone(module._read_task_evidence(self.repo, self.contract, errors))
+                    self.assertIsNone(
+                        module._read_task_evidence(self.repo, self.contract, errors)
+                    )
                     self.assertTrue(errors)
                 row[key] = original
 

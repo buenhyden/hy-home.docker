@@ -18,14 +18,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/validation/check-document-links.py"
 METADATA_CLI = ROOT / "scripts/validation/check-document-metadata.py"
 LIFECYCLE_CLI = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
-LIFECYCLE_CONTRACT = (
-    ROOT / "scripts/lib/document_governance/lifecycle/contract.py"
-)
+LIFECYCLE_CONTRACT = ROOT / "scripts/lib/document_governance/lifecycle/contract.py"
 SCRIPT_MANIFEST_CLI = ROOT / "scripts/validation/check-script-manifest.py"
 
 
 def load_metadata_cli():
-    spec = importlib.util.spec_from_file_location("task10_document_metadata", METADATA_CLI)
+    spec = importlib.util.spec_from_file_location(
+        "task10_document_metadata", METADATA_CLI
+    )
     if spec is None or spec.loader is None:
         raise RuntimeError("metadata validator unavailable")
     module = importlib.util.module_from_spec(spec)
@@ -72,19 +72,32 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 with self.subTest(channel=channel, case=case):
                     streams = {"stdout": io.BytesIO(), "stderr": io.BytesIO()}
                     streams[channel] = (
-                        BrokenStream() if case == "error" else io.BytesIO(
-                            b"x" * (git_provenance._GIT_OUTPUT_BYTES + (case == "overflow"))
+                        BrokenStream()
+                        if case == "error"
+                        else io.BytesIO(
+                            b"x"
+                            * (git_provenance._GIT_OUTPUT_BYTES + (case == "overflow"))
                         )
                     )
                     process = mock.Mock(**streams, stdin=None, returncode=0)
                     process.poll.return_value = 0
-                    with mock.patch.object(git_provenance.subprocess, "Popen", return_value=process), mock.patch.object(
-                        git_provenance.threading, "Thread", DeferredDrain
+                    with (
+                        mock.patch.object(
+                            git_provenance.subprocess, "Popen", return_value=process
+                        ),
+                        mock.patch.object(
+                            git_provenance.threading, "Thread", DeferredDrain
+                        ),
                     ):
-                        result = git_provenance._run_git(ROOT, ["cat-file", "blob", "object"])
+                        result = git_provenance._run_git(
+                            ROOT, ["cat-file", "blob", "object"]
+                        )
                     if case == "exact":
                         self.assertEqual(result.returncode, 0)
-                        self.assertEqual(len(getattr(result, channel)), git_provenance._GIT_OUTPUT_BYTES)
+                        self.assertEqual(
+                            len(getattr(result, channel)),
+                            git_provenance._GIT_OUTPUT_BYTES,
+                        )
                     else:
                         self.assertNotEqual(result.returncode, 0)
                         self.assertEqual(result.stdout, b"")
@@ -93,7 +106,9 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
         from scripts.lib.document_governance.git_provenance import HistoricalDocument
 
         commit = "494065806794980080b081439298d7b534d10803"
-        document = HistoricalDocument(ROOT, commit, "docs/99.templates/support/README.md")
+        document = HistoricalDocument(
+            ROOT, commit, "docs/99.templates/support/README.md"
+        )
         self.assertIn("#", document.read_text())
         for invalid_commit, invalid_path in (
             ("HEAD", "README.md"),
@@ -106,15 +121,21 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     HistoricalDocument(ROOT, invalid_commit, invalid_path).read_text()
 
-    def test_graph_reads_large_task_evidence_and_keeps_a_finite_byte_limit(self) -> None:
+    def test_graph_reads_large_task_evidence_and_keeps_a_finite_byte_limit(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import links
 
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             source = root / "source.md"
             target = root / "task.md"
-            source.write_text("# Source\n[Evidence](task.md#evidence)\n", encoding="utf-8")
-            target.write_text("# Evidence\n" + ("bounded evidence\n" * 140_000), encoding="utf-8")
+            source.write_text(
+                "# Source\n[Evidence](task.md#evidence)\n", encoding="utf-8"
+            )
+            target.write_text(
+                "# Evidence\n" + ("bounded evidence\n" * 140_000), encoding="utf-8"
+            )
             graph = links.build_document_graph((source, target), repo_root=root)
             self.assertEqual((), graph.input_findings)
             self.assertEqual(2, len(graph.nodes))
@@ -139,7 +160,9 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 read_frontmatter(path)
         self.assertEqual("duplicate-key", raised.exception.code)
 
-    def test_frontmatter_record_metadata_is_deeply_immutable_and_copy_isolated(self) -> None:
+    def test_frontmatter_record_metadata_is_deeply_immutable_and_copy_isolated(
+        self,
+    ) -> None:
         from scripts.lib.document_governance.frontmatter import (
             read_frontmatter,
             read_frontmatter_values,
@@ -176,7 +199,9 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
 
         metadata = load_metadata_cli()
         self.assertIs(frontmatter.read_frontmatter_values, metadata.parse_frontmatter)
-        self.assertIs(frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text)
+        self.assertIs(
+            frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text
+        )
 
     def test_git_provenance_is_frozen_and_proves_regular_blob(self) -> None:
         from scripts.lib.document_governance.git_provenance import (
@@ -199,14 +224,16 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
 
     def test_git_provenance_rejects_nul_tree_and_missing_objects(self) -> None:
         from scripts.lib.document_governance import git_provenance
-        from scripts.lib.document_governance.git_provenance import resolve_git_provenance
+        from scripts.lib.document_governance.git_provenance import (
+            resolve_git_provenance,
+        )
 
         nul = resolve_git_provenance("README.md\x00other", "HEAD", repo_root=ROOT)
-        nul_commit = resolve_git_provenance("README.md", "HEAD\x00other", repo_root=ROOT)
-        tree = resolve_git_provenance("docs", "HEAD", repo_root=ROOT)
-        missing_object = resolve_git_provenance(
-            "README.md", "f" * 40, repo_root=ROOT
+        nul_commit = resolve_git_provenance(
+            "README.md", "HEAD\x00other", repo_root=ROOT
         )
+        tree = resolve_git_provenance("docs", "HEAD", repo_root=ROOT)
+        missing_object = resolve_git_provenance("README.md", "f" * 40, repo_root=ROOT)
         self.assertFalse(nul.exists)
         self.assertFalse(nul_commit.exists)
         self.assertFalse(tree.is_regular_blob)
@@ -228,9 +255,7 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
         with mock.patch.object(
             git_provenance, "_run_git", side_effect=lambda *_: next(responses)
         ):
-            missing_blob = resolve_git_provenance(
-                "README.md", "HEAD", repo_root=ROOT
-            )
+            missing_blob = resolve_git_provenance("README.md", "HEAD", repo_root=ROOT)
         self.assertTrue(missing_blob.exists)
         self.assertFalse(missing_blob.is_regular_blob)
 
@@ -334,7 +359,9 @@ class DocumentGraphTests(unittest.TestCase):
             tuple(link.target.as_posix() for link in links),
         )
 
-    def test_inline_code_comment_opener_does_not_hide_later_rendered_links(self) -> None:
+    def test_inline_code_comment_opener_does_not_hide_later_rendered_links(
+        self,
+    ) -> None:
         from scripts.lib.document_governance.links import parse_local_markdown_links
 
         links = parse_local_markdown_links(
@@ -422,11 +449,35 @@ class DocumentGraphTests(unittest.TestCase):
             tuple(link.target.as_posix() for link in links),
         )
         self.assertEqual(
-            (False, False, False, False, False, True, False, False, False, False, False),
+            (
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                False,
+                False,
+                False,
+                False,
+                False,
+            ),
             tuple(link.absolute for link in links),
         )
         self.assertEqual(
-            (False, False, False, False, False, False, True, False, False, False, False),
+            (
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                False,
+                False,
+                False,
+                False,
+            ),
             tuple(link.outside_repository for link in links),
         )
         self.assertEqual(
@@ -442,7 +493,9 @@ class DocumentGraphTests(unittest.TestCase):
         with self.assertRaises(dataclasses.FrozenInstanceError):
             links[0].line = 99  # type: ignore[misc]
 
-    def test_retired_role_root_implementation_selector_has_no_current_inputs(self) -> None:
+    def test_retired_role_root_implementation_selector_has_no_current_inputs(
+        self,
+    ) -> None:
         selected: list[str] = []
         operations = ROOT / "docs/05.operations"
         for role_root in ("guides", "policies", "runbooks"):
@@ -476,7 +529,9 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertEqual("docs/target.md", graph.links[0].target.as_posix())
         self.assertEqual("target", graph.links[0].fragment)
 
-    def test_graph_ignores_inline_code_and_parses_angle_and_nested_destinations(self) -> None:
+    def test_graph_ignores_inline_code_and_parses_angle_and_nested_destinations(
+        self,
+    ) -> None:
         from scripts.lib.document_governance.links import build_document_graph
 
         with tempfile.TemporaryDirectory() as temp:
@@ -496,8 +551,13 @@ class DocumentGraphTests(unittest.TestCase):
             {"docs/target_(one).md"}, {link.target.as_posix() for link in graph.links}
         )
 
-    def test_graph_reports_unreadable_invalid_utf8_and_symlink_escape_inputs(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+    def test_graph_reports_unreadable_invalid_utf8_and_symlink_escape_inputs(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)
@@ -509,7 +569,9 @@ class DocumentGraphTests(unittest.TestCase):
             escaped = root / "docs/escaped.md"
             escaped.symlink_to(outside)
             try:
-                graph = build_document_graph([invalid, escaped, outside], repo_root=root)
+                graph = build_document_graph(
+                    [invalid, escaped, outside], repo_root=root
+                )
                 codes = {finding.code for finding in check_alignment(graph)}
             finally:
                 outside.unlink(missing_ok=True)
@@ -517,8 +579,13 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("document-symlink", codes)
         self.assertIn("document-outside-repository", codes)
 
-    def test_graph_rejects_source_symlink_ancestors_and_lexical_parent_escape(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+    def test_graph_rejects_source_symlink_ancestors_and_lexical_parent_escape(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp) / "repo"
@@ -536,7 +603,10 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("document-outside-repository", codes)
 
     def test_malformed_frontmatter_is_immutable_and_reported(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)
@@ -569,7 +639,9 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("missing-link-target", codes)
         self.assertIn("active-archive-link", codes)
 
-    def test_alignment_allows_current_to_archive_index_and_migration_links(self) -> None:
+    def test_alignment_allows_current_to_archive_index_and_migration_links(
+        self,
+    ) -> None:
         from scripts.lib.document_governance.links import (
             archive_direct_link_total,
             build_document_graph,
@@ -611,8 +683,13 @@ class DocumentGraphTests(unittest.TestCase):
             codes = {finding.code for finding in check_alignment(graph)}
         self.assertIn("removed-template-name", codes)
 
-    def test_alignment_validates_same_document_and_unselected_markdown_anchors(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+    def test_alignment_validates_same_document_and_unselected_markdown_anchors(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)
@@ -627,10 +704,15 @@ class DocumentGraphTests(unittest.TestCase):
             target.write_text("# Present\n", encoding="utf-8")
             graph = build_document_graph([source], repo_root=root)
             findings = check_alignment(graph)
-        self.assertEqual(2, sum(item.code == "missing-link-anchor" for item in findings))
+        self.assertEqual(
+            2, sum(item.code == "missing-link-anchor" for item in findings)
+        )
 
     def test_alignment_rejects_symlink_and_non_regular_targets(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)
@@ -654,7 +736,10 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("link-target-symlink", codes)
 
     def test_alignment_rejects_target_symlink_ancestors(self) -> None:
-        from scripts.lib.document_governance.links import build_document_graph, check_alignment
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
 
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp) / "repo"
@@ -670,7 +755,9 @@ class DocumentGraphTests(unittest.TestCase):
             codes = {finding.code for finding in check_alignment(graph)}
         self.assertIn("link-target-symlink-ancestor", codes)
 
-    def test_traceability_fixture_accepts_reciprocal_indexes_and_catalog_pairs(self) -> None:
+    def test_traceability_fixture_accepts_reciprocal_indexes_and_catalog_pairs(
+        self,
+    ) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
             check_traceability,
@@ -713,14 +800,20 @@ class DocumentLinksCliTests(unittest.TestCase):
                 for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
                     with self.subTest(mode=mode, path=path):
                         result = subprocess.run(
-                            ["bash", path], cwd=ROOT, env=env,
-                            pass_fds=(held.fileno(),), capture_output=True,
-                            text=True, check=False,
+                            ["bash", path],
+                            cwd=ROOT,
+                            env=env,
+                            pass_fds=(held.fileno(),),
+                            capture_output=True,
+                            text=True,
+                            check=False,
                         )
                         self.assertEqual(0, result.returncode, result.stderr)
                         self.assertIn(f"mode={mode}", result.stdout)
 
-    def test_transition_shells_preserve_canonical_failures_and_reject_extra_argv(self) -> None:
+    def test_transition_shells_preserve_canonical_failures_and_reject_extra_argv(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q", str(root)], check=True)
@@ -737,29 +830,45 @@ class DocumentLinksCliTests(unittest.TestCase):
                 script = ROOT / "scripts/validation" / name
                 with self.subTest(name=name):
                     result = subprocess.run(
-                        ["bash", str(script)], cwd=root,
-                        capture_output=True, text=True, check=False,
+                        ["bash", str(script)],
+                        cwd=root,
+                        capture_output=True,
+                        text=True,
+                        check=False,
                     )
                     self.assertEqual(1, result.returncode, result.stderr)
                     self.assertIn(expected, result.stderr)
                     rejected = subprocess.run(
-                        ["bash", str(script), "--mode", "all"], cwd=ROOT,
-                        capture_output=True, text=True, check=False,
+                        ["bash", str(script), "--mode", "all"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
                     )
                     self.assertEqual(2, rejected.returncode)
 
     def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
-        from scripts.lib.agent_governance.agent_governance_contract import HISTORICAL_TABLE_MARKER, current_markdown_authority
+        from scripts.lib.agent_governance.agent_governance_contract import (
+            HISTORICAL_TABLE_MARKER,
+            current_markdown_authority,
+        )
 
         command = "bash scripts/validation/check-doc-traceability.sh"
         table = f"{HISTORICAL_TABLE_MARKER}\n| Command | Result |\n| --- | --- |\n| `{command}` | observed PASS |\n"
         self.assertNotIn(command, current_markdown_authority(table))
         self.assertIn(command, current_markdown_authority(table + f"\n{command}\n"))
-        self.assertIn(command, current_markdown_authority(table.replace("| --- | --- |", "invalid separator")))
+        self.assertIn(
+            command,
+            current_markdown_authority(
+                table.replace("| --- | --- |", "invalid separator")
+            ),
+        )
 
     def test_active_publications_do_not_instruct_deleted_shell_validators(self) -> None:
         from scripts.lib.document_governance.frontmatter import read_frontmatter_values
-        from scripts.lib.agent_governance.agent_governance_contract import current_markdown_authority
+        from scripts.lib.agent_governance.agent_governance_contract import (
+            current_markdown_authority,
+        )
 
         candidates = [ROOT / "README.md"]
         for root in (
@@ -777,10 +886,18 @@ class DocumentLinksCliTests(unittest.TestCase):
             if path.name in {"plan.md", "task.md"}:
                 continue
             metadata = read_frontmatter_values(path)
-            if metadata.get("status") in {"completed", "archived", "deprecated", "retired"}:
+            if metadata.get("status") in {
+                "completed",
+                "archived",
+                "deprecated",
+                "retired",
+            }:
                 continue
             text = current_markdown_authority(path.read_text(encoding="utf-8"))
-            if "check-doc-traceability.sh" in text or "check-doc-implementation-alignment.sh" in text:
+            if (
+                "check-doc-traceability.sh" in text
+                or "check-doc-implementation-alignment.sh" in text
+            ):
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)
 
@@ -867,7 +984,11 @@ class LinkSelectionScopeTests(unittest.TestCase):
         module = load_links_cli()
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
-            for name, status in (("a", "superseded"), ("b", "retired"), ("c", "active")):
+            for name, status in (
+                ("a", "superseded"),
+                ("b", "retired"),
+                ("c", "active"),
+            ):
                 target = root / f"docs/90.references/audits/0001-{name}/README.md"
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(

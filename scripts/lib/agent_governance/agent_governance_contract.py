@@ -64,8 +64,12 @@ RETIRED_PROVIDER_SHIM = _RETIRED_PROVIDER.upper() + ".md"
 GENERATED_AUTHORITY = re.compile(
     r"(?i)(?:policy source of truth|owns? policy|normative authority)"
 )
-HISTORICAL_QUOTE_MARKER = "> Historical evidence (not current authority; source: Git history):"
-HISTORICAL_TABLE_MARKER = "<!-- Historical evidence table (not current authority; source: Git history). -->"
+HISTORICAL_QUOTE_MARKER = (
+    "> Historical evidence (not current authority; source: Git history):"
+)
+HISTORICAL_TABLE_MARKER = (
+    "<!-- Historical evidence table (not current authority; source: Git history). -->"
+)
 
 
 class ContractLoadError(ValueError):
@@ -76,7 +80,9 @@ class _UniqueLoader(yaml.SafeLoader):
     pass
 
 
-def _construct_mapping(loader: _UniqueLoader, node: yaml.MappingNode, deep: bool = False):
+def _construct_mapping(
+    loader: _UniqueLoader, node: yaml.MappingNode, deep: bool = False
+):
     pairs = loader.construct_pairs(node, deep=deep)
     result: dict[object, object] = {}
     for key, value in pairs:
@@ -176,7 +182,11 @@ class ContractBundle:
 
 def _safe_relative(value: str | pathlib.PurePath) -> pathlib.PurePosixPath:
     raw = pathlib.PurePosixPath(str(value).replace("\\", "/"))
-    if raw.is_absolute() or not raw.parts or any(part in {"", ".", ".."} for part in raw.parts):
+    if (
+        raw.is_absolute()
+        or not raw.parts
+        or any(part in {"", ".", ".."} for part in raw.parts)
+    ):
         raise ContractLoadError("AGC-UNSAFE-PATH")
     if any(ord(char) < 32 or ord(char) == 127 for char in raw.as_posix()):
         raise ContractLoadError("AGC-UNSAFE-PATH")
@@ -203,11 +213,18 @@ def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
         descriptor = os.open(current, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         with os.fdopen(descriptor, "rb") as source:
             opened = os.fstat(source.fileno())
-            if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (metadata.st_dev, metadata.st_ino):
+            if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
+                metadata.st_dev,
+                metadata.st_ino,
+            ):
                 raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
             payload = source.read(MAX_TEXT_BYTES + 1)
             after = os.fstat(source.fileno())
-            if (opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            if (opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) != (
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
+            ):
                 raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
     except OSError as error:
         raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}") from error
@@ -223,7 +240,9 @@ def read_repository_text(root: pathlib.Path, relative_path: str) -> str:
     return _read_text(root, relative_path)
 
 
-def _load_yaml(root: pathlib.Path, relative: str | pathlib.PurePath) -> Mapping[str, object]:
+def _load_yaml(
+    root: pathlib.Path, relative: str | pathlib.PurePath
+) -> Mapping[str, object]:
     try:
         value = yaml.load(_read_text(root, relative), Loader=_UniqueLoader)
     except yaml.YAMLError as error:
@@ -233,7 +252,9 @@ def _load_yaml(root: pathlib.Path, relative: str | pathlib.PurePath) -> Mapping[
     return MappingProxyType(value)
 
 
-def load_artifact_contract(root: pathlib.Path, path: pathlib.Path) -> Mapping[str, object]:
+def load_artifact_contract(
+    root: pathlib.Path, path: pathlib.Path
+) -> Mapping[str, object]:
     """Compatibility loader for explicitly supplied legacy transition fixtures."""
     root = root.absolute()
     try:
@@ -258,7 +279,9 @@ def _frontmatter(text: str, path: pathlib.PurePosixPath) -> Mapping[str, object]
     return MappingProxyType(value)
 
 
-def _strings(value: object, *, field: str, path: pathlib.PurePosixPath) -> tuple[str, ...]:
+def _strings(
+    value: object, *, field: str, path: pathlib.PurePosixPath
+) -> tuple[str, ...]:
     if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
         raise ContractLoadError(f"AGC-FIELD-INVALID path={path} field={field}")
     result = tuple(value)
@@ -276,7 +299,9 @@ def _identifiers(
     return result
 
 
-def _string(values: Mapping[str, object], field: str, path: pathlib.PurePosixPath) -> str:
+def _string(
+    values: Mapping[str, object], field: str, path: pathlib.PurePosixPath
+) -> str:
     value = values.get(field)
     if not isinstance(value, str) or not value:
         raise ContractLoadError(f"AGC-FIELD-INVALID path={path} field={field}")
@@ -295,8 +320,7 @@ def _identifier(
 def _safe_executable(value: object, *, field: str) -> pathlib.PurePosixPath:
     executable = _safe_relative(str(value))
     if any(
-        SAFE_REPOSITORY_PATH_PART.fullmatch(part) is None
-        for part in executable.parts
+        SAFE_REPOSITORY_PATH_PART.fullmatch(part) is None for part in executable.parts
     ):
         raise ContractLoadError(f"AGC-UNSAFE-EXECUTABLE field={field}")
     return executable
@@ -308,7 +332,9 @@ def _mapping(value: object, *, field: str) -> Mapping[str, object]:
     return value
 
 
-def _exact_keys(values: Mapping[str, object], expected: set[str], *, field: str) -> None:
+def _exact_keys(
+    values: Mapping[str, object], expected: set[str], *, field: str
+) -> None:
     if set(values) != expected:
         raise ContractLoadError(f"AGC-PROVIDER-REGISTRY-KEYS field={field}")
 
@@ -359,8 +385,14 @@ def _validate_registry(
         raise ContractLoadError("AGC-PROVIDER-REGISTRY-INVALID field=providers")
     records: list[ProviderRecord] = []
     provider_keys = {
-        "provider_id", "capability_status", "adoption_status", "runtime_acceptance",
-        "adapter_path", "native_agent_pattern", "native_skill_pattern", "native_config_path",
+        "provider_id",
+        "capability_status",
+        "adoption_status",
+        "runtime_acceptance",
+        "adapter_path",
+        "native_agent_pattern",
+        "native_skill_pattern",
+        "native_config_path",
     }
     expected_provider_values = {
         "claude": {
@@ -378,12 +410,20 @@ def _validate_registry(
         values = _mapping(raw, field=f"providers[{index}]")
         _exact_keys(values, provider_keys, field=f"providers[{index}]")
         provider_id = values.get("provider_id")
-        if provider_id not in SUPPORTED_PROVIDERS or provider_id != SUPPORTED_PROVIDERS[index]:
+        if (
+            provider_id not in SUPPORTED_PROVIDERS
+            or provider_id != SUPPORTED_PROVIDERS[index]
+        ):
             raise ContractLoadError("AGC-PROVIDER-REGISTRY-INVALID field=provider_id")
-        if values.get("capability_status") != "supported" or values.get("adoption_status") != "adopted":
+        if (
+            values.get("capability_status") != "supported"
+            or values.get("adoption_status") != "adopted"
+        ):
             raise ContractLoadError("AGC-PROVIDER-REGISTRY-INVALID field=status")
         if values.get("runtime_acceptance") != "needs_revalidation":
-            raise ContractLoadError("AGC-PROVIDER-REGISTRY-INVALID field=runtime_acceptance")
+            raise ContractLoadError(
+                "AGC-PROVIDER-REGISTRY-INVALID field=runtime_acceptance"
+            )
         adapter = _safe_relative(str(values.get("adapter_path", "")))
         expected_adapter = GOVERNANCE / f"providers/{provider_id}.md"
         if adapter != expected_adapter:
@@ -393,21 +433,43 @@ def _validate_registry(
         if any(values.get(key) != value for key, value in expected_values.items()):
             raise ContractLoadError("AGC-PROVIDER-PROJECTION-CROSS-REFERENCE")
         _read_text(root, config)
-        records.append(ProviderRecord(
-            provider_id=provider_id,
-            capability_status="supported",
-            adoption_status="adopted",
-            runtime_acceptance="needs_revalidation",
-            adapter_path=adapter,
-            agent_pattern=_projection_pattern(values.get("native_agent_pattern"), token="agent_id", field="native_agent_pattern"),
-            skill_pattern=_projection_pattern(values.get("native_skill_pattern"), token="skill_id", field="native_skill_pattern"),
-            config_path=config,
-        ))
-    compatibility_values = _mapping(registry.get("compatibility"), field="compatibility")
-    _exact_keys(compatibility_values, {"agent_pattern", "skill_pattern"}, field="compatibility")
+        records.append(
+            ProviderRecord(
+                provider_id=provider_id,
+                capability_status="supported",
+                adoption_status="adopted",
+                runtime_acceptance="needs_revalidation",
+                adapter_path=adapter,
+                agent_pattern=_projection_pattern(
+                    values.get("native_agent_pattern"),
+                    token="agent_id",
+                    field="native_agent_pattern",
+                ),
+                skill_pattern=_projection_pattern(
+                    values.get("native_skill_pattern"),
+                    token="skill_id",
+                    field="native_skill_pattern",
+                ),
+                config_path=config,
+            )
+        )
+    compatibility_values = _mapping(
+        registry.get("compatibility"), field="compatibility"
+    )
+    _exact_keys(
+        compatibility_values, {"agent_pattern", "skill_pattern"}, field="compatibility"
+    )
     compatibility = CompatibilityRecord(
-        agent_pattern=_projection_pattern(compatibility_values.get("agent_pattern"), token="agent_id", field="compatibility.agent_pattern"),
-        skill_pattern=_projection_pattern(compatibility_values.get("skill_pattern"), token="skill_id", field="compatibility.skill_pattern"),
+        agent_pattern=_projection_pattern(
+            compatibility_values.get("agent_pattern"),
+            token="agent_id",
+            field="compatibility.agent_pattern",
+        ),
+        skill_pattern=_projection_pattern(
+            compatibility_values.get("skill_pattern"),
+            token="skill_id",
+            field="compatibility.skill_pattern",
+        ),
     )
     if compatibility != CompatibilityRecord(
         agent_pattern=".agents/agents/{agent_id}.md",
@@ -460,7 +522,9 @@ def _validate_registry(
         raise ContractLoadError("AGC-PERMISSION-PROFILES")
     for name, raw in permissions.items():
         values = _mapping(raw, field=f"permissions.{name}")
-        if set(values) != providers or any(not isinstance(item, str) or not item for item in values.values()):
+        if set(values) != providers or any(
+            not isinstance(item, str) or not item for item in values.values()
+        ):
             raise ContractLoadError(f"AGC-PERMISSION-PROVIDER field={name}")
     semantic_events = _mapping(registry.get("semantic_events"), field="semantic_events")
     hook_contracts = _mapping(registry.get("hook_contracts"), field="hook_contracts")
@@ -468,22 +532,29 @@ def _validate_registry(
         raise ContractLoadError("AGC-HOOK-PROVIDERS")
     for provider_id in SUPPORTED_PROVIDERS:
         events = semantic_events.get(provider_id)
-        contracts = _mapping(hook_contracts.get(provider_id), field=f"hook_contracts.{provider_id}")
+        contracts = _mapping(
+            hook_contracts.get(provider_id), field=f"hook_contracts.{provider_id}"
+        )
         if (
             not isinstance(events, list)
             or not events
             or any(not isinstance(event, str) or not event for event in events)
             or any(
-                re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", event) is None
-                for event in events
+                re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", event) is None for event in events
             )
             or len(events) != len(set(events))
             or tuple(contracts) != tuple(events)
         ):
             raise ContractLoadError(f"AGC-HOOK-EVENTS field={provider_id}")
         for event, raw_contract in contracts.items():
-            contract = _mapping(raw_contract, field=f"hook_contracts.{provider_id}.{event}")
-            _exact_keys(contract, {"command", "timeout", "matcher", "executable"}, field=f"hook_contracts.{provider_id}.{event}")
+            contract = _mapping(
+                raw_contract, field=f"hook_contracts.{provider_id}.{event}"
+            )
+            _exact_keys(
+                contract,
+                {"command", "timeout", "matcher", "executable"},
+                field=f"hook_contracts.{provider_id}.{event}",
+            )
             if (
                 not isinstance(contract.get("command"), str)
                 or not contract.get("command")
@@ -492,7 +563,9 @@ def _validate_registry(
                 or not 1 <= contract["timeout"] <= 600
             ):
                 raise ContractLoadError(f"AGC-HOOK-BINDING field={provider_id}.{event}")
-            if contract.get("matcher") is not None and not isinstance(contract.get("matcher"), str):
+            if contract.get("matcher") is not None and not isinstance(
+                contract.get("matcher"), str
+            ):
                 raise ContractLoadError(f"AGC-HOOK-BINDING field={provider_id}.{event}")
             executable = _safe_executable(
                 contract.get("executable"), field=f"{provider_id}.{event}"
@@ -517,8 +590,14 @@ def _validate_registry(
         if set(profile) != providers:
             raise ContractLoadError(f"AGC-WORK-PROFILE-PROVIDERS field={profile_name}")
         for provider_id, raw_selection in profile.items():
-            selection = _mapping(raw_selection, field=f"work_profiles.{profile_name}.{provider_id}")
-            _exact_keys(selection, {"model", "control", "value"}, field=f"work_profiles.{profile_name}.{provider_id}")
+            selection = _mapping(
+                raw_selection, field=f"work_profiles.{profile_name}.{provider_id}"
+            )
+            _exact_keys(
+                selection,
+                {"model", "control", "value"},
+                field=f"work_profiles.{profile_name}.{provider_id}",
+            )
             model_id = selection.get("model")
             model = models.get(model_id) if isinstance(model_id, str) else None
             if (
@@ -529,7 +608,9 @@ def _validate_registry(
                     and model.get("control") != selection.get("control")
                 )
             ):
-                raise ContractLoadError(f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}")
+                raise ContractLoadError(
+                    f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}"
+                )
             value = selection.get("value")
             if provider_id == "codex" and (
                 model.get("control") != "model_reasoning_effort"
@@ -542,20 +623,28 @@ def _validate_registry(
                 )
             if model.get("control") == "unsupported":
                 if value is not None or selection.get("control") != "effort":
-                    raise ContractLoadError(f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}")
-            elif (
-                value not in model.get("supported_values", [])
-                or selection.get("control") != model.get("control")
-            ):
-                raise ContractLoadError(f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}")
+                    raise ContractLoadError(
+                        f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}"
+                    )
+            elif value not in model.get("supported_values", []) or selection.get(
+                "control"
+            ) != model.get("control"):
+                raise ContractLoadError(
+                    f"AGC-MODEL-SELECTION field={profile_name}.{provider_id}"
+                )
             selected.add(model_id)
     if selected != set(models):
         raise ContractLoadError("AGC-MODEL-SELECTION")
     for model_id, raw in models.items():
         model = _mapping(raw, field=f"models.{model_id}")
         expected_model_keys = {
-            "provider", "lifecycle", "entitlement", "runtime_acceptance",
-            "control", "work_profiles", "source_url",
+            "provider",
+            "lifecycle",
+            "entitlement",
+            "runtime_acceptance",
+            "control",
+            "work_profiles",
+            "source_url",
         }
         if model.get("control") != "unsupported":
             expected_model_keys.add("supported_values")
@@ -570,16 +659,23 @@ def _validate_registry(
             and model.get("control") != "model_reasoning_effort"
         ):
             raise ContractLoadError(f"AGC-MODEL-CONTROL field={model_id}")
-        if model.get("runtime_acceptance") != "needs_revalidation" or model.get("entitlement") != "needs_revalidation":
+        if (
+            model.get("runtime_acceptance") != "needs_revalidation"
+            or model.get("entitlement") != "needs_revalidation"
+        ):
             raise ContractLoadError(f"AGC-MODEL-STATUS field={model_id}")
         listed = model.get("work_profiles")
         if not isinstance(listed, list) or set(listed) != {
-            name for name, profile in work_profiles.items()
-            if isinstance(profile, dict) and isinstance(profile.get(model.get("provider")), dict)
+            name
+            for name, profile in work_profiles.items()
+            if isinstance(profile, dict)
+            and isinstance(profile.get(model.get("provider")), dict)
             and profile[model["provider"]].get("model") == model_id
         }:
             raise ContractLoadError(f"AGC-MODEL-WORK-PROFILES field={model_id}")
-        if model.get("lifecycle") != "stable" or not isinstance(model.get("source_url"), str):
+        if model.get("lifecycle") != "stable" or not isinstance(
+            model.get("source_url"), str
+        ):
             raise ContractLoadError(f"AGC-MODEL-STATUS field={model_id}")
         supported_values = model.get("supported_values")
         if model.get("control") == "unsupported":
@@ -592,7 +688,9 @@ def _validate_registry(
             or len(supported_values) != len(set(supported_values))
         ):
             raise ContractLoadError(f"AGC-MODEL-CONTROL field={model_id}")
-    catalog_policy = _mapping(registry.get("model_catalog_policy"), field="model_catalog_policy")
+    catalog_policy = _mapping(
+        registry.get("model_catalog_policy"), field="model_catalog_policy"
+    )
     _exact_keys(
         catalog_policy,
         {"active_rows_only", "unselected_rows", "activation_requires"},
@@ -627,8 +725,7 @@ def _validate_registry(
     if (
         generated_roots != required_roots
         or any(
-            len(path.parts) < 2
-            or path.parts[0] not in {".agents", ".claude", ".codex"}
+            len(path.parts) < 2 or path.parts[0] not in {".agents", ".claude", ".codex"}
             for path in generated_roots
         )
         or any(
@@ -703,7 +800,9 @@ def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     provider_ids = tuple(item.provider_id for item in provider_records)
     governance_root = root / GOVERNANCE
     root_entries = tuple(sorted(path.name for path in governance_root.iterdir()))
-    provider_entries = tuple(sorted(path.name for path in (governance_root / "providers").iterdir()))
+    provider_entries = tuple(
+        sorted(path.name for path in (governance_root / "providers").iterdir())
+    )
     return AgentGovernanceState(
         providers=provider_ids,
         provider_records=provider_records,
@@ -724,15 +823,29 @@ def _finding(path: str | pathlib.PurePath, code: str, message: str) -> Finding:
     return Finding(str(path), code, message)
 
 
-def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list[Finding]:
+def validate_contract_bundle(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
     state = bundle.state
     findings: list[Finding] = []
     if state.providers != SUPPORTED_PROVIDERS:
-        findings.append(_finding(REGISTRY, "AGC-PROVIDERS", "providers must be claude and codex"))
+        findings.append(
+            _finding(REGISTRY, "AGC-PROVIDERS", "providers must be claude and codex")
+        )
     if state.root_entries != ROOT_ENTRIES:
-        findings.append(_finding(GOVERNANCE, "AGC-ROOT-INVENTORY", "Stage 00 root inventory differs"))
+        findings.append(
+            _finding(
+                GOVERNANCE, "AGC-ROOT-INVENTORY", "Stage 00 root inventory differs"
+            )
+        )
     if state.provider_entries != PROVIDER_ENTRIES:
-        findings.append(_finding(GOVERNANCE / "providers", "AGC-PROVIDER-INVENTORY", "provider inventory differs"))
+        findings.append(
+            _finding(
+                GOVERNANCE / "providers",
+                "AGC-PROVIDER-INVENTORY",
+                "provider inventory differs",
+            )
+        )
     role_ids = tuple(item.agent_id for item in state.roles)
     skill_ids = tuple(item.skill_id for item in state.skills)
     role_paths = {
@@ -748,34 +861,68 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
         or len(role_ids) != len(set(role_ids))
         or role_paths != {item.source_path for item in state.roles}
     ):
-        findings.append(_finding(GOVERNANCE / "roles", "AGC-ROLE-SET", "role identities and source paths differ"))
+        findings.append(
+            _finding(
+                GOVERNANCE / "roles",
+                "AGC-ROLE-SET",
+                "role identities and source paths differ",
+            )
+        )
     if (
         not skill_ids
         or len(skill_ids) != len(set(skill_ids))
         or skill_paths != {item.source_path for item in state.skills}
     ):
-        findings.append(_finding(GOVERNANCE / "skills", "AGC-SKILL-SET", "skill identities and source paths differ"))
+        findings.append(
+            _finding(
+                GOVERNANCE / "skills",
+                "AGC-SKILL-SET",
+                "skill identities and source paths differ",
+            )
+        )
     roles = set(role_ids)
     skills = set(skill_ids)
     work_profiles = bundle.registry.get("work_profiles")
     permissions = bundle.registry.get("permissions")
     if not isinstance(work_profiles, dict) or not isinstance(permissions, dict):
-        findings.append(_finding(REGISTRY, "AGC-PROVIDER-REGISTRY", "work profiles and permissions are required"))
+        findings.append(
+            _finding(
+                REGISTRY,
+                "AGC-PROVIDER-REGISTRY",
+                "work profiles and permissions are required",
+            )
+        )
         return sorted(set(findings))
     models = bundle.registry.get("models")
     if not isinstance(models, dict) or not models:
-        findings.append(_finding(REGISTRY, "AGC-MODEL-CATALOG", "active model catalog is required"))
+        findings.append(
+            _finding(REGISTRY, "AGC-MODEL-CATALOG", "active model catalog is required")
+        )
     for role in state.roles:
         if role.work_profile not in work_profiles:
-            findings.append(_finding(role.source_path, "AGC-WORK-PROFILE", "unknown work profile"))
+            findings.append(
+                _finding(role.source_path, "AGC-WORK-PROFILE", "unknown work profile")
+            )
         if role.permission_profile not in permissions:
-            findings.append(_finding(role.source_path, "AGC-PERMISSION", "unknown permission profile"))
+            findings.append(
+                _finding(
+                    role.source_path, "AGC-PERMISSION", "unknown permission profile"
+                )
+            )
         for skill_id in role.skill_ids:
             if skill_id not in skills:
-                findings.append(_finding(role.source_path, "AGC-SKILL-REFERENCE", f"unknown skill {skill_id}"))
+                findings.append(
+                    _finding(
+                        role.source_path,
+                        "AGC-SKILL-REFERENCE",
+                        f"unknown skill {skill_id}",
+                    )
+                )
     for skill in state.skills:
         if skill.owner_agent not in roles:
-            findings.append(_finding(skill.source_path, "AGC-ROLE-REFERENCE", "unknown owner role"))
+            findings.append(
+                _finding(skill.source_path, "AGC-ROLE-REFERENCE", "unknown owner role")
+            )
     if isinstance(models, dict):
         selected = {
             item.get("model")
@@ -785,10 +932,26 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
             if isinstance(item, dict)
         }
         if selected != set(models):
-            findings.append(_finding(REGISTRY, "AGC-MODEL-SELECTION", "model catalog and work profiles differ"))
+            findings.append(
+                _finding(
+                    REGISTRY,
+                    "AGC-MODEL-SELECTION",
+                    "model catalog and work profiles differ",
+                )
+            )
         for model_id, model in models.items():
-            if not isinstance(model, dict) or model.get("runtime_acceptance") != "needs_revalidation" or model.get("entitlement") != "needs_revalidation":
-                findings.append(_finding(REGISTRY, "AGC-MODEL-STATUS", f"model status incomplete: {model_id}"))
+            if (
+                not isinstance(model, dict)
+                or model.get("runtime_acceptance") != "needs_revalidation"
+                or model.get("entitlement") != "needs_revalidation"
+            ):
+                findings.append(
+                    _finding(
+                        REGISTRY,
+                        "AGC-MODEL-STATUS",
+                        f"model status incomplete: {model_id}",
+                    )
+                )
     return sorted(set(findings))
 
 
@@ -823,7 +986,14 @@ def _projection_ids(root: pathlib.Path, directory: str, suffix: str) -> set[str]
 
 
 ACTIVE_TEXT_EXTENSIONS = {
-    ".json", ".md", ".py", ".sh", ".toml", ".txt", ".yaml", ".yml",
+    ".json",
+    ".md",
+    ".py",
+    ".sh",
+    ".toml",
+    ".txt",
+    ".yaml",
+    ".yml",
 }
 ACTIVE_TEXT_ROOTS = (
     "_workspace",
@@ -856,7 +1026,9 @@ def _active_text_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
         except FileNotFoundError:
             continue
         relative_root = pathlib.PurePosixPath(directory_name)
-        if stat.S_ISLNK(root_metadata.st_mode) or not stat.S_ISDIR(root_metadata.st_mode):
+        if stat.S_ISLNK(root_metadata.st_mode) or not stat.S_ISDIR(
+            root_metadata.st_mode
+        ):
             paths.add(relative_root)
             continue
         for path in directory.rglob("*"):
@@ -868,7 +1040,9 @@ def _active_text_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
             if (
                 path.suffix.lower() in ACTIVE_TEXT_EXTENSIONS
                 or stat.S_ISLNK(metadata.st_mode)
-                or not (stat.S_ISREG(metadata.st_mode) or stat.S_ISDIR(metadata.st_mode))
+                or not (
+                    stat.S_ISREG(metadata.st_mode) or stat.S_ISDIR(metadata.st_mode)
+                )
             ):
                 paths.add(pathlib.PurePosixPath(path.relative_to(root).as_posix()))
     return tuple(sorted(paths))
@@ -882,11 +1056,13 @@ def current_markdown_authority(text: str) -> str:
     table_history = False
     for index, line in enumerate(lines):
         if line == HISTORICAL_TABLE_MARKER and index + 2 < len(lines):
-            header, separator = lines[index + 1:index + 3]
-            if (re.fullmatch(r"\|(?:[^|\n]+\|)+", header)
-                    and re.fullmatch(r"\|(?:\s*:?-{3,}:?\s*\|)+", separator)
-                    and len(header.split("|")) == len(separator.split("|"))
-                    and all(cell.strip() for cell in header.split("|")[1:-1])):
+            header, separator = lines[index + 1 : index + 3]
+            if (
+                re.fullmatch(r"\|(?:[^|\n]+\|)+", header)
+                and re.fullmatch(r"\|(?:\s*:?-{3,}:?\s*\|)+", separator)
+                and len(header.split("|")) == len(separator.split("|"))
+                and all(cell.strip() for cell in header.split("|")[1:-1])
+            ):
                 table_history = True
                 continue
         if table_history and line.startswith("|"):
@@ -908,12 +1084,18 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
     if relative.endswith(".py"):
         # Literal inventories used to prove retired paths absent are data, not
         # provider adoption. No executable statement is removed by this match.
-        text = re.sub(r"(?m)^\w*(?:REMOVED|RETIRED)_PATHS(?::[^=\n]+)? = \(\n(?:[ \t]+\"[^\"\n]+\",\n)+\)", "", text)
+        text = re.sub(
+            r"(?m)^\w*(?:REMOVED|RETIRED)_PATHS(?::[^=\n]+)? = \(\n(?:[ \t]+\"[^\"\n]+\",\n)+\)",
+            "",
+            text,
+        )
         return UNSUPPORTED_TOKEN.search(text) is not None
     # A search pattern names evidence, not an adopted provider. Strip only the
     # quoted pattern, retaining adjacent commands and all remaining arguments.
     text = re.sub(r"(?m)^(\s*!?\s*rg -n(?: -i)? )(['\"])[^\n]*?\2", r"\1", text)
-    statements = re.split(r"\n\s*\n|\n(?=\s*(?:[-*] |\d+[.] |\|))|(?<=[.!?])\s+(?=[A-Z])|;|\bbut\b", text)
+    statements = re.split(
+        r"\n\s*\n|\n(?=\s*(?:[-*] |\d+[.] |\|))|(?<=[.!?])\s+(?=[A-Z])|;|\bbut\b", text
+    )
     for statement in statements:
         if UNSUPPORTED_TOKEN.search(statement) is None:
             continue
@@ -924,18 +1106,27 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
             rf"(?i)(?:\b(?:use|load|enable|support|adopt|create|restore|retain)\s+(?:the\s+)?`?(?:{UNSUPPORTED_TOKEN.pattern[4:]})|"
             r"\b(?:must|should)\s+(?:remain|become)\s+active|\bcurrent active authority|"
             rf"(?:{UNSUPPORTED_TOKEN.pattern[4:]}).*?\b(?:is|are|remains?|must be|should be)\s+(?:the\s+)?(?:current|active|default|supported|adopted|enabled|required|canonical)\b|"
-            r"\b(?:do not|must not|never)\s+(?:remove|retire|delete))", normalized,
+            r"\b(?:do not|must not|never)\s+(?:remove|retire|delete))",
+            normalized,
         )
         if positive:
             return True
-        if re.search(r"(?i)\b(?:remov(?:e[ds]?|ing|al)|retir(?:e[ds]?|ing|ement)|delet(?:e[ds]?|ing|ion)|absent|absence|forbidden|reject|fail)\b", normalized):
+        if re.search(
+            r"(?i)\b(?:remov(?:e[ds]?|ing|al)|retir(?:e[ds]?|ing|ement)|delet(?:e[ds]?|ing|ion)|absent|absence|forbidden|reject|fail)\b",
+            normalized,
+        ):
             continue
-        if re.search(rf"(?i)\bno\s+[^.;]*(?:{UNSUPPORTED_TOKEN.pattern[4:]})|\bdo(?:es)? not exist\b", normalized):
+        if re.search(
+            rf"(?i)\bno\s+[^.;]*(?:{UNSUPPORTED_TOKEN.pattern[4:]})|\bdo(?:es)? not exist\b",
+            normalized,
+        ):
             continue
         if re.match(r"(?i)(?:[-*] )?Move:", normalized) and " to " in normalized:
             if not UNSUPPORTED_TOKEN.search(normalized.split(" to ", 1)[1]):
                 continue
-        if re.search(r"(?:self[.])?assertFalse\(Path\([^\n]+\)[.]exists\(\)\)", normalized):
+        if re.search(
+            r"(?:self[.])?assertFalse\(Path\([^\n]+\)[.]exists\(\)\)", normalized
+        ):
             continue
         return True
     return False
@@ -962,12 +1153,24 @@ def validate_repository(
         ):
             actual = _projection_ids(root, directory, suffix)
             if actual != expected:
-                findings.append(_finding(directory, code, f"expected={sorted(expected)} actual={sorted(actual)}"))
+                findings.append(
+                    _finding(
+                        directory,
+                        code,
+                        f"expected={sorted(expected)} actual={sorted(actual)}",
+                    )
+                )
     if section in {"providers", "harness", "all"}:
         if (root / RETIRED_PROVIDER_DIRECTORY).exists() or (
             root / RETIRED_PROVIDER_SHIM
         ).exists():
-            findings.append(_finding(".", "AGC-UNSUPPORTED-PROVIDER", "unsupported provider surface exists"))
+            findings.append(
+                _finding(
+                    ".",
+                    "AGC-UNSUPPORTED-PROVIDER",
+                    "unsupported provider surface exists",
+                )
+            )
         for relative_path in _active_text_paths(root):
             try:
                 text = _read_text(root, relative_path)
@@ -982,9 +1185,23 @@ def validate_repository(
                 continue
             relative = relative_path.as_posix()
             if _has_unsupported_active_token(relative, text):
-                findings.append(_finding(relative, "AGC-UNSUPPORTED-TOKEN", "retired provider or handoff token"))
-            if relative.startswith((".agents/", ".claude/", ".codex/")) and GENERATED_AUTHORITY.search(text):
-                findings.append(_finding(relative, "AGC-GENERATED-AUTHORITY", "generated adapter owns policy"))
+                findings.append(
+                    _finding(
+                        relative,
+                        "AGC-UNSUPPORTED-TOKEN",
+                        "retired provider or handoff token",
+                    )
+                )
+            if relative.startswith(
+                (".agents/", ".claude/", ".codex/")
+            ) and GENERATED_AUTHORITY.search(text):
+                findings.append(
+                    _finding(
+                        relative,
+                        "AGC-GENERATED-AUTHORITY",
+                        "generated adapter owns policy",
+                    )
+                )
     return sorted(set(findings))
 
 
@@ -1017,4 +1234,7 @@ def _expand_braces(pattern: str) -> tuple[str, ...]:
 
 def path_matches_artifact_pattern(path: str, pattern: str) -> bool:
     normalized = normalize_repo_relative_path(path)
-    return any(fnmatch.fnmatchcase(normalized, candidate) for candidate in _expand_braces(pattern))
+    return any(
+        fnmatch.fnmatchcase(normalized, candidate)
+        for candidate in _expand_braces(pattern)
+    )

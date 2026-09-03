@@ -28,7 +28,9 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         renderer = load_renderer()
         records = renderer.render_all(ROOT, providers=("claude", "codex"))
         self.assertIsInstance(records, tuple)
-        self.assertEqual({"claude", "codex", "shared"}, {item.provider for item in records})
+        self.assertEqual(
+            {"claude", "codex", "shared"}, {item.provider for item in records}
+        )
         self.assertTrue(
             all(
                 item.path.parts[0] in {".agents", ".claude", ".codex"}

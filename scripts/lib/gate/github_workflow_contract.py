@@ -47,9 +47,7 @@ MAX_SEMANTIC_HELPER_BYTES: Final = 256 * 1_024
 MAX_SEMANTIC_HELPER_TOTAL_BYTES: Final = 4 * 1_048_576
 MAX_SEMANTIC_HELPER_FILES: Final = 64
 MAX_SEMANTIC_HELPER_DEPTH: Final = 8
-PUBLIC_GATE_RUNNER: Final = pathlib.PurePosixPath(
-    "scripts/validation/run-ci-gate.py"
-)
+PUBLIC_GATE_RUNNER: Final = pathlib.PurePosixPath("scripts/validation/run-ci-gate.py")
 
 
 @dataclasses.dataclass(frozen=True, order=True, slots=True)
@@ -253,10 +251,7 @@ def _construct_unique_mapping(
     mapping: dict[object, object] = {}
     key_tags: dict[object, str] = {}
     for key_node, value_node in node.value:
-        if (
-            isinstance(key_node, yaml.nodes.ScalarNode)
-            and key_node.value == "on"
-        ):
+        if isinstance(key_node, yaml.nodes.ScalarNode) and key_node.value == "on":
             key: object = "on"
         else:
             key = loader.construct_object(key_node, deep=deep)
@@ -367,11 +362,10 @@ def _read_bounded_yaml(
         descriptor = os.open(path, flags)
         try:
             opened_metadata = os.fstat(descriptor)
-            if (
-                not stat.S_ISREG(opened_metadata.st_mode)
-                or (metadata.st_dev, metadata.st_ino)
-                != (opened_metadata.st_dev, opened_metadata.st_ino)
-            ):
+            if not stat.S_ISREG(opened_metadata.st_mode) or (
+                metadata.st_dev,
+                metadata.st_ino,
+            ) != (opened_metadata.st_dev, opened_metadata.st_ino):
                 raise WorkflowContractError(
                     "yaml-file-unsafe",
                     relative.as_posix(),
@@ -464,11 +458,7 @@ def _normalize_workflow_trigger_key(
     *,
     path: str,
 ) -> None:
-    boolean_on_keys = tuple(
-        key
-        for key in data
-        if type(key) is bool and key is True
-    )
+    boolean_on_keys = tuple(key for key in data if type(key) is bool and key is True)
     if boolean_on_keys:
         raise WorkflowContractError(
             "workflow-trigger-key-invalid",
@@ -746,9 +736,8 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                 path=workflow_path,
                 field="concurrency",
             )
-            if (
-                not isinstance(concurrency_mapping["group"], str)
-                or not isinstance(concurrency_mapping["cancel-in-progress"], bool)
+            if not isinstance(concurrency_mapping["group"], str) or not isinstance(
+                concurrency_mapping["cancel-in-progress"], bool
             ):
                 raise WorkflowContractError(
                     "contract-schema-invalid",
@@ -979,9 +968,7 @@ def _static_gate_profile(program: str) -> str | None:
 def _environment_keys(value: object) -> set[str] | None:
     if value is None:
         return set()
-    if not isinstance(value, dict) or any(
-        not isinstance(key, str) for key in value
-    ):
+    if not isinstance(value, dict) or any(not isinstance(key, str) for key in value):
         return None
     return set(value)
 
@@ -1119,7 +1106,11 @@ def _workflow_projection_findings(
                         f"job {raw_job_id} run step context is not admitted",
                     )
                 )
-            selected_profile = "bootstrap" if program == CI_DEPENDENCY_BOOTSTRAP else _static_gate_profile(program)
+            selected_profile = (
+                "bootstrap"
+                if program == CI_DEPENDENCY_BOOTSTRAP
+                else _static_gate_profile(program)
+            )
             if selected_profile is None:
                 findings.append(
                     _finding(
@@ -1190,9 +1181,7 @@ class _TraversalBudget:
     total_bytes: int = 0
 
 
-_SHELL_SEPARATORS: Final = frozenset(
-    {";", "\n", "&&", "||", "|", "&", "(", ")"}
-)
+_SHELL_SEPARATORS: Final = frozenset({";", "\n", "&&", "||", "|", "&", "(", ")"})
 _SHELL_PUNCTUATION: Final = ";&|<>()\n"
 _SCRIPT_PATH_RE: Final = re.compile(
     r"scripts/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.(?:py|sh)"
@@ -1200,9 +1189,7 @@ _SCRIPT_PATH_RE: Final = re.compile(
 _VARIABLE_RE: Final = re.compile(
     r"\$(?:([A-Za-z_][A-Za-z0-9_]*)|\{([A-Za-z_][A-Za-z0-9_]*)\})"
 )
-_INDIRECT_VARIABLE_RE: Final = re.compile(
-    r"\$\{!([A-Za-z_][A-Za-z0-9_]*)\}"
-)
+_INDIRECT_VARIABLE_RE: Final = re.compile(r"\$\{!([A-Za-z_][A-Za-z0-9_]*)\}")
 _ASSIGNMENT_RE: Final = re.compile(
     r"([A-Za-z_][A-Za-z0-9_]*)=(.*)",
     re.DOTALL,
@@ -1331,10 +1318,7 @@ def _canonical_script_path(token: str) -> str | None:
 
 
 def _looks_like_repo_script(token: str) -> bool:
-    return (
-        "scripts/" in token
-        and (".sh" in token or ".py" in token)
-    )
+    return "scripts/" in token and (".sh" in token or ".py" in token)
 
 
 def _read_repo_script_bytes(
@@ -1366,9 +1350,7 @@ def _read_repo_script_bytes(
                 return None
             descriptors.append(descriptor)
         file_flags = (
-            os.O_RDONLY
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         )
         descriptor = os.open(
             relative.name,
@@ -1393,8 +1375,7 @@ def _read_repo_script_bytes(
             len(payload) != opened.st_size
             or len(payload) > maximum
             or opened.st_size != closed.st_size
-            or (opened.st_dev, opened.st_ino)
-            != (closed.st_dev, closed.st_ino)
+            or (opened.st_dev, opened.st_ino) != (closed.st_dev, closed.st_ino)
             or not stat.S_ISREG(closed.st_mode)
         ):
             return None
@@ -1620,13 +1601,9 @@ def _shell_program_tokens(source: str) -> tuple[str, ...] | None:
     except ValueError:
         return None
     tokens: list[str] = []
-    punctuation_pattern = re.compile(
-        r"&&|\|\||<<-|<<|>>|[;&|<>()\n]"
-    )
+    punctuation_pattern = re.compile(r"&&|\|\||<<-|<<|>>|[;&|<>()\n]")
     for token in raw_tokens:
-        if token and all(
-            character in _SHELL_PUNCTUATION for character in token
-        ):
+        if token and all(character in _SHELL_PUNCTUATION for character in token):
             pieces = punctuation_pattern.findall(token)
             if "".join(pieces) != token:
                 return None
@@ -1881,10 +1858,7 @@ def _analyze_shell_program(
     def substitution_is_relevant(nested: _ShellAnalysis) -> bool:
         return bool(
             nested.script_invocations
-            or (
-                nested.command_signatures
-                & _GOVERNED_NON_SCRIPT_SIGNATURES
-            )
+            or (nested.command_signatures & _GOVERNED_NON_SCRIPT_SIGNATURES)
         )
 
     if prepared.heredoc_substitutions:
@@ -1895,9 +1869,7 @@ def _analyze_shell_program(
         if not segment:
             continue
         segment_substitutions = [
-            substitutions[token]
-            for token in segment
-            if token in substitutions
+            substitutions[token] for token in segment if token in substitutions
         ]
         for token in segment:
             assignment = _ASSIGNMENT_RE.fullmatch(token)
@@ -1911,20 +1883,15 @@ def _analyze_shell_program(
             nested = analyze_substitution(substitution)
             assignment_only = (
                 len(segment) == 1
-                and (assignment := _ASSIGNMENT_RE.fullmatch(segment[0]))
-                is not None
+                and (assignment := _ASSIGNMENT_RE.fullmatch(segment[0])) is not None
                 and assignment.group(2) == substitution.placeholder
             )
             approved = (
                 allow_owner_substitution
                 and substitution.kind == "command"
                 and assignment_only
-                and _APPROVED_OWNER_SUBSTITUTION
-                in nested.command_signatures
-                and {
-                    invocation.path
-                    for invocation in nested.script_invocations
-                }
+                and _APPROVED_OWNER_SUBSTITUTION in nested.command_signatures
+                and {invocation.path for invocation in nested.script_invocations}
                 == {_APPROVED_OWNER_SUBSTITUTION[1]}
                 and not nested.invalid
             )
@@ -1981,8 +1948,7 @@ def _analyze_shell_program(
             while arguments and arguments[0] == "--":
                 arguments.pop(0)
             if not arguments or (
-                executable in {"python", "python3"}
-                and arguments[0] == "-m"
+                executable in {"python", "python3"} and arguments[0] == "-m"
             ):
                 continue
             script_binding = _resolve_shell_word(arguments[0], bindings)
@@ -1995,12 +1961,8 @@ def _analyze_shell_program(
                     analysis.invalid = True
                 continue
             suffix = pathlib.PurePosixPath(script_path).suffix
-            if (
-                executable in {"bash", "sh", "zsh"}
-                and suffix != ".sh"
-            ) or (
-                executable in {"python", "python3"}
-                and suffix != ".py"
+            if (executable in {"bash", "sh", "zsh"} and suffix != ".sh") or (
+                executable in {"python", "python3"} and suffix != ".py"
             ):
                 analysis.invalid = True
                 continue
@@ -2044,10 +2006,7 @@ def _literal_python_command(node: ast.expr) -> str | None:
         return None
     values: list[str] = []
     for element in node.elts:
-        if not (
-            isinstance(element, ast.Constant)
-            and isinstance(element.value, str)
-        ):
+        if not (isinstance(element, ast.Constant) and isinstance(element.value, str)):
             return None
         values.append(element.value)
     return shlex.join(values)
@@ -2131,8 +2090,7 @@ def _tracked_executable_mode(
     )
     return (
         match is not None
-        and match.group(1).decode("utf-8", errors="ignore")
-        == relative.as_posix()
+        and match.group(1).decode("utf-8", errors="ignore") == relative.as_posix()
     )
 
 
@@ -2147,10 +2105,7 @@ def _direct_script_admitted(
         metadata = root.joinpath(*relative.parts).lstat()
     except OSError:
         return False
-    if (
-        not stat.S_ISREG(metadata.st_mode)
-        or metadata.st_mode & 0o111 == 0
-    ):
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_mode & 0o111 == 0:
         return False
     shebang = payload.splitlines()[0] if payload.splitlines() else b""
     return shebang in _ADMITTED_SHEBANGS.get(relative.suffix, frozenset())
@@ -2218,10 +2173,7 @@ def _resolve_job_semantics(
             return
         if invocation.direct:
             resolution.script_paths.add(invocation.path)
-        if (
-            invocation.path in governed
-            and relative != PUBLIC_GATE_RUNNER
-        ):
+        if invocation.path in governed and relative != PUBLIC_GATE_RUNNER:
             return
         if depth > MAX_SEMANTIC_HELPER_DEPTH:
             mark_invalid(aggregate=aggregate)
@@ -2343,10 +2295,7 @@ def _permission_baseline_findings(
     findings: list[WorkflowFinding] = []
     baselines_by_path = dict(_WORKFLOW_PERMISSION_BASELINES)
     baseline_paths = set(baselines_by_path)
-    if (
-        set(documents_by_path) != baseline_paths
-        or set(specs_by_path) != baseline_paths
-    ):
+    if set(documents_by_path) != baseline_paths or set(specs_by_path) != baseline_paths:
         findings.append(
             _finding(
                 "workflow-permission-baseline-invalid",
@@ -2355,9 +2304,7 @@ def _permission_baseline_findings(
             )
         )
 
-    for path in sorted(
-        baseline_paths & set(documents_by_path) & set(specs_by_path)
-    ):
+    for path in sorted(baseline_paths & set(documents_by_path) & set(specs_by_path)):
         baseline = baselines_by_path[path]
         document = documents_by_path[path]
         spec = specs_by_path[path]
@@ -2384,10 +2331,7 @@ def _permission_baseline_findings(
                     baseline_valid = False
                     continue
                 if permission_items is None:
-                    if (
-                        contract_job.permissions is not None
-                        or "permissions" in raw_job
-                    ):
+                    if contract_job.permissions is not None or "permissions" in raw_job:
                         baseline_valid = False
                     continue
                 expected_permissions = dict(permission_items)
@@ -2423,9 +2367,7 @@ def validate_workflows(
         return (_finding(error.code, error.path, error.message),)
     documents_by_path = {document.path: document for document in documents}
     specs_by_path = {spec.path: spec for spec in contract.workflows}
-    findings.extend(
-        _permission_baseline_findings(documents_by_path, specs_by_path)
-    )
+    findings.extend(_permission_baseline_findings(documents_by_path, specs_by_path))
     for path in sorted(set(specs_by_path) - set(documents_by_path)):
         findings.append(
             _finding("workflow-missing", path, "registered workflow is missing")
@@ -2478,12 +2420,20 @@ def validate_workflows(
         data = document.data
         if data.get("name") != spec.name:
             findings.append(
-                _finding("workflow-name-mismatch", path, "workflow name differs from the contract")
+                _finding(
+                    "workflow-name-mismatch",
+                    path,
+                    "workflow name differs from the contract",
+                )
             )
         trigger = data.get("on")
         if not isinstance(trigger, dict):
             findings.append(
-                _finding("workflow-trigger-invalid", path, "workflow triggers must be a mapping")
+                _finding(
+                    "workflow-trigger-invalid",
+                    path,
+                    "workflow triggers must be a mapping",
+                )
             )
             trigger = {}
         for event in sorted(set(trigger) & forbidden_events):
@@ -2505,7 +2455,9 @@ def validate_workflows(
         permissions = data.get("permissions")
         if permissions == "write-all":
             findings.append(
-                _finding("workflow-permission-write-all", path, "write-all is forbidden")
+                _finding(
+                    "workflow-permission-write-all", path, "write-all is forbidden"
+                )
             )
         if permissions != spec.permissions:
             findings.append(
@@ -2708,7 +2660,11 @@ def validate_workflows(
         registry_path = WORKFLOW_CONTRACT.as_posix()
         if re.fullmatch(r"[0-9a-f]{40}", action.sha) is None:
             findings.append(
-                _finding("action-registry-sha-invalid", registry_path, "Action SHA is invalid")
+                _finding(
+                    "action-registry-sha-invalid",
+                    registry_path,
+                    "Action SHA is invalid",
+                )
             )
         if action.runtime.casefold() in {"node20", "node16", "node12"}:
             findings.append(
@@ -2728,7 +2684,9 @@ def validate_workflows(
             )
         repository_parts = action.action.split("/")
         action_subpath = "/".join(repository_parts[2:])
-        manifest_path = f"{action_subpath}/action.yml" if action_subpath else "action.yml"
+        manifest_path = (
+            f"{action_subpath}/action.yml" if action_subpath else "action.yml"
+        )
         expected_url = (
             "https://raw.githubusercontent.com/"
             f"{repository_parts[0]}/{repository_parts[1]}/{action.sha}/{manifest_path}"

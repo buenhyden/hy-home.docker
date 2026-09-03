@@ -35,11 +35,10 @@ def _repository_root() -> pathlib.Path:
         direct = fallback.stat()
     except (OSError, ValueError, OverflowError):
         raise SystemExit(_ROOT_ERROR) from None
-    if (
-        not stat.S_ISDIR(descriptor.st_mode)
-        or (descriptor.st_dev, descriptor.st_ino)
-        != (direct.st_dev, direct.st_ino)
-    ):
+    if not stat.S_ISDIR(descriptor.st_mode) or (
+        descriptor.st_dev,
+        descriptor.st_ino,
+    ) != (direct.st_dev, direct.st_ino):
         raise SystemExit(_ROOT_ERROR)
     return pathlib.Path(override)
 
@@ -60,7 +59,8 @@ from scripts.lib.document_governance import metadata_contract  # noqa: E402
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
 HISTORICAL_CONTRACT = HistoricalDocument(
-    ROOT, "494065806794980080b081439298d7b534d10803",
+    ROOT,
+    "494065806794980080b081439298d7b534d10803",
     "docs/99.templates/support/document-corpus-migration-contract.yaml",
 )
 DEFAULT_CONTRACT = None
@@ -241,9 +241,7 @@ EVIDENCE_FIELDS = (
 )
 REVIEW_FIELDS = ("specification", "quality")
 DESTRUCTIVE_DISPOSITIONS = frozenset({"merge", "archive", "delete"})
-SOURCE_EQUALS_TARGET = frozenset(
-    {"migrate", "preserve", "regenerate", "exempt"}
-)
+SOURCE_EQUALS_TARGET = frozenset({"migrate", "preserve", "regenerate", "exempt"})
 TARGET_DISTINCT = frozenset({"move", "merge", "archive"})
 REVIEW_VALUES = frozenset({"pending", "pass", "changes-required"})
 TYPED_SURFACE_CLASSES = frozenset(
@@ -252,8 +250,12 @@ TYPED_SURFACE_CLASSES = frozenset(
 OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 SENSITIVE_PAYLOAD_PATTERNS = (
-    re.compile(rb"(?i)(?:password|passwd|credential|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\s*[:=]"),
-    re.compile(rb"(?i)(?:auth|authorization)\s*[:=]\s*(?:bearer|basic|[A-Za-z0-9+/]{16,})"),
+    re.compile(
+        rb"(?i)(?:password|passwd|credential|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\s*[:=]"
+    ),
+    re.compile(
+        rb"(?i)(?:auth|authorization)\s*[:=]\s*(?:bearer|basic|[A-Za-z0-9+/]{16,})"
+    ),
     re.compile(rb"(?is)\bmachine\s+\S+.{0,512}\blogin\s+\S+.{0,512}\bpassword\s+\S+"),
     re.compile(rb'(?i)"auths?"\s*:\s*\{|"auth"\s*:\s*"[A-Za-z0-9+/=_-]{8,}"'),
     re.compile(rb"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"),
@@ -268,9 +270,15 @@ SENSITIVE_PAYLOAD_PATTERNS = (
     re.compile(rb"(?i)(?:^|/|\\)\.(?:bash|zsh|sh)_history(?:\s|$)|\bHISTFILE\s*="),
     re.compile(rb"(?m)^\d{4}-\d{2}-\d{2}(?:T|\s).*(?:ERROR|WARN|DEBUG|TRACE)\b"),
     re.compile(rb"(?mi)^(?:TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\b"),
-    re.compile(rb'(?is)"(?:timestamp|time|ts)"\s*:\s*"[^"]+".{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'),
-    re.compile(rb'(?is)\{.{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'),
-    re.compile(rb"(?m)^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\S+(?:\[\d+\])?:"),
+    re.compile(
+        rb'(?is)"(?:timestamp|time|ts)"\s*:\s*"[^"]+".{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'
+    ),
+    re.compile(
+        rb'(?is)\{.{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'
+    ),
+    re.compile(
+        rb"(?m)^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\S+(?:\[\d+\])?:"
+    ),
 )
 
 
@@ -393,7 +401,6 @@ def _finding(
     return Finding(pathlib.PurePosixPath(path).as_posix(), code, message, severity)
 
 
-
 def _run_git(
     root: pathlib.Path,
     args: collections.abc.Sequence[str],
@@ -443,7 +450,9 @@ def _tracked_active_consumers(
             if item
         )
     except UnicodeDecodeError as error:
-        raise ProfileError("bounded active-consumer Git scan returned invalid UTF-8") from error
+        raise ProfileError(
+            "bounded active-consumer Git scan returned invalid UTF-8"
+        ) from error
     if any(not _safe_path(item.as_posix()) for item in values):
         raise ProfileError("bounded active-consumer Git scan returned an unsafe path")
     return tuple(sorted(set(values)))
@@ -491,9 +500,7 @@ def _reviewed_evidence_findings(
                 "reviewed Foundation evidence requires complete bounded proof",
             )
         )
-    expected_sources = tuple(
-        sorted((source, *FOUNDATION_EVIDENCE_OWNER_PATHS))
-    )
+    expected_sources = tuple(sorted((source, *FOUNDATION_EVIDENCE_OWNER_PATHS)))
     if review_started and evidence.sources != expected_sources:
         findings.append(
             _finding(
@@ -564,9 +571,7 @@ def _reviewed_evidence_findings(
                 OBJECT_ID.fullmatch(line) for line in lines
             ):
                 expected_rollback = (
-                    ("git revert --no-commit " + " ".join(commits),)
-                    if commits
-                    else ()
+                    ("git revert --no-commit " + " ".join(commits),) if commits else ()
                 )
     if (
         expected_rollback is None
@@ -598,8 +603,10 @@ def _git_object_type(root: pathlib.Path, object_id: str) -> str | None:
 
 
 def _safe_path(value: object) -> bool:
-    return bool(metadata._safe_repo_path(value)) and isinstance(value, str) and not any(
-        marker in value for marker in "*?[]{}"
+    return (
+        bool(metadata._safe_repo_path(value))
+        and isinstance(value, str)
+        and not any(marker in value for marker in "*?[]{}")
     )
 
 
@@ -627,9 +634,7 @@ def _open_regular_repo_descriptor(root: pathlib.Path, relative_path: str) -> int
         return None
     parts = pathlib.PurePosixPath(relative_path).parts
     directory_flags = (
-        os.O_RDONLY
-        | getattr(os, "O_DIRECTORY", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
     )
     file_flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     parent_descriptor: int | None = None
@@ -678,9 +683,7 @@ def _read_regular_repo_bytes(
         if tracked.returncode != 0 or not tracked.stdout:
             return None
         modes = {
-            record.split(b" ", 1)[0]
-            for record in tracked.stdout.split(b"\0")
-            if record
+            record.split(b" ", 1)[0] for record in tracked.stdout.split(b"\0") if record
         }
         if not modes or not modes <= {b"100644", b"100755"}:
             return None
@@ -703,7 +706,11 @@ def _read_regular_repo_bytes(
             if total > limit:
                 return None
         after = os.fstat(descriptor)
-        if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+        if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+            after.st_size,
+            after.st_mtime_ns,
+            after.st_ctime_ns,
+        ):
             return None
         return b"".join(chunks)
     except OSError:
@@ -725,7 +732,9 @@ def _safe_path_text(value: pathlib.PurePosixPath | None) -> str | None:
     return None if value is None else value.as_posix()
 
 
-def _as_exact_mapping(value: object, fields: tuple[str, ...], label: str) -> dict[str, object]:
+def _as_exact_mapping(
+    value: object, fields: tuple[str, ...], label: str
+) -> dict[str, object]:
     if not isinstance(value, dict) or not all(isinstance(key, str) for key in value):
         raise ProfileError(f"{label} must be a string-keyed mapping")
     if tuple(value) != fields or set(value) != set(fields):
@@ -754,7 +763,6 @@ def _as_string_tuple(value: object, label: str) -> tuple[str, ...]:
 def _as_path_tuple(value: object, label: str) -> tuple[pathlib.PurePosixPath, ...]:
     values = _as_string_tuple(value, label)
     return tuple(pathlib.PurePosixPath(item) for item in values)
-
 
 
 def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
@@ -791,8 +799,12 @@ def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
     top = _as_exact_mapping(loaded, MANIFEST_TOP_LEVEL_FIELDS, "migration manifest")
     schema_version = top["schema_version"]
     if type(schema_version) is not int or schema_version not in {1, 2}:
-        raise ProfileError("migration manifest schema_version must be the integer 1 or 2")
-    entry_fields = MANIFEST_ENTRY_FIELDS_V2 if schema_version == 2 else MANIFEST_ENTRY_FIELDS
+        raise ProfileError(
+            "migration manifest schema_version must be the integer 1 or 2"
+        )
+    entry_fields = (
+        MANIFEST_ENTRY_FIELDS_V2 if schema_version == 2 else MANIFEST_ENTRY_FIELDS
+    )
     entries_value = top["entries"]
     if not isinstance(entries_value, list):
         raise ProfileError("migration manifest entries must be a list")
@@ -824,7 +836,9 @@ def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
                 source_path=pathlib.PurePosixPath(
                     _as_string(entry["source_path"], f"{label} source_path") or ""
                 ),
-                target_path=pathlib.PurePosixPath(target) if target is not None else None,
+                target_path=pathlib.PurePosixPath(target)
+                if target is not None
+                else None,
                 artifact_id=_as_string(
                     entry["artifact_id"], f"{label} artifact_id", nullable=True
                 ),
@@ -935,10 +949,6 @@ def _load_repo_migration_manifest(
     return _load_migration_manifest_text(source)
 
 
-
-
-
-
 def _repo_manifest_matches(
     root: pathlib.Path,
     relative_path: str,
@@ -946,8 +956,6 @@ def _repo_manifest_matches(
 ) -> bool:
     payload = _read_regular_repo_bytes(root, relative_path, require_tracked=True)
     return payload == expected.replace("\r\n", "\n").encode("utf-8")
-
-
 
 
 def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
@@ -971,7 +979,9 @@ def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
             "parent_ids": sorted(row.parent_ids),
             "disposition": row.disposition,
             "canonical_replacement": row.canonical_replacement,
-            "active_consumers": sorted(path.as_posix() for path in row.active_consumers),
+            "active_consumers": sorted(
+                path.as_posix() for path in row.active_consumers
+            ),
             "partition_plan": _safe_path_text(row.partition_plan),
             "preservation_class": row.preservation_class,
             "evidence": {
@@ -997,7 +1007,9 @@ def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
         "enforcement": document.enforcement,
         "entries": [
             row_mapping(row)
-            for row in sorted(document.entries, key=lambda item: item.source_path.as_posix())
+            for row in sorted(
+                document.entries, key=lambda item: item.source_path.as_posix()
+            )
         ],
     }
 
@@ -1105,23 +1117,19 @@ def _surface_class(path: str, mode: str, profiles: dict[str, object]) -> str:
         and suffix in {".sh", ".bash", ".zsh", ".py", ".js", ".mjs", ".ts"}
     ):
         return "executable-script"
-    if (
-        suffix
-        in {
-            ".yaml",
-            ".yml",
-            ".json",
-            ".jsonc",
-            ".toml",
-            ".ini",
-            ".conf",
-            ".config",
-            ".env",
-            ".example",
-            ".properties",
-        }
-        or name.startswith(".")
-    ):
+    if suffix in {
+        ".yaml",
+        ".yml",
+        ".json",
+        ".jsonc",
+        ".toml",
+        ".ini",
+        ".conf",
+        ".config",
+        ".env",
+        ".example",
+        ".properties",
+    } or name.startswith("."):
         return "configuration"
     return "unsupported-static"
 
@@ -1160,7 +1168,9 @@ def _surface_artifact_types(
     profile_map = profiles.get("profiles")
     registered = set(profile_map) if isinstance(profile_map, dict) else set()
     declared = frontmatter.get("type")
-    declared_type = declared if isinstance(declared, str) and declared in registered else None
+    declared_type = (
+        declared if isinstance(declared, str) and declared in registered else None
+    )
     if surface_class == "content-archive":
         return ("archive" if declared_type == "archive" else None), "archive"
     if surface_class == "readme":
@@ -1168,8 +1178,12 @@ def _surface_artifact_types(
     if surface_class == "generated-output":
         return "generated", "generated"
     if surface_class == "typed-example":
-        inferred = declared_type or metadata.infer_artifact_type(pathlib.Path(path), profiles)
-        inferred = inferred if inferred in registered and inferred != "unsupported" else None
+        inferred = declared_type or metadata.infer_artifact_type(
+            pathlib.Path(path), profiles
+        )
+        inferred = (
+            inferred if inferred in registered and inferred != "unsupported" else None
+        )
         return inferred, inferred
     return None, None
 
@@ -1200,12 +1214,16 @@ def _generate_manifest_skeleton(
     wave_contract = _wave_mapping(contract, wave)
     pinned_baseline = wave_contract.get("baseline_commit")
     if pinned_baseline is not None and pinned_baseline != baseline_commit:
-        raise ProfileError("baseline_ref must resolve to the wave's pinned baseline_commit")
+        raise ProfileError(
+            "baseline_ref must resolve to the wave's pinned baseline_commit"
+        )
     active_profiles = _manifest_profiles(profiles)
     source_roots = wave_contract.get("source_roots")
     direct_source_paths = wave_contract.get("direct_source_paths")
     if source_roots is not None or direct_source_paths is not None:
-        if not isinstance(source_roots, list) or not all(isinstance(item, str) for item in source_roots):
+        if not isinstance(source_roots, list) or not all(
+            isinstance(item, str) for item in source_roots
+        ):
             raise ProfileError("wave source_roots must be a string list")
         if not isinstance(direct_source_paths, list) or not all(
             isinstance(item, str) for item in direct_source_paths
@@ -1235,7 +1253,9 @@ def _generate_manifest_skeleton(
             )
             before_status = frontmatter.get("status")
             status_before = before_status if isinstance(before_status, str) else None
-            status_after = "archived" if surface_class == "content-archive" else status_before
+            status_after = (
+                "archived" if surface_class == "content-archive" else status_before
+            )
             identity_type = artifact_type_after or artifact_type_before or "unsupported"
             parent_ids = frontmatter.get("parent_ids")
             rows.append(
@@ -1347,8 +1367,6 @@ def generate_manifest_skeleton(
     )
 
 
-
-
 def _profile_required_fields(
     profiles: dict[str, object], artifact_type: str
 ) -> set[str]:
@@ -1409,10 +1427,7 @@ def _resolve_canonical_replacement(
         ]
     candidate = candidates[0]
     candidate_path = candidate.path.as_posix()
-    if disposition == "merge" and (
-        target is None
-        or candidate_path != target
-    ):
+    if disposition == "merge" and (target is None or candidate_path != target):
         return None, [
             _finding(
                 source,
@@ -1430,11 +1445,14 @@ def _resolve_canonical_replacement(
                 "canonical replacement must be distinct from the removed source and archive target",
             )
         ]
-    if (
-        candidate.artifact_type
-        in {"archive", "generated", "readme", "repo-support", "template-source", "unsupported"}
-        or candidate.metadata.get("status") not in {"active", "completed"}
-    ):
+    if candidate.artifact_type in {
+        "archive",
+        "generated",
+        "readme",
+        "repo-support",
+        "template-source",
+        "unsupported",
+    } or candidate.metadata.get("status") not in {"active", "completed"}:
         return None, [
             _finding(
                 source,
@@ -1569,9 +1587,7 @@ def _baseline_merge_owner_findings(
     common = profiles.get("common")
     transitions = common.get("transitions") if isinstance(common, dict) else None
     allowed_next = (
-        transitions.get(baseline_status)
-        if isinstance(transitions, dict)
-        else None
+        transitions.get(baseline_status) if isinstance(transitions, dict) else None
     )
     transition_valid = baseline_status == current_status or (
         isinstance(allowed_next, list) and current_status in allowed_next
@@ -1608,9 +1624,7 @@ def _baseline_merge_owner_findings(
         )
 
     attestations = [
-        candidate
-        for candidate in entries
-        if complete_attestation(candidate)
+        candidate for candidate in entries if complete_attestation(candidate)
     ]
     if len(attestations) == 1:
         return []
@@ -1802,9 +1816,7 @@ def _surface_replacement_record(
             text = payload.decode("utf-8")
         except UnicodeDecodeError:
             continue
-        record = metadata._record_from_text(
-            pathlib.Path(path), text, profiles=profiles
-        )
+        record = metadata._record_from_text(pathlib.Path(path), text, profiles=profiles)
         if (
             record.parse_error is not None
             or not record.frontmatter_present
@@ -1858,10 +1870,10 @@ def _surface_replacement_findings(
         ]
     if replacement is None:
         return []
-    if (
-        document.schema_version == 2
-        and row.surface_class in {"runtime", "configuration"}
-    ):
+    if document.schema_version == 2 and row.surface_class in {
+        "runtime",
+        "configuration",
+    }:
         return (
             []
             if _surface_native_replacement_valid(
@@ -1920,8 +1932,7 @@ def _surface_rollback_valid(root: pathlib.Path, commands: tuple[str, ...]) -> bo
             return False
         commits = tokens[3:]
         if any(
-            not OBJECT_ID.fullmatch(commit)
-            or _verified_commit(root, commit) != commit
+            not OBJECT_ID.fullmatch(commit) or _verified_commit(root, commit) != commit
             for commit in commits
         ):
             return False
@@ -1943,9 +1954,10 @@ def _surface_partition_plan_findings(
         return []
     source = row.source_path.as_posix()
     partition = row.partition_plan.as_posix()
-    if not _safe_path(partition) or metadata.infer_artifact_type(
-        pathlib.Path(partition), profiles
-    ) != "plan":
+    if (
+        not _safe_path(partition)
+        or metadata.infer_artifact_type(pathlib.Path(partition), profiles) != "plan"
+    ):
         return [
             _finding(
                 source,
@@ -1955,9 +1967,9 @@ def _surface_partition_plan_findings(
         ]
     current_records, current_payloads = _canonical_current_snapshot(root, profiles)
     payload = current_payloads.get(partition)
-    plan_record = {
-        record.path.as_posix(): record for record in current_records
-    }.get(partition)
+    plan_record = {record.path.as_posix(): record for record in current_records}.get(
+        partition
+    )
     if payload is None or plan_record is None:
         return [
             _finding(
@@ -1984,9 +1996,7 @@ def _surface_partition_plan_findings(
                 profiles,
                 metadata.build_manifest(current_records),
             ),
-            *metadata.validate_body_contract(
-                plan_record, text, profiles, True
-            ),
+            *metadata.validate_body_contract(plan_record, text, profiles, True),
         )
         if finding.severity == "error"
     ]
@@ -2023,8 +2033,7 @@ def _sample_service_predecessor_row_valid(
 
     return (
         predecessor_row.source_path.as_posix() == SAMPLE_SERVICE_FIXTURE_PATH
-        and _safe_path_text(predecessor_row.target_path)
-        == SAMPLE_SERVICE_FIXTURE_PATH
+        and _safe_path_text(predecessor_row.target_path) == SAMPLE_SERVICE_FIXTURE_PATH
         and predecessor_row.artifact_id == "spec:sample-web-service"
         and predecessor_row.artifact_type_before is None
         and predecessor_row.artifact_type_after == "spec"
@@ -2094,8 +2103,10 @@ def _surface_result_state_findings(
         )
     if row.disposition == "delete":
         return findings, not findings
-    if target is None or not _safe_path(target) or not _surface_regular_result_exists(
-        root, target
+    if (
+        target is None
+        or not _safe_path(target)
+        or not _surface_regular_result_exists(root, target)
     ):
         findings.append(
             _finding(
@@ -2206,10 +2217,10 @@ def _surface_result_state_findings(
         target_record,
         row,
     )
-    sample_predecessor_status_valid = (
-        target != SAMPLE_SERVICE_FIXTURE_PATH
-        or (row.status_before, row.status_after) == ("active", "active")
-    )
+    sample_predecessor_status_valid = target != SAMPLE_SERVICE_FIXTURE_PATH or (
+        row.status_before,
+        row.status_after,
+    ) == ("active", "active")
     sample_predecessor_parents_valid = (
         target != SAMPLE_SERVICE_FIXTURE_PATH
         or row.parent_ids == ("spec:133-target-surface-contract-convergence",)
@@ -2233,12 +2244,8 @@ def _surface_result_state_findings(
                 "result target identity differs from manifest truth",
             )
         )
-    if (
-        not sample_predecessor_status_valid
-        or (
-            normalized_status != row.status_after
-            and not sample_successor_handoff
-        )
+    if not sample_predecessor_status_valid or (
+        normalized_status != row.status_after and not sample_successor_handoff
     ):
         findings.append(
             _finding(
@@ -2335,7 +2342,6 @@ def _surface_result_state_findings(
     return findings, not findings
 
 
-
 def _changed_path_sets(root: pathlib.Path, base_ref: str) -> tuple[set[str], set[str]]:
     """Return current changed paths and all relation-trigger paths NUL-safely."""
 
@@ -2363,7 +2369,9 @@ def _changed_path_sets(root: pathlib.Path, base_ref: str) -> tuple[set[str], set
     if changed.returncode != 0 or untracked.returncode != 0:
         raise ProfileError("cannot determine impacted Markdown paths")
     try:
-        tokens = [token.decode("utf-8") for token in changed.stdout.split(b"\0") if token]
+        tokens = [
+            token.decode("utf-8") for token in changed.stdout.split(b"\0") if token
+        ]
         untracked_paths = [
             token.decode("utf-8") for token in untracked.stdout.split(b"\0") if token
         ]
@@ -2402,8 +2410,6 @@ def _changed_record_paths(root: pathlib.Path, base_ref: str) -> set[str]:
     return _changed_path_sets(root, base_ref)[1]
 
 
-
-
 def _partition_plan_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -2418,9 +2424,10 @@ def _partition_plan_findings(
         return []
     source = row.source_path.as_posix()
     partition = row.partition_plan.as_posix()
-    if not _safe_path(partition) or metadata.infer_artifact_type(
-        pathlib.Path(partition), profiles
-    ) != "plan":
+    if (
+        not _safe_path(partition)
+        or metadata.infer_artifact_type(pathlib.Path(partition), profiles) != "plan"
+    ):
         return [
             _finding(
                 source,
@@ -2428,9 +2435,7 @@ def _partition_plan_findings(
                 "partition plan must be a safe tracked regular canonical Plan",
             )
         ]
-    tracked_payload = _read_regular_repo_bytes(
-        root, partition, require_tracked=True
-    )
+    tracked_payload = _read_regular_repo_bytes(root, partition, require_tracked=True)
     if tracked_payload is None:
         return [
             _finding(
@@ -2440,9 +2445,7 @@ def _partition_plan_findings(
             )
         ]
     if records is None or payloads is None:
-        current_records, current_payloads = _canonical_current_snapshot(
-            root, profiles
-        )
+        current_records, current_payloads = _canonical_current_snapshot(root, profiles)
     else:
         current_records = tuple(records)
         current_payloads = dict(payloads)
@@ -2521,14 +2524,6 @@ def _partition_plan_findings(
     return []
 
 
-
-
-
-
-
-
-
-
 def _safe_archive_value(record: Record, key: str) -> str | None:
     value = record.metadata.get(key)
     return value if isinstance(value, str) and value else None
@@ -2553,25 +2548,41 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
     )
     if preservation == "git-history" and snapshot_fields_present:
         findings.append(
-            _finding(path, "archive-snapshot-forbidden", "git-history forbids snapshot fields")
+            _finding(
+                path,
+                "archive-snapshot-forbidden",
+                "git-history forbids snapshot fields",
+            )
         )
     if preservation is None:
         findings.append(
-            _finding(path, "archive-preservation-missing", "archive preservation class is unavailable")
+            _finding(
+                path,
+                "archive-preservation-missing",
+                "archive preservation class is unavailable",
+            )
         )
     if commit is None:
         findings.append(
-            _finding(path, "archive-commit-missing", "archive commit provenance is unavailable")
+            _finding(
+                path,
+                "archive-commit-missing",
+                "archive commit provenance is unavailable",
+            )
         )
         return sorted(set(findings))
     if not OBJECT_ID.fullmatch(commit) or _git_object_type(root, commit) != "commit":
         findings.append(
-            _finding(path, "archive-commit-invalid", "archived commit is not a commit object")
+            _finding(
+                path, "archive-commit-invalid", "archived commit is not a commit object"
+            )
         )
         return sorted(set(findings))
     if blob is None:
         findings.append(
-            _finding(path, "archive-blob-missing", "archive blob provenance is unavailable")
+            _finding(
+                path, "archive-blob-missing", "archive blob provenance is unavailable"
+            )
         )
         return sorted(set(findings))
     if not OBJECT_ID.fullmatch(blob) or _git_object_type(root, blob) != "blob":
@@ -2581,24 +2592,36 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
         return sorted(set(findings))
     if archived_from is None:
         findings.append(
-            _finding(path, "archive-source-missing", "archived source path is unavailable")
+            _finding(
+                path, "archive-source-missing", "archived source path is unavailable"
+            )
         )
         return sorted(set(findings))
     if not _safe_path(archived_from):
         findings.append(
-            _finding(path, "archive-source-path-invalid", "archived source path is not repository-safe")
+            _finding(
+                path,
+                "archive-source-path-invalid",
+                "archived source path is not repository-safe",
+            )
         )
         return sorted(set(findings))
     resolved = _run_git(root, ["rev-parse", f"{commit}:{archived_from}"])
     if resolved.returncode != 0 or resolved.stdout.strip() != blob:
         findings.append(
-            _finding(path, "archive-blob-mismatch", "commit path does not resolve to archived blob")
+            _finding(
+                path,
+                "archive-blob-mismatch",
+                "commit path does not resolve to archived blob",
+            )
         )
         return sorted(set(findings))
     blob_bytes_result = _run_git(root, ["cat-file", "blob", blob], text=False)
     if blob_bytes_result.returncode != 0:
         findings.append(
-            _finding(path, "archive-blob-invalid", "archived blob bytes are unavailable")
+            _finding(
+                path, "archive-blob-invalid", "archived blob bytes are unavailable"
+            )
         )
         return sorted(set(findings))
     blob_sha256 = hashlib.sha256(blob_bytes_result.stdout).hexdigest()
@@ -2608,7 +2631,11 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
             if isinstance(content_sha256, str)
             else None
         )
-        if snapshot_path != expected_path or snapshot_path is None or not _safe_path(snapshot_path):
+        if (
+            snapshot_path != expected_path
+            or snapshot_path is None
+            or not _safe_path(snapshot_path)
+        ):
             findings.append(
                 _finding(
                     path,
@@ -2644,7 +2671,9 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
                     "snapshot and archived blob do not match the declared digest",
                 )
             )
-        if any(pattern.search(snapshot_bytes) for pattern in SENSITIVE_PAYLOAD_PATTERNS):
+        if any(
+            pattern.search(snapshot_bytes) for pattern in SENSITIVE_PAYLOAD_PATTERNS
+        ):
             findings.append(
                 _finding(
                     path,
@@ -2653,40 +2682,6 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
                 )
             )
     return sorted(set(findings))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _rooted(root: pathlib.Path, path: pathlib.Path) -> pathlib.Path:
@@ -2709,7 +2704,9 @@ def _tracked_corpus_paths(
     if result.returncode != 0:
         raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
     common = profiles.get("common")
-    excluded_values = common.get("inventory_excludes") if isinstance(common, dict) else None
+    excluded_values = (
+        common.get("inventory_excludes") if isinstance(common, dict) else None
+    )
     excluded = set(excluded_values) if isinstance(excluded_values, list) else set()
     candidates: list[str] = []
     seen: set[str] = set()
@@ -2722,9 +2719,7 @@ def _tracked_corpus_paths(
             mode, _object_id, stage = raw_header.split()
             path = raw_path.decode("utf-8")
         except (ValueError, UnicodeDecodeError):
-            raise _CorpusSafetyError(
-                "corpus", "corpus-markdown-path-invalid"
-            ) from None
+            raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
         if not path.endswith(".md") or not path.startswith(target_prefixes):
             continue
         if not _safe_path(path):
@@ -2788,35 +2783,25 @@ def _worktree_removed_markdown_paths(root: pathlib.Path) -> frozenset[str]:
         try:
             status_code = tokens[index].decode("ascii")
         except UnicodeDecodeError:
-            raise _CorpusSafetyError(
-                "corpus", "corpus-markdown-path-invalid"
-            ) from None
+            raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
         index += 1
         path_token: bytes
         if status_code.startswith("R"):
             if index + 1 >= len(tokens):
-                raise _CorpusSafetyError(
-                    "corpus", "corpus-markdown-path-invalid"
-                )
+                raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
             path_token = tokens[index]
             index += 2
         elif status_code.startswith("D"):
             if index >= len(tokens):
-                raise _CorpusSafetyError(
-                    "corpus", "corpus-markdown-path-invalid"
-                )
+                raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
             path_token = tokens[index]
             index += 1
         else:
-            raise _CorpusSafetyError(
-                "corpus", "corpus-markdown-path-invalid"
-            )
+            raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
         try:
             path = path_token.decode("utf-8")
         except UnicodeDecodeError:
-            raise _CorpusSafetyError(
-                "corpus", "corpus-markdown-path-invalid"
-            ) from None
+            raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
         if not _safe_path(path):
             raise _CorpusSafetyError(path, "corpus-markdown-path-invalid")
         removed.add(path)
@@ -2837,7 +2822,9 @@ def _untracked_corpus_paths(
     if result.returncode != 0:
         raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
     common = profiles.get("common")
-    excluded_values = common.get("inventory_excludes") if isinstance(common, dict) else None
+    excluded_values = (
+        common.get("inventory_excludes") if isinstance(common, dict) else None
+    )
     excluded = set(excluded_values) if isinstance(excluded_values, list) else set()
     target_prefixes = tuple(metadata.TARGET_MARKDOWN_PREFIXES)
     candidates: list[str] = []
@@ -2847,9 +2834,7 @@ def _untracked_corpus_paths(
         try:
             path = raw_path.decode("utf-8")
         except UnicodeDecodeError:
-            raise _CorpusSafetyError(
-                "corpus", "corpus-markdown-path-invalid"
-            ) from None
+            raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
         if not path.startswith(target_prefixes):
             continue
         if not _safe_path(path):
@@ -2893,9 +2878,7 @@ def _safe_corpus_snapshot(
     paths = tuple(sorted(tracked | set(untracked_paths)))
     payloads: dict[str, bytes] = {}
     for path in paths:
-        payload = _read_regular_repo_bytes(
-            root, path, require_tracked=path in tracked
-        )
+        payload = _read_regular_repo_bytes(root, path, require_tracked=path in tracked)
         if payload is None:
             raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
         payloads[path] = payload

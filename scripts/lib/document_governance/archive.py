@@ -24,7 +24,9 @@ from scripts.lib.document_governance.git_provenance import (
 )
 
 
-FROZEN_MIGRATION_SHA256 = "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
+FROZEN_MIGRATION_SHA256 = (
+    "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
+)
 APPROVED_MIGRATION_COMMIT = "494065806794980080b081439298d7b534d10803"
 ONE_TIME_VERIFIER_PATHS = (
     "scripts/validation/check-task4-migration.py",
@@ -95,12 +97,21 @@ _TOMBSTONE_FIELDS = frozenset(
 # sequence number carried by the tombstone filename.
 _RETIRED_IDENTITY_ROOTS = (
     ("docs/03.specs/", re.compile(r"docs/03\.specs/(?P<number>[0-9]{3,4})-"), "SPEC"),
-    ("docs/90.references/research/",
-     re.compile(r"docs/90\.references/research/(?P<number>[0-9]{4})-"), "RES"),
-    ("docs/90.references/audits/",
-     re.compile(r"docs/90\.references/audits/(?P<number>[0-9]{4})-"), "AUD"),
-    ("docs/90.references/data/",
-     re.compile(r"docs/90\.references/data/(?P<number>[0-9]{4})-"), "DATA"),
+    (
+        "docs/90.references/research/",
+        re.compile(r"docs/90\.references/research/(?P<number>[0-9]{4})-"),
+        "RES",
+    ),
+    (
+        "docs/90.references/audits/",
+        re.compile(r"docs/90\.references/audits/(?P<number>[0-9]{4})-"),
+        "AUD",
+    ),
+    (
+        "docs/90.references/data/",
+        re.compile(r"docs/90\.references/data/(?P<number>[0-9]{4})-"),
+        "DATA",
+    ),
 )
 _RETIRED_ROLE_PREFIXES = (("/policies/", "POL"), ("/runbooks/", "RUN"))
 
@@ -117,6 +128,8 @@ def tombstone_identity(retired: str, number: str) -> str:
         if marker in retired:
             return f"tomb-{prefix}-{number}"
     return f"tomb-GDE-{number}"
+
+
 APPROVED_BASELINE_RECOVERY_PATHS = frozenset(
     pathlib.PurePosixPath(path)
     for path in (
@@ -229,7 +242,9 @@ def _snapshot(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
     )
 
 
-def _open_directory_at(parent: int, name: str, label: str) -> tuple[int, tuple[int, ...]]:
+def _open_directory_at(
+    parent: int, name: str, label: str
+) -> tuple[int, tuple[int, ...]]:
     descriptor: int | None = None
     try:
         before = os.stat(name, dir_fd=parent, follow_symlinks=False)
@@ -248,7 +263,9 @@ def _open_directory_at(parent: int, name: str, label: str) -> tuple[int, tuple[i
     return descriptor, _snapshot(opened)
 
 
-def _open_directory_path(path: pathlib.Path, label: str) -> tuple[int, int, str, tuple[int, ...]]:
+def _open_directory_path(
+    path: pathlib.Path, label: str
+) -> tuple[int, int, str, tuple[int, ...]]:
     absolute = pathlib.Path(os.path.abspath(path))
     if not absolute.is_absolute() or len(absolute.parts) < 2:
         raise ValueError(f"{label} must be an absolute contained path")
@@ -280,7 +297,11 @@ def _verify_directory(
         opened = os.fstat(descriptor)
     except OSError as error:
         raise ValueError(f"{label} changed while loading: {error}") from error
-    if stat.S_ISLNK(linked.st_mode) or _snapshot(linked) != snapshot or _snapshot(opened) != snapshot:
+    if (
+        stat.S_ISLNK(linked.st_mode)
+        or _snapshot(linked) != snapshot
+        or _snapshot(opened) != snapshot
+    ):
         raise ValueError(f"{label} changed while loading")
 
 
@@ -320,7 +341,10 @@ def _read_regular_at(
     try:
         descriptor = os.open(
             name,
-            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK,
+            os.O_RDONLY
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+            | os.O_NONBLOCK,
             dir_fd=parent,
         )
     except OSError as error:
@@ -341,7 +365,9 @@ def _read_regular_at(
             raise ValueError(f"document grew during its bounded read: {label}")
         after = os.fstat(descriptor)
         linked = os.stat(name, dir_fd=parent, follow_symlinks=False)
-        if _snapshot(after) != _snapshot(before) or _snapshot(linked) != _snapshot(before):
+        if _snapshot(after) != _snapshot(before) or _snapshot(linked) != _snapshot(
+            before
+        ):
             raise ValueError(f"document changed during its bounded read: {label}")
         return b"".join(chunks)
     finally:
@@ -349,12 +375,20 @@ def _read_regular_at(
 
 
 def _read_regular(path: pathlib.Path) -> bytes:
-    parent, descriptor, name, snapshot = _open_directory_path(path.parent, f"{path} parent")
+    parent, descriptor, name, snapshot = _open_directory_path(
+        path.parent, f"{path} parent"
+    )
     try:
-        entries = dict(_bounded_entries(descriptor, label=f"{path} parent", limit=MAX_ARCHIVE_ENTRIES))
+        entries = dict(
+            _bounded_entries(
+                descriptor, label=f"{path} parent", limit=MAX_ARCHIVE_ENTRIES
+            )
+        )
         if path.name not in entries:
             raise ValueError(f"document is missing: {path}")
-        raw = _read_regular_at(descriptor, path.name, str(path), expected=entries[path.name])
+        raw = _read_regular_at(
+            descriptor, path.name, str(path), expected=entries[path.name]
+        )
         _verify_directory(parent, name, descriptor, snapshot, f"{path} parent")
         return raw
     finally:
@@ -412,14 +446,18 @@ def _load_archive_yaml(source: str) -> object:
 
 
 def _migration_path(root: pathlib.Path) -> pathlib.Path:
-    return root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+    return (
+        root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+    )
 
 
 def validate_compacted_migration(document: object) -> None:
     """Validate the durable schema independently of pending execution evidence."""
 
     if not isinstance(document, dict) or set(document) != {
-        "schema_version", "migration_id", "rows"
+        "schema_version",
+        "migration_id",
+        "rows",
     }:
         raise ValueError("compacted Migration top-level fields are invalid")
     if type(document["schema_version"]) is not int or document["schema_version"] != 3:
@@ -465,7 +503,9 @@ def _parse_migration_document(raw: bytes) -> dict[str, Any]:
     try:
         document = _load_archive_yaml(payload)
     except (yaml.YAMLError, ValueError) as error:
-        raise ValueError("Migration 0003 YAML is invalid or has duplicate keys") from error
+        raise ValueError(
+            "Migration 0003 YAML is invalid or has duplicate keys"
+        ) from error
     if not isinstance(document, dict) or document.get("migration_id") != "mig-0003":
         raise ValueError("Migration 0003 execution ledger is invalid")
     rows = document.get("rows")
@@ -478,7 +518,8 @@ def _approved_migration_document(root: pathlib.Path) -> dict[str, Any]:
     """Read the reviewed execution selection, never current policy, from Git."""
 
     raw = HistoricalDocument(
-        root, APPROVED_MIGRATION_COMMIT,
+        root,
+        APPROVED_MIGRATION_COMMIT,
         "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
     ).read_bytes()
     if hashlib.sha256(raw).hexdigest() != FROZEN_MIGRATION_SHA256:
@@ -488,7 +529,10 @@ def _approved_migration_document(root: pathlib.Path) -> dict[str, Any]:
 
 def _mapping_selection(document: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [
-        {key: row[key] for key in ("source_path", "target_path", "artifact_id", "action")}
+        {
+            key: row[key]
+            for key in ("source_path", "target_path", "artifact_id", "action")
+        }
         for row in document["rows"]
     ]
 
@@ -498,29 +542,27 @@ def _compact_mapping_selection(document: Mapping[str, Any]) -> list[dict[str, An
 
     selected = _mapping_selection(document)
     task_targets = {
-        "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md":
-            "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
-            "tsk-0001-research-pack-extension.md",
-        "docs/03.specs/0134-agent-governance-canonical-convergence/task.md":
-            "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
-            "tsk-0001-canonical-convergence.md",
-        "docs/03.specs/0135-target-surface-delta-convergence/task.md":
-            "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
-            "tsk-0001-delta-convergence.md",
-        "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md":
-            "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
-            "tsk-0001-taxonomy-convergence.md",
-        "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md":
-            "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
-            "tsk-0001-reference-disposition.md",
+        "docs/03.specs/0123-agentic-engineering-audit-remediation/task.md": "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/"
+        "tsk-0001-research-pack-extension.md",
+        "docs/03.specs/0134-agent-governance-canonical-convergence/task.md": "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/"
+        "tsk-0001-canonical-convergence.md",
+        "docs/03.specs/0135-target-surface-delta-convergence/task.md": "docs/03.specs/0135-target-surface-delta-convergence/tasks/"
+        "tsk-0001-delta-convergence.md",
+        "docs/03.specs/0136-sdlc-taxonomy-convergence/task.md": "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/"
+        "tsk-0001-taxonomy-convergence.md",
+        "docs/03.specs/0152-deleted-reference-leaf-disposition/task.md": "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/"
+        "tsk-0001-reference-disposition.md",
     }
     row_ids = {f"mig-0003-r{number:04d}" for number in (233, 239, 242, 245, 248)}
     for original, row in zip(document["rows"], selected, strict=True):
         if original["row_id"] in row_ids:
             row["target_path"] = task_targets[row["target_path"]]
     omitted = {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
-    return [row for original, row in zip(document["rows"], selected, strict=True)
-            if original["row_id"] not in omitted]
+    return [
+        row
+        for original, row in zip(document["rows"], selected, strict=True)
+        if original["row_id"] not in omitted
+    ]
 
 
 def _execution_selection(document: dict[str, Any]) -> dict[str, Any]:
@@ -542,18 +584,40 @@ def _migration_document(root: pathlib.Path) -> dict[str, Any]:
     if document.get("schema_version") == 3:
         validate_compacted_migration(document)
         additions = [
-            {"source_path": path, "target_path": None, "artifact_id": None, "action": "delete"}
+            {
+                "source_path": path,
+                "target_path": None,
+                "artifact_id": None,
+                "action": "delete",
+            }
             for path in ONE_TIME_VERIFIER_PATHS
         ]
         additions.extend(
-            {"source_path": path, "target_path": None, "artifact_id": identity, "action": "delete"}
+            {
+                "source_path": path,
+                "target_path": None,
+                "artifact_id": identity,
+                "action": "delete",
+            }
             for path, identity in HISTORICAL_SESSION_SPECS.items()
         )
-        if _mapping_selection(document) != [*_compact_mapping_selection(approved), *additions]:
-            raise ValueError("Migration 0003 compact selection differs from approved frozen digest")
-        if any(row["recovery_commit"] != APPROVED_MIGRATION_COMMIT for row in document["rows"][-len(additions):]):
-            raise ValueError("terminal addition recovery must use its approved existing commit")
-        recoveries = [(row["source_path"], row["recovery_commit"]) for row in document["rows"]]
+        if _mapping_selection(document) != [
+            *_compact_mapping_selection(approved),
+            *additions,
+        ]:
+            raise ValueError(
+                "Migration 0003 compact selection differs from approved frozen digest"
+            )
+        if any(
+            row["recovery_commit"] != APPROVED_MIGRATION_COMMIT
+            for row in document["rows"][-len(additions) :]
+        ):
+            raise ValueError(
+                "terminal addition recovery must use its approved existing commit"
+            )
+        recoveries = [
+            (row["source_path"], row["recovery_commit"]) for row in document["rows"]
+        ]
     else:
         if (
             type(document.get("schema_version")) is not int
@@ -561,26 +625,38 @@ def _migration_document(root: pathlib.Path) -> dict[str, Any]:
             or set(document) != _MIGRATION_FIELDS
             or _execution_selection(document) != _execution_selection(approved)
         ):
-            raise ValueError("Migration 0003 execution selection differs from approved frozen digest")
+            raise ValueError(
+                "Migration 0003 execution selection differs from approved frozen digest"
+            )
         for row in document["rows"]:
             if row["status"] == "planned" and row["recovery_commit"] is None:
                 continue
-            if row["status"] != "completed" or not recovery_commit_is_valid(row["recovery_commit"]):
+            if row["status"] != "completed" or not recovery_commit_is_valid(
+                row["recovery_commit"]
+            ):
                 raise ValueError("Migration 0003 completed row requires recovery")
             recoveries.append((row["source_path"], row["recovery_commit"]))
     for offset in range(0, len(recoveries), 512):
-        proofs = verify_recovery_blobs_batch(recoveries[offset:offset + 512], repo_root=root)
+        proofs = verify_recovery_blobs_batch(
+            recoveries[offset : offset + 512], repo_root=root
+        )
         if not all(proof.is_regular_blob for proof in proofs):
-            raise ValueError("Migration 0003 recovery must resolve to an existing regular Git blob")
+            raise ValueError(
+                "Migration 0003 recovery must resolve to an existing regular Git blob"
+            )
     return document
 
 
-def migration_rows_for_task(root: pathlib.Path, task: int) -> tuple[dict[str, Any], ...]:
+def migration_rows_for_task(
+    root: pathlib.Path, task: int
+) -> tuple[dict[str, Any], ...]:
     """Select native rows using the reviewed historical ownership, not invented fields."""
 
     document = _migration_document(root)
     approved = _approved_migration_document(root)
-    sources = {row["source_path"] for row in approved["rows"] if row["owner_task"] == task}
+    sources = {
+        row["source_path"] for row in approved["rows"] if row["owner_task"] == task
+    }
     return tuple(row for row in document["rows"] if row["source_path"] in sources)
 
 
@@ -592,17 +668,16 @@ def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
         if len(rows) != 275:
             raise ValueError("Task 10 compact selection is incomplete")
         return rows
-    expected_row_ids = tuple(
-        f"mig-0003-r{number:04d}"
-        for number in range(566, 841)
-    )
+    expected_row_ids = tuple(f"mig-0003-r{number:04d}" for number in range(566, 841))
     if (
         len(rows) != 275
         or tuple(row.get("row_id") for row in rows) != expected_row_ids
         or rows[0].get("row_id") != TASK10_FIRST_ROW
         or rows[-1].get("row_id") != TASK10_LAST_ROW
     ):
-        raise ValueError("Task 10 Migration row range is not the approved 275-row selection")
+        raise ValueError(
+            "Task 10 Migration row range is not the approved 275-row selection"
+        )
     for row in rows:
         source = _safe_path(row.get("source_path"))
         target_value = row.get("target_path")
@@ -615,7 +690,10 @@ def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
             or action not in {"rename", "delete"}
             or (action == "rename" and target is None)
             or (action == "delete" and target_value is not None)
-            or (target is not None and not target.as_posix().startswith("docs/98.archive/"))
+            or (
+                target is not None
+                and not target.as_posix().startswith("docs/98.archive/")
+            )
             or row.get("owner_task") != 10
             or row.get("source_kind") not in {"tracked", "planned-output"}
             or (
@@ -629,7 +707,10 @@ def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
             or not isinstance(consumers, list)
             or any(_safe_path(consumer) is None for consumer in consumers)
             or row.get("artifact_id") is not None
-            and (not isinstance(row.get("artifact_id"), str) or not row.get("artifact_id"))
+            and (
+                not isinstance(row.get("artifact_id"), str)
+                or not row.get("artifact_id")
+            )
             or row.get("status") not in {"planned", "completed"}
         ):
             raise ValueError("Task 10 Migration row semantics are invalid")
@@ -684,7 +765,11 @@ def _parse_tombstone_text(
     metadata, body = _frontmatter(text)
     retired = _safe_path(_code_value(_section(body, "Retired Path")))
     replacement_text = _section(body, "Replacement")
-    replacement = None if replacement_text == "none" else _safe_path(_code_value(replacement_text))
+    replacement = (
+        None
+        if replacement_text == "none"
+        else _safe_path(_code_value(replacement_text))
+    )
     reason = _section(body, "Reason")
     commit = _code_value(_section(body, "Recovery Commit"))
     traceability = _section(body, "Traceability")
@@ -696,11 +781,10 @@ def _parse_tombstone_text(
         and metadata.get("type") == "archive/tombstone"
         and metadata.get("status") == "completed"
         and metadata.get("artifact_id")
-        == tombstone_identity(
-            retired.as_posix() if retired is not None else "", number
-        )
+        == tombstone_identity(retired.as_posix() if retired is not None else "", number)
         and isinstance(metadata.get("parent_ids"), list)
-        and headings == ("Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability")
+        and headings
+        == ("Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability")
         and retired is not None
         and (replacement_text == "none" or replacement is not None)
         and bool(reason)
@@ -711,7 +795,9 @@ def _parse_tombstone_text(
             or "98.archive/README.md" in traceability
             or "98.archive/migrations/" in traceability
         )
-        and not re.search(r"(?i)archived_blob|snapshot(?:_path|_count)|line[-_ ]sha", text)
+        and not re.search(
+            r"(?i)archived_blob|snapshot(?:_path|_count)|line[-_ ]sha", text
+        )
     )
     if retired is None or not recovery_commit_is_valid(commit):
         raise ValueError(f"invalid tombstone recovery identity: {relative}")
@@ -728,19 +814,25 @@ def _parse_tombstone_text(
 
 
 def _parse_tombstone(path: pathlib.Path, archive_root: pathlib.Path) -> TombstoneRecord:
-    relative = pathlib.PurePosixPath(path.relative_to(archive_root.parent.parent).as_posix())
+    relative = pathlib.PurePosixPath(
+        path.relative_to(archive_root.parent.parent).as_posix()
+    )
     return _parse_tombstone_text(_decode_document(path), relative, path.name)
 
 
 def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
-    parent, root_fd, root_name, root_snapshot = _open_directory_path(archive_root, "Stage 98")
+    parent, root_fd, root_name, root_snapshot = _open_directory_path(
+        archive_root, "Stage 98"
+    )
     migrations_fd: int | None = None
     tombstones_fd: int | None = None
     try:
         root_rows = _bounded_entries(root_fd, label="Stage 98", limit=MAX_ROOT_ENTRIES)
         entries = tuple(name for name, _ in root_rows)
         if entries != ("README.md", "migrations", "tombstones"):
-            raise ValueError("Stage 98 root must contain only README.md, migrations/, and tombstones/")
+            raise ValueError(
+                "Stage 98 root must contain only README.md, migrations/, and tombstones/"
+            )
         root_metadata = dict(root_rows)
         if not stat.S_ISREG(root_metadata["README.md"].st_mode):
             raise ValueError("Stage 98 README.md must be a regular file")
@@ -761,7 +853,9 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
                 or not stat.S_ISREG(metadata.st_mode)
                 or _MIGRATION_NAME.fullmatch(filename) is None
             ):
-                raise ValueError("Stage 98 migrations must be prefixless numbered Markdown files")
+                raise ValueError(
+                    "Stage 98 migrations must be prefixless numbered Markdown files"
+                )
             raw = _read_regular_at(
                 migrations_fd,
                 filename,
@@ -769,9 +863,15 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
                 expected=metadata,
             )
             total_bytes += len(raw)
-            migrations.append(pathlib.PurePosixPath(f"docs/98.archive/migrations/{filename}"))
+            migrations.append(
+                pathlib.PurePosixPath(f"docs/98.archive/migrations/{filename}")
+            )
         _verify_directory(
-            root_fd, "migrations", migrations_fd, migrations_snapshot, "Stage 98 migrations"
+            root_fd,
+            "migrations",
+            migrations_fd,
+            migrations_snapshot,
+            "Stage 98 migrations",
         )
 
         tombstones_fd, tombstones_snapshot = _open_directory_at(
@@ -848,7 +948,11 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
             finally:
                 os.close(stage_fd)
         _verify_directory(
-            root_fd, "tombstones", tombstones_fd, tombstones_snapshot, "Stage 98 tombstones"
+            root_fd,
+            "tombstones",
+            tombstones_fd,
+            tombstones_snapshot,
+            "Stage 98 tombstones",
         )
         _verify_directory(parent, root_name, root_fd, root_snapshot, "Stage 98")
         return ArchiveInventory(entries, tuple(migrations), tuple(tombstones))
@@ -861,12 +965,18 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         os.close(parent)
 
 
-def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReference, ...]:
+def load_task10_recovery_references(
+    root: pathlib.Path,
+) -> tuple[RecoveryReference, ...]:
     change_rows = [
-        row for row in task10_rows(root)
-        if row.get("action") == "delete" and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
+        row
+        for row in task10_rows(root)
+        if row.get("action") == "delete"
+        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
     ]
-    sources = tuple(pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows)
+    sources = tuple(
+        pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows
+    )
     recoveries = _legacy_change_recoveries(root, sources)
     references = [recoveries[source] for source in sources]
     archive = load_archive(root / "docs/98.archive")
@@ -874,14 +984,22 @@ def load_task10_recovery_references(root: pathlib.Path) -> tuple[RecoveryReferen
     return tuple(references)
 
 
-def load_task10_preservation_decisions(root: pathlib.Path) -> tuple[PreservationDecision, ...]:
+def load_task10_preservation_decisions(
+    root: pathlib.Path,
+) -> tuple[PreservationDecision, ...]:
     change_rows = [
-        row for row in task10_rows(root)
-        if row.get("action") == "delete" and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
+        row
+        for row in task10_rows(root)
+        if row.get("action") == "delete"
+        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
     ]
-    sources = tuple(pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows)
+    sources = tuple(
+        pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows
+    )
     recoveries = _legacy_change_recoveries(root, sources)
-    grouped: dict[pathlib.PurePosixPath, list[RecoveryReference]] = collections.defaultdict(list)
+    grouped: dict[pathlib.PurePosixPath, list[RecoveryReference]] = (
+        collections.defaultdict(list)
+    )
     for source in sources:
         grouped[source.parent].append(recoveries[source])
     decisions = [
@@ -930,10 +1048,14 @@ def validate_recovery_rows(
     valid: list[RecoveryReference] = []
     for row in selected:
         if not recovery_commit_is_valid(row.commit):
-            findings.append(ArchiveFinding("recovery-commit-invalid", row.original_path.as_posix()))
+            findings.append(
+                ArchiveFinding("recovery-commit-invalid", row.original_path.as_posix())
+            )
             continue
         if _safe_path(row.original_path.as_posix()) is None:
-            findings.append(ArchiveFinding("recovery-path-invalid", row.original_path.as_posix()))
+            findings.append(
+                ArchiveFinding("recovery-path-invalid", row.original_path.as_posix())
+            )
             continue
         valid.append(row)
     try:
@@ -943,17 +1065,23 @@ def validate_recovery_rows(
         )
     except ValueError as error:
         findings.append(
-            ArchiveFinding("recovery-validator-internal-error", "docs/98.archive", str(error))
+            ArchiveFinding(
+                "recovery-validator-internal-error", "docs/98.archive", str(error)
+            )
         )
         return tuple(sorted(set(findings)))
     for row, proof in zip(valid, proofs, strict=True):
         if proof.is_regular_blob:
             continue
         if not proof.exists:
-            findings.append(ArchiveFinding("recovery-object-missing", row.original_path.as_posix()))
+            findings.append(
+                ArchiveFinding("recovery-object-missing", row.original_path.as_posix())
+            )
         else:
             findings.append(
-                ArchiveFinding("recovery-object-not-regular-blob", row.original_path.as_posix())
+                ArchiveFinding(
+                    "recovery-object-not-regular-blob", row.original_path.as_posix()
+                )
             )
     return tuple(sorted(set(findings)))
 

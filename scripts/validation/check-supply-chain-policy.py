@@ -37,11 +37,10 @@ def _repository_root() -> pathlib.Path:
         direct = fallback.stat()
     except (OSError, ValueError, OverflowError):
         raise SystemExit(_ROOT_ERROR) from None
-    if (
-        not stat.S_ISDIR(descriptor.st_mode)
-        or (descriptor.st_dev, descriptor.st_ino)
-        != (direct.st_dev, direct.st_ino)
-    ):
+    if not stat.S_ISDIR(descriptor.st_mode) or (
+        descriptor.st_dev,
+        descriptor.st_ino,
+    ) != (direct.st_dev, direct.st_ino):
         raise SystemExit(_ROOT_ERROR)
     return pathlib.Path(override)
 
@@ -233,11 +232,7 @@ def _git_paths(repo_root: pathlib.Path, arguments: list[str]) -> list[str]:
     if result.returncode != 0:
         raise BuildContextError("git-context-inspection-failed")
     try:
-        return [
-            value.decode("utf-8")
-            for value in result.stdout.split(b"\0")
-            if value
-        ]
+        return [value.decode("utf-8") for value in result.stdout.split(b"\0") if value]
     except UnicodeDecodeError as exc:
         raise BuildContextError("git-context-path-encoding-invalid") from exc
 
@@ -269,10 +264,9 @@ def _read_regular_material(path: pathlib.Path) -> tuple[bytes, os.stat_result]:
         raise BuildContextError("effective-context-material-open-failed") from exc
     try:
         opened_stat = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(opened_stat.st_mode)
-            or _stable_material_stat(opened_stat) != _stable_material_stat(path_stat)
-        ):
+        if not stat.S_ISREG(opened_stat.st_mode) or _stable_material_stat(
+            opened_stat
+        ) != _stable_material_stat(path_stat):
             raise BuildContextError("effective-context-material-raced")
         chunks: list[bytes] = []
         while True:
@@ -287,10 +281,9 @@ def _read_regular_material(path: pathlib.Path) -> tuple[bytes, os.stat_result]:
         current_stat = path.lstat()
     except OSError as exc:
         raise BuildContextError("effective-context-material-raced") from exc
-    if (
-        _stable_material_stat(opened_stat) != _stable_material_stat(final_stat)
-        or _stable_material_stat(opened_stat) != _stable_material_stat(current_stat)
-    ):
+    if _stable_material_stat(opened_stat) != _stable_material_stat(
+        final_stat
+    ) or _stable_material_stat(opened_stat) != _stable_material_stat(current_stat):
         raise BuildContextError("effective-context-material-raced")
     body = b"".join(chunks)
     if len(body) != opened_stat.st_size:
@@ -314,7 +307,9 @@ def _deterministic_context_archive(
             *((name, True) for name in directory_names),
             *((material["path"], False) for material in materials),
         ]
-        for name, is_directory in sorted(entries, key=lambda row: row[0].encode("utf-8")):
+        for name, is_directory in sorted(
+            entries, key=lambda row: row[0].encode("utf-8")
+        ):
             info = tarfile.TarInfo(name=name)
             info.uid = 0
             info.gid = 0
@@ -396,16 +391,22 @@ def _capture_build_context_bundle(
             return None
         return normalized[len(context_prefix) :]
 
-    modified = _git_lines(
-        root, ["rev-parse", "HEAD"]
-    )
+    modified = _git_lines(root, ["rev-parse", "HEAD"])
     if len(modified) != 1 or not SHA1_RE.fullmatch(modified[0]):
         raise BuildContextError("source-revision-invalid")
     source_revision = modified[0]
 
     modified_paths = _git_paths(
         root,
-        ["diff", "--name-only", "-z", "--diff-filter=ACDMRTUXB", "HEAD", "--", relative_root.as_posix()],
+        [
+            "diff",
+            "--name-only",
+            "-z",
+            "--diff-filter=ACDMRTUXB",
+            "HEAD",
+            "--",
+            relative_root.as_posix(),
+        ],
     )
     for repo_path in modified_paths:
         relative = to_context_path(repo_path)
@@ -503,9 +504,7 @@ def write_private_bytes(path: pathlib.Path | str, body: bytes) -> None:
     ):
         raise SecureOutputError("private-parent-invalid")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
-    parent_fd = os.open(
-        target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    )
+    parent_fd = os.open(target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         descriptor = os.open(target.name, flags, 0o600, dir_fd=parent_fd)
         try:
@@ -532,9 +531,7 @@ def read_private_bytes(path: pathlib.Path | str) -> bytes:
         or stat.S_IMODE(parent_stat.st_mode) != 0o700
     ):
         raise SecureOutputError("private-parent-invalid")
-    parent_fd = os.open(
-        source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    )
+    parent_fd = os.open(source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         descriptor = os.open(source.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
         try:
@@ -577,9 +574,7 @@ def write_build_context_bundle(
     return snapshot
 
 
-def _validate_directory_stat(
-    path_stat: os.stat_result, *, final: bool
-) -> None:
+def _validate_directory_stat(path_stat: os.stat_result, *, final: bool) -> None:
     if not stat.S_ISDIR(path_stat.st_mode):
         raise SecureOutputError("output-ancestor-not-directory")
     if path_stat.st_uid != os.getuid():
@@ -649,9 +644,7 @@ def _open_secure_output_directory(
 def prepare_secure_output_directory(
     base: pathlib.Path | str, relative: pathlib.Path | str
 ) -> str:
-    descriptor, identity = _open_secure_output_directory(
-        base, relative, create=True
-    )
+    descriptor, identity = _open_secure_output_directory(base, relative, create=True)
     os.close(descriptor)
     return identity
 
@@ -699,9 +692,7 @@ def invalidate_secure_handoffs(
     try:
         _validate_output_identity(descriptor, expected_identity)
         for name in names:
-            _validate_existing_handoff(
-                descriptor, name, require_private_mode=False
-            )
+            _validate_existing_handoff(descriptor, name, require_private_mode=False)
         for name in names:
             try:
                 os.unlink(name, dir_fd=descriptor)
@@ -725,9 +716,7 @@ def _read_private_handoff(path: pathlib.Path | str) -> tuple[bytes, Any]:
         or stat.S_IMODE(parent_stat.st_mode) != 0o700
     ):
         raise SecureOutputError("private-source-parent-invalid")
-    parent_fd = os.open(
-        source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    )
+    parent_fd = os.open(source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         descriptor = os.open(source.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
         try:
@@ -809,18 +798,20 @@ def publish_verdict_pair(
         "candidate": _read_private_handoff(candidate_path),
     }
     for role, (_, payload) in sources.items():
-        local_ref = payload.get("local_image_ref") if isinstance(payload, dict) else None
+        local_ref = (
+            payload.get("local_image_ref") if isinstance(payload, dict) else None
+        )
         local_match = (
             LOCAL_IMAGE_REF_RE.fullmatch(local_ref)
             if isinstance(local_ref, str)
             else None
         )
         runtime_kind = (
-            payload.get("runtime_identity_kind")
-            if isinstance(payload, dict)
-            else None
+            payload.get("runtime_identity_kind") if isinstance(payload, dict) else None
         )
-        runtime_id = payload.get("runtime_image_id") if isinstance(payload, dict) else None
+        runtime_id = (
+            payload.get("runtime_image_id") if isinstance(payload, dict) else None
+        )
         config_digest = (
             payload.get("image_config_digest") if isinstance(payload, dict) else None
         )
@@ -841,19 +832,14 @@ def publish_verdict_pair(
                 r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z",
                 str(payload.get("verified_at", "")),
             )
-            or not SHA256_RE.fullmatch(
-                str(payload.get("oci_manifest_digest", ""))
-            )
+            or not SHA256_RE.fullmatch(str(payload.get("oci_manifest_digest", "")))
             or not SHA256_RE.fullmatch(str(payload.get("image_config_digest", "")))
             or not SHA256_RE.fullmatch(str(payload.get("oci_archive_sha256", "")))
-            or not SHA256_RE.fullmatch(
-                str(payload.get("docker_archive_sha256", ""))
-            )
+            or not SHA256_RE.fullmatch(str(payload.get("docker_archive_sha256", "")))
             or not SHA256_RE.fullmatch(str(runtime_id))
             or local_match is None
             or local_match.group(1) != role
-            or local_match.group(2)
-            != str(config_digest).removeprefix("sha256:")
+            or local_match.group(2) != str(config_digest).removeprefix("sha256:")
             or runtime_kind not in {"config-digest", "docker-target-digest"}
             or (runtime_kind == "config-digest" and runtime_id != config_digest)
             or (runtime_kind == "docker-target-digest" and runtime_id == config_digest)
@@ -870,10 +856,7 @@ def publish_verdict_pair(
         "schema_version": 3,
         "source_revision": source_revision,
         "subjects": {
-            role: {
-                field: sources[role][1][field]
-                for field in VERDICT_IDENTITY_KEYS
-            }
+            role: {field: sources[role][1][field] for field in VERDICT_IDENTITY_KEYS}
             for role in ("baseline", "candidate")
         },
         "verdict_sha256": {
@@ -968,7 +951,8 @@ def publish_minimized_handoff(
         or set(database) != allowed_database_keys
         or not isinstance(counts, dict)
         or any(
-            severity not in {"negligible", "unknown", "low", "medium", "high", "critical"}
+            severity
+            not in {"negligible", "unknown", "low", "medium", "high", "critical"}
             or isinstance(count, bool)
             or not isinstance(count, int)
             or count < 0
@@ -1020,7 +1004,11 @@ def _exception_errors(exception: Any) -> list[str]:
         "compensating_control",
         "approval_reference",
     )
-    errors = ["exception-field-missing" for key in required if not _is_text(exception.get(key))]
+    errors = [
+        "exception-field-missing"
+        for key in required
+        if not _is_text(exception.get(key))
+    ]
     if not SHA256_RE.fullmatch(str(exception.get("subject_digest", ""))):
         errors.append("exception-subject-digest-invalid")
     if not _is_text(exception.get("owner_role")):
@@ -1058,11 +1046,15 @@ def validate_tool_registry(registry: Any) -> list[str]:
         image, digest, repo_digest, target_digest, config_id, version = expected
         if row.get("image") != image:
             errors.append("tool-image-pin-invalid")
-        if row.get("digest") != digest or not SHA256_RE.fullmatch(str(row.get("digest", ""))):
+        if row.get("digest") != digest or not SHA256_RE.fullmatch(
+            str(row.get("digest", ""))
+        ):
             errors.append("tool-digest-invalid")
         if row.get("repo_digest") != repo_digest:
             errors.append("tool-repo-digest-invalid")
-        if row.get("target_descriptor_digest") != target_digest or not SHA256_RE.fullmatch(
+        if row.get(
+            "target_descriptor_digest"
+        ) != target_digest or not SHA256_RE.fullmatch(
             str(row.get("target_descriptor_digest", ""))
         ):
             errors.append("tool-target-descriptor-digest-invalid")
@@ -1089,7 +1081,10 @@ def validate_policy(policy: Any) -> list[str]:
     if policy.get("policy_id") != "sample-service-local-v1":
         errors.append("policy-id-invalid")
     subject = policy.get("subject")
-    if not isinstance(subject, dict) or subject.get("service") != "examples/sample-web-service":
+    if (
+        not isinstance(subject, dict)
+        or subject.get("service") != "examples/sample-web-service"
+    ):
         errors.append("policy-subject-service-invalid")
     elif subject.get("roles") != ["baseline", "candidate"]:
         errors.append("policy-subject-roles-invalid")
@@ -1103,11 +1098,17 @@ def validate_policy(policy: Any) -> list[str]:
             errors.append("policy-blocking-severities-invalid")
         if vulnerability.get("review_severities") != ["high"]:
             errors.append("policy-review-severities-invalid")
-        if vulnerability.get("exception_registry") != "infra/supply-chain.vulnerability-exceptions.json":
+        if (
+            vulnerability.get("exception_registry")
+            != "infra/supply-chain.vulnerability-exceptions.json"
+        ):
             errors.append("policy-exception-registry-invalid")
     if policy.get("provenance") != {"predicate_type": "https://slsa.dev/provenance/v1"}:
         errors.append("policy-provenance-invalid")
-    if policy.get("signature") != {"mode": "cosign-sign-blob", "key_lifetime": "process"}:
+    if policy.get("signature") != {
+        "mode": "cosign-sign-blob",
+        "key_lifetime": "process",
+    }:
         errors.append("policy-signature-invalid")
     if policy.get("scorecard") != {"mode": "read-only-advisory"}:
         errors.append("policy-scorecard-invalid")
@@ -1136,7 +1137,9 @@ def validate_exceptions(
                 errors.append("exception-id-duplicate")
             if isinstance(identifier, str):
                 ids.add(identifier)
-    if expected_subject_digest is not None and not SHA256_RE.fullmatch(expected_subject_digest):
+    if expected_subject_digest is not None and not SHA256_RE.fullmatch(
+        expected_subject_digest
+    ):
         errors.append("exception-expected-subject-invalid")
     return sorted(set(errors))
 
@@ -1210,9 +1213,7 @@ def _parse_json_object(content: bytes, reason: str) -> dict[str, Any]:
     return value
 
 
-def _require_oci_descriptor(
-    value: Any, *, prefix: str
-) -> tuple[str, int, str]:
+def _require_oci_descriptor(value: Any, *, prefix: str) -> tuple[str, int, str]:
     if not isinstance(value, dict):
         raise ValueError(f"{prefix}-descriptor-invalid")
     digest = value.get("digest")
@@ -1258,9 +1259,7 @@ def _verify_oci_gzip_layer_diff_id(
         while pending and not decompressor.eof:
             previous_size = len(pending)
             try:
-                output = decompressor.decompress(
-                    pending, OCI_DECOMPRESSION_CHUNK_BYTES
-                )
+                output = decompressor.decompress(pending, OCI_DECOMPRESSION_CHUNK_BYTES)
             except zlib.error as exc:
                 raise ValueError("oci-layer-gzip-invalid") from exc
             pending = decompressor.unconsumed_tail
@@ -1429,12 +1428,9 @@ def _preflight_uncompressed_oci_tar(content: bytes) -> None:
         if member.type in pax_types:
             if (
                 member.size > OCI_METADATA_MAX_BYTES
-                or hidden_metadata_bytes + member.size
-                > OCI_METADATA_MAX_BYTES
+                or hidden_metadata_bytes + member.size > OCI_METADATA_MAX_BYTES
             ):
-                raise ValueError(
-                    "oci-archive-pax-metadata-size-limit-exceeded"
-                )
+                raise ValueError("oci-archive-pax-metadata-size-limit-exceeded")
             if next_offset > len(content):
                 raise ValueError("oci-archive-truncated")
             _preflight_pax_payload(content, payload_start, member.size)
@@ -1448,10 +1444,7 @@ def _preflight_uncompressed_oci_tar(content: bytes) -> None:
 
         if next_offset > len(content):
             raise ValueError("oci-archive-truncated")
-        if (
-            content.count(b"\0", payload_end, next_offset)
-            != next_offset - payload_end
-        ):
+        if content.count(b"\0", payload_end, next_offset) != next_offset - payload_end:
             raise ValueError("oci-archive-padding-invalid")
         offset = next_offset
 
@@ -1473,9 +1466,7 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         try:
             for member in archive:
                 if member.size < 0 or member.size > OCI_ARCHIVE_MAX_BYTES:
-                    raise ValueError(
-                        "oci-archive-member-size-limit-exceeded"
-                    )
+                    raise ValueError("oci-archive-member-size-limit-exceeded")
                 name = member.name
                 path = pathlib.PurePosixPath(name)
                 if (
@@ -1559,9 +1550,8 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         )
         if len(manifest_blob) != manifest_size:
             raise ValueError("oci-manifest-blob-size-mismatch")
-        if (
-            hashlib.sha256(manifest_blob).hexdigest()
-            != manifest_digest.removeprefix("sha256:")
+        if hashlib.sha256(manifest_blob).hexdigest() != manifest_digest.removeprefix(
+            "sha256:"
         ):
             raise ValueError("oci-manifest-blob-digest-mismatch")
         manifest = _parse_json_object(manifest_blob, "oci-manifest-invalid")
@@ -1583,9 +1573,8 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         )
         if len(config_blob) != config_size:
             raise ValueError("oci-config-blob-size-mismatch")
-        if (
-            hashlib.sha256(config_blob).hexdigest()
-            != config_digest.removeprefix("sha256:")
+        if hashlib.sha256(config_blob).hexdigest() != config_digest.removeprefix(
+            "sha256:"
         ):
             raise ValueError("oci-config-blob-digest-mismatch")
         config = _parse_json_object(config_blob, "oci-config-blob-invalid")
@@ -1625,9 +1614,8 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
             )
             if len(layer_blob) != layer_size:
                 raise ValueError("oci-layer-blob-size-mismatch")
-            if (
-                hashlib.sha256(layer_blob).hexdigest()
-                != layer_digest.removeprefix("sha256:")
+            if hashlib.sha256(layer_blob).hexdigest() != layer_digest.removeprefix(
+                "sha256:"
             ):
                 raise ValueError("oci-layer-blob-digest-mismatch")
             uncompressed_bytes = _verify_oci_gzip_layer_diff_id(
@@ -1669,9 +1657,7 @@ def _inspect_docker_save_archive_bytes(content: bytes) -> str:
         try:
             for member in archive:
                 if member.size < 0 or member.size > OCI_ARCHIVE_MAX_BYTES:
-                    raise ValueError(
-                        "docker-save-archive-member-size-limit-exceeded"
-                    )
+                    raise ValueError("docker-save-archive-member-size-limit-exceeded")
                 name = member.name
                 path = pathlib.PurePosixPath(name)
                 if (
@@ -1720,9 +1706,7 @@ def _inspect_docker_save_archive_bytes(content: bytes) -> str:
             "manifest.json", "docker-save-manifest-missing-or-invalid"
         )
         try:
-            manifest = json.loads(
-                manifest_body, object_pairs_hook=_unique_json_object
-            )
+            manifest = json.loads(manifest_body, object_pairs_hook=_unique_json_object)
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             raise ValueError("docker-save-manifest-invalid") from exc
         if (
@@ -1735,9 +1719,7 @@ def _inspect_docker_save_archive_bytes(content: bytes) -> str:
         if not isinstance(config_path, str):
             raise ValueError("docker-save-config-descriptor-invalid")
         legacy_match = re.fullmatch(r"([0-9a-f]{64})\.json", config_path)
-        content_store_match = re.fullmatch(
-            r"blobs/sha256/([0-9a-f]{64})", config_path
-        )
+        content_store_match = re.fullmatch(r"blobs/sha256/([0-9a-f]{64})", config_path)
         descriptor_match = legacy_match or content_store_match
         if descriptor_match is None:
             raise ValueError("docker-save-config-descriptor-invalid")
@@ -1795,9 +1777,7 @@ def _read_stable_private_bytes(
         or stat.S_IMODE(parent_stat.st_mode) != 0o700
     ):
         raise SecureOutputError("private-parent-invalid")
-    parent_fd = os.open(
-        path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    )
+    parent_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         opened_parent = os.fstat(parent_fd)
         if (opened_parent.st_dev, opened_parent.st_ino) != (
@@ -1805,9 +1785,7 @@ def _read_stable_private_bytes(
             parent_stat.st_ino,
         ):
             raise SecureOutputError("private-parent-raced")
-        descriptor = os.open(
-            path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd
-        )
+        descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
         try:
             before = os.fstat(descriptor)
             if (
@@ -1826,9 +1804,7 @@ def _read_stable_private_bytes(
                     break
                 bytes_read += len(chunk)
                 if max_bytes is not None and bytes_read > max_bytes:
-                    raise SecureOutputError(
-                        "private-source-size-limit-exceeded"
-                    )
+                    raise SecureOutputError("private-source-size-limit-exceeded")
                 chunks.append(chunk)
             after = os.fstat(descriptor)
             current = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
@@ -1871,9 +1847,7 @@ def _atomic_replace_private_bytes(path: pathlib.Path, body: bytes) -> None:
         or stat.S_IMODE(parent_stat.st_mode) != 0o700
     ):
         raise SecureOutputError("private-parent-invalid")
-    parent_fd = os.open(
-        path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    )
+    parent_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     temporary = f".{path.name}.{secrets.token_hex(8)}.tmp"
     try:
         try:
@@ -1958,9 +1932,7 @@ def convert_oci_archive_to_docker_load_archive(
     if source == destination or source.parent != destination.parent:
         raise ValueError("docker-archive-target-invalid")
     try:
-        content = _read_stable_private_bytes(
-            source, max_bytes=OCI_ARCHIVE_MAX_BYTES
-        )
+        content = _read_stable_private_bytes(source, max_bytes=OCI_ARCHIVE_MAX_BYTES)
     except SecureOutputError as exc:
         if str(exc) == "private-source-size-limit-exceeded":
             raise ValueError("oci-archive-size-limit-exceeded") from exc
@@ -1993,9 +1965,7 @@ def convert_oci_archive_to_docker_load_archive(
         separators=(",", ":"),
     ).encode("utf-8")
     output = io.BytesIO()
-    with tarfile.open(
-        fileobj=output, mode="w", format=tarfile.USTAR_FORMAT
-    ) as archive:
+    with tarfile.open(fileobj=output, mode="w", format=tarfile.USTAR_FORMAT) as archive:
         for name in sorted(payloads):
             body = payloads[name]
             member = tarfile.TarInfo(name)
@@ -2025,14 +1995,25 @@ def validate_sbom_subject(sbom: Any, subject: Any) -> list[str]:
     errors: list[str] = []
     if sbom.get("bomFormat") != "CycloneDX" or not _is_text(sbom.get("specVersion")):
         errors.append("sbom-format-invalid")
-    component = (sbom.get("metadata") or {}).get("component") if isinstance(sbom.get("metadata"), dict) else None
-    if not isinstance(component, dict) or component.get("name") != "examples/sample-web-service":
+    component = (
+        (sbom.get("metadata") or {}).get("component")
+        if isinstance(sbom.get("metadata"), dict)
+        else None
+    )
+    if (
+        not isinstance(component, dict)
+        or component.get("name") != "examples/sample-web-service"
+    ):
         errors.append("sbom-component-invalid")
         return errors
     properties = _properties(component)
-    if properties.get("org.hyhome.delivery.image_config_digest") != subject.get("image_config_digest"):
+    if properties.get("org.hyhome.delivery.image_config_digest") != subject.get(
+        "image_config_digest"
+    ):
         errors.append("sbom-image-config-subject-mismatch")
-    if properties.get("org.hyhome.delivery.oci_archive_sha256") != subject.get("oci_archive_sha256"):
+    if properties.get("org.hyhome.delivery.oci_archive_sha256") != subject.get(
+        "oci_archive_sha256"
+    ):
         errors.append("sbom-oci-archive-subject-mismatch")
     if properties.get("org.hyhome.delivery.rehearsal.role") != subject.get("role"):
         errors.append("sbom-role-subject-mismatch")
@@ -2040,7 +2021,10 @@ def validate_sbom_subject(sbom: Any, subject: Any) -> list[str]:
 
 
 def _find_exception(
-    fixture: dict[str, Any], registry: dict[str, Any], match: dict[str, str], subject_digest: str
+    fixture: dict[str, Any],
+    registry: dict[str, Any],
+    match: dict[str, str],
+    subject_digest: str,
 ) -> tuple[dict[str, Any] | None, str | None]:
     embedded = fixture.get("exception")
     if isinstance(embedded, dict):
@@ -2050,12 +2034,18 @@ def _find_exception(
             and embedded.get("vulnerability_id") == match["vulnerability_id"]
             and str(embedded.get("severity", "")).lower() == match["severity"]
         ):
-            return embedded, embedded.get("id") if isinstance(embedded.get("id"), str) else None
+            return embedded, embedded.get("id") if isinstance(
+                embedded.get("id"), str
+            ) else None
         return None, None
     requested_id = fixture.get("exception_id")
     if not isinstance(requested_id, str) or not requested_id:
         return None, None
-    rows = registry.get("exceptions") if isinstance(registry.get("exceptions"), list) else []
+    rows = (
+        registry.get("exceptions")
+        if isinstance(registry.get("exceptions"), list)
+        else []
+    )
     for row in rows:
         if not isinstance(row, dict):
             continue
@@ -2074,13 +2064,32 @@ def _find_exception(
 def evaluate_grype_fixture(
     fixture: Any, policy: Any, registry: Any, subject: Any
 ) -> dict[str, str | None]:
-    if not isinstance(fixture, dict) or not isinstance(policy, dict) or not isinstance(registry, dict) or not isinstance(subject, dict):
-        return {"verdict": "rejected", "exception_id": None, "reason": "grype-fixture-invalid"}
-    if fixture.get("schema_version") != 1 or fixture.get("subject_digest") != subject.get("image_config_digest"):
-        return {"verdict": "rejected", "exception_id": None, "reason": "grype-subject-mismatch"}
+    if (
+        not isinstance(fixture, dict)
+        or not isinstance(policy, dict)
+        or not isinstance(registry, dict)
+        or not isinstance(subject, dict)
+    ):
+        return {
+            "verdict": "rejected",
+            "exception_id": None,
+            "reason": "grype-fixture-invalid",
+        }
+    if fixture.get("schema_version") != 1 or fixture.get(
+        "subject_digest"
+    ) != subject.get("image_config_digest"):
+        return {
+            "verdict": "rejected",
+            "exception_id": None,
+            "reason": "grype-subject-mismatch",
+        }
     matches = fixture.get("matches")
     if not isinstance(matches, list):
-        return {"verdict": "rejected", "exception_id": None, "reason": "grype-matches-invalid"}
+        return {
+            "verdict": "rejected",
+            "exception_id": None,
+            "reason": "grype-matches-invalid",
+        }
     if not matches:
         return {"verdict": "accepted", "exception_id": None, "reason": "clean"}
     vulnerability = policy.get("vulnerability", {})
@@ -2090,13 +2099,28 @@ def evaluate_grype_fixture(
     has_outside_policy_match = False
     for match in matches:
         if not isinstance(match, dict):
-            return {"verdict": "rejected", "exception_id": None, "reason": "grype-match-invalid"}
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "grype-match-invalid",
+            }
         artifact = match.get("artifact")
         finding = match.get("vulnerability")
         if not isinstance(artifact, dict) or not isinstance(finding, dict):
-            return {"verdict": "rejected", "exception_id": None, "reason": "grype-match-invalid"}
-        if any(key in finding for key in ("description", "urls", "locations", "relatedVulnerabilities")):
-            return {"verdict": "rejected", "exception_id": None, "reason": "raw-finding-leakage"}
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "grype-match-invalid",
+            }
+        if any(
+            key in finding
+            for key in ("description", "urls", "locations", "relatedVulnerabilities")
+        ):
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "raw-finding-leakage",
+            }
         severity = str(finding.get("severity", "")).lower()
         finding_key = {
             "package": str(artifact.get("name", "")),
@@ -2104,25 +2128,49 @@ def evaluate_grype_fixture(
             "severity": severity,
         }
         if not all(finding_key.values()):
-            return {"verdict": "rejected", "exception_id": None, "reason": "grype-finding-invalid"}
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "grype-finding-invalid",
+            }
         exception, exception_id = _find_exception(
             fixture, registry, finding_key, str(subject.get("image_config_digest", ""))
         )
         if exception is not None:
             exception_errors = _exception_errors(exception)
             if "exception-expired" in exception_errors:
-                return {"verdict": "rejected", "exception_id": exception_id, "reason": "exception-expired"}
+                return {
+                    "verdict": "rejected",
+                    "exception_id": exception_id,
+                    "reason": "exception-expired",
+                }
             if exception_errors:
-                return {"verdict": "rejected", "exception_id": exception_id, "reason": exception_errors[0]}
+                return {
+                    "verdict": "rejected",
+                    "exception_id": exception_id,
+                    "reason": exception_errors[0],
+                }
             if severity in blocking or severity in review:
                 if exception_id is None:
-                    return {"verdict": "rejected", "exception_id": None, "reason": "exception-id-invalid"}
+                    return {
+                        "verdict": "rejected",
+                        "exception_id": None,
+                        "reason": "exception-id-invalid",
+                    }
                 approved_exception_ids.append(exception_id)
             continue
         if severity in blocking:
-            return {"verdict": "rejected", "exception_id": None, "reason": "blocking-finding-without-exception"}
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "blocking-finding-without-exception",
+            }
         if severity in review:
-            return {"verdict": "rejected", "exception_id": None, "reason": "review-finding-without-exception"}
+            return {
+                "verdict": "rejected",
+                "exception_id": None,
+                "reason": "review-finding-without-exception",
+            }
         has_outside_policy_match = True
     if approved_exception_ids:
         unique_ids = sorted(set(approved_exception_ids))
@@ -2131,7 +2179,11 @@ def evaluate_grype_fixture(
             "exception_id": unique_ids[0] if len(unique_ids) == 1 else None,
             "reason": "all-policy-findings-exception-approved",
         }
-    return {"verdict": "accepted", "exception_id": None, "reason": "outside-policy" if has_outside_policy_match else "clean"}
+    return {
+        "verdict": "accepted",
+        "exception_id": None,
+        "reason": "outside-policy" if has_outside_policy_match else "clean",
+    }
 
 
 def validate_provenance_subject(provenance: Any, subject: Any) -> list[str]:
@@ -2164,7 +2216,9 @@ def validate_provenance_subject(provenance: Any, subject: Any) -> list[str]:
     builder = run_details.get("builder")
     if not isinstance(params, dict) or params.get("role") != subject.get("role"):
         errors.append("provenance-role-invalid")
-    if not isinstance(params, dict) or params.get("source_revision") != subject.get("source_revision"):
+    if not isinstance(params, dict) or params.get("source_revision") != subject.get(
+        "source_revision"
+    ):
         errors.append("provenance-source-revision-mismatch")
     expected_context = subject.get("build_context_sha256")
     if (
@@ -2207,7 +2261,10 @@ def validate_scorecard_advisory(scorecard: Any) -> list[str]:
     errors: list[str] = []
     if scorecard.get("schema_version") != 1:
         errors.append("scorecard-schema-version-invalid")
-    if scorecard.get("mode") != "read-only-advisory" or scorecard.get("observation") != "read-only":
+    if (
+        scorecard.get("mode") != "read-only-advisory"
+        or scorecard.get("observation") != "read-only"
+    ):
         errors.append("scorecard-advisory-mode-invalid")
     if scorecard.get("ci_enforcement") != "fixture-policy-only":
         errors.append("scorecard-blocking-forbidden")
@@ -2232,7 +2289,9 @@ def check() -> list[str]:
     exceptions = load_json(EXCEPTIONS_PATH)
     subject = _fixture_subject()
     errors = [*validate_tool_registry(registry), *validate_policy(policy)]
-    errors.extend(validate_exceptions(exceptions, policy, subject["image_config_digest"]))
+    errors.extend(
+        validate_exceptions(exceptions, policy, subject["image_config_digest"])
+    )
     errors.extend(
         validate_subject_tuples(
             [
@@ -2246,8 +2305,14 @@ def check() -> list[str]:
             ]
         )
     )
-    errors.extend(validate_sbom_subject(load_json(FIXTURES / "sample-service-sbom.valid.cdx.json"), subject))
-    if not validate_sbom_subject(load_json(FIXTURES / "sample-service-sbom.subject-mismatch.cdx.json"), subject):
+    errors.extend(
+        validate_sbom_subject(
+            load_json(FIXTURES / "sample-service-sbom.valid.cdx.json"), subject
+        )
+    )
+    if not validate_sbom_subject(
+        load_json(FIXTURES / "sample-service-sbom.subject-mismatch.cdx.json"), subject
+    ):
         errors.append("negative-sbom-fixture-not-rejected")
     for name, expected in (
         ("grype.clean.json", "accepted"),
@@ -2256,23 +2321,41 @@ def check() -> list[str]:
         ("grype.expired-exception.json", "rejected"),
         ("grype.valid-exception-then-critical.json", "rejected"),
     ):
-        result = evaluate_grype_fixture(load_json(FIXTURES / name), policy, exceptions, subject)
+        result = evaluate_grype_fixture(
+            load_json(FIXTURES / name), policy, exceptions, subject
+        )
         if result["verdict"] != expected:
             errors.append("grype-fixture-verdict-invalid")
-    errors.extend(validate_provenance_subject(load_json(FIXTURES / "provenance.valid.intoto.json"), subject))
-    if not validate_provenance_subject(load_json(FIXTURES / "provenance.subject-mismatch.intoto.json"), subject):
+    errors.extend(
+        validate_provenance_subject(
+            load_json(FIXTURES / "provenance.valid.intoto.json"), subject
+        )
+    )
+    if not validate_provenance_subject(
+        load_json(FIXTURES / "provenance.subject-mismatch.intoto.json"), subject
+    ):
         errors.append("negative-provenance-fixture-not-rejected")
-    errors.extend(validate_signature_fixture(load_json(FIXTURES / "cosign.verify.valid.json"), subject))
+    errors.extend(
+        validate_signature_fixture(
+            load_json(FIXTURES / "cosign.verify.valid.json"), subject
+        )
+    )
     for name in ("cosign.verify.tampered.json", "cosign.verify.wrong-subject.json"):
         if not validate_signature_fixture(load_json(FIXTURES / name), subject):
             errors.append("negative-signature-fixture-not-rejected")
-    errors.extend(validate_scorecard_advisory(load_json(FIXTURES / "scorecard.advisory.json")))
+    errors.extend(
+        validate_scorecard_advisory(load_json(FIXTURES / "scorecard.advisory.json"))
+    )
     return sorted(set(errors))
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="validate policy and deterministic fixtures")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="validate policy and deterministic fixtures",
+    )
     parser.add_argument(
         "--oci-archive-config-digest",
         metavar="ARCHIVE",
@@ -2416,7 +2499,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         errors = check()
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(f"supply_chain_policy=fail reason={exc.__class__.__name__}", file=sys.stderr)
+        print(
+            f"supply_chain_policy=fail reason={exc.__class__.__name__}", file=sys.stderr
+        )
         return 1
     if errors:
         print(f"supply_chain_policy=fail errors={','.join(errors)}", file=sys.stderr)

@@ -33,9 +33,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertIn("provider_surface_renderer.py", serialized)
 
     def test_repository_contract_does_not_require_removed_handoff(self) -> None:
-        self.assertFalse(
-            (ROOT / "scripts/validation/check-repo-contracts.sh").exists()
-        )
+        self.assertFalse((ROOT / "scripts/validation/check-repo-contracts.sh").exists())
         manifest = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         self.assertNotIn("check-repo-" + "contracts.sh", manifest)
 
@@ -49,9 +47,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertNotIn("check-agent-governance-contract.py", text)
 
     def test_active_workflows_route_provider_validation(self) -> None:
-        workflow_text = (
-            ROOT / ".github/workflows/ci-quality.yml"
-        ).read_text(encoding="utf-8")
+        workflow_text = (ROOT / ".github/workflows/ci-quality.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile changed"))
         self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile full"))
         self.assertNotIn("--gate", workflow_text)

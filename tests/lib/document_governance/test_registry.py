@@ -55,7 +55,6 @@ def _child_env() -> dict[str, str]:
     return environment
 
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
@@ -93,9 +92,7 @@ def _allocation_git_fixture(root: pathlib.Path) -> str:
 def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
     registry_path = root / "docs/99.templates/registry.json"
     raw = json.loads(registry_path.read_text(encoding="utf-8"))
-    allocation = raw["identity_spaces"]["requirement"]["child_spaces"][
-        "REQ-0003.FR"
-    ]
+    allocation = raw["identity_spaces"]["requirement"]["child_spaces"]["REQ-0003.FR"]
     allocation["reserved_history"].remove(5)
     allocation["current_issued"].append(5)
     registry_path.write_text(json.dumps(raw), encoding="utf-8")
@@ -115,39 +112,99 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
-    def test_changed_generated_body_requires_exact_manifest_owner_and_output(self) -> None:
-        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
-        from scripts.lib.document_governance.references import generated_reference_owners
+    def test_changed_generated_body_requires_exact_manifest_owner_and_output(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata_validator import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.references import (
+            generated_reference_owners,
+        )
 
         profiles = build_registry_profiles(load_registry())
         profiles["common"]["generated_outputs"] = generated_reference_owners(ROOT)
-        path = pathlib.Path("docs/90.references/data/0065-audit-implementation-matrix/README.md")
+        path = pathlib.Path(
+            "docs/90.references/data/0065-audit-implementation-matrix/README.md"
+        )
         owner = "scripts/validation/generate-audit-implementation-matrix.sh"
-        for candidate, generated_by, allowed in ((path, owner, True), (path, "scripts/forged.py", False), (path.with_name("undeclared.md"), owner, False)):
+        for candidate, generated_by, allowed in (
+            (path, owner, True),
+            (path, "scripts/forged.py", False),
+            (path.with_name("undeclared.md"), owner, False),
+        ):
             with self.subTest(path=candidate, owner=generated_by):
-                record = Record(candidate, {"profile_id": "data", "generated_by": generated_by}, "data")
-                findings = validate_body_contract(record, "# Generated\n", profiles, changed_boundary=True)
+                record = Record(
+                    candidate,
+                    {"profile_id": "data", "generated_by": generated_by},
+                    "data",
+                )
+                findings = validate_body_contract(
+                    record, "# Generated\n", profiles, changed_boundary=True
+                )
                 self.assertEqual(allowed, not findings)
 
     def test_exact_additional_readme_paths_preserve_profile_validation(self) -> None:
-        from scripts.lib.document_governance.metadata_validator import build_registry_profiles
+        from scripts.lib.document_governance.metadata_validator import (
+            build_registry_profiles,
+        )
 
         registry = load_registry()
-        for path in ("docs/02.architecture/decisions/README.md", "docs/02.architecture/descriptions/README.md", "docs/99.templates/README.md", "docs/99.templates/templates/README.md"):
+        for path in (
+            "docs/02.architecture/decisions/README.md",
+            "docs/02.architecture/descriptions/README.md",
+            "docs/99.templates/README.md",
+            "docs/99.templates/templates/README.md",
+        ):
             with self.subTest(path=path):
                 self.assertEqual("readme", classify_path(path, registry))
-                record = Record(pathlib.Path(path), {"status": "active", "type": "sdlc/spec"}, "readme")
-                self.assertIn("type-mismatch", {item.code for item in validate_record(record, build_registry_profiles(registry), build_manifest([record]))})
-                self.assertIn("body-heading-missing", {item.code for item in validate_body_contract(record, "# Navigation\n", build_registry_profiles(registry), changed_boundary=True)})
-        self.assertIsNone(classify_path("docs/02.architecture/unknown/README.md", registry))
+                record = Record(
+                    pathlib.Path(path),
+                    {"status": "active", "type": "sdlc/spec"},
+                    "readme",
+                )
+                self.assertIn(
+                    "type-mismatch",
+                    {
+                        item.code
+                        for item in validate_record(
+                            record,
+                            build_registry_profiles(registry),
+                            build_manifest([record]),
+                        )
+                    },
+                )
+                self.assertIn(
+                    "body-heading-missing",
+                    {
+                        item.code
+                        for item in validate_body_contract(
+                            record,
+                            "# Navigation\n",
+                            build_registry_profiles(registry),
+                            changed_boundary=True,
+                        )
+                    },
+                )
+        self.assertIsNone(
+            classify_path("docs/02.architecture/unknown/README.md", registry)
+        )
         for path in ("../outside.md", "docs/03.specs/0104-collision/spec.md"):
             raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
-            next(item for item in raw["profiles"] if item["profile_id"] == "readme")["additional_paths"] = [path]
+            next(item for item in raw["profiles"] if item["profile_id"] == "readme")[
+                "additional_paths"
+            ] = [path]
             self.assertTrue(validate_registry(raw))
 
-    def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(self) -> None:
+    def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import (
-            architecture, archive, identity_history, requirements, spec_packages,
+            architecture,
+            archive,
+            identity_history,
+            requirements,
+            spec_packages,
         )
 
         def read_spec(path):
@@ -161,13 +218,18 @@ class DocumentRegistryTests(unittest.TestCase):
 
         readers = (
             lambda path: registry_module._read_regular_file(path, 1024),
-            architecture._read_regular_utf8, archive._read_regular,
+            architecture._read_regular_utf8,
+            archive._read_regular,
             identity_history._read_identity_source,
-            requirements._read_regular_utf8, read_spec,
+            requirements._read_regular_utf8,
+            read_spec,
         )
         real_open = os.open
         for reader in readers:
-            with self.subTest(reader=reader.__name__), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(reader=reader.__name__),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 path = pathlib.Path(directory) / "input.md"
                 path.write_text("safe\n", encoding="utf-8")
 
@@ -175,19 +237,21 @@ class DocumentRegistryTests(unittest.TestCase):
                     if pathlib.Path(name).name == path.name:
                         path.unlink()
                         os.mkfifo(path)
-                        self.assertTrue(flags & os.O_NONBLOCK, "FIFO open must not block")
+                        self.assertTrue(
+                            flags & os.O_NONBLOCK, "FIFO open must not block"
+                        )
                     return real_open(name, flags, *args, **kwargs)
 
                 with mock.patch.object(os, "open", side_effect=swap):
-                    with self.assertRaises((ValueError, identity_history.IdentityHistoryError)):
+                    with self.assertRaises(
+                        (ValueError, identity_history.IdentityHistoryError)
+                    ):
                         reader(path)
 
     def test_default_authority_is_registry_json(self) -> None:
         registry = load_registry()
 
-        self.assertEqual(
-            registry.source.as_posix(), "docs/99.templates/registry.json"
-        )
+        self.assertEqual(registry.source.as_posix(), "docs/99.templates/registry.json")
         self.assertEqual(DEFAULT_REGISTRY, ROOT / registry.source)
         self.assertNotIn("release", registry.profiles)
         self.assertGreater(registry.identity_spaces["requirement"].next_number, 0)
@@ -219,18 +283,12 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             (1, 2, 3, 4), requirement.child_spaces["REQ-0001.FR"].current_issued
         )
-        self.assertEqual(
-            (), requirement.child_spaces["REQ-0001.IF"].current_issued
-        )
-        self.assertEqual(
-            (1,), requirement.child_spaces["REQ-0001.IF"].reserved_history
-        )
+        self.assertEqual((), requirement.child_spaces["REQ-0001.IF"].current_issued)
+        self.assertEqual((1,), requirement.child_spaces["REQ-0001.IF"].reserved_history)
 
     def test_spec_0153_package_uses_registered_paths_and_identities(self) -> None:
         registry = load_registry()
-        package = pathlib.Path(
-            "docs/03.specs/0153-workspace-governance-simplification"
-        )
+        package = pathlib.Path("docs/03.specs/0153-workspace-governance-simplification")
         expected_profiles = {
             ".github/INDEX.md": "github-navigation-index",
             package / "spec.md": "spec",
@@ -316,9 +374,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 {"type": "operation/guide", "artifact_id": "GDE-0012"},
             ),
             (
-                pathlib.PurePosixPath(
-                    "docs/03.specs/9999-contains-0015/plan.md"
-                ),
+                pathlib.PurePosixPath("docs/03.specs/9999-contains-0015/plan.md"),
                 {"type": "sdlc/plan", "artifact_id": "SPEC-0015-PLAN-0001"},
             ),
         )
@@ -334,7 +390,9 @@ class DocumentRegistryTests(unittest.TestCase):
                     },
                 )
 
-    def test_every_markdown_template_references_a_profile_not_a_target_path(self) -> None:
+    def test_every_markdown_template_references_a_profile_not_a_target_path(
+        self,
+    ) -> None:
         registry = load_registry()
 
         for role, template in registry.template_roles.items():
@@ -402,7 +460,9 @@ class DocumentRegistryTests(unittest.TestCase):
             ),
             "non-monotonic-identity": lambda value: value["identity_spaces"][
                 "requirement"
-            ].update({"next_number": value["identity_spaces"]["requirement"]["high_water"]}),
+            ].update(
+                {"next_number": value["identity_spaces"]["requirement"]["high_water"]}
+            ),
             "reserved-history-reissue": lambda value: value["identity_spaces"][
                 "requirement"
             ]["child_spaces"]["REQ-0003.FR"]["current_issued"].append(5),
@@ -431,11 +491,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "template-source-traversal": lambda value: value["template_roles"][
                 "sdlc/requirement"
             ].update(
-                {
-                    "source": (
-                        "docs/99.templates/templates/../../outside.template.md"
-                    )
-                }
+                {"source": ("docs/99.templates/templates/../../outside.template.md")}
             ),
             "artifact-token-unknown": lambda value: value["profiles"][0].update(
                 {"artifact_id_pattern": "REQ-{bogus:4}"}
@@ -449,13 +505,13 @@ class DocumentRegistryTests(unittest.TestCase):
             "frontmatter-overlap": lambda value: value["profiles"][0][
                 "optional_frontmatter"
             ].append(value["profiles"][0]["required_frontmatter"][0]),
-            "flattened-requirement-child-space": lambda value: value[
-                "identity_spaces"
-            ]["requirement"]["child_spaces"].update(
+            "flattened-requirement-child-space": lambda value: value["identity_spaces"][
+                "requirement"
+            ]["child_spaces"].update(
                 {
-                    "FR": value["identity_spaces"]["requirement"][
-                        "child_spaces"
-                    ].pop("REQ-0001.FR")
+                    "FR": value["identity_spaces"]["requirement"]["child_spaces"].pop(
+                        "REQ-0001.FR"
+                    )
                 }
             ),
             "missing-requirement-package-spaces": lambda value: [
@@ -567,7 +623,9 @@ class DocumentRegistryTests(unittest.TestCase):
             )
         }
 
-        self.assertIn("requirement-child-space-above-package-high-water", snapshot_codes)
+        self.assertIn(
+            "requirement-child-space-above-package-high-water", snapshot_codes
+        )
         self.assertIn("requirement-package-high-water-regressed", transition_codes)
 
         advanced = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -625,7 +683,9 @@ class DocumentRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             baseline_oid = _allocation_git_fixture(root)
-            self.assertEqual(0, _fixture_git(root, "branch", "moving", baseline_oid).returncode)
+            self.assertEqual(
+                0, _fixture_git(root, "branch", "moving", baseline_oid).returncode
+            )
             _reclassify_fixture_allocation(root)
             self.assertEqual(0, _fixture_git(root, "add", ".").returncode)
             self.assertEqual(
@@ -644,12 +704,16 @@ class DocumentRegistryTests(unittest.TestCase):
                 if args[:2] == ["rev-parse", "--verify"]:
                     self.assertEqual(
                         0,
-                        _fixture_git(root, "branch", "-f", "moving", candidate_oid).returncode,
+                        _fixture_git(
+                            root, "branch", "-f", "moving", candidate_oid
+                        ).returncode,
                     )
                     moved = True
                 return result
 
-            with mock.patch.object(registry_module, "_git_read", side_effect=moving_ref):
+            with mock.patch.object(
+                registry_module, "_git_read", side_effect=moving_ref
+            ):
                 baseline = registry_module.load_trusted_requirement_allocation_baseline(
                     "moving", root=root
                 )
@@ -678,7 +742,9 @@ class DocumentRegistryTests(unittest.TestCase):
                     index_changed = True
                 return result
 
-            with mock.patch.object(registry_module, "_git_read", side_effect=moving_index):
+            with mock.patch.object(
+                registry_module, "_git_read", side_effect=moving_index
+            ):
                 baseline = registry_module.load_trusted_requirement_allocation_baseline(
                     ":", root=root
                 )
@@ -715,7 +781,9 @@ class DocumentRegistryTests(unittest.TestCase):
                 baseline.package_high_water,
             )
 
-    def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(self) -> None:
+    def test_every_canonical_markdown_profile_has_a_satisfiable_profile_id_contract(
+        self,
+    ) -> None:
         registry = load_registry()
         adapted = build_registry_profiles(registry)
         profile_map = adapted["profiles"]
@@ -967,7 +1035,21 @@ class DocumentRegistryTests(unittest.TestCase):
             readme.write_text("# Incomplete Index\n", encoding="utf-8")
             shutil.copy2(DEFAULT_REGISTRY, root / "docs/99.templates/registry.json")
             subprocess.run(["git", "add", "."], cwd=root, check=True)
-            subprocess.run(["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "registry baseline"], cwd=root, check=True, capture_output=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "registry baseline",
+                ],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
             result = subprocess.run(
                 [
                     sys.executable,
@@ -1070,9 +1152,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             [], validate_body_contract(record, body, adapted, changed_boundary=True)
         )
-        missing = body.replace(
-            "## Acceptance Criteria\n\nContract content.\n\n", "", 1
-        )
+        missing = body.replace("## Acceptance Criteria\n\nContract content.\n\n", "", 1)
         self.assertIn(
             "body-heading-missing",
             {
@@ -1149,10 +1229,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         self.assertIn(
             "type-mismatch",
-            {
-                finding.code
-                for finding in validate_record(record, adapted, {})
-            },
+            {finding.code for finding in validate_record(record, adapted, {})},
         )
 
     def test_frontmatter_schema_enforces_date_formats(self) -> None:
@@ -1192,9 +1269,7 @@ class FreeFormProfileTests(unittest.TestCase):
         body = "# Title\n\n" + "".join(f"## {h}\n\ncontent\n\n" for h in headings)
         return {
             finding.code
-            for finding in validate_body_contract(
-                record, body, self._adapted(), True
-            )
+            for finding in validate_body_contract(record, body, self._adapted(), True)
         }
 
     def test_free_form_profile_permits_an_unregistered_heading(self) -> None:
@@ -1332,8 +1407,7 @@ class InvalidPreviousStatusTests(unittest.TestCase):
             previous_status=previous_status,
         )
         return {
-            finding.code
-            for finding in validate_record(record, self._profiles(), {})
+            finding.code for finding in validate_record(record, self._profiles(), {})
         }
 
     def test_repair_from_an_undefined_status_is_not_a_transition(self) -> None:

@@ -44,6 +44,7 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 
+
 def _validate_template_source(
     record: Record,
     profiles: dict[str, object],
@@ -63,11 +64,23 @@ def _validate_template_source(
     _, role = matching_roles[0]
     target_type = role.get("artifact_profile")
     if not isinstance(target_type, str):
-        return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
+        return [
+            _finding(
+                record,
+                "unknown-template-target",
+                "template role has no artifact profile",
+            )
+        ]
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
     if not isinstance(target_profile, dict):
-        return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
+        return [
+            _finding(
+                record,
+                "unknown-template-target",
+                f"template target profile is unknown: {target_type}",
+            )
+        ]
     placeholders = _template_placeholder_values(profiles)
     common_contract, _ = _profile_mapping(profiles)
     required_placeholder_keys = set(
@@ -83,7 +96,11 @@ def _validate_template_source(
         owned_optional = set(target_profile.get("optional", []))
         for key in sorted(owned_required - set(record.metadata)):
             findings.append(
-                _finding(record, "missing-template-key", f"target-profile key is missing: {key}")
+                _finding(
+                    record,
+                    "missing-template-key",
+                    f"target-profile key is missing: {key}",
+                )
             )
         for key in sorted(set(record.metadata) - owned_required - owned_optional):
             findings.append(
@@ -99,18 +116,36 @@ def _validate_template_source(
     forbidden = set(target_profile.get("forbidden", []))
     allowed_template_keys = required | optional | {"status"}
     for key in sorted(required - set(record.metadata)):
-        findings.append(_finding(record, "missing-template-key", f"target-profile key is missing: {key}"))
+        findings.append(
+            _finding(
+                record, "missing-template-key", f"target-profile key is missing: {key}"
+            )
+        )
     for key in sorted(set(record.metadata) & forbidden):
-        findings.append(_finding(record, "forbidden-template-key", f"key is forbidden for {target_type}: {key}"))
+        findings.append(
+            _finding(
+                record,
+                "forbidden-template-key",
+                f"key is forbidden for {target_type}: {key}",
+            )
+        )
     for key in sorted(set(record.metadata) - allowed_template_keys):
-        findings.append(_finding(record, "type-inappropriate-key", f"key is not declared for target {target_type}: {key}"))
+        findings.append(
+            _finding(
+                record,
+                "type-inappropriate-key",
+                f"key is not declared for target {target_type}: {key}",
+            )
+        )
     # A template source carries its lifecycle's initial status, which is
     # `draft` for every profile that has one. The incident lifecycle is
     # `open/mitigated/closed` and has no `draft`, so demanding it there
     # contradicted the lifecycle-membership check on the same file.
     allowed_statuses = target_profile.get("allowed_statuses") or ()
-    initial_status = "draft" if "draft" in allowed_statuses else (
-        allowed_statuses[0] if allowed_statuses else "draft"
+    initial_status = (
+        "draft"
+        if "draft" in allowed_statuses
+        else (allowed_statuses[0] if allowed_statuses else "draft")
     )
     if record.metadata.get("status") != initial_status:
         findings.append(
@@ -122,7 +157,11 @@ def _validate_template_source(
         )
     if record.metadata.get("type") != document_type(target_type):
         findings.append(
-            _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
+            _finding(
+                record,
+                "artifact-type-mismatch",
+                f"template must declare target artifact_type {target_type}",
+            )
         )
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
@@ -134,16 +173,34 @@ def _validate_template_source(
     if not declares_parents and "parent_ids" not in record.metadata:
         pass
     elif parents is None:
-        findings.append(_finding(record, "invalid-template-placeholder", "parent_ids must be a placeholder list"))
+        findings.append(
+            _finding(
+                record,
+                "invalid-template-placeholder",
+                "parent_ids must be a placeholder list",
+            )
+        )
     elif not parents and not target_profile.get("allow_empty_parents", False):
-        findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
+        findings.append(
+            _finding(
+                record,
+                "missing-parent",
+                f"{target_type} template requires a direct parent placeholder",
+            )
+        )
     elif parent_placeholder is not None and any(
         parent != parent_placeholder for parent in parents
     ):
         # Only enforce canonicality when a placeholder is actually configured.
         # The JSON Registry projection supplies none, so an unguarded compare
         # made every non-empty parent_ids list "noncanonical" against None.
-        findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
+        findings.append(
+            _finding(
+                record,
+                "invalid-template-placeholder",
+                "parent_ids contains a noncanonical placeholder",
+            )
+        )
     for key in record.metadata:
         if key == "parent_ids":
             continue
@@ -266,9 +323,9 @@ def _body_target_scan_text(text: str) -> str:
 
 def _machine_template_path(path: pathlib.Path) -> bool:
     normalized = path.as_posix()
-    return normalized.startswith("docs/99.templates/templates/") and normalized.endswith(
-        MACHINE_TEMPLATE_SUFFIXES
-    )
+    return normalized.startswith(
+        "docs/99.templates/templates/"
+    ) and normalized.endswith(MACHINE_TEMPLATE_SUFFIXES)
 
 
 def _normalized_credential_key(value: object) -> str | None:
@@ -283,7 +340,11 @@ def _approved_machine_token(value: object) -> bool:
     if not isinstance(value, str):
         return False
     candidate = value.strip()
-    if len(candidate) >= 2 and candidate[0] == candidate[-1] and candidate[0] in {'"', "'"}:
+    if (
+        len(candidate) >= 2
+        and candidate[0] == candidate[-1]
+        and candidate[0] in {'"', "'"}
+    ):
         candidate = candidate[1:-1]
     return MACHINE_TEMPLATE_TOKEN.fullmatch(candidate) is not None
 
@@ -345,7 +406,9 @@ def _inspect_openapi(text: str) -> OpenApiInspection:
         nonlocal concrete_credential, concrete_format
         if isinstance(value, dict):
             for key, member in value.items():
-                normalized_key = re.sub(r"[^A-Za-z0-9]+", "_", str(key)).strip("_").lower()
+                normalized_key = (
+                    re.sub(r"[^A-Za-z0-9]+", "_", str(key)).strip("_").lower()
+                )
                 nested_security_context = security_scheme_context or normalized_key in {
                     "securityscheme",
                     "securityschemes",
@@ -431,7 +494,9 @@ def _graphql_concrete_credential(text: str) -> bool:
     return False
 
 
-PROTO_VALUE = r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[A-Za-z_][A-Za-z0-9_]*|-?[0-9]+)'
+PROTO_VALUE = (
+    r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[A-Za-z_][A-Za-z0-9_]*|-?[0-9]+)'
+)
 
 
 def _protobuf_concrete_credential(text: str) -> bool:
@@ -453,7 +518,9 @@ def _protobuf_concrete_credential(text: str) -> bool:
                     line,
                     flags=re.IGNORECASE,
                 )
-                if default_value and not _approved_machine_token(default_value.group(1)):
+                if default_value and not _approved_machine_token(
+                    default_value.group(1)
+                ):
                     return True
             assignment = re.search(
                 rf"(?:\b{re.escape(name)}\b|\({re.escape(name)}\))\s*=\s*({PROTO_VALUE})",
@@ -505,7 +572,9 @@ def _machine_template_findings(record: Record, text: str) -> list[Finding]:
             inspection.concrete_credential_value or inspection.concrete_format_value
         )
     else:
-        concrete_value = MACHINE_EXAMPLE_VALUE.search(text) is not None or _machine_concrete_credential(
+        concrete_value = MACHINE_EXAMPLE_VALUE.search(
+            text
+        ) is not None or _machine_concrete_credential(
             record.path,
             text,
         )
@@ -518,7 +587,6 @@ def _machine_template_findings(record: Record, text: str) -> list[Finding]:
             )
         )
     return sorted(set(findings))
-
 
 
 def _path_profile_declares_provider_binding(
@@ -634,10 +702,9 @@ def validate_body_contract(
             return sorted(set(findings))
 
     source_roles = _source_roles_for_path(record.path, profiles)
-    is_markdown_source = (
-        record.path.as_posix().startswith("docs/99.templates/templates/")
-        and record.path.name.endswith(".template.md")
-    )
+    is_markdown_source = record.path.as_posix().startswith(
+        "docs/99.templates/templates/"
+    ) and record.path.name.endswith(".template.md")
     role_name: str | None = None
     role: dict[str, object] | None = None
     findings: list[Finding] = []
@@ -730,12 +797,13 @@ def validate_body_contract(
     if source_roles or (
         isinstance(registry, DocumentRegistry)
         and record.artifact_type == "plan"
-        and classify_registered_path(record.path.as_posix(), registry) == record.artifact_type
+        and classify_registered_path(record.path.as_posix(), registry)
+        == record.artifact_type
     ):
         conditional = role.get("conditional_headings", [])
-        allowed_headings = set(required_headings if isinstance(required_headings, list) else []) | set(
-            conditional if isinstance(conditional, list) else []
-        )
+        allowed_headings = set(
+            required_headings if isinstance(required_headings, list) else []
+        ) | set(conditional if isinstance(conditional, list) else [])
         for heading in sorted(set(h2) - allowed_headings):
             findings.append(
                 _finding(
@@ -743,7 +811,7 @@ def validate_body_contract(
                     "body-heading-forbidden",
                     f"role {role_name} source contains unregistered heading: {heading}",
                 )
-                )
+            )
     if source_roles:
         for literal in TARGET_TEMPLATE_LITERALS:
             if literal in unfenced_text:
@@ -813,7 +881,9 @@ def _body_deficit_multiset(
         if finding.code in occurrence_codes:
             continue
         identity = _private_deficit_identity(finding.code, finding.message)
-        deficits[(finding.code, identity, "body contract deficit", finding.severity)] += 1
+        deficits[
+            (finding.code, identity, "body contract deficit", finding.severity)
+        ] += 1
 
     source_roles = _source_roles_for_path(record.path, profiles)
     # A `.template.md` under the Stage 99 template root is a source even when no
@@ -836,7 +906,9 @@ def _body_deficit_multiset(
         identity = _private_deficit_identity(instruction_code, literal)
         count = len(tuple(re.finditer(re.escape(literal), scan_text)))
         if count:
-            deficits[(instruction_code, identity, "template instruction", "error")] += count
+            deficits[(instruction_code, identity, "template instruction", "error")] += (
+                count
+            )
     if not is_template_source and changed_boundary:
         for match in MARKDOWN_BODY_TOKEN.finditer(scan_text):
             identity = _private_deficit_identity(
@@ -893,13 +965,16 @@ def _introduced_body_findings(
 
 
 def _native_migration_compaction_witness(
-    root: pathlib.Path, record: Record, base_ref: str | None,
+    root: pathlib.Path,
+    record: Record,
+    base_ref: str | None,
 ) -> Record | None:
     """Bind the frozen historical ledger to its verified native compact state."""
 
     if (
         not base_ref
-        or record.path.as_posix() != "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+        or record.path.as_posix()
+        != "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         or record.previous_status != "archived"
         or record.artifact_type != "migration"
         or record.metadata.get("type") != "archive/migration"
@@ -910,7 +985,9 @@ def _native_migration_compaction_witness(
     from scripts.lib.document_governance import archive
 
     try:
-        previous = archive.HistoricalDocument(root, base_ref, record.path.as_posix()).read_bytes()
+        previous = archive.HistoricalDocument(
+            root, base_ref, record.path.as_posix()
+        ).read_bytes()
         if hashlib.sha256(previous).hexdigest() != archive.FROZEN_MIGRATION_SHA256:
             return None
         if archive._migration_document(root)["schema_version"] != 3:

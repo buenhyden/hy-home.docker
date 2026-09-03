@@ -28,7 +28,9 @@ EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 COSIGN_OFFLINE_SIGNING_CONFIG = (
     ROOT / "infra/supply-chain.cosign-offline-signing-config.json"
 )
-COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
+COSIGN_OFFLINE_TRUSTED_ROOT = (
+    ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
+)
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
@@ -145,7 +147,9 @@ class SupplyChainPolicyTests(unittest.TestCase):
     def test_private_docker_save_config_body_is_hashed_independently(self) -> None:
         config_body = b'{"architecture":"amd64","os":"linux","rootfs":{"type":"layers","diff_ids":[]}}'
         config_digest = "sha256:" + hashlib.sha256(config_body).hexdigest()
-        with tempfile.TemporaryDirectory(prefix="docker-save-config-", dir="/tmp") as raw:
+        with tempfile.TemporaryDirectory(
+            prefix="docker-save-config-", dir="/tmp"
+        ) as raw:
             directory = pathlib.Path(raw)
             directory.chmod(0o700)
             archive_path = directory / "image.tar"
@@ -159,7 +163,9 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 ],
                 separators=(",", ":"),
             ).encode("utf-8")
-            with tarfile.open(archive_path, "w", format=tarfile.USTAR_FORMAT) as archive:
+            with tarfile.open(
+                archive_path, "w", format=tarfile.USTAR_FORMAT
+            ) as archive:
                 for name, body in (
                     ("manifest.json", manifest_body),
                     (f"{config_digest.removeprefix('sha256:')}.json", config_body),
@@ -291,9 +297,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
         mutation: str | None = None,
     ) -> dict[str, str | int]:
         layer_payload = (
-            b"x" * 16384
-            if mutation == "oversized-layer"
-            else b"deterministic-layer\n"
+            b"x" * 16384 if mutation == "oversized-layer" else b"deterministic-layer\n"
         )
         layer_buffer = io.BytesIO()
         with tarfile.open(
@@ -330,9 +334,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
             {
                 "architecture": "amd64",
                 "config": {
-                    "Labels": {
-                        "org.hyhome.delivery.rehearsal.role": "baseline"
-                    }
+                    "Labels": {"org.hyhome.delivery.rehearsal.role": "baseline"}
                 },
                 "os": "linux",
                 "rootfs": {
@@ -455,12 +457,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
         }
         if mutation in raw_tar_mutations:
             logical_end = sum(
-                512
-                + (
-                    ((entry.size + 511) // 512) * 512
-                    if entry.isfile()
-                    else 0
-                )
+                512 + (((entry.size + 511) // 512) * 512 if entry.isfile() else 0)
                 for entry, _ in entries
             )
             body = bytearray(path.read_bytes())
@@ -536,14 +533,10 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     pax_member.pax_headers = {"GNU.sparse.realsize": "0"}
                 else:
                     pax_member.pax_headers = {"comment": "malformed"}
-                pax_sequence = bytearray(
-                    pax_member.tobuf(format=tarfile.PAX_FORMAT)
-                )
+                pax_sequence = bytearray(pax_member.tobuf(format=tarfile.PAX_FORMAT))
                 if mutation == "malformed-pax-record":
                     pax_sequence[512] = ord("x")
-                body[logical_end : logical_end + len(pax_sequence)] = (
-                    pax_sequence
-                )
+                body[logical_end : logical_end + len(pax_sequence)] = pax_sequence
             path.write_bytes(body)
         path.chmod(0o600)
         return {
@@ -620,8 +613,12 @@ class SupplyChainPolicyTests(unittest.TestCase):
 
             self.assertEqual(first.read_bytes(), second.read_bytes())
             self.assertEqual(0o600, stat.S_IMODE(first.stat().st_mode))
-            self.assertEqual(expected["image_config_digest"], first_result["image_config_digest"])
-            self.assertEqual(expected["oci_manifest_digest"], first_result["oci_manifest_digest"])
+            self.assertEqual(
+                expected["image_config_digest"], first_result["image_config_digest"]
+            )
+            self.assertEqual(
+                expected["oci_manifest_digest"], first_result["oci_manifest_digest"]
+            )
             self.assertEqual(
                 "hyhome.local/sample-web-service:baseline-"
                 + expected["image_config_digest"].removeprefix("sha256:"),
@@ -640,8 +637,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                         (
                             expected["image_config_digest"].removeprefix("sha256:")
                             + ".json",
-                            expected["layer_digest"].removeprefix("sha256:")
-                            + ".tar",
+                            expected["layer_digest"].removeprefix("sha256:") + ".tar",
                             "manifest.json",
                         )
                     ),
@@ -650,9 +646,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 self.assertNotIn("index.json", names)
                 self.assertNotIn("oci-layout", names)
                 manifest = json.load(archive.extractfile("manifest.json"))
-            self.assertEqual(
-                [first_result["local_image_ref"]], manifest[0]["RepoTags"]
-            )
+            self.assertEqual([first_result["local_image_ref"]], manifest[0]["RepoTags"])
 
     def test_portable_converter_rejects_unsafe_or_unbound_oci_members(self) -> None:
         cases = {
@@ -688,7 +682,10 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "truncated-member": "oci-archive-truncated",
         }
         for mutation, reason in cases.items():
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
                 root = pathlib.Path(temporary)
                 root.chmod(0o700)
                 source = root / "image.oci.tar"
@@ -709,9 +706,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
             expected = self._write_portable_oci_archive(
                 source, mutation="oversized-layer"
             )
-            original = getattr(
-                self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES", None
-            )
+            original = getattr(self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES", None)
             setattr(
                 self.checker,
                 "OCI_LAYER_MAX_UNCOMPRESSED_BYTES",
@@ -726,9 +721,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     )
             finally:
                 if original is None:
-                    delattr(
-                        self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES"
-                    )
+                    delattr(self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES")
                 else:
                     self.checker.OCI_LAYER_MAX_UNCOMPRESSED_BYTES = original
             self.assertFalse(target.exists())
@@ -803,15 +796,11 @@ class SupplyChainPolicyTests(unittest.TestCase):
             root = pathlib.Path(temporary)
             root.chmod(0o700)
             source = root / "image.pax-size-override.oci.tar"
-            self._write_portable_oci_archive(
-                source, mutation="pax-size-override"
-            )
+            self._write_portable_oci_archive(source, mutation="pax-size-override")
             with self.assertRaisesRegex(
                 ValueError, "oci-archive-member-size-limit-exceeded"
             ):
-                self.checker._preflight_uncompressed_oci_tar(
-                    source.read_bytes()
-                )
+                self.checker._preflight_uncompressed_oci_tar(source.read_bytes())
 
     def test_portable_converter_rejects_oversized_hidden_pax_metadata(
         self,
@@ -829,9 +818,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                         pax_source = root / f"image.{scope}.pax.oci.tar"
                         target = root / f"image.{scope}.docker.tar"
                         global_headers = (
-                            {"comment": "g" * 2048}
-                            if scope == "global"
-                            else None
+                            {"comment": "g" * 2048} if scope == "global" else None
                         )
                         with tarfile.open(ustar_source, "r:") as source_archive:
                             with tarfile.open(
@@ -843,7 +830,10 @@ class SupplyChainPolicyTests(unittest.TestCase):
                                 cumulative_headers = 0
                                 for member in source_archive:
                                     copied = copy.copy(member)
-                                    if scope == "extended" and copied.name == "index.json":
+                                    if (
+                                        scope == "extended"
+                                        and copied.name == "index.json"
+                                    ):
                                         copied.pax_headers = {"comment": "x" * 2048}
                                     elif (
                                         scope == "cumulative"
@@ -2012,29 +2002,30 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
             for role, digit in (("baseline", "1"), ("candidate", "2")):
                 config = "sha256:" + digit * 64
                 payload = {
-                    "build_context_sha256": CANDIDATE_SUBJECT[
-                        "build_context_sha256"
-                    ],
-                    "docker_archive_sha256": "sha256:" + ("3" if role == "baseline" else "4") * 64,
+                    "build_context_sha256": CANDIDATE_SUBJECT["build_context_sha256"],
+                    "docker_archive_sha256": "sha256:"
+                    + ("3" if role == "baseline" else "4") * 64,
                     "exception_id": None,
                     "image_config_digest": config,
                     "local_image_ref": (
                         f"hyhome.local/sample-web-service:{role}-"
                         f"{config.removeprefix('sha256:')}"
                     ),
-                    "oci_archive_sha256": "sha256:" + ("5" if role == "baseline" else "6") * 64,
-                    "oci_manifest_digest": "sha256:" + ("7" if role == "baseline" else "8") * 64,
+                    "oci_archive_sha256": "sha256:"
+                    + ("5" if role == "baseline" else "6") * 64,
+                    "oci_manifest_digest": "sha256:"
+                    + ("7" if role == "baseline" else "8") * 64,
                     "policy_id": "sample-service-local-v1",
                     "producer_spec": "spec:126-security-supply-chain-remediation",
                     "redaction_status": "passed",
                     "role": role,
                     "runtime_identity_kind": (
-                        "config-digest" if role == "baseline" else "docker-target-digest"
+                        "config-digest"
+                        if role == "baseline"
+                        else "docker-target-digest"
                     ),
                     "runtime_image_id": (
-                        config
-                        if role == "baseline"
-                        else "sha256:" + "a" * 64
+                        config if role == "baseline" else "sha256:" + "a" * 64
                     ),
                     "schema_version": 2,
                     "source_revision": SOURCE_REVISION,

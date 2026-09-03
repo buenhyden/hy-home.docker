@@ -130,7 +130,10 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
         ("scripts/knowledge/generate-llm-wiki.py", ("--check",)),
         ("scripts/validation/generate-audit-implementation-matrix.sh", ("--check",)),
         ("scripts/validation/generate-security-automation-readiness.sh", ("--check",)),
-        ("scripts/security/generate-supply-chain-sample-service-summary.sh", ("--check",)),
+        (
+            "scripts/security/generate-supply-chain-sample-service-summary.sh",
+            ("--check",),
+        ),
         ("scripts/validation/validate-docker-compose.sh", ()),
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
@@ -443,31 +446,31 @@ def build_public_validation_plan(
             gate_id=(
                 template.gate_id
                 if template is not None
-                else "public.validator."
-                + item.path.as_posix().replace("/", ".")
+                else "public.validator." + item.path.as_posix().replace("/", ".")
             ),
             entrypoint=item.path,
             argv=_context_validator_argv(item, context, profile),
             cwd=(template.cwd if template is not None else pathlib.PurePosixPath(".")),
             allowed_env_keys=(
                 ("TEMPLATE_GATE_BASE",)
-                if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                if item.path.name
+                in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
                 and context in {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
-                else () if item.path.name in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
-                else template.allowed_env_keys if template is not None else ()
+                else ()
+                if item.path.name
+                in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
+                else template.allowed_env_keys
+                if template is not None
+                else ()
             ),
             timeout_seconds=(template.timeout_seconds if template is not None else 300),
         )
 
-    canonical = {
-        item.path: canonical_invocation(item) for item in selected_ownership
-    }
+    canonical = {item.path: canonical_invocation(item) for item in selected_ownership}
     plan: list[GateInvocation] = []
     emitted: set[pathlib.PurePosixPath] = set()
     standalone_validator_paths = {
-        item.path
-        for item in suite_model.validators
-        if item.execution_contexts
+        item.path for item in suite_model.validators if item.execution_contexts
     }
     for invocation in base_plan:
         path = invocation.entrypoint
@@ -488,7 +491,8 @@ def build_public_validation_plan(
         ExecutionContext.WORKFLOW_DISPATCH,
     }:
         result = tuple(
-            invocation for invocation in result
+            invocation
+            for invocation in result
             if invocation.gate_id != "leaf.repo-metadata-base"
         )
     validate_public_execution_parity(
@@ -498,14 +502,22 @@ def build_public_validation_plan(
 
 
 def _context_validator_argv(
-    item: public_suite_registry.ValidatorOwnership, context: ExecutionContext, profile: str,
+    item: public_suite_registry.ValidatorOwnership,
+    context: ExecutionContext,
+    profile: str,
 ) -> tuple[str, ...]:
     if profile not in {"changed", "full"}:
-        raise GateContractError("ci-gate-profile-unknown", "profile", "unknown public profile")
+        raise GateContractError(
+            "ci-gate-profile-unknown", "profile", "unknown public profile"
+        )
     if item.path.name == "check-document-metadata.py":
         if profile == "full":
             return ("--mode", "check-contracts", "--history-scope", "full")
-        if context in {ExecutionContext.LOCAL, ExecutionContext.PUSH_INITIAL, ExecutionContext.WORKFLOW_DISPATCH}:
+        if context in {
+            ExecutionContext.LOCAL,
+            ExecutionContext.PUSH_INITIAL,
+            ExecutionContext.WORKFLOW_DISPATCH,
+        }:
             return ("--mode", "check-active")
     return item.execution_argv
 
@@ -524,9 +536,13 @@ def validate_public_execution_parity(
     ownership_paths = tuple(item.path for item in suite_model.validators)
     try:
         for item in suite_model.validators:
-            public_suite_registry.validate_execution_argv(item.path, item.execution_argv)
+            public_suite_registry.validate_execution_argv(
+                item.path, item.execution_argv
+            )
     except public_suite_registry.SuiteRegistryError as error:
-        raise GateContractError("ci-gate-validator-arguments", "manifest", str(error)) from error
+        raise GateContractError(
+            "ci-gate-validator-arguments", "manifest", str(error)
+        ) from error
     if (
         len(selected) != len(selected_suites)
         or not selected.issubset(suite_model.public_names)
@@ -557,7 +573,9 @@ def validate_public_execution_parity(
                 invocation.gate_id,
                 "every invocation requires selected validator or exact internal admission",
             )
-        expected_argv = _context_validator_argv(ownership_by_path[invocation.entrypoint], context, profile)
+        expected_argv = _context_validator_argv(
+            ownership_by_path[invocation.entrypoint], context, profile
+        )
         if invocation.argv != expected_argv:
             raise GateContractError(
                 "ci-gate-public-execution-parity",
@@ -619,9 +637,7 @@ def _filter_execution_context(
             and node_by_id[invocation.gate_id].profiles != ("ci",)
         )
     return tuple(
-        invocation
-        for invocation in plan
-        if invocation.gate_id not in _PR_ONLY_GATE_IDS
+        invocation for invocation in plan if invocation.gate_id not in _PR_ONLY_GATE_IDS
     )
 
 
@@ -648,9 +664,7 @@ def execute_execution_plan(
             "PATH",
             "the controller PATH must be nonempty",
         )
-    home = pathlib.Path(
-        tempfile.mkdtemp(prefix="ci-gate-home-", dir="/tmp")
-    )
+    home = pathlib.Path(tempfile.mkdtemp(prefix="ci-gate-home-", dir="/tmp"))
     try:
         if executor is not None:
             for invocation in plan:
@@ -763,13 +777,21 @@ def main(argv: list[str] | None = None) -> int:
                 print(line)
             return 0
         return execute_execution_plan(root, plan, os.environ)
-    except (GateContractError, argparse.ArgumentError, public_suite_registry.SuiteRegistryError) as error:
+    except (
+        GateContractError,
+        argparse.ArgumentError,
+        public_suite_registry.SuiteRegistryError,
+    ) as error:
         if isinstance(error, GateContractError):
             code = error.code
             path = error.path
             message = error.message
         elif isinstance(error, public_suite_registry.SuiteRegistryError):
-            code, path, message = "ci-gate-manifest-invalid", "scripts/manifest.yaml", str(error)
+            code, path, message = (
+                "ci-gate-manifest-invalid",
+                "scripts/manifest.yaml",
+                str(error),
+            )
         else:
             code = "ci-gate-cli-arguments"
             path = "arguments"
@@ -794,13 +816,13 @@ def collect_changed_paths(
     }
     base = ""
     event = environ.get("EVENT_NAME", "")
-    if event == "pull_request" and _FULL_SHA.fullmatch(
-        environ.get("PR_BASE_SHA", "")
-    ):
+    if event == "pull_request" and _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", "")):
         base = environ["PR_BASE_SHA"]
-    elif event == "push" and _FULL_SHA.fullmatch(
-        environ.get("PUSH_BEFORE_SHA", "")
-    ) and environ.get("PUSH_BEFORE_SHA") != "0" * 40:
+    elif (
+        event == "push"
+        and _FULL_SHA.fullmatch(environ.get("PUSH_BEFORE_SHA", ""))
+        and environ.get("PUSH_BEFORE_SHA") != "0" * 40
+    ):
         base = environ["PUSH_BEFORE_SHA"]
 
     commands = (
@@ -941,10 +963,7 @@ def _open_directory_at(
         for part in parts:
             next_fd = os.open(
                 part,
-                os.O_RDONLY
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW
-                | os.O_DIRECTORY,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
                 dir_fd=current,
             )
             _close(current)
@@ -973,10 +992,7 @@ def _open_entrypoint_at(
         for part in parts[:-1]:
             next_fd = os.open(
                 part,
-                os.O_RDONLY
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW
-                | os.O_DIRECTORY,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
                 dir_fd=parent_fd,
             )
             _close(parent_fd)
@@ -984,10 +1000,7 @@ def _open_entrypoint_at(
         try:
             entrypoint_fd = os.open(
                 parts[-1],
-                os.O_RDONLY
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW
-                | os.O_NONBLOCK,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK,
                 dir_fd=parent_fd,
             )
         except OSError as error:
@@ -1182,20 +1195,13 @@ def _child_environment(
     python_bootstrap: pathlib.Path | None = None,
 ) -> dict[str, str]:
     for key in invocation.allowed_env_keys:
-        if (
-            _SECRET_ENV_SHAPE.search(key)
-            or key not in _ADMITTED_ENV_KEYS
-        ):
+        if _SECRET_ENV_SHAPE.search(key) or key not in _ADMITTED_ENV_KEYS:
             raise GateContractError(
                 "ci-gate-environment",
                 invocation.gate_id,
                 "the gate environment key is not admitted",
             )
-    root_value = (
-        f"/proc/self/fd/{root}"
-        if isinstance(root, int)
-        else str(root)
-    )
+    root_value = f"/proc/self/fd/{root}" if isinstance(root, int) else str(root)
     admitted: dict[str, str] = {
         "PATH": environ["PATH"],
         "LANG": "C.UTF-8",
@@ -1234,18 +1240,10 @@ def _metadata_comparison_base(environ: Mapping[str, str]) -> str | None:
     event_name = environ.get("EVENT_NAME", "")
     if event_name == "pull_request":
         base = environ.get("PR_BASE_SHA", "")
-        return (
-            base
-            if _FULL_SHA.fullmatch(base) and base != "0" * 40
-            else None
-        )
+        return base if _FULL_SHA.fullmatch(base) and base != "0" * 40 else None
     if event_name == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
-        return (
-            base
-            if _FULL_SHA.fullmatch(base) and base != "0" * 40
-            else None
-        )
+        return base if _FULL_SHA.fullmatch(base) and base != "0" * 40 else None
     return None
 
 
@@ -1258,11 +1256,7 @@ def _create_python_bootstrap(
         directory.mkdir(mode=0o700)
         descriptor = os.open(
             directory / "sitecustomize.py",
-            os.O_WRONLY
-            | os.O_CREAT
-            | os.O_EXCL
-            | os.O_CLOEXEC
-            | os.O_NOFOLLOW,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
             0o600,
         )
         try:
@@ -1360,11 +1354,7 @@ def _finalize_process_group(
             pidfd,
             _TERMINATION_GRACE_SECONDS,
         )
-    members = (
-        _same_pgid_members(pgid, process.pid)
-        if leader_ready
-        else ()
-    )
+    members = _same_pgid_members(pgid, process.pid) if leader_ready else ()
     if not leader_ready or members:
         _signal_process_group(pgid, signal.SIGKILL)
         if not leader_ready:
@@ -1394,10 +1384,7 @@ def _finalize_process_lifecycle(
             if lifecycle.process is not None:
                 if lifecycle.reap_started:
                     lifecycle.mark_cleanup_failed()
-                elif (
-                    not lifecycle.pidfd_acquired
-                    or not lifecycle.group_finalized
-                ):
+                elif not lifecycle.pidfd_acquired or not lifecycle.group_finalized:
                     _signal_process_group(
                         lifecycle.bound_process().pid,
                         signal.SIGKILL,
@@ -1421,9 +1408,7 @@ def _finalize_process_lifecycle(
                         lifecycle.pidfd,
                         _TERMINATION_GRACE_SECONDS,
                     )
-                    lifecycle.mark_recovery_readiness_completed(
-                        leader_ready
-                    )
+                    lifecycle.mark_recovery_readiness_completed(leader_ready)
             except BaseException:
                 if lifecycle.process is not None:
                     lifecycle.mark_cleanup_failed()
@@ -1502,11 +1487,7 @@ def _bounded_reap(
     if lifecycle.reap_started:
         raise _runner_cleanup_error()
     lifecycle.mark_reap_started()
-    returncode = int(
-        lifecycle.bound_process().wait(
-            timeout=_TERMINATION_GRACE_SECONDS
-        )
-    )
+    returncode = int(lifecycle.bound_process().wait(timeout=_TERMINATION_GRACE_SECONDS))
     lifecycle.mark_reap_completed(returncode)
     return returncode
 
@@ -1564,9 +1545,7 @@ def _pidfd_ready(pidfd: int, timeout_seconds: float) -> bool:
             ) from None
         if events:
             for descriptor, event in events:
-                if descriptor != pidfd or event & (
-                    select.POLLERR | select.POLLNVAL
-                ):
+                if descriptor != pidfd or event & (select.POLLERR | select.POLLNVAL):
                     raise GateContractError(
                         "ci-gate-runner-pidfd-readiness",
                         "pidfd",
@@ -1608,10 +1587,7 @@ def _same_pgid_members(
     try:
         proc_fd = os.open(
             proc_root,
-            os.O_RDONLY
-            | os.O_CLOEXEC
-            | os.O_NOFOLLOW
-            | os.O_DIRECTORY,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
         )
         try:
             numeric_names: list[str] = []
@@ -1621,10 +1597,7 @@ def _same_pgid_members(
                     if (
                         not name
                         or not name.isascii()
-                        or any(
-                            character < "0" or character > "9"
-                            for character in name
-                        )
+                        or any(character < "0" or character > "9" for character in name)
                     ):
                         continue
                     numeric_names.append(name)
@@ -1684,10 +1657,7 @@ def _read_proc_entry_pgid(
         try:
             pid_fd = os.open(
                 name,
-                os.O_RDONLY
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW
-                | os.O_DIRECTORY,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
                 dir_fd=proc_fd,
             )
         except OSError as error:
@@ -1699,10 +1669,7 @@ def _read_proc_entry_pgid(
             try:
                 stat_fd = os.open(
                     "stat",
-                    os.O_RDONLY
-                    | os.O_CLOEXEC
-                    | os.O_NOFOLLOW
-                    | os.O_NONBLOCK,
+                    os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK,
                     dir_fd=pid_fd,
                 )
             except OSError as error:

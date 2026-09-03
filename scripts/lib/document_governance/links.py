@@ -19,9 +19,7 @@ from scripts.lib.document_governance.frontmatter import (
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
-_CATALOG_PAIR = re.compile(
-    r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)"
-)
+_CATALOG_PAIR = re.compile(r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)")
 _ACTIVE_STAGE_PREFIXES = (
     "docs/01.requirements/",
     "docs/02.architecture/",
@@ -98,7 +96,10 @@ class DocumentLink:
             self.absolute
             or self.outside_repository
             or "\\" in self.decoded_target
-            or any(ord(character) < 32 or ord(character) == 127 for character in self.decoded_target)
+            or any(
+                ord(character) < 32 or ord(character) == 127
+                for character in self.decoded_target
+            )
         )
 
 
@@ -169,7 +170,13 @@ def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
         if fence is None:
             line, html_comment = _without_html_comments(line, html_comment)
         stripped = line.lstrip()
-        marker = "```" if stripped.startswith("```") else "~~~" if stripped.startswith("~~~") else None
+        marker = (
+            "```"
+            if stripped.startswith("```")
+            else "~~~"
+            if stripped.startswith("~~~")
+            else None
+        )
         if marker is not None:
             if fence is None:
                 fence = marker
@@ -352,12 +359,16 @@ def build_document_graph(
     nodes: list[DocumentNode] = []
     links: list[DocumentLink] = []
     input_findings: list[LinkFinding] = []
-    selected = sorted({item.absolute() for item in paths}, key=lambda item: item.as_posix())
+    selected = sorted(
+        {item.absolute() for item in paths}, key=lambda item: item.as_posix()
+    )
     for path in selected:
         relative = _strict_relative_path(root, path)
         if relative is None:
             input_findings.append(
-                LinkFinding(path.as_posix(), "document-outside-repository", path.as_posix())
+                LinkFinding(
+                    path.as_posix(), "document-outside-repository", path.as_posix()
+                )
             )
             continue
         if _has_symlink_ancestor(root, relative):
@@ -373,34 +384,46 @@ def build_document_graph(
             status = path.lstat()
         except OSError:
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-unreadable", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-unreadable", relative.as_posix()
+                )
             )
             continue
         if path.is_symlink():
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-symlink", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-symlink", relative.as_posix()
+                )
             )
             continue
         if not path.is_file():
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-not-regular", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-not-regular", relative.as_posix()
+                )
             )
             continue
         if status.st_size > _MAX_ANCHOR_BYTES:
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-too-large", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-too-large", relative.as_posix()
+                )
             )
             continue
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeError:
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-invalid-utf8", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-invalid-utf8", relative.as_posix()
+                )
             )
             continue
         except OSError:
             input_findings.append(
-                LinkFinding(relative.as_posix(), "document-unreadable", relative.as_posix())
+                LinkFinding(
+                    relative.as_posix(), "document-unreadable", relative.as_posix()
+                )
             )
             continue
         try:
@@ -445,9 +468,7 @@ def _node_map(graph: DocumentGraph) -> dict[pathlib.PurePosixPath, DocumentNode]
 def _regular_target(
     graph: DocumentGraph, target: pathlib.PurePosixPath
 ) -> tuple[pathlib.Path | None, str | None]:
-    if target.is_absolute() or any(
-        part in {"", ".", ".."} for part in target.parts
-    ):
+    if target.is_absolute() or any(part in {"", ".", ".."} for part in target.parts):
         return None, "link-outside-repository"
     path = graph.repo_root.joinpath(*target.parts)
     relative = _strict_relative_path(graph.repo_root, path)
@@ -603,23 +624,47 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     )
     for path in (specs, operations, catalog):
         if path not in nodes:
-            findings.append(LinkFinding(path.as_posix(), "traceability-file-missing", path.as_posix()))
+            findings.append(
+                LinkFinding(
+                    path.as_posix(), "traceability-file-missing", path.as_posix()
+                )
+            )
     if specs in nodes and operations.as_posix() not in _link_targets(graph, specs):
-        findings.append(LinkFinding(specs.as_posix(), "operations-index-link-missing", operations.as_posix()))
+        findings.append(
+            LinkFinding(
+                specs.as_posix(), "operations-index-link-missing", operations.as_posix()
+            )
+        )
     if operations in nodes and specs.as_posix() not in _link_targets(graph, operations):
-        findings.append(LinkFinding(operations.as_posix(), "spec-index-link-missing", specs.as_posix()))
+        findings.append(
+            LinkFinding(
+                operations.as_posix(), "spec-index-link-missing", specs.as_posix()
+            )
+        )
     catalog_node = nodes.get(catalog)
     if catalog_node is not None:
         for oper_raw, run_raw in _CATALOG_PAIR.findall(catalog_node.text):
             for role, raw in (("OPER", oper_raw), ("RUN", run_raw)):
                 resolved = _normalized_target(catalog, raw)
                 if resolved is None:
-                    findings.append(LinkFinding(catalog.as_posix(), "catalog-target-invalid", f"{role}:{raw}"))
+                    findings.append(
+                        LinkFinding(
+                            catalog.as_posix(),
+                            "catalog-target-invalid",
+                            f"{role}:{raw}",
+                        )
+                    )
                     continue
                 target, _, _, outside = resolved
                 target_path, _ = _regular_target(graph, target)
                 if outside or target_path is None:
-                    findings.append(LinkFinding(catalog.as_posix(), "catalog-target-missing", f"{role}:{raw}"))
+                    findings.append(
+                        LinkFinding(
+                            catalog.as_posix(),
+                            "catalog-target-missing",
+                            f"{role}:{raw}",
+                        )
+                    )
     return sorted(set(findings))
 
 

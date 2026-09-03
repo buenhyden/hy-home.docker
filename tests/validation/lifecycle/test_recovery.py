@@ -29,8 +29,11 @@ class HistoricalDocumentRecoveryTests(unittest.TestCase):
             self.assertEqual("current recovery body\n", recovered.read_text())
 
             for path in ("docs", "docs/missing.md", "docs/link.md"):
-                with self.subTest(path=path), self.assertRaisesRegex(
-                    ValueError,
-                    "regular blob",
+                with (
+                    self.subTest(path=path),
+                    self.assertRaisesRegex(
+                        ValueError,
+                        "regular blob",
+                    ),
                 ):
                     HistoricalDocument(root, commit, path).read_bytes()

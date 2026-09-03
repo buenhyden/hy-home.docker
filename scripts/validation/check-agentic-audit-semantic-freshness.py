@@ -342,7 +342,11 @@ def _validate_tracked_contract_paths(
         ("2026-07-07 README", SUPERSEDED_2026_07_07_README.as_posix()),
     ]
     for label, relative in declared:
-        if label == "task evidence" and not (repo_root / relative).exists() and not (repo_root / relative).is_symlink():
+        if (
+            label == "task evidence"
+            and not (repo_root / relative).exists()
+            and not (repo_root / relative).is_symlink()
+        ):
             _read_task_evidence(repo_root, contract, errors)
             continue
         errors.extend(
@@ -404,7 +408,9 @@ def _task_is_done(task_text: str, task_id: str) -> bool:
 
 
 def _read_task_evidence(
-    repo_root: pathlib.Path, contract: dict[str, Any], errors: list[str],
+    repo_root: pathlib.Path,
+    contract: dict[str, Any],
+    errors: list[str],
 ) -> str | None:
     """Use live execution evidence, or its explicit compact recovery mapping."""
 
@@ -416,13 +422,19 @@ def _read_task_evidence(
 
     try:
         migration = _migration_document(repo_root)
-        rows = [row for row in migration["rows"] if row["source_path"] == contract["task_evidence"]]
+        rows = [
+            row
+            for row in migration["rows"]
+            if row["source_path"] == contract["task_evidence"]
+        ]
         if migration["schema_version"] != 3 or len(rows) != 1:
             raise ValueError("retired task requires one compact recovery mapping")
         row = rows[0]
         if row["action"] != "delete" or row["target_path"] is not None:
             raise ValueError("retired task must be an approved deletion")
-        return HistoricalDocument(repo_root, row["recovery_commit"], row["source_path"]).read_text()
+        return HistoricalDocument(
+            repo_root, row["recovery_commit"], row["source_path"]
+        ).read_text()
     except (ValueError, OSError, UnicodeError):
         errors.append("task evidence: explicit compact regular Git recovery is invalid")
         return None

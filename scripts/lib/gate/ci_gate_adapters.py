@@ -183,7 +183,7 @@ def validate_adapter_argv(argv: tuple[str, ...]) -> None:
                 _argument_error()
         return
     if command == "run-npm":
-        if arguments[-len(_NPM_PREFIX):] != _NPM_PREFIX:
+        if arguments[-len(_NPM_PREFIX) :] != _NPM_PREFIX:
             _argument_error()
         if arguments[: -len(_NPM_PREFIX)] not in _NPM_ARGUMENT_SHAPES:
             _argument_error()
@@ -255,8 +255,7 @@ def _dispatch_adapter(
             len(arguments) < 2
             or arguments[-1] != "-v"
             or any(
-                _UNITTEST_MODULE.fullmatch(module) is None
-                for module in arguments[:-1]
+                _UNITTEST_MODULE.fullmatch(module) is None for module in arguments[:-1]
             )
         ):
             _argument_error()
@@ -570,9 +569,7 @@ def _validate_environment(environ: Mapping[str, str]) -> None:
 
 def _git_environment(environ: Mapping[str, str]) -> dict[str, str]:
     result = {
-        key: value
-        for key, value in environ.items()
-        if not key.startswith("GIT_")
+        key: value for key, value in environ.items() if not key.startswith("GIT_")
     }
     result["GIT_CONFIG_NOSYSTEM"] = "1"
     result["GIT_CONFIG_GLOBAL"] = "/dev/null"
@@ -663,10 +660,7 @@ def _check_shell_syntax(
         or ".." in pathlib.PurePosixPath(path).parts
         or not (
             (path.startswith("scripts/") and path.endswith(".sh"))
-            or (
-                path.startswith(".claude/hooks/")
-                and path.endswith(".sh")
-            )
+            or (path.startswith(".claude/hooks/") and path.endswith(".sh"))
         )
         for path in paths
     ):
@@ -728,10 +722,7 @@ def _npm_arguments(arguments: tuple[str, ...]) -> tuple[str, ...]:
     admitted = {
         ("audit", "--audit-level=high", *_NPM_PREFIX),
         ("ci", *_NPM_PREFIX),
-        *{
-            ("run", script, *_NPM_PREFIX)
-            for script in _NPM_SCRIPTS
-        },
+        *{("run", script, *_NPM_PREFIX) for script in _NPM_SCRIPTS},
     }
     if arguments not in admitted:
         _argument_error()
@@ -750,7 +741,10 @@ def _check_git_flow(environ: Mapping[str, str]) -> None:
         r"(?:docs|style|refactor|perf|test|build|ci|chore|revert)/.+|"
         r"(?:dependabot|codex)/.+)\Z"
     )
-    if title_pattern.fullmatch(title) is None or branch_pattern.fullmatch(branch) is None:
+    if (
+        title_pattern.fullmatch(title) is None
+        or branch_pattern.fullmatch(branch) is None
+    ):
         raise AdapterError(
             "ci-gate-adapter-git-flow",
             "the pull request identity does not match policy",
@@ -831,10 +825,7 @@ def _prepare_compose_env(
             environ=_git_environment(environ),
             capture_output=True,
         )
-        if (
-            tracked_blob.returncode != 0
-            or tracked_blob.stdout != payload
-        ):
+        if tracked_blob.returncode != 0 or tracked_blob.stdout != payload:
             raise AdapterError(
                 "ci-gate-adapter-compose-source",
                 "the compose example source is invalid",
@@ -842,11 +833,7 @@ def _prepare_compose_env(
         try:
             destination_fd = os.open(
                 ".env",
-                os.O_WRONLY
-                | os.O_CREAT
-                | os.O_EXCL
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
                 0o600,
                 dir_fd=root_fd,
             )
@@ -889,9 +876,7 @@ def _prepare_compose_env(
             descriptor_cleanup_failed = True
 
     unlink_cleanup_failed = False
-    if created and (
-        product_error is not None or descriptor_cleanup_failed
-    ):
+    if created and (product_error is not None or descriptor_cleanup_failed):
         try:
             os.unlink(".env", dir_fd=root_fd)
         except OSError:
@@ -961,11 +946,7 @@ def _run_zizmor_sarif(
         try:
             output_fd = os.open(
                 "results.sarif",
-                os.O_WRONLY
-                | os.O_CREAT
-                | os.O_EXCL
-                | os.O_CLOEXEC
-                | os.O_NOFOLLOW,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
                 0o600,
                 dir_fd=root_fd,
             )
@@ -1010,9 +991,7 @@ def _run_zizmor_sarif(
 
     unlink_cleanup_failed = False
     if created and (
-        product_error is not None
-        or result_code != 0
-        or output_cleanup_failed
+        product_error is not None or result_code != 0 or output_cleanup_failed
     ):
         try:
             os.unlink("results.sarif", dir_fd=root_fd)

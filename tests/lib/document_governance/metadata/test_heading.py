@@ -56,7 +56,9 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_additional_body_token_is_blocked_without_value_leakage(self) -> None:
         base = REQUIREMENT_TARGET_BODY + "\n{{existing_token}}\n"
         findings = self.introduced(base + "\n{{additional_token}}\n", base)
-        self.assertEqual(["template-body-token-in-target"], [item.code for item in findings])
+        self.assertEqual(
+            ["template-body-token-in-target"], [item.code for item in findings]
+        )
         rendered = "\n".join(item.message for item in findings)
         self.assertNotIn("existing_token", rendered)
         self.assertNotIn("additional_token", rendered)
@@ -66,7 +68,9 @@ class CurrentBodyContractTests(unittest.TestCase):
             REQUIREMENT_TARGET_BODY + "\n{{replacement_token}}\n",
             REQUIREMENT_TARGET_BODY + "\n{{original_token}}\n",
         )
-        self.assertEqual(["template-body-token-in-target"], [item.code for item in findings])
+        self.assertEqual(
+            ["template-body-token-in-target"], [item.code for item in findings]
+        )
         rendered = "\n".join(item.message for item in findings)
         self.assertNotIn("original_token", rendered)
         self.assertNotIn("replacement_token", rendered)
@@ -76,7 +80,9 @@ class CurrentBodyContractTests(unittest.TestCase):
             REQUIREMENT_TARGET_BODY + "\n> Rules:\n",
             REQUIREMENT_TARGET_BODY,
         )
-        self.assertEqual(["template-instruction-in-target"], [item.code for item in findings])
+        self.assertEqual(
+            ["template-instruction-in-target"], [item.code for item in findings]
+        )
         self.assertNotIn("> Rules:", "\n".join(item.message for item in findings))
 
     def test_new_file_body_deficit_is_blocked(self) -> None:
@@ -84,7 +90,9 @@ class CurrentBodyContractTests(unittest.TestCase):
             REQUIREMENT_TARGET_BODY + "\n{{new_file_token}}\n",
             None,
         )
-        self.assertEqual(["template-body-token-in-target"], [item.code for item in findings])
+        self.assertEqual(
+            ["template-body-token-in-target"], [item.code for item in findings]
+        )
 
     def test_current_operations_policy_preserves_its_own_body_baseline(self) -> None:
         record = metadata.Record(

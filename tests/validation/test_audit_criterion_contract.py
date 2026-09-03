@@ -33,7 +33,9 @@ class AuditCriterionContractTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.tempdir.cleanup()
 
-    def _report(self, name: str = "sdlc-quality-formatting-implementation.md") -> pathlib.Path:
+    def _report(
+        self, name: str = "sdlc-quality-formatting-implementation.md"
+    ) -> pathlib.Path:
         return self.pack / REPORT_FILES[name]
 
     def _rewrite_criterion(self, criterion_id: str, mutate) -> None:
@@ -57,7 +59,9 @@ class AuditCriterionContractTests(unittest.TestCase):
         contract = validate_pack(self.pack)
         self.assertEqual(EXPECTED_TOTAL, len(contract.rows))
         self.assertEqual(len(REPORT_PREFIX_COUNTS), len(contract.per_report_counts))
-        self.assertEqual(EXPECTED_TOTAL, len({row.criterion_id for row in contract.rows}))
+        self.assertEqual(
+            EXPECTED_TOTAL, len({row.criterion_id for row in contract.rows})
+        )
 
     def test_deleted_row_is_rejected(self) -> None:
         report = self._report()
@@ -72,8 +76,12 @@ class AuditCriterionContractTests(unittest.TestCase):
     def test_malformed_row_is_rejected(self) -> None:
         report = self._report()
         text = report.read_text(encoding="utf-8")
-        original = next(line for line in text.splitlines() if line.startswith("| QAF-01 |"))
-        report.write_text(text.replace(original, "| QAF-01 | malformed |", 1), encoding="utf-8")
+        original = next(
+            line for line in text.splitlines() if line.startswith("| QAF-01 |")
+        )
+        report.write_text(
+            text.replace(original, "| QAF-01 | malformed |", 1), encoding="utf-8"
+        )
         self._assert_contract_error("malformed criterion row has 2 fields; expected 10")
 
     def test_blank_field_is_rejected(self) -> None:
@@ -95,7 +103,11 @@ class AuditCriterionContractTests(unittest.TestCase):
         env = os.environ.copy()
         env["AUDIT_PACK_DIR"] = str(self.pack)
         result = subprocess.run(
-            ["bash", "scripts/validation/generate-audit-implementation-matrix.sh", "--dry-run"],
+            [
+                "bash",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "--dry-run",
+            ],
             cwd=ROOT,
             env=env,
             capture_output=True,
@@ -132,8 +144,12 @@ class AuditCriterionContractTests(unittest.TestCase):
                 with self.subTest(path=path):
                     result = subprocess.run(
                         ["bash", path, "--pack", str(self.pack), "--check"],
-                        cwd=ROOT, env=env, pass_fds=(held.fileno(),),
-                        capture_output=True, text=True, check=False,
+                        cwd=ROOT,
+                        env=env,
+                        pass_fds=(held.fileno(),),
+                        capture_output=True,
+                        text=True,
+                        check=False,
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
                     self.assertIn("criterion_rows_total=161", result.stdout)
@@ -145,18 +161,33 @@ class AuditCriterionContractTests(unittest.TestCase):
         source = overview.read_text(encoding="utf-8")
         self.assertEqual(1, source.count("| Harness engineering |"))
         overview.write_text(
-            "\n".join(line for line in source.splitlines()
-                      if not line.startswith("| Harness engineering |")) + "\n",
+            "\n".join(
+                line
+                for line in source.splitlines()
+                if not line.startswith("| Harness engineering |")
+            )
+            + "\n",
             encoding="utf-8",
         )
         result = subprocess.run(
-            ["bash", "scripts/validation/report-audit-pack-coverage.sh",
-             "--pack", str(self.pack), "--check"],
-            cwd=ROOT, capture_output=True, text=True, check=False,
+            [
+                "bash",
+                "scripts/validation/report-audit-pack-coverage.sh",
+                "--pack",
+                str(self.pack),
+                "--check",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
         )
         self.assertEqual(1, result.returncode)
         self.assertIn("overview_categories_found=14", result.stdout)
-        self.assertIn("missing implementation-overview category: Harness engineering", result.stderr)
+        self.assertIn(
+            "missing implementation-overview category: Harness engineering",
+            result.stderr,
+        )
 
 
 if __name__ == "__main__":

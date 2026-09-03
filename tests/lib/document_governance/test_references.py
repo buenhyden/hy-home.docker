@@ -26,12 +26,26 @@ def reference_api():
 
 class ReferencePackageTests(unittest.TestCase):
     def test_generated_ownership_is_exact_unique_bounded_and_safe(self) -> None:
-        entry = {"path": "scripts/example.sh", "kind": "generator", "mutation": "check-write", "lifecycle": "active", "disposition": "retain", "outputs": ["docs/90.references/data/0065-example/README.md"]}
+        entry = {
+            "path": "scripts/example.sh",
+            "kind": "generator",
+            "mutation": "check-write",
+            "lifecycle": "active",
+            "disposition": "retain",
+            "outputs": ["docs/90.references/data/0065-example/README.md"],
+        }
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             manifest = root / "scripts/manifest.yaml"
             manifest.parent.mkdir()
-            for mutation in ("valid", "validator", "duplicate", "traversal", "malformed", "oversize"):
+            for mutation in (
+                "valid",
+                "validator",
+                "duplicate",
+                "traversal",
+                "malformed",
+                "oversize",
+            ):
                 with self.subTest(mutation=mutation):
                     row = {**entry, "outputs": list(entry["outputs"])}
                     rows = [row]
@@ -44,28 +58,55 @@ class ReferencePackageTests(unittest.TestCase):
                     elif mutation == "malformed":
                         rows = [None]
                     elif mutation == "oversize":
-                        row["outputs"] = [f"docs/90.references/data/{number:04d}-example/README.md" for number in range(129)]
+                        row["outputs"] = [
+                            f"docs/90.references/data/{number:04d}-example/README.md"
+                            for number in range(129)
+                        ]
                     manifest.write_text(json.dumps({"files": rows}), encoding="utf-8")
                     if mutation in {"valid", "validator"}:
-                        self.assertEqual({entry["outputs"][0]: entry["path"]}, self.references.generated_reference_owners(root))
+                        self.assertEqual(
+                            {entry["outputs"][0]: entry["path"]},
+                            self.references.generated_reference_owners(root),
+                        )
                     else:
                         with self.assertRaises(ValueError):
                             self.references.generated_reference_owners(root)
 
-    def test_public_metadata_checks_current_generated_links_not_historical_snapshots(self) -> None:
+    def test_public_metadata_checks_current_generated_links_not_historical_snapshots(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import metadata_validator
         from scripts.lib.document_governance import archive
 
         native_migration = archive._migration_document(ROOT)
         context, root = self._fixture()
-        with context, mock.patch.object(archive, "_migration_document", return_value=native_migration):
-            generated = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
-            historical = root / "docs/90.references/audits/0031-security-framework-maturity/README.md"
-            generated.write_text(generated.read_text() + "\n[Broken current](../../../../__missing_generated_link__.md)\n")
-            historical.write_text(historical.read_text() + "\n[Old source](../../../../__historical_snapshot_link__.md)\n")
+        with (
+            context,
+            mock.patch.object(
+                archive, "_migration_document", return_value=native_migration
+            ),
+        ):
+            generated = (
+                root
+                / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
+            )
+            historical = (
+                root
+                / "docs/90.references/audits/0031-security-framework-maturity/README.md"
+            )
+            generated.write_text(
+                generated.read_text()
+                + "\n[Broken current](../../../../__missing_generated_link__.md)\n"
+            )
+            historical.write_text(
+                historical.read_text()
+                + "\n[Old source](../../../../__historical_snapshot_link__.md)\n"
+            )
             output = io.StringIO()
             with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-                code = metadata_validator.main(["--root", str(root), "--mode", "check-active"])
+                code = metadata_validator.main(
+                    ["--root", str(root), "--mode", "check-active"]
+                )
             self.assertNotEqual(0, code)
             self.assertIn("__missing_generated_link__.md", output.getvalue())
             self.assertNotIn("__historical_snapshot_link__.md", output.getvalue())
@@ -84,9 +125,14 @@ class ReferencePackageTests(unittest.TestCase):
                     if mutation == "missing":
                         path.unlink()
                     elif mutation == "extra":
-                        path.with_name("unexpected.md").write_text("# Unexpected\n", encoding="utf-8")
+                        path.with_name("unexpected.md").write_text(
+                            "# Unexpected\n", encoding="utf-8"
+                        )
                     else:
-                        path.write_text("---\nstatus: active\nstatus: retired\n---\n# Invalid\n", encoding="utf-8")
+                        path.write_text(
+                            "---\nstatus: active\nstatus: retired\n---\n# Invalid\n",
+                            encoding="utf-8",
+                        )
                     self.assertIn(expected, self.finding_codes(root))
 
     def setUp(self) -> None:
@@ -124,15 +170,26 @@ class ReferencePackageTests(unittest.TestCase):
             {"AUD-", "DATA-", "RES-"},
             {item.artifact_id.rsplit("-", 1)[0] + "-" for item in corpus.packages},
         )
-        self.assertTrue(all(self.references.PACKAGE_PATH.fullmatch(item.relative_package) for item in corpus.packages))
-        self.assertFalse(any(item.overrides_normative_stage for item in corpus.packages))
+        self.assertTrue(
+            all(
+                self.references.PACKAGE_PATH.fullmatch(item.relative_package)
+                for item in corpus.packages
+            )
+        )
+        self.assertFalse(
+            any(item.overrides_normative_stage for item in corpus.packages)
+        )
 
     def test_dated_or_prefixed_package_is_rejected(self) -> None:
         for invalid in ("2026-08-08-dated", "res-0099-prefixed", "aud-0099-prefixed"):
             with self.subTest(invalid=invalid):
                 context, root = self._fixture()
                 with context:
-                    source = next((root / "docs/90.references/research").glob("[0-9][0-9][0-9][0-9]-*"))
+                    source = next(
+                        (root / "docs/90.references/research").glob(
+                            "[0-9][0-9][0-9][0-9]-*"
+                        )
+                    )
                     source.rename(source.with_name(invalid))
                     self.assertIn("package-path-invalid", self.finding_codes(root))
 
@@ -149,7 +206,9 @@ class ReferencePackageTests(unittest.TestCase):
         with context:
             retired = root / "docs/90.references/learning"
             retired.mkdir()
-            (retired / "README.md").write_text("# Moved\n\nSee ../research/.\n", encoding="utf-8")
+            (retired / "README.md").write_text(
+                "# Moved\n\nSee ../research/.\n", encoding="utf-8"
+            )
             self.assertIn("retired-root-present", self.finding_codes(root))
 
         context, root = self._fixture()
@@ -184,9 +243,15 @@ class ReferencePackageTests(unittest.TestCase):
     def test_package_identity_must_match_category_and_directory(self) -> None:
         context, root = self._fixture()
         with context:
-            package = next((root / "docs/90.references/audits").glob("[0-9][0-9][0-9][0-9]-*/README.md"))
+            package = next(
+                (root / "docs/90.references/audits").glob(
+                    "[0-9][0-9][0-9][0-9]-*/README.md"
+                )
+            )
             package.write_text(
-                package.read_text(encoding="utf-8").replace("artifact_id: AUD-", "artifact_id: RES-", 1),
+                package.read_text(encoding="utf-8").replace(
+                    "artifact_id: AUD-", "artifact_id: RES-", 1
+                ),
                 encoding="utf-8",
             )
             self.assertIn("package-identity-invalid", self.finding_codes(root))
@@ -194,7 +259,11 @@ class ReferencePackageTests(unittest.TestCase):
     def test_stage90_cannot_override_normative_stages(self) -> None:
         context, root = self._fixture()
         with context:
-            package = next((root / "docs/90.references/research").glob("[0-9][0-9][0-9][0-9]-*/README.md"))
+            package = next(
+                (root / "docs/90.references/research").glob(
+                    "[0-9][0-9][0-9][0-9]-*/README.md"
+                )
+            )
             package.write_text(
                 package.read_text(encoding="utf-8")
                 + "\nStage 90 overrides Stage 00 policy and takes precedence over Stage 03.\n",
@@ -217,9 +286,7 @@ class ReferencePackageTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             package = next(
-                (root / "docs/90.references/research").glob(
-                    "[0-9][0-9][0-9][0-9]-*"
-                )
+                (root / "docs/90.references/research").glob("[0-9][0-9][0-9][0-9]-*")
             )
             payload = package / "payload.md"
             payload.write_text(
@@ -262,7 +329,9 @@ class ReferencePackageTests(unittest.TestCase):
             )
             self.assertIn("generated-data-link-missing", self.finding_codes(root))
 
-    def test_reference_traversal_rejects_symlinks_fifos_and_budget_overflow(self) -> None:
+    def test_reference_traversal_rejects_symlinks_fifos_and_budget_overflow(
+        self,
+    ) -> None:
         for unsafe in ("broken-symlink", "live-symlink", "fifo"):
             with self.subTest(unsafe=unsafe):
                 context, root = self._fixture()
@@ -274,7 +343,9 @@ class ReferencePackageTests(unittest.TestCase):
                         )
                     elif unsafe == "live-symlink":
                         target = next(data.glob("[0-9][0-9][0-9][0-9]-*"))
-                        (data / "0099-live").symlink_to(target, target_is_directory=True)
+                        (data / "0099-live").symlink_to(
+                            target, target_is_directory=True
+                        )
                     else:
                         os.mkfifo(data / "unregistered.pipe")
                     self.assertIn("reference-corpus-invalid", self.finding_codes(root))
@@ -284,11 +355,17 @@ class ReferencePackageTests(unittest.TestCase):
             self.assertIn("reference-corpus-invalid", self.finding_codes(root))
 
         context, root = self._fixture()
-        with context, mock.patch.object(self.references, "MAX_REFERENCE_FILE_BYTES", 32):
+        with (
+            context,
+            mock.patch.object(self.references, "MAX_REFERENCE_FILE_BYTES", 32),
+        ):
             self.assertIn("reference-corpus-invalid", self.finding_codes(root))
 
         context, root = self._fixture()
-        with context, mock.patch.object(self.references, "MAX_TOTAL_REFERENCE_BYTES", 64):
+        with (
+            context,
+            mock.patch.object(self.references, "MAX_TOTAL_REFERENCE_BYTES", 64),
+        ):
             self.assertIn("reference-corpus-invalid", self.finding_codes(root))
 
     def test_descriptor_reader_rejects_missing_and_swapped_leaf_races(self) -> None:
@@ -320,7 +397,9 @@ class ReferencePackageTests(unittest.TestCase):
 
                     try:
                         with mock.patch.object(self.references.os, "stat", racing_stat):
-                            with self.assertRaises(self.references.ReferenceCorpusError):
+                            with self.assertRaises(
+                                self.references.ReferenceCorpusError
+                            ):
                                 self.references._read_regular_utf8(
                                     descriptor,
                                     "README.md",
@@ -330,7 +409,9 @@ class ReferencePackageTests(unittest.TestCase):
                     finally:
                         os.close(descriptor)
 
-    def test_authority_and_redirect_classification_is_semantic_and_padding_independent(self) -> None:
+    def test_authority_and_redirect_classification_is_semantic_and_padding_independent(
+        self,
+    ) -> None:
         context, root = self._fixture()
         with context:
             package = next(
@@ -463,7 +544,9 @@ class ReferencePackageTests(unittest.TestCase):
                 root,
                 (pathlib.PurePosixPath("scripts/validation/current.py"),),
             )
-            self.assertEqual({"retired-active-reference-path"}, {item.code for item in findings})
+            self.assertEqual(
+                {"retired-active-reference-path"}, {item.code for item in findings}
+            )
 
 
 class ProtectedResearchDeclarationTests(unittest.TestCase):
@@ -483,7 +566,9 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
                 cwd=ROOT,
                 capture_output=True,
                 check=True,
-            ).stdout.decode("utf-8").split("\0")
+            )
+            .stdout.decode("utf-8")
+            .split("\0")
         ) - {""}
         self.assertEqual(tracked, declared)
         for relative in sorted(declared):
@@ -538,7 +623,12 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
             (root / victim).unlink()
             self.assertEqual(
                 {"protected-research-missing"},
-                {item.code for item in references.validate_protected_research(root, consumers=())},
+                {
+                    item.code
+                    for item in references.validate_protected_research(
+                        root, consumers=()
+                    )
+                },
             )
 
     def test_undeclared_package_file_fails_closed(self) -> None:
@@ -549,10 +639,17 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / relative, target)
-            (root / self.PACKAGE / "undeclared.md").write_text("# stray\n", encoding="utf-8")
+            (root / self.PACKAGE / "undeclared.md").write_text(
+                "# stray\n", encoding="utf-8"
+            )
             self.assertEqual(
                 {"protected-research-undeclared"},
-                {item.code for item in references.validate_protected_research(root, consumers=())},
+                {
+                    item.code
+                    for item in references.validate_protected_research(
+                        root, consumers=()
+                    )
+                },
             )
 
     def test_declared_leaves_keep_substantive_research_shape(self) -> None:
@@ -573,7 +670,11 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
     def test_current_reference_topology_ignores_the_archive_migration(self) -> None:
         references = self._references()
         source = pathlib.Path(references.__file__).read_text(encoding="utf-8")
-        for token in ("load_task9_migration", "Task9Migration", "migration_rows_for_task"):
+        for token in (
+            "load_task9_migration",
+            "Task9Migration",
+            "migration_rows_for_task",
+        ):
             self.assertNotIn(token, source)
         self.assertNotIn("98.archive", source)
 

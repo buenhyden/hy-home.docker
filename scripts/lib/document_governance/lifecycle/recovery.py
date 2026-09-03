@@ -18,9 +18,7 @@ def run(root: pathlib.Path) -> int:
         # safely", which is true and useless: the operator learned nothing about
         # which archive document broke its contract.
         path = getattr(error, "path", "docs/98.archive")
-        print(
-            f"archive-contract-invalid: {path}: validation rule is not satisfied"
-        )
+        print(f"archive-contract-invalid: {path}: validation rule is not satisfied")
         print(
             "archive recovery: migrations=0 tombstones=0 decisions=0 "
             "recovery_rows=0 violations=1"
@@ -30,10 +28,7 @@ def run(root: pathlib.Path) -> int:
     recovery_rows = archive_authority.load_task10_recovery_references(root)
     findings = archive_authority.validate_recovery_rows(recovery_rows, root)
     for finding in findings:
-        print(
-            f"{finding.code}: {finding.path}: "
-            "validation rule is not satisfied"
-        )
+        print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
     violations = len(findings)
     print(
         "archive recovery: "

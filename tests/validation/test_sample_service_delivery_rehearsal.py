@@ -25,10 +25,22 @@ OVERRIDE = FIXTURES / "compose.delivery.override.yml"
 POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
 READINESS = FIXTURES / "readiness-verdict.json"
 RECOVERY = FIXTURES / "recovery-verdict.json"
-REAL_BASELINE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
-REAL_CANDIDATE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
-REAL_PAIR_MANIFEST = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
-REAL_RECORD = ROOT / "_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json"
+REAL_BASELINE = (
+    ROOT
+    / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
+)
+REAL_CANDIDATE = (
+    ROOT
+    / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
+)
+REAL_PAIR_MANIFEST = (
+    ROOT
+    / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
+)
+REAL_RECORD = (
+    ROOT
+    / "_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json"
+)
 
 VERDICT_KEYS = {
     "schema_version",
@@ -162,7 +174,11 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             payload = path.read_bytes()
             return ("file", mode, len(payload), hashlib.sha256(payload).hexdigest())
         if stat.S_ISDIR(info.st_mode):
-            return ("directory", mode, tuple(sorted(item.name for item in path.iterdir())))
+            return (
+                "directory",
+                mode,
+                tuple(sorted(item.name for item in path.iterdir())),
+            )
         if stat.S_ISLNK(info.st_mode):
             return ("symlink", mode, os.readlink(path))
         return ("other", mode)
@@ -318,9 +334,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             set(manifest),
         )
         self.assertEqual(3, manifest["schema_version"])
-        self.assertEqual(
-            "hyhome-verification-verdict-pair-v3", manifest["generation"]
-        )
+        self.assertEqual("hyhome-verification-verdict-pair-v3", manifest["generation"])
         self.assertEqual(
             "sha256:" + hashlib.sha256(BASELINE.read_bytes()).hexdigest(),
             manifest["verdict_sha256"]["baseline"],
@@ -388,9 +402,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertTrue(identity_keys.issubset(baseline))
         self.assertTrue(identity_keys.issubset(candidate))
         self.assertEqual(3, pair["schema_version"])
-        self.assertEqual(
-            "hyhome-verification-verdict-pair-v3", pair["generation"]
-        )
+        self.assertEqual("hyhome-verification-verdict-pair-v3", pair["generation"])
         self.assertEqual(identity_keys, set(pair["subjects"]["baseline"]))
         self.assertEqual(identity_keys, set(pair["subjects"]["candidate"]))
         for role, verdict in (("baseline", baseline), ("candidate", candidate)):
@@ -412,13 +424,13 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            result = self.run_sourced(f"validate_compose_contract {fixed!s} {OVERRIDE!s}")
+            result = self.run_sourced(
+                f"validate_compose_contract {fixed!s} {OVERRIDE!s}"
+            )
         self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
     def test_accepts_project_scopable_compose_contract(self) -> None:
-        result = self.run_sourced(
-            f"validate_compose_contract {COMPOSE!s} {OVERRIDE!s}"
-        )
+        result = self.run_sourced(f"validate_compose_contract {COMPOSE!s} {OVERRIDE!s}")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_delivery_override_labels_service_and_network_exactly(self) -> None:
@@ -484,14 +496,14 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         )
         for path, role in cases:
             with self.subTest(path=path.name):
-                result = self.run_sourced(
-                    f"load_and_validate_verdict {role} {path!s}"
-                )
+                result = self.run_sourced(f"load_and_validate_verdict {role} {path!s}")
                 self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
     def test_rejects_extra_unknown_verdict_field(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
-            path = self.write_payload(Path(raw), "extra.json", lambda p: p.update(extra=True))
+            path = self.write_payload(
+                Path(raw), "extra.json", lambda p: p.update(extra=True)
+            )
             result = self.run_sourced(f"load_and_validate_verdict baseline {path!s}")
         self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
@@ -509,7 +521,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             candidate = json.loads(CANDIDATE.read_text(encoding="utf-8"))
             candidate["source_revision"] = "f" * 40
             path = Path(raw) / "candidate.json"
-            path.write_text(json.dumps(candidate, sort_keys=True) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(candidate, sort_keys=True) + "\n", encoding="utf-8"
+            )
             result = self.run_sourced(
                 f"load_and_validate_verdict baseline {BASELINE!s}\n"
                 f"load_and_validate_verdict candidate {path!s}\n"
@@ -524,7 +538,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 BASELINE.read_text(encoding="utf-8")
             )["oci_archive_sha256"]
             path = Path(raw) / "candidate.json"
-            path.write_text(json.dumps(candidate, sort_keys=True) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(candidate, sort_keys=True) + "\n", encoding="utf-8"
+            )
             result = self.run_sourced(
                 f"load_and_validate_verdict baseline {BASELINE!s}\n"
                 f"load_and_validate_verdict candidate {path!s}\n"
@@ -547,7 +563,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 )
                 self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
-    def test_accepts_current_spec126_verdict_schema_and_binds_pair_context(self) -> None:
+    def test_accepts_current_spec126_verdict_schema_and_binds_pair_context(
+        self,
+    ) -> None:
         build_context = "sha256:" + "e" * 64
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
@@ -563,12 +581,10 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 f"load_and_validate_verdict baseline {paths['baseline']!s} || exit $?\n"
                 f"load_and_validate_verdict candidate {paths['candidate']!s} || exit $?\n"
                 "assert_distinct_subjects_and_same_revision || exit $?\n"
-                "printf '%s|%s\\n' \"$BUILD_CONTEXT_SHA256\" \"$POLICY_ID\""
+                'printf \'%s|%s\\n\' "$BUILD_CONTEXT_SHA256" "$POLICY_ID"'
             )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertEqual(
-            f"{build_context}|sample-service-local-v1\n", result.stdout
-        )
+        self.assertEqual(f"{build_context}|sample-service-local-v1\n", result.stdout)
 
     def test_missing_stale_or_mixed_pair_manifest_fails_class10_without_runtime(
         self,
@@ -584,9 +600,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 "pair-manifest-source-revision-mismatch",
             ),
             "context": (
-                lambda value: value.update(
-                    build_context_sha256="sha256:" + "f" * 64
-                ),
+                lambda value: value.update(build_context_sha256="sha256:" + "f" * 64),
                 "pair-manifest-build-context-mismatch",
             ),
             "mixed": (
@@ -707,14 +721,14 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 result = self.run_sourced(
                     textwrap.dedent(
                         f"""\
-                        BASELINE_VERDICT_PATH={root / 'baseline.json'!s}
-                        CANDIDATE_VERDICT_PATH={root / 'candidate.json'!s}
-                        PAIR_MANIFEST_PATH={root / 'verification-verdict.pair.json'!s}
-                        DRE_READINESS_PATH={root / 'readiness.json'!s}
-                        DRE_RECOVERY_PATH={root / 'recovery.json'!s}
-                        DRE_POLICY_PATH={root / 'policy.json'!s}
-                        DRE_COMPOSE_PATH={root / 'compose.yml'!s}
-                        DRE_OVERRIDE_PATH={root / 'override.yml'!s}
+                        BASELINE_VERDICT_PATH={root / "baseline.json"!s}
+                        CANDIDATE_VERDICT_PATH={root / "candidate.json"!s}
+                        PAIR_MANIFEST_PATH={root / "verification-verdict.pair.json"!s}
+                        DRE_READINESS_PATH={root / "readiness.json"!s}
+                        DRE_RECOVERY_PATH={root / "recovery.json"!s}
+                        DRE_POLICY_PATH={root / "policy.json"!s}
+                        DRE_COMPOSE_PATH={root / "compose.yml"!s}
+                        DRE_OVERRIDE_PATH={root / "override.yml"!s}
                         capture_delivery_input_snapshots || exit $?
                         {command}
                         revalidate_delivery_input_snapshots 40
@@ -724,7 +738,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             self.assertEqual(40, result.returncode, result.stdout + result.stderr)
             self.assertIn(expected_code, result.stderr)
 
-    def test_publication_revalidates_inputs_immediately_before_schema_and_write(self) -> None:
+    def test_publication_revalidates_inputs_immediately_before_schema_and_write(
+        self,
+    ) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         publication = text.split("publish_rehearsal_record() {", 1)[1].split(
             "\ndre_operation_bounded()", 1
@@ -766,7 +782,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                     CANARY_RESULT=passed
                     REHEARSAL_RESULT=promoted
                     CANDIDATE_JSON="$(build_rehearsal_record_json)"
-                    CANDIDATE_JSON="${{CANDIDATE_JSON/$BASELINE_VERDICT_SHA256/sha256:{'9' * 64}}}"
+                    CANDIDATE_JSON="${{CANDIDATE_JSON/$BASELINE_VERDICT_SHA256/sha256:{"9" * 64}}}"
                     publish_rehearsal_record
                     """
                 )
@@ -860,9 +876,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                         """
                     )
                 )
-                self.assertEqual(
-                    0, result.returncode, result.stdout + result.stderr
-                )
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_tag_and_running_image_are_revalidated_at_each_start_boundary(
         self,
@@ -900,7 +914,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                         VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
                         VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
                         dre_operation_bounded() {{ printf '%s|baseline\n' '{wrong_id}'; }}
-                        dre_compose() {{ touch {root / 'before-compose'!s}; }}
+                        dre_compose() {{ touch {root / "before-compose"!s}; }}
                         start_baseline
                         """
                     ),
@@ -915,7 +929,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                         VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
                         VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
                         dre_operation_bounded() {{ printf '%s|baseline\n' '{wrong_id}'; }}
-                        dre_compose() {{ touch {root / 'between-compose'!s}; }}
+                        dre_compose() {{ touch {root / "between-compose"!s}; }}
                         start_canary
                         """
                     ),
@@ -942,7 +956,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                     CANARY_PROJECT=hyhome-dre-20260719-12345-canary
                     VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
                     VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
-                    dre_compose() {{ touch {root / 'after-compose'!s}; }}
+                    dre_compose() {{ touch {root / "after-compose"!s}; }}
                     dre_operation_bounded() {{
                       local requested="$1"
                       shift
@@ -1049,7 +1063,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertIn(" up -d --pull never --no-build --remove-orphans", result.stdout)
 
     def test_health_requires_container_and_http_marker(self) -> None:
-        accepted = self.run_sourced("health_observation_is_accepted healthy 200 present")
+        accepted = self.run_sourced(
+            "health_observation_is_accepted healthy 200 present"
+        )
         self.assertEqual(0, accepted.returncode, accepted.stdout + accepted.stderr)
         for values in (
             "starting 200 present",
@@ -1108,11 +1124,17 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             "CANARY_PROJECT=hyhome-dre-20260720-12345-canary\n"
             "assert_owned_project_names"
         )
-        self.assertEqual(10, wrong_date.returncode, wrong_date.stdout + wrong_date.stderr)
+        self.assertEqual(
+            10, wrong_date.returncode, wrong_date.stdout + wrong_date.stderr
+        )
 
     def test_in_process_cleanup_handles_exact_partial_owned_states(self) -> None:
         cases = (
-            ("container", {"container": "container-id"}, ["docker rm --force container-id"]),
+            (
+                "container",
+                {"container": "container-id"},
+                ["docker rm --force container-id"],
+            ),
             ("network", {"network": "network-id"}, ["docker network rm network-id"]),
         )
         for name, resources, expected in cases:
@@ -1216,7 +1238,10 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             "TASK_ID=2026-07-19-dre\n"
             "BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline\n"
             "CANARY_PROJECT=hyhome-dre-20260719-12345-canary\n"
-            "VERDICT_LOCAL_IMAGE_REF[baseline]=hyhome.local/sample-web-service:baseline-" + "1" * 64 + "\n"
+            "VERDICT_LOCAL_IMAGE_REF[baseline]=hyhome.local/sample-web-service:baseline-"
+            + "1"
+            * 64
+            + "\n"
             "validate_local_image_object() { :; }\n"
             "dre_compose() { return 99; }\n"
             "start_baseline"
@@ -1318,8 +1343,12 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual("sha256:" + "4" * 64, payload["candidate_oci_manifest_digest"])
         self.assertEqual("sha256:" + "a" * 64, payload["baseline_oci_archive_sha256"])
         self.assertEqual("sha256:" + "b" * 64, payload["candidate_oci_archive_sha256"])
-        self.assertEqual("sha256:" + "c" * 64, payload["baseline_docker_archive_sha256"])
-        self.assertEqual("sha256:" + "d" * 64, payload["candidate_docker_archive_sha256"])
+        self.assertEqual(
+            "sha256:" + "c" * 64, payload["baseline_docker_archive_sha256"]
+        )
+        self.assertEqual(
+            "sha256:" + "d" * 64, payload["candidate_docker_archive_sha256"]
+        )
         self.assertEqual(
             "hyhome.local/sample-web-service:baseline-" + "1" * 64,
             payload["baseline_local_image_ref"],
@@ -1524,7 +1553,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             payload = json.loads(canonical.read_text(encoding="utf-8"))
             payload["cleanup_status"] = "failed"
             path = Path(raw) / "readiness.json"
-            path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8"
+            )
             os.chmod(path, 0o600)
             rejected = self.run_sourced(f"validate_readiness_verdict {path!s}")
         self.assertEqual(10, rejected.returncode, rejected.stdout + rejected.stderr)
@@ -1537,7 +1568,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             payload = json.loads(canonical.read_text(encoding="utf-8"))
             payload["scope"] = "production"
             path = Path(raw) / "recovery.json"
-            path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8"
+            )
             os.chmod(path, 0o600)
             rejected = self.run_sourced(f"validate_recovery_boundary {path!s}")
         self.assertEqual(10, rejected.returncode, rejected.stdout + rejected.stderr)
@@ -1577,7 +1610,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         ):
             with self.subTest(args=args):
                 result = self.run_cli(*args)
-                self.assertEqual(expected, result.returncode, result.stdout + result.stderr)
+                self.assertEqual(
+                    expected, result.returncode, result.stdout + result.stderr
+                )
 
     def test_fixture_preflight_is_contract_only_and_never_calls_docker(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -1585,7 +1620,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             call_log = mock / "calls.log"
             docker = mock / "docker"
             docker.write_text(
-                "#!/usr/bin/env bash\nprintf '%s\\n' \"$*\" >>\"$DRE_CALL_LOG\"\nexit 99\n",
+                '#!/usr/bin/env bash\nprintf \'%s\\n\' "$*" >>"$DRE_CALL_LOG"\nexit 99\n',
                 encoding="utf-8",
             )
             docker.chmod(0o755)
@@ -1597,7 +1632,10 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 str(BASELINE.relative_to(ROOT)),
                 "--candidate-verdict",
                 str(CANDIDATE.relative_to(ROOT)),
-                env={"PATH": f"{mock}:{os.environ['PATH']}", "DRE_CALL_LOG": str(call_log)},
+                env={
+                    "PATH": f"{mock}:{os.environ['PATH']}",
+                    "DRE_CALL_LOG": str(call_log),
+                },
             )
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertIn("evidence=fixture-contract-only", result.stdout)
@@ -1616,9 +1654,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             REAL_RECORD.parent,
             REAL_RECORD,
         )
-        protected_before = {
-            path: self.snapshot_path(path) for path in protected_paths
-        }
+        protected_before = {path: self.snapshot_path(path) for path in protected_paths}
         with tempfile.TemporaryDirectory(
             prefix="dre-canonical-absence-", dir="/tmp"
         ) as raw:
@@ -1626,9 +1662,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             isolated_script = isolated_root / SCRIPT.relative_to(ROOT)
             isolated_script.parent.mkdir(parents=True)
             shutil.copy2(SCRIPT, isolated_script)
-            (isolated_root / "_workspace/repo-support").mkdir(
-                parents=True, mode=0o700
-            )
+            (isolated_root / "_workspace/repo-support").mkdir(parents=True, mode=0o700)
             isolated_baseline = isolated_root / REAL_BASELINE.relative_to(ROOT)
             isolated_candidate = isolated_root / REAL_CANDIDATE.relative_to(ROOT)
             isolated_pair = isolated_root / REAL_PAIR_MANIFEST.relative_to(ROOT)
@@ -1644,7 +1678,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             call_log = Path(raw) / "calls.log"
             docker = mock / "docker"
             docker.write_text(
-                "#!/usr/bin/env bash\nprintf '%s\\n' \"$*\" >>\"$DRE_CALL_LOG\"\nexit 99\n",
+                '#!/usr/bin/env bash\nprintf \'%s\\n\' "$*" >>"$DRE_CALL_LOG"\nexit 99\n',
                 encoding="utf-8",
             )
             docker.chmod(0o755)
@@ -1699,7 +1733,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             call_log = mock / "calls.log"
             docker = mock / "docker"
             docker.write_text(
-                "#!/usr/bin/env bash\nprintf called >>\"$DRE_TEST_DOCKER_CALL_LOG\"\nexit 99\n",
+                '#!/usr/bin/env bash\nprintf called >>"$DRE_TEST_DOCKER_CALL_LOG"\nexit 99\n',
                 encoding="utf-8",
             )
             docker.chmod(0o755)

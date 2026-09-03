@@ -50,7 +50,9 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             path.write_text(content, encoding="utf-8")
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
         subprocess.run(["git", "add", "."], cwd=root, check=True)
-        (root / "docs/arbitrary-untracked.md").write_text("untracked\n", encoding="utf-8")
+        (root / "docs/arbitrary-untracked.md").write_text(
+            "untracked\n", encoding="utf-8"
+        )
 
     def test_generator_defaults_to_check_without_mutating_git_diff(self) -> None:
         before = subprocess.run(
@@ -102,9 +104,13 @@ class LlmWikiGeneratorTests(unittest.TestCase):
         generator.collect_candidates = counted
         outputs = generator.build_outputs(ROOT)
         self.assertEqual(1, calls)
-        self.assertEqual({generator.INDEX_OUTPUT, generator.COVERAGE_OUTPUT}, set(outputs))
+        self.assertEqual(
+            {generator.INDEX_OUTPUT, generator.COVERAGE_OUTPUT}, set(outputs)
+        )
 
-    def test_tracked_nul_inventory_excludes_arbitrary_untracked_and_handles_unicode(self) -> None:
+    def test_tracked_nul_inventory_excludes_arbitrary_untracked_and_handles_unicode(
+        self,
+    ) -> None:
         generator = load_generator()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -141,12 +147,16 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             self.assertNotIn(".agents/agent.md", selected)
             self.assertEqual("Runtime surfaces", selected[".claude/agent.md"])
             self.assertEqual("Runtime surfaces", selected[".codex/config.toml"])
-            self.assertEqual("Active stage docs", selected["docs/03.specs/0001-fixture/plan.md"])
+            self.assertEqual(
+                "Active stage docs", selected["docs/03.specs/0001-fixture/plan.md"]
+            )
             index = generator.render_index(candidates)
             coverage = generator.render_coverage(candidates)
             self.assertIn("data/0076-llm-wiki-stage-category-coverage/README.md", index)
             self.assertNotIn("data/0082-llm-wiki-index/README.md](", index)
-            self.assertNotIn("data/0076-llm-wiki-stage-category-coverage/README.md](", coverage)
+            self.assertNotIn(
+                "data/0076-llm-wiki-stage-category-coverage/README.md](", coverage
+            )
             self.assertNotIn("data/0082-llm-wiki-index/README.md](", coverage)
 
     def test_exact_script_identity_excludes_transition_wrappers(self) -> None:
@@ -165,9 +175,14 @@ class LlmWikiGeneratorTests(unittest.TestCase):
         self.assertEqual(39, len(script_paths))
         self.assertIn(generator.GENERATOR_PATH, script_paths)
         self.assertNotIn("scripts/knowledge/generate-llm-wiki-index.sh", script_paths)
-        self.assertNotIn("scripts/knowledge/generate-llm-wiki-coverage.sh", script_paths)
+        self.assertNotIn(
+            "scripts/knowledge/generate-llm-wiki-coverage.sh", script_paths
+        )
         self.assertFalse(
-            any(path.endswith(".py") for path in script_paths - {generator.GENERATOR_PATH})
+            any(
+                path.endswith(".py")
+                for path in script_paths - {generator.GENERATOR_PATH}
+            )
         )
 
     def test_git_process_deadline_terminates_a_stalled_process_group(self) -> None:
@@ -202,13 +217,14 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                 ),
                 (
                     "total",
-                    "alias.noisy=!python3 -c 'import sys;sys.stdout.write(\"o\"*16);sys.stderr.write(\"e\"*16)'",
+                    'alias.noisy=!python3 -c \'import sys;sys.stdout.write("o"*16);sys.stderr.write("e"*16)\'',
                     {"max_stdout": 64, "max_stderr": 64, "max_total": 20},
                 ),
             )
             for label, alias, bounds in cases:
-                with self.subTest(label=label), self.assertRaisesRegex(
-                    generator.GeneratorError, label
+                with (
+                    self.subTest(label=label),
+                    self.assertRaisesRegex(generator.GeneratorError, label),
                 ):
                     generator._run_git_bounded(
                         root,
@@ -233,7 +249,10 @@ class LlmWikiGeneratorTests(unittest.TestCase):
     def test_candidate_validation_rejects_symlink_fifo_and_symlink_parent(self) -> None:
         generator = load_generator()
         for mutation in ("live-symlink", "broken-symlink", "fifo", "symlink-parent"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = Path(directory)
                 self._fixture_repo(root)
                 candidate = root / "docs/한글-경로.md"
@@ -294,13 +313,18 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                 return chunk
 
             with mock.patch.object(generator.os, "read", side_effect=swap_after_read):
-                with self.assertRaisesRegex(generator.GeneratorError, "changed during read"):
+                with self.assertRaisesRegex(
+                    generator.GeneratorError, "changed during read"
+                ):
                     generator._read_bounded_regular_path(path, max_bytes=128)
 
     def test_candidate_read_rejects_immediate_and_partial_premature_eof(self) -> None:
         generator = load_generator()
         for mutation in ("immediate", "partial"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = Path(directory)
                 self._fixture_repo(root)
                 candidate = root / "docs/한글-경로.md"
@@ -319,13 +343,20 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                     return b""
 
                 with mock.patch.object(generator.os, "read", side_effect=premature_eof):
-                    with self.assertRaisesRegex(generator.GeneratorError, "premature EOF"):
+                    with self.assertRaisesRegex(
+                        generator.GeneratorError, "premature EOF"
+                    ):
                         generator.collect_candidates(root)
 
-    def test_current_output_read_rejects_immediate_and_partial_premature_eof(self) -> None:
+    def test_current_output_read_rejects_immediate_and_partial_premature_eof(
+        self,
+    ) -> None:
         generator = load_generator()
         for mutation in ("immediate", "partial"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 output = Path(directory) / "generated.md"
                 output.write_text("expected\n", encoding="utf-8")
                 identity = (output.stat().st_dev, output.stat().st_ino)
@@ -343,13 +374,20 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                     return b""
 
                 with mock.patch.object(generator.os, "read", side_effect=premature_eof):
-                    with self.assertRaisesRegex(generator.GeneratorError, "premature EOF"):
+                    with self.assertRaisesRegex(
+                        generator.GeneratorError, "premature EOF"
+                    ):
                         generator.check_outputs({output: "expected\n"})
 
-    def test_output_operations_reject_symlink_fifo_oversize_and_unsafe_parent(self) -> None:
+    def test_output_operations_reject_symlink_fifo_oversize_and_unsafe_parent(
+        self,
+    ) -> None:
         generator = load_generator()
         for mutation in ("symlink", "fifo", "oversize", "symlink-parent"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = Path(directory)
                 parent = root / "output"
                 parent.mkdir()
@@ -370,7 +408,10 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                 generator.MAX_OUTPUT_BYTES = 16
                 try:
                     with self.assertRaises(generator.GeneratorError):
-                        generator.apply_mode({output: "generated\n"}, "write" if mutation != "oversize" else "check")
+                        generator.apply_mode(
+                            {output: "generated\n"},
+                            "write" if mutation != "oversize" else "check",
+                        )
                 finally:
                     generator.MAX_OUTPUT_BYTES = original_bound
                 self.assertEqual("victim\n", victim.read_text(encoding="utf-8"))
@@ -384,7 +425,9 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             self.assertEqual(0, generator.apply_mode({output: "new\n"}, "write"))
             self.assertEqual("new\n", output.read_text(encoding="utf-8"))
             self.assertNotEqual(previous_inode, output.stat().st_ino)
-            self.assertEqual(["generated.md"], sorted(path.name for path in output.parent.iterdir()))
+            self.assertEqual(
+                ["generated.md"], sorted(path.name for path in output.parent.iterdir())
+            )
 
 
 if __name__ == "__main__":

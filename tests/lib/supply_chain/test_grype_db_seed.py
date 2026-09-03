@@ -68,7 +68,9 @@ class GrypeDbSeedHarnessContractTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         source = HARNESS_PATH.read_text(encoding="utf-8")
         library = source.split('\ncase "$MODE" in\n', maxsplit=1)[0]
-        self.assertNotEqual(source, library, "seed harness dispatch boundary is missing")
+        self.assertNotEqual(
+            source, library, "seed harness dispatch boundary is missing"
+        )
         with tempfile.TemporaryDirectory(
             prefix="grype-seed-library-", dir="/tmp"
         ) as raw:
@@ -472,13 +474,19 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
         """The red path, exercised rather than asserted about."""
 
         for script, marker, code in (
-            (self.SEED, "Grype DB network approval: confirmed", "seed-network-approval-missing"),
+            (
+                self.SEED,
+                "Grype DB network approval: confirmed",
+                "seed-network-approval-missing",
+            ),
             (self.VERIFY, "Scorecard network approval: confirmed", "scorecard"),
         ):
             with self.subTest(script=script.name):
                 text = script.read_text(encoding="utf-8")
                 self.assertIn(f"grep -Fqx '{marker}' \"$APPROVAL_DOC\"", text)
-                self.assertNotIn(marker, self.APPROVALS.read_text(encoding="utf-8").splitlines())
+                self.assertNotIn(
+                    marker, self.APPROVALS.read_text(encoding="utf-8").splitlines()
+                )
                 self.assertTrue(code)
 
     def test_granting_the_marker_would_satisfy_the_scripts_exact_match(self) -> None:
@@ -501,7 +509,14 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
             )
             self.assertEqual(0, result.returncode)
             result = subprocess.run(
-                ["grep", "-Fqx", "Grype DB network approval: confirmed", str(self.APPROVALS)],
+                [
+                    "grep",
+                    "-Fqx",
+                    "Grype DB network approval: confirmed",
+                    str(self.APPROVALS),
+                ],
                 capture_output=True,
             )
-            self.assertEqual(1, result.returncode, "the tracked surface must grant nothing")
+            self.assertEqual(
+                1, result.returncode, "the tracked surface must grant nothing"
+            )

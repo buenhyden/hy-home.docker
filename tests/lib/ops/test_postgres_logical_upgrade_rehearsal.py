@@ -26,9 +26,7 @@ ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
 PARTIAL_SQL = FIXTURE / "sql/020_negative_partial_state.sql"
 ALIGNMENT_CHECK = ROOT / "scripts/validation/check-document-links.py"
 MANIFEST = ROOT / "scripts/manifest.yaml"
-IMAGE_IDENTITY_CHECKER = (
-    ROOT / "scripts/validation/check-supply-chain-policy.py"
-)
+IMAGE_IDENTITY_CHECKER = ROOT / "scripts/validation/check-supply-chain-policy.py"
 
 SOURCE_IMAGE = (
     "postgres:17.6-alpine@sha256:"
@@ -40,16 +38,13 @@ TARGET_IMAGE = (
 )
 CLIENT_IMAGE = TARGET_IMAGE
 SOURCE_REPO_DIGEST = (
-    "postgres@sha256:"
-    "ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+    "postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
 )
 TARGET_REPO_DIGEST = (
-    "postgres@sha256:"
-    "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+    "postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
 CLIENT_REPO_DIGEST = (
-    "postgres@sha256:"
-    "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+    "postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
 SOURCE_TARGET_DESCRIPTOR_DIGEST = (
     "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
@@ -58,8 +53,12 @@ TARGET_TARGET_DESCRIPTOR_DIGEST = (
     "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
 CLIENT_TARGET_DESCRIPTOR_DIGEST = TARGET_TARGET_DESCRIPTOR_DIGEST
-SOURCE_CONFIG_ID = "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8"
-TARGET_CONFIG_ID = "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183"
+SOURCE_CONFIG_ID = (
+    "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8"
+)
+TARGET_CONFIG_ID = (
+    "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183"
+)
 CLIENT_CONFIG_ID = TARGET_CONFIG_ID
 OBSERVED_CONFIG_DIGESTS = {
     "SOURCE": "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8",
@@ -319,9 +318,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 )
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertEqual(
-                sentinel.read_text(encoding="utf-8"), "foreign-sentinel\n"
-            )
+            self.assertEqual(sentinel.read_text(encoding="utf-8"), "foreign-sentinel\n")
         finally:
             sentinel.unlink(missing_ok=True)
             evidence.rmdir()
@@ -353,7 +350,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             finally:
                 evidence.unlink(missing_ok=True)
 
-    def test_canonical_symlink_and_directory_are_rejected_without_mutation(self) -> None:
+    def test_canonical_symlink_and_directory_are_rejected_without_mutation(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory(prefix="ior-canonical-", dir="/tmp") as tmp:
             root = Path(tmp)
             foreign = root / "foreign.json"
@@ -375,9 +374,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
             self.assertTrue(symlink.is_symlink())
             self.assertTrue(directory.is_dir())
-            self.assertEqual(
-                foreign.read_text(encoding="utf-8"), '{"foreign":true}\n'
-            )
+            self.assertEqual(foreign.read_text(encoding="utf-8"), '{"foreign":true}\n')
 
     def test_canonical_parent_symlink_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory(prefix="ior-parent-", dir="/tmp") as tmp:
@@ -426,8 +423,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertIn("source", call_text)
         self.assertIn("evidence", call_text)
 
-    def test_candidate_is_memory_only_and_publication_requires_complete_cleanup(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ior-state-machine-", dir="/tmp") as tmp:
+    def test_candidate_is_memory_only_and_publication_requires_complete_cleanup(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(
+            prefix="ior-state-machine-", dir="/tmp"
+        ) as tmp:
             root = Path(tmp)
             evidence = root / "evidence"
             evidence.mkdir(mode=0o700)
@@ -440,8 +441,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     EVIDENCE_DIR={evidence!s}
                     SOURCE_IMAGE={SOURCE_IMAGE!r}
                     TARGET_IMAGE={TARGET_IMAGE!r}
-                    FIXTURE_SHA256={'a' * 64!r}
-                    DUMP_SHA256={'b' * 64!r}
+                    FIXTURE_SHA256={"a" * 64!r}
+                    DUMP_SHA256={"b" * 64!r}
                     BACKUP_SECONDS=1
                     RESTORE_SECONDS=2
                     write_recovery_verdict
@@ -457,7 +458,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def test_deadline_precedes_every_docker_call_and_reserves_cleanup(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         main = text[text.index("main() {") :]
-        self.assertLess(main.index("initialize_runtime_state"), main.index("assert_safe"))
+        self.assertLess(
+            main.index("initialize_runtime_state"), main.index("assert_safe")
+        )
         self.assertIn("CLEANUP_RESERVE_SECONDS", text)
         self.assertIn("OPERATION_DEADLINE", text)
         self.assertIn("run_cleanup_bounded", text)
@@ -515,8 +518,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 ) as tmp:
                     root = Path(tmp) / "repo"
                     isolated_script = (
-                        root
-                        / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                        root / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
                     )
                     isolated_script.parent.mkdir(parents=True)
                     shutil.copy2(SCRIPT, isolated_script)
@@ -536,7 +538,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     calls = Path(tmp) / "calls"
                     docker = fake_bin / "docker"
                     docker.write_text(
-                        "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$IOR_TEST_DOCKER_CALLS\"\n",
+                        '#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$IOR_TEST_DOCKER_CALLS"\n',
                         encoding="utf-8",
                     )
                     docker.chmod(docker.stat().st_mode | stat.S_IXUSR)
@@ -599,7 +601,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     docker = fake_bin / "docker"
                     docker.write_text(
                         "#!/bin/sh\n"
-                        "printf '%s\\n' \"$*\" >> \"$IOR_TEST_DOCKER_CALLS\"\n"
+                        'printf \'%s\\n\' "$*" >> "$IOR_TEST_DOCKER_CALLS"\n'
                         "exit 99\n",
                         encoding="utf-8",
                     )
@@ -673,12 +675,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
 
     def test_render_validates_both_exact_project_names(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn(
-            '"$SOURCE_PROJECT" "$RENDERED_TOPOLOGY_PATH" false', text
-        )
-        self.assertIn(
-            '"$TARGET_PROJECT" "$TARGET_RENDERED_TOPOLOGY_PATH"', text
-        )
+        self.assertIn('"$SOURCE_PROJECT" "$RENDERED_TOPOLOGY_PATH" false', text)
+        self.assertIn('"$TARGET_PROJECT" "$TARGET_RENDERED_TOPOLOGY_PATH"', text)
         self.assertIn('docker compose -p "$project"', text)
 
     def test_compose_render_command_error_fails_closed(self) -> None:
@@ -840,7 +838,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     """
                 )
             )
-            observed = calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
+            observed = (
+                calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
+            )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
             [
@@ -923,9 +923,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         config_id = "sha256:" + "b" * 64
         inspection = json.dumps(
             {
-                "RepoDigests": [
-                    "example.invalid/postgres@sha256:" + "c" * 64
-                ],
+                "RepoDigests": ["example.invalid/postgres@sha256:" + "c" * 64],
                 "Id": target_digest,
                 "Descriptor": {
                     "digest": target_digest,
@@ -968,7 +966,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 f"""\
                 OPERATION_DEADLINE=$((SECONDS + 30))
                 run_bounded() {{ printf '%s\n' {inspection!r}; }}
-                observe_local_image_config_digest() {{ printf '%s\n' 'sha256:{'d' * 64}'; }}
+                observe_local_image_config_digest() {{ printf '%s\n' 'sha256:{"d" * 64}'; }}
                 assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
                 """
             )
@@ -1021,9 +1019,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 )
             )
             observed = (
-                calls.read_text(encoding="utf-8").splitlines()
-                if calls.exists()
-                else []
+                calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
             )
         self.assertEqual(10, result.returncode, result.stdout + result.stderr)
         self.assertEqual(1, len(observed))
@@ -1037,7 +1033,11 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertEqual(2, compose.count("pull_policy: never"))
 
         text = SCRIPT.read_text(encoding="utf-8")
-        up_lines = [line.strip() for line in text.splitlines() if " compose " in line and " up " in line]
+        up_lines = [
+            line.strip()
+            for line in text.splitlines()
+            if " compose " in line and " up " in line
+        ]
         self.assertEqual(2, len(up_lines))
         for command in up_lines:
             self.assertIn("--pull never", command)
@@ -1333,9 +1333,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def test_backup_restore_commands_and_cleanup_are_mandatory(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("pg_dump -Fc --no-owner --no-acl", text)
-        self.assertIn(
-            "pg_restore --clean --if-exists --no-owner --no-acl", text
-        )
+        self.assertIn("pg_restore --clean --if-exists --no-owner --no-acl", text)
         self.assertIn("trap on_exit EXIT", text)
         self.assertIn("down --volumes --remove-orphans", text)
         self.assertIn("run_bounded docker compose", text)
@@ -1353,7 +1351,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertEqual(
             text.count('database_readiness_stable "$TARGET_PROJECT" target'), 1
         )
-        self.assertIn('PGCONNECT_TIMEOUT=1', text)
+        self.assertIn("PGCONNECT_TIMEOUT=1", text)
         self.assertIn('-c "SELECT pg_postmaster_start_time()"', text)
         self.assertIn("run_bounded sleep 2", text)
         self.assertIn("service_is_running_and_healthy", text)
@@ -1468,8 +1466,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 f"""\
                 SOURCE_IMAGE={SOURCE_IMAGE!r}
                 TARGET_IMAGE={TARGET_IMAGE!r}
-                FIXTURE_SHA256={'a' * 64!r}
-                DUMP_SHA256={'b' * 64!r}
+                FIXTURE_SHA256={"a" * 64!r}
+                DUMP_SHA256={"b" * 64!r}
                 BACKUP_SECONDS=1
                 RESTORE_SECONDS=2
                 build_recovery_verdict_json
@@ -1726,7 +1724,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertIn("volume ls", call_text)
 
     def test_post_cleanup_prepublication_window_has_no_canonical(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ior-publish-window-", dir="/tmp") as tmp:
+        with tempfile.TemporaryDirectory(
+            prefix="ior-publish-window-", dir="/tmp"
+        ) as tmp:
             root = Path(tmp)
             run_id = str(time.time_ns())
             evidence = Path(f"/tmp/hyhome-ior-evidence.{run_id}")
@@ -1748,8 +1748,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     IOR_TEST_TOTAL_TIMEOUT=10
                     IOR_TEST_CLEANUP_RESERVE=3
                     initialize_runtime_state
-                    FIXTURE_SHA256={'a' * 64!r}
-                    DUMP_SHA256={'b' * 64!r}
+                    FIXTURE_SHA256={"a" * 64!r}
+                    DUMP_SHA256={"b" * 64!r}
                     BACKUP_SECONDS=1
                     RESTORE_SECONDS=2
                     write_recovery_verdict

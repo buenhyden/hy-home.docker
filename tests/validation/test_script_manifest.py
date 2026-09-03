@@ -243,7 +243,9 @@ def declared_tombstone_replacements(text: str, tombstone_path: str) -> list[str]
 def canonical_current_path(path: str) -> str:
     """Resolve the Migration 0003 predecessor spelling to its live Stage03 path."""
 
-    return path.replace("docs/03.specs/spec-0008-workflow/", "docs/03.specs/0008-workflow/")
+    return path.replace(
+        "docs/03.specs/spec-0008-workflow/", "docs/03.specs/0008-workflow/"
+    )
 
 
 def replacement_preservation_errors(
@@ -277,7 +279,9 @@ def _python_imports_target(reference: str, target: str) -> bool:
             if any(alias.name == module for alias in node.names):
                 return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module == module or (same_directory and node.module == sibling_module):
+            if node.module == module or (
+                same_directory and node.module == sibling_module
+            ):
                 return True
             package, _, member = module.rpartition(".")
             if node.module == package and any(
@@ -310,7 +314,9 @@ def machine_config_proves_use(document: object, target: str, parent: str = "") -
             for key, value in document.items()
         )
     if isinstance(document, list):
-        return any(machine_config_proves_use(value, target, parent) for value in document)
+        return any(
+            machine_config_proves_use(value, target, parent) for value in document
+        )
     if parent not in MACHINE_REFERENCE_KEYS or not isinstance(document, str):
         return False
     return bool(
@@ -362,14 +368,18 @@ def reference_proves_use(reference: str, target: str) -> bool:
         return machine_config_proves_use(document, target)
     if reference.endswith((".sh", ".bash")):
         return any(
-            (target in line or basename in line)
-            and not line.lstrip().startswith("#")
+            (target in line or basename in line) and not line.lstrip().startswith("#")
             for line in text.splitlines()
         )
     if reference.endswith(".py"):
         return any(
             marker in text
-            for marker in ("subprocess.run", "subprocess.Popen", "runpy.run_path", "importlib")
+            for marker in (
+                "subprocess.run",
+                "subprocess.Popen",
+                "runpy.run_path",
+                "importlib",
+            )
         )
     return target in text
 
@@ -393,12 +403,24 @@ def stable_target_type(path: str) -> str | None:
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/spec\.md", "spec"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/plan\.md", "plan"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/task\.md", "task"),
-        (r"docs/05\.operations/(?:[0-9]{2}-[^/]+)/(?:ops-[0-9]{4}-[^/]+)/(?:guide|policy|runbook)\.md", "ops-role"),
-        (r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md", "event"),
+        (
+            r"docs/05\.operations/(?:[0-9]{2}-[^/]+)/(?:ops-[0-9]{4}-[^/]+)/(?:guide|policy|runbook)\.md",
+            "ops-role",
+        ),
+        (
+            r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md",
+            "event",
+        ),
         (r"docs/05\.operations/releases/rel-[0-9]{4}-[^/]+/release\.md", "release"),
-        (r"docs/90\.references/.*/ref-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)", "reference"),
+        (
+            r"docs/90\.references/.*/ref-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
+            "reference",
+        ),
         (r"docs/98\.archive/changes/chg-[0-9]{4}-[^/]+/(?:plan|task)\.md", "change"),
-        (r"docs/98\.archive/tombstones/(?:01\.requirements|02\.architecture|03\.specs|05\.operations)/[^/]+\.md", "tombstone"),
+        (
+            r"docs/98\.archive/tombstones/(?:01\.requirements|02\.architecture|03\.specs|05\.operations)/[^/]+\.md",
+            "tombstone",
+        ),
         (r"docs/98\.archive/migrations/mig-[0-9]{4}-[^/]+\.md", "migration"),
     )
     if path == "docs/05.operations/README.md" or path.endswith("/README.md"):
@@ -417,7 +439,11 @@ class ScriptManifestTests(unittest.TestCase):
         cls.manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         cls.rows = cls.manifest["files"]
         cls.rows_by_path = {row["path"]: row for row in cls.rows}
-        ledger_text = LEDGER.read_text(encoding="utf-8").split("```yaml\n", 1)[1].split("```", 1)[0]
+        ledger_text = (
+            LEDGER.read_text(encoding="utf-8")
+            .split("```yaml\n", 1)[1]
+            .split("```", 1)[0]
+        )
         cls.ledger_rows = yaml.safe_load(ledger_text)["records"]
         cls.ledger_by_path = {row["legacy_path"]: row for row in cls.ledger_rows}
 
@@ -426,23 +452,48 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(self.tracked, set(declared))
 
-    def test_stage90_generators_declare_exact_destinations_and_explicit_write_mode(self) -> None:
+    def test_stage90_generators_declare_exact_destinations_and_explicit_write_mode(
+        self,
+    ) -> None:
         for script, output in (
-            ("scripts/operations/generate-compose-profile-service-coverage.sh", "docs/90.references/data/0059-compose-profile-service-coverage/README.md"),
-            ("scripts/operations/generate-tech-stack-version-provenance.sh", "docs/90.references/data/0061-tech-stack-version-provenance/README.md"),
-            ("scripts/validation/generate-audit-implementation-matrix.sh", "docs/90.references/data/0065-audit-implementation-matrix/README.md"),
-            ("scripts/validation/generate-security-automation-readiness.sh", "docs/90.references/data/0078-security-automation-readiness/README.md"),
-            ("scripts/security/generate-supply-chain-sample-service-summary.sh", "docs/90.references/data/0079-supply-chain-sample-service/README.md"),
+            (
+                "scripts/operations/generate-compose-profile-service-coverage.sh",
+                "docs/90.references/data/0059-compose-profile-service-coverage/README.md",
+            ),
+            (
+                "scripts/operations/generate-tech-stack-version-provenance.sh",
+                "docs/90.references/data/0061-tech-stack-version-provenance/README.md",
+            ),
+            (
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "docs/90.references/data/0065-audit-implementation-matrix/README.md",
+            ),
+            (
+                "scripts/validation/generate-security-automation-readiness.sh",
+                "docs/90.references/data/0078-security-automation-readiness/README.md",
+            ),
+            (
+                "scripts/security/generate-supply-chain-sample-service-summary.sh",
+                "docs/90.references/data/0079-supply-chain-sample-service/README.md",
+            ),
         ):
             with self.subTest(script=script):
                 row = self.rows_by_path[script]
                 self.assertEqual([output], row["outputs"])
                 self.assertEqual(["bash", script, "--check"], row["check_command"])
-                result = subprocess.run(["bash", script, "--help"], cwd=ROOT, text=True, capture_output=True, check=False)
+                result = subprocess.run(
+                    ["bash", script, "--help"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertIn("--write", result.stdout)
 
-    def test_stage90_generators_require_write_and_touch_only_declared_output(self) -> None:
+    def test_stage90_generators_require_write_and_touch_only_declared_output(
+        self,
+    ) -> None:
         scripts = (
             "scripts/operations/generate-compose-profile-service-coverage.sh",
             "scripts/operations/generate-tech-stack-version-provenance.sh",
@@ -452,32 +503,85 @@ class ScriptManifestTests(unittest.TestCase):
             "scripts/validation/report-provider-hook-parity.sh",
         )
         for script in scripts:
-            with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(script=script),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = Path(directory)
                 inputs = {script}
                 fixture_sources: dict[str, Path] = {}
                 if "tech-stack" in script:
                     (root / "infra").mkdir()
-                    (root / "infra/tech-stack.versions.json").write_text(json.dumps({"entries": [{"component": "fixture", "images": ["fixture:1"], "compose_files": ["infra/docker-compose.fixture.yml"]}]}))
+                    (root / "infra/tech-stack.versions.json").write_text(
+                        json.dumps(
+                            {
+                                "entries": [
+                                    {
+                                        "component": "fixture",
+                                        "images": ["fixture:1"],
+                                        "compose_files": [
+                                            "infra/docker-compose.fixture.yml"
+                                        ],
+                                    }
+                                ]
+                            }
+                        )
+                    )
                     (root / "infra/image-tag-policy.exceptions.json").write_text("{}")
-                    (root / "infra/docker-compose.fixture.yml").write_text("services:\n  fixture:\n    image: fixture:1\n")
+                    (root / "infra/docker-compose.fixture.yml").write_text(
+                        "services:\n  fixture:\n    image: fixture:1\n"
+                    )
                 elif "audit-implementation" in script:
-                    inputs.update({"scripts/validation/audit_criterion_contract.py", "scripts/validation/check-agentic-audit-semantic-freshness.py", "scripts/validation/agentic-audit-semantic-contract.json"})
-                    semantic = json.loads((ROOT / "scripts/validation/agentic-audit-semantic-contract.json").read_text())
-                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "docs/90.references/audits").rglob("*.md"))
+                    inputs.update(
+                        {
+                            "scripts/validation/audit_criterion_contract.py",
+                            "scripts/validation/check-agentic-audit-semantic-freshness.py",
+                            "scripts/validation/agentic-audit-semantic-contract.json",
+                        }
+                    )
+                    semantic = json.loads(
+                        (
+                            ROOT
+                            / "scripts/validation/agentic-audit-semantic-contract.json"
+                        ).read_text()
+                    )
+                    inputs.update(
+                        path.relative_to(ROOT).as_posix()
+                        for path in (ROOT / "docs/90.references/audits").rglob("*.md")
+                    )
                     inputs.add(semantic["task_evidence"])
                     fixture_sources[semantic["task_evidence"]] = (
                         ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
                     )
-                    inputs.update(path for assertion in semantic["assertions"] for path in assertion["required_evidence_paths"])
+                    inputs.update(
+                        path
+                        for assertion in semantic["assertions"]
+                        for path in assertion["required_evidence_paths"]
+                    )
                 elif "supply-chain" in script:
-                    inputs.update({"scripts/validation/check-supply-chain-policy.py", "scripts/lib/supply_chain/grype_db_seed.py", "examples/sample-web-service/Dockerfile"})
-                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "infra").glob("supply-chain*.json"))
-                    inputs.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "tests/fixtures/supply-chain").rglob("*") if path.is_file())
+                    inputs.update(
+                        {
+                            "scripts/validation/check-supply-chain-policy.py",
+                            "scripts/lib/supply_chain/grype_db_seed.py",
+                            "examples/sample-web-service/Dockerfile",
+                        }
+                    )
+                    inputs.update(
+                        path.relative_to(ROOT).as_posix()
+                        for path in (ROOT / "infra").glob("supply-chain*.json")
+                    )
+                    inputs.update(
+                        path.relative_to(ROOT).as_posix()
+                        for path in (ROOT / "tests/fixtures/supply-chain").rglob("*")
+                        if path.is_file()
+                    )
                 elif "hook-parity" in script:
                     from tests.validation.test_provider_hook_parity import copy_fixture
+
                     copy_fixture(root)
-                self.assertLess(len(inputs), 180, "fixture must remain a bounded producer input set")
+                self.assertLess(
+                    len(inputs), 180, "fixture must remain a bounded producer input set"
+                )
                 for relative in sorted(inputs):
                     source = fixture_sources.get(relative, ROOT / relative)
                     target = root / relative
@@ -488,26 +592,70 @@ class ScriptManifestTests(unittest.TestCase):
                 target = root / output
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text("stale output\n", encoding="utf-8")
-                subprocess.run(["git", "init", "-q"], cwd=root, check=True, capture_output=True)
-                subprocess.run(["git", "add", "."], cwd=root, check=True, capture_output=True)
-                environment = {**os.environ, "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1"}
+                subprocess.run(
+                    ["git", "init", "-q"], cwd=root, check=True, capture_output=True
+                )
+                subprocess.run(
+                    ["git", "add", "."], cwd=root, check=True, capture_output=True
+                )
+                environment = {
+                    **os.environ,
+                    "PYTHONPATH": str(ROOT),
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                }
                 environment.pop("HYHOME_CI_GATE_ROOT", None)
                 command = ["bash", str(root / script)]
                 extra = ["--root", str(root)] if "hook-parity" in script else []
+
                 def snapshot():
-                    return {path.relative_to(root).as_posix(): path.read_bytes() for path in root.rglob("*") if path.is_file() and ".git" not in path.relative_to(root).parts}
+                    return {
+                        path.relative_to(root).as_posix(): path.read_bytes()
+                        for path in root.rglob("*")
+                        if path.is_file() and ".git" not in path.relative_to(root).parts
+                    }
+
                 before = snapshot()
                 for mode in ([], ["--check"]):
-                    result = subprocess.run([*command, *mode, *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+                    result = subprocess.run(
+                        [*command, *mode, *extra],
+                        cwd=root,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                    )
                     self.assertNotEqual(0, result.returncode, script)
                     self.assertEqual(before, snapshot(), script)
-                result = subprocess.run([*command, "--write", *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+                result = subprocess.run(
+                    [*command, "--write", *extra],
+                    cwd=root,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                )
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)
                 after = snapshot()
-                self.assertEqual({output}, {path for path in before.keys() | after.keys() if before.get(path) != after.get(path)})
+                self.assertEqual(
+                    {output},
+                    {
+                        path
+                        for path in before.keys() | after.keys()
+                        if before.get(path) != after.get(path)
+                    },
+                )
                 for mode in ([], ["--check"]):
-                    result = subprocess.run([*command, *mode, *extra], cwd=root, env=environment, capture_output=True, text=True, timeout=30)
-                    self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                    result = subprocess.run(
+                        [*command, *mode, *extra],
+                        cwd=root,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                    )
+                    self.assertEqual(
+                        0, result.returncode, result.stdout + result.stderr
+                    )
                     self.assertEqual(after, snapshot())
 
     def test_task12_retires_only_the_proven_successor_scripts(self) -> None:
@@ -573,12 +721,20 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertIn(successor, self.repository_paths)
                 if row["disposition"] == "retain" and row["kind"] != "library":
                     self.assertTrue(row["consumers"])
-                if row["disposition"] == "retain" and row["kind"] not in {"contract", "dependency-manifest"}:
+                if row["disposition"] == "retain" and row["kind"] not in {
+                    "contract",
+                    "dependency-manifest",
+                }:
                     self.assertTrue(row["tests"])
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
-                if row["kind"] in {"generator", "validator"} and row["mutation"] == "check-write" and row["disposition"] == "retain" and "check_command" in row:
+                if (
+                    row["kind"] in {"generator", "validator"}
+                    and row["mutation"] == "check-write"
+                    and row["disposition"] == "retain"
+                    and "check_command" in row
+                ):
                     self.assertIn("--check", row["check_command"])
                     self.assertNotIn("--write", row["check_command"])
                     self.assertTrue(row["outputs"])
@@ -633,7 +789,12 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(path=row["path"]):
                 expected = MUTATION_OVERRIDES.get(row["path"], "none")
                 self.assertEqual(expected, row["mutation"])
-                if row["kind"] in {"generator", "validator"} and row["mutation"] == "check-write" and row["disposition"] == "retain" and "check_command" in row:
+                if (
+                    row["kind"] in {"generator", "validator"}
+                    and row["mutation"] == "check-write"
+                    and row["disposition"] == "retain"
+                    and "check_command" in row
+                ):
                     self.assertEqual(row["path"], row["check_command"][1])
 
     def test_plan_mandatory_dispositions_and_high_risk_operations(self) -> None:
@@ -685,19 +846,29 @@ class ScriptManifestTests(unittest.TestCase):
                 )
                 authority_text = (ROOT / authority).read_text(encoding="utf-8")
                 basename = PurePosixPath(row["path"]).name
-                if authority in unrelated and basename not in authority_text and row["path"] not in authority_text:
-                    self.fail(f"blanket authority {authority} does not govern {row['path']}")
+                if (
+                    authority in unrelated
+                    and basename not in authority_text
+                    and row["path"] not in authority_text
+                ):
+                    self.fail(
+                        f"blanket authority {authority} does not govern {row['path']}"
+                    )
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(authority))
                     self.assertTrue(
                         basename in authority_text or row["path"] in authority_text,
                         f"runtime Runbook does not name {row['path']}",
                     )
-                elif row["mutation"] == "runtime" and not is_runbook_authority(authority):
+                elif row["mutation"] == "runtime" and not is_runbook_authority(
+                    authority
+                ):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(row["path"], row["successor"])
 
-    def test_operations_implementation_and_gate_use_the_registry_authority(self) -> None:
+    def test_operations_implementation_and_gate_use_the_registry_authority(
+        self,
+    ) -> None:
         for path in OPERATIONS_MANIFEST_PATHS:
             with self.subTest(path=path):
                 row = self.rows_by_path[path]
@@ -731,14 +902,20 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIn("Do not invoke a default-write generator without", compact)
         self.assertIn("semantic invocation/import evidence", compact)
 
-    def test_ledger_has_one_complete_sorted_row_for_every_migration_document(self) -> None:
+    def test_ledger_has_one_complete_sorted_row_for_every_migration_document(
+        self,
+    ) -> None:
         rows = self.ledger_rows
         expected = set(
             subprocess.run(
                 [
-                    "git", "ls-tree", "-r", "--name-only",
+                    "git",
+                    "ls-tree",
+                    "-r",
+                    "--name-only",
                     BASELINE,
-                    "--", *MIGRATION_ROOTS,
+                    "--",
+                    *MIGRATION_ROOTS,
                 ],
                 cwd=ROOT,
                 text=True,
@@ -763,7 +940,10 @@ class ScriptManifestTests(unittest.TestCase):
         for row in rows:
             with self.subTest(path=row["legacy_path"]):
                 self.assertEqual(required, set(row))
-                self.assertIn(row["action"], {"archive", "delete", "merge", "move", "retain", "rewrite"})
+                self.assertIn(
+                    row["action"],
+                    {"archive", "delete", "merge", "move", "retain", "rewrite"},
+                )
                 self.assertEqual(
                     BASELINE,
                     row["source_commit"],
@@ -790,8 +970,15 @@ class ScriptManifestTests(unittest.TestCase):
                     parts = PurePosixPath(target).parts
                     self.assertNotIn("docs/04.execution", target)
                     self.assertNotIn("README.md/", target)
-                    self.assertFalse(any(re.fullmatch(r"[0-9]{4}", part) for part in parts))
-                    self.assertFalse(any(re.match(r"[0-9]{4}-[0-9]{2}-[0-9]{2}-", part) for part in parts))
+                    self.assertFalse(
+                        any(re.fullmatch(r"[0-9]{4}", part) for part in parts)
+                    )
+                    self.assertFalse(
+                        any(
+                            re.match(r"[0-9]{4}-[0-9]{2}-[0-9]{2}-", part)
+                            for part in parts
+                        )
+                    )
                     self.assertFalse(
                         target.startswith(
                             (
@@ -829,7 +1016,10 @@ class ScriptManifestTests(unittest.TestCase):
             "spec": (r".*/spec-([0-9]{4})-[^/]+/spec\.md", "spec"),
             "event": (r".*/inc-([0-9]{4})-[^/]+/incident\.md", "inc"),
             "release": (r".*/rel-([0-9]{4})-[^/]+/release\.md", "rel"),
-            "reference": (r".*/ref-([0-9]{4})-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)", "ref"),
+            "reference": (
+                r".*/ref-([0-9]{4})-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
+                "ref",
+            ),
             "migration": (r".*/mig-([0-9]{4})-[^/]+\.md", "mig"),
         }
         for row in self.ledger_rows:
@@ -855,7 +1045,9 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     self.assertIsNotNone(match)
                     identity, role = match.groups()
-                    expected = f"plan-{identity}" if role == "plan" else f"task-{identity}-01"
+                    expected = (
+                        f"plan-{identity}" if role == "plan" else f"task-{identity}-01"
+                    )
                     self.assertEqual(expected, artifact_id)
                 elif target_type == "ops-role":
                     match = re.fullmatch(
@@ -886,7 +1078,10 @@ class ScriptManifestTests(unittest.TestCase):
                         )
                 elif target_type == "tombstone":
                     filename = PurePosixPath(target).stem
-                    self.assertTrue(filename.startswith(f"{artifact_id}-") or filename == artifact_id)
+                    self.assertTrue(
+                        filename.startswith(f"{artifact_id}-")
+                        or filename == artifact_id
+                    )
 
     def test_active_and_draft_sources_never_route_to_archive(self) -> None:
         for row in self.ledger_rows:
@@ -905,15 +1100,18 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIsNone(stable_target_type("docs/03.specs/spec-131-example/spec.md"))
         self.assertIsNone(stable_target_type("docs/05.operations/runbooks/example.md"))
 
-
     def test_tombstones_are_terminal_and_only_name_active_replacements(self) -> None:
         for row in self.ledger_rows:
             if row["action"] != "archive":
                 continue
             with self.subTest(path=row["legacy_path"]):
                 metadata = frontmatter(git_text(row["legacy_path"]))
-                self.assertIn(metadata.get("status"), {"completed", "superseded", "archived"})
-                self.assertTrue(str(row["stable_path"]).startswith("docs/98.archive/tombstones/"))
+                self.assertIn(
+                    metadata.get("status"), {"completed", "superseded", "archived"}
+                )
+                self.assertTrue(
+                    str(row["stable_path"]).startswith("docs/98.archive/tombstones/")
+                )
                 replacement = row["replacement"]
                 if replacement is not None:
                     self.assertFalse(str(replacement).startswith("docs/98.archive/"))
@@ -938,7 +1136,9 @@ class ScriptManifestTests(unittest.TestCase):
             ),
         )
 
-    def test_baseline_tombstone_replacements_are_preserved_as_stable_targets(self) -> None:
+    def test_baseline_tombstone_replacements_are_preserved_as_stable_targets(
+        self,
+    ) -> None:
         index_replacements: dict[str, list[str]] = {}
         index_path = "docs/98.archive/README.md"
         for line in git_text(index_path).splitlines():
@@ -975,7 +1175,9 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertIsInstance(target, str)
                     canonical_target = canonical_current_path(str(target))
                     self.assertFalse(canonical_target.startswith("docs/98.archive/"))
-                    self.assertIsNotNone(stable_target_type(canonical_target), canonical_target)
+                    self.assertIsNotNone(
+                        stable_target_type(canonical_target), canonical_target
+                    )
                     translated.append(canonical_target)
 
                 self.assertEqual([], replacement_preservation_errors(row, translated))
@@ -1029,14 +1231,20 @@ class ScriptManifestTests(unittest.TestCase):
             role = "plan" if "/plans/" in path else "task"
             expected = f"docs/03.specs/spec-{int(identity):04d}-{slug}/{role}.md"
             self.assertEqual(expected, target)
-            expected_id = f"plan-{int(identity):04d}" if role == "plan" else f"task-{int(identity):04d}-01"
+            expected_id = (
+                f"plan-{int(identity):04d}"
+                if role == "plan"
+                else f"task-{int(identity):04d}-01"
+            )
             self.assertEqual(expected_id, row["artifact_id"])
 
     def test_completed_linked_plan_task_pairs_share_typed_change_packet(self) -> None:
         plans_by_id: dict[str, str] = {}
         plans_by_slug: dict[str, str] = {}
         for path in self.ledger_by_path:
-            if not path.startswith("docs/04.execution/plans/") or path.endswith("README.md"):
+            if not path.startswith("docs/04.execution/plans/") or path.endswith(
+                "README.md"
+            ):
                 continue
             metadata = frontmatter(git_text(path))
             if isinstance(metadata.get("artifact_id"), str):
@@ -1046,7 +1254,9 @@ class ScriptManifestTests(unittest.TestCase):
 
         pairs: set[tuple[str, str]] = set()
         for task_path in self.ledger_by_path:
-            if not task_path.startswith("docs/04.execution/tasks/") or task_path.endswith("README.md"):
+            if not task_path.startswith(
+                "docs/04.execution/tasks/"
+            ) or task_path.endswith("README.md"):
                 continue
             body = git_text(task_path)
             metadata = frontmatter(body)
@@ -1067,9 +1277,14 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(plan=plan_path, task=task_path):
                 plan = self.ledger_by_path[plan_path]
                 task = self.ledger_by_path[task_path]
-                self.assertEqual(PurePosixPath(plan["stable_path"]).parent, PurePosixPath(task["stable_path"]).parent)
+                self.assertEqual(
+                    PurePosixPath(plan["stable_path"]).parent,
+                    PurePosixPath(task["stable_path"]).parent,
+                )
                 plan_match = re.fullmatch(r"plan-([0-9]{4})", str(plan["artifact_id"]))
-                task_match = re.fullmatch(r"task-([0-9]{4})-[0-9]{2}", str(task["artifact_id"]))
+                task_match = re.fullmatch(
+                    r"task-([0-9]{4})-[0-9]{2}", str(task["artifact_id"])
+                )
                 self.assertIsNotNone(plan_match)
                 self.assertIsNotNone(task_match)
                 self.assertEqual(plan_match.group(1), task_match.group(1))
@@ -1085,7 +1300,11 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(target=target):
                 owners = [row for row in rows if row["action"] != "merge"]
                 self.assertEqual(1, len(owners))
-                self.assertTrue(all(row["action"] == "merge" for row in rows if row is not owners[0]))
+                self.assertTrue(
+                    all(
+                        row["action"] == "merge" for row in rows if row is not owners[0]
+                    )
+                )
 
     def test_current_archived_capabilities_are_restored_to_stage03(self) -> None:
         for identity, slug in (
@@ -1154,7 +1373,9 @@ class ScriptManifestValidationTests(unittest.TestCase):
         }
         return {**row, **updates}
 
-    def codes(self, row: dict[str, object], tracked: set[str] | None = None) -> set[str]:
+    def codes(
+        self, row: dict[str, object], tracked: set[str] | None = None
+    ) -> set[str]:
         document = {"schema_version": 1, "files": [row]}
         return {
             finding.code
@@ -1190,9 +1411,16 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn("consumer-missing", {finding.code for finding in findings})
 
     def test_manifest_rejects_missing_and_invalid_authority(self) -> None:
-        self.assertIn("fields-missing", self.codes({key: value for key, value in self.row().items() if key != "authority"}))
+        self.assertIn(
+            "fields-missing",
+            self.codes(
+                {key: value for key, value in self.row().items() if key != "authority"}
+            ),
+        )
         self.assertIn("authority-invalid", self.codes(self.row(authority="")))
-        self.assertIn("authority-untracked", self.codes(self.row(authority="docs/unknown.md")))
+        self.assertIn(
+            "authority-untracked", self.codes(self.row(authority="docs/unknown.md"))
+        )
 
     def test_manifest_rejects_retired_operations_authority_fields(self) -> None:
         for field in ("current_authorities", "semantic_witnesses"):
@@ -1203,17 +1431,28 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 )
 
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
-        self.assertIn("disposition-invalid", self.codes(self.row(disposition="deprecated")))
-        self.assertIn("successor-invalid", self.codes(self.row(successor="scripts/next.py")))
-        self.assertIn("successor-missing", self.codes(self.row(disposition="merge", successor=None)))
+        self.assertIn(
+            "disposition-invalid", self.codes(self.row(disposition="deprecated"))
+        )
+        self.assertIn(
+            "successor-invalid", self.codes(self.row(successor="scripts/next.py"))
+        )
+        self.assertIn(
+            "successor-missing",
+            self.codes(self.row(disposition="merge", successor=None)),
+        )
         self.assertIn(
             "successor-untracked",
             self.codes(self.row(disposition="merge", successor="scripts/next.py")),
         )
 
-    def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(self) -> None:
+    def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(
+        self,
+    ) -> None:
         self.assertIn("tests-missing", self.codes(self.row(tests=[])))
-        self.assertIn("mutation-invalid", self.codes(self.row(mutation="default-write")))
+        self.assertIn(
+            "mutation-invalid", self.codes(self.row(mutation="default-write"))
+        )
 
     def test_manifest_rejects_retired_placeholder_test_roots(self) -> None:
         for root in ("docs", "qa", "setup"):
@@ -1227,7 +1466,9 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     ),
                 )
 
-    def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(self) -> None:
+    def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(
+        self,
+    ) -> None:
         library = self.row(
             path="scripts/lib/document_governance/example.py",
             kind="library",
@@ -1256,7 +1497,12 @@ class ScriptManifestValidationTests(unittest.TestCase):
             ["python3", "-c", "pass", "scripts/example.py", "--check"],
             ["python3", "-m", "scripts.example", "--check"],
             ["python3", "scripts/example.py", "--check", "extra"],
-            ["python3", "scripts/validation/check-script-manifest.py", "scripts/example.py", "--check"],
+            [
+                "python3",
+                "scripts/validation/check-script-manifest.py",
+                "scripts/example.py",
+                "--check",
+            ],
         )
         for command in adversarial:
             with self.subTest(command=command):
@@ -1331,7 +1577,9 @@ class ScriptManifestValidationTests(unittest.TestCase):
             ),
         )
 
-    def _generator_repo(self, root: Path, script: str, script_path: str = "scripts/example.py") -> Path:
+    def _generator_repo(
+        self, root: Path, script: str, script_path: str = "scripts/example.py"
+    ) -> Path:
         for relative in ("scripts", "docs", "tests"):
             (root / relative).mkdir(parents=True, exist_ok=True)
         (root / script_path).parent.mkdir(parents=True, exist_ok=True)
@@ -1379,17 +1627,30 @@ class ScriptManifestValidationTests(unittest.TestCase):
         }
         manifest["files"].sort(key=lambda row: row["path"])
         manifest_path = root / "scripts/manifest.yaml"
-        manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+        manifest_path.write_text(
+            yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8"
+        )
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
         subprocess.run(["git", "add", "."], cwd=root, check=True)
         subprocess.run(
-            ["git", "-c", "user.name=Task Test", "-c", "user.email=task@example.invalid", "commit", "-qm", "fixture"],
+            [
+                "git",
+                "-c",
+                "user.name=Task Test",
+                "-c",
+                "user.email=task@example.invalid",
+                "commit",
+                "-qm",
+                "fixture",
+            ],
             cwd=root,
             check=True,
         )
         return manifest_path
 
-    def test_generated_checks_fail_closed_on_stale_missing_and_mutating_commands(self) -> None:
+    def test_generated_checks_fail_closed_on_stale_missing_and_mutating_commands(
+        self,
+    ) -> None:
         valid_script = "import argparse\nargparse.ArgumentParser().add_argument('--check', action='store_true')\n"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -1400,7 +1661,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
             (root / script_path).write_text("raise SystemExit(9)\n", encoding="utf-8")
             self.assertIn(
                 "generated-check-failed",
-                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                },
             )
             producer = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
             next(row for row in producer["files"] if row["path"] == script_path).update(
@@ -1408,7 +1672,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 public_suites=["repository-integrity"],
                 execution_argv=["--check"],
                 execution_contexts=[
-                    "local", "pull_request", "push", "workflow_dispatch"
+                    "local",
+                    "pull_request",
+                    "push",
+                    "workflow_dispatch",
                 ],
             )
             manifest_path.write_text(
@@ -1416,7 +1683,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
             )
             self.assertIn(
                 "generated-check-failed",
-                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                },
             )
 
             (root / script_path).write_text(
@@ -1425,12 +1695,17 @@ class ScriptManifestValidationTests(unittest.TestCase):
             )
             self.assertIn(
                 "generated-check-mutated",
-                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                },
             )
 
             for surface in ("docs", "tests", "infra"):
                 with self.subTest(ignored_surface=surface):
-                    subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
+                    subprocess.run(
+                        ["git", "restore", "docs/output.md"], cwd=root, check=True
+                    )
                     marker = f"{surface}/.ignored-mutation"
                     (root / surface).mkdir(parents=True, exist_ok=True)
                     (root / script_path).write_text(
@@ -1440,22 +1715,34 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     (root / ".gitignore").write_text(f"{marker}\n", encoding="utf-8")
                     self.assertIn(
                         "generated-check-mutated",
-                        {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                        {
+                            finding.code
+                            for finding in self.checker.check_generated(
+                                root, manifest_path
+                            )
+                        },
                     )
                     (root / marker).unlink()
 
             subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
             document = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
             missing = deepcopy(document)
-            next(row for row in missing["files"] if row["path"] == script_path)["check_command"] = [
+            next(row for row in missing["files"] if row["path"] == script_path)[
+                "check_command"
+            ] = [
                 "missing-task9-generator-command",
                 script_path,
                 "--check",
             ]
-            manifest_path.write_text(yaml.safe_dump(missing, sort_keys=False), encoding="utf-8")
+            manifest_path.write_text(
+                yaml.safe_dump(missing, sort_keys=False), encoding="utf-8"
+            )
             self.assertIn(
                 "generated-check-invalid",
-                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                },
             )
 
     def test_semantic_evidence_rejects_prose_comments_and_non_test_paths(self) -> None:
@@ -1470,19 +1757,28 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 "# subprocess.run(['python3', 'scripts/example.py', '--check'])\n",
                 encoding="utf-8",
             )
-            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            codes = {
+                finding.code
+                for finding in self.checker.check_manifest(root, manifest_path)
+            }
             self.assertIn("consumers-unproven", codes)
             self.assertIn("tests-unproven", codes)
             (root / "tests/validation/test_example.py").write_text(
                 '"""Prose only: scripts/example.py."""\n', encoding="utf-8"
             )
-            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            codes = {
+                finding.code
+                for finding in self.checker.check_manifest(root, manifest_path)
+            }
             self.assertIn("tests-unproven", codes)
             (root / "tests/validation/test_example.py").write_text(
                 "TARGET = 'scripts/example.py'\nprint('unrelated')\n",
                 encoding="utf-8",
             )
-            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            codes = {
+                finding.code
+                for finding in self.checker.check_manifest(root, manifest_path)
+            }
             self.assertIn("tests-unproven", codes)
 
     def test_yaml_semantic_evidence_accepts_exact_entry_only(self) -> None:
@@ -1538,9 +1834,13 @@ class ScriptManifestValidationTests(unittest.TestCase):
         )
         for source in positives:
             with self.subTest(source=source):
-                self.assertTrue(self.checker._python_proves_use(source, "scripts/example.py"))
+                self.assertTrue(
+                    self.checker._python_proves_use(source, "scripts/example.py")
+                )
 
-    def test_python_semantic_evidence_rejects_unrelated_calls_and_collisions(self) -> None:
+    def test_python_semantic_evidence_rejects_unrelated_calls_and_collisions(
+        self,
+    ) -> None:
         negatives = (
             "from unrelated import example\n",
             "TARGET = 'scripts/example.py'\nlen(TARGET)\n",
@@ -1553,7 +1853,9 @@ class ScriptManifestValidationTests(unittest.TestCase):
         )
         for source in negatives:
             with self.subTest(source=source):
-                self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
+                self.assertFalse(
+                    self.checker._python_proves_use(source, "scripts/example.py")
+                )
 
     def test_python_semantic_evidence_rejects_ambiguous_path_reassignment(self) -> None:
         source = (
@@ -1562,9 +1864,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "TARGET = 'scripts/other.py'\n"
             "subprocess.run(['python3', TARGET])\n"
         )
-        self.assertFalse(
-            self.checker._python_proves_use(source, "scripts/example.py")
-        )
+        self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
 
     def test_python_semantic_evidence_rejects_sibling_function_scope_join(self) -> None:
         source = (
@@ -1574,9 +1874,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "def two():\n"
             "    from example import helper\n"
         )
-        self.assertFalse(
-            self.checker._python_proves_use(source, "scripts/example.py")
-        )
+        self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
 
     def test_python_semantic_evidence_rejects_sibling_class_scope_join(self) -> None:
         source = (
@@ -1586,20 +1884,18 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "class Two:\n"
             "    from example import helper\n"
         )
-        self.assertFalse(
-            self.checker._python_proves_use(source, "scripts/example.py")
-        )
+        self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
 
-    def test_python_semantic_evidence_allows_explicit_module_path_visibility(self) -> None:
+    def test_python_semantic_evidence_allows_explicit_module_path_visibility(
+        self,
+    ) -> None:
         source = (
             "from pathlib import Path\n"
             "BASE = Path('scripts')\n"
             "def use():\n"
             "    from example import helper\n"
         )
-        self.assertTrue(
-            self.checker._python_proves_use(source, "scripts/example.py")
-        )
+        self.assertTrue(self.checker._python_proves_use(source, "scripts/example.py"))
 
     def test_declared_paths_reject_symlinks_before_execution(self) -> None:
         valid_script = "raise SystemExit('must not execute')\n"
@@ -1611,7 +1907,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
             (root / "scripts/example.py").unlink()
             (root / "scripts/example.py").symlink_to(outside)
             try:
-                codes = {finding.code for finding in self.checker.check_generated(root, manifest_path)}
+                codes = {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                }
                 self.assertIn("declared-path-invalid", codes)
                 self.assertNotIn("generated-check-failed", codes)
             finally:
@@ -1627,7 +1926,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
             (root / "docs/output.md").unlink()
             (root / "docs/output.md").symlink_to(outside)
             try:
-                codes = {finding.code for finding in self.checker.check_generated(root, manifest_path)}
+                codes = {
+                    finding.code
+                    for finding in self.checker.check_generated(root, manifest_path)
+                }
                 self.assertIn("declared-path-invalid", codes)
                 self.assertEqual("outside\n", outside.read_text(encoding="utf-8"))
                 self.assertNotIn("generated-check-failed", codes)

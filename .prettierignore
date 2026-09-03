@@ -1,24 +1,20 @@
-# Shared generated directories and local-only agent state.
-.agent/
-.claude/
-.codex/
-.git/
-.history/
-.mypy_cache/
-.vscode/
-archive/
-artifacts/
-node_modules/
-dist/
-coverage/
-storybook-static/
-
-# App workspaces that keep their own local formatting conventions.
-projects/storybook/nextjs/
-
-# Bundled or generated assets that should not be rewritten.
-*.min.js
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
-bun.lockb
+# This repository is not formatted by Prettier.
+#
+# Prettier has no tracked invocation here: it is absent from
+# `.pre-commit-config.yaml` and from every gate suite, so it never runs in CI.
+# It reaches files only through an agent editor hook outside this repository,
+# where it reformatted 596 of 776 Markdown files -- realigning every table and
+# rewriting frontmatter quoting -- against conventions this repository's own
+# templates and validators encode.
+#
+# Each file type already has one owner:
+#   *.md            markdownlint-cli2 plus the Stage 99 document validators
+#   *.yaml, *.yml   yamllint, and actionlint for workflows
+#   *.json          check-json
+#   *.py            ruff format, pinned by ruff.toml
+#   *.sh            shellcheck
+#   Dockerfile*     hadolint
+#
+# Ignoring everything keeps that ownership single. Narrow this file only
+# together with a tracked Prettier invocation that says what it owns.
+*

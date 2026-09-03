@@ -15,7 +15,10 @@ import subprocess
 import time
 from collections.abc import Mapping, Sequence
 
-from scripts.lib.document_governance.frontmatter import FrontmatterError, parse_frontmatter_text
+from scripts.lib.document_governance.frontmatter import (
+    FrontmatterError,
+    parse_frontmatter_text,
+)
 from scripts.lib.document_governance.registry import (
     document_type,
     RegistryError,
@@ -71,7 +74,12 @@ _ROLE_SECTION_ALIASES = {
         "Trigger": {"Trigger", "When to Use"},
         "Prerequisites": {"Prerequisites", "When to Use", "Procedure"},
         "Procedure": {"Procedure"},
-        "Verification": {"Verification", "Evidence", "Verification Steps", "Verification Record"},
+        "Verification": {
+            "Verification",
+            "Evidence",
+            "Verification Steps",
+            "Verification Record",
+        },
         "Rollback": {"Rollback", "Rollback or Recovery"},
         "Escalation": {"Escalation"},
         "Traceability": {"Traceability", "Related Documents"},
@@ -88,11 +96,20 @@ _RELEASE_ROLE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 _RELEASE_NEGATIONS = (
-    "no release", "not maintain", "does not maintain", "without a release",
-    "release absence", "release is absent", "release role and route are unnecessary",
-    "no separate release", "remove release", "retired release",
+    "no release",
+    "not maintain",
+    "does not maintain",
+    "without a release",
+    "release absence",
+    "release is absent",
+    "release role and route are unnecessary",
+    "no separate release",
+    "remove release",
+    "retired release",
     "a separate release document role",
 )
+
+
 class OperationsAuthorityError(ValueError):
     def __init__(self, code: str, message: str) -> None:
         self.code = code
@@ -188,8 +205,12 @@ def _run_git_bounded(
 ) -> GitCommandResult:
     """Run Git with simultaneous bounded pipe draining and hard cleanup."""
 
-    if not arguments or any(not isinstance(item, str) or "\0" in item for item in arguments):
-        raise OperationsAuthorityError("git-arguments-invalid", "Git arguments must be nonempty text")
+    if not arguments or any(
+        not isinstance(item, str) or "\0" in item for item in arguments
+    ):
+        raise OperationsAuthorityError(
+            "git-arguments-invalid", "Git arguments must be nonempty text"
+        )
     if timeout_seconds <= 0 or max_stdout < 1 or max_stderr < 1:
         raise OperationsAuthorityError("bounds-invalid", "Git bounds must be positive")
     deadline_seconds = min(float(timeout_seconds), MAX_GIT_SECONDS)
@@ -208,7 +229,10 @@ def _run_git_bounded(
     except OSError as error:
         raise OperationsAuthorityError("git-start-failed", str(error)) from error
     assert process.stdout is not None and process.stderr is not None
-    streams = {process.stdout: ("stdout", stdout_limit), process.stderr: ("stderr", stderr_limit)}
+    streams = {
+        process.stdout: ("stdout", stdout_limit),
+        process.stderr: ("stderr", stderr_limit),
+    }
     output = {"stdout": bytearray(), "stderr": bytearray()}
     selector = selectors.DefaultSelector()
     failure: OperationsAuthorityError | None = None
@@ -220,7 +244,9 @@ def _run_git_bounded(
         while selector.get_map():
             remaining = deadline_seconds - (time.monotonic() - started)
             if remaining <= 0:
-                failure = OperationsAuthorityError("git-deadline", "Git deadline exceeded")
+                failure = OperationsAuthorityError(
+                    "git-deadline", "Git deadline exceeded"
+                )
                 break
             for key, _ in selector.select(min(remaining, 0.1)):
                 stream = key.fileobj
@@ -240,7 +266,9 @@ def _run_git_bounded(
                     )
                     break
                 if len(output["stdout"]) + len(output["stderr"]) > MAX_GIT_TOTAL_BYTES:
-                    failure = OperationsAuthorityError("git-output-bounds", "Git output bound exceeded")
+                    failure = OperationsAuthorityError(
+                        "git-output-bounds", "Git output bound exceeded"
+                    )
                     break
             if failure is not None:
                 break
@@ -255,8 +283,12 @@ def _run_git_bounded(
             returncode = process.wait(timeout=remaining)
         except subprocess.TimeoutExpired as error:
             _kill_and_reap(process)
-            raise OperationsAuthorityError("git-deadline", "Git deadline exceeded") from error
-        return GitCommandResult(returncode, bytes(output["stdout"]), bytes(output["stderr"]))
+            raise OperationsAuthorityError(
+                "git-deadline", "Git deadline exceeded"
+            ) from error
+        return GitCommandResult(
+            returncode, bytes(output["stdout"]), bytes(output["stderr"])
+        )
     finally:
         for stream in streams:
             try:
@@ -293,30 +325,48 @@ def _open_anchored_regular(
     try:
         directory_descriptor = os.open(root, directory_flags)
         for part in relative.parts[:-1]:
-            component = os.stat(part, dir_fd=directory_descriptor, follow_symlinks=False)
+            component = os.stat(
+                part, dir_fd=directory_descriptor, follow_symlinks=False
+            )
             if stat.S_ISLNK(component.st_mode):
-                raise OperationsAuthorityError("symlink-invalid", f"symlink input: {relative}")
+                raise OperationsAuthorityError(
+                    "symlink-invalid", f"symlink input: {relative}"
+                )
             if not stat.S_ISDIR(component.st_mode):
-                raise OperationsAuthorityError("file-not-regular", f"non-directory component: {relative}")
-            next_descriptor = os.open(part, directory_flags, dir_fd=directory_descriptor)
+                raise OperationsAuthorityError(
+                    "file-not-regular", f"non-directory component: {relative}"
+                )
+            next_descriptor = os.open(
+                part, directory_flags, dir_fd=directory_descriptor
+            )
             opened = os.fstat(next_descriptor)
             if (component.st_dev, component.st_ino) != (opened.st_dev, opened.st_ino):
                 os.close(next_descriptor)
-                raise OperationsAuthorityError("file-raced", f"changed before read: {relative}")
+                raise OperationsAuthorityError(
+                    "file-raced", f"changed before read: {relative}"
+                )
             os.close(directory_descriptor)
             directory_descriptor = next_descriptor
-        path_stat = os.stat(relative.name, dir_fd=directory_descriptor, follow_symlinks=False)
+        path_stat = os.stat(
+            relative.name, dir_fd=directory_descriptor, follow_symlinks=False
+        )
         if stat.S_ISLNK(path_stat.st_mode):
-            raise OperationsAuthorityError("symlink-invalid", f"symlink input: {relative}")
+            raise OperationsAuthorityError(
+                "symlink-invalid", f"symlink input: {relative}"
+            )
         if not stat.S_ISREG(path_stat.st_mode):
-            raise OperationsAuthorityError("file-not-regular", f"not regular: {relative}")
+            raise OperationsAuthorityError(
+                "file-not-regular", f"not regular: {relative}"
+            )
         descriptor = os.open(relative.name, file_flags, dir_fd=directory_descriptor)
         opened = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(opened.st_mode)
-            or (opened.st_dev, opened.st_ino) != (path_stat.st_dev, path_stat.st_ino)
+        if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
+            path_stat.st_dev,
+            path_stat.st_ino,
         ):
-            raise OperationsAuthorityError("file-raced", f"changed before read: {relative}")
+            raise OperationsAuthorityError(
+                "file-raced", f"changed before read: {relative}"
+            )
         return directory_descriptor, descriptor, opened
     except OperationsAuthorityError:
         if descriptor is not None:
@@ -341,12 +391,20 @@ def _directory_entries_bounded(
 ) -> tuple[BoundedDirectoryEntry, ...]:
     """Stream one directory through anchored descriptors and reject identity races."""
 
-    if isinstance(max_entries, bool) or not isinstance(max_entries, int) or max_entries < 1:
-        raise OperationsAuthorityError("bounds-invalid", "max_entries must be a positive integer")
+    if (
+        isinstance(max_entries, bool)
+        or not isinstance(max_entries, int)
+        or max_entries < 1
+    ):
+        raise OperationsAuthorityError(
+            "bounds-invalid", "max_entries must be a positive integer"
+        )
     effective_limit = min(max_entries, MAX_DIRECTORY_ENTRIES)
     relative = _safe_relative(relative.as_posix(), "directory path")
     if not relative.parts:
-        raise OperationsAuthorityError("path-invalid", "directory path must be nonempty")
+        raise OperationsAuthorityError(
+            "path-invalid", "directory path must be nonempty"
+        )
     directory_flags = (
         os.O_RDONLY
         | getattr(os, "O_CLOEXEC", 0)
@@ -369,7 +427,8 @@ def _directory_entries_bounded(
             if (path_stat.st_dev, path_stat.st_ino) != (opened.st_dev, opened.st_ino):
                 os.close(opened_descriptor)
                 raise OperationsAuthorityError(
-                    "directory-raced", f"directory changed before enumeration: {relative}"
+                    "directory-raced",
+                    f"directory changed before enumeration: {relative}",
                 )
             if index == len(relative.parts) - 1:
                 directory_descriptor = opened_descriptor
@@ -434,7 +493,9 @@ def read_bounded_regular(
 ) -> bytes:
     """Read one regular file without following symlinks or accepting races."""
     if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
-        raise OperationsAuthorityError("bounds-invalid", "max_bytes must be a positive integer")
+        raise OperationsAuthorityError(
+            "bounds-invalid", "max_bytes must be a positive integer"
+        )
     effective_max_bytes = min(max_bytes, MAX_FILE_BYTES)
     relative = _safe_relative(relative.as_posix(), "input path")
     directory_descriptor, descriptor, before = _open_anchored_regular(root, relative)
@@ -449,14 +510,18 @@ def read_bounded_regular(
             chunks.append(chunk)
             total += len(chunk)
             if total > effective_max_bytes:
-                raise OperationsAuthorityError("file-too-large", f"bound exceeded: {relative}")
+                raise OperationsAuthorityError(
+                    "file-too-large", f"bound exceeded: {relative}"
+                )
         after = os.fstat(descriptor)
         if (
             identity != (after.st_dev, after.st_ino)
             or before.st_size != after.st_size
             or before.st_mtime_ns != after.st_mtime_ns
         ):
-            raise OperationsAuthorityError("file-raced", f"changed during read: {relative}")
+            raise OperationsAuthorityError(
+                "file-raced", f"changed during read: {relative}"
+            )
         return b"".join(chunks)
     finally:
         os.close(descriptor)
@@ -467,10 +532,14 @@ def _read_text(root: pathlib.Path, relative: pathlib.PurePosixPath) -> str:
     try:
         return read_bounded_regular(root, relative).decode("utf-8")
     except UnicodeDecodeError as error:
-        raise OperationsAuthorityError("utf8-invalid", f"invalid UTF-8: {relative}") from error
+        raise OperationsAuthorityError(
+            "utf8-invalid", f"invalid UTF-8: {relative}"
+        ) from error
 
 
-def _tracked_paths(root: pathlib.Path, max_files: int) -> tuple[pathlib.PurePosixPath, ...]:
+def _tracked_paths(
+    root: pathlib.Path, max_files: int
+) -> tuple[pathlib.PurePosixPath, ...]:
     effective_max_files = min(max_files, MAX_TRACKED_FILES)
     result = _run_git_bounded(
         root,
@@ -483,16 +552,22 @@ def _tracked_paths(root: pathlib.Path, max_files: int) -> tuple[pathlib.PurePosi
     if raw and raw[-1] == b"":
         raw.pop()
     if len(raw) > effective_max_files:
-        raise OperationsAuthorityError("tracked-file-bounds", "tracked file bound exceeded")
+        raise OperationsAuthorityError(
+            "tracked-file-bounds", "tracked file bound exceeded"
+        )
     try:
         return tuple(_safe_relative(item.decode(), "tracked path") for item in raw)
     except UnicodeDecodeError as error:
-        raise OperationsAuthorityError("tracked-path-utf8", "tracked path is not UTF-8") from error
+        raise OperationsAuthorityError(
+            "tracked-path-utf8", "tracked path is not UTF-8"
+        ) from error
 
 
 def _excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
-    return value.startswith(("docs/90.references/", "docs/98.archive/", "graphify-out/"))
+    return value.startswith(
+        ("docs/90.references/", "docs/98.archive/", "graphify-out/")
+    )
 
 
 _RETIRED_ROUTE_RECORD_MARKER = "retired-route-record"
@@ -500,9 +575,8 @@ _RETIRED_ROUTE_RECORD_MARKER = "retired-route-record"
 
 def _active_reference_scan_excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
-    spec_execution_body = (
-        value.startswith("docs/03.specs/")
-        and (path.name == "plan.md" or "tasks" in path.parts)
+    spec_execution_body = value.startswith("docs/03.specs/") and (
+        path.name == "plan.md" or "tasks" in path.parts
     )
     return (
         _excluded(path)
@@ -558,8 +632,10 @@ def validate_active_operations_references(
                 # reformatting broke it. The marker states the exemption.
                 continue
             old_route = any(pattern.search(line) for pattern in _ACTIVE_ROUTE_PATTERNS)
-            release_role = suffix == ".md" and _RELEASE_ROLE_PATTERN.search(line) and not any(
-                token in line.lower() for token in _RELEASE_NEGATIONS
+            release_role = (
+                suffix == ".md"
+                and _RELEASE_ROLE_PATTERN.search(line)
+                and not any(token in line.lower() for token in _RELEASE_NEGATIONS)
             )
             if old_route or release_role:
                 findings.append(
@@ -594,7 +670,13 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
     profiles = registry.get("profiles")
     roles = registry.get("template_roles")
     if not isinstance(profiles, list) or not isinstance(roles, Mapping):
-        return [_finding("registry-invalid", REGISTRY_PATH, "profile/template collections invalid")]
+        return [
+            _finding(
+                "registry-invalid",
+                REGISTRY_PATH,
+                "profile/template collections invalid",
+            )
+        ]
     profile_ids = [
         item.get("profile_id")
         for item in profiles
@@ -607,7 +689,9 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
     )
     canonical_findings = validate_canonical_registry(registry)
     findings: list[CatalogFinding] = [
-        _finding("registry-canonical-invalid", REGISTRY_PATH, f"{item.code}:{item.path}")
+        _finding(
+            "registry-canonical-invalid", REGISTRY_PATH, f"{item.code}:{item.path}"
+        )
         for item in canonical_findings
     ]
     if (
@@ -617,32 +701,48 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
         or release_template_present
     ):
         findings.append(
-            _finding("release-authority-present", REGISTRY_PATH, "Release remains registered")
+            _finding(
+                "release-authority-present", REGISTRY_PATH, "Release remains registered"
+            )
         )
     if any(item.code == "schema-invalid" for item in canonical_findings):
         return findings
-    duplicates = {item for item in profile_ids if isinstance(item, str) and profile_ids.count(item) > 1}
+    duplicates = {
+        item
+        for item in profile_ids
+        if isinstance(item, str) and profile_ids.count(item) > 1
+    }
     if duplicates:
-        findings.append(_finding("registry-profile-duplicate", REGISTRY_PATH, str(sorted(duplicates))))
-    by_id = {item.get("profile_id"): item for item in profiles if isinstance(item, Mapping)}
+        findings.append(
+            _finding(
+                "registry-profile-duplicate", REGISTRY_PATH, str(sorted(duplicates))
+            )
+        )
+    by_id = {
+        item.get("profile_id"): item for item in profiles if isinstance(item, Mapping)
+    }
     lifecycles = registry.get("lifecycles")
     for profile_id in _OPERATIONS_PROFILE_IDS:
         profile = by_id.get(profile_id)
         if not isinstance(profile, Mapping):
-            findings.append(_finding("registry-operations-profile-invalid", REGISTRY_PATH, profile_id))
+            findings.append(
+                _finding(
+                    "registry-operations-profile-invalid", REGISTRY_PATH, profile_id
+                )
+            )
             continue
         required_frontmatter = profile.get("required_frontmatter")
         required_sections = profile.get("required_sections")
         lifecycle_id = profile.get("lifecycle_id")
-        lifecycle = lifecycles.get(lifecycle_id) if isinstance(lifecycles, Mapping) else None
+        lifecycle = (
+            lifecycles.get(lifecycle_id) if isinstance(lifecycles, Mapping) else None
+        )
         statuses = lifecycle.get("statuses") if isinstance(lifecycle, Mapping) else None
         if (
             profile.get("frontmatter_policy") != "required"
             or not isinstance(profile.get("artifact_id_pattern"), str)
             or not isinstance(required_frontmatter, list)
-            or not all(
-                isinstance(item, str) and item for item in required_frontmatter
-            )
+            or not all(isinstance(item, str) and item for item in required_frontmatter)
             or not {"title", "type", "layer", "status", "owner", "artifact_id"}
             <= set(required_frontmatter)
             or not isinstance(required_sections, list)
@@ -650,19 +750,31 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             or not all(isinstance(item, str) and item for item in required_sections)
         ):
             findings.append(
-                _finding("registry-operations-profile-invalid", REGISTRY_PATH, profile_id)
+                _finding(
+                    "registry-operations-profile-invalid", REGISTRY_PATH, profile_id
+                )
             )
-        if not isinstance(statuses, list) or not statuses or not all(
-            isinstance(status, str) and status for status in statuses
+        if (
+            not isinstance(statuses, list)
+            or not statuses
+            or not all(isinstance(status, str) and status for status in statuses)
         ):
             findings.append(
-                _finding("registry-operations-lifecycle-invalid", REGISTRY_PATH, str(lifecycle_id))
+                _finding(
+                    "registry-operations-lifecycle-invalid",
+                    REGISTRY_PATH,
+                    str(lifecycle_id),
+                )
             )
         template_id = profile.get("template_id")
         role = roles.get(template_id) if isinstance(template_id, str) else None
         if not isinstance(role, Mapping) or role.get("profile_id") != profile_id:
             findings.append(
-                _finding("registry-operations-profile-invalid", REGISTRY_PATH, f"{profile_id}.template_id")
+                _finding(
+                    "registry-operations-profile-invalid",
+                    REGISTRY_PATH,
+                    f"{profile_id}.template_id",
+                )
             )
     role_sections = [
         tuple(by_id[role].get("required_sections", ()))
@@ -671,12 +783,18 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
     ]
     if len(role_sections) != len(set(role_sections)):
         findings.append(
-            _finding("registry-role-purpose-duplicate", REGISTRY_PATH, "role sections must differ")
+            _finding(
+                "registry-role-purpose-duplicate",
+                REGISTRY_PATH,
+                "role sections must differ",
+            )
         )
     return findings
 
 
-def _registry_profiles(registry: Mapping[str, object]) -> dict[str, Mapping[str, object]]:
+def _registry_profiles(
+    registry: Mapping[str, object],
+) -> dict[str, Mapping[str, object]]:
     profiles = registry.get("profiles")
     if not isinstance(profiles, list):
         return {}
@@ -762,7 +880,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
     def require_tracked(path: pathlib.PurePosixPath) -> None:
         if path not in tracked_paths:
             findings.append(
-                _finding("untracked-operations-path", path, "current Operations files must be Git tracked")
+                _finding(
+                    "untracked-operations-path",
+                    path,
+                    "current Operations files must be Git tracked",
+                )
             )
 
     try:
@@ -772,7 +894,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             max_entries=MAX_OPERATIONS_ROOT_ENTRIES,
         )
     except OperationsAuthorityError as error:
-        code = "operations-root-bounds" if error.code == "directory-bounds" else "operations-root-invalid"
+        code = (
+            "operations-root-bounds"
+            if error.code == "directory-bounds"
+            else "operations-root-invalid"
+        )
         return (_finding(code, OPERATIONS_ROOT, str(error)),)
     root_entry_names = {entry.name for entry in operations_entries}
     root_by_name = {entry.name: entry for entry in operations_entries}
@@ -786,17 +912,29 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
         )
     for retired in ("releases", "guides", "policies", "runbooks"):
         if retired in root_entry_names:
-            findings.append(_finding("retired-root-present", OPERATIONS_ROOT / retired, "must be absent"))
+            findings.append(
+                _finding(
+                    "retired-root-present", OPERATIONS_ROOT / retired, "must be absent"
+                )
+            )
     root_readme = root_by_name.get("README.md")
     if root_readme is None or not root_readme.is_regular:
         findings.append(
-            _finding("operations-root-index-invalid", OPERATIONS_ROOT / "README.md", "regular README required")
+            _finding(
+                "operations-root-index-invalid",
+                OPERATIONS_ROOT / "README.md",
+                "regular README required",
+            )
         )
     else:
         require_tracked(OPERATIONS_ROOT / "README.md")
     template = root / "docs/99.templates/templates/operations/release.template.md"
     if template.exists() or template.is_symlink():
-        findings.append(_finding("release-template-present", template.relative_to(root), "must be absent"))
+        findings.append(
+            _finding(
+                "release-template-present", template.relative_to(root), "must be absent"
+            )
+        )
 
     catalog_relative = OPERATIONS_ROOT / "catalog"
     try:
@@ -806,7 +944,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             max_entries=MAX_CATALOG_ENTRIES,
         )
     except OperationsAuthorityError as error:
-        code = "catalog-bounds" if error.code == "directory-bounds" else "catalog-root-invalid"
+        code = (
+            "catalog-bounds"
+            if error.code == "directory-bounds"
+            else "catalog-root-invalid"
+        )
         findings.append(_finding(code, catalog_relative, str(error)))
         catalog_entries = ()
     seen_numbers: dict[str, pathlib.PurePosixPath] = {}
@@ -815,7 +957,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
     catalog_readme = catalog_by_name.get("README.md")
     if catalog_readme is None or not catalog_readme.is_regular:
         findings.append(
-            _finding("catalog-index-invalid", catalog_relative / "README.md", "regular README required")
+            _finding(
+                "catalog-index-invalid",
+                catalog_relative / "README.md",
+                "regular README required",
+            )
         )
     else:
         require_tracked(catalog_relative / "README.md")
@@ -823,9 +969,16 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
         if domain_entry.name == "README.md":
             continue
         domain_relative = catalog_relative / domain_entry.name
-        if not domain_entry.is_directory or _DOMAIN.fullmatch(domain_entry.name) is None:
+        if (
+            not domain_entry.is_directory
+            or _DOMAIN.fullmatch(domain_entry.name) is None
+        ):
             findings.append(
-                _finding("domain-path-invalid", domain_relative, "must be a two-digit slug directory")
+                _finding(
+                    "domain-path-invalid",
+                    domain_relative,
+                    "must be a two-digit slug directory",
+                )
             )
             continue
         try:
@@ -835,14 +988,22 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 max_entries=MAX_DOMAIN_ENTRIES,
             )
         except OperationsAuthorityError as error:
-            code = "domain-bounds" if error.code == "directory-bounds" else "domain-invalid"
+            code = (
+                "domain-bounds"
+                if error.code == "directory-bounds"
+                else "domain-invalid"
+            )
             findings.append(_finding(code, domain_relative, str(error)))
             continue
         domain_by_name = {entry.name: entry for entry in domain_entries}
         domain_readme = domain_by_name.get("README.md")
         if domain_readme is None or not domain_readme.is_regular:
             findings.append(
-                _finding("domain-index-invalid", domain_relative / "README.md", "regular README required")
+                _finding(
+                    "domain-index-invalid",
+                    domain_relative / "README.md",
+                    "regular README required",
+                )
             )
         else:
             require_tracked(domain_relative / "README.md")
@@ -852,7 +1013,13 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             subject_relative = domain_relative / subject_entry.name
             match = _SUBJECT.fullmatch(subject_entry.name)
             if not subject_entry.is_directory or match is None:
-                findings.append(_finding("subject-path-invalid", subject_relative, "must be prefixless four-digit slug"))
+                findings.append(
+                    _finding(
+                        "subject-path-invalid",
+                        subject_relative,
+                        "must be prefixless four-digit slug",
+                    )
+                )
                 continue
             try:
                 subject_entries = _directory_entries_bounded(
@@ -861,13 +1028,21 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     max_entries=MAX_SUBJECT_ENTRIES,
                 )
             except OperationsAuthorityError as error:
-                code = "subject-bounds" if error.code == "directory-bounds" else "subject-symlink-invalid"
+                code = (
+                    "subject-bounds"
+                    if error.code == "directory-bounds"
+                    else "subject-symlink-invalid"
+                )
                 findings.append(_finding(code, subject_relative, str(error)))
                 continue
             number = match.group("number")
             previous = seen_numbers.setdefault(number, subject_relative)
             if previous != subject_relative:
-                findings.append(_finding("subject-identity-duplicate", subject_relative, str(previous)))
+                findings.append(
+                    _finding(
+                        "subject-identity-duplicate", subject_relative, str(previous)
+                    )
+                )
             entries_by_name = {entry.name: entry for entry in subject_entries}
             entries = set(entries_by_name)
             if not entries or not entries <= set(_ROLE_FILE):
@@ -882,7 +1057,13 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 role_relative = subject_relative / filename
                 require_tracked(role_relative)
                 if not entries_by_name[filename].is_regular:
-                    findings.append(_finding("role-file-invalid", role_relative, "must be regular and symlink-free"))
+                    findings.append(
+                        _finding(
+                            "role-file-invalid",
+                            role_relative,
+                            "must be regular and symlink-free",
+                        )
+                    )
                     continue
                 try:
                     role_text = _read_text(root, role_relative)
@@ -894,7 +1075,9 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 artifact = metadata.get("artifact_id")
                 profile = profiles.get(role)
                 if not isinstance(profile, Mapping):
-                    findings.append(_finding("role-profile-invalid", role_relative, role))
+                    findings.append(
+                        _finding("role-profile-invalid", role_relative, role)
+                    )
                     continue
                 if not path_matches_pattern(role_relative, profile.get("path_pattern")):
                     findings.append(
@@ -912,21 +1095,32 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                             str(profile.get("identity_relation")),
                         )
                     )
-                if (
-                    not _matches_artifact_pattern(
-                        profile.get("artifact_id_pattern"), artifact
-                    )
-                    or metadata.get("type") != document_type(role)
-                ):
+                if not _matches_artifact_pattern(
+                    profile.get("artifact_id_pattern"), artifact
+                ) or metadata.get("type") != document_type(role):
                     findings.append(
                         _finding("role-identity-invalid", role_relative, str(artifact))
                     )
-                required_metadata = set(_string_items(profile.get("required_frontmatter")))
+                required_metadata = set(
+                    _string_items(profile.get("required_frontmatter"))
+                )
                 if not required_metadata <= set(metadata):
-                    findings.append(_finding("role-profile-invalid", role_relative, "required metadata missing"))
+                    findings.append(
+                        _finding(
+                            "role-profile-invalid",
+                            role_relative,
+                            "required metadata missing",
+                        )
+                    )
                 allowed_statuses = _profile_statuses(registry, profile)
                 if metadata.get("status") not in allowed_statuses:
-                    findings.append(_finding("role-status-invalid", role_relative, str(metadata.get("status"))))
+                    findings.append(
+                        _finding(
+                            "role-status-invalid",
+                            role_relative,
+                            str(metadata.get("status")),
+                        )
+                    )
                 headings = _headings(role_text)
                 missing_sections = [
                     section
@@ -936,12 +1130,24 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 ]
                 if missing_sections:
                     findings.append(
-                        _finding("role-sections-invalid", role_relative, ",".join(missing_sections))
+                        _finding(
+                            "role-sections-invalid",
+                            role_relative,
+                            ",".join(missing_sections),
+                        )
                     )
                 if isinstance(artifact, str):
-                    previous_artifact = seen_artifacts.setdefault(artifact, role_relative)
+                    previous_artifact = seen_artifacts.setdefault(
+                        artifact, role_relative
+                    )
                     if previous_artifact != role_relative:
-                        findings.append(_finding("role-identity-duplicate", role_relative, str(previous_artifact)))
+                        findings.append(
+                            _finding(
+                                "role-identity-duplicate",
+                                role_relative,
+                                str(previous_artifact),
+                            )
+                        )
 
     incidents_relative = OPERATIONS_ROOT / "incidents"
     try:
@@ -951,14 +1157,22 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             max_entries=MAX_INCIDENT_ENTRIES,
         )
     except OperationsAuthorityError as error:
-        code = "incident-bounds" if error.code == "directory-bounds" else "incident-root-invalid"
+        code = (
+            "incident-bounds"
+            if error.code == "directory-bounds"
+            else "incident-root-invalid"
+        )
         findings.append(_finding(code, incidents_relative, str(error)))
     else:
         incident_by_name = {entry.name: entry for entry in incident_entries}
         incident_readme = incident_by_name.get("README.md")
         if incident_readme is None or not incident_readme.is_regular:
             findings.append(
-                _finding("incident-index-invalid", incidents_relative / "README.md", "regular README required")
+                _finding(
+                    "incident-index-invalid",
+                    incidents_relative / "README.md",
+                    "regular README required",
+                )
             )
         else:
             require_tracked(incidents_relative / "README.md")
@@ -967,7 +1181,13 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 continue
             year_relative = incidents_relative / year_entry.name
             if _YEAR.fullmatch(year_entry.name) is None or not year_entry.is_directory:
-                findings.append(_finding("incident-year-invalid", year_relative, "year is the only date exception"))
+                findings.append(
+                    _finding(
+                        "incident-year-invalid",
+                        year_relative,
+                        "year is the only date exception",
+                    )
+                )
                 continue
             try:
                 year_entries = _directory_entries_bounded(
@@ -976,14 +1196,22 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     max_entries=MAX_INCIDENT_YEAR_ENTRIES,
                 )
             except OperationsAuthorityError as error:
-                code = "incident-bounds" if error.code == "directory-bounds" else "incident-year-invalid"
+                code = (
+                    "incident-bounds"
+                    if error.code == "directory-bounds"
+                    else "incident-year-invalid"
+                )
                 findings.append(_finding(code, year_relative, str(error)))
                 continue
             for packet_entry in year_entries:
                 packet_relative = year_relative / packet_entry.name
                 packet_match = _INCIDENT.fullmatch(packet_entry.name)
                 if packet_match is None or not packet_entry.is_directory:
-                    findings.append(_finding("incident-packet-invalid", packet_relative, "invalid packet"))
+                    findings.append(
+                        _finding(
+                            "incident-packet-invalid", packet_relative, "invalid packet"
+                        )
+                    )
                     continue
                 try:
                     packet_entries = _directory_entries_bounded(
@@ -992,17 +1220,36 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                         max_entries=MAX_INCIDENT_PACKET_ENTRIES,
                     )
                 except OperationsAuthorityError as error:
-                    code = "incident-bounds" if error.code == "directory-bounds" else "incident-packet-invalid"
+                    code = (
+                        "incident-bounds"
+                        if error.code == "directory-bounds"
+                        else "incident-packet-invalid"
+                    )
                     findings.append(_finding(code, packet_relative, str(error)))
                     continue
                 entries = {entry.name for entry in packet_entries}
-                if "incident.md" not in entries or not entries <= {"incident.md", "postmortem.md"}:
-                    findings.append(_finding("incident-roles-invalid", packet_relative, "incident required; postmortem optional"))
+                if "incident.md" not in entries or not entries <= {
+                    "incident.md",
+                    "postmortem.md",
+                }:
+                    findings.append(
+                        _finding(
+                            "incident-roles-invalid",
+                            packet_relative,
+                            "incident required; postmortem optional",
+                        )
+                    )
                 for child_entry in packet_entries:
                     child_relative = packet_relative / child_entry.name
                     require_tracked(child_relative)
                     if not child_entry.is_regular:
-                        findings.append(_finding("incident-role-file-invalid", child_relative, "must be regular"))
+                        findings.append(
+                            _finding(
+                                "incident-role-file-invalid",
+                                child_relative,
+                                "must be regular",
+                            )
+                        )
                         continue
                     if child_entry.name not in {"incident.md", "postmortem.md"}:
                         continue
@@ -1011,13 +1258,19 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                         child_text = _read_text(root, child_relative)
                         metadata = _frontmatter(child_text, child_relative)
                     except OperationsAuthorityError as error:
-                        findings.append(_finding(error.code, child_relative, str(error)))
+                        findings.append(
+                            _finding(error.code, child_relative, str(error))
+                        )
                         continue
                     profile = profiles.get(role)
                     if not isinstance(profile, Mapping):
-                        findings.append(_finding("incident-profile-invalid", child_relative, role))
+                        findings.append(
+                            _finding("incident-profile-invalid", child_relative, role)
+                        )
                         continue
-                    if not path_matches_pattern(child_relative, profile.get("path_pattern")):
+                    if not path_matches_pattern(
+                        child_relative, profile.get("path_pattern")
+                    ):
                         findings.append(
                             _finding(
                                 "incident-path-profile-mismatch",
@@ -1025,7 +1278,9 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                                 role,
                             )
                         )
-                    expected_relation = "direct" if role == "incident" else "package-member"
+                    expected_relation = (
+                        "direct" if role == "incident" else "package-member"
+                    )
                     if profile.get("identity_relation") != expected_relation:
                         findings.append(
                             _finding(
@@ -1034,12 +1289,15 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                                 str(profile.get("identity_relation")),
                             )
                         )
-                    required_metadata = set(_string_items(profile.get("required_frontmatter")))
-                    if (
-                        not required_metadata <= set(metadata)
-                        or metadata.get("type") != document_type(role)
-                    ):
-                        findings.append(_finding("incident-profile-invalid", child_relative, role))
+                    required_metadata = set(
+                        _string_items(profile.get("required_frontmatter"))
+                    )
+                    if not required_metadata <= set(metadata) or metadata.get(
+                        "type"
+                    ) != document_type(role):
+                        findings.append(
+                            _finding("incident-profile-invalid", child_relative, role)
+                        )
                     allowed_statuses = _profile_statuses(registry, profile)
                     if metadata.get("status") not in allowed_statuses:
                         findings.append(
@@ -1057,7 +1315,11 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                         else ""
                     )
                     if metadata.get("artifact_id") != expected_id:
-                        findings.append(_finding("incident-identity-invalid", child_relative, expected_id))
+                        findings.append(
+                            _finding(
+                                "incident-identity-invalid", child_relative, expected_id
+                            )
+                        )
                     parent_ids = metadata.get("parent_ids")
                     incident_profile = profiles.get("incident")
                     incident_pattern = (
@@ -1071,15 +1333,20 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                         else ""
                     )
                     if role == "postmortem" and (
-                        not isinstance(parent_ids, list) or expected_parent not in parent_ids
+                        not isinstance(parent_ids, list)
+                        or expected_parent not in parent_ids
                     ):
                         findings.append(
-                            _finding("incident-identity-invalid", child_relative, "incident parent required")
+                            _finding(
+                                "incident-identity-invalid",
+                                child_relative,
+                                "incident parent required",
+                            )
                         )
                     headings = _headings(child_text)
-                    missing_sections = set(
-                        _string_items(profile.get("required_sections"))
-                    ) - headings
+                    missing_sections = (
+                        set(_string_items(profile.get("required_sections"))) - headings
+                    )
                     if missing_sections:
                         findings.append(
                             _finding(
@@ -1092,17 +1359,33 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     updated = _date_time(metadata.get("updated"))
                     if created is None or updated is None or updated < created:
                         findings.append(
-                            _finding("incident-date-order-invalid", child_relative, "created/updated")
+                            _finding(
+                                "incident-date-order-invalid",
+                                child_relative,
+                                "created/updated",
+                            )
                         )
                     if role == "incident":
                         occurred = _date_time(metadata.get("occurred_at"))
                         resolved = _date_time(metadata.get("resolved_at"))
                         if occurred is None or str(occurred.year) != year_entry.name:
                             findings.append(
-                                _finding("incident-year-date-invalid", child_relative, year_entry.name)
+                                _finding(
+                                    "incident-year-date-invalid",
+                                    child_relative,
+                                    year_entry.name,
+                                )
                             )
-                        if resolved is not None and occurred is not None and resolved < occurred:
+                        if (
+                            resolved is not None
+                            and occurred is not None
+                            and resolved < occurred
+                        ):
                             findings.append(
-                                _finding("incident-date-order-invalid", child_relative, "resolved before occurred")
+                                _finding(
+                                    "incident-date-order-invalid",
+                                    child_relative,
+                                    "resolved before occurred",
+                                )
                             )
     return tuple(sorted(set(findings)))

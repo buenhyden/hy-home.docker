@@ -68,6 +68,7 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 
+
 def _expected_document_type(profile_id: str) -> str:
     """Return the Registry family/kind type, falling back to the profile id."""
 
@@ -81,7 +82,8 @@ def validate_record(
     record: Record,
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
-    transition_overrides: Mapping[tuple[str, str, str], TransitionOverride] | None = None,
+    transition_overrides: Mapping[tuple[str, str, str], TransitionOverride]
+    | None = None,
     migration_compaction_witness: Record | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
@@ -103,12 +105,22 @@ def validate_record(
             raw_profile = legacy_profile
     profile_label = record.artifact_type
     if not isinstance(raw_profile, dict):
-        return [_finding(record, "unknown-profile", f"profile is not configured: {record.artifact_type}")]
-    typed_manifest = manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
+        return [
+            _finding(
+                record,
+                "unknown-profile",
+                f"profile is not configured: {record.artifact_type}",
+            )
+        ]
+    typed_manifest = (
+        manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
+    )
     findings: list[Finding] = []
     if record.parse_error:
         parse_code = record.parse_error_code or "malformed-yaml"
-        findings.append(_finding(record, f"frontmatter-{parse_code}", record.parse_error))
+        findings.append(
+            _finding(record, f"frontmatter-{parse_code}", record.parse_error)
+        )
         return findings
     template_findings = _validate_template_source(record, profiles)
     if template_findings is not None:
@@ -122,9 +134,7 @@ def validate_record(
                     "typed example fixture must remain draft and cannot be active truth",
                 )
             )
-        if record.metadata.get("parent_ids") != list(
-            TYPED_EXAMPLE_FIXTURE_PARENT_IDS
-        ):
+        if record.metadata.get("parent_ids") != list(TYPED_EXAMPLE_FIXTURE_PARENT_IDS):
             findings.append(
                 _finding(
                     record,
@@ -170,7 +180,8 @@ def validate_record(
 
     placeholder_values = _template_angle_tokens(profiles)
     if record.artifact_type != "template-source" and any(
-        _contains_template_placeholder(value, placeholder_values) for value in record.metadata.values()
+        _contains_template_placeholder(value, placeholder_values)
+        for value in record.metadata.values()
     ):
         findings.append(
             _finding(
@@ -220,9 +231,17 @@ def validate_record(
     registered_owner = registered_generated_owner(record.path, profiles)
     for key in sorted(required):
         if key not in record.metadata or record.metadata[key] in (None, ""):
-            if key == "generated_by" and record.artifact_type == "generated" and registered_owner:
+            if (
+                key == "generated_by"
+                and record.artifact_type == "generated"
+                and registered_owner
+            ):
                 continue
-            findings.append(_finding(record, "missing-required-key", f"required key is missing: {key}"))
+            findings.append(
+                _finding(
+                    record, "missing-required-key", f"required key is missing: {key}"
+                )
+            )
     for key in sorted(record.metadata):
         if key not in forbidden:
             continue
@@ -248,16 +267,28 @@ def validate_record(
     if status is not None:
         if not isinstance(status, str) or status not in allowed_statuses:
             findings.append(
-                _finding(record, "invalid-status", f"status is not allowed for {profile_label}")
+                _finding(
+                    record,
+                    "invalid-status",
+                    f"status is not allowed for {profile_label}",
+                )
             )
         if status == "archived" and record.artifact_type != "archive":
             findings.append(
-                _finding(record, "archived-outside-stage-98", "archived status is reserved for archive tombstones")
+                _finding(
+                    record,
+                    "archived-outside-stage-98",
+                    "archived status is reserved for archive tombstones",
+                )
             )
     previous_status = record.previous_status
     if isinstance(status, str) and previous_status and status != previous_status:
         transitions = raw_profile.get("transitions", common.get("transitions", {}))
-        allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
+        allowed_next = (
+            transitions.get(previous_status, [])
+            if isinstance(transitions, dict)
+            else []
+        )
         # A previous status the lifecycle never defined is not a state this
         # document can transition out of, so moving to a defined status repairs
         # it rather than transitioning. Demanding an override for a repair
@@ -284,10 +315,21 @@ def validate_record(
 
     artifact_id = record.metadata.get("artifact_id")
     if artifact_id is not None and not _valid_metadata_artifact_id(artifact_id):
-        findings.append(_finding(record, "invalid-artifact-id", "artifact_id must be a non-empty string"))
-    if isinstance(artifact_id, str) and artifact_id.strip() in typed_manifest.duplicates:
-        paths = ", ".join(path.as_posix() for path in typed_manifest.duplicates[artifact_id.strip()])
-        findings.append(_finding(record, "duplicate-artifact-id", f"artifact_id occurs at: {paths}"))
+        findings.append(
+            _finding(
+                record, "invalid-artifact-id", "artifact_id must be a non-empty string"
+            )
+        )
+    if (
+        isinstance(artifact_id, str)
+        and artifact_id.strip() in typed_manifest.duplicates
+    ):
+        paths = ", ".join(
+            path.as_posix() for path in typed_manifest.duplicates[artifact_id.strip()]
+        )
+        findings.append(
+            _finding(record, "duplicate-artifact-id", f"artifact_id occurs at: {paths}")
+        )
 
     declared_type = record.metadata.get("type")
     expected_profile = (
@@ -349,22 +391,45 @@ def validate_record(
     parent_value = record.metadata.get("parent_ids")
     parent_ids = _string_list(parent_value) if parent_value is not None else None
     if parent_value is not None and parent_ids is None:
-        findings.append(_finding(record, "invalid-parent-ids", "parent_ids must be a list of non-empty strings"))
+        findings.append(
+            _finding(
+                record,
+                "invalid-parent-ids",
+                "parent_ids must be a list of non-empty strings",
+            )
+        )
     if parent_ids is not None:
         if len(parent_ids) != len(set(parent_ids)):
-            findings.append(_finding(record, "duplicate-parent", "parent_ids contains duplicate IDs"))
+            findings.append(
+                _finding(
+                    record, "duplicate-parent", "parent_ids contains duplicate IDs"
+                )
+            )
         root_exceptions = common.get("root_exceptions", {})
         root_permitted = raw_profile.get("allow_empty_parents", False) or (
-            isinstance(root_exceptions, dict) and record.path.as_posix() in root_exceptions
+            isinstance(root_exceptions, dict)
+            and record.path.as_posix() in root_exceptions
         )
         if not parent_ids and not root_permitted:
-            findings.append(_finding(record, "missing-parent", "this artifact profile does not permit a root"))
+            findings.append(
+                _finding(
+                    record,
+                    "missing-parent",
+                    "this artifact profile does not permit a root",
+                )
+            )
         parent_type_order = raw_profile.get("allowed_parent_types", [])
         allowed_parent_types = set(parent_type_order)
         relation_ids = _relation_ids_for_record(record)
         for parent_id in parent_ids:
             if parent_id in relation_ids:
-                findings.append(_finding(record, "self-parent", f"artifact references itself as parent: {parent_id}"))
+                findings.append(
+                    _finding(
+                        record,
+                        "self-parent",
+                        f"artifact references itself as parent: {parent_id}",
+                    )
+                )
                 continue
             parent_record = _relation_record(typed_manifest, parent_id, record)
             if parent_id in typed_manifest.relation_conflicts:
@@ -376,7 +441,13 @@ def validate_record(
                     )
                 )
             elif not _relation_reference_exists(typed_manifest, parent_id, record):
-                findings.append(_finding(record, "unresolved-parent", f"parent artifact_id is unresolved: {parent_id}"))
+                findings.append(
+                    _finding(
+                        record,
+                        "unresolved-parent",
+                        f"parent artifact_id is unresolved: {parent_id}",
+                    )
+                )
             elif parent_record and allowed_parent_types:
                 parent_type = parent_record.artifact_type
                 if (
@@ -403,14 +474,16 @@ def validate_record(
             and isinstance(parent_type_order, list)
         ):
             type_precedence = {
-                parent_type: index for index, parent_type in enumerate(parent_type_order)
+                parent_type: index
+                for index, parent_type in enumerate(parent_type_order)
             }
             resolved_parents = [
                 _relation_record(typed_manifest, parent_id, record)
                 for parent_id in parent_ids
             ]
             if all(
-                parent_record is not None and parent_record.artifact_type in type_precedence
+                parent_record is not None
+                and parent_record.artifact_type in type_precedence
                 for parent_record in resolved_parents
             ):
                 expected_parent_ids = sorted(
@@ -433,18 +506,32 @@ def validate_record(
                         )
                     )
         if _has_parent_cycle(record, parent_ids, typed_manifest):
-            findings.append(_finding(record, "parent-cycle", "parent_ids creates a cycle"))
+            findings.append(
+                _finding(record, "parent-cycle", "parent_ids creates a cycle")
+            )
 
     supersedes_value = record.metadata.get("supersedes")
     if supersedes_value is not None:
         supersedes = _string_list(supersedes_value)
         if supersedes is None:
-            findings.append(_finding(record, "invalid-supersedes", "supersedes must be a list of non-empty strings"))
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-supersedes",
+                    "supersedes must be a list of non-empty strings",
+                )
+            )
         else:
             relation_ids = _relation_ids_for_record(record)
             for replaced_id in supersedes:
                 if replaced_id in relation_ids:
-                    findings.append(_finding(record, "self-supersession", f"artifact supersedes itself: {replaced_id}"))
+                    findings.append(
+                        _finding(
+                            record,
+                            "self-supersession",
+                            f"artifact supersedes itself: {replaced_id}",
+                        )
+                    )
                 elif replaced_id in typed_manifest.relation_conflicts:
                     findings.append(
                         _finding(
@@ -457,13 +544,20 @@ def validate_record(
                     typed_manifest, replaced_id, record
                 ):
                     findings.append(
-                        _finding(record, "unresolved-supersedes", f"superseded artifact_id is unresolved: {replaced_id}")
+                        _finding(
+                            record,
+                            "unresolved-supersedes",
+                            f"superseded artifact_id is unresolved: {replaced_id}",
+                        )
                     )
                 else:
                     replaced_record = _relation_record(
                         typed_manifest, replaced_id, record
                     )
-                    if replaced_record and replaced_record.metadata.get("status") != "superseded":
+                    if (
+                        replaced_record
+                        and replaced_record.metadata.get("status") != "superseded"
+                    ):
                         findings.append(
                             _finding(
                                 record,
@@ -476,9 +570,7 @@ def validate_record(
         replacement_ids: set[str] = set()
         for candidate in typed_manifest.relation_records_by_id.values():
             candidate_relation_ids = _relation_ids_for_record(candidate)
-            for replaced_id in (
-                _string_list(candidate.metadata.get("supersedes")) or []
-            ):
+            for replaced_id in _string_list(candidate.metadata.get("supersedes")) or []:
                 if (
                     replaced_id not in candidate_relation_ids
                     and replaced_id not in typed_manifest.relation_conflicts
@@ -499,11 +591,24 @@ def validate_record(
 
     reviewed_at = record.metadata.get("reviewed_at")
     successor = record.metadata.get("superseded_by")
-    if successor is not None and (not isinstance(successor, str) or not _relation_reference_exists(typed_manifest, successor, record)):
-        findings.append(_finding(record, "unresolved-superseded-by", "superseded_by must resolve to current or verified retired lineage"))
+    if successor is not None and (
+        not isinstance(successor, str)
+        or not _relation_reference_exists(typed_manifest, successor, record)
+    ):
+        findings.append(
+            _finding(
+                record,
+                "unresolved-superseded-by",
+                "superseded_by must resolve to current or verified retired lineage",
+            )
+        )
     if status == "active" and "reviewed_at" in required and reviewed_at in (None, ""):
         findings.append(
-            _finding(record, "stale-active", "active freshness-managed artifact lacks reviewed_at evidence")
+            _finding(
+                record,
+                "stale-active",
+                "active freshness-managed artifact lacks reviewed_at evidence",
+            )
         )
     temporal_fields = (
         "created",
@@ -529,9 +634,17 @@ def validate_record(
     generated_by = record.metadata.get("generated_by")
     if generated_by is not None and not _safe_repo_path(generated_by, "scripts/"):
         findings.append(
-            _finding(record, "invalid-generator", "generated_by must be a safe canonical scripts/ repository path")
+            _finding(
+                record,
+                "invalid-generator",
+                "generated_by must be a safe canonical scripts/ repository path",
+            )
         )
-    elif registered_owner is not None and generated_by is not None and generated_by != registered_owner:
+    elif (
+        registered_owner is not None
+        and generated_by is not None
+        and generated_by != registered_owner
+    ):
         findings.append(
             _finding(
                 record,
@@ -569,8 +682,16 @@ def validate_record(
                 )
             )
         archive_reason = record.metadata.get("archive_reason")
-        if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
-            findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
+        if archive_reason is not None and (
+            not isinstance(archive_reason, str) or not archive_reason.strip()
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-archive-reason",
+                    "archive_reason must be a non-empty string",
+                )
+            )
 
         archive_disposition = record.metadata.get("archive_disposition")
         archive_disposition_valid = (
@@ -626,7 +747,9 @@ def validate_record(
             ("archived_commit", "invalid-archived-commit"),
             ("archived_blob", "invalid-archived-blob"),
         ):
-            if key in record.metadata and not _valid_lowercase_object_id(record.metadata.get(key)):
+            if key in record.metadata and not _valid_lowercase_object_id(
+                record.metadata.get(key)
+            ):
                 findings.append(
                     _finding(
                         record,
@@ -734,10 +857,13 @@ def validate_record(
         known = required | optional | forbidden | specialization_keys
         for key in sorted(set(record.metadata) - known):
             findings.append(
-                _finding(record, "type-inappropriate-key", f"key is not declared for {profile_label}: {key}")
+                _finding(
+                    record,
+                    "type-inappropriate-key",
+                    f"key is not declared for {profile_label}: {key}",
+                )
             )
     return sorted(set(findings))
-
 
 
 def _git_lines(root: pathlib.Path, args: Sequence[str]) -> list[str]:
@@ -753,11 +879,19 @@ def _git_lines(root: pathlib.Path, args: Sequence[str]) -> list[str]:
 
 
 def _verified_commit(root: pathlib.Path, ref: str) -> str | None:
-    lines = _git_lines(root, ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"])
-    return lines[0] if len(lines) == 1 and re.fullmatch(r"[0-9a-fA-F]{40,64}", lines[0]) else None
+    lines = _git_lines(
+        root, ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"]
+    )
+    return (
+        lines[0]
+        if len(lines) == 1 and re.fullmatch(r"[0-9a-fA-F]{40,64}", lines[0])
+        else None
+    )
 
 
-def resolve_base_selection(root: pathlib.Path, explicit_ref: str | None) -> BaseSelection:
+def resolve_base_selection(
+    root: pathlib.Path, explicit_ref: str | None
+) -> BaseSelection:
     """Resolve a safe comparison base without ever falling back to the full corpus."""
 
     if explicit_ref:
@@ -766,7 +900,9 @@ def resolve_base_selection(root: pathlib.Path, explicit_ref: str | None) -> Base
             raise ProfileError(f"explicit --base-ref is not a commit: {explicit_ref}")
         merge_base = _git_lines(root, ["merge-base", "HEAD", commit])
         if not merge_base:
-            raise ProfileError(f"explicit --base-ref has no merge base with HEAD: {explicit_ref}")
+            raise ProfileError(
+                f"explicit --base-ref has no merge base with HEAD: {explicit_ref}"
+            )
         return BaseSelection("explicit", explicit_ref, merge_base[0])
 
     candidates: list[tuple[str, str]] = []
@@ -802,7 +938,9 @@ def resolve_base_selection(root: pathlib.Path, explicit_ref: str | None) -> Base
     return BaseSelection("fallback:working-tree-only", None, None)
 
 
-def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> dict[str, object] | None:
+def _metadata_at_ref(
+    root: pathlib.Path, path: pathlib.Path, base_ref: str | None
+) -> dict[str, object] | None:
     if not base_ref:
         return None
     if not resolve_git_provenance(path, base_ref, repo_root=root).is_regular_blob:
@@ -821,7 +959,9 @@ def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | Non
         return None
 
 
-def _text_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
+def _text_at_ref(
+    root: pathlib.Path, path: pathlib.Path, base_ref: str | None
+) -> str | None:
     if not base_ref:
         return None
     if not resolve_git_provenance(path, base_ref, repo_root=root).is_regular_blob:
@@ -835,9 +975,15 @@ def _text_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -
     return result.stdout if result.returncode == 0 else None
 
 
-def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
+def _previous_status(
+    root: pathlib.Path, path: pathlib.Path, base_ref: str | None
+) -> str | None:
     loaded = _metadata_at_ref(root, path, base_ref)
-    return loaded.get("status") if isinstance(loaded, dict) and isinstance(loaded.get("status"), str) else None
+    return (
+        loaded.get("status")
+        if isinstance(loaded, dict) and isinstance(loaded.get("status"), str)
+        else None
+    )
 
 
 def _record_from_text(
@@ -861,7 +1007,8 @@ def _record_from_text(
     registered_package_readme = bool(
         inferred_type in {"data", "audit", "research"}
         and isinstance(registry, DocumentRegistry)
-        and classify_registered_path(relative_path.as_posix(), registry) == inferred_type
+        and classify_registered_path(relative_path.as_posix(), registry)
+        == inferred_type
     )
     # Only an exact Registry-classified Data package README retains Data
     # ownership; generated_by is provenance there. Every other generated
@@ -918,8 +1065,12 @@ def collect_records_at_ref(
             text=True,
         )
         if shown.returncode != 0:
-            raise ProfileError(f"cannot read base Markdown record: {relative_path.as_posix()}")
-        records.append(_record_from_text(relative_path, shown.stdout, profiles=profiles))
+            raise ProfileError(
+                f"cannot read base Markdown record: {relative_path.as_posix()}"
+            )
+        records.append(
+            _record_from_text(relative_path, shown.stdout, profiles=profiles)
+        )
     return records
 
 
@@ -991,7 +1142,8 @@ def collect_records(
         previous_record = (previous_records or {}).get(relative_path.as_posix())
         previous_status = (
             previous_record.metadata.get("status")
-            if previous_record and isinstance(previous_record.metadata.get("status"), str)
+            if previous_record
+            and isinstance(previous_record.metadata.get("status"), str)
             else _previous_status(root, relative_path, base_ref)
         )
         records.append(
@@ -1023,7 +1175,9 @@ def load_transition_overrides(
     except (OSError, UnicodeError, yaml.YAMLError) as error:
         raise ProfileError(f"cannot load transition override file: {error}") from error
     if not isinstance(loaded, dict) or set(loaded) != {"transition_overrides"}:
-        raise ProfileError("transition override file must contain only transition_overrides")
+        raise ProfileError(
+            "transition override file must contain only transition_overrides"
+        )
     rows = loaded.get("transition_overrides")
     if not isinstance(rows, list) or not rows:
         raise ProfileError("transition_overrides must be a non-empty list")
@@ -1036,9 +1190,7 @@ def load_transition_overrides(
     allowed_statuses = set(common.get("allowed_statuses", []))
     if isinstance(registry, DocumentRegistry):
         allowed_statuses |= {
-            status
-            for statuses in registry.lifecycles.values()
-            for status in statuses
+            status for statuses in registry.lifecycles.values() for status in statuses
         }
     expected_keys = {
         "path",
@@ -1051,13 +1203,21 @@ def load_transition_overrides(
     overrides: dict[tuple[str, str, str], TransitionOverride] = {}
     for index, row in enumerate(rows):
         if not isinstance(row, dict) or set(row) != expected_keys:
-            raise ProfileError(f"transition override row {index} must define the exact evidence fields")
-        if not all(isinstance(row[key], str) and row[key].strip() for key in expected_keys):
-            raise ProfileError(f"transition override row {index} values must be non-empty strings")
+            raise ProfileError(
+                f"transition override row {index} must define the exact evidence fields"
+            )
+        if not all(
+            isinstance(row[key], str) and row[key].strip() for key in expected_keys
+        ):
+            raise ProfileError(
+                f"transition override row {index} values must be non-empty strings"
+            )
         target = _normalized_target_path(row["path"])
         evidence = _normalized_target_path(row["evidence_task"])
         if target is None or not (root / target).is_file():
-            raise ProfileError(f"transition override row {index} target path is not an existing canonical document")
+            raise ProfileError(
+                f"transition override row {index} target path is not an existing canonical document"
+            )
         # The co-located Task form Stage 03 actually uses. The retired
         # `docs/03.specs/spec-<slug>/task.md` shape has zero documents in this
         # repository against fifteen in this one, so requiring it made every
@@ -1073,10 +1233,17 @@ def load_transition_overrides(
             )
         previous_status = row["previous_status"].strip()
         new_status = row["new_status"].strip()
-        if previous_status not in allowed_statuses or new_status not in allowed_statuses:
-            raise ProfileError(f"transition override row {index} uses an unknown lifecycle status")
+        if (
+            previous_status not in allowed_statuses
+            or new_status not in allowed_statuses
+        ):
+            raise ProfileError(
+                f"transition override row {index} uses an unknown lifecycle status"
+            )
         if previous_status == new_status:
-            raise ProfileError(f"transition override row {index} does not describe a transition")
+            raise ProfileError(
+                f"transition override row {index} does not describe a transition"
+            )
         override = TransitionOverride(
             target.as_posix(),
             previous_status,
@@ -1087,7 +1254,9 @@ def load_transition_overrides(
         )
         key = (override.path, override.previous_status, override.new_status)
         if key in overrides:
-            raise ProfileError(f"duplicate transition override scope: {' -> '.join(key)}")
+            raise ProfileError(
+                f"duplicate transition override scope: {' -> '.join(key)}"
+            )
         overrides[key] = override
     return overrides
 
@@ -1145,9 +1314,14 @@ def _legacy_exception_evidence(
         "unsupported",
     }:
         return None
-    if MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(record.metadata):
+    if MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(
+        record.metadata
+    ):
         return None
-    if any(finding.code not in LEGACY_EXCEPTION_CODES for finding in [*base_errors, *current_errors]):
+    if any(
+        finding.code not in LEGACY_EXCEPTION_CODES
+        for finding in [*base_errors, *current_errors]
+    ):
         return None
     return len(current_deficits), len(base_deficits)
 
@@ -1167,9 +1341,11 @@ def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
     ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
     try:
         text = ledger.read_text(encoding="utf-8")
-        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
-            "```", 1
-        )[0]
+        fenced = (
+            text.split("## Archive Ledger", 1)[1]
+            .split("```yaml", 1)[1]
+            .split("```", 1)[0]
+        )
         document = _safe_load_unique(fenced)
     except (OSError, UnicodeError, IndexError, yaml.YAMLError):
         return {}
@@ -1183,7 +1359,9 @@ def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
         target = row.get("stable_path")
         source = row.get("legacy_path")
         commit = row.get("source_commit")
-        if not all(isinstance(value, str) and value for value in (target, source, commit)):
+        if not all(
+            isinstance(value, str) and value for value in (target, source, commit)
+        ):
             return {}
         if target in mappings:
             return {}
@@ -1197,9 +1375,11 @@ def _task5_legacy_parent_ids(root: pathlib.Path) -> set[str]:
     ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
     try:
         text = ledger.read_text(encoding="utf-8")
-        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
-            "```", 1
-        )[0]
+        fenced = (
+            text.split("## Archive Ledger", 1)[1]
+            .split("```yaml", 1)[1]
+            .split("```", 1)[0]
+        )
         document = _safe_load_unique(fenced)
     except (OSError, UnicodeError, IndexError, yaml.YAMLError):
         return set()
@@ -1214,10 +1394,15 @@ def _task5_legacy_parent_ids(root: pathlib.Path) -> set[str]:
         artifact_id = row.get("artifact_id")
         if not isinstance(legacy, str) or not isinstance(artifact_id, str):
             continue
-        spec_match = re.fullmatch(r"docs/(?:98\.archive/03\.specs/|03\.specs/)(\d{3})-([^/]+)/spec\.md", legacy)
+        spec_match = re.fullmatch(
+            r"docs/(?:98\.archive/03\.specs/|03\.specs/)(\d{3})-([^/]+)/spec\.md",
+            legacy,
+        )
         if artifact_id.startswith("spec-") and spec_match:
             identities.add(f"spec:{spec_match.group(1)}-{spec_match.group(2)}")
-        execution_match = re.fullmatch(r"docs/04\.execution/(plans|tasks)/([^/]+)\.md", legacy)
+        execution_match = re.fullmatch(
+            r"docs/04\.execution/(plans|tasks)/([^/]+)\.md", legacy
+        )
         if execution_match:
             role = "plan" if execution_match.group(1) == "plans" else "task"
             identities.add(f"{role}:{execution_match.group(2)}")
@@ -1248,12 +1433,9 @@ def _task5_moved_body_baseline(
 
 
 _TASK10_ARCHIVE_MOVE_SOURCES = {
-    "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md":
-        "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md":
-        "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md":
-        "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
+    "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md": "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
+    "docs/98.archive/migrations/0002-operations-catalog-convergence.md": "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
+    "docs/98.archive/migrations/0003-workspace-governance-simplification.md": "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
 }
 
 

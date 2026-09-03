@@ -34,12 +34,12 @@ PUBLIC_SUITES: Final = (
 )
 PUBLIC_PROFILES: Final = ("changed", "full")
 RETIRED_PATHS: Final = (
-    "scripts/hooks/patch-graphify-" "post-commit.sh",
-    "scripts/knowledge/generate-llm-wiki-" "coverage.sh",
-    "scripts/knowledge/generate-llm-wiki-" "index.sh",
-    "scripts/validation/check-repo-" "contracts.sh",
-    "scripts/validation/recommend-gap-" "routing.sh",
-    "scripts/validation/recommend-qa-" "gates.sh",
+    "scripts/hooks/patch-graphify-post-commit.sh",
+    "scripts/knowledge/generate-llm-wiki-coverage.sh",
+    "scripts/knowledge/generate-llm-wiki-index.sh",
+    "scripts/validation/check-repo-contracts.sh",
+    "scripts/validation/recommend-gap-routing.sh",
+    "scripts/validation/recommend-qa-gates.sh",
 )
 TASK4_REMOVED_PATHS: Final = (
     "docs/00.agent-governance/providers/agents-md.md",
@@ -58,9 +58,7 @@ RUNNER: Final = "python3 scripts/validation/run-ci-gate.py"
 CHANGED_COMMAND: Final = f"{RUNNER} --profile changed"
 FULL_COMMAND: Final = f"{RUNNER} --profile full"
 MAX_SURFACE_BYTES: Final = 2 * 1_048_576
-_PROFILE_ARGUMENT_RE: Final = re.compile(
-    r"run-ci-gate\.py\s+--profile\s+([a-z-]+)"
-)
+_PROFILE_ARGUMENT_RE: Final = re.compile(r"run-ci-gate\.py\s+--profile\s+([a-z-]+)")
 
 
 @dataclass(frozen=True, order=True, slots=True)
@@ -78,7 +76,11 @@ def _read_surface(root: pathlib.Path, relative: str) -> str:
     path = root / relative
     try:
         metadata = path.lstat()
-        if not path.is_file() or path.is_symlink() or metadata.st_size > MAX_SURFACE_BYTES:
+        if (
+            not path.is_file()
+            or path.is_symlink()
+            or metadata.st_size > MAX_SURFACE_BYTES
+        ):
             raise OSError
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeError):
@@ -154,7 +156,9 @@ def _suite_ownership_findings(
 
     validator_paths = tuple(item.path.as_posix() for item in manifest.validators)
     duplicates = {
-        path for path, count in collections.Counter(validator_paths).items() if count != 1
+        path
+        for path, count in collections.Counter(validator_paths).items()
+        if count != 1
     }
     for path in sorted(duplicates):
         findings.append(
@@ -267,7 +271,9 @@ def _workflow_findings(root: pathlib.Path) -> list[DeltaFinding]:
     relative = ".github/workflows/ci-quality.yml"
     source = _read_surface(root, relative)
     if not source:
-        return [_finding("public-workflow-unreadable", relative, "workflow is unreadable")]
+        return [
+            _finding("public-workflow-unreadable", relative, "workflow is unreadable")
+        ]
     try:
         document = yaml.safe_load(source)
     except yaml.YAMLError:
@@ -377,11 +383,15 @@ def _surface_findings(
                     "profile surfaces may select only changed or full",
                 )
             )
-        if relative in {
-            "scripts/validation/run-local-qa-gates.sh",
-            "scripts/hooks/agent-event-hook.sh",
-            "scripts/hooks/post-tool-validate.sh",
-        } and RUNNER not in source:
+        if (
+            relative
+            in {
+                "scripts/validation/run-local-qa-gates.sh",
+                "scripts/hooks/agent-event-hook.sh",
+                "scripts/hooks/post-tool-validate.sh",
+            }
+            and RUNNER not in source
+        ):
             findings.append(
                 _finding(
                     "public-surface-route-missing",
@@ -404,7 +414,10 @@ def _retirement_findings(root: pathlib.Path) -> list[DeltaFinding]:
                     "the successor-backed transition path must be absent",
                 )
             )
-        if relative in active_text or pathlib.PurePosixPath(relative).name in active_text:
+        if (
+            relative in active_text
+            or pathlib.PurePosixPath(relative).name in active_text
+        ):
             findings.append(
                 _finding(
                     "retired-path-consumed",
@@ -456,7 +469,10 @@ def validate_repository(root: pathlib.Path) -> tuple[DeltaFinding, ...]:
     root = root.resolve()
     try:
         manifest, gates, public = _load_models(root)
-    except (ci_gate_contract.GateContractError, suite_registry.SuiteRegistryError) as error:
+    except (
+        ci_gate_contract.GateContractError,
+        suite_registry.SuiteRegistryError,
+    ) as error:
         code = getattr(error, "code", "public-suite-registry")
         path = getattr(error, "path", "scripts/manifest.yaml")
         message = getattr(error, "message", "the public suite registry is invalid")

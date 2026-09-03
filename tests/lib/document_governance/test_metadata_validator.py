@@ -76,18 +76,30 @@ class ResponsibilityModuleTests(unittest.TestCase):
 
 
 class FourDigitDocumentIdentityTests(unittest.TestCase):
-    def test_native_migration_compaction_requires_both_exact_provenance_states(self) -> None:
-        from scripts.lib.document_governance import archive, metadata_validator as metadata
+    def test_native_migration_compaction_requires_both_exact_provenance_states(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import (
+            archive,
+            metadata_validator as metadata,
+        )
 
-        path = pathlib.Path("docs/98.archive/migrations/0003-workspace-governance-simplification.md")
+        path = pathlib.Path(
+            "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+        )
         profiles = metadata.build_registry_profiles(self.registry)
         base = next(
-            row["recovery_commit"] for row in archive._migration_document(ROOT)["rows"]
-            if row["source_path"] == "docs/03.specs/0153-workspace-governance-simplification/spec.md"
+            row["recovery_commit"]
+            for row in archive._migration_document(ROOT)["rows"]
+            if row["source_path"]
+            == "docs/03.specs/0153-workspace-governance-simplification/spec.md"
             and row["action"] == "delete"
         )
         record = metadata._record_from_text(
-            path, (ROOT / path).read_text(), profiles=profiles, previous_status="archived"
+            path,
+            (ROOT / path).read_text(),
+            profiles=profiles,
+            previous_status="archived",
         )
         witness = metadata._native_migration_compaction_witness(ROOT, record, base)
         self.assertEqual(record, witness)
@@ -96,14 +108,22 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         # suppress `invalid-transition`. The witness stays exercised below for
         # the provenance binding it verifies; its transition role is subsumed
         # and its removal belongs to the provenance narrowing in SPEC-0155.
-        self.assertNotIn("invalid-transition", {
-            finding.code for finding in metadata.validate_record(record, profiles, {})
-        })
-        self.assertNotIn("invalid-transition", {
-            finding.code for finding in metadata.validate_record(
-                record, profiles, {}, migration_compaction_witness=witness
-            )
-        })
+        self.assertNotIn(
+            "invalid-transition",
+            {
+                finding.code
+                for finding in metadata.validate_record(record, profiles, {})
+            },
+        )
+        self.assertNotIn(
+            "invalid-transition",
+            {
+                finding.code
+                for finding in metadata.validate_record(
+                    record, profiles, {}, migration_compaction_witness=witness
+                )
+            },
+        )
         for changed in (
             {"path": path.with_name("0004-other.md")},
             {"metadata": {**record.metadata, "artifact_id": "mig-0004"}},
@@ -114,9 +134,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 other = dataclasses.replace(record, **changed)
                 # The witness is exact: any near miss fails to bind. This is
                 # the property under test, and it is unchanged.
-                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, other, base))
+                self.assertIsNone(
+                    metadata._native_migration_compaction_witness(ROOT, other, base)
+                )
                 codes = {
-                    finding.code for finding in metadata.validate_record(
+                    finding.code
+                    for finding in metadata.validate_record(
                         other, profiles, {}, migration_compaction_witness=witness
                     )
                 }
@@ -137,30 +160,53 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                     self.assertIn("invalid-transition", codes)
         for invalid_base in (None, "0" * 40):
             with self.subTest(base=invalid_base):
-                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, invalid_base))
-        with mock.patch.object(archive.HistoricalDocument, "read_bytes", return_value=b"unproved history"):
-            self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
+                self.assertIsNone(
+                    metadata._native_migration_compaction_witness(
+                        ROOT, record, invalid_base
+                    )
+                )
+        with mock.patch.object(
+            archive.HistoricalDocument, "read_bytes", return_value=b"unproved history"
+        ):
+            self.assertIsNone(
+                metadata._native_migration_compaction_witness(ROOT, record, base)
+            )
         current = (ROOT / path).read_bytes()
         malformed_states = {
             "schema": current.replace(b"schema_version: 3", b"schema_version: 4", 1),
             "mapping": current.replace(
                 b"source_path: docs/03.specs/spec-0153-workspace-governance-simplification/spec.md",
-                b"source_path: docs/03.specs/spec-0153-unproved/spec.md", 1,
+                b"source_path: docs/03.specs/spec-0153-unproved/spec.md",
+                1,
             ),
             "recovery": current.replace(
                 b"recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525",
-                b"recovery_commit: " + b"0" * 40, 1,
+                b"recovery_commit: " + b"0" * 40,
+                1,
             ),
-            "envelope": current.replace(b"parent_ids: [ADR-0029]", b"parent_ids: []", 1),
+            "envelope": current.replace(
+                b"parent_ids: [ADR-0029]", b"parent_ids: []", 1
+            ),
         }
         for failure, malformed in malformed_states.items():
             self.assertNotEqual(current, malformed)
-            with self.subTest(failure=failure), mock.patch.object(archive, "_read_regular", return_value=malformed):
-                self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
-        with mock.patch.object(archive, "_migration_document", return_value={"schema_version": 2}):
-            self.assertIsNone(metadata._native_migration_compaction_witness(ROOT, record, base))
+            with (
+                self.subTest(failure=failure),
+                mock.patch.object(archive, "_read_regular", return_value=malformed),
+            ):
+                self.assertIsNone(
+                    metadata._native_migration_compaction_witness(ROOT, record, base)
+                )
+        with mock.patch.object(
+            archive, "_migration_document", return_value={"schema_version": 2}
+        ):
+            self.assertIsNone(
+                metadata._native_migration_compaction_witness(ROOT, record, base)
+            )
 
-    def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(self) -> None:
+    def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(
+        self,
+    ) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
         from scripts.lib.document_governance.metadata import reference
 
@@ -169,38 +215,108 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             source = "docs/03.specs/0153-example/spec.md"
             path = root / source
             path.parent.mkdir(parents=True)
-            path.write_text("---\nartifact_id: SPEC-0153\nartifact_type: spec\nstatus: completed\nsupersedes: [SPEC-0136]\n---\n# Recovered\n", encoding="utf-8")
-            for args in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "recoverable spec")):
-                subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
-            commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True, capture_output=True, text=True).stdout.strip()
+            path.write_text(
+                "---\nartifact_id: SPEC-0153\nartifact_type: spec\nstatus: completed\nsupersedes: [SPEC-0136]\n---\n# Recovered\n",
+                encoding="utf-8",
+            )
+            for args in (
+                ("init", "-q"),
+                ("add", "."),
+                (
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "recoverable spec",
+                ),
+            ):
+                subprocess.run(
+                    ["git", *args], cwd=root, check=True, capture_output=True
+                )
+            commit = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
             path.unlink()
-            migration_path = root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+            migration_path = (
+                root
+                / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+            )
             migration_path.parent.mkdir(parents=True)
             migration_path.write_text("fixture boundary", encoding="utf-8")
-            row = {"source_path": source, "artifact_id": "SPEC-0153", "action": "delete", "target_path": None, "recovery_commit": commit}
-            record = metadata.Record(pathlib.Path("docs/03.specs/0136-original/spec.md"), {"artifact_id": "SPEC-0136", "superseded_by": "SPEC-0153"}, "spec")
+            row = {
+                "source_path": source,
+                "artifact_id": "SPEC-0153",
+                "action": "delete",
+                "target_path": None,
+                "recovery_commit": commit,
+            }
+            record = metadata.Record(
+                pathlib.Path("docs/03.specs/0136-original/spec.md"),
+                {"artifact_id": "SPEC-0136", "superseded_by": "SPEC-0153"},
+                "spec",
+            )
             # Native compact selection has its own real-905 integration test;
             # this injects only that parsed boundary, not Git/blob recovery.
-            with mock.patch("scripts.lib.document_governance.archive._migration_document", return_value={"schema_version": 3, "rows": [row]}):
+            with mock.patch(
+                "scripts.lib.document_governance.archive._migration_document",
+                return_value={"schema_version": 3, "rows": [row]},
+            ):
                 manifest = metadata.build_current_manifest(root, [record])
                 self.assertNotIn("SPEC-0153", manifest)
-                self.assertEqual("retired", manifest.relation_records_by_id["SPEC-0153"].metadata["status"])
-                self.assertEqual(["SPEC-0136"], manifest.relation_records_by_id["SPEC-0153"].metadata["supersedes"])
+                self.assertEqual(
+                    "retired",
+                    manifest.relation_records_by_id["SPEC-0153"].metadata["status"],
+                )
+                self.assertEqual(
+                    ["SPEC-0136"],
+                    manifest.relation_records_by_id["SPEC-0153"].metadata["supersedes"],
+                )
                 row["recovery_commit"] = "0" * 40
                 with self.assertRaises(metadata.ProfileError):
                     metadata.build_current_manifest(root, [record])
                 stderr = io.StringIO()
-                with mock.patch.object(reference, "collect_records", return_value=[record]), contextlib.redirect_stderr(stderr):
-                    result = metadata.main(["--root", str(root), "--registry", str(PROFILES), "--mode", "check-active"])
+                with (
+                    mock.patch.object(
+                        reference, "collect_records", return_value=[record]
+                    ),
+                    contextlib.redirect_stderr(stderr),
+                ):
+                    result = metadata.main(
+                        [
+                            "--root",
+                            str(root),
+                            "--registry",
+                            str(PROFILES),
+                            "--mode",
+                            "check-active",
+                        ]
+                    )
                 self.assertEqual(2, result)
-                self.assertIn("configuration-error: retired Spec lineage recovery is invalid", stderr.getvalue())
+                self.assertIn(
+                    "configuration-error: retired Spec lineage recovery is invalid",
+                    stderr.getvalue(),
+                )
                 self.assertNotIn("Traceback", stderr.getvalue())
                 row.update(recovery_commit=commit, artifact_id="SPEC-0152")
                 record.metadata["superseded_by"] = "SPEC-0152"
                 with self.assertRaises(metadata.ProfileError):
                     metadata.build_current_manifest(root, [record])
-            with mock.patch("scripts.lib.document_governance.archive._migration_document", return_value={"schema_version": 3, "rows": []}):
-                self.assertNotIn("SPEC-0152", metadata.build_current_manifest(root, [record]).relation_records_by_id)
+            with mock.patch(
+                "scripts.lib.document_governance.archive._migration_document",
+                return_value={"schema_version": 3, "rows": []},
+            ):
+                self.assertNotIn(
+                    "SPEC-0152",
+                    metadata.build_current_manifest(
+                        root, [record]
+                    ).relation_records_by_id,
+                )
 
     def test_full_repository_contracts_reaches_active_record_validation(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
@@ -212,10 +328,29 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             source.write_bytes(PROFILES.read_bytes())
             document = root / "docs/03.specs/0104-example/spec.md"
             document.parent.mkdir(parents=True)
-            document.write_text("---\nstatus: active\ntype: sdlc/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n", encoding="utf-8")
-            for args in (("init", "-q"), ("add", "."), ("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")):
-                subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
-            findings = validate_repository_contracts(root, metadata.build_registry_profiles(self.registry))
+            document.write_text(
+                "---\nstatus: active\ntype: sdlc/plan\nartifact_id: SPEC-0104\n---\n# Invalid\n",
+                encoding="utf-8",
+            )
+            for args in (
+                ("init", "-q"),
+                ("add", "."),
+                (
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+            ):
+                subprocess.run(
+                    ["git", *args], cwd=root, check=True, capture_output=True
+                )
+            findings = validate_repository_contracts(
+                root, metadata.build_registry_profiles(self.registry)
+            )
             self.assertIn("type-mismatch", {item.code for item in findings})
 
     def test_current_profile_envelope_never_loads_legacy_authority(self) -> None:
@@ -224,9 +359,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         profiles = metadata_validator.build_registry_profiles(self.registry)
         self.assertEqual(set(self.registry.profiles), set(profiles["profiles"]))
         self.assertNotIn("_legacy_profiles", profiles)
-        self.assertEqual("unsupported", metadata_validator.infer_artifact_type(
-            pathlib.Path("docs/90.references/ref-9999-legacy.md"), profiles
-        ))
+        self.assertEqual(
+            "unsupported",
+            metadata_validator.infer_artifact_type(
+                pathlib.Path("docs/90.references/ref-9999-legacy.md"), profiles
+            ),
+        )
 
     def test_metadata_contract_uses_the_canonical_registry(self) -> None:
         self.assertEqual(
@@ -277,9 +415,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_profiles_parse_and_publish_exact_incident_selector(self) -> None:
         incident = self.profiles["incident"]
         postmortem = self.profiles["postmortem"]
-        self.assertEqual(
-            "inc-{year:4}-{number:4}", incident["artifact_id_pattern"]
-        )
+        self.assertEqual("inc-{year:4}-{number:4}", incident["artifact_id_pattern"])
         self.assertEqual(
             "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
             incident["path_pattern"],
@@ -414,7 +550,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 )
 
     def test_current_requirement_package_paths_own_their_ids(self) -> None:
-        paths = sorted((ROOT / "docs/01.requirements").glob("[0-9][0-9][0-9][0-9]-*.md"))
+        paths = sorted(
+            (ROOT / "docs/01.requirements").glob("[0-9][0-9][0-9][0-9]-*.md")
+        )
         identities = tuple(
             requirement_package_identity(path.relative_to(ROOT)) for path in paths
         )
@@ -455,7 +593,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             },
         )
 
-    def test_prd_internal_id_validator_rejects_ids_in_adversarial_contexts(self) -> None:
+    def test_prd_internal_id_validator_rejects_ids_in_adversarial_contexts(
+        self,
+    ) -> None:
         path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
         canonical = """## Requirements
 
@@ -607,7 +747,10 @@ This paragraph explains how verification evidence will be interpreted.
                 )
 
     def test_requirement_template_publishes_all_owned_child_id_patterns(self) -> None:
-        text = (ROOT / "docs/99.templates/templates/requirements/requirement-package.template.md").read_text(encoding="utf-8")
+        text = (
+            ROOT
+            / "docs/99.templates/templates/requirements/requirement-package.template.md"
+        ).read_text(encoding="utf-8")
         for kind in ("FR", "NFR", "IF"):
             with self.subTest(kind=kind):
                 self.assertIn(f"REQ-####-{kind}-####", text)
@@ -659,9 +802,7 @@ This paragraph explains how verification evidence will be interpreted.
         self.assertEqual(
             1,
             operations.validators.count(
-                pathlib.PurePosixPath(
-                    "scripts/validation/check-operations-catalog.py"
-                )
+                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py")
             ),
         )
         contract = parse_public_gate_contract(
@@ -719,7 +860,9 @@ This paragraph explains how verification evidence will be interpreted.
                     violations.append(f"{relative}:{line_number}:{line.strip()}")
         self.assertEqual([], violations)
 
-    def test_active_human_contracts_publish_only_the_canonical_incident_route(self) -> None:
+    def test_active_human_contracts_publish_only_the_canonical_incident_route(
+        self,
+    ) -> None:
         contracts = (
             "docs/00.agent-governance/skills/ops-runbook-agent.md",
             "docs/00.agent-governance/skills/incident-response.md",

@@ -57,16 +57,23 @@ class HistoricalDocument:
         return pathlib.PurePosixPath(self.path).suffix
 
     def read_bytes(self) -> bytes:
-        if not isinstance(self.path, str) or pathlib.PurePosixPath(self.path).as_posix() != self.path:
+        if (
+            not isinstance(self.path, str)
+            or pathlib.PurePosixPath(self.path).as_posix() != self.path
+        ):
             raise ValueError("historical document path is invalid")
-        provenance, = verify_recovery_blobs_batch(
+        (provenance,) = verify_recovery_blobs_batch(
             ((self.path, self.commit),), repo_root=self.repo_root
         )
         if not provenance.is_regular_blob or provenance.object_id is None:
-            raise ValueError("historical document recovery must resolve to a regular blob")
+            raise ValueError(
+                "historical document recovery must resolve to a regular blob"
+            )
         result = _run_git(self.repo_root, ["cat-file", "blob", provenance.object_id])
         if result.returncode:
-            raise ValueError("historical document exceeds the bounded Git reader or is unavailable")
+            raise ValueError(
+                "historical document exceeds the bounded Git reader or is unavailable"
+            )
         return result.stdout
 
     def read_text(self, encoding: str = "utf-8") -> str:
@@ -74,17 +81,25 @@ class HistoricalDocument:
 
 
 def _safe_relative_path(path: pathlib.PurePosixPath) -> bool:
-    return bool(path.parts) and not path.is_absolute() and all(
-        part not in {"", ".", ".."}
-        and not part.startswith("-")
-        and "\\" not in part
-        and ":" not in part
-        and all(ord(character) >= 32 and ord(character) != 127 for character in part)
-        for part in path.parts
+    return (
+        bool(path.parts)
+        and not path.is_absolute()
+        and all(
+            part not in {"", ".", ".."}
+            and not part.startswith("-")
+            and "\\" not in part
+            and ":" not in part
+            and all(
+                ord(character) >= 32 and ord(character) != 127 for character in part
+            )
+            for part in path.parts
+        )
     )
 
 
-def _kill_and_reap(process: subprocess.Popen[bytes], *, timeout_seconds: float = 1.0) -> bool:
+def _kill_and_reap(
+    process: subprocess.Popen[bytes], *, timeout_seconds: float = 1.0
+) -> bool:
     """Kill a process group and attempt a strictly bounded reap."""
 
     deadline = time.monotonic() + max(0.01, timeout_seconds)
@@ -124,7 +139,9 @@ def _run_git(
         or any(ord(character) < 32 or ord(character) == 127 for character in argument)
         for argument in args
     ):
-        return subprocess.CompletedProcess(["git", *args], 126, b"", b"invalid arguments")
+        return subprocess.CompletedProcess(
+            ["git", *args], 126, b"", b"invalid arguments"
+        )
     if input_bytes is not None and len(input_bytes) > _GIT_INPUT_BYTES:
         return subprocess.CompletedProcess(
             ["git", *args], 126, b"", b"input bound exceeded"
@@ -193,7 +210,11 @@ def _run_git(
     if writer is not None:
         writer.start()
     try:
-        while process.poll() is None and not overflow.is_set() and not reader_error.is_set():
+        while (
+            process.poll() is None
+            and not overflow.is_set()
+            and not reader_error.is_set()
+        ):
             remaining = _GIT_TIMEOUT_SECONDS - (time.monotonic() - started)
             if remaining <= 0:
                 _kill_and_reap(process)
@@ -210,16 +231,22 @@ def _run_git(
             writer.join(timeout=max(0.0, remaining))
             if writer.is_alive():
                 _kill_and_reap(process)
-                return subprocess.CompletedProcess(argv, 124, b"", b"input deadline exceeded")
+                return subprocess.CompletedProcess(
+                    argv, 124, b"", b"input deadline exceeded"
+                )
         for reader in readers:
             remaining = _GIT_TIMEOUT_SECONDS - (time.monotonic() - started)
             reader.join(timeout=max(0.0, remaining))
         if any(reader.is_alive() for reader in readers):
             _kill_and_reap(process)
-            return subprocess.CompletedProcess(argv, 124, b"", b"drain deadline exceeded")
+            return subprocess.CompletedProcess(
+                argv, 124, b"", b"drain deadline exceeded"
+            )
         if overflow.is_set() or reader_error.is_set():
             _kill_and_reap(process)
-            reason = b"output bound exceeded" if overflow.is_set() else b"output read failed"
+            reason = (
+                b"output bound exceeded" if overflow.is_set() else b"output read failed"
+            )
             return subprocess.CompletedProcess(argv, 125, b"", reason)
         if writer_error.is_set() and process.returncode == 0:
             return subprocess.CompletedProcess(argv, 125, b"", b"input write failed")
@@ -323,11 +350,7 @@ def verify_recovery_blobs_batch(
 
     object_ids = tuple(
         sorted(
-            {
-                item.object_id
-                for item in resolved.values()
-                if item.object_id is not None
-            }
+            {item.object_id for item in resolved.values() if item.object_id is not None}
         )
     )
     object_kinds: dict[str, str] = {}
@@ -339,13 +362,19 @@ def verify_recovery_blobs_batch(
         )
         if checked_objects.returncode != 0:
             raise ValueError("bounded recovery-object batch failed")
-        object_rows = checked_objects.stdout.decode("ascii", errors="strict").splitlines()
+        object_rows = checked_objects.stdout.decode(
+            "ascii", errors="strict"
+        ).splitlines()
         if len(object_rows) != len(object_ids):
-            raise ValueError("bounded recovery-object batch returned an unexpected row count")
+            raise ValueError(
+                "bounded recovery-object batch returned an unexpected row count"
+            )
         for expected, rendered in zip(object_ids, object_rows, strict=True):
             parts = rendered.split(" ")
             if len(parts) != 2 or parts[0] != expected:
-                raise ValueError("bounded recovery-object batch returned an unexpected entry")
+                raise ValueError(
+                    "bounded recovery-object batch returned an unexpected entry"
+                )
             if parts[1] != "missing":
                 object_kinds[expected] = parts[1]
 
@@ -445,7 +474,9 @@ def read_archived_metadata_batch(
             raise ValueError(f"partial legacy recovery metadata: {source}")
         archived_commit = values["archived_commit"]
         archived_from = pathlib.PurePosixPath(values["archived_from"])
-        if not recovery_commit_is_valid(archived_commit) or not _safe_relative_path(archived_from):
+        if not recovery_commit_is_valid(archived_commit) or not _safe_relative_path(
+            archived_from
+        ):
             raise ValueError(f"invalid legacy recovery metadata: {source}")
         records.append(ArchivedMetadata(source, archived_commit, archived_from))
     return tuple(records)
@@ -496,7 +527,10 @@ def resolve_git_provenance(
         object_id = object_bytes.decode("ascii")
     except (UnicodeError, ValueError):
         return dataclasses.replace(empty, commit=commit_id)
-    exists = listed_path == relative.as_posix() and _OBJECT_ID.fullmatch(object_id) is not None
+    exists = (
+        listed_path == relative.as_posix()
+        and _OBJECT_ID.fullmatch(object_id) is not None
+    )
     object_kind = _run_git(repo_root, ["cat-file", "-t", object_id]) if exists else None
     proven_blob = bool(
         object_kind is not None

@@ -24,7 +24,9 @@ from typing import Mapping, Sequence
 
 
 INDEX_OUTPUT = Path("docs/90.references/data/0082-llm-wiki-index/README.md")
-COVERAGE_OUTPUT = Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")
+COVERAGE_OUTPUT = Path(
+    "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md"
+)
 GENERATOR_PATH = "scripts/knowledge/generate-llm-wiki.py"
 ROOT_ENTRYPOINTS = frozenset(
     {
@@ -39,16 +41,28 @@ ROOT_ENTRYPOINTS = frozenset(
         "llms.txt",
     }
 )
-REQUIRED_LOCAL_PATHS = frozenset(
-    {GENERATOR_PATH}
-)
+REQUIRED_LOCAL_PATHS = frozenset({GENERATOR_PATH})
 RETIRED_GENERATOR_WRAPPERS = frozenset(
     {
         "scripts/knowledge/generate-llm-wiki-index.sh",
         "scripts/knowledge/generate-llm-wiki-coverage.sh",
     }
 )
-SAFE_SUFFIXES = frozenset({".conf", ".env", ".graphql", ".json", ".md", ".proto", ".sh", ".toml", ".txt", ".yaml", ".yml"})
+SAFE_SUFFIXES = frozenset(
+    {
+        ".conf",
+        ".env",
+        ".graphql",
+        ".json",
+        ".md",
+        ".proto",
+        ".sh",
+        ".toml",
+        ".txt",
+        ".yaml",
+        ".yml",
+    }
+)
 ARCHIVE_NONCURRENT_PREFIXES = (
     "docs/98.archive/changes/",
     "docs/98.archive/tombstones/",
@@ -62,8 +76,16 @@ EXCLUDED_PREFIXES = (
     "volumes/",
     *ARCHIVE_NONCURRENT_PREFIXES,
 )
-EXCLUDED_PARTS = frozenset({".cache", ".next", "coverage", "dist", "node_modules", "vendor"})
-GENERATED_OR_LOCK_FILES = (".min.css", ".min.js", "package-lock.json", "pnpm-lock.yaml", "yarn.lock")
+EXCLUDED_PARTS = frozenset(
+    {".cache", ".next", "coverage", "dist", "node_modules", "vendor"}
+)
+GENERATED_OR_LOCK_FILES = (
+    ".min.css",
+    ".min.js",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+)
 CATEGORY_ORDER = (
     "Root entrypoints",
     "LLM Wiki reference",
@@ -94,10 +116,7 @@ MAX_CANDIDATE_FILE_BYTES = 10_000_000
 MAX_CANDIDATE_TOTAL_BYTES = 300_000_000
 MAX_OUTPUT_BYTES = 10_000_000
 REQUIRED_SEALS = (
-    fcntl.F_SEAL_SEAL
-    | fcntl.F_SEAL_SHRINK
-    | fcntl.F_SEAL_GROW
-    | fcntl.F_SEAL_WRITE
+    fcntl.F_SEAL_SEAL | fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_WRITE
 )
 
 
@@ -150,7 +169,9 @@ def _run_git_bounded(
 ) -> GitResult:
     """Run Git with a deadline, concurrent bounded drains, and group cleanup."""
 
-    if not arguments or any(not isinstance(item, str) or "\0" in item for item in arguments):
+    if not arguments or any(
+        not isinstance(item, str) or "\0" in item for item in arguments
+    ):
         raise GeneratorError("git arguments must be nonempty text")
     if min(timeout_seconds, max_stdout, max_stderr, max_total) <= 0:
         raise GeneratorError("git bounds must be positive")
@@ -240,7 +261,9 @@ def _validate_relative_path(path_text: str) -> str:
         or path_text.startswith("/")
         or path_text.endswith("/")
         or "\\" in path_text
-        or any(ord(character) < 0x20 or ord(character) == 0x7F for character in path_text)
+        or any(
+            ord(character) < 0x20 or ord(character) == 0x7F for character in path_text
+        )
     ):
         raise GeneratorError(f"unsafe tracked path: {path_text!r}")
     if any(part in {"", ".", ".."} for part in path_text.split("/")):
@@ -332,10 +355,10 @@ def _read_bounded_regular_path(path: Path, *, max_bytes: int) -> bytes:
             dir_fd=parent_descriptor,
         )
         before = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(before.st_mode)
-            or (before_path.st_dev, before_path.st_ino) != (before.st_dev, before.st_ino)
-        ):
+        if not stat.S_ISREG(before.st_mode) or (
+            before_path.st_dev,
+            before_path.st_ino,
+        ) != (before.st_dev, before.st_ino):
             raise GeneratorError(f"file changed before read: {path}")
         chunks: list[bytes] = []
         total = 0
@@ -388,16 +411,27 @@ def is_safe_candidate(path_text: str) -> bool:
         return path_text.startswith((".claude/", ".codex/", ".github/"))
     if path.suffix and path.suffix not in SAFE_SUFFIXES:
         return False
-    return path_text in ROOT_ENTRYPOINTS or path_text.startswith((".claude/", ".codex/", ".github/", "docs/", "infra/", "scripts/")) or path_text == "secrets/README.md"
+    return (
+        path_text in ROOT_ENTRYPOINTS
+        or path_text.startswith(
+            (".claude/", ".codex/", ".github/", "docs/", "infra/", "scripts/")
+        )
+        or path_text == "secrets/README.md"
+    )
 
 
 def classify(path_text: str) -> str:
     if path_text in ROOT_ENTRYPOINTS:
         return "Root entrypoints"
-    if path_text.startswith((
-        "docs/90.references/data/0082-llm-wiki-index/",
-        "docs/90.references/data/0083-repository-map/",
-    )) or path_text == "llms.txt":
+    if (
+        path_text.startswith(
+            (
+                "docs/90.references/data/0082-llm-wiki-index/",
+                "docs/90.references/data/0083-repository-map/",
+            )
+        )
+        or path_text == "llms.txt"
+    ):
         return "LLM Wiki reference"
     if path_text.startswith("docs/00.agent-governance/"):
         return "Agent governance"
@@ -405,9 +439,14 @@ def classify(path_text: str) -> str:
         return "Runtime surfaces"
     if path_text.startswith("docs/05.operations/"):
         return "Operations docs"
-    if path_text.startswith(("docs/01.requirements/", "docs/02.architecture/", "docs/03.specs/")):
+    if path_text.startswith(
+        ("docs/01.requirements/", "docs/02.architecture/", "docs/03.specs/")
+    ):
         return "Active stage docs"
-    if path_text.startswith(("docs/90.references/", "docs/99.templates/")) or path_text == "docs/README.md":
+    if (
+        path_text.startswith(("docs/90.references/", "docs/99.templates/"))
+        or path_text == "docs/README.md"
+    ):
         return "Reference and template docs"
     if path_text.startswith("infra/"):
         return "Infrastructure source"
@@ -469,7 +508,10 @@ def collect_candidates(repo_root: Path) -> list[Candidate]:
         if aggregate_bytes > MAX_CANDIDATE_TOTAL_BYTES:
             raise GeneratorError("candidate aggregate byte bound exceeded")
         safe_paths.append(relative)
-    return [Candidate(path, classify(path), source_bucket(path), role_for(path)) for path in safe_paths]
+    return [
+        Candidate(path, classify(path), source_bucket(path), role_for(path))
+        for path in safe_paths
+    ]
 
 
 def candidates_from_manifest(paths: Sequence[str]) -> list[Candidate]:
@@ -498,28 +540,85 @@ def render_index(candidates: Sequence[Candidate]) -> str:
             continue
         grouped[candidate.category].append(candidate)
     lines = [
-        "---", "title: LLM Wiki Generated Index", "version: 1.0.0", "type: reference/data-pack", "layer: references", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0082", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
-        "# LLM Wiki Generated Index", "", "## Purpose", "",
-        "이 문서는 `hy-home.docker`의 LLM Wiki가 사용하는 generated tracked repo-local index다. LLM 에이전트가 먼저 확인할 수 있는 안전한 경로 목록을 제공하되, 각 파일의 내용이나 runtime truth를 복제하지 않는다.", "",
-        "Provide a deterministic path index for repo-local AI agents without creating a public site, a full-content bundle, or a replacement for canonical source files.", "",
-        "## Schema", "", "Each inventory row contains a repository-relative path and a lightweight role derived from the tracked file name or suffix.", "",
-        "## Provenance", "", "This generated tracked repo-local index complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.", "",
-        "Graphify output is advisory navigation context only. This index is generated from repository path metadata and does not treat `graphify-out/` as source material.", "",
-        "### In Scope", "", "- Repo-relative path links for safe tracked source entrypoints.", "- Governance, runtime, documentation, infrastructure, script, and secret-handling policy surfaces.", f"- Deterministic refresh through `python3 {GENERATOR_PATH} --write`.", "",
-        "### Out of Scope", "", "- Public website or public wiki deployment.", "- `llms-full.txt` or any full-content export.", "- External model calls, network publishing, deployment workflow, or Docker runtime behavior.", "- Secret contents, credentials, private keys, tokens, shell history, raw logs, `volumes/`, dependency trees, generated/minified artifacts, and `graphify-out/` as evidence.", "",
-        "## Inventory", "",
+        "---",
+        "title: LLM Wiki Generated Index",
+        "version: 1.0.0",
+        "type: reference/data-pack",
+        "layer: references",
+        "status: active",
+        'owner: "@buenhyden"',
+        "artifact_id: DATA-0082",
+        "parent_ids: []",
+        "created: 2026-08-19",
+        "updated: 2026-08-23",
+        "observed_at: 2026-08-23",
+        f"generated_by: {GENERATOR_PATH}",
+        "---",
+        "",
+        "# LLM Wiki Generated Index",
+        "",
+        "## Purpose",
+        "",
+        "이 문서는 `hy-home.docker`의 LLM Wiki가 사용하는 generated tracked repo-local index다. LLM 에이전트가 먼저 확인할 수 있는 안전한 경로 목록을 제공하되, 각 파일의 내용이나 runtime truth를 복제하지 않는다.",
+        "",
+        "Provide a deterministic path index for repo-local AI agents without creating a public site, a full-content bundle, or a replacement for canonical source files.",
+        "",
+        "## Schema",
+        "",
+        "Each inventory row contains a repository-relative path and a lightweight role derived from the tracked file name or suffix.",
+        "",
+        "## Provenance",
+        "",
+        "This generated tracked repo-local index complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.",
+        "",
+        "Graphify output is advisory navigation context only. This index is generated from repository path metadata and does not treat `graphify-out/` as source material.",
+        "",
+        "### In Scope",
+        "",
+        "- Repo-relative path links for safe tracked source entrypoints.",
+        "- Governance, runtime, documentation, infrastructure, script, and secret-handling policy surfaces.",
+        f"- Deterministic refresh through `python3 {GENERATOR_PATH} --write`.",
+        "",
+        "### Out of Scope",
+        "",
+        "- Public website or public wiki deployment.",
+        "- `llms-full.txt` or any full-content export.",
+        "- External model calls, network publishing, deployment workflow, or Docker runtime behavior.",
+        "- Secret contents, credentials, private keys, tokens, shell history, raw logs, `volumes/`, dependency trees, generated/minified artifacts, and `graphify-out/` as evidence.",
+        "",
+        "## Inventory",
+        "",
     ]
     for category in CATEGORY_ORDER:
         entries = grouped.get(category, [])
         if entries:
             lines.extend([f"### {category}", "", "| Path | Role |", "| --- | --- |"])
-            lines.extend(f"| {_link(item.path, INDEX_OUTPUT)} | {item.role} |" for item in entries)
+            lines.extend(
+                f"| {_link(item.path, INDEX_OUTPUT)} | {item.role} |"
+                for item in entries
+            )
             lines.append("")
-    lines.extend([
-        "## Refresh", "", "- **Owner**: `doc-writer` using the `knowledge-map-agent` function", "- **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change", f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation", "",
-        "## Consumers", "", "`llms.txt`, repository readers, documentation validators, and AI agents consume this package as navigation evidence only.", "",
-        "## Traceability", "", "- [llms.txt](../../../../llms.txt) - root LLM entrypoint and boundary statement", "- [LLM Wiki repository map](../0083-repository-map/README.md)", f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH})", "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)", "- [Agent governance hub](../../../00.agent-governance/README.md)",
-    ])
+    lines.extend(
+        [
+            "## Refresh",
+            "",
+            "- **Owner**: `doc-writer` using the `knowledge-map-agent` function",
+            "- **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change",
+            f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation",
+            "",
+            "## Consumers",
+            "",
+            "`llms.txt`, repository readers, documentation validators, and AI agents consume this package as navigation evidence only.",
+            "",
+            "## Traceability",
+            "",
+            "- [llms.txt](../../../../llms.txt) - root LLM entrypoint and boundary statement",
+            "- [LLM Wiki repository map](../0083-repository-map/README.md)",
+            f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH})",
+            "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)",
+            "- [Agent governance hub](../../../00.agent-governance/README.md)",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -541,27 +640,106 @@ def render_coverage(candidates: Sequence[Candidate]) -> str:
         buckets[candidate.bucket].append(candidate)
         roles[candidate.role].append(candidate)
     lines = [
-        "---", "title: LLM Wiki Stage Category Coverage", "version: 1.0.0", "type: reference/data-pack", "layer: references", "status: active", "owner: \"@buenhyden\"", "artifact_id: DATA-0076", "parent_ids: []", "created: 2026-08-19", "updated: 2026-08-23", "observed_at: 2026-08-23", f"generated_by: {GENERATOR_PATH}", "---", "",
-        "# LLM Wiki Stage Category Coverage", "", "## Purpose", "", "This generated reference summarizes the safe tracked source paths that feed the repo-local LLM Wiki index by source bucket, LLM Wiki category, and path role.", "", "Provide audit consumers with a compact coverage snapshot without duplicating the full generated index or changing canonical source ownership.", "",
-        "## Schema", "", "Counts are grouped by source bucket, navigation category, and derived path role, with representative repository-relative links.", "",
-        "## Provenance", "", "This package is generated from the same safe tracked candidate set as DATA-0082. Runtime truth remains in canonical tracked sources.", "",
-        "### In Scope", "", "- Counts by source bucket, LLM Wiki category, and path role.", "- Representative links for each category.", f"- Deterministic freshness through `python3 {GENERATOR_PATH} --check`.", "",
-        "### Out of Scope", "", "- Full-content export or public website generation.", "- Runtime behavior, deployment workflow, network publishing, or external model calls.", "- Secret contents, credentials, private keys, tokens, shell history, raw logs, `volumes/`, dependency trees, generated/minified artifacts, and `graphify-out/` as evidence.", "",
-        "## Inventory", "", f"- Safe tracked source paths: `{len(selected)}`", f"- Source buckets: `{len(buckets)}`", f"- LLM Wiki categories: `{len(categories)}`", f"- Path roles: `{len(roles)}`", "",
-        "## Source Bucket Coverage", "", "| Source Bucket | Paths | Representative Paths |", "| --- | ---: | --- |",
+        "---",
+        "title: LLM Wiki Stage Category Coverage",
+        "version: 1.0.0",
+        "type: reference/data-pack",
+        "layer: references",
+        "status: active",
+        'owner: "@buenhyden"',
+        "artifact_id: DATA-0076",
+        "parent_ids: []",
+        "created: 2026-08-19",
+        "updated: 2026-08-23",
+        "observed_at: 2026-08-23",
+        f"generated_by: {GENERATOR_PATH}",
+        "---",
+        "",
+        "# LLM Wiki Stage Category Coverage",
+        "",
+        "## Purpose",
+        "",
+        "This generated reference summarizes the safe tracked source paths that feed the repo-local LLM Wiki index by source bucket, LLM Wiki category, and path role.",
+        "",
+        "Provide audit consumers with a compact coverage snapshot without duplicating the full generated index or changing canonical source ownership.",
+        "",
+        "## Schema",
+        "",
+        "Counts are grouped by source bucket, navigation category, and derived path role, with representative repository-relative links.",
+        "",
+        "## Provenance",
+        "",
+        "This package is generated from the same safe tracked candidate set as DATA-0082. Runtime truth remains in canonical tracked sources.",
+        "",
+        "### In Scope",
+        "",
+        "- Counts by source bucket, LLM Wiki category, and path role.",
+        "- Representative links for each category.",
+        f"- Deterministic freshness through `python3 {GENERATOR_PATH} --check`.",
+        "",
+        "### Out of Scope",
+        "",
+        "- Full-content export or public website generation.",
+        "- Runtime behavior, deployment workflow, network publishing, or external model calls.",
+        "- Secret contents, credentials, private keys, tokens, shell history, raw logs, `volumes/`, dependency trees, generated/minified artifacts, and `graphify-out/` as evidence.",
+        "",
+        "## Inventory",
+        "",
+        f"- Safe tracked source paths: `{len(selected)}`",
+        f"- Source buckets: `{len(buckets)}`",
+        f"- LLM Wiki categories: `{len(categories)}`",
+        f"- Path roles: `{len(roles)}`",
+        "",
+        "## Source Bucket Coverage",
+        "",
+        "| Source Bucket | Paths | Representative Paths |",
+        "| --- | ---: | --- |",
     ]
-    lines.extend(f"| `{bucket}` | {len(items)} | {_examples(items, COVERAGE_OUTPUT)} |" for bucket, items in sorted(buckets.items()))
-    lines.extend(["", "## LLM Wiki Category Coverage", "", "| Category | Paths | Representative Paths |", "| --- | ---: | --- |"])
+    lines.extend(
+        f"| `{bucket}` | {len(items)} | {_examples(items, COVERAGE_OUTPUT)} |"
+        for bucket, items in sorted(buckets.items())
+    )
+    lines.extend(
+        [
+            "",
+            "## LLM Wiki Category Coverage",
+            "",
+            "| Category | Paths | Representative Paths |",
+            "| --- | ---: | --- |",
+        ]
+    )
     for category in CATEGORY_ORDER:
         if categories.get(category):
-            lines.append(f"| {category} | {len(categories[category])} | {_examples(categories[category], COVERAGE_OUTPUT)} |")
-    lines.extend(["", "## Path Role Coverage", "", "| Role | Paths |", "| --- | ---: |"])
+            lines.append(
+                f"| {category} | {len(categories[category])} | {_examples(categories[category], COVERAGE_OUTPUT)} |"
+            )
+    lines.extend(
+        ["", "## Path Role Coverage", "", "| Role | Paths |", "| --- | ---: |"]
+    )
     lines.extend(f"| {role} | {len(items)} |" for role, items in sorted(roles.items()))
-    lines.extend([
-        "", "## Refresh", "", "- **Owner**: `doc-writer` using the `knowledge-map-agent` function.", "- **Review Cadence**: Review after root entrypoint, governance, operations, script inventory, infrastructure index, or LLM Wiki path changes.", f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation.", "",
-        "## Consumers", "", "Audit tooling, documentation validators, and AI agents consume this package as coverage evidence only.", "",
-        "## Traceability", "", "- [LLM Wiki generated index](../0082-llm-wiki-index/README.md)", "- [LLM Wiki repository map](../0083-repository-map/README.md)", f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH})", "- [Reference data](../README.md)", "- [Reference index](../../README.md)", "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Refresh",
+            "",
+            "- **Owner**: `doc-writer` using the `knowledge-map-agent` function.",
+            "- **Review Cadence**: Review after root entrypoint, governance, operations, script inventory, infrastructure index, or LLM Wiki path changes.",
+            f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation.",
+            "",
+            "## Consumers",
+            "",
+            "Audit tooling, documentation validators, and AI agents consume this package as coverage evidence only.",
+            "",
+            "## Traceability",
+            "",
+            "- [LLM Wiki generated index](../0082-llm-wiki-index/README.md)",
+            "- [LLM Wiki repository map](../0083-repository-map/README.md)",
+            f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH})",
+            "- [Reference data](../README.md)",
+            "- [Reference index](../../README.md)",
+            "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -580,9 +758,9 @@ def check_outputs(outputs: Mapping[Path, str]) -> int:
     stale = False
     for path, expected in outputs.items():
         try:
-            current = _read_bounded_regular_path(path, max_bytes=MAX_OUTPUT_BYTES).decode(
-                "utf-8", errors="strict"
-            )
+            current = _read_bounded_regular_path(
+                path, max_bytes=MAX_OUTPUT_BYTES
+            ).decode("utf-8", errors="strict")
         except GeneratorError as error:
             if "missing" not in str(error):
                 raise
@@ -590,7 +768,9 @@ def check_outputs(outputs: Mapping[Path, str]) -> int:
             stale = True
             continue
         except UnicodeDecodeError as error:
-            raise GeneratorError(f"generated output is not strict UTF-8: {path}") from error
+            raise GeneratorError(
+                f"generated output is not strict UTF-8: {path}"
+            ) from error
         if current != expected:
             print(f"FAIL: stale generated LLM Wiki output: {path}", file=sys.stderr)
             stale = True
@@ -636,14 +816,19 @@ def _atomic_write_regular(path: Path, content: str) -> None:
             except FileExistsError:
                 continue
         if descriptor is None or temporary_name is None:
-            raise GeneratorError(f"cannot allocate same-directory temporary output: {path}")
+            raise GeneratorError(
+                f"cannot allocate same-directory temporary output: {path}"
+            )
         remaining = memoryview(payload)
         while remaining:
             written = os.write(descriptor, remaining)
             if written <= 0:
                 raise GeneratorError(f"output write made no progress: {path}")
             remaining = remaining[written:]
-        os.fchmod(descriptor, stat.S_IMODE(previous.st_mode) if previous is not None else 0o644)
+        os.fchmod(
+            descriptor,
+            stat.S_IMODE(previous.st_mode) if previous is not None else 0o644,
+        )
         os.fsync(descriptor)
         os.close(descriptor)
         descriptor = None
@@ -678,7 +863,9 @@ def _atomic_write_regular(path: Path, content: str) -> None:
     except OSError as error:
         if error.errno == errno.ELOOP:
             raise GeneratorError(f"symlink output is not allowed: {path}") from error
-        raise GeneratorError(f"output cannot be written safely: {path}: {error}") from error
+        raise GeneratorError(
+            f"output cannot be written safely: {path}: {error}"
+        ) from error
     finally:
         if descriptor is not None:
             os.close(descriptor)
@@ -707,7 +894,9 @@ def apply_mode(outputs: Mapping[Path, str], mode: str) -> int:
 
 def _canonical_decimal(value: str, label: str) -> int:
     if re.fullmatch(r"0|[1-9][0-9]*", value) is None:
-        raise GeneratorError(f"invalid Gate 9 LLM manifest: {label} is not canonical decimal")
+        raise GeneratorError(
+            f"invalid Gate 9 LLM manifest: {label} is not canonical decimal"
+        )
     return int(value)
 
 
@@ -717,7 +906,9 @@ def _manifest_path(path_bytes: bytes) -> str:
     try:
         return _validate_relative_path(path_bytes.decode("utf-8", errors="strict"))
     except UnicodeDecodeError as error:
-        raise GeneratorError("invalid Gate 9 LLM manifest: path is not strict UTF-8") from error
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: path is not strict UTF-8"
+        ) from error
 
 
 def read_gate9_manifest(mode: str) -> list[str] | None:
@@ -736,15 +927,21 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
     if not any(present):
         return None
     if mode != "stdout":
-        raise GeneratorError("invalid Gate 9 LLM manifest: internal mode requires --stdout")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: internal mode requires --stdout"
+        )
 
     descriptor = _canonical_decimal(os.environ[MANIFEST_ENV_NAMES[0]], "fd")
     declared_size = _canonical_decimal(os.environ[MANIFEST_ENV_NAMES[1]], "size")
     declared_digest = os.environ[MANIFEST_ENV_NAMES[2]]
     if declared_size == 0 or declared_size > MAX_MANIFEST_BYTES:
-        raise GeneratorError("invalid Gate 9 LLM manifest: size is outside the 1..8 MiB bound")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: size is outside the 1..8 MiB bound"
+        )
     if re.fullmatch(r"[0-9a-f]{64}", declared_digest) is None:
-        raise GeneratorError("invalid Gate 9 LLM manifest: SHA-256 is not canonical lowercase hex")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: SHA-256 is not canonical lowercase hex"
+        )
     try:
         before = os.fstat(descriptor)
         current_offset = os.lseek(descriptor, 0, os.SEEK_CUR)
@@ -755,29 +952,45 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
             f"invalid Gate 9 LLM manifest: descriptor validation failed: {error}"
         ) from error
     if not stat.S_ISREG(before.st_mode) or before.st_nlink != 0:
-        raise GeneratorError("invalid Gate 9 LLM manifest: descriptor is not an unlinked regular file")
-    if not descriptor_target.startswith("/memfd:") or not descriptor_target.endswith(" (deleted)"):
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: descriptor is not an unlinked regular file"
+        )
+    if not descriptor_target.startswith("/memfd:") or not descriptor_target.endswith(
+        " (deleted)"
+    ):
         raise GeneratorError("invalid Gate 9 LLM manifest: descriptor is not a memfd")
     if current_offset != 0:
-        raise GeneratorError("invalid Gate 9 LLM manifest: descriptor offset is not zero")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: descriptor offset is not zero"
+        )
     if before.st_size != declared_size:
-        raise GeneratorError("invalid Gate 9 LLM manifest: declared size does not match descriptor size")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: declared size does not match descriptor size"
+        )
     if seals & REQUIRED_SEALS != REQUIRED_SEALS:
-        raise GeneratorError("invalid Gate 9 LLM manifest: descriptor lacks required seals")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: descriptor lacks required seals"
+        )
     chunks: list[bytes] = []
     remaining = declared_size
     try:
         while remaining:
             chunk = os.read(descriptor, min(remaining, 1024 * 1024))
             if not chunk:
-                raise GeneratorError("invalid Gate 9 LLM manifest: descriptor ended early")
+                raise GeneratorError(
+                    "invalid Gate 9 LLM manifest: descriptor ended early"
+                )
             chunks.append(chunk)
             remaining -= len(chunk)
         if os.read(descriptor, 1) != b"":
-            raise GeneratorError("invalid Gate 9 LLM manifest: descriptor has trailing bytes")
+            raise GeneratorError(
+                "invalid Gate 9 LLM manifest: descriptor has trailing bytes"
+            )
         after = os.fstat(descriptor)
     except OSError as error:
-        raise GeneratorError(f"invalid Gate 9 LLM manifest: descriptor read failed: {error}") from error
+        raise GeneratorError(
+            f"invalid Gate 9 LLM manifest: descriptor read failed: {error}"
+        ) from error
     if (
         before.st_dev,
         before.st_ino,
@@ -791,7 +1004,9 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
         after.st_nlink,
         after.st_size,
     ):
-        raise GeneratorError("invalid Gate 9 LLM manifest: descriptor identity changed during read")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: descriptor identity changed during read"
+        )
     payload = b"".join(chunks)
     if not hmac.compare_digest(hashlib.sha256(payload).hexdigest(), declared_digest):
         raise GeneratorError("invalid Gate 9 LLM manifest: SHA-256 mismatch")
@@ -799,7 +1014,9 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
         raise GeneratorError("invalid Gate 9 LLM manifest: payload lacks terminal NUL")
     records = payload.split(b"\0")[:-1]
     if len(records) < 5 or records[0] != MANIFEST_SCHEMA:
-        raise GeneratorError("invalid Gate 9 LLM manifest: schema record is missing or invalid")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: schema record is missing or invalid"
+        )
     object_format_record = records[1]
     if object_format_record == b"object-format=sha1":
         oid_length = 40
@@ -813,21 +1030,33 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
         (records[3], b"projected-tree=", "projected tree"),
     ):
         if not record.startswith(prefix):
-            raise GeneratorError(f"invalid Gate 9 LLM manifest: {label} record is missing")
+            raise GeneratorError(
+                f"invalid Gate 9 LLM manifest: {label} record is missing"
+            )
         oid = record[len(prefix) :]
         if oid_pattern.fullmatch(oid) is None or oid == b"0" * oid_length:
             raise GeneratorError(f"invalid Gate 9 LLM manifest: {label} OID is invalid")
     if not records[4].startswith(b"count="):
         raise GeneratorError("invalid Gate 9 LLM manifest: count record is missing")
     try:
-        count = _canonical_decimal(records[4][len(b"count=") :].decode("ascii"), "count")
+        count = _canonical_decimal(
+            records[4][len(b"count=") :].decode("ascii"), "count"
+        )
     except UnicodeDecodeError as error:
-        raise GeneratorError("invalid Gate 9 LLM manifest: count is not ASCII") from error
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: count is not ASCII"
+        ) from error
     path_records = records[5:]
     if len(path_records) != count or count > MAX_TRACKED_PATHS:
-        raise GeneratorError("invalid Gate 9 LLM manifest: count does not match bounded paths")
-    if path_records != sorted(path_records) or len(set(path_records)) != len(path_records):
-        raise GeneratorError("invalid Gate 9 LLM manifest: paths are not byte-sorted and unique")
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: count does not match bounded paths"
+        )
+    if path_records != sorted(path_records) or len(set(path_records)) != len(
+        path_records
+    ):
+        raise GeneratorError(
+            "invalid Gate 9 LLM manifest: paths are not byte-sorted and unique"
+        )
     manifest_paths = [_manifest_path(record) for record in path_records]
     path_set = set(manifest_paths)
     for path_text in manifest_paths:
@@ -835,7 +1064,9 @@ def read_gate9_manifest(mode: str) -> list[str] | None:
         for part in path_text.split("/")[:-1]:
             prefix = f"{prefix}/{part}" if prefix else part
             if prefix in path_set:
-                raise GeneratorError("invalid Gate 9 LLM manifest: file/directory prefix collision")
+                raise GeneratorError(
+                    "invalid Gate 9 LLM manifest: file/directory prefix collision"
+                )
     return manifest_paths
 
 
@@ -865,7 +1096,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     modes.add_argument("--check", dest="mode", action="store_const", const="check")
     modes.add_argument("--write", dest="mode", action="store_const", const="write")
     modes.add_argument("--stdout", dest="mode", action="store_const", const="stdout")
-    parser.add_argument("--artifact", choices=("index", "coverage"), help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--artifact", choices=("index", "coverage"), help=argparse.SUPPRESS
+    )
     parser.set_defaults(mode="check")
     args = parser.parse_args(argv)
     if args.mode == "stdout" and args.artifact is None:

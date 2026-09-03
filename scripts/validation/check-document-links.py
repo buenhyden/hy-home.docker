@@ -69,9 +69,7 @@ def _paths(root: pathlib.Path) -> list[pathlib.Path]:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
-    parser.add_argument(
-        "--mode", required=True, choices=(*tuple(MODE_HANDLERS), "all")
-    )
+    parser.add_argument("--mode", required=True, choices=(*tuple(MODE_HANDLERS), "all"))
     return parser
 
 
@@ -80,11 +78,7 @@ def main(argv: list[str] | None = None) -> int:
     root = args.root.resolve()
     graph = build_document_graph(_paths(root), repo_root=root)
     modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
-    findings = tuple(
-        finding
-        for mode in modes
-        for finding in run_mode(mode, graph)
-    )
+    findings = tuple(finding for mode in modes for finding in run_mode(mode, graph))
     for finding in findings:
         print(
             f"{finding.code}: {finding.path}: {finding.message}",

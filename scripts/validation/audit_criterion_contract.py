@@ -51,7 +51,9 @@ NON_CRITERION_FILES = {
 }
 EXPECTED_PACK_FILES = NON_CRITERION_FILES | set(REPORT_FILES.values())
 EXPECTED_TOTAL = sum(
-    count for prefix_counts in REPORT_PREFIX_COUNTS.values() for count in prefix_counts.values()
+    count
+    for prefix_counts in REPORT_PREFIX_COUNTS.values()
+    for count in prefix_counts.values()
 )
 EXPECTED_PREFIX_COUNTS = collections.Counter(
     {
@@ -74,7 +76,13 @@ SCHEMA = (
     "confidence",
 )
 VALID_STATE_HEADERS = {"status", "implementation state"}
-VALID_STATES = {"Implemented", "Partial", "Missing", "Not Applicable", "Needs Revalidation"}
+VALID_STATES = {
+    "Implemented",
+    "Partial",
+    "Missing",
+    "Not Applicable",
+    "Needs Revalidation",
+}
 VALID_DISPOSITIONS = {"Retain", "Fix", "Improve", "Add", "Remove"}
 ID_RE = re.compile(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-[0-9]{2}")
 DEPTH_RE = re.compile(r"([0-4])(?:\b|\s)")
@@ -119,7 +127,9 @@ def split_row(line: str) -> list[str]:
         stripped = stripped[1:]
     if stripped.endswith("|") and not stripped.endswith(r"\|"):
         stripped = stripped[:-1]
-    return [cell.replace(r"\|", "|").strip() for cell in re.split(r"(?<!\\)\|", stripped)]
+    return [
+        cell.replace(r"\|", "|").strip() for cell in re.split(r"(?<!\\)\|", stripped)
+    ]
 
 
 def is_separator(cells: list[str]) -> bool:
@@ -148,7 +158,9 @@ def expected_ids(prefix: str, count: int) -> set[str]:
     return {f"{prefix}-{index:02d}" for index in range(1, count + 1)}
 
 
-def _parse_report(path: pathlib.Path, prefix_counts: dict[str, int]) -> tuple[list[CriterionRow], list[str]]:
+def _parse_report(
+    path: pathlib.Path, prefix_counts: dict[str, int]
+) -> tuple[list[CriterionRow], list[str]]:
     errors: list[str] = []
     rows: list[CriterionRow] = []
     lines = path.read_text(encoding="utf-8", errors="strict").splitlines()
@@ -178,7 +190,9 @@ def _parse_report(path: pathlib.Path, prefix_counts: dict[str, int]) -> tuple[li
         else:
             normalized_header[3] = "implementation state"
             if tuple(normalized_header) != SCHEMA:
-                errors.append(f"{path}: invalid criterion header order/schema: {' | '.join(header)}")
+                errors.append(
+                    f"{path}: invalid criterion header order/schema: {' | '.join(header)}"
+                )
 
         if index + 1 >= len(lines) or not lines[index + 1].lstrip().startswith("|"):
             errors.append(f"{path}: criterion table is missing its separator row")
@@ -193,7 +207,9 @@ def _parse_report(path: pathlib.Path, prefix_counts: dict[str, int]) -> tuple[li
             raw_line = lines[index]
             cells = split_row(raw_line)
             if is_separator(cells):
-                errors.append(f"{path}:{index + 1}: unexpected separator inside criterion rows")
+                errors.append(
+                    f"{path}:{index + 1}: unexpected separator inside criterion rows"
+                )
                 index += 1
                 continue
             if len(cells) != len(SCHEMA):
@@ -202,7 +218,11 @@ def _parse_report(path: pathlib.Path, prefix_counts: dict[str, int]) -> tuple[li
                 )
                 index += 1
                 continue
-            empty_fields = [SCHEMA[position] for position, cell in enumerate(cells) if not cell.strip()]
+            empty_fields = [
+                SCHEMA[position]
+                for position, cell in enumerate(cells)
+                if not cell.strip()
+            ]
             if empty_fields:
                 errors.append(
                     f"{path}:{index + 1}: empty criterion fields: {', '.join(empty_fields)}"
@@ -214,10 +234,16 @@ def _parse_report(path: pathlib.Path, prefix_counts: dict[str, int]) -> tuple[li
             raw_status = cells[3]
             depth = cells[4]
             disposition = cells[5]
-            prefix = criterion_prefix(criterion_id) if ID_RE.fullmatch(criterion_id) else "[invalid]"
+            prefix = (
+                criterion_prefix(criterion_id)
+                if ID_RE.fullmatch(criterion_id)
+                else "[invalid]"
+            )
 
             if not ID_RE.fullmatch(criterion_id):
-                errors.append(f"{path}:{index + 1}: invalid criterion ID: {criterion_id}")
+                errors.append(
+                    f"{path}:{index + 1}: invalid criterion ID: {criterion_id}"
+                )
             if prefix not in prefix_counts:
                 errors.append(
                     f"{path}:{index + 1}: criterion prefix {prefix} is not allowed in {path.name}"
@@ -288,9 +314,13 @@ def validate_pack(pack: pathlib.Path | str = DEFAULT_PACK) -> AuditCriterionCont
     per_report_counts: dict[str, int] = {}
 
     if not pack_path.is_dir():
-        raise AuditCriterionContractError([f"missing audit pack directory: {pack_path}"])
+        raise AuditCriterionContractError(
+            [f"missing audit pack directory: {pack_path}"]
+        )
 
-    actual_files = {path.relative_to(pack_path).as_posix() for path in pack_path.glob("*/README.md")}
+    actual_files = {
+        path.relative_to(pack_path).as_posix() for path in pack_path.glob("*/README.md")
+    }
     for missing in sorted(EXPECTED_PACK_FILES - actual_files):
         errors.append(f"{pack_path}: missing expected Markdown file: {missing}")
 
@@ -305,19 +335,27 @@ def validate_pack(pack: pathlib.Path | str = DEFAULT_PACK) -> AuditCriterionCont
         errors.extend(report_errors)
 
     id_counts = collections.Counter(row.criterion_id for row in all_rows)
-    duplicates = sorted(criterion_id for criterion_id, count in id_counts.items() if count > 1)
+    duplicates = sorted(
+        criterion_id for criterion_id, count in id_counts.items() if count > 1
+    )
     if duplicates:
         errors.append(f"duplicate criterion IDs: {', '.join(duplicates)}")
 
-    prefix_counts = collections.Counter(criterion_prefix(row.criterion_id) for row in all_rows)
+    prefix_counts = collections.Counter(
+        criterion_prefix(row.criterion_id) for row in all_rows
+    )
     for prefix in sorted(set(EXPECTED_PREFIX_COUNTS) | set(prefix_counts)):
         actual = prefix_counts.get(prefix, 0)
         expected = EXPECTED_PREFIX_COUNTS.get(prefix, 0)
         if actual != expected:
-            errors.append(f"criterion prefix {prefix}: row count {actual} does not equal expected {expected}")
+            errors.append(
+                f"criterion prefix {prefix}: row count {actual} does not equal expected {expected}"
+            )
 
     if len(all_rows) != EXPECTED_TOTAL:
-        errors.append(f"criterion row total {len(all_rows)} does not equal expected {EXPECTED_TOTAL}")
+        errors.append(
+            f"criterion row total {len(all_rows)} does not equal expected {EXPECTED_TOTAL}"
+        )
 
     if errors:
         raise AuditCriterionContractError(errors)

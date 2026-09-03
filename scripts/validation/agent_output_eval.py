@@ -23,9 +23,7 @@ FIXTURE_REFERENCE = pathlib.PurePosixPath(
 CATALOG_CONTRACT = pathlib.PurePosixPath(
     "docs/00.agent-governance/providers/registry.yaml"
 )
-SYNTHETIC_INPUT_ROOTS = (
-    pathlib.PurePosixPath("tests/fixtures/agent-output-eval"),
-)
+SYNTHETIC_INPUT_ROOTS = (pathlib.PurePosixPath("tests/fixtures/agent-output-eval"),)
 MAX_SYNTHETIC_INPUT_BYTES = 1_048_576
 MAX_EVIDENCE_FILES = 8
 MAX_COMBINED_INPUT_BYTES = 1_048_576
@@ -1926,14 +1924,18 @@ def check_fixtures(
     run_regression_check: bool = True,
 ) -> int:
     failures: list[str] = []
-    context_paths = sorted({path for fixture in FIXTURES.values() for path in fixture.required_context})
+    context_paths = sorted(
+        {path for fixture in FIXTURES.values() for path in fixture.required_context}
+    )
     if len(context_paths) > 30:
         failures.append("AOE-CONTEXT-LIMIT")
     else:
         total = 0
         for path in context_paths:
             try:
-                context = _read_confined_catalog(root, pathlib.PurePosixPath(path), max_bytes=4 * 1024 * 1024)
+                context = _read_confined_catalog(
+                    root, pathlib.PurePosixPath(path), max_bytes=4 * 1024 * 1024
+                )
                 total += len(context.encode("utf-8"))
                 if len(context.strip()) < 32 or total > 8 * 1024 * 1024:
                     raise ValueError("context is empty or exceeds its aggregate bound")

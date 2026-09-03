@@ -159,21 +159,30 @@ class SpecPackageTests(unittest.TestCase):
         self.assertEqual("SPEC-0001", package.spec.artifact_id)
         self.assertEqual("SPEC-0001-PLAN-0001", package.plan.artifact_id)
         self.assertEqual("SPEC-0001-TSK-0001", package.tasks[0].artifact_id)
-        self.assertEqual(("openapi.yaml",), tuple(path.name for path in package.contracts))
+        self.assertEqual(
+            ("openapi.yaml",), tuple(path.name for path in package.contracts)
+        )
         self.assertTrue(dataclasses.is_dataclass(package))
         with self.assertRaises(dataclasses.FrozenInstanceError):
             package.number = "9999"
 
-    def test_loader_rejects_symlink_non_regular_oversized_non_utf8_and_race(self) -> None:
+    def test_loader_rejects_symlink_non_regular_oversized_non_utf8_and_race(
+        self,
+    ) -> None:
         spec_packages = _spec_packages_module()
         for mutation in ("symlink", "non-regular", "oversized", "non-utf8"):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 stage = pathlib.Path(directory) / "docs/03.specs"
                 package = _write_package(stage)
                 target = package / "spec.md"
                 if mutation == "symlink":
                     source = stage.parent / "source.md"
-                    source.write_text(target.read_text(encoding="utf-8"), encoding="utf-8")
+                    source.write_text(
+                        target.read_text(encoding="utf-8"), encoding="utf-8"
+                    )
                     target.unlink()
                     target.symlink_to(source)
                 elif mutation == "non-regular":
@@ -195,18 +204,24 @@ class SpecPackageTests(unittest.TestCase):
             changed_values = list(opened)
             changed_values[6] += 1
             changed = type(opened)(changed_values)
-            with mock.patch.object(
-                spec_packages.os,
-                "fstat",
-                side_effect=(opened, changed),
-            ), self.assertRaisesRegex(spec_packages.SpecPackageError, "changed"):
+            with (
+                mock.patch.object(
+                    spec_packages.os,
+                    "fstat",
+                    side_effect=(opened, changed),
+                ),
+                self.assertRaisesRegex(spec_packages.SpecPackageError, "changed"),
+            ):
                 spec_packages.load_spec_packages(stage, registry=registry)
 
     def test_directory_parent_swaps_and_final_file_symlink_fail_closed(self) -> None:
         spec_packages = _spec_packages_module()
 
         for surface in ("stage", "package", "tasks", "contracts"):
-            with self.subTest(surface=surface), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(surface=surface),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 stage = root / "docs/03.specs"
                 package = _write_package(stage, task=surface == "tasks")
@@ -238,11 +253,16 @@ class SpecPackageTests(unittest.TestCase):
                         target.symlink_to(backup, target_is_directory=True)
                     return original_scandir(path)
 
-                with mock.patch.object(
-                    spec_packages.os,
-                    "scandir",
-                    side_effect=swap_on_scan,
-                ), self.assertRaisesRegex(spec_packages.SpecPackageError, "changed|symlink"):
+                with (
+                    mock.patch.object(
+                        spec_packages.os,
+                        "scandir",
+                        side_effect=swap_on_scan,
+                    ),
+                    self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "changed|symlink"
+                    ),
+                ):
                     spec_packages.load_spec_packages(stage)
 
         with tempfile.TemporaryDirectory() as directory:
@@ -263,22 +283,32 @@ class SpecPackageTests(unittest.TestCase):
                         spec_path.symlink_to(saved)
                 return result
 
-            with mock.patch.object(
-                spec_packages.os,
-                "stat",
-                side_effect=replace_after_open,
-            ), self.assertRaisesRegex(spec_packages.SpecPackageError, "changed|symlink"):
+            with (
+                mock.patch.object(
+                    spec_packages.os,
+                    "stat",
+                    side_effect=replace_after_open,
+                ),
+                self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "changed|symlink"
+                ),
+            ):
                 spec_packages.load_spec_packages(stage)
 
-    def test_enumeration_and_aggregate_budgets_fail_before_unbounded_loading(self) -> None:
+    def test_enumeration_and_aggregate_budgets_fail_before_unbounded_loading(
+        self,
+    ) -> None:
         spec_packages = _spec_packages_module()
         registry = spec_packages.load_registry()
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             package = _write_package(stage, plan=True)
             package.joinpath("README.md").write_text("# fixture\n", encoding="utf-8")
-            with mock.patch.object(spec_packages, "MAX_PACKAGE_ENTRIES", 2), self.assertRaisesRegex(
-                spec_packages.SpecPackageError, "too many entries"
+            with (
+                mock.patch.object(spec_packages, "MAX_PACKAGE_ENTRIES", 2),
+                self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "too many entries"
+                ),
             ):
                 spec_packages.load_spec_packages(stage, registry=registry)
 
@@ -286,8 +316,11 @@ class SpecPackageTests(unittest.TestCase):
             stage = pathlib.Path(directory) / "docs/03.specs"
             _write_package(stage, number="0001")
             _write_package(stage, number="0002")
-            with mock.patch.object(spec_packages, "MAX_TOTAL_ENTRIES", 3), self.assertRaisesRegex(
-                spec_packages.SpecPackageError, "aggregate entry"
+            with (
+                mock.patch.object(spec_packages, "MAX_TOTAL_ENTRIES", 3),
+                self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "aggregate entry"
+                ),
             ):
                 spec_packages.load_spec_packages(stage, registry=registry)
 
@@ -296,12 +329,19 @@ class SpecPackageTests(unittest.TestCase):
             first = _write_package(stage, number="0001") / "spec.md"
             second = _write_package(stage, number="0002") / "spec.md"
             aggregate_limit = first.stat().st_size + second.stat().st_size - 1
-            self.assertGreater(aggregate_limit, max(first.stat().st_size, second.stat().st_size))
-            with mock.patch.object(
-                spec_packages,
-                "MAX_TOTAL_FILE_BYTES",
-                aggregate_limit,
-            ), self.assertRaisesRegex(spec_packages.SpecPackageError, "aggregate byte"):
+            self.assertGreater(
+                aggregate_limit, max(first.stat().st_size, second.stat().st_size)
+            )
+            with (
+                mock.patch.object(
+                    spec_packages,
+                    "MAX_TOTAL_FILE_BYTES",
+                    aggregate_limit,
+                ),
+                self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "aggregate byte"
+                ),
+            ):
                 spec_packages.load_spec_packages(stage, registry=registry)
 
     def test_duplicate_and_mismatched_package_identities_fail_closed(self) -> None:
@@ -351,7 +391,9 @@ class SpecPackageTests(unittest.TestCase):
                 _document_text("task", "SPEC-0002-TSK-0001", ("SPEC-0001",)),
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(spec_packages.SpecPackageError, "SPEC-0001-TSK-0001"):
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError, "SPEC-0001-TSK-0001"
+            ):
                 spec_packages.load_spec_packages(stage)
 
     def test_dangling_plan_and_task_parents_fail_closed(self) -> None:
@@ -366,8 +408,14 @@ class SpecPackageTests(unittest.TestCase):
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "plan.*parent"):
                 spec_packages.load_spec_packages(stage)
 
-        for parents in (("SPEC-0001", "SPEC-0001-PLAN-0001"), ("SPEC-0001", "SPEC-0001-TSK-9999")):
-            with self.subTest(parents=parents), tempfile.TemporaryDirectory() as directory:
+        for parents in (
+            ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+            ("SPEC-0001", "SPEC-0001-TSK-9999"),
+        ):
+            with (
+                self.subTest(parents=parents),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 stage = pathlib.Path(directory) / "docs/03.specs"
                 _write_package(stage, task=True, task_parent_ids=parents)
                 with self.assertRaisesRegex(spec_packages.SpecPackageError, "parent"):
@@ -381,7 +429,10 @@ class SpecPackageTests(unittest.TestCase):
             ("completed", "active", "completed", "active Plan requires active Spec"),
         )
         for spec_status, plan_status, task_status, message in cases:
-            with self.subTest(message=message), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(message=message),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 stage = pathlib.Path(directory) / "docs/03.specs"
                 _write_package(
                     stage,
@@ -445,9 +496,16 @@ class SpecPackageTests(unittest.TestCase):
         spec_packages = _spec_packages_module()
         for plan_status, task_status, removed in (
             ("active", "active", "docs/03.specs/0001-example/plan.md"),
-            ("active", "active", "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"),
+            (
+                "active",
+                "active",
+                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
+            ),
         ):
-            with self.subTest(removed=removed), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(removed=removed),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 before_stage = root / "before/docs/03.specs"
                 after_stage = root / "after/docs/03.specs"
@@ -519,7 +577,9 @@ class SpecPackageTests(unittest.TestCase):
                 {("package-retirement-unrecorded", "docs/03.specs/0001-example")},
                 {
                     (finding.code, finding.path)
-                    for finding in spec_packages.validate_spec_package_lifecycle(before, after)
+                    for finding in spec_packages.validate_spec_package_lifecycle(
+                        before, after
+                    )
                 },
             )
             self.assertEqual(
@@ -533,7 +593,9 @@ class SpecPackageTests(unittest.TestCase):
                 ),
             )
 
-    def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(self) -> None:
+    def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(
+        self,
+    ) -> None:
         spec_packages = _spec_packages_module()
         source = ROOT.joinpath(
             "scripts/lib/document_governance/spec_packages.py"
@@ -589,7 +651,9 @@ class SpecPackageTests(unittest.TestCase):
         spec_packages = _spec_packages_module()
         real_popen = subprocess.Popen
 
-        def invoke(script: str, *, byte_limit: int, timeout: float = 1.0) -> tuple[bytes, list]:
+        def invoke(
+            script: str, *, byte_limit: int, timeout: float = 1.0
+        ) -> tuple[bytes, list]:
             processes = []
 
             def spawn(_command, **kwargs):
@@ -597,10 +661,13 @@ class SpecPackageTests(unittest.TestCase):
                 processes.append(process)
                 return process
 
-            with mock.patch.object(spec_packages.subprocess, "Popen", side_effect=spawn), mock.patch.object(
-                spec_packages,
-                "GIT_COMMAND_TIMEOUT_SECONDS",
-                timeout,
+            with (
+                mock.patch.object(spec_packages.subprocess, "Popen", side_effect=spawn),
+                mock.patch.object(
+                    spec_packages,
+                    "GIT_COMMAND_TIMEOUT_SECONDS",
+                    timeout,
+                ),
             ):
                 result = spec_packages._bounded_git(
                     ROOT,
@@ -630,15 +697,21 @@ class SpecPackageTests(unittest.TestCase):
                     processes.append(process)
                     return process
 
-                with mock.patch.object(
-                    spec_packages.subprocess,
-                    "Popen",
-                    side_effect=spawn,
-                ), mock.patch.object(
-                    spec_packages,
-                    "GIT_COMMAND_TIMEOUT_SECONDS",
-                    1.0,
-                ), self.assertRaisesRegex(spec_packages.SpecPackageError, "byte budget"):
+                with (
+                    mock.patch.object(
+                        spec_packages.subprocess,
+                        "Popen",
+                        side_effect=spawn,
+                    ),
+                    mock.patch.object(
+                        spec_packages,
+                        "GIT_COMMAND_TIMEOUT_SECONDS",
+                        1.0,
+                    ),
+                    self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "byte budget"
+                    ),
+                ):
                     spec_packages._bounded_git(ROOT, "fixture", byte_limit=64)
                 self.assertIsNotNone(processes[0].poll())
 
@@ -653,15 +726,19 @@ class SpecPackageTests(unittest.TestCase):
             return process
 
         started = time.monotonic()
-        with mock.patch.object(
-            spec_packages.subprocess,
-            "Popen",
-            side_effect=spawn_timeout,
-        ), mock.patch.object(
-            spec_packages,
-            "GIT_COMMAND_TIMEOUT_SECONDS",
-            0.05,
-        ), self.assertRaisesRegex(spec_packages.SpecPackageError, "deadline"):
+        with (
+            mock.patch.object(
+                spec_packages.subprocess,
+                "Popen",
+                side_effect=spawn_timeout,
+            ),
+            mock.patch.object(
+                spec_packages,
+                "GIT_COMMAND_TIMEOUT_SECONDS",
+                0.05,
+            ),
+            self.assertRaisesRegex(spec_packages.SpecPackageError, "deadline"),
+        ):
             spec_packages._bounded_git(ROOT, "fixture", byte_limit=64)
         self.assertLess(time.monotonic() - started, 2.0)
         self.assertIsNotNone(timed_processes[0].poll())
@@ -669,11 +746,7 @@ class SpecPackageTests(unittest.TestCase):
     def test_base_snapshot_rejects_file_at_limit_plus_one(self) -> None:
         spec_packages = _spec_packages_module()
         commit = b"a" * 40 + b"\n"
-        tree = (
-            b"100644 blob "
-            + b"b" * 40
-            + b"\tdocs/03.specs/0001-example/spec.md\0"
-        )
+        tree = b"100644 blob " + b"b" * 40 + b"\tdocs/03.specs/0001-example/spec.md\0"
         body = _document_text("spec", "SPEC-0001", ("REQ-0001",)).encode("utf-8")
         exact = body + b"\n" * (spec_packages.MAX_SPEC_FILE_BYTES - len(body))
         with mock.patch.object(
@@ -687,11 +760,14 @@ class SpecPackageTests(unittest.TestCase):
             )
         self.assertEqual(1, len(packages))
 
-        with mock.patch.object(
-            spec_packages,
-            "_bounded_git",
-            side_effect=(commit, tree, exact + b"\n"),
-        ), self.assertRaisesRegex(spec_packages.SpecPackageError, "byte limit"):
+        with (
+            mock.patch.object(
+                spec_packages,
+                "_bounded_git",
+                side_effect=(commit, tree, exact + b"\n"),
+            ),
+            self.assertRaisesRegex(spec_packages.SpecPackageError, "byte limit"),
+        ):
             spec_packages._load_base_spec_packages(
                 ROOT,
                 base_ref="HEAD",
@@ -716,14 +792,18 @@ class SpecPackageTests(unittest.TestCase):
             if path.is_dir() and (path / "spec.md").is_file()
         }
         self.assertEqual(expected_paths, {package.path for package in packages})
-        self.assertTrue(all(not package.path.name.startswith("spec-") for package in packages))
+        self.assertTrue(
+            all(not package.path.name.startswith("spec-") for package in packages)
+        )
         self.assertFalse((ROOT / "docs/04.execution").exists())
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/tests.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
 
-    def test_active_route_authority_uses_only_canonical_spec_execution_paths(self) -> None:
+    def test_active_route_authority_uses_only_canonical_spec_execution_paths(
+        self,
+    ) -> None:
         forbidden = (
             re.compile(r"docs/04\.execution(?:/|`|$)"),
             re.compile(r"docs/03\.specs/spec-[0-9]{4}-"),
@@ -735,14 +815,10 @@ class SpecPackageTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             for pattern in forbidden:
                 for match in pattern.finditer(text):
-                    violations.append(
-                        f"{path.relative_to(ROOT)}:{match.group(0)}"
-                    )
+                    violations.append(f"{path.relative_to(ROOT)}:{match.group(0)}")
         metadata_sources = (
             ROOT / "scripts/lib/document_governance/metadata_validator.py",
-            *sorted(
-                (ROOT / "scripts/lib/document_governance/metadata").glob("*.py")
-            ),
+            *sorted((ROOT / "scripts/lib/document_governance/metadata").glob("*.py")),
         )
         for stale in (
             "docs/03.specs/005-data-analytics",

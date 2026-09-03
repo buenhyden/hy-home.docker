@@ -45,7 +45,14 @@ repos:
         args: ['--severity=warning']
         files: \.sh$
 
-  # --- 3. Actions & CI Configuration ---
+  # --- 3. Python Formatting ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff-format
+        files: \.pyi?$
+
+  # --- 4. Actions & CI Configuration ---
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:
@@ -58,21 +65,21 @@ repos:
       - id: check-dependabot
         files: ^\.github/dependabot\.yml$
 
-  # --- 4. Infrastructure & Docker ---
+  # --- 5. Infrastructure & Docker ---
   - repo: https://github.com/hadolint/hadolint
     rev: v2.14.0
     hooks:
       - id: hadolint-docker
         files: (^|/)(Dockerfile|Dockerfile\.[^/]+)$
 
-  # --- 5. Security ---
+  # --- 6. Security ---
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0
     hooks:
       - id: gitleaks
         args: ['--config=.gitleaks.toml']
 
-  # --- 6. Local Project Specific ---
+  # --- 7. Local Project Specific ---
   - repo: local
     hooks:
       - id: public-validation-changed
@@ -91,7 +98,7 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
-  # --- 7. 커밋 및 메시지 (Release) ---
+  # --- 8. Commit & Message (Release) ---
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.15.1
     hooks:

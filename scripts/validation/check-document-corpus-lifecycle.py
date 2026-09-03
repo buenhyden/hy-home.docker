@@ -69,14 +69,10 @@ def _safe_diagnostic_path(value: object) -> str:
     return path
 
 
-
-
 def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
     ordered = sorted(set(findings))
     for finding in ordered:
-        if _diagnostic_payload_is_sensitive(
-            f"{finding.path}\n{finding.message}"
-        ):
+        if _diagnostic_payload_is_sensitive(f"{finding.path}\n{finding.message}"):
             raise _CorpusSafetyError(
                 _safe_diagnostic_path(finding.path),
                 "diagnostic-redaction-unsafe",

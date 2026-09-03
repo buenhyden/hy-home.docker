@@ -44,6 +44,7 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "graphify-out/",
 )
 
+
 def _requirement_high_water() -> int:
     """Stage 99 owns the corpus size; a test never pins it."""
 
@@ -185,10 +186,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             )
         ]
         self.assertEqual(
-            {
-                f"REQ-{number:04d}"
-                for number in range(1, _requirement_high_water() + 1)
-            },
+            {f"REQ-{number:04d}" for number in range(1, _requirement_high_water() + 1)},
             {metadata_for(path)["artifact_id"] for path in paths},
         )
         for path in paths:
@@ -204,8 +202,12 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 )
                 self.assertEqual("sdlc/requirement", metadata["type"])
                 self.assertEqual([], metadata["parent_ids"])
-                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
-                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(
+                    str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
+                self.assertRegex(
+                    str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
 
     def test_stage_02_description_filename_metadata_and_parent_agree_exactly(self):
         paths = [
@@ -234,8 +236,12 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertEqual(
                     [AD_TO_REQUIREMENT_PACKAGE[artifact_id]], metadata["parent_ids"]
                 )
-                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
-                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(
+                    str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
+                self.assertRegex(
+                    str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
 
     def test_stage_02_adr_filename_metadata_and_parent_agree_exactly(self):
         paths = [
@@ -246,7 +252,9 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 path,
             )
         ]
-        self.assertEqual(set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths})
+        self.assertEqual(
+            set(ADR_TO_AD), {metadata_for(path)["artifact_id"] for path in paths}
+        )
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
@@ -259,16 +267,19 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 self.assertEqual(artifact_id, metadata["artifact_id"])
                 self.assertEqual("sdlc/architecture-decision", metadata["type"])
                 self.assertEqual([ADR_TO_AD[artifact_id]], metadata["parent_ids"])
-                self.assertRegex(str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
-                self.assertRegex(str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+                self.assertRegex(
+                    str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
+                self.assertRegex(
+                    str(metadata["updated"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                )
 
     def test_description_readme_ledger_row_is_a_move_to_descriptions(self):
-        rows = {
-            row["legacy_path"]: row
-            for row in ledger_records()
-        }
+        rows = {row["legacy_path"]: row for row in ledger_records()}
         row = rows["docs/02.architecture/requirements/README.md"]
-        self.assertEqual("docs/02.architecture/descriptions/README.md", row["stable_path"])
+        self.assertEqual(
+            "docs/02.architecture/descriptions/README.md", row["stable_path"]
+        )
         self.assertEqual("move", row["action"])
         self.assertIsNone(row["artifact_id"])
 
@@ -281,8 +292,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 str(row["legacy_path"]).startswith("docs/01.requirements/")
                 or str(row["legacy_path"]).startswith("docs/02.architecture/")
             )
-            and architecture_identity(PurePosixPath(str(row["legacy_path"])))
-            is None
+            and architecture_identity(PurePosixPath(str(row["legacy_path"]))) is None
         }
         destinations = re.compile(
             r"!?\[[^\]\n]*\]\(([^\s)]+)|"
@@ -298,7 +308,9 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             if not source_path.is_file():
                 continue
             for match in destinations.finditer(source_path.read_text()):
-                destination = next(group for group in match.groups() if group is not None)
+                destination = next(
+                    group for group in match.groups() if group is not None
+                )
                 resolved = resolved_repo_path(source, destination)
                 if resolved in legacy_paths:
                     violations.append(f"{source}: {destination} -> {resolved}")
@@ -350,16 +362,12 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         self.assertEqual(
             ("2026", "2026-08-09-audit.md"),
             find_dated_identity_parts(
-                PurePosixPath(
-                    "docs/90.references/research/2026/2026-08-09-audit.md"
-                )
+                PurePosixPath("docs/90.references/research/2026/2026-08-09-audit.md")
             ),
         )
 
     def test_accepts_architecture_description_identity(self):
-        path = PurePosixPath(
-            "docs/02.architecture/descriptions/0001-gateway.md"
-        )
+        path = PurePosixPath("docs/02.architecture/descriptions/0001-gateway.md")
         self.assertEqual(
             ("architecture-description", "AD-0001"),
             architecture_identity(path),
@@ -382,9 +390,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
 
     def test_accepts_inherited_task_role_identity(self):
         findings = validate_stable_identity(
-            PurePosixPath(
-                "docs/03.specs/spec-0999-example-change/task.md"
-            ),
+            PurePosixPath("docs/03.specs/spec-0999-example-change/task.md"),
             {
                 "artifact_id": "task-0999-01",
                 "type": "task",
@@ -393,9 +399,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 "task": {
                     "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
                     "path_identity": "inherited",
-                    "parent_id_pattern": (
-                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
-                    ),
+                    "parent_id_pattern": (r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"),
                     "artifact_id_identity_pattern": (
                         r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
                     ),
@@ -407,9 +411,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
 
     def test_rejects_inherited_task_role_with_mismatched_identity(self):
         findings = validate_stable_identity(
-            PurePosixPath(
-                "docs/03.specs/spec-0999-example-change/task.md"
-            ),
+            PurePosixPath("docs/03.specs/spec-0999-example-change/task.md"),
             {
                 "artifact_id": "task-9999-01",
                 "type": "task",
@@ -418,9 +420,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 "task": {
                     "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
                     "path_identity": "inherited",
-                    "parent_id_pattern": (
-                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
-                    ),
+                    "parent_id_pattern": (r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"),
                     "artifact_id_identity_pattern": (
                         r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
                     ),
@@ -444,9 +444,7 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 "task": {
                     "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
                     "path_identity": "inherited",
-                    "parent_id_pattern": (
-                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
-                    ),
+                    "parent_id_pattern": (r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"),
                     "artifact_id_identity_pattern": (
                         r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
                     ),
@@ -523,6 +521,4 @@ class ActiveStageScopeTests(unittest.TestCase):
             ),
         ):
             with self.subTest(path=relative):
-                self.assertIn(
-                    marker, (ROOT / relative).read_text(encoding="utf-8")
-                )
+                self.assertIn(marker, (ROOT / relative).read_text(encoding="utf-8"))

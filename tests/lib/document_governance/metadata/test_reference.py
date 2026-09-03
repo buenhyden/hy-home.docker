@@ -45,6 +45,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
         ]
         self.assertEqual([], missing)
 
+
 class RepositoryContractIntegrationTests(unittest.TestCase):
     def fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
         root = pathlib.Path(directory)
@@ -88,8 +89,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_registry_contracts_parse_profile_and_section_contracts(self) -> None:
         relative_path = (
-            "docs/99.templates/templates/requirements/"
-            "requirement-package.template.md"
+            "docs/99.templates/templates/requirements/requirement-package.template.md"
         )
         cases = (
             (
@@ -117,7 +117,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"{expected}: {relative_path}", result.stdout)
 
-    def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(self) -> None:
+    def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(
+        self,
+    ) -> None:
         relative_path = (
             "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
@@ -169,7 +171,10 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             "enum": "[fixture-enum-leak, __PASSWORD_SECONDARY__]",
         }
         for keyword, value in values.items():
-            with self.subTest(keyword=keyword), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(keyword=keyword),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root, profiles = self.fixture(directory)
                 (root / relative_path).write_text(
                     "openapi: 3.1.0\n"
@@ -191,7 +196,10 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     result.stdout,
                 )
                 self.assertNotIn("fixture-", rendered)
-        with self.subTest(keyword="direct-list"), tempfile.TemporaryDirectory() as directory:
+        with (
+            self.subTest(keyword="direct-list"),
+            tempfile.TemporaryDirectory() as directory,
+        ):
             root, profiles = self.fixture(directory)
             (root / relative_path).write_text(
                 "openapi: 3.1.0\n"
@@ -208,7 +216,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             )
             self.assertNotIn("fixture-direct-list-leak", rendered)
 
-    def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(self) -> None:
+    def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(
+        self,
+    ) -> None:
         relative_path = (
             "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
@@ -241,7 +251,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 )
                 self.assertNotIn("fixture-", rendered)
 
-    def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(self) -> None:
+    def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(
+        self,
+    ) -> None:
         relative_path = (
             "docs/99.templates/templates/specs/contracts/openapi.template.yaml"
         )
@@ -420,9 +432,7 @@ class ReadmeSectionProfileTests(unittest.TestCase):
             if not required:
                 continue
             checked += 1
-            _, h2 = extract_markdown_headings(
-                path.read_text(encoding="utf-8")
-            )
+            _, h2 = extract_markdown_headings(path.read_text(encoding="utf-8"))
             for section in required:
                 with self.subTest(path=relative, section=section):
                     self.assertIn(f"## {section}", h2)
@@ -485,9 +495,7 @@ class ArchiveContractDiagnosticTests(unittest.TestCase):
     def _corrupted_root(self, directory: str) -> pathlib.Path:
         root = pathlib.Path(directory)
         shutil.copytree(ROOT / "docs/98.archive", root / "docs/98.archive")
-        victim = next(
-            (root / "docs/98.archive/tombstones").rglob("*.md")
-        )
+        victim = next((root / "docs/98.archive/tombstones").rglob("*.md"))
         victim.write_text(
             victim.read_text(encoding="utf-8")
             + "\n## Original Body\n\nA retired body copied into the pointer.\n",
@@ -547,7 +555,9 @@ class TemplateCatalogTests(unittest.TestCase):
             # omitted template has to exist for the omission to matter.
             copied = root / source
             copied.parent.mkdir(parents=True, exist_ok=True)
-            copied.write_text((ROOT / source).read_text(encoding="utf-8"), encoding="utf-8")
+            copied.write_text(
+                (ROOT / source).read_text(encoding="utf-8"), encoding="utf-8"
+            )
             findings = reference_module._template_catalog_findings(root, registry)
         self.assertIn(
             "template-catalog-unlisted", [finding.code for finding in findings]

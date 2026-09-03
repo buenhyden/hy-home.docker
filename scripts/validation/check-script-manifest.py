@@ -99,6 +99,8 @@ MACHINE_AUTHORITIES = frozenset(
 )
 MAX_OBSERVED_PATHS = 50_000
 MAX_OBSERVED_BYTES = 512 * 1_048_576
+
+
 @dataclass(frozen=True, order=True)
 class Finding:
     code: str
@@ -114,11 +116,15 @@ def _safe_repo_path(value: object) -> bool:
     if not isinstance(value, str) or not value:
         return False
     path = PurePosixPath(value)
-    return not path.is_absolute() and ".." not in path.parts and value == path.as_posix()
+    return (
+        not path.is_absolute() and ".." not in path.parts and value == path.as_posix()
+    )
 
 
 def _string_list(value: object) -> bool:
-    return isinstance(value, list) and all(isinstance(item, str) and item for item in value)
+    return isinstance(value, list) and all(
+        isinstance(item, str) and item for item in value
+    )
 
 
 def _generator_command_error(row: Mapping[str, Any]) -> str | None:
@@ -153,21 +159,37 @@ def validate_manifest_document(
     tracked = set(tracked_paths)
     findings: list[Finding] = []
     if not isinstance(document, dict):
-        return [_finding("document-invalid", "<manifest>", "document must be a mapping")]
+        return [
+            _finding("document-invalid", "<manifest>", "document must be a mapping")
+        ]
     if document.get("schema_version") != 1:
-        findings.append(_finding("schema-version-invalid", "<manifest>", "schema_version must equal 1"))
+        findings.append(
+            _finding(
+                "schema-version-invalid", "<manifest>", "schema_version must equal 1"
+            )
+        )
     if set(document) != {"schema_version", "files"}:
-        findings.append(_finding("document-fields-invalid", "<manifest>", "top-level fields must be schema_version and files"))
+        findings.append(
+            _finding(
+                "document-fields-invalid",
+                "<manifest>",
+                "top-level fields must be schema_version and files",
+            )
+        )
     rows = document.get("files")
     if not isinstance(rows, list):
         findings.append(_finding("files-invalid", "<manifest>", "files must be a list"))
         return sorted(findings)
 
     declared: list[str] = []
-    tracked_scripts = {path for path in tracked if path == "scripts" or path.startswith("scripts/")}
+    tracked_scripts = {
+        path for path in tracked if path == "scripts" or path.startswith("scripts/")
+    }
     for index, raw_row in enumerate(rows):
         if not isinstance(raw_row, dict):
-            findings.append(_finding("row-invalid", f"files[{index}]", "row must be a mapping"))
+            findings.append(
+                _finding("row-invalid", f"files[{index}]", "row must be a mapping")
+            )
             continue
         row: Mapping[str, Any] = raw_row
         path = row.get("path")
@@ -176,19 +198,33 @@ def validate_manifest_document(
         missing = REQUIRED_FIELDS - fields
         unknown = fields - REQUIRED_FIELDS - OPTIONAL_FIELDS
         if missing:
-            findings.append(_finding("fields-missing", label, f"missing fields: {sorted(missing)}"))
+            findings.append(
+                _finding("fields-missing", label, f"missing fields: {sorted(missing)}")
+            )
         if unknown:
-            findings.append(_finding("fields-unknown", label, f"unknown fields: {sorted(unknown)}"))
+            findings.append(
+                _finding("fields-unknown", label, f"unknown fields: {sorted(unknown)}")
+            )
         if not _safe_repo_path(path) or not str(path).startswith("scripts/"):
-            findings.append(_finding("path-invalid", label, "path must be below scripts/"))
+            findings.append(
+                _finding("path-invalid", label, "path must be below scripts/")
+            )
             continue
         path = str(path)
         declared.append(path)
         if path not in tracked:
-            findings.append(_finding("path-untracked", path, "manifest path is not tracked in the current tree"))
+            findings.append(
+                _finding(
+                    "path-untracked",
+                    path,
+                    "manifest path is not tracked in the current tree",
+                )
+            )
 
         if row.get("kind") not in KINDS:
-            findings.append(_finding("kind-invalid", path, f"invalid kind: {row.get('kind')!r}"))
+            findings.append(
+                _finding("kind-invalid", path, f"invalid kind: {row.get('kind')!r}")
+            )
         public_suites = row.get("public_suites")
         if row.get("kind") == "validator":
             if (
@@ -216,11 +252,15 @@ def validate_manifest_document(
                     )
                 )
             execution_contexts = row.get("execution_contexts")
-            if isinstance(execution_argv, list) and all(isinstance(item, str) for item in execution_argv):
+            if isinstance(execution_argv, list) and all(
+                isinstance(item, str) for item in execution_argv
+            ):
                 try:
                     validate_execution_argv(PurePosixPath(path), tuple(execution_argv))
                 except SuiteRegistryError as error:
-                    findings.append(_finding("validator-execution-argv-invalid", path, str(error)))
+                    findings.append(
+                        _finding("validator-execution-argv-invalid", path, str(error))
+                    )
             if (
                 not isinstance(execution_contexts, list)
                 or execution_contexts
@@ -262,18 +302,49 @@ def validate_manifest_document(
                 )
         authority = row.get("authority")
         if not _safe_repo_path(authority):
-            findings.append(_finding("authority-invalid", path, "authority must be a non-empty repository path"))
+            findings.append(
+                _finding(
+                    "authority-invalid",
+                    path,
+                    "authority must be a non-empty repository path",
+                )
+            )
         elif authority not in tracked:
-            findings.append(_finding("authority-untracked", path, f"authority is not tracked: {authority}"))
+            findings.append(
+                _finding(
+                    "authority-untracked",
+                    path,
+                    f"authority is not tracked: {authority}",
+                )
+            )
         if row.get("lifecycle") not in LIFECYCLES:
-            findings.append(_finding("lifecycle-invalid", path, f"invalid lifecycle: {row.get('lifecycle')!r}"))
+            findings.append(
+                _finding(
+                    "lifecycle-invalid",
+                    path,
+                    f"invalid lifecycle: {row.get('lifecycle')!r}",
+                )
+            )
         if row.get("mutation") not in MUTATIONS:
-            findings.append(_finding("mutation-invalid", path, f"invalid mutation: {row.get('mutation')!r}"))
+            findings.append(
+                _finding(
+                    "mutation-invalid",
+                    path,
+                    f"invalid mutation: {row.get('mutation')!r}",
+                )
+            )
         disposition = row.get("disposition")
         if disposition not in DISPOSITIONS:
-            findings.append(_finding("disposition-invalid", path, f"invalid disposition: {disposition!r}"))
+            findings.append(
+                _finding(
+                    "disposition-invalid", path, f"invalid disposition: {disposition!r}"
+                )
+            )
         if row.get("mutation") == "runtime" and disposition == "retain":
-            if not isinstance(authority, str) or RUNBOOK_AUTHORITY.fullmatch(authority) is None:
+            if (
+                not isinstance(authority, str)
+                or RUNBOOK_AUTHORITY.fullmatch(authority) is None
+            ):
                 findings.append(
                     _finding(
                         "runtime-authority-invalid",
@@ -282,26 +353,50 @@ def validate_manifest_document(
                     )
                 )
 
-        for field, empty_code in (("consumers", "consumer-missing"), ("tests", "tests-missing")):
+        for field, empty_code in (
+            ("consumers", "consumer-missing"),
+            ("tests", "tests-missing"),
+        ):
             values = row.get(field)
             if not _string_list(values):
-                findings.append(_finding(f"{field}-invalid", path, f"{field} must be a list of paths"))
+                findings.append(
+                    _finding(
+                        f"{field}-invalid", path, f"{field} must be a list of paths"
+                    )
+                )
                 continue
             assert isinstance(values, list)
             if values != sorted(set(values)):
-                findings.append(_finding(f"{field}-unsorted", path, f"{field} must be unique and sorted"))
+                findings.append(
+                    _finding(
+                        f"{field}-unsorted", path, f"{field} must be unique and sorted"
+                    )
+                )
             is_library = row.get("kind") == "library"
-            is_document_governance_library = isinstance(path, str) and path.startswith(
-                "scripts/lib/document_governance/"
-            ) and not path.endswith("/__init__.py")
+            is_document_governance_library = (
+                isinstance(path, str)
+                and path.startswith("scripts/lib/document_governance/")
+                and not path.endswith("/__init__.py")
+            )
             requires_evidence = (
                 field == "tests"
                 and row.get("kind") not in {"contract", "dependency-manifest"}
             ) or (field == "consumers" and not is_library)
             if disposition == "retain" and requires_evidence and not values:
-                findings.append(_finding(empty_code, path, f"retained {row.get('kind')} requires {field}"))
-            if disposition == "retain" and is_document_governance_library and field == "tests":
-                if not any(value.startswith("tests/lib/document_governance/") for value in values):
+                findings.append(
+                    _finding(
+                        empty_code, path, f"retained {row.get('kind')} requires {field}"
+                    )
+                )
+            if (
+                disposition == "retain"
+                and is_document_governance_library
+                and field == "tests"
+            ):
+                if not any(
+                    value.startswith("tests/lib/document_governance/")
+                    for value in values
+                ):
                     findings.append(
                         _finding(
                             "tests-mirror-missing",
@@ -311,9 +406,21 @@ def validate_manifest_document(
                     )
             for value in values:
                 if value not in tracked:
-                    findings.append(_finding(f"{field}-untracked", path, f"{field} path is not tracked: {value}"))
+                    findings.append(
+                        _finding(
+                            f"{field}-untracked",
+                            path,
+                            f"{field} path is not tracked: {value}",
+                        )
+                    )
                 if value.startswith(FORBIDDEN_EVIDENCE_PREFIXES):
-                    findings.append(_finding(f"{field}-historical", path, f"{field} cannot use historical/generated evidence: {value}"))
+                    findings.append(
+                        _finding(
+                            f"{field}-historical",
+                            path,
+                            f"{field} cannot use historical/generated evidence: {value}",
+                        )
+                    )
                 if field == "tests" and not (
                     value.startswith(APPROVED_TEST_PREFIXES)
                     and value.endswith((".py", ".sh"))
@@ -329,11 +436,29 @@ def validate_manifest_document(
         successor = row.get("successor")
         if disposition == "retain":
             if successor is not None:
-                findings.append(_finding("successor-invalid", path, "retained rows require successor: null"))
+                findings.append(
+                    _finding(
+                        "successor-invalid",
+                        path,
+                        "retained rows require successor: null",
+                    )
+                )
         elif not _safe_repo_path(successor):
-            findings.append(_finding("successor-missing", path, "non-retained rows require a successor path"))
+            findings.append(
+                _finding(
+                    "successor-missing",
+                    path,
+                    "non-retained rows require a successor path",
+                )
+            )
         elif successor not in tracked:
-            findings.append(_finding("successor-untracked", path, f"successor is not tracked: {successor}"))
+            findings.append(
+                _finding(
+                    "successor-untracked",
+                    path,
+                    f"successor is not tracked: {successor}",
+                )
+            )
 
         maintained_generator = (
             (
@@ -370,15 +495,35 @@ def validate_manifest_document(
                             )
                         )
         elif "check_command" in row or "outputs" in row:
-            findings.append(_finding("generated-fields-invalid", path, "generator fields are allowed only on retained check-write producers"))
+            findings.append(
+                _finding(
+                    "generated-fields-invalid",
+                    path,
+                    "generator fields are allowed only on retained check-write producers",
+                )
+            )
 
-    duplicates = sorted(path for path, count in __import__("collections").Counter(declared).items() if count > 1)
+    duplicates = sorted(
+        path
+        for path, count in __import__("collections").Counter(declared).items()
+        if count > 1
+    )
     for path in duplicates:
-        findings.append(_finding("path-duplicate", path, "manifest path appears more than once"))
+        findings.append(
+            _finding("path-duplicate", path, "manifest path appears more than once")
+        )
     if declared != sorted(declared):
-        findings.append(_finding("paths-unsorted", "<manifest>", "manifest rows must be sorted by path"))
+        findings.append(
+            _finding(
+                "paths-unsorted", "<manifest>", "manifest rows must be sorted by path"
+            )
+        )
     for path in sorted(tracked_scripts - set(declared)):
-        findings.append(_finding("manifest-record-missing", path, "tracked script has no manifest row"))
+        findings.append(
+            _finding(
+                "manifest-record-missing", path, "tracked script has no manifest row"
+            )
+        )
     return sorted(set(findings))
 
 
@@ -390,7 +535,11 @@ def _git_paths(repo_root: Path) -> set[str]:
         check=True,
         capture_output=True,
     )
-    paths = {raw.decode("utf-8", "surrogateescape") for raw in result.stdout.split(b"\0") if raw}
+    paths = {
+        raw.decode("utf-8", "surrogateescape")
+        for raw in result.stdout.split(b"\0")
+        if raw
+    }
     for relative in REQUIRED_LOCAL_PATHS:
         candidate = repo_root / relative
         if candidate.is_file() and not candidate.is_symlink():
@@ -514,8 +663,10 @@ def _python_proves_use(text: str, target: str) -> bool:
             and len(node.args) == 1
             and not node.keywords
             and (
-                isinstance(node.func, ast.Name) and node.func.id in {"Path", "str"}
-                or isinstance(node.func, ast.Attribute) and node.func.attr == "Path"
+                isinstance(node.func, ast.Name)
+                and node.func.id in {"Path", "str"}
+                or isinstance(node.func, ast.Attribute)
+                and node.func.attr == "Path"
             )
         ):
             return static_path(node.args[0])
@@ -556,15 +707,12 @@ def _python_proves_use(text: str, target: str) -> bool:
         ):
             return True
 
-    def contains_exact_target(
-        node: ast.AST, names: set[tuple[ast.AST, str]]
-    ) -> bool:
+    def contains_exact_target(node: ast.AST, names: set[tuple[ast.AST, str]]) -> bool:
         return any(
             static_path(child) == target
             or isinstance(child, ast.Name)
             and (
-                (node_scopes[id(child)], child.id) in names
-                or (tree, child.id) in names
+                (node_scopes[id(child)], child.id) in names or (tree, child.id) in names
             )
             for child in ast.walk(node)
         )
@@ -635,12 +783,16 @@ def _python_proves_use(text: str, target: str) -> bool:
             )
         ):
             return True
-        if len(node.args) >= 2 and contains_exact_target(node.args[1], target_names) and (
-            isinstance(node.func, ast.Name)
-            and visible(spec_calls, scope, node.func.id)
-            or isinstance(node.func, ast.Attribute)
-            and call_name == "spec_from_file_location"
-            and visible(importlib_modules, scope, root_name)
+        if (
+            len(node.args) >= 2
+            and contains_exact_target(node.args[1], target_names)
+            and (
+                isinstance(node.func, ast.Name)
+                and visible(spec_calls, scope, node.func.id)
+                or isinstance(node.func, ast.Attribute)
+                and call_name == "spec_from_file_location"
+                and visible(importlib_modules, scope, root_name)
+            )
         ):
             return True
         if (
@@ -696,9 +848,7 @@ def _machine_config_proves_use(
         try:
             if isinstance(document, dict):
                 for key, value in document.items():
-                    if _machine_config_proves_use(
-                        value, target, str(key), active
-                    ):
+                    if _machine_config_proves_use(value, target, str(key), active):
                         return True
             else:
                 for value in document:
@@ -717,7 +867,9 @@ def _machine_config_proves_use(
     )
 
 
-def _reference_proves_use(reference: str, text: str, target: str, *, is_test: bool) -> bool:
+def _reference_proves_use(
+    reference: str, text: str, target: str, *, is_test: bool
+) -> bool:
     basename = PurePosixPath(target).name
     if reference.endswith(".py"):
         return _python_proves_use(text, target)
@@ -777,7 +929,11 @@ def _semantic_findings(repo_root: Path, document: object) -> list[Finding]:
                 try:
                     text = ref_path.read_text(encoding="utf-8")
                 except (OSError, UnicodeError):
-                    findings.append(_finding(f"{field}-unreadable", path, f"cannot read {reference}"))
+                    findings.append(
+                        _finding(
+                            f"{field}-unreadable", path, f"cannot read {reference}"
+                        )
+                    )
                     continue
                 try:
                     proven = _reference_proves_use(
@@ -830,7 +986,9 @@ def _declared_path_findings(repo_root: Path, document: object) -> list[Finding]:
         if isinstance(row.get("outputs"), list):
             declared.extend(value for value in row["outputs"] if isinstance(value, str))
         for relative in declared:
-            if not _safe_repo_path(relative) or not _repo_regular_path(repo_root, relative):
+            if not _safe_repo_path(relative) or not _repo_regular_path(
+                repo_root, relative
+            ):
                 findings.append(
                     _finding(
                         "declared-path-invalid",
@@ -848,10 +1006,14 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
     for row in document["files"]:
         if not isinstance(row, dict) or not isinstance(row.get("path"), str):
             continue
-        if not (row.get("mutation") == "runtime" and row.get("disposition") == "retain"):
+        if not (
+            row.get("mutation") == "runtime" and row.get("disposition") == "retain"
+        ):
             continue
         authority = row.get("authority")
-        if not isinstance(authority, str) or not _repo_regular_path(repo_root, authority):
+        if not isinstance(authority, str) or not _repo_regular_path(
+            repo_root, authority
+        ):
             continue
         text = (repo_root / authority).read_text(encoding="utf-8")
         metadata: object = {}
@@ -860,10 +1022,26 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
                 metadata = yaml.safe_load(text.split("---\n", 2)[1]) or {}
             except yaml.YAMLError:
                 metadata = {}
-        if not isinstance(metadata, dict) or metadata.get("status") != "active" or metadata.get("type") != "operation/runbook":
-            findings.append(_finding("runtime-authority-inactive", row["path"], f"{authority} is not a current typed Runbook"))
+        if (
+            not isinstance(metadata, dict)
+            or metadata.get("status") != "active"
+            or metadata.get("type") != "operation/runbook"
+        ):
+            findings.append(
+                _finding(
+                    "runtime-authority-inactive",
+                    row["path"],
+                    f"{authority} is not a current typed Runbook",
+                )
+            )
         if not _reference_proves_use(authority, text, row["path"], is_test=False):
-            findings.append(_finding("runtime-authority-unproven", row["path"], f"{authority} does not semantically govern the runtime script"))
+            findings.append(
+                _finding(
+                    "runtime-authority-unproven",
+                    row["path"],
+                    f"{authority} does not semantically govern the runtime script",
+                )
+            )
     return findings
 
 
@@ -872,7 +1050,9 @@ def check_manifest(repo_root: Path, manifest_path: Path) -> list[Finding]:
 
     document = _load_manifest(manifest_path)
     if isinstance(document, dict) and "_load_error" in document:
-        return [_finding("manifest-unreadable", manifest_path, str(document["_load_error"]))]
+        return [
+            _finding("manifest-unreadable", manifest_path, str(document["_load_error"]))
+        ]
     tracked = _git_paths(repo_root)
     return sorted(
         set(
@@ -906,16 +1086,22 @@ def _git_visible_state(repo_root: Path) -> tuple[str, tuple[tuple[str, str], ...
         relative = raw.decode("utf-8", "surrogateescape")
         path = repo_root / relative
         if path.is_file() and not path.is_symlink():
-            fingerprints.append((relative, hashlib.sha256(path.read_bytes()).hexdigest()))
+            fingerprints.append(
+                (relative, hashlib.sha256(path.read_bytes()).hexdigest())
+            )
     return hashlib.sha256(diff).hexdigest(), tuple(fingerprints)
 
 
-def _declared_output_state(repo_root: Path, outputs: Sequence[str]) -> tuple[tuple[str, str], ...]:
+def _declared_output_state(
+    repo_root: Path, outputs: Sequence[str]
+) -> tuple[tuple[str, str], ...]:
     state: list[tuple[str, str]] = []
     for relative in sorted(outputs):
         if not _repo_regular_path(repo_root, relative):
             raise ValueError(f"unsafe declared output: {relative}")
-        state.append((relative, hashlib.sha256((repo_root / relative).read_bytes()).hexdigest()))
+        state.append(
+            (relative, hashlib.sha256((repo_root / relative).read_bytes()).hexdigest())
+        )
     return tuple(state)
 
 
@@ -982,7 +1168,9 @@ def _bounded_repository_state(
             elif path.is_file():
                 observed_bytes += stat.st_size
                 if observed_bytes > MAX_OBSERVED_BYTES:
-                    raise RuntimeError("bounded repository snapshot exceeds safe byte limit")
+                    raise RuntimeError(
+                        "bounded repository snapshot exceeds safe byte limit"
+                    )
                 digest = hashlib.sha256()
                 with path.open("rb") as handle:
                     for chunk in iter(lambda: handle.read(1_048_576), b""):
@@ -1060,14 +1248,23 @@ def check_generated(repo_root: Path, manifest_path: Path) -> list[Finding]:
             )
         if result.returncode != 0:
             detail = (result.stderr or result.stdout).strip().splitlines()
-            findings.append(_finding("generated-check-failed", row["path"], detail[-1] if detail else f"exit {result.returncode}"))
+            findings.append(
+                _finding(
+                    "generated-check-failed",
+                    row["path"],
+                    detail[-1] if detail else f"exit {result.returncode}",
+                )
+            )
     return sorted(set(findings))
 
 
 def _print_findings(findings: Sequence[Finding]) -> int:
     if findings:
         for finding in findings:
-            print(f"FAIL [{finding.code}] {finding.path}: {finding.message}", file=sys.stderr)
+            print(
+                f"FAIL [{finding.code}] {finding.path}: {finding.message}",
+                file=sys.stderr,
+            )
         print(f"script_manifest_failures={len(findings)}", file=sys.stderr)
         return 1
     print("PASS: script manifest is valid")
@@ -1079,9 +1276,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--manifest", type=Path, default=Path("scripts/manifest.yaml"))
     parser.add_argument("--check-generated", action="store_true")
     args = parser.parse_args(argv)
-    repo_root = Path(subprocess.run(["git", "rev-parse", "--show-toplevel"], text=True, check=True, capture_output=True).stdout.strip())
-    manifest_path = args.manifest if args.manifest.is_absolute() else repo_root / args.manifest
-    findings = check_generated(repo_root, manifest_path) if args.check_generated else check_manifest(repo_root, manifest_path)
+    repo_root = Path(
+        subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            text=True,
+            check=True,
+            capture_output=True,
+        ).stdout.strip()
+    )
+    manifest_path = (
+        args.manifest if args.manifest.is_absolute() else repo_root / args.manifest
+    )
+    findings = (
+        check_generated(repo_root, manifest_path)
+        if args.check_generated
+        else check_manifest(repo_root, manifest_path)
+    )
     return _print_findings(findings)
 
 

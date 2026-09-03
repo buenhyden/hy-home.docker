@@ -135,9 +135,7 @@ class RequirementPackageTests(unittest.TestCase):
             "legacy-package": _package_text().replace(
                 "REQ-0001-FR-0001", "PRD-0001-R0001", 1
             ),
-            "bare-child": _package_text().replace(
-                "REQ-0001-FR-0001", "FR-0001", 1
-            ),
+            "bare-child": _package_text().replace("REQ-0001-FR-0001", "FR-0001", 1),
             "retired-interface": _package_text().replace(
                 "REQ-0001-FR-0001", "interface-0001", 1
             ),
@@ -221,9 +219,7 @@ class RequirementPackageTests(unittest.TestCase):
             1,
         )
         with tempfile.TemporaryDirectory() as directory:
-            path = self._write_package(
-                pathlib.Path(directory), text=incomplete
-            )
+            path = self._write_package(pathlib.Path(directory), text=incomplete)
             with self.assertRaisesRegex(
                 requirements.RequirementPackageError,
                 "current_issued|declarations|allocation",
@@ -253,9 +249,7 @@ class RequirementPackageTests(unittest.TestCase):
         identity_spaces["requirement"] = dataclasses.replace(
             requirement, child_spaces=child_spaces
         )
-        paired_registry = dataclasses.replace(
-            registry, identity_spaces=identity_spaces
-        )
+        paired_registry = dataclasses.replace(registry, identity_spaces=identity_spaces)
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             package_path = self._write_package(
@@ -275,9 +269,9 @@ class RequirementPackageTests(unittest.TestCase):
         raw_registry = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )
-        allocation = raw_registry["identity_spaces"]["requirement"][
-            "child_spaces"
-        ]["REQ-0001.FR"]
+        allocation = raw_registry["identity_spaces"]["requirement"]["child_spaces"][
+            "REQ-0001.FR"
+        ]
         allocation.update(
             {
                 "high_water": 5,
@@ -321,9 +315,9 @@ class RequirementPackageTests(unittest.TestCase):
         raw_registry = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )
-        allocation = raw_registry["identity_spaces"]["requirement"][
-            "child_spaces"
-        ]["REQ-0003.FR"]
+        allocation = raw_registry["identity_spaces"]["requirement"]["child_spaces"][
+            "REQ-0003.FR"
+        ]
         allocation["reserved_history"].remove(5)
         allocation["current_issued"].append(5)
         source = ROOT / "docs/01.requirements/0003-security.md"
@@ -361,9 +355,7 @@ class RequirementPackageTests(unittest.TestCase):
                 if source_path.name == "README.md":
                     continue
                 shutil.copyfile(source_path, stage / source_path.name)
-            (stage / "0003-security.md").write_text(
-                reintroduced, encoding="utf-8"
-            )
+            (stage / "0003-security.md").write_text(reintroduced, encoding="utf-8")
             with self.subTest(surface="stage-load"):
                 with self.assertRaisesRegex(
                     ValueError, "history|reserved|baseline|transition"
@@ -548,22 +540,21 @@ class RequirementPackageTests(unittest.TestCase):
                 "```graphql\ntype Subscription @auth { events: String! }\n```"
             ),
             "graphql-next-line-brace": (
-                "```graphql\nextend type Mutation @auth\n"
-                "{\n  rotate: Boolean!\n}\n```"
+                "```graphql\nextend type Mutation @auth\n{\n  rotate: Boolean!\n}\n```"
             ),
             "graphql-blank-multiline-directive": (
                 "```graphql\nextend\n\n type\n Mutation\n"
                 "@auth(\n role: ADMIN\n)\n\n{\n rotate: Boolean!\n}\n```"
             ),
             "graphql-schema-multiline-directive": (
-                "```graphql\nschema\n@link(\n url: \"urn:fixture\"\n)\n\n"
+                '```graphql\nschema\n@link(\n url: "urn:fixture"\n)\n\n'
                 "{\n query: Query\n}\n```"
             ),
             "graphql-comments-and-nested-directive-input": (
                 "```graphql\nextend # extension comment\n"
                 "type # kind comment\nMutation\n"
                 "@auth(rule: { any: [{ nested: true }] }, "
-                "note: \"parenthesis ( stays literal )\")\n"
+                'note: "parenthesis ( stays literal )")\n'
                 "# brace comment\n{\n rotate: Boolean!\n}\n```"
             ),
             "proto2-indented": '    syntax = "proto2";\n    message Health {}',
@@ -585,7 +576,7 @@ class RequirementPackageTests(unittest.TestCase):
             "proto-service-option-aggregate-before-rpc": (
                 "```proto\nservice Health {\n"
                 " option (google.api.default_host) = {\n"
-                "  value: { nested: \"fixture } literal\" }\n };\n"
+                '  value: { nested: "fixture } literal" }\n };\n'
                 " rpc Check (google.protobuf.Empty) "
                 "returns (acme.v1.Health);\n}\n```"
             ),
@@ -641,7 +632,8 @@ class RequirementPackageTests(unittest.TestCase):
                 requirements.os, "read", side_effect=(valid_prefix, b"")
             ):
                 with self.assertRaisesRegex(
-                    requirements.RequirementPackageError, "short read|changed while reading"
+                    requirements.RequirementPackageError,
+                    "short read|changed while reading",
                 ):
                     requirements.parse_requirement_package(path, registry=registry)
 
@@ -678,9 +670,7 @@ class RequirementPackageTests(unittest.TestCase):
     def test_current_specs_reference_declared_requirement_child_ids(self) -> None:
         requirements = _requirements_module()
         packages = requirements.load_requirement_packages(ROOT / "docs/01.requirements")
-        declared = {
-            item.identity for package in packages for item in package.items
-        }
+        declared = {item.identity for package in packages for item in package.items}
         spec_packages = importlib.import_module(
             "scripts.lib.document_governance.spec_packages"
         ).load_spec_packages(ROOT / "docs/03.specs")

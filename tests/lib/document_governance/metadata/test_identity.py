@@ -37,13 +37,17 @@ class CheckerCliTests(unittest.TestCase):
             root = pathlib.Path(directory)
             path = root / "docs/03.specs/spec-0123-example/spec.md"
             path.parent.mkdir(parents=True)
-            path.write_text("---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8")
+            path.write_text(
+                "---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8"
+            )
             result = run_checker(root, "report")
             self.assertEqual(2, result.returncode)
             self.assertIn("frontmatter-duplicate-key", result.stdout)
             self.assertIn("| duplicate-key |", result.stdout)
 
-    def test_report_returns_nonzero_for_parser_failure_but_renders_inventory(self) -> None:
+    def test_report_returns_nonzero_for_parser_failure_but_renders_inventory(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             path = root / "docs/03.specs/spec-0123-example/spec.md"
@@ -95,10 +99,14 @@ class CheckerCliTests(unittest.TestCase):
             self.assertNotEqual(0, stale.returncode)
             self.assertIn("metadata inventory is stale", stale.stderr)
 
-    def test_active_mode_is_available_but_semantic_gate_is_not_auto_invoked(self) -> None:
+    def test_active_mode_is_available_but_semantic_gate_is_not_auto_invoked(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/spec-0123-example/spec.md", {"status": "active"})
+            write_doc(
+                root / "docs/03.specs/spec-0123-example/spec.md", {"status": "active"}
+            )
             result = run_checker(root, "check-active")
             self.assertNotEqual(0, result.returncode)
             self.assertIn("metadata check-active", result.stdout)
@@ -189,9 +197,17 @@ class CheckerCliTests(unittest.TestCase):
         records = [parent, child]
         manifest = metadata.build_manifest(records)
         findings = {
-            record.path.as_posix(): metadata.validate_record(record, profiles, manifest) for record in records
+            record.path.as_posix(): metadata.validate_record(record, profiles, manifest)
+            for record in records
         }
         report = metadata.render_report(records, profiles, findings)
-        child_row = next(line for line in report.splitlines() if "docs/03.specs/spec-0123-child/spec.md" in line)
-        self.assertIn("| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |", child_row)
+        child_row = next(
+            line
+            for line in report.splitlines()
+            if "docs/03.specs/spec-0123-child/spec.md" in line
+        )
+        self.assertIn(
+            "| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |",
+            child_row,
+        )
         self.assertIn("available:active->completed; valid", child_row)

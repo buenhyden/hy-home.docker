@@ -33,19 +33,24 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
 
     def _run_default(self) -> str:
         output = io.StringIO()
-        with mock.patch.object(
-            lifecycle,
-            "_spec_package_lifecycle_findings",
-            return_value=[SPEC_FINDING],
-        ), mock.patch.object(
-            lifecycle,
-            "_historical_promoted_findings",
-            return_value=[PROMOTED_FINDING],
-        ), mock.patch.object(
-            lifecycle,
-            "run_recovery",
-            side_effect=lambda root: print(f"{RECOVERY_FINDING.code}: stub") or 1,
-        ), contextlib.redirect_stdout(output):
+        with (
+            mock.patch.object(
+                lifecycle,
+                "_spec_package_lifecycle_findings",
+                return_value=[SPEC_FINDING],
+            ),
+            mock.patch.object(
+                lifecycle,
+                "_historical_promoted_findings",
+                return_value=[PROMOTED_FINDING],
+            ),
+            mock.patch.object(
+                lifecycle,
+                "run_recovery",
+                side_effect=lambda root: print(f"{RECOVERY_FINDING.code}: stub") or 1,
+            ),
+            contextlib.redirect_stdout(output),
+        ):
             code = lifecycle.main([])
         self.assertNotEqual(0, code, "seeded findings must fail the route")
         return output.getvalue()
@@ -63,9 +68,7 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
         )
         parser = lifecycle._parser()
         options = {
-            option
-            for action in parser._actions
-            for option in action.option_strings
+            option for action in parser._actions for option in action.option_strings
         }
         for removed in ("--mode", "--wave", "--manifest", "--exceptions", "--output"):
             with self.subTest(option=removed):

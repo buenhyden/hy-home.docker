@@ -33,7 +33,9 @@ def current_profiles() -> dict[str, object]:
     return metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
 
 
-def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: str = "# Fixture\n") -> None:
+def write_doc(
+    path: pathlib.Path, frontmatter: dict[str, object] | None, body: str = "# Fixture\n"
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if frontmatter is None:
         path.write_text(body, encoding="utf-8")
@@ -76,6 +78,7 @@ def init_git(root: pathlib.Path) -> None:
     registry.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(REGISTRY, registry)
 
+
 def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
     """Copy the current Registry, schemas, and registered template sources."""
 
@@ -89,10 +92,7 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         # The catalog is a registered contract surface, so a fixture that holds
         # template sources without it is not a valid Stage 99 tree.
         pathlib.Path(values["template_catalog"]),
-        *(
-            pathlib.Path(role["source"])
-            for role in values["template_roles"].values()
-        ),
+        *(pathlib.Path(role["source"]) for role in values["template_roles"].values()),
     }
     for relative_path in sorted(relative_paths):
         target = root / relative_path
@@ -115,6 +115,7 @@ def body_with_headings(*headings: str) -> str:
     sections = "\n\n".join(f"{heading}\n\nFixture content." for heading in headings)
     return f"# Fixture\n\n{sections}\n"
 
+
 REQUIREMENT_TARGET_BODY = body_with_headings(
     "## Problem and Goals",
     "## Stakeholders and User Needs",
@@ -134,6 +135,7 @@ POLICY_TARGET_BODY = body_with_headings(
     "## Verification",
     "## Traceability",
 )
+
 
 def _materialised_profiles() -> pathlib.Path:
     """Return the sole current document-profile authority."""

@@ -303,9 +303,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             ),
         )
         repository_integrity = next(
-            suite
-            for suite in registry.suites
-            if suite.name == "repository-integrity"
+            suite for suite in registry.suites if suite.name == "repository-integrity"
         )
         self.assertEqual(
             1,
@@ -491,9 +489,7 @@ class TechStackVersionContractTests(unittest.TestCase):
                 "      - registry.example.test/team/app:1\n"
             ),
             "explicit-list-image": (
-                "services:\n"
-                "  target:\n"
-                "    image: [registry.example.test/team/app:1]\n"
+                "services:\n  target:\n    image: [registry.example.test/team/app:1]\n"
             ),
             "non-scalar-image": "services:\n  target:\n    image: null\n",
             "unsafe-image": (
@@ -507,14 +503,10 @@ class TechStackVersionContractTests(unittest.TestCase):
                 f'    image: "registry.example.test/team/app:1$({payload_marker})"\n'
             ),
             "unterminated-single-quote": (
-                "services:\n"
-                "  target:\n"
-                "    image: 'registry.example.test/team/app:1\n"
+                "services:\n  target:\n    image: 'registry.example.test/team/app:1\n"
             ),
             "unterminated-double-quote": (
-                "services:\n"
-                "  target:\n"
-                '    image: "registry.example.test/team/app:1\n'
+                'services:\n  target:\n    image: "registry.example.test/team/app:1\n'
             ),
         }
         for label, compose_text in invalid_fixtures.items():
@@ -538,11 +530,7 @@ class TechStackVersionContractTests(unittest.TestCase):
             temporary_root = pathlib.Path(temporary_directory)
             regular_path = temporary_root / "regular.yml"
             regular_path.write_text(
-                (
-                    "services:\n"
-                    "  target:\n"
-                    "    image: registry.example.test/team/app:1\n"
-                ),
+                ("services:\n  target:\n    image: registry.example.test/team/app:1\n"),
                 encoding="utf-8",
             )
             symlink_path = temporary_root / "symlink.yml"

@@ -43,9 +43,12 @@ class SharedProvenanceTests(unittest.TestCase):
                     f"/proc/self/fd/{closed}",
                     f"/proc/self/fd/{other_root}",
                 ):
-                    with self.subTest(override=override), mock.patch.dict(
-                        os.environ,
-                        {"HYHOME_CI_GATE_ROOT": override},
+                    with (
+                        self.subTest(override=override),
+                        mock.patch.dict(
+                            os.environ,
+                            {"HYHOME_CI_GATE_ROOT": override},
+                        ),
                     ):
                         result = run(
                             sys.executable,
@@ -86,8 +89,7 @@ class SharedProvenanceTests(unittest.TestCase):
     def test_lifecycle_uses_shared_git_provenance(self) -> None:
         entrypoint = SCRIPT.read_text(encoding="utf-8")
         contract = (
-            ROOT
-            / "scripts/lib/document_governance/lifecycle/contract.py"
+            ROOT / "scripts/lib/document_governance/lifecycle/contract.py"
         ).read_text(encoding="utf-8")
         self.assertIn("scripts.lib.document_governance.git_provenance", contract)
         self.assertNotIn("METADATA_SCRIPT", entrypoint)

@@ -410,9 +410,7 @@ def _tool_from_registry(repo_root: pathlib.Path | str) -> dict[str, str]:
                 {
                     "image_ref": f"{row.get('image')}@{row.get('digest')}",
                     "repo_digest": row.get("repo_digest"),
-                    "target_descriptor_digest": row.get(
-                        "target_descriptor_digest"
-                    ),
+                    "target_descriptor_digest": row.get("target_descriptor_digest"),
                     "config_id": row.get("config_id"),
                 }
             )

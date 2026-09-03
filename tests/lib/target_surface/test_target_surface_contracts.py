@@ -19,13 +19,13 @@ LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.p
 REGISTRY = ROOT / "docs/99.templates/registry.json"
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
 TARGET_MANIFEST = (
-    ROOT
-    / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
+    ROOT / "docs/90.references/data/0069-target-surface-convergence/data.yaml"
 )
-TARGET_SUMMARY = ROOT / "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
+TARGET_SUMMARY = (
+    ROOT / "docs/90.references/data/0068-target-surface-convergence-summary/README.md"
+)
 CURRENT_DELTA_MANIFEST = (
-    ROOT
-    / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
+    ROOT / "docs/90.references/data/0073-target-surface-delta-manifest/data.yaml"
 )
 TARGET_VALIDATOR = ROOT / "scripts/lib/target_surface/target_surface_contract.py"
 TARGET_CLI = ROOT / "scripts/validation/check-target-surface-contract.py"
@@ -721,10 +721,15 @@ class TargetReadmeProfileTests(unittest.TestCase):
     def test_target_runtime_readmes_stay_outside_the_document_registry(self) -> None:
         result = subprocess.run(
             ["git", "ls-files", "--", *TARGET_ROOTS],
-            cwd=ROOT, capture_output=True, text=True, check=True,
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
         )
         registry = load_registry(REGISTRY)
-        readmes = [path for path in result.stdout.splitlines() if path.endswith("/README.md")]
+        readmes = [
+            path for path in result.stdout.splitlines() if path.endswith("/README.md")
+        ]
         self.assertTrue(readmes)
         for path in readmes:
             with self.subTest(path=path):
@@ -736,7 +741,9 @@ class TargetReadmeProfileTests(unittest.TestCase):
                     continue
                 self.assertIsNone(profile)
 
-    def test_native_markdown_and_typed_example_stay_outside_the_document_registry(self) -> None:
+    def test_native_markdown_and_typed_example_stay_outside_the_document_registry(
+        self,
+    ) -> None:
         registry = load_registry(REGISTRY)
         native_or_typed_paths = (
             ".github/PULL_REQUEST_TEMPLATE.md",
@@ -755,7 +762,9 @@ class TargetReadmeProfileTests(unittest.TestCase):
             with self.subTest(path=relative):
                 headings = {
                     line.strip()
-                    for line in (ROOT / relative).read_text(encoding="utf-8").splitlines()
+                    for line in (ROOT / relative)
+                    .read_text(encoding="utf-8")
+                    .splitlines()
                     if line.startswith("## ")
                 }
                 self.assertIn("## Overview", headings)
@@ -771,7 +780,9 @@ class TargetReadmeProfileTests(unittest.TestCase):
             with self.subTest(path=relative):
                 headings = {
                     line.strip()
-                    for line in (ROOT / relative).read_text(encoding="utf-8").splitlines()
+                    for line in (ROOT / relative)
+                    .read_text(encoding="utf-8")
+                    .splitlines()
                     if line.startswith("## ")
                 }
                 self.assertTrue(
@@ -805,15 +816,12 @@ class TargetReadmeProfileTests(unittest.TestCase):
         self.assertEqual(
             1,
             text.count(
-                "[docs/05.operations/README.md]"
-                "(../../docs/05.operations/README.md)"
+                "[docs/05.operations/README.md](../../docs/05.operations/README.md)"
             ),
         )
 
     def test_secret_inventory_registers_surrealdb_path_only(self) -> None:
-        lines = (ROOT / "secrets/README.md").read_text(
-            encoding="utf-8"
-        ).splitlines()
+        lines = (ROOT / "secrets/README.md").read_text(encoding="utf-8").splitlines()
 
         self.assertEqual(
             ["- `secrets/db/surreal_db/`"],
@@ -880,6 +888,7 @@ class StorybookPhantomContractTests(unittest.TestCase):
         self.assertFalse(
             any(line.startswith("160000 ") for line in result.stdout.splitlines())
         )
+
 
 class DeprecatedRuntimeContractTests(unittest.TestCase):
     def test_seaweedfs_unmounted_duplicate_is_removed_but_scaffold_remains(
@@ -1014,8 +1023,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         self.assertEqual(
             483,
             sum(
-                entry["review_verdict"]
-                == {"specification": "pass", "quality": "pass"}
+                entry["review_verdict"] == {"specification": "pass", "quality": "pass"}
                 for entry in manifest["entries"]
             ),
         )
@@ -1108,8 +1116,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         self.assertEqual(
             483,
             sum(
-                entry["review_verdict"]
-                == {"specification": "pass", "quality": "pass"}
+                entry["review_verdict"] == {"specification": "pass", "quality": "pass"}
                 for entry in manifest["entries"]
             ),
         )
@@ -1195,16 +1202,12 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         )
         self.assertEqual(
             470,
-            sum(
-                entry["disposition"] == "preserve"
-                for entry in manifest["entries"]
-            ),
+            sum(entry["disposition"] == "preserve" for entry in manifest["entries"]),
         )
         self.assertEqual(
             483,
             sum(
-                entry["review_verdict"]
-                == {"specification": "pass", "quality": "pass"}
+                entry["review_verdict"] == {"specification": "pass", "quality": "pass"}
                 for entry in manifest["entries"]
             ),
         )
@@ -1354,6 +1357,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
                     path=path.relative_to(ROOT).as_posix(), required=required
                 ):
                     self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()

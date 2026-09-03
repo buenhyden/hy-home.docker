@@ -87,9 +87,7 @@ _GRAPHQL_LEAF_DECLARATION = re.compile(
     r"union[ \t\r\n]+[A-Za-z_][A-Za-z0-9_]*[ \t\r\n]*=|"
     r"directive[ \t\r\n]+@[A-Za-z_][A-Za-z0-9_]*)"
 )
-_PROTO_SYNTAX = re.compile(
-    r"(?mi)^[ \t]*(?:>\s*)?syntax\s*=\s*[\"']proto[23][\"']\s*;"
-)
+_PROTO_SYNTAX = re.compile(r"(?mi)^[ \t]*(?:>\s*)?syntax\s*=\s*[\"']proto[23][\"']\s*;")
 _PROTO_MESSAGE = re.compile(
     r"(?mi)^[ \t]*(?:>\s*)?message\s+[A-Za-z_][A-Za-z0-9_]*\s*\{"
 )
@@ -104,9 +102,7 @@ _PROTO2_INLINE_MESSAGE = re.compile(
     r"[A-Za-z_][A-Za-z0-9_.<> ,]*\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*"
     r"[1-9][0-9]*\s*(?:\[[^\n\]]*\])?\s*;"
 )
-_PROTO_SERVICE_START = re.compile(
-    r"(?mi)^[ \t]*(?:>[ \t]*)*(?P<declaration>service)\b"
-)
+_PROTO_SERVICE_START = re.compile(r"(?mi)^[ \t]*(?:>[ \t]*)*(?P<declaration>service)\b")
 _SYNTAX_TOKEN = re.compile(
     r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|'
     r"[A-Za-z_][A-Za-z0-9_]*|[0-9]+(?:\.[0-9]+)*|"
@@ -184,9 +180,7 @@ def _contains_openapi_yaml(text: str) -> bool:
                 return True
             break
     for match in _OPENAPI_YAML.finditer(text):
-        if _openapi_kind_matches_version(
-            match.group("kind"), match.group("version")
-        ):
+        if _openapi_kind_matches_version(match.group("kind"), match.group("version")):
             return True
     anchors: dict[str, str] = {}
     for index, match in enumerate(_YAML_VERSION_ANCHOR.finditer(text)):
@@ -251,9 +245,7 @@ def _syntax_tokens(text: str) -> tuple[str, ...]:
     )
 
 
-def _consume_balanced_tokens(
-    tokens: tuple[str, ...], index: int
-) -> int | None:
+def _consume_balanced_tokens(tokens: tuple[str, ...], index: int) -> int | None:
     pairs = {"(": ")", "[": "]", "{": "}"}
     if index >= len(tokens) or tokens[index] not in pairs:
         return None
@@ -272,12 +264,10 @@ def _consume_balanced_tokens(
 def _contains_graphql_block_declaration(text: str) -> bool:
     for match in _GRAPHQL_DECLARATION_START.finditer(text):
         window = text[
-            match.start("declaration") :
-            match.start("declaration") + _EXECUTABLE_SCAN_CHARS
+            match.start("declaration") : match.start("declaration")
+            + _EXECUTABLE_SCAN_CHARS
         ]
-        tokens = _syntax_tokens(
-            _strip_syntax_comments(window, line_marker="#")
-        )
+        tokens = _syntax_tokens(_strip_syntax_comments(window, line_marker="#"))
         if not tokens:
             continue
         index = 0
@@ -337,8 +327,10 @@ def _consume_proto_type(tokens: tuple[str, ...], index: int) -> int | None:
     ):
         return None
     index += 1
-    while index + 1 < len(tokens) and tokens[index] == "." and re.fullmatch(
-        r"[A-Za-z_][A-Za-z0-9_]*", tokens[index + 1]
+    while (
+        index + 1 < len(tokens)
+        and tokens[index] == "."
+        and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", tokens[index + 1])
     ):
         index += 2
     return index
@@ -374,12 +366,10 @@ def _is_proto_rpc(tokens: tuple[str, ...], index: int) -> bool:
 def _contains_proto_service_rpc(text: str) -> bool:
     for match in _PROTO_SERVICE_START.finditer(text):
         window = text[
-            match.start("declaration") :
-            match.start("declaration") + _EXECUTABLE_SCAN_CHARS
+            match.start("declaration") : match.start("declaration")
+            + _EXECUTABLE_SCAN_CHARS
         ]
-        clean = _strip_syntax_comments(
-            window, line_marker="//", block_comments=True
-        )
+        clean = _strip_syntax_comments(window, line_marker="//", block_comments=True)
         tokens = _syntax_tokens(clean)
         if (
             len(tokens) < 3
@@ -432,14 +422,21 @@ def _read_regular_utf8(path: pathlib.Path) -> str:
     try:
         metadata = path.lstat()
     except OSError as error:
-        raise RequirementPackageError(f"cannot stat requirement package: {error}") from error
+        raise RequirementPackageError(
+            f"cannot stat requirement package: {error}"
+        ) from error
     if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
         raise RequirementPackageError(
             "requirement package must be a regular non-symlink file"
         )
     if metadata.st_size > MAX_REQUIREMENT_BYTES:
         raise RequirementPackageError("requirement package exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | os.O_NONBLOCK
+    )
     try:
         descriptor = os.open(path, flags)
         try:
@@ -484,7 +481,9 @@ def _read_regular_utf8(path: pathlib.Path) -> str:
         finally:
             os.close(descriptor)
     except OSError as error:
-        raise RequirementPackageError(f"cannot read requirement package: {error}") from error
+        raise RequirementPackageError(
+            f"cannot read requirement package: {error}"
+        ) from error
     if len(payload) > MAX_REQUIREMENT_BYTES:
         raise RequirementPackageError("requirement package exceeds the byte limit")
     try:
@@ -523,9 +522,13 @@ def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
                 table_cells = tuple(
                     cell.strip() for cell in line.strip().strip("|").split("|")
                 )
-                if line.lstrip().startswith("|") and table_cells and (
-                    table_cells[0].casefold() == "id"
-                    or set(table_cells[0]) <= {"-", ":", " "}
+                if (
+                    line.lstrip().startswith("|")
+                    and table_cells
+                    and (
+                        table_cells[0].casefold() == "id"
+                        or set(table_cells[0]) <= {"-", ":", " "}
+                    )
                 ):
                     continue
                 if tokens or re.match(r"^[ \t]*(?:[-*+]\s+|\|)", line):
@@ -565,7 +568,9 @@ def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
                 RequirementItem(identity, kind, item_text, section_line + offset)
             )
             if len(items) > MAX_REQUIREMENT_ITEMS:
-                raise RequirementPackageError("requirement package exceeds the item limit")
+                raise RequirementPackageError(
+                    "requirement package exceeds the item limit"
+                )
     return tuple(items)
 
 
@@ -578,7 +583,9 @@ def _allocation_space(
     name = f"REQ-{package_number}.{kind}"
     allocation = requirement.child_spaces.get(name)
     if allocation is None:
-        raise RequirementPackageError(f"Requirement allocation space is missing: {name}")
+        raise RequirementPackageError(
+            f"Requirement allocation space is missing: {name}"
+        )
     return allocation
 
 
@@ -620,9 +627,7 @@ def _validate_allocation_history(
         raise RequirementPackageError(
             f"reserved allocation history was reissued: {allocation_name}"
         )
-    if current_numbers | reserved_numbers != set(
-        range(1, allocation.high_water + 1)
-    ):
+    if current_numbers | reserved_numbers != set(range(1, allocation.high_water + 1)):
         raise RequirementPackageError(
             f"Requirement allocation history is incomplete: {allocation_name}"
         )
@@ -639,14 +644,10 @@ def _validate_registry_allocation_transition(
 ) -> None:
     if not allow_transition:
         return
-    findings = validate_requirement_allocation_transition(
-        registry, trusted_baseline
-    )
+    findings = validate_requirement_allocation_transition(registry, trusted_baseline)
     if findings:
         first = findings[0]
-        raise RequirementPackageError(
-            f"{first.code}: {first.message}"
-        )
+        raise RequirementPackageError(f"{first.code}: {first.message}")
 
 
 def _validate_complete_allocation(
@@ -687,9 +688,7 @@ def parse_requirement_package(
             raise RequirementPackageError(
                 "requirement package contains a bare child identity"
             )
-        raise RequirementPackageError(
-            "requirement package contains a retired identity"
-        )
+        raise RequirementPackageError("requirement package contains a retired identity")
     if _contains_executable_payload(text):
         raise RequirementPackageError(
             "executable interface payloads belong to the related Stage 03 Spec package"
@@ -717,7 +716,9 @@ def parse_requirement_package(
     )
     sections = tuple(section.group("name") for section in _SECTION.finditer(text))
     missing = tuple(
-        required for required in _required_sections(active_registry) if required not in sections
+        required
+        for required in _required_sections(active_registry)
+        if required not in sections
     )
     if missing:
         raise RequirementPackageError(
@@ -749,7 +750,9 @@ def load_requirement_packages(
     except OSError as error:
         raise RequirementPackageError(f"cannot stat Stage 01: {error}") from error
     if stat.S_ISLNK(root_metadata.st_mode) or not stat.S_ISDIR(root_metadata.st_mode):
-        raise RequirementPackageError("Stage 01 must be a regular non-symlink directory")
+        raise RequirementPackageError(
+            "Stage 01 must be a regular non-symlink directory"
+        )
     paths: list[pathlib.Path] = []
     for entry in sorted(stage_root.iterdir(), key=lambda item: item.name):
         if entry.name == "README.md":
@@ -758,7 +761,11 @@ def load_requirement_packages(
             raise RequirementPackageError(
                 "executable interface payloads belong to the related Stage 03 Spec package"
             )
-        if entry.is_symlink() or not entry.is_file() or _PACKAGE_PATH.fullmatch(entry.name) is None:
+        if (
+            entry.is_symlink()
+            or not entry.is_file()
+            or _PACKAGE_PATH.fullmatch(entry.name) is None
+        ):
             raise RequirementPackageError(f"unregistered Stage 01 entry: {entry.name}")
         paths.append(entry)
     active_registry = load_registry() if registry is None else registry
@@ -772,13 +779,14 @@ def load_requirement_packages(
     )
     package_ids = tuple(package.artifact_id for package in packages)
     if len(package_ids) != len(set(package_ids)):
-        raise RequirementPackageError("duplicate or reused Requirement Package identity")
+        raise RequirementPackageError(
+            "duplicate or reused Requirement Package identity"
+        )
     requirement_space = active_registry.identity_spaces.get("requirement")
     if requirement_space is None:
         raise RequirementPackageError("Requirement package allocation space is missing")
     expected_package_ids = {
-        f"REQ-{number:04d}"
-        for number in range(1, requirement_space.high_water + 1)
+        f"REQ-{number:04d}" for number in range(1, requirement_space.high_water + 1)
     }
     if set(package_ids) != expected_package_ids:
         raise RequirementPackageError(

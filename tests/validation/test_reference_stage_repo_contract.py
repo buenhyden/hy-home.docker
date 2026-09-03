@@ -41,7 +41,10 @@ class ReferenceStageRepoContractTests(unittest.TestCase):
 
     def test_retired_reference_roots_fail_closed(self) -> None:
         for retired in ("learning", "llm-wiki"):
-            with self.subTest(retired=retired), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(retired=retired),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = self._fixture(directory)
                 (root / "docs/90.references" / retired).mkdir()
                 corpus = load_reference_packages(root / "docs/90.references")

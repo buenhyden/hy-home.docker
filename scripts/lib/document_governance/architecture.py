@@ -13,7 +13,11 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
-from scripts.lib.document_governance.registry import document_type, DocumentRegistry, load_registry
+from scripts.lib.document_governance.registry import (
+    document_type,
+    DocumentRegistry,
+    load_registry,
+)
 from scripts.lib.document_governance.taxonomy import architecture_identity
 
 
@@ -99,7 +103,12 @@ def _read_regular_utf8(path: pathlib.Path) -> str:
         )
     if metadata.st_size > MAX_ARCHITECTURE_BYTES:
         raise ArchitectureDocumentError("architecture document exceeds the byte limit")
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | os.O_NONBLOCK
+    )
     try:
         descriptor = os.open(path, flags)
         try:
@@ -232,12 +241,12 @@ def parse_architecture_document(
         raise ArchitectureDocumentError(
             f"architecture document has the wrong type: {artifact_type}"
         )
-    relative_path = pathlib.PurePosixPath(
-        "docs/02.architecture", directory, path.name
-    )
+    relative_path = pathlib.PurePosixPath("docs/02.architecture", directory, path.name)
     owned_identity = architecture_identity(relative_path)
     if owned_identity is None or owned_identity[0] != artifact_type:
-        raise ArchitectureDocumentError("architecture document path has no registered identity")
+        raise ArchitectureDocumentError(
+            "architecture document path has no registered identity"
+        )
     expected_artifact_id = owned_identity[1]
     artifact_id = record.metadata.get("artifact_id")
     if artifact_id != expected_artifact_id:
@@ -248,7 +257,10 @@ def parse_architecture_document(
     _validate_registry_contract(active_registry)
     lifecycle_id = _EXPECTED_PROFILE_CONTRACTS[artifact_type][2]
     status = record.metadata.get("status")
-    if not isinstance(status, str) or status not in active_registry.lifecycles[lifecycle_id]:
+    if (
+        not isinstance(status, str)
+        or status not in active_registry.lifecycles[lifecycle_id]
+    ):
         raise ArchitectureDocumentError(
             f"architecture document status is outside lifecycle: {status!r}"
         )
@@ -262,7 +274,9 @@ def parse_architecture_document(
     superseded_by = record.metadata.get("superseded_by")
     if superseded_by is not None and not isinstance(superseded_by, str):
         raise ArchitectureDocumentError("superseded_by must be a stable ID or null")
-    identity_pattern = _DESCRIPTION_ID if artifact_type == "architecture-description" else _DECISION_ID
+    identity_pattern = (
+        _DESCRIPTION_ID if artifact_type == "architecture-description" else _DECISION_ID
+    )
     if any(identity_pattern.fullmatch(item) is None for item in supersedes):
         raise ArchitectureDocumentError(
             "supersedes must use same-type uppercase stable IDs"
@@ -316,7 +330,9 @@ def load_architecture_documents(
                 _read_regular_utf8(entry)
                 has_index = True
                 continue
-            pattern = _DESCRIPTION_PATH if directory == "descriptions" else _DECISION_PATH
+            pattern = (
+                _DESCRIPTION_PATH if directory == "descriptions" else _DECISION_PATH
+            )
             if pattern.fullmatch(entry.name) is None:
                 raise ArchitectureDocumentError(
                     f"unregistered Stage 02 entry: {directory}/{entry.name}"
@@ -336,9 +352,7 @@ def load_architecture_documents(
         duplicate = next(
             identity for identity in identities if identities.count(identity) > 1
         )
-        raise ArchitectureDocumentError(
-            f"duplicate architecture identity: {duplicate}"
-        )
+        raise ArchitectureDocumentError(f"duplicate architecture identity: {duplicate}")
     return documents
 
 

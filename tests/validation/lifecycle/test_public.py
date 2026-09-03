@@ -27,12 +27,8 @@ from tests.validation.lifecycle._support import (
 class CurrentPublicContractTests(unittest.TestCase):
     def valid_row(self, **overrides: object):
         values: dict[str, object] = {
-            "source_path": pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/spec.md"
-            ),
-            "target_path": pathlib.PurePosixPath(
-                "docs/03.specs/0001-example/spec.md"
-            ),
+            "source_path": pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+            "target_path": pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
             "artifact_id": "SPEC-0001",
             "artifact_type": "spec",
             "status_before": "active",
@@ -105,9 +101,7 @@ class CurrentPublicContractTests(unittest.TestCase):
         self.assertNotIn("configuration-error", result.stderr)
 
     def test_manifest_loader_rejects_unknown_and_missing_keys(self) -> None:
-        loaded = yaml.safe_load(
-            lifecycle.render_migration_manifest(self.document())
-        )
+        loaded = yaml.safe_load(lifecycle.render_migration_manifest(self.document()))
         for mutation in ("unknown-top", "missing-entry"):
             candidate = {**loaded}
             candidate["entries"] = [dict(loaded["entries"][0])]
@@ -115,31 +109,26 @@ class CurrentPublicContractTests(unittest.TestCase):
                 candidate["unexpected"] = True
             else:
                 del candidate["entries"][0]["status_after"]
-            with self.subTest(mutation=mutation), self.assertRaises(
-                lifecycle.ProfileError
+            with (
+                self.subTest(mutation=mutation),
+                self.assertRaises(lifecycle.ProfileError),
             ):
                 lifecycle.load_migration_manifest(
-                    self.write_manifest(
-                        yaml.safe_dump(candidate, sort_keys=False)
-                    )
+                    self.write_manifest(yaml.safe_dump(candidate, sort_keys=False))
                 )
 
     def test_manifest_serialization_is_deterministic_and_lf_only(self) -> None:
         rendered = lifecycle.render_migration_manifest(self.document())
         self.assertTrue(rendered.endswith("\n"))
         self.assertNotIn("\r", rendered)
-        reloaded = lifecycle.load_migration_manifest(
-            self.write_manifest(rendered)
-        )
+        reloaded = lifecycle.load_migration_manifest(self.write_manifest(rendered))
         self.assertEqual(
             rendered,
             lifecycle.render_migration_manifest(reloaded),
         )
 
     def test_manifest_v2_exposes_surface_transition_fields(self) -> None:
-        loaded = yaml.safe_load(
-            lifecycle.render_migration_manifest(self.document())
-        )
+        loaded = yaml.safe_load(lifecycle.render_migration_manifest(self.document()))
         loaded["schema_version"] = 2
         row = loaded["entries"][0]
         row["artifact_type_before"] = row.pop("artifact_type")
@@ -154,11 +143,14 @@ class CurrentPublicContractTests(unittest.TestCase):
         self.assertEqual("typed-example", manifest.entries[0].surface_class)
 
     def test_default_route_does_not_load_a_legacy_contract(self) -> None:
-        with mock.patch.object(
-            lifecycle,
-            "load_migration_contract",
-            side_effect=AssertionError("legacy authority loaded"),
-        ), contextlib.redirect_stdout(io.StringIO()):
+        with (
+            mock.patch.object(
+                lifecycle,
+                "load_migration_contract",
+                side_effect=AssertionError("legacy authority loaded"),
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             self.assertEqual(0, lifecycle.main([]))
 
     def test_default_route_reports_lifecycle_and_archive_recovery(self) -> None:
