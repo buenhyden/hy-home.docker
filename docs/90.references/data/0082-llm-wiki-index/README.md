@@ -336,6 +336,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0161-legacy-profile-layer-retirement/plan.md](../../../03.specs/0161-legacy-profile-layer-retirement/plan.md) | Markdown reference |
 | [docs/03.specs/0161-legacy-profile-layer-retirement/spec.md](../../../03.specs/0161-legacy-profile-layer-retirement/spec.md) | Markdown reference |
 | [docs/03.specs/0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md](../../../03.specs/0161-legacy-profile-layer-retirement/tasks/tsk-0001-legacy-layer-retirement.md) | Markdown reference |
+| [docs/03.specs/0162-validation-blind-spot-closure/plan.md](../../../03.specs/0162-validation-blind-spot-closure/plan.md) | Markdown reference |
+| [docs/03.specs/0162-validation-blind-spot-closure/spec.md](../../../03.specs/0162-validation-blind-spot-closure/spec.md) | Markdown reference |
+| [docs/03.specs/0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md](../../../03.specs/0162-validation-blind-spot-closure/tasks/tsk-0001-blind-spot-closure.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
