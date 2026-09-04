@@ -92,15 +92,17 @@
         "issue-greeting": {
           "permissions": {
             "issues": "write",
-            "contents": "read"
+            "contents": "read",
+            "pull-requests": "read"
           },
           "runs_on": "ubuntu-latest",
           "timeout_minutes": 5
         },
         "pull-request-greeting": {
           "permissions": {
-            "issues": "write",
-            "contents": "read"
+            "issues": "read",
+            "contents": "read",
+            "pull-requests": "write"
           },
           "runs_on": "ubuntu-latest",
           "timeout_minutes": 5
@@ -209,7 +211,6 @@
         "ci.dependency-vulnerability-audit",
         "ci.git-flow-contract",
         "ci.compose-validation",
-        "ci.compose-all-profiles-validation",
         "ci.infrastructure-hardening",
         "ci.template-security-baseline",
         "ci.quickwin-baseline",
@@ -235,7 +236,6 @@
         "ci.dependency-vulnerability-audit",
         "ci.git-flow-contract",
         "ci.compose-validation",
-        "ci.compose-all-profiles-validation",
         "ci.infrastructure-hardening",
         "ci.template-security-baseline",
         "ci.quickwin-baseline",
@@ -258,18 +258,6 @@
       "children": [
         "leaf.agent-output-eval-fixture-regressions",
         "leaf.agent-output-eval-fixture-gate"
-      ]
-    },
-    {
-      "gate_id": "ci.compose-all-profiles-validation",
-      "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.compose-all-profiles-validation"
       ]
     },
     {
@@ -418,7 +406,7 @@
       ],
       "opaque": false,
       "children": [
-        "setup.storybook-node-dependencies",
+        "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
         "leaf.storybook-coverage"
       ]
@@ -632,23 +620,6 @@
       ],
       "opaque": true,
       "suite_key": "document-governance-library-regressions"
-    },
-    {
-      "gate_id": "leaf.compose-all-profiles-validation",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/validate-docker-compose.sh",
-      "argv": [],
-      "cwd": ".",
-      "allowed_env_keys": [
-        "HYHOME_COMPOSE_PROFILES"
-      ],
-      "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-all-profiles"
-      ],
-      "opaque": true,
-      "suite_key": "compose-all-profiles-validation"
     },
     {
       "gate_id": "leaf.compose-validation",
@@ -1539,17 +1510,6 @@
       "suite_key": "zizmor"
     },
     {
-      "gate_id": "local.compose-all-profiles-validation",
-      "kind": "aggregate",
-      "profiles": [
-        "local-all-profiles"
-      ],
-      "opaque": false,
-      "children": [
-        "leaf.compose-all-profiles-validation"
-      ]
-    },
-    {
       "gate_id": "local.compose-validation",
       "kind": "aggregate",
       "profiles": [
@@ -1752,24 +1712,6 @@
       "opaque": false
     },
     {
-      "gate_id": "setup.storybook-node-dependencies",
-      "kind": "setup",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-npm",
-        "ci",
-        "--prefix",
-        "projects/storybook/nextjs"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
-      "opaque": false
-    },
-    {
       "gate_id": "setup.storybook-playwright",
       "kind": "setup",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1875,8 +1817,7 @@
         "local.quickwin-baseline",
         "local.generated-freshness",
         "leaf.repository-integrity-regressions",
-        "leaf.repo-contracts",
-        "local.compose-all-profiles-validation"
+        "leaf.repo-contracts"
       ],
       "classification": "local"
     }
@@ -1914,7 +1855,6 @@
         "leaf.operations-catalog",
         "local.supply-chain",
         "local.compose-validation",
-        "local.compose-all-profiles-validation",
         "local.infrastructure-hardening",
         "local.template-security-baseline",
         "local.quickwin-baseline"

@@ -54,7 +54,6 @@ _INTERNAL_CI_ROOTS = {
     "dependency-vulnerability-audit": "ci.dependency-vulnerability-audit",
     "git-flow-contract": "ci.git-flow-contract",
     "compose-validation": "ci.compose-validation",
-    "compose-all-profiles-validation": "ci.compose-all-profiles-validation",
     "infrastructure-hardening": "ci.infrastructure-hardening",
     "template-security-baseline": "ci.template-security-baseline",
     "quickwin-baseline": "ci.quickwin-baseline",
@@ -118,10 +117,6 @@ _INTERNAL_ROOT_CHILDREN = {
         "setup.compose-env",
         "leaf.compose-validation",
     ),
-    "ci.compose-all-profiles-validation": (
-        "setup.compose-env",
-        "leaf.compose-all-profiles-validation",
-    ),
     "ci.infrastructure-hardening": (
         "setup.compose-env",
         "leaf.infrastructure-hardening",
@@ -146,7 +141,7 @@ _INTERNAL_ROOT_CHILDREN = {
         "leaf.frontend-quality",
     ),
     "ci.storybook-coverage": (
-        "setup.storybook-node-dependencies",
+        "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
         "leaf.storybook-coverage",
     ),
@@ -214,7 +209,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.operations-catalog",
     ),
     "local.compose-validation": ("leaf.compose-validation",),
-    "local.compose-all-profiles-validation": ("leaf.compose-all-profiles-validation",),
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
@@ -231,7 +225,6 @@ _LOCAL_FORBIDDEN_GATE_IDS = frozenset(
         "setup.repo-python-dependencies",
         "setup.precommit-python-dependencies",
         "setup.frontend-node-dependencies",
-        "setup.storybook-node-dependencies",
         "setup.storybook-playwright",
         "leaf.dependency-vulnerability-audit",
         "leaf.pre-commit",
@@ -278,10 +271,7 @@ _LOCAL_HARNESS_ROOTS = tuple(
 _EXPECTED_PROFILE_ROOTS = {
     "local-script-backed": _LOCAL_SCRIPT_BACKED_ROOTS,
     "local-harness": _LOCAL_HARNESS_ROOTS,
-    "local-all-profiles": (
-        *_LOCAL_SCRIPT_BACKED_ROOTS,
-        "local.compose-all-profiles-validation",
-    ),
+    "local-all-profiles": _LOCAL_SCRIPT_BACKED_ROOTS,
 }
 _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
@@ -296,7 +286,6 @@ _ADMITTED_ENV_KEYS = frozenset(
         "CI",
         "GITHUB_ACTIONS",
         "HEAD_REF",
-        "HYHOME_COMPOSE_PROFILES",
         "PR_TITLE",
         "TEMPLATE_GATE_BASE",
     }

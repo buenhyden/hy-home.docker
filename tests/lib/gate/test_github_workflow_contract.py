@@ -255,6 +255,97 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(on_disk, {document.path for document in workflows})
         self.assertEqual((), self.module.validate_workflows(ROOT, contract))
 
+    def test_ci_installs_each_frontend_dependency_tree_once(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        nodes = {node.gate_id: node for node in contract.gate_registry.nodes}
+        selected = self.module.expand_gate_ids(contract.gate_registry, "ci", None, True)
+        installers = [
+            nodes[key]
+            for key in selected
+            if nodes[key].argv
+            == ("run-npm", "ci", "--prefix", "projects/storybook/nextjs")
+        ]
+        self.assertEqual(1, len(installers))
+
+    def test_greeting_write_scope_matches_comment_target(self) -> None:
+        workflow = next(
+            document
+            for document in self.module.load_workflows(ROOT)
+            if document.path == ".github/workflows/greetings.yml"
+        )
+        self.assertEqual(
+            {"contents": "read", "issues": "write", "pull-requests": "read"},
+            workflow.data["jobs"]["issue-greeting"]["permissions"],
+        )
+        self.assertEqual(
+            {"contents": "read", "issues": "read", "pull-requests": "write"},
+            workflow.data["jobs"]["pull-request-greeting"]["permissions"],
+        )
+
+    def test_every_profile_runs_compose_selection_only_once(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        nodes = {node.gate_id: node for node in contract.gate_registry.nodes}
+        for profile in (
+            "ci",
+            "local-script-backed",
+            "local-harness",
+            "local-all-profiles",
+        ):
+            with self.subTest(profile=profile):
+                selected = self.module.expand_gate_ids(
+                    contract.gate_registry, profile, None, True
+                )
+                compose = [
+                    nodes[gate_id]
+                    for gate_id in selected
+                    if str(nodes[gate_id].entrypoint)
+                    == "scripts/validation/validate-docker-compose.sh"
+                ]
+                self.assertEqual(1, len(compose))
+                self.assertEqual((), compose[0].allowed_env_keys)
+
+    def test_full_job_preserves_every_declared_compose_selection(self) -> None:
+        workflows = {
+            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
+        }
+        full_env = workflows[".github/workflows/ci-quality.yml"].data["jobs"][
+            "validation-full"
+        ]["env"]
+
+        self.assertEqual(
+            {
+                "EVENT_NAME": "${{ github.event_name }}",
+                "PUSH_BEFORE_SHA": "${{ github.event.before }}",
+            },
+            full_env,
+        )
+        self.assertNotIn("HYHOME_COMPOSE_PROFILES", full_env)
+
+    def test_required_workflow_rejects_inherited_compose_selection(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        documents = self.module.load_workflows(ROOT)
+        document = next(
+            item
+            for item in documents
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        data = copy.deepcopy(document.data)
+        data["env"] = {"HYHOME_COMPOSE_PROFILES": "core data obs workflow"}
+        changed = dataclasses.replace(document, data=data)
+
+        with mock.patch.object(
+            self.module,
+            "load_workflows",
+            return_value=tuple(
+                changed if item.path == document.path else item for item in documents
+            ),
+        ):
+            codes = {
+                finding.code
+                for finding in self.module.validate_workflows(ROOT, contract)
+            }
+        self.assertIn("workflow-gate-environment-invalid", codes)
+
     def test_canonical_schema_v2_registry_is_complete_and_expandable(
         self,
     ) -> None:
@@ -812,7 +903,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual({"leaf.quickwin-baseline"}, script_backed - harness)
         self.assertEqual(set(), harness - script_backed)
         self.assertEqual(
-            {"leaf.compose-all-profiles-validation"},
+            set(),
             all_profiles - script_backed,
         )
         self.assertEqual(set(), script_backed - all_profiles)
@@ -895,7 +986,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(
             (
-                "setup.storybook-node-dependencies",
+                "setup.frontend-node-dependencies",
                 "setup.storybook-playwright",
                 "leaf.storybook-coverage",
             ),
@@ -1957,10 +2048,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "issue-greeting": {
                         "contents": "read",
                         "issues": "write",
+                        "pull-requests": "read",
                     },
                     "pull-request-greeting": {
                         "contents": "read",
-                        "issues": "write",
+                        "issues": "read",
+                        "pull-requests": "write",
                     },
                 },
             ),
@@ -2031,7 +2124,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 (
                     ".github/workflows/greetings.yml",
                     "pull-request-greeting",
-                    "issues",
+                    "pull-requests",
                 ),
                 (
                     ".github/workflows/pr-labeler.yml",
@@ -2076,6 +2169,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "    if: github.event_name == 'issues'\n"
                     "    permissions:\n"
                     "      issues: write\n"
+                    "      pull-requests: read\n"
                     "      contents: read\n"
                 ),
                 (
@@ -2091,6 +2185,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "        permissions:\n"
                     "          issues: write\n"
                     "          contents: read\n"
+                    "          pull-requests: read\n"
                 ),
                 (
                     "      issue-greeting:\n"

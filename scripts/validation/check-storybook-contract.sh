@@ -49,7 +49,7 @@ required_gate_argv = {
     "leaf.frontend-build": ["run-npm", "run", "build", "--prefix", "projects/storybook/nextjs"],
     "leaf.frontend-quality": ["run-npm", "run", "build-storybook", "--prefix", "projects/storybook/nextjs"],
     "leaf.storybook-coverage": ["run-npm", "run", "coverage", "--prefix", "projects/storybook/nextjs"],
-    "setup.storybook-node-dependencies": ["run-npm", "ci", "--prefix", "projects/storybook/nextjs"],
+    "setup.frontend-node-dependencies": ["run-npm", "ci", "--prefix", "projects/storybook/nextjs"],
 }
 
 try:
