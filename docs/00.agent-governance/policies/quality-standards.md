@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Agent Quality and Security Standards
@@ -88,8 +88,11 @@ Quality dimensions:
 
 ## 5. Change-Type Verification Matrix
 
-Use the smallest meaningful checks for the touched layer. When a listed check is
-not applicable, record the skipped-check rationale in the task evidence.
+This is the sole change-type verification matrix for all providers and GitHub
+workflows. Provider adapters and GitHub policy route here rather than copying
+or extending the matrix. Use the smallest meaningful checks for the touched
+layer. When a listed check is not applicable, record the skipped-check rationale
+in the task evidence.
 
 | Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -138,8 +141,14 @@ components, so docs-only changes that mention service versions must keep those
 literals aligned with current compose declarations and
 `infra/tech-stack.versions.json`.
 
-The local runner validates `.github/workflow-contract.yml` and all seven
-tracked workflow definitions through
+Local and hosted QA use the same public entrypoint and suite manifest, while
+execution-context ownership determines which leaves can run. A local `full`
+result is not proof of a hosted `full` result. Do not fake GitHub environment
+variables to invoke CI-only wrappers locally. Record missing tools and
+unexecuted checks explicitly; neither absence nor a skipped check is a PASS.
+
+The local runner validates `.github/workflow-contract.yml` and the registered
+workflow definitions through
 `scripts/validation/check-github-workflow-contract.py`. It lists
 `tech-stack-version-sync.yml` as non-gating remote automation, never runs real
 pre-commit through the CI-only entry point, and exercises that wrapper only

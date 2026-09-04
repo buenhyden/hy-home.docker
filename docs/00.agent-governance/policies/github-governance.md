@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # GitHub Governance Policy
@@ -75,7 +75,11 @@ Repo-local stricter rules always override this document; never weaken them on th
   Its evidence covers only Git-visible, non-ignored repository paths; it does
   not observe ignored/outside writes or provide process/filesystem sandboxing.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
-- **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
+- **Implementation**: The CI pre-commit runner owns its skip list. It skips
+  checks already owned by dedicated gate leaves and the public validation hooks
+  that would recursively invoke the gate runner. Callers must not supply
+  `SKIP` or introduce a second orchestration path. See
+  [the shared execution boundary](quality-standards.md#4-execution-boundary).
 
 ### 5.0 Approved Remote Mutation Protocol
 
@@ -102,17 +106,15 @@ approval for that repository and remote surface.
 
 ### 5.2 Evidence Boundary by Change Type
 
-Agents must align local checks, CI-only gates, and skipped-check rationale with
-the QA scope matrix. For PR-related work, the completion summary or task
-evidence must state:
+Use the [shared change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
+for local checks, selected public suites, and skipped-check rationale. This
+policy does not define a second matrix or additional provider-specific gates.
 
-| Change Type | Required Local Evidence | CI-Only Evidence | Required Skip Rationale |
-| --- | --- | --- | --- |
-| Docs or governance docs | Diff hygiene, doc implementation alignment, repo contracts, doc traceability, provider sync when provider docs changed | Required docs/repo contract jobs | Domain tests are N/A for docs-only changes. |
-| Historical-file cleanup | Diff hygiene, stale active-reference scan, and minimal metadata/link checks | Required docs/repo contract jobs | Domain tests and runtime checks are N/A unless behavior/config changed. |
-| Hook, script, or validator | Targeted command output plus repo contracts | Required quality/security jobs | GitHub-only permissions, SARIF upload, or protected remote state if not locally runnable. |
-| Runtime or Docker config | Compose/hardening/local smoke checks when approved | Compose and hardening jobs | Live mutation skipped without approval. |
-| GitHub workflow/protection | Static review and local contract checks | GitHub Actions and branch-protection verification | Any remote state not verified must be reported as unverified, not done. |
+For PR-related work, record local command results separately from hosted run
+IDs, head commits, job conclusions, required reviews, and observed protection
+settings. Missing tools, unexecuted checks, and unavailable remote observations
+must remain explicitly blocked, skipped with a reason, or unverified; they are
+not passing evidence.
 
 No task is complete by citing a CI-only gate alone when a cheap local check is
 available, and no local-only check replaces required protected-branch gates.
