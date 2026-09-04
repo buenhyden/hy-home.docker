@@ -145,6 +145,19 @@ runtime, protection, review, deferral, and Git evidence.
   now provisions `uvx` in the changed job before dependencies and the public
   gate. No permission, event, validator, tool version, or SARIF upload behavior
   changes; removing that one step is the workflow rollback.
+- PR run `33876647221`, job `101035112333`, executed against exact candidate
+  `2aefde23d5853ca6a0e0de4e4dd1dbb72b06667f`. Both `Install uv` and dependency
+  bootstrap passed, proving the previous executable-availability failure was
+  removed. The public gate then failed after 17m52s when pinned
+  markdownlint-cli2 0.22.1 rewrote one duplicate blank line in the Stage 99
+  template README despite reporting zero lint errors, and Ruff 0.15.12 reported
+  12 Python files requiring deterministic formatting; 94 Python files were
+  already formatted. The full job `101035114121` was correctly skipped.
+- A write-free local `ruff format --check --diff .` reproduced the exact same
+  12-file set. Ruff mechanically normalized only those named Python files, and
+  the exact CI pre-commit path reproduced markdownlint-cli2's one Stage 99
+  README normalization. Validator and test behavior, hook versions, and all
+  other non-evidence surfaces remain unchanged.
 
 ### Gap matrix
 
@@ -174,7 +187,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | runs `33866474442`, `33869471269`, and `33873742953` advanced through hardening, audit, and browser coverage to the missing PR-job `uvx` provisioning; each exact failure is corrected locally and a new candidate rerun is required |
+| Hosted CI | FAIL / RETRY REQUIRED | four runs advanced through hardening, audit, browser coverage, uv provisioning, and finally the pinned Markdown and Python format hooks; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
@@ -233,6 +246,9 @@ admitted by the References consumer and validated by the Registry metadata path.
 - Removed the Hosted runner-image dependency from the PR `zizmor` path by
   provisioning the same registered SHA-pinned `setup-uv` action in both public
   validation jobs, without broadening the PR job's read-only permission set.
+- Converged the exact Ruff 0.15.12 12-Python and markdownlint-cli2 0.22.1
+  one-Markdown drift reported only after Hosted CI reached the pre-commit leaf;
+  the mechanical normalization changes no behavior.
 
 ## Review Evidence
 
@@ -270,8 +286,9 @@ returned final PASS with no actionable finding on the resulting six-file diff.
   TypeScript, and Next build-tool closure plus exact review evidence.
 
 The PR-job `uvx` provisioning correction plus this evidence update are prepared
-for one follow-up commit. Valid forward lifecycle transitions remain post-merge
-work; they are not compressed into the initial PR history.
+in `2aefde23`. The exact formatter normalization plus this new Hosted evidence
+are prepared for one follow-up commit. Valid forward lifecycle transitions
+remain post-merge work; they are not compressed into the initial PR history.
 
 ## Rulings
 

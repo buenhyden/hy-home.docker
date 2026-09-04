@@ -46,9 +46,10 @@ archive-body mutation.
 9. Commit the initial lifecycle entry, push the feature branch, open a PR, and
    observe Hosted CI without bypassing checks. If an existing public gate fails,
    reproduce it and apply only the minimum dependency, lockfile, build-time
-   compiler-path, or registered CI-tool provisioning correction before rerunning
-   the same gate. Preserve the entry state through the first merge; record
-   forward transitions in post-merge follow-up changes.
+   compiler-path, registered CI-tool provisioning, or pinned format-hook
+   normalization before rerunning the same gate. Preserve the entry state
+   through the first merge; record forward transitions in post-merge follow-up
+   changes.
 10. Record provider, runtime, and branch-protection observations separately from
     acceptance. Stop before any mutation whose target, desired state, recovery,
     tag version, release scope, or merge authority is not exact.
@@ -79,6 +80,9 @@ archive-body mutation.
   typecheck, and production build; Hosted default build and browser coverage.
 - Required-job `setup-uv` parity, immutable action provenance, and Hosted
   `zizmor` completion without PR-job permission expansion.
+- Ruff 0.15.12 and markdownlint-cli2 0.22.1 checks plus focused behavior tests
+  for the exact 12-Python and one-Markdown format-hook set reported by Hosted
+  CI.
 
 ## Rulings
 

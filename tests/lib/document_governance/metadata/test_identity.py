@@ -27,8 +27,7 @@ class CheckerCliTests(unittest.TestCase):
                 "docs/03.specs/0172-recovery/tasks/tsk-0001-recovery.md"
             )
             carrier_path = pathlib.Path(
-                "docs/90.references/research/0085-workspace/"
-                "m0001-request-scope.md"
+                "docs/90.references/research/0085-workspace/m0001-request-scope.md"
             )
             decision = {
                 "source_commit": "0" * 40,
@@ -92,9 +91,8 @@ class CheckerCliTests(unittest.TestCase):
 
             self.assertEqual([carrier_path.as_posix()], changed)
             self.assertEqual(
-                [decision], by_path[task_path.as_posix()].metadata[
-                    "identity_recovery_decisions"
-                ]
+                [decision],
+                by_path[task_path.as_posix()].metadata["identity_recovery_decisions"],
             )
 
     def test_duplicate_artifact_id_is_reported(self) -> None:

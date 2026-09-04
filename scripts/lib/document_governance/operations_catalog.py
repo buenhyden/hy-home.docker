@@ -766,10 +766,7 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             )
         template_id = profile.get("template_id")
         role = roles.get(template_id) if isinstance(template_id, str) else None
-        if (
-            not isinstance(role, Mapping)
-            or profile_id not in role.get("profiles", ())
-        ):
+        if not isinstance(role, Mapping) or profile_id not in role.get("profiles", ()):
             findings.append(
                 _finding(
                     "registry-operations-profile-invalid",

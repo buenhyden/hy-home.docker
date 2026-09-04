@@ -45,9 +45,10 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
   runtime inventory observation, and remote branch-protection inspection.
 - In scope when an exact Hosted public gate fails: the minimum Storybook
   development dependency, lockfile, build-time Next compiler selection, or
-  registered CI-tool provisioning required to execute that existing gate.
-  Application behavior, validator relaxation, workflow permission expansion,
-  and deployment configuration remain out of scope.
+  registered CI-tool provisioning and deterministic format-hook normalization
+  required to execute that existing gate. Application behavior, validator
+  relaxation, workflow permission expansion, and deployment configuration
+  remain out of scope.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -87,6 +88,10 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
 12. Every required job that selects the `zizmor` leaf must provision its pinned
     `uvx` runtime through the registered immutable `setup-uv` action before the
     public gate starts; the PR job gains no permission or upload side effect.
+13. A Hosted format-hook failure may normalize only files actually rewritten by
+    that pinned hook. Evidence-only Spec, Plan, and Task updates may accompany
+    the remediation; every format diff must remain mechanical and
+    behavior-preserving.
 
 ## Technical Approach
 
@@ -144,7 +149,11 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 7. Both Hosted required jobs provision the same immutable `setup-uv` action,
    and the changed public gate advances through the registered `zizmor` leaf
    without relying on runner-image tool availability.
-8. The final diff changes no frozen archive body and contains no secret,
+8. Ruff 0.15.12 reports every tracked Python file formatted,
+   markdownlint-cli2 0.22.1 reports zero errors and no rewrites, and focused
+   behavior tests pass after the exact 12-Python plus one-Markdown mechanical
+   normalization reported by Hosted CI.
+9. The final diff changes no frozen archive body and contains no secret,
    credential, certificate, or deployment/runtime service payload. Any
    build-time Next setting is limited to the compiler path proved by the failed
    Hosted gate.
