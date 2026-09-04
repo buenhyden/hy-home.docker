@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Convergence Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -24,10 +24,11 @@ explicit local/hosted evidence. Use the executing-plans workflow for this plan.
 - Baseline `main` and an isolated task-owned worktree.
 - Stage 00 bootstrap, approval, workflow, quality, Git, and completion policies.
 - Stage 99's existing Spec/Plan/Task templates; no parallel planning directory.
-- PRs #140 and #141 contain overlapping in-progress work. Read and compare their
-  exact changes before reuse; do not mutate their branches or reuse their test
-  conclusions as this candidate's evidence. SPEC-0174 avoids the in-progress
-  branch's 0173 namespace.
+- PRs #140 and #141 overlapped at initial inspection and were later merged into
+  `main` at `4c6d211129615eab372d720ebd209b6c27618c86`. This candidate
+  preserves that upstream commit. Their branches were not modified, and their
+  test conclusions are not this candidate's evidence. SPEC-0174 keeps its
+  separate 0174 identity; it does not reuse the other work's 0173 namespace.
 
 ## Execution Sequence
 

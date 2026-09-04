@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Convergence Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -25,9 +25,12 @@ other in-progress work and recording each verified logical change.
 - User request dated 2026-09-05 (Asia/Seoul): retire shared runtime projections,
   consolidate common governance and provider mechanics, simplify QA/CI/gates and
   fixtures, audit current and historical documents, and create logical commits.
-- Baseline: `591e3c607f97aa34739f41288b5243f0cd4f0aac`.
+- Initial baseline: `591e3c607f97aa34739f41288b5243f0cd4f0aac`.
+- Integrated upstream: `4c6d211129615eab372d720ebd209b6c27618c86`.
 - Branch: `codex/governance-qa-convergence`; isolated worktree, initially clean.
-- Open PRs #140 and #141 overlap; their branches are not modified by this task.
+- PRs #140 and #141 overlapped at initial inspection and were later merged by
+  upstream. This task preserves both through the integrated main commit and does
+  not mutate either source branch. Delivery is draft PR #142.
 - Remote mutation scope: this feature branch and its PR only. Recovery is logical
   revert or closing the unmerged PR. No runtime, secret, protection, or merge change.
 
@@ -40,7 +43,7 @@ other in-progress work and recording each verified logical change.
 - Baseline provider/renderer/contract tests: 55 tests, exit 0.
 - Hosted baseline full run `33879597896` failed when an aggregate environment
   selected incompatible Compose services. Independent profile checks had passed.
-- Re-read remote `main`: code baseline unchanged; required contexts now read
+- At the initial protection readback, the code baseline was unchanged; contexts read
   `validation-changed` and `validation-full`. Earlier 12-context evidence is
   historical and is not the current control-plane state. This task changed no
   protection setting.
@@ -63,10 +66,27 @@ other in-progress work and recording each verified logical change.
   (common QA policy consolidation). Additional retirement, de-duplication,
   permission, documentation, and fixture changes are verified in this candidate.
   Neither PR's prior test results are this candidate's results.
+- Integrated the later upstream main commit without replacing its Dockerfile,
+  hardening, document-lifecycle, template, or in-progress SPEC-0172 changes.
+  Resolved two overlapping files by retaining the merged shared QA wording in
+  the PR template and the added gate/workflow regression tests. The resulting
+  implementation tree is `db9fbc6101ecb69d535a900720dabc0494194f47`.
+- Published five logical implementation/cleanup/integration commits on the
+  feature branch through a non-force ref update. The three temporary acquisition
+  and reconstruction workflows are absent from the delivered implementation.
+- The optional `graphify` CLI is unavailable in this execution environment;
+  its graph refresh was not run. Both maintained LLM Wiki generators passed
+  freshness checks after the evidence edits. Ruff check and format verification
+  passed for all 15 changed Python files without altering them.
 - Regenerated the LLM Wiki indexes and security readiness snapshot through their
   maintained generators. Fixed the new Spec's initially missing index row.
 
 ## Verification Evidence
+
+Evidence checkpoint: 2026-09-05 06:51 Asia/Seoul. Pending hosted results below
+are observations at this checkpoint, not a claim of later workflow outcomes.
+The PR conversation records later remote check conclusions without making a
+self-referential new code commit for each check result.
 
 | Check | Outcome | Boundary |
 | --- | --- | --- |
@@ -76,14 +96,18 @@ other in-progress work and recording each verified logical change.
 | Gate/workflow tests | OK, 63 tests, 11 pre-existing skips | includes rejection and de-duplication regressions |
 | Provider renderer | PASS, 2 providers, 0 drift | static translation; not native account entitlement |
 | Workflow contract | PASS, 6 workflows, 8 jobs, 8 Actions | temporary transport workflows excluded from delivered tree |
-| Metadata repository contracts | PASS, 0 violations | registered document and template structure |
-| Document links | PASS, 685 documents, 5,772 links | traceability on candidate tree before this evidence update |
+| Metadata repository contracts | PASS, 0 violations | rechecked after integration and evidence edits |
+| Document links | PASS, 685 documents, 5,772 links | rechecked after integration and evidence edits |
 | Lifecycle and recovery | PASS, 0 violations | preservation integrity, not historical-content cleanup |
 | Compose selection | PASS, every-declared, 28 selections, 232 services | configuration validation; no live deployment |
 | Public local full, initial complete attempt | FAIL, 3 cleanup subcases | stopped at runner lifecycle regression; not a full pass |
 | Identical cleanup regression under init | PASS | no runner deadline, skip, assertion, or production change |
-| Public local full under init | pending | result must be recorded after the complete command ends |
-| Candidate hosted QA | pending | not inferred from local or other PR results |
+| Public local full under init, initial baseline candidate | PASS, exit 0 | tree `72eb9b1528501e639c06524a9a2bfefb2af0f924`; not the later upstream integration |
+| Integrated gate/workflow regressions | OK, 63 tests, 11 existing skips | 52 executed, 0 failures, tree `db9fbc6101ecb69d535a900720dabc0494194f47` |
+| Integrated public local full | PASS, exit 0 | tree `db9fbc6101ecb69d535a900720dabc0494194f47`; clean venv and proper init semantics |
+| Integrated hosted full | running at checkpoint, run `33922214372` | actual GitHub environment on the identical implementation tree; not the protected PR check |
+| PR required QA | running at checkpoint, run `33922559580` | PR #142 head `dbee92c0177c407fb9360d819b0d82f30e5a666a` |
+| PR Greeting and Labeler | PASS, runs `33922559860` and `33922559452` | this same-repository PR only; not fork-token or actual comment-write coverage |
 
 The initial full run retained zombie descendants with parent PID 1 after the
 unchanged 250 ms cleanup bound. A task-local Linux child-subreaper reproduced a
@@ -94,8 +118,11 @@ weakened. A clean Python virtual environment also isolates the gate's generated
 bootstrap from unrelated environment-managed Python startup hooks.
 
 The temporary source and tool acquisition runs passed, but neither is QA evidence.
-The complete final candidate must remove every temporary acquisition/transport
-workflow. Full hosted results and independent reviews remain separate boundaries.
+All three temporary acquisition/transport workflows have been removed from the
+implementation tree. Two initial reconstruction runs failed before QA and are
+not QA evidence. Full hosted results and independent reviews remain separate
+boundaries. A tree-level hosted result does not substitute for the final PR head
+check, SARIF-upload acceptance, or independent review.
 
 ## Review Evidence
 
@@ -130,11 +157,11 @@ The user request is not fully complete. Acceptance remains open for:
   in-progress document. This candidate fixes the coupled runtime README route,
   PR evidence, current provider documents, and its own Spec/Plan/Task package;
   it does not claim an exhaustive semantic corpus rewrite.
-- Hosted full QA, fork-token automation behavior, and independent code/policy
-  review. The local scanner remains intentionally CI-routed in the existing
+- Hosted final acceptance, fork-token automation behavior, and independent
+  code/policy review. The local scanner remains intentionally CI-routed in the existing
   executable contract; this candidate does not claim newly supported local SARIF.
-- Integration of overlapping PRs #140 and #141. Their branches remain intact;
-  maintainers must re-evaluate the common diff rather than blindly merge both.
+- Final PR-head acceptance and independent review after the evidence-only
+  update. Do not infer either from an earlier tree or workflow result.
 
 No deployment, provider entitlement probe, global configuration, branch-protection
 mutation, tag, release, or PR merge is authorized by this repository-change scope.
