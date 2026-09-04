@@ -708,7 +708,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/specialized/qdrant/docker-compose.yml](../../../../infra/04-data/specialized/qdrant/docker-compose.yml) | YAML config |
 | [infra/05-messaging/README.md](../../../../infra/05-messaging/README.md) | folder index |
 | [infra/05-messaging/kafka/README.md](../../../../infra/05-messaging/kafka/README.md) | folder index |
-| [infra/05-messaging/kafka/docker-compose.dev.yml](../../../../infra/05-messaging/kafka/docker-compose.dev.yml) | YAML config |
 | [infra/05-messaging/kafka/docker-compose.yml](../../../../infra/05-messaging/kafka/docker-compose.yml) | YAML config |
 | [infra/05-messaging/kafka/jmx-exporter/kafka-config.yaml](../../../../infra/05-messaging/kafka/jmx-exporter/kafka-config.yaml) | YAML config |
 | [infra/05-messaging/kafka/kafbat-ui/dynamic_config.template.yaml](../../../../infra/05-messaging/kafka/kafbat-ui/dynamic_config.template.yaml) | YAML config |

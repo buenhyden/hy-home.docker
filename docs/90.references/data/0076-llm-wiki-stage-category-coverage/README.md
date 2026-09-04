@@ -43,7 +43,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `981`
+- Safe tracked source paths: `980`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -65,7 +65,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `docs/99.templates` | 43 | [docs/99.templates/README.md](../../../99.templates/README.md)<br>[docs/99.templates/contracts/document-profile.schema.json](../../../99.templates/contracts/document-profile.schema.json)<br>[docs/99.templates/contracts/frontmatter.schema.json](../../../99.templates/contracts/frontmatter.schema.json) |
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
 | `evals` | 2 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh) |
-| `infra` | 246 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
+| `infra` | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | `root` | 7 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | `scripts` | 38 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | `secrets` | 1 | [secrets/README.md](../../../../secrets/README.md) |
@@ -81,7 +81,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Active stage docs | 75 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
 | Reference and template docs | 104 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
-| Infrastructure source | 246 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
+| Infrastructure source | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 40 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh)<br>[scripts/README.md](../../../../scripts/README.md) |
 | GitHub workflow surface | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
@@ -93,7 +93,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: |
 | JSON registry | 77 |
 | Markdown reference | 547 |
-| YAML config | 103 |
+| YAML config | 102 |
 | folder index | 169 |
 | script | 53 |
 | source path | 28 |

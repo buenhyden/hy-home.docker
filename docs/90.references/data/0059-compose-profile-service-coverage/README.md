@@ -62,12 +62,12 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 
 | Metric | Value |
 | --- | ---: |
-| Compose files scanned | 43 |
-| Compose files with services | 42 |
-| Services discovered | 145 |
-| Distinct profiles including `default` | 27 |
+| Compose files scanned | 42 |
+| Compose files with services | 41 |
+| Services discovered | 138 |
+| Distinct profiles including `default` | 28 |
 | Default services | 0 |
-| Profile-gated service entries | 145 |
+| Profile-gated service entries | 138 |
 
 ## Profile Coverage
 
@@ -81,11 +81,12 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `data` | 58 | `influxdb` (infra/04-data/analytics/influxdb/docker-compose.yml), `ksqldb-server` (infra/04-data/analytics/ksql/docker-compose.yml), `opensearch` (infra/04-data/analytics/opensearch/docker-compose.yml), `opensearch-dashboards` (infra/04-data/analytics/opensearch/docker-compose.yml), `starrocks-be` (infra/04-data/analytics/warehouses/docker-compose.yml), `starrocks-fe` (infra/04-data/analytics/warehouses/docker-compose.yml), `valkey-cluster-exporter` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-cluster-init` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-0` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-1` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-2` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-3` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-4` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-5` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `seaweedfs-filer` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-master` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-mount` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-s3` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), ... +40 more |
 | `data-cluster` | 4 | `opensearch-dashboards` (infra/04-data/analytics/opensearch/docker-compose.yml), `opensearch-node1` (infra/04-data/analytics/opensearch/docker-compose.yml), `opensearch-node2` (infra/04-data/analytics/opensearch/docker-compose.yml), `opensearch-node3` (infra/04-data/analytics/opensearch/docker-compose.yml) |
 | `dedicated-valkey` | 6 | `oauth2-proxy-valkey` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey-exporter` (infra/02-auth/oauth2-proxy/docker-compose.yml), `airflow-valkey` (infra/07-workflow/airflow/docker-compose.yml), `airflow-valkey-exporter` (infra/07-workflow/airflow/docker-compose.yml), `n8n-valkey` (infra/07-workflow/n8n/docker-compose.yml), `n8n-valkey-exporter` (infra/07-workflow/n8n/docker-compose.yml) |
-| `dev` | 47 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `qdrant` (infra/04-data/specialized/qdrant/docker-compose.yml), `kafbat-ui` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.dev.yml), ... +29 more |
+| `dev` | 47 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `qdrant` (infra/04-data/specialized/qdrant/docker-compose.yml), `kafbat-ui` (infra/05-messaging/kafka/docker-compose.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.yml), ... +29 more |
 | `graph` | 1 | `neo4j` (infra/04-data/specialized/neo4j/docker-compose.yml) |
 | `iac` | 4 | `terraform` (infra/09-tooling/terraform/docker-compose.yml), `terrakube-api` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-executor` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-ui` (infra/09-tooling/terrakube/docker-compose.yml) |
 | `ksql` | 3 | `ksql-datagen` (infra/04-data/analytics/ksql/docker-compose.yml), `ksqldb-cli` (infra/04-data/analytics/ksql/docker-compose.yml), `ksqldb-server` (infra/04-data/analytics/ksql/docker-compose.yml) |
-| `messaging` | 17 | `kafbat-ui` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-rest-proxy` (infra/05-messaging/kafka/docker-compose.dev.yml), `schema-registry` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafbat-ui` (infra/05-messaging/kafka/docker-compose.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.yml), `kafka-2` (infra/05-messaging/kafka/docker-compose.yml), `kafka-3` (infra/05-messaging/kafka/docker-compose.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.yml), `kafka-rest-proxy` (infra/05-messaging/kafka/docker-compose.yml), `schema-registry` (infra/05-messaging/kafka/docker-compose.yml), `rabbitmq` (infra/05-messaging/rabbitmq/docker-compose.yml) |
+| `messaging` | 8 | `kafbat-ui` (infra/05-messaging/kafka/docker-compose.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.yml), `kafka-rest-proxy` (infra/05-messaging/kafka/docker-compose.yml), `schema-registry` (infra/05-messaging/kafka/docker-compose.yml), `rabbitmq` (infra/05-messaging/rabbitmq/docker-compose.yml) |
+| `messaging-cluster` | 2 | `kafka-2` (infra/05-messaging/kafka/docker-compose.yml), `kafka-3` (infra/05-messaging/kafka/docker-compose.yml) |
 | `messaging-option` | 1 | `rabbitmq` (infra/05-messaging/rabbitmq/docker-compose.yml) |
 | `mng` | 5 | `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml) |
 | `nginx` | 2 | `nginx` (infra/01-gateway/nginx/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml) |
@@ -109,7 +110,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `02-auth` | 4 | `auth`, `core`, `dedicated-valkey`, `dev` |
 | `03-security` | 2 | `core`, `dev`, `security` |
 | `04-data` | 74 | `ai`, `data`, `data-cluster`, `dev`, `graph`, `ksql`, `mng`, `nginx`, `obs`, `service`, `storage`, `storage-cluster` |
-| `05-messaging` | 17 | `dev`, `messaging`, `messaging-option` |
+| `05-messaging` | 10 | `dev`, `messaging`, `messaging-cluster`, `messaging-option` |
 | `06-observability` | 9 | `dev`, `obs` |
 | `07-workflow` | 16 | `dedicated-valkey`, `dev`, `workflow` |
 | `08-ai` | 3 | `ai`, `dev` |
@@ -142,8 +143,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `infra/04-data/relational/postgresql-cluster/docker-compose.yml` | 11 | `data`, `service` |
 | `infra/04-data/specialized/neo4j/docker-compose.yml` | 1 | `data`, `graph` |
 | `infra/04-data/specialized/qdrant/docker-compose.yml` | 1 | `ai`, `data`, `dev` |
-| `infra/05-messaging/kafka/docker-compose.dev.yml` | 7 | `dev`, `messaging` |
-| `infra/05-messaging/kafka/docker-compose.yml` | 9 | `messaging` |
+| `infra/05-messaging/kafka/docker-compose.yml` | 9 | `dev`, `messaging`, `messaging-cluster` |
 | `infra/05-messaging/rabbitmq/docker-compose.yml` | 1 | `messaging`, `messaging-option` |
 | `infra/06-observability/docker-compose.yml` | 9 | `dev`, `obs` |
 | `infra/07-workflow/airflow/docker-compose.yml` | 10 | `dedicated-valkey`, `dev`, `workflow` |

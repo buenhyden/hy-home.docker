@@ -7,7 +7,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka1-data
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data
+  kafka-connect-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-kafka-connect
   kafka-2-data:
     driver: local
     driver_opts:
@@ -20,57 +26,18 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka3-data
-  kafka-connect-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka-connect
-
-x-kafka-broker-common: &kafka-broker-common
-  image: confluentinc/cp-kafka:8.3.0
-  profiles:
-    - messaging
-  extends:
-    file: ../../common-optimizations.yml
-    service: template-stateful-high
-  read_only: false
-  restart: unless-stopped
-  environment: &kafka-broker-env-common
-    CLUSTER_ID: ${KAFKA_CLUSTER_ID}
-    KAFKA_PROCESS_ROLES: 'broker,controller'
-    KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}'
-    KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}'
-    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
-    KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-    KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-    KAFKA_LOG_DIRS: '/var/lib/kafka/data'
-    KAFKA_HEAP_OPTS: '-Xms1G -Xmx1G'
-    KAFKA_JMX_OPTS: >-
-      -Dcom.sun.management.jmxremote
-      -Dcom.sun.management.jmxremote.authenticate=false
-      -Dcom.sun.management.jmxremote.ssl=false
-      -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost}
-      -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101}
-      -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
-    KAFKA_OPTS: >-
-      -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
-  healthcheck:
-    test:
-      [
-        'CMD-SHELL',
-        'unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1',
-      ]
-    interval: 15s
-    timeout: 30s
-    retries: 10
-    start_period: 45s
-  labels:
-    <<: *tier-label
 
 services:
   kafka-1:
-    <<: *kafka-broker-common
+    image: confluentinc/cp-kafka:8.3.0
+    profiles:
+      - messaging
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    read_only: false
+    restart: unless-stopped
     container_name: kafka-1
     hostname: kafka-1
     volumes:
@@ -81,58 +48,55 @@ services:
       - '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
       - '${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
-      <<: *kafka-broker-env-common
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # 자동 토픽 생성 방지 (권장: kafka-init에서 통제)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '${KAFKA_QUORUM_VOTERS:-1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093}}'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_HEAP_OPTS: '${KAFKA_HEAP_OPTS:--Xms512M -Xmx512M}'
+      KAFKA_JMX_OPTS: >-
+        -Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost}
+        -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101}
+        -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
+      KAFKA_OPTS: >-
+        -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
       KAFKA_NODE_ID: 1
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://${KAFKA_EXTERNAL_HOSTNAME:-localhost}:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}'
       KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
       KAFKA_JMX_HOSTNAME: kafka-1
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1',
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 10
+      start_period: 45s
     networks:
       infra_net:
         ipv4_address: 172.19.0.30
-  kafka-2:
-    <<: *kafka-broker-common
-    container_name: kafka-2
-    hostname: kafka-2
-    volumes:
-      - kafka-2-data:/var/lib/kafka/data:rw
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    ports:
-      - '${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}'
-      - '${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}'
-      - '${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
-    environment:
-      <<: *kafka-broker-env-common
-      KAFKA_NODE_ID: 2
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}'
-      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
-      KAFKA_JMX_HOSTNAME: kafka-2
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.31
-  kafka-3:
-    <<: *kafka-broker-common
-    container_name: kafka-3
-    hostname: kafka-3
-    volumes:
-      - kafka-3-data:/var/lib/kafka/data:rw
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    ports:
-      - '${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}'
-      - '${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}'
-      - '${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
-    environment:
-      <<: *kafka-broker-env-common
-      KAFKA_NODE_ID: 3
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}'
-      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
-      KAFKA_JMX_HOSTNAME: kafka-3
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.32
+    labels:
+      <<: *tier-label
 
   schema-registry:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -146,7 +110,9 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
       SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: 'http'
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS_URI:-PLAINTEXT://kafka-1:19092}'
+      SCHEMA_REGISTRY_KAFKASTORE_RETRY_BACKOFF_MS: 500
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
     expose:
       - '${SCHEMA_REGISTRY_PORT:-8081}'
     labels:
@@ -162,17 +128,16 @@ services:
         condition: service_healthy
       kafka-2:
         condition: service_healthy
+        required: false
       kafka-3:
         condition: service_healthy
+        required: false
     healthcheck:
       test:
-        - CMD-SHELL
-        - |
-          bash -ec '
-            exec 3<>/dev/tcp/127.0.0.1/${SCHEMA_REGISTRY_PORT:-8081}
-            printf "GET /subjects HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3
-            timeout 5 cat <&3 | grep -qE "HTTP/1\.[01] 200"
-          '
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects >/dev/null || exit 1',
+        ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -184,6 +149,7 @@ services:
   kafka-connect:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -199,22 +165,25 @@ services:
         condition: service_healthy
       kafka-2:
         condition: service_healthy
+        required: false
       kafka-3:
         condition: service_healthy
+        required: false
       schema-registry:
         condition: service_healthy
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
+      CONNECT_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS:-kafka-1:19092}'
       CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT:-8083}
+      CONNECT_LISTENERS: 'http://0.0.0.0:${KAFKA_CONNECT_PORT:-8083}'
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
       CONNECT_GROUP_ID: 'kafka-connect-cluster'
 
       CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: _connect-status
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
 
       CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
@@ -258,6 +227,7 @@ services:
   kafka-rest-proxy:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -278,20 +248,21 @@ services:
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
       KAFKA_REST_LISTENERS: 'http://0.0.0.0:${KAFKA_REST_PROXY_PORT:-8082}'
-      KAFKA_REST_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
+      KAFKA_REST_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS_URI:-PLAINTEXT://kafka-1:19092}'
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
     depends_on:
       kafka-1:
         condition: service_healthy
       kafka-2:
         condition: service_healthy
+        required: false
       kafka-3:
         condition: service_healthy
+        required: false
       schema-registry:
         condition: service_healthy
     healthcheck:
-      test:
-        ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/topics || exit 1']
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/ || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
@@ -303,18 +274,19 @@ services:
   kafbat-ui:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: kafbat/kafka-ui:v1.5.0
     container_name: kafbat-ui
-    read_only: false
+    read_only: true
     tmpfs:
       - /tmp
       - /etc/kafkaui:uid=100,gid=101,mode=0775
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: '${KAFKA_BOOTSTRAP_SERVERS:-kafka-1:19092}'
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}
@@ -343,8 +315,10 @@ services:
         condition: service_healthy
       kafka-2:
         condition: service_healthy
+        required: false
       kafka-3:
         condition: service_healthy
+        required: false
       schema-registry:
         condition: service_healthy
       kafka-connect:
@@ -368,6 +342,7 @@ services:
   kafka-exporter:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -377,14 +352,17 @@ services:
     tmpfs:
       - /tmp
     command:
-      [--kafka.server=kafka-1:19092, --kafka.server=kafka-2:19092, --kafka.server=kafka-3:19092]
+      - --kafka.server=kafka-1:19092
+      - --web.listen-address=:${KAFKA_EXPORTER_PORT:-9308}
     depends_on:
       kafka-1:
         condition: service_healthy
       kafka-2:
         condition: service_healthy
+        required: false
       kafka-3:
         condition: service_healthy
+        required: false
     healthcheck:
       test:
         [
@@ -402,6 +380,7 @@ services:
   kafka-init:
     profiles:
       - 'messaging'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -414,6 +393,12 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+        required: false
+      kafka-3:
+        condition: service_healthy
+        required: false
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
@@ -426,3 +411,99 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.38
+
+  kafka-2:
+    profiles:
+    - messaging-cluster
+    image: confluentinc/cp-kafka:8.3.0
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    read_only: false
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
+      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
+      KAFKA_NODE_ID: 2
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}
+      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
+      KAFKA_JMX_HOSTNAME: kafka-2
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1
+      interval: 15s
+      timeout: 30s
+      retries: 10
+      start_period: 45s
+    labels:
+      hy-home.tier: messaging
+    container_name: kafka-2
+    hostname: kafka-2
+    volumes:
+    - kafka-2-data:/var/lib/kafka/data:rw
+    - ./jmx-exporter:/usr/share/jmx_exporter:ro
+    ports:
+    - ${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}
+    - ${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}
+    - ${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.31
+
+  kafka-3:
+    profiles:
+    - messaging-cluster
+    image: confluentinc/cp-kafka:8.3.0
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    read_only: false
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
+      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
+      KAFKA_NODE_ID: 3
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}
+      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
+      KAFKA_JMX_HOSTNAME: kafka-3
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1
+      interval: 15s
+      timeout: 30s
+      retries: 10
+      start_period: 45s
+    labels:
+      hy-home.tier: messaging
+    container_name: kafka-3
+    hostname: kafka-3
+    volumes:
+    - kafka-3-data:/var/lib/kafka/data:rw
+    - ./jmx-exporter:/usr/share/jmx_exporter:ro
+    ports:
+    - ${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}
+    - ${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}
+    - ${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.32

@@ -22,7 +22,6 @@ updated: 2026-08-11
 ## Policy Scope
 
 - `infra/05-messaging/kafka/docker-compose.yml`
-- `infra/05-messaging/kafka/docker-compose.dev.yml`
 - `infra/05-messaging/rabbitmq/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 05-messaging`
 

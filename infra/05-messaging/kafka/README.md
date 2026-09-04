@@ -56,10 +56,10 @@ kafka/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Kafka Event Streaming service leaf in `05-messaging`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local full compose: `docker-compose.yml` |
+| Purpose | Kafka Event Streaming service leaf in `05-messaging`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`; local full compose: `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
 | Config values | root dev env keys include `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1`, `KAFKA_PROCESS_ROLES`, `KAFKA_CONTROLLER_QUORUM_VOTERS`; full compose uses broker IDs 1-3 and replication factor 3 for internal topics; profiles: `messaging`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `kafka-1-data:/var/lib/kafka/data:rw`, `./jmx-exporter:/usr/share/jmx_exporter:ro`, `kafka-connect-data:/var/lib/kafka-connect:rw`, `./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro`, `kafka-1-data`, `kafka-connect-data`, `kafka-2-data:/var/lib/kafka/data:rw`, `kafka-3-data:/var/lib/kafka/data:rw`, plus 2 more |
 | Ports | `${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${SCHEMA_REGISTRY_PORT:-8081}`, `${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}`, plus 2 more |

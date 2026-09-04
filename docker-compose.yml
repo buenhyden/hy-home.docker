@@ -234,7 +234,7 @@ include:
   - infra/04-data/specialized/neo4j/docker-compose.yml
   - infra/04-data/specialized/qdrant/docker-compose.yml
   # 05-messaging
-  - infra/05-messaging/kafka/docker-compose.dev.yml
+  - infra/05-messaging/kafka/docker-compose.yml
   - infra/05-messaging/rabbitmq/docker-compose.yml
   # 06-observability
   - infra/06-observability/docker-compose.yml
