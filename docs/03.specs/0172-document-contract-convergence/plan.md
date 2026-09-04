@@ -47,8 +47,8 @@ archive-body mutation.
    observe Hosted CI without bypassing checks. If an existing public gate fails,
    reproduce it and apply only the minimum dependency, lockfile, build-time
    compiler-path, registered CI-tool provisioning, or pinned format-hook
-   normalization or exact lint-conformance correction before rerunning the same
-   gate. Preserve the entry state
+   normalization, exact lint-conformance correction, or execution-context
+   override correction before rerunning the same gate. Preserve the entry state
    through the first merge; record forward transitions in post-merge follow-up
    changes.
 10. Record provider, runtime, and branch-protection observations separately from
@@ -92,6 +92,10 @@ archive-body mutation.
   production identity is synchronized across its Dockerfile, canonical
   hardening consumer, focused regression, and guide while its dev identity
   contract remains distinct.
+- Workflow-dispatch full-profile reproduction with the canonical
+  `HYHOME_COMPOSE_PROFILES` override absent; verify all 28 declared selections
+  and 232 services independently, reject inherited workflow-level and job-level
+  selection overrides, and keep host-port collision detection intact.
 
 ## Rulings
 

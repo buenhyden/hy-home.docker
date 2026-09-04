@@ -175,6 +175,12 @@ Keep legacy archive payloads on unmanaged preservation profiles.
    corresponding hardening/test/guide synchronization required by Hosted lint
    findings. Any build-time Next setting is limited to the compiler path proved
    by the failed Hosted gate.
+10. The Hosted full job leaves `HYHOME_COMPOSE_PROFILES` unset so the canonical
+    Compose validator checks every declared profile as an independent selection.
+    The workflow semantic contract and focused regression reject any inherited
+    workflow-level or job-level override that recombines mutually exclusive
+    stacks; no profile, collision check, validator, threshold, or required job
+    is removed.
 
 ## Traceability
 

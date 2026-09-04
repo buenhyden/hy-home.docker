@@ -203,6 +203,20 @@ runtime, protection, review, deferral, and Git evidence.
   changed public suite in 13m0s. This proves the numeric-user correction reaches
   and passes every Hosted leaf, including Hadolint v2.14.0. The full job
   `101081791407` was correctly skipped for the PR event.
+- Final candidate PR run `33892413865`, changed job `101087013309`, executed
+  against `fe4e26bbe4cc699d678832f68bd765901e028fb7` and passed in 19m55s.
+  Workflow-dispatch run `33894450241` then executed full job `101093684400`
+  against that same SHA and failed after 12m25s. A local CI-context reproduction
+  proved the full job combined 21 mutually exclusive profiles into one named
+  selection, producing exact host-port conflicts on 80/443 and 8000. The full
+  job now leaves `HYHOME_COMPOSE_PROFILES` unset so the existing validator checks
+  all 28 declared selections and 232 services independently. Reintroducing the
+  workflow-level or job-level override is rejected by the semantic contract;
+  reverting the correction restores the known failure. The exact local CI-context
+  run passed both Compose validations, hardening, tests, frontend build, and
+  Storybook, then exited 1 only when Playwright's browser installer required an
+  unavailable interactive `sudo` password; Hosted full remains the authority for
+  that runner-specific final segment.
 
 ### Gap matrix
 
@@ -232,7 +246,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | PASS | seven runs progressively reached hardening, audit, browser coverage, uv provisioning, format hooks, `DL3025`, and five exact `DL3066` findings; exact candidate `1a5de646` then passed changed job `101081789784` in run `33890830204` |
+| Hosted CI | CHANGED PASS / FULL RETRY REQUIRED | final candidate `fe4e26bb` passed changed job `101087013309` in run `33892413865`; full run `33894450241` reproduced the job-level combined-profile collision and the exact override correction requires a rerun |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
