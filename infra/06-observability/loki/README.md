@@ -55,7 +55,7 @@ loki/
 | --- | --- |
 | Purpose | Log aggregation and LogQL query backend for the `06-observability` tier |
 | Compose service | `loki` in `infra/06-observability/docker-compose.yml` |
-| Compose linkage | Declared in `infra/06-observability/docker-compose.yml` and mirrored in `infra/06-observability/docker-compose.dev.yml` |
+| Compose linkage | Declared in `infra/06-observability/docker-compose.yml` |
 | Container | `infra-loki` |
 | Image | `hy/loki:3.7.3-custom` |
 | Runtime user | `10001:10001` |

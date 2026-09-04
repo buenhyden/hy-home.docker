@@ -22,7 +22,6 @@ updated: 2026-08-11
 ## Policy Scope
 
 - `infra/06-observability/docker-compose.yml`
-- `infra/06-observability/docker-compose.dev.yml`
 - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
 - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - `scripts/hardening/check-all-hardening.sh`

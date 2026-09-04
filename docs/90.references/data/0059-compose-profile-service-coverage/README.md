@@ -62,12 +62,12 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 
 | Metric | Value |
 | --- | ---: |
-| Compose files scanned | 48 |
-| Compose files with services | 47 |
-| Services discovered | 168 |
+| Compose files scanned | 47 |
+| Compose files with services | 46 |
+| Services discovered | 159 |
 | Distinct profiles including `default` | 26 |
 | Default services | 4 |
-| Profile-gated service entries | 164 |
+| Profile-gated service entries | 155 |
 
 ## Profile Coverage
 
@@ -88,7 +88,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `messaging-option` | 1 | `rabbitmq` (infra/05-messaging/rabbitmq/docker-compose.yml) |
 | `mng` | 5 | `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml) |
 | `nginx` | 2 | `nginx` (infra/01-gateway/nginx/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml) |
-| `obs` | 27 | `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `cassandra-exporter` (infra/04-data/nosql/cassandra/docker-compose.yml), `cassandra-node1` (infra/04-data/nosql/cassandra/docker-compose.yml), `mongo-init` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongo-key-generator` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-exporter` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-rep1` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-rep2` (infra/04-data/nosql/mongodb/docker-compose.yml), `alertmanager` (infra/06-observability/docker-compose.dev.yml), `alloy` (infra/06-observability/docker-compose.dev.yml), `cadvisor` (infra/06-observability/docker-compose.dev.yml), `grafana` (infra/06-observability/docker-compose.dev.yml), `loki` (infra/06-observability/docker-compose.dev.yml), `prometheus` (infra/06-observability/docker-compose.dev.yml), `pushgateway` (infra/06-observability/docker-compose.dev.yml), `pyroscope` (infra/06-observability/docker-compose.dev.yml), `tempo` (infra/06-observability/docker-compose.dev.yml), ... +9 more |
+| `obs` | 18 | `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `cassandra-exporter` (infra/04-data/nosql/cassandra/docker-compose.yml), `cassandra-node1` (infra/04-data/nosql/cassandra/docker-compose.yml), `mongo-init` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongo-key-generator` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-exporter` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-rep1` (infra/04-data/nosql/mongodb/docker-compose.yml), `mongodb-rep2` (infra/04-data/nosql/mongodb/docker-compose.yml), `alertmanager` (infra/06-observability/docker-compose.yml), `alloy` (infra/06-observability/docker-compose.yml), `cadvisor` (infra/06-observability/docker-compose.yml), `grafana` (infra/06-observability/docker-compose.yml), `loki` (infra/06-observability/docker-compose.yml), `prometheus` (infra/06-observability/docker-compose.yml), `pushgateway` (infra/06-observability/docker-compose.yml), `pyroscope` (infra/06-observability/docker-compose.yml), `tempo` (infra/06-observability/docker-compose.yml) |
 | `registry` | 1 | `registry` (infra/09-tooling/registry/docker-compose.yml) |
 | `sast` | 1 | `sonarqube` (infra/09-tooling/sonarqube/docker-compose.yml) |
 | `security` | 2 | `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml) |
@@ -109,7 +109,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `03-security` | 2 | `core`, `dev`, `security` |
 | `04-data` | 75 | `ai`, `data`, `default`, `dev`, `graph`, `ksql`, `mng`, `nginx`, `obs`, `service`, `storage`, `storage-cluster` |
 | `05-messaging` | 17 | `dev`, `messaging`, `messaging-option` |
-| `06-observability` | 18 | `dev`, `obs` |
+| `06-observability` | 9 | `dev`, `obs` |
 | `07-workflow` | 28 | `dev`, `workflow` |
 | `08-ai` | 3 | `ai`, `dev` |
 | `09-tooling` | 10 | `iac`, `registry`, `sast`, `sync`, `testing`, `tooling` |
@@ -146,8 +146,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `infra/05-messaging/kafka/docker-compose.dev.yml` | 7 | `dev`, `messaging` |
 | `infra/05-messaging/kafka/docker-compose.yml` | 9 | `messaging` |
 | `infra/05-messaging/rabbitmq/docker-compose.yml` | 1 | `messaging`, `messaging-option` |
-| `infra/06-observability/docker-compose.dev.yml` | 9 | `dev`, `obs` |
-| `infra/06-observability/docker-compose.yml` | 9 | `obs` |
+| `infra/06-observability/docker-compose.yml` | 9 | `dev`, `obs` |
 | `infra/07-workflow/airflow/docker-compose.dev.yml` | 8 | `dev`, `workflow` |
 | `infra/07-workflow/airflow/docker-compose.yml` | 10 | `workflow` |
 | `infra/07-workflow/n8n/docker-compose.dev.yml` | 4 | `dev`, `workflow` |

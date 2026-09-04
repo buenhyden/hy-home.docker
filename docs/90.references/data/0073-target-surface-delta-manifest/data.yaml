@@ -941,11 +941,11 @@ entries:
   surface_class: native-configuration
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
-  canonical_owner: infra/06-observability/docker-compose.dev.yml
+  disposition: delete
+  canonical_owner: infra/06-observability/docker-compose.yml
   direct_consumers: []
-  finding: Preserve infra/06-observability/docker-compose.dev.yml as its service-local Compose declaration; no root Compose consumer is asserted.
-  replacement: null
+  finding: Merged into infra/06-observability/docker-compose.yml. The two files declared the same nine services and differed only in cadvisor's resource tier and prometheus's config path, both now environment variables.
+  replacement: infra/06-observability/docker-compose.yml
   secret_safety: not-applicable
   validators:
   - scripts/validation/check-target-surface-delta-contract.py

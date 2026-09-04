@@ -55,7 +55,7 @@ grafana/
 | --- | --- |
 | Purpose | Visualization hub for metrics, logs, traces, alerts, and profiles in the `06-observability` tier |
 | Compose service | `grafana` in `infra/06-observability/docker-compose.yml` |
-| Compose linkage | Declared in `infra/06-observability/docker-compose.yml` and mirrored in `infra/06-observability/docker-compose.dev.yml` |
+| Compose linkage | Declared in `infra/06-observability/docker-compose.yml` |
 | Container | `infra-grafana` |
 | Image | `grafana/grafana:13.1.0` |
 | Config files | `provisioning/datasources/datasource.yml`, `provisioning/dashboards/dashboards.yml`, dashboard JSON files |

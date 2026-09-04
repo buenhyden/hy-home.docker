@@ -91,7 +91,7 @@ observed_at: '2026-08-23'
 | `infra/06-observability/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/alertmanager/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/alloy/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
-| `infra/06-observability/docker-compose.dev.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/docker-compose.dev.yml` | `native-configuration` | `none` | `delete` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/prometheus/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/pushgateway/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |

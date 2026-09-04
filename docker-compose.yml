@@ -237,7 +237,7 @@ include:
   - infra/05-messaging/kafka/docker-compose.dev.yml
   - infra/05-messaging/rabbitmq/docker-compose.yml
   # 06-observability
-  - infra/06-observability/docker-compose.dev.yml
+  - infra/06-observability/docker-compose.yml
   # 07-workflow
   - infra/07-workflow/airflow/docker-compose.dev.yml
   - infra/07-workflow/n8n/docker-compose.dev.yml

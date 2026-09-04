@@ -50,6 +50,7 @@ services:
   prometheus:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -64,7 +65,7 @@ services:
     command: >
       "exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver"
     volumes:
-      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/config/${PROMETHEUS_CONFIG_FILE:-prometheus.dev.yml}:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
       - prometheus-data:/prometheus:rw
     secrets:
@@ -101,6 +102,7 @@ services:
   loki:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -147,6 +149,7 @@ services:
   tempo:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -193,6 +196,7 @@ services:
   alloy:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -247,6 +251,7 @@ services:
   grafana:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
@@ -347,9 +352,12 @@ services:
   cadvisor:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-host-observer-med
+    cpus: ${CADVISOR_CPUS:-1.50}
+    mem_limit: ${CADVISOR_MEM_LIMIT:-1g}
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
     privileged: true
@@ -392,6 +400,7 @@ services:
   pyroscope:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -426,6 +435,7 @@ services:
   alertmanager:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
@@ -474,6 +484,7 @@ services:
   pushgateway:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low

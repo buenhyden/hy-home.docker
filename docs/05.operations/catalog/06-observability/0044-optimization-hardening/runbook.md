@@ -74,13 +74,13 @@ updated: 2026-08-11
 5. Pyroscope and cAdvisor route availability boundary를 확인한다.
 
    ```bash
-   rg -n 'pyroscope:|cadvisor:|traefik.http.routers.pyroscope|traefik.http.services.pyroscope.loadbalancer.server.port|traefik.http.routers.cadvisor|traefik.http.services.cadvisor.loadbalancer.server.port|PYROSCOPE_PORT|CADVISOR_PORT' infra/06-observability/docker-compose.yml infra/06-observability/docker-compose.dev.yml
+   rg -n 'pyroscope:|cadvisor:|traefik.http.routers.pyroscope|traefik.http.services.pyroscope.loadbalancer.server.port|traefik.http.routers.cadvisor|traefik.http.services.cadvisor.loadbalancer.server.port|PYROSCOPE_PORT|CADVISOR_PORT' infra/06-observability/docker-compose.yml
    ```
 
 6. 증상별 Git-managed rollback 후보를 확인한다.
 
    ```bash
-   git diff -- infra/06-observability/docker-compose.yml infra/06-observability/docker-compose.dev.yml infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh scripts/hardening/check-all-hardening.sh .github/workflows/ci-quality.yml
+   git diff -- infra/06-observability/docker-compose.yml infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh scripts/hardening/check-all-hardening.sh .github/workflows/ci-quality.yml
    ```
 
 7. Hardening script, Compose, Dockerfile, or workflow 변경이 원인이면 직전 Git diff 단위로 되돌리고 재검증한다.

@@ -720,7 +720,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/06-observability/alertmanager/README.md](../../../../infra/06-observability/alertmanager/README.md) | folder index |
 | [infra/06-observability/alertmanager/config/config.yml](../../../../infra/06-observability/alertmanager/config/config.yml) | YAML config |
 | [infra/06-observability/alloy/README.md](../../../../infra/06-observability/alloy/README.md) | folder index |
-| [infra/06-observability/docker-compose.dev.yml](../../../../infra/06-observability/docker-compose.dev.yml) | YAML config |
 | [infra/06-observability/docker-compose.yml](../../../../infra/06-observability/docker-compose.yml) | YAML config |
 | [infra/06-observability/grafana/README.md](../../../../infra/06-observability/grafana/README.md) | folder index |
 | [infra/06-observability/grafana/dashboards/Applications/airflow-dag-overview.json](../../../../infra/06-observability/grafana/dashboards/Applications/airflow-dag-overview.json) | JSON registry |

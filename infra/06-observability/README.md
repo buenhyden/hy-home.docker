@@ -58,10 +58,10 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Observability Tier (06-observability) folder index; services `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local obs compose is `docker-compose.yml` |
+| Purpose | Observability Tier (06-observability) folder index; services `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
 | Config values | Uses non-secret env keys for MinIO app username, Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml`. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, and `CADVISOR_MEM_LIMIT` select the topology that used to be a second file. |
 | Networks | `infra_net`, `k3d-hyhome` |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
