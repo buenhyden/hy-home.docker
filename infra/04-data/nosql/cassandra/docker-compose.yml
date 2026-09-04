@@ -47,6 +47,7 @@ services:
   cassandra-node1:
     profiles:
       - 'data'
+      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high

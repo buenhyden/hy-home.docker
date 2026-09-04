@@ -15,6 +15,7 @@ services:
       - storage
       - obs
       - dev
+      - nginx
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med

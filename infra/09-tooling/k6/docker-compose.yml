@@ -23,7 +23,7 @@ services:
     labels:
       <<: *tier-label
     ports:
-      - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
+      - '${K6_HOST_PORT:-18189}:${K6_PORT:-8089}'
     volumes:
       - k6-data:/mnt/locust:rw
     networks:

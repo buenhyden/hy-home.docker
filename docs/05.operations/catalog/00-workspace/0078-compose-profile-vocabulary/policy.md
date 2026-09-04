@@ -32,11 +32,15 @@ updated: 2026-09-04
 - 비대상: profile이 선택한 뒤의 서비스 설정 내용, 이미지 버전, secret 값,
   network 주소 체계
 
-- **Systems**: `infra/` 하위 Compose 파일 47개, 서비스 168개
+- **Systems**: `infra/` 하위 Compose 파일 47개 중 root가 include하는 41개, 서비스 127개
 - **Agents**: Infra/DevOps/Operations 역할의 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Definitions
+
+아래 세 표의 서비스 수는 root가 include하는 41개 파일 기준이며,
+`docker compose config --services`가 해당 profile 하나만 선택했을 때 내놓는
+수와 일치한다. SPEC-0171이 보류한 6개 파일의 서비스는 세지 않는다.
 
 profile 이름은 세 종류로 나뉜다.
 
@@ -49,12 +53,12 @@ profile 이름은 세 종류로 나뉜다.
 
 | Profile | 선택 대상 | 서비스 |
 | --- | --- | ---: |
-| `auth` | `02-auth` | 5 |
+| `auth` | `02-auth` | 2 |
 | `security` | `03-security` | 2 |
 | `data` | `04-data` | 58 |
-| `messaging` | `05-messaging` | 17 |
-| `obs` | `06-observability`와 `04-data`의 exporter | 22 |
-| `workflow` | `07-workflow` | 28 |
+| `messaging` | `05-messaging` | 8 |
+| `obs` | `06-observability`와 `04-data`의 exporter | 18 |
+| `workflow` | `07-workflow` | 12 |
 | `ai` | `08-ai`와 `04-data`의 vector store | 4 |
 | `tooling` | `09-tooling` | 10 |
 | `communication` | `10-communication` | 2 |
@@ -67,11 +71,12 @@ profile 이름은 세 종류로 나뉜다.
 
 | Profile | 선택 대상 | 서비스 |
 | --- | --- | ---: |
-| `core` | 최소 도달 가능 stack: gateway, auth, security | 8 |
-| `dev` | 개발용 구성 변형 | 48 |
-| `nginx` | traefik 대신 nginx를 gateway로 사용 | 1 |
+| `core` | 최소 도달 가능 stack: gateway, auth, security | 5 |
+| `dev` | 개발용 구성 변형 | 47 |
+| `nginx` | traefik 대신 nginx를 gateway로 사용 | 2 |
 | `messaging-option` | messaging 선택 구성 요소 | 1 |
-| `ksql` | analytics 선택 구성 요소 | 2 |
+| `ksql` | analytics 선택 구성 요소 | 3 |
+| `storage-cluster` | 단일 노드 minio 대신 4노드 minio 클러스터 | 4 |
 
 ### Role selector
 
@@ -95,6 +100,9 @@ profile 이름은 세 종류로 나뉜다.
     깨뜨린다.
   - 새 profile 이름을 도입하면 같은 논리 변경에서 이 문서에 행을 추가한다.
   - 상호 배타 쌍을 새로 만들면 아래 표에 근거와 함께 기록한다.
+  - `depends_on` 대상은 출발 서비스의 모든 profile을 함께 선언한다. 이 규칙이
+    깨지면 해당 profile은 `depends on undefined service`로 렌더링 자체가
+    실패한다. 규칙은 전이적이므로 의존 그래프의 폐포까지 닫아야 한다.
 - **Allowed**:
   - 한 서비스가 여러 profile을 선언하는 것. 예로 `k6-master`는 `tooling`과
     `testing`을 함께 선언한다.
@@ -109,9 +117,11 @@ profile 이름은 세 종류로 나뉜다.
 | 쌍 | 충돌 | 근거 |
 | --- | --- | --- |
 | `nginx` ↔ `core`, `nginx` ↔ `dev` | host port 80, 443 | nginx와 traefik은 같은 역할의 대체재이며 동시에 gateway가 될 수 없다 |
+| `storage-cluster` ↔ `storage` | host port 충돌 없음 | 두 minio 토폴로지는 대체재다. 두 파일이 서비스 이름을 공유하지 않아 host port는 부딪히지 않지만, 동시에 띄우면 같은 network에 독립된 object store가 둘 생긴다 |
 
-`testing`은 `k6-master`와 `locust-master`를 함께 선택하지만 둘의 host port는
-서로 다르게 배정되어 있으므로 배타 쌍이 아니다.
+`testing`은 `k6-master`와 `locust-master`를 함께 선택한다. 두 서비스는 원래
+`LOCUST_HOST_PORT` 하나를 공유해 18089에서 충돌했으므로, k6에 `K6_HOST_PORT`
+(기본 18189)를 분리 배정했다. 이제 배타 쌍이 아니다.
 
 ## Exceptions
 
