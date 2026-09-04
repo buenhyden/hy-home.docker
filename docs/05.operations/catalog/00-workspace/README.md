@@ -41,6 +41,7 @@ policy for controls, and runbook for ordered recovery or validation.
 | [new-service onboarding](0008-new-service-onboarding/guide.md) | Guide |
 | [release management](0009-release-management/runbook.md) | Runbook |
 | [sensitive environment comparison](0010-sensitive-env-vars-comparison/guide.md) | Guide |
+| [Compose profile vocabulary](0078-compose-profile-vocabulary/policy.md) | Policy |
 
 ## How to Work in This Area
 

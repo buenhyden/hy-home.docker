@@ -316,6 +316,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md](../../../05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md](../../../05.operations/catalog/00-workspace/0009-release-management/runbook.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md](../../../05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md) | folder index |
 | [docs/05.operations/catalog/01-gateway/0011-nginx/guide.md](../../../05.operations/catalog/01-gateway/0011-nginx/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/0011-nginx/policy.md](../../../05.operations/catalog/01-gateway/0011-nginx/policy.md) | Markdown reference |

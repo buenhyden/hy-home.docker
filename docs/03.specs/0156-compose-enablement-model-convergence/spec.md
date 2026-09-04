@@ -221,5 +221,6 @@ logging anchor, which already exists in `infra/common-optimizations.yml`.
 
 - [Infrastructure operational policy](../../00.agent-governance/policies/environment-constraints.md)
 - [Operations catalog](../../05.operations/catalog/README.md)
+- [Compose profile vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)
 - [Infra net standardization](../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
 - [Compose profile service coverage](../../90.references/data/0059-compose-profile-service-coverage/README.md)
